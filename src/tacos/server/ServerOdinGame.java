@@ -26,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 import odin.handling.channel.PlayerStorage;
 import odin.server.maps.MapleMapFactory;
-import java.util.HashSet;
-import java.util.Set;
 
 public class ServerOdinGame {
 
@@ -40,10 +38,6 @@ public class ServerOdinGame {
 
     public boolean isShutdown() {
         return server_game.isShutdown();
-    }
-
-    public static Map<Integer, ServerOdinGame> getInstances() {
-        return instances;
     }
 
     public MapleMapFactory getMapFactory() {
@@ -60,10 +54,6 @@ public class ServerOdinGame {
         this.channel = channel;
     }
 
-    public static Set<Integer> getAllInstance() {
-        return new HashSet<>(instances.keySet());
-    }
-
     public void run_startup_configurations(int port) {
         setChannel(channel);
     }
@@ -78,11 +68,6 @@ public class ServerOdinGame {
 
     public void removePlayer(int idz, String namez) {
         getPlayerStorage().deregisterPlayer(idz, namez);
-
-    }
-
-    public int getChannel() {
-        return channel;
     }
 
     public void setChannel(int channel) {

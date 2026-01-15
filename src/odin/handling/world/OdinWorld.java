@@ -17,11 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
-import odin.client.MapleCoolDownValueHolder;
-import odin.client.MapleDiseaseValueHolder;
-import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
-import tacos.wz.data.ItemWz;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
 import tacos.server.ServerOdinGame;
@@ -36,13 +31,9 @@ import java.util.Collection;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCUIMessenger;
-import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.server.Timer.WorldTimer;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapItem;
 import tacos.server.TacosWorld;
 
 public class OdinWorld extends TacosWorld {
@@ -1225,92 +1216,4 @@ public class OdinWorld extends TacosWorld {
         }
     }
 
-    public static void registerRespawn() {
-        WorldTimer.getInstance().register(new Respawn(), 3000);
-    }
-
-    public static class Respawn implements Runnable { //is putting it here a good idea?
-
-        private int numTimes = 0;
-
-        @Override
-        public void run() {
-            numTimes++;
-            for (ServerOdinGame cserv : ServerOdinGame.getAllInstances()) {
-                for (MapleMap map : cserv.getMapFactory().getAllMaps()) { //iterating through each map o_x
-                    handleMap(map, numTimes, map.getCharactersSize());
-                }
-                for (MapleMap map : cserv.getMapFactory().getAllInstanceMaps()) {
-                    handleMap(map, numTimes, map.getCharactersSize());
-                }
-            }
-        }
-    }
-
-    public static void handleMap(final MapleMap map, final int numTimes, final int size) {
-        if (map.getItemsSize() > 0) {
-            for (MapleMapItem item : map.getAllItems()) {
-                if (item.shouldExpire()) {
-                    item.expire(map);
-                } else if (item.shouldFFA()) {
-                    item.setDropType((byte) 2);
-                }
-            }
-        }
-        if (map.characterSize() > 0) {
-            if (map.canSpawn()) {
-                map.respawn(false);
-            }
-            boolean hurt = map.canHurt();
-            for (MapleCharacter chr : map.getCharacters()) {
-                handleCooldowns(chr, numTimes, hurt);
-            }
-        }
-    }
-
-    public static void handleCooldowns(final MapleCharacter chr, final int numTimes, final boolean hurt) { //is putting it here a good idea? expensive?
-        final long now = System.currentTimeMillis();
-        for (MapleCoolDownValueHolder m : chr.getCooldowns()) {
-            if (m.startTime + m.length < now) {
-                final int skil = m.skillId;
-                chr.removeCooldown(skil);
-                chr.getClient().getSession().write(ResCUserLocal.SkillCooltimeSet(skil, 0));
-            }
-        }
-        for (MapleDiseaseValueHolder m : chr.getAllDiseases()) {
-            if (m.startTime + m.length < now) {
-                chr.dispelDebuff(m.disease);
-            }
-        }
-        if (numTimes % 20 == 0) { //we're parsing through the characters anyway (:
-            for (MaplePet pet : chr.getPets()) {
-                if (pet.getSummoned()) {
-                    if (pet.getPetItemId() == 5000054 && pet.getSecondsLeft() > 0) {
-                        pet.setSecondsLeft(pet.getSecondsLeft() - 1);
-                        if (pet.getSecondsLeft() <= 0) {
-                            chr.unequipPet(pet, true, true);
-                            return;
-                        }
-                    }
-                    int newFullness = pet.getFullness() - ItemWz.get().getHunger(pet.getPetItemId());
-                    if (newFullness <= 5) {
-                        pet.setFullness(15);
-                        chr.unequipPet(pet, true, true);
-                    } else {
-                        pet.setFullness(newFullness);
-                        chr.getClient().getSession().write(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
-                    }
-                }
-            }
-        }
-        if (hurt && chr.isAlive()) {
-            if (chr.getInventory(MapleInventoryType.EQUIPPED).findById(chr.getMap().getHPDecProtect()) == null) {
-                if (chr.getMapId() == 749040100 && chr.getInventory(MapleInventoryType.CASH).findById(5451000) == null) { //minidungeon
-                    chr.addHP(-chr.getMap().getHPDec());
-                } else if (chr.getMapId() != 749040100) {
-                    chr.addHP(-chr.getMap().getHPDec());
-                }
-            }
-        }
-    }
 }

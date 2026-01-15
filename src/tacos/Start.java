@@ -50,6 +50,7 @@ import tacos.server.TacosCashShop;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosITC;
+import tacos.server.TacosWorld;
 import test.ToolMan;
 
 /**
@@ -152,7 +153,7 @@ public class Start {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        OdinWorld.registerRespawn();
+        TacosWorld.registerRespawn();
         DebugLogger.SetupLog("RANKING");
         RankingWorker.getInstance().run();
 

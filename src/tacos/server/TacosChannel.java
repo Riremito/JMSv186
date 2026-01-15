@@ -68,7 +68,6 @@ public class TacosChannel extends TacosServer {
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving characters...");
         getPlayerStorage().disconnectAll();
         DebugLogger.InfoLog("Channel " + this.channel + ", Unbinding...");
-        ServerOdinGame.getInstances().remove(this.channel);
         super.shutdown();
     }
 
