@@ -219,4 +219,13 @@ public class TacosWorld {
         return player;
     }
 
+    public boolean hasMerchant(int character_id) {
+        for (TacosChannel channel : this.channels) {
+            if (channel.containsMerchant(character_id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }

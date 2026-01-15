@@ -26,7 +26,6 @@ import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.server.ServerOdinGame;
 import java.util.LinkedList;
 import java.util.List;
 import tacos.packet.response.ResCEmployeePool;
@@ -34,6 +33,7 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
 import odin.server.maps.MapleMapObjectType;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.server.TacosWorld;
 
 public class HiredMerchant extends AbstractPlayerStore {
 
@@ -133,7 +133,7 @@ public class HiredMerchant extends AbstractPlayerStore {
             saveItems();
         }
         if (remove) {
-            ServerOdinGame.getInstance(channel).removeMerchant(this);
+            TacosWorld.find(0).getChannelServer(channel).removeMerchant(this); // TODO : fix
             getMap().broadcastMessage(ResCEmployeePool.EmployeeLeaveField(this));
         }
         getMap().removeMapObject(this);

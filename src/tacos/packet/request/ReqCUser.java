@@ -1317,7 +1317,7 @@ public class ReqCUser {
             return false;
         }
         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, owl_item_id, 1, true, false);
-        final List<HiredMerchant> hms = chr.getClient().getOdinChannelServer().searchMerchant(target_item_id);
+        final List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
         // not coded.
         chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
         return true;

@@ -64,15 +64,6 @@ public class OdinWorld extends TacosWorld {
         return Find.findChannel(charName) > 0;
     }
 
-    public static boolean hasMerchant(int accountID) {
-        for (ServerOdinGame cs : ServerOdinGame.getAllInstances()) {
-            if (cs.containsMerchant(accountID)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static class Party {
 
         private static Map<Integer, MapleParty> parties = new HashMap<Integer, MapleParty>();

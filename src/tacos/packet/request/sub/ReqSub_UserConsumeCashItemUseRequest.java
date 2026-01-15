@@ -158,7 +158,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 523: {
                 // OnUserShopScannerItemUseRequest
                 int target_item_id = cp.Decode4();
-                final List<HiredMerchant> hms = chr.getClient().getOdinChannelServer().searchMerchant(target_item_id);
+                final List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
                 chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
                 item_use.run();
                 return true;

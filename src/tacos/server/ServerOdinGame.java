@@ -23,15 +23,10 @@ package tacos.server;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import odin.handling.channel.PlayerStorage;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
-import odin.server.shops.HiredMerchant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,12 +55,8 @@ public class ServerOdinGame {
         return this.server_game.getPlayerStorage();
     }
 
-    private int channel, running_MerchantID = 0;
+    private int channel;
     private final Map<String, MapleSquad> mapleSquads = new HashMap<>();
-    private final Map<Integer, HiredMerchant> merchants = new HashMap<>();
-    private final ReentrantReadWriteLock merchLock = new ReentrantReadWriteLock(); //merchant
-    private final ReentrantReadWriteLock squadLock = new ReentrantReadWriteLock(); //squad
-    private int eventmap = -1;
 
     private ServerOdinGame(int channel) {
         this.channel = channel;
@@ -75,151 +66,57 @@ public class ServerOdinGame {
         return new HashSet<>(instances.keySet());
     }
 
-    public final void run_startup_configurations(int port) {
+    public void run_startup_configurations(int port) {
         setChannel(channel);
     }
 
-    public static final ServerOdinGame newInstance(int channel) {
+    public static ServerOdinGame newInstance(int channel) {
         return new ServerOdinGame(channel);
     }
 
-    public static final ServerOdinGame getInstance(final int channel) {
+    public static ServerOdinGame getInstance(int channel) {
         return instances.get(channel);
     }
 
-    public final void removePlayer(final int idz, final String namez) {
+    public void removePlayer(int idz, String namez) {
         getPlayerStorage().deregisterPlayer(idz, namez);
 
     }
 
-    public final int getChannel() {
+    public int getChannel() {
         return channel;
     }
 
-    public final void setChannel(final int channel) {
+    public void setChannel(int channel) {
         instances.put(channel, this);
     }
 
-    public static final Collection<ServerOdinGame> getAllInstances() {
+    public static Collection<ServerOdinGame> getAllInstances() {
         return Collections.unmodifiableCollection(instances.values());
     }
 
     public Map<String, MapleSquad> getAllSquads() {
-        squadLock.readLock().lock();
-        try {
-            return Collections.unmodifiableMap(mapleSquads);
-        } finally {
-            squadLock.readLock().unlock();
-        }
+        return Collections.unmodifiableMap(mapleSquads);
     }
 
-    public final MapleSquad getMapleSquad(final String type) {
-        squadLock.readLock().lock();
-        try {
-            return mapleSquads.get(type.toLowerCase());
-        } finally {
-            squadLock.readLock().unlock();
-        }
+    public MapleSquad getMapleSquad(String type) {
+        return mapleSquads.get(type.toLowerCase());
     }
 
-    public final boolean addMapleSquad(final MapleSquad squad, final String type) {
-        squadLock.writeLock().lock();
-        try {
-            if (!mapleSquads.containsKey(type.toLowerCase())) {
-                mapleSquads.put(type.toLowerCase(), squad);
-                return true;
-            }
-        } finally {
-            squadLock.writeLock().unlock();
+    public boolean addMapleSquad(MapleSquad squad, String type) {
+        if (!mapleSquads.containsKey(type.toLowerCase())) {
+            mapleSquads.put(type.toLowerCase(), squad);
+            return true;
         }
         return false;
     }
 
-    public final boolean removeMapleSquad(final String type) {
-        squadLock.writeLock().lock();
-        try {
-            if (mapleSquads.containsKey(type.toLowerCase())) {
-                mapleSquads.remove(type.toLowerCase());
-                return true;
-            }
-        } finally {
-            squadLock.writeLock().unlock();
+    public boolean removeMapleSquad(String type) {
+        if (mapleSquads.containsKey(type.toLowerCase())) {
+            mapleSquads.remove(type.toLowerCase());
+            return true;
         }
         return false;
-    }
-
-    public final void closeAllMerchant() {
-        merchLock.writeLock().lock();
-        try {
-            final Iterator<HiredMerchant> merchants_ = merchants.values().iterator();
-            while (merchants_.hasNext()) {
-                merchants_.next().closeShop(true, false, 0);
-                merchants_.remove();
-            }
-        } finally {
-            merchLock.writeLock().unlock();
-        }
-    }
-
-    public final int addMerchant(final HiredMerchant hMerchant) {
-        merchLock.writeLock().lock();
-
-        int runningmer = 0;
-        try {
-            runningmer = running_MerchantID;
-            merchants.put(running_MerchantID, hMerchant);
-            running_MerchantID++;
-        } finally {
-            merchLock.writeLock().unlock();
-        }
-        return runningmer;
-    }
-
-    public final void removeMerchant(final HiredMerchant hMerchant) {
-        merchLock.writeLock().lock();
-
-        try {
-            merchants.remove(hMerchant.getStoreId());
-        } finally {
-            merchLock.writeLock().unlock();
-        }
-    }
-
-    public final boolean containsMerchant(final int accid) {
-        boolean contains = false;
-
-        merchLock.readLock().lock();
-        try {
-            final Iterator itr = merchants.values().iterator();
-
-            while (itr.hasNext()) {
-                if (((HiredMerchant) itr.next()).getOwnerAccId() == accid) {
-                    contains = true;
-                    break;
-                }
-            }
-        } finally {
-            merchLock.readLock().unlock();
-        }
-        return contains;
-    }
-
-    public final List<HiredMerchant> searchMerchant(final int itemSearch) {
-        final List<HiredMerchant> list = new LinkedList<>();
-        merchLock.readLock().lock();
-        try {
-            final Iterator itr = merchants.values().iterator();
-
-            while (itr.hasNext()) {
-                HiredMerchant hm = (HiredMerchant) itr.next();
-                if (hm.searchItem(itemSearch).size() > 0) {
-                    list.add(hm);
-                }
-            }
-        } finally {
-            merchLock.readLock().unlock();
-        }
-        return list;
     }
 
 }

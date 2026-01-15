@@ -19,11 +19,15 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.PlayerStorage;
 import odin.server.maps.MapleMapFactory;
+import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
 import tacos.constants.TacosConstants;
 import tacos.network.MaplePacket;
@@ -59,7 +63,7 @@ public class TacosChannel extends TacosServer {
     public void shutdown() {
         broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("This channel will now shut down."));
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving hired merchants...");
-        ServerOdinGame.getInstance(this.channel).closeAllMerchant();
+        closeAllMerchant();
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving characters...");
         getPlayerStorage().disconnectAll();
         DebugLogger.InfoLog("Channel " + this.channel + ", Unbinding...");
@@ -119,6 +123,48 @@ public class TacosChannel extends TacosServer {
         return this.dropRate;
     }
 
+    // merch
+    private int running_MerchantID = 0;
+    private Map<Integer, HiredMerchant> merchants = new HashMap<>();
+
+    public void closeAllMerchant() {
+        for (HiredMerchant hm : this.merchants.values()) {
+            hm.closeShop(true, false, 0);
+        }
+        this.merchants.clear();
+    }
+
+    public int addMerchant(HiredMerchant hMerchant) {
+        int shop_id = this.running_MerchantID;
+        this.merchants.put(shop_id, hMerchant);
+        this.running_MerchantID++;
+        return shop_id;
+    }
+
+    public void removeMerchant(HiredMerchant hMerchant) {
+        this.merchants.remove(hMerchant.getStoreId());
+    }
+
+    public boolean containsMerchant(int character_id) {
+        for (HiredMerchant hm : this.merchants.values()) {
+            if (hm.getOwnerAccId() == character_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<HiredMerchant> searchMerchant(int item_id) {
+        List<HiredMerchant> list = new LinkedList<>();
+        for (HiredMerchant hm : this.merchants.values()) {
+            if (hm.searchItem(item_id).size() > 0) {
+                list.add(hm);
+            }
+        }
+        return list;
+    }
+
+    // init
     public static List<TacosChannel> init() {
         List<TacosChannel> game_servers = new ArrayList<>();
         TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
