@@ -18,10 +18,9 @@
  */
 package tacos.server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
+import tacos.network.PacketHandler_Login;
 import tacos.property.Property_Login;
 
 /**
@@ -30,46 +29,28 @@ import tacos.property.Property_Login;
  */
 public class TacosLogin extends TacosServer {
 
-    private ArrayList<TacosChannel> game_servers = new ArrayList<>();
-    private Map<Integer, ArrayList<TacosChannel>> game_worlds = new HashMap<>();
-
     public TacosLogin(String server_name) {
         super(server_name);
         setType(TacosServerType.LOGIN_SERVER);
     }
 
-    public void addGameServer(TacosChannel game_server) {
-        this.game_servers.add(game_server);
-        int world_id = game_server.getWorld().getId();
-        ArrayList<TacosChannel> game_world = this.game_worlds.get(world_id);
-        if (game_world == null) {
-            game_world = new ArrayList<>();
-            this.game_worlds.put(world_id, game_world);
-        }
-        game_world.add(game_server);
-    }
-
-    public int getNumberOfWorlds() {
-        return this.game_worlds.size();
-    }
-
-    public ArrayList<TacosChannel> getWorld(int world_id) {
-        return this.game_worlds.get(world_id);
-    }
-
-    public int getWolrdStatus(int world) {
+    public int getWolrdStatus(int world_id) {
         // test
-        if (2 <= world) {
-            if (world == 2) {
+        if (2 <= world_id) {
+            if (world_id == 2) {
                 return 1;
             }
             return 2;
         }
+        TacosWorld world = TacosWorld.find(world_id);
+        if (world == null) {
+            DebugLogger.ErrorLog("getWolrdStatus : invalid world.");
+            return 2;
+        }
         int online_users = 0;
-        for (TacosChannel game_server : this.game_servers) {
-            if (game_server.getWorld().getId() == world) {
-                online_users += game_server.getNumberOfSessions();
-            }
+
+        for (TacosChannel channel : world.getChannels()) {
+            online_users += channel.getOnlinePlayers().get().size();
         }
 
         int world_max_users = Property_Login.getUserLimit();
@@ -85,6 +66,13 @@ public class TacosLogin extends TacosServer {
 
         // OK
         return 0;
+    }
+
+    public static void init() {
+        TacosLogin login_server = new TacosLogin("Login");
+        TacosServer.add(login_server);
+        login_server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
+        login_server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
     }
 
 }

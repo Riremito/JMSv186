@@ -30,7 +30,6 @@ import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
 import odin.handling.world.OdinWorld;
 import java.sql.SQLException;
-import java.util.List;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import odin.handling.world.family.MapleFamilyBuff;
@@ -41,10 +40,7 @@ import odin.server.SpeedRunner;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
-import tacos.constants.TacosConstants;
 import tacos.network.MapleAESOFB;
-import tacos.network.PacketHandler_Login;
-import tacos.property.Property_Login;
 import tacos.server.TacosServer;
 import tacos.server.TacosCashShop;
 import tacos.server.TacosChannel;
@@ -128,16 +124,9 @@ public class Start {
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
         // login server
-        TacosLogin login_server = new TacosLogin("Login");
-        TacosServer.add(login_server);
-        login_server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
-        login_server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
+        TacosLogin.init();
         // game servers
-        List<TacosChannel> game_servers = TacosChannel.init();
-        // for world list.
-        for (TacosChannel game_server : game_servers) {
-            login_server.addGameServer(game_server);
-        }
+        TacosChannel.init();
         // cashshop server
         TacosCashShop.init();
         // itc server

@@ -18,7 +18,6 @@
  */
 package tacos.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -195,8 +194,7 @@ public class TacosChannel extends TacosServer {
     }
 
     // init
-    public static List<TacosChannel> init() {
-        List<TacosChannel> game_servers = new ArrayList<>();
+    public static void init() {
         TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
         TacosWorld.add(world);
 
@@ -211,7 +209,6 @@ public class TacosChannel extends TacosServer {
             TacosServer.add(server);
             server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
             server.run(TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(server, channel));
-            game_servers.add(server);
             server.setWorld(world);
             world.addChannel(server);
             // property
@@ -224,7 +221,6 @@ public class TacosChannel extends TacosServer {
         for (int i = 1; i <= 1; i++) {
             createDummyWorld(i);
         }
-        return game_servers;
     }
 
     public static void createDummyWorld(int dummy_world_id) {
