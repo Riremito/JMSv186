@@ -176,7 +176,7 @@ public class TacosWorld {
         MapleCharacter player = null;
         // channel servers
         for (TacosChannel ch_server : this.channels) {
-            player = ch_server.getPlayerStorage().getCharacterByName(player_name);
+            player = ch_server.getOnlinePlayers().findByName(player_name);
             if (player != null) {
                 return player;
             }
@@ -185,12 +185,12 @@ public class TacosWorld {
             return player;
         }
         // itc
-        player = this.itc.getPlayerStorage().getCharacterByName(player_name);
+        player = this.itc.getOnlinePlayers().findByName(player_name);
         if (player != null) {
             return player;
         }
         // cs
-        player = this.cashshop.getPlayerStorage().getCharacterByName(player_name);
+        player = this.cashshop.getOnlinePlayers().findByName(player_name);
         if (player != null) {
             return player;
         }
@@ -206,7 +206,7 @@ public class TacosWorld {
         MapleCharacter player = null;
         // channel servers
         for (TacosChannel ch_server : this.channels) {
-            player = ch_server.getPlayerStorage().getCharacterById(player_id);
+            player = ch_server.getOnlinePlayers().findById(player_id);
             if (player != null) {
                 return player;
             }
@@ -215,12 +215,12 @@ public class TacosWorld {
             return player;
         }
         // itc
-        player = this.itc.getPlayerStorage().getCharacterById(player_id);
+        player = this.itc.getOnlinePlayers().findById(player_id);
         if (player != null) {
             return player;
         }
         // cs
-        player = this.cashshop.getPlayerStorage().getCharacterById(player_id);
+        player = this.cashshop.getOnlinePlayers().findById(player_id);
         if (player != null) {
             return player;
         }

@@ -212,7 +212,7 @@ public class ToolMan {
     private static void updateCharacterListComboBox() {
         cb_character.removeAllItems();
         for (TacosChannel channel : TacosWorld.find(0).getChannels()) {
-            for (MapleCharacter player : channel.getPlayerStorage().getAllCharacters()) {
+            for (MapleCharacter player : channel.getOnlinePlayers().get()) {
                 if (player != null) {
                     cb_character.addItem(player.getName());
                 }

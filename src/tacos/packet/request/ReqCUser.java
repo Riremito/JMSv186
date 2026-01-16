@@ -837,7 +837,7 @@ public class ReqCUser {
 
     public static void OnUserTransferFieldRequest_ITC(MapleCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
-        chr.getWorld().getITC().getPlayerStorage().deregisterPlayer(chr);
+        chr.getWorld().getITC().getOnlinePlayers().remove(chr);
         DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
@@ -848,7 +848,7 @@ public class ReqCUser {
 
     public static void OnUserTransferFieldRequest_CS(MapleCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
-        chr.getWorld().getCashShop().getPlayerStorage().deregisterPlayer(chr);
+        chr.getWorld().getCashShop().getOnlinePlayers().remove(chr);
         DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
@@ -881,7 +881,7 @@ public class ReqCUser {
 
         chr.changeRemoval();
         chr.getWorld().addMigratingPlayer(chr);
-        chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
+        chr.getChannelServer().getOnlinePlayers().remove(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         chr.sendMigrateCommand(chr.getWorld().getCashShop());
         chr.saveToDB(false, false);
@@ -2496,7 +2496,7 @@ public class ReqCUser {
 
         chr.changeRemoval();
         chr.getWorld().addMigratingPlayer(chr);
-        chr.getChannelServer().getPlayerStorage().deregisterPlayer(chr);
+        chr.getChannelServer().getOnlinePlayers().remove(chr);
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         chr.sendMigrateCommand(chr.getWorld().getITC());
         chr.saveToDB(false, false);

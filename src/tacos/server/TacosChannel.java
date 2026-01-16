@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import odin.client.MapleCharacter;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
-import odin.handling.channel.PlayerStorage;
 import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
 import odin.server.shops.HiredMerchant;
@@ -46,7 +46,7 @@ public class TacosChannel extends TacosServer {
     private int channel;
     private int language = 0;
     private MapleMapFactory mapFactory = null;
-    private PlayerStorage players;
+    private OnlinePlayers onlines;
     private String serverMessage;
     private int expRate;
     private int mesoRate;
@@ -66,17 +66,24 @@ public class TacosChannel extends TacosServer {
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving hired merchants...");
         closeAllMerchant();
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving characters...");
-        getPlayerStorage().disconnectAll();
+        getOnlinePlayers().disconnectAll();
         DebugLogger.InfoLog("Channel " + this.channel + ", Unbinding...");
         super.shutdown();
     }
 
     public void broadcastPacket(MaplePacket packet) {
-        getPlayerStorage().broadcastPacket(packet);
+        for (MapleCharacter player : getOnlinePlayers().get()) {
+            player.SendPacket(packet);
+        }
     }
 
     public void broadcastMegaphonePacket(MaplePacket packet) {
-        getPlayerStorage().broadcastSmegaPacket(packet);
+        for (MapleCharacter player : getOnlinePlayers().get()) {
+            if (!player.getSmega()) {
+                continue;
+            }
+            player.SendPacket(packet);
+        }
     }
 
     public TacosWorld getWorld() {
@@ -99,8 +106,8 @@ public class TacosChannel extends TacosServer {
         return this.mapFactory;
     }
 
-    public PlayerStorage getPlayerStorage() {
-        return this.players;
+    public OnlinePlayers getOnlinePlayers() {
+        return this.onlines;
     }
 
     public String getServerMessage() {
@@ -200,7 +207,7 @@ public class TacosChannel extends TacosServer {
             int language = Region.check(Region.EMS) ? i % Property_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.mapFactory.setChannel(channel);
-            server.players = new PlayerStorage(channel);
+            server.onlines = new OnlinePlayers();
             TacosServer.add(server);
             server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
             server.run(TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(server, channel));

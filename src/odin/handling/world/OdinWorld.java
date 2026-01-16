@@ -697,50 +697,8 @@ public class OdinWorld extends TacosWorld {
 
     public static class Find {
 
-        private static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-        private static HashMap<Integer, Integer> idToChannel = new HashMap<Integer, Integer>();
-        private static HashMap<String, Integer> nameToChannel = new HashMap<String, Integer>();
-
-        public static void register(int id, String name, int channel) {
-            lock.writeLock().lock();
-            try {
-                idToChannel.put(id, channel);
-                nameToChannel.put(name.toLowerCase(), channel);
-            } finally {
-                lock.writeLock().unlock();
-            }
-        }
-
-        public static void forceDeregister(int id) {
-            lock.writeLock().lock();
-            try {
-                idToChannel.remove(id);
-            } finally {
-                lock.writeLock().unlock();
-            }
-        }
-
-        public static void forceDeregister(String id) {
-            lock.writeLock().lock();
-            try {
-                nameToChannel.remove(id.toLowerCase());
-            } finally {
-                lock.writeLock().unlock();
-            }
-        }
-
-        public static void forceDeregister(int id, String name) {
-            lock.writeLock().lock();
-            try {
-                idToChannel.remove(id);
-                nameToChannel.remove(name.toLowerCase());
-            } finally {
-                lock.writeLock().unlock();
-            }
-        }
-
         public static CharacterIdChannelPair[] multiBuddyFind(int charIdFrom, int[] characterIds) {
-            List<CharacterIdChannelPair> foundsChars = new ArrayList<CharacterIdChannelPair>(characterIds.length);
+            List<CharacterIdChannelPair> foundsChars = new ArrayList<>(characterIds.length);
             for (int i : characterIds) {
                 MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(i, false);
                 if (player != null) {

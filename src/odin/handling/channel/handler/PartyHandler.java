@@ -46,7 +46,7 @@ public class PartyHandler {
                         c.getSession().write(ResCWvsContext.partyStatusMessage(17));
                     }
                 } else if (action != 0x16) {
-                    final MapleCharacter cfrom = c.getChannelServer().getPlayerStorage().getCharacterById(party.getLeader().getId());
+                    final MapleCharacter cfrom = c.getChannelServer().getOnlinePlayers().findById(party.getLeader().getId());
                     if (cfrom != null) {
                         cfrom.getClient().getSession().write(ResCWvsContext.partyStatusMessage(23, c.getPlayer().getName()));
                     }
@@ -117,7 +117,7 @@ public class PartyHandler {
                 break;
             case 4: // invite
                 // TODO store pending invitations and check against them
-                final MapleCharacter invited = c.getChannelServer().getPlayerStorage().getCharacterByName(cp.DecodeStr());
+                final MapleCharacter invited = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (invited != null) {
                     if (invited.getParty() == null && party != null) {
                         if (party.getMembers().size() < 6) {

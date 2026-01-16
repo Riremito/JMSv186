@@ -61,7 +61,7 @@ public class MapleSquad {
     }
 
     public MapleCharacter getChar(String name) {
-        return this.leader.get().getChannelServer().getPlayerStorage().getCharacterByName(name);
+        return this.leader.get().getChannelServer().getOnlinePlayers().findByName(name);
     }
 
     public long getTimeLeft() {

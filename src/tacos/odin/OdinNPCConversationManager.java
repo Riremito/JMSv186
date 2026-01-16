@@ -642,7 +642,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void warpPartyWithExp(int mapId, int exp) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = client.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
+            MapleCharacter curChar = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
             curChar.changeMap(target, target.getPortal(0));
             curChar.gainExp(exp, true, false, true);
         }
@@ -651,7 +651,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void warpPartyWithExpMeso(int mapId, int exp, int meso) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = client.getChannelServer().getPlayerStorage().getCharacterByName(chr.getName());
+            MapleCharacter curChar = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
             curChar.changeMap(target, target.getPortal(0));
             curChar.gainExp(exp, true, false, true);
             curChar.gainMeso(meso, true);
@@ -1166,7 +1166,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (ii.getItemEffect(buff) != null && getPlayer().getGuildId() > 0) {
             final MapleStatEffect mse = ii.getItemEffect(buff);
             for (TacosChannel srv_channel : this.client.getWorld().getChannels()) {
-                for (MapleCharacter chr : srv_channel.getPlayerStorage().getAllCharacters()) {
+                for (MapleCharacter chr : srv_channel.getOnlinePlayers().get()) {
                     if (chr.getGuildId() == getPlayer().getGuildId()) {
                         mse.applyTo(chr, chr, true, null, duration);
                         chr.dropMessage(5, "Your guild has gotten a " + msg + " buff.");
@@ -1178,7 +1178,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean createAlliance(String alliancename) {
         MapleParty pt = client.getPlayer().getParty();
-        MapleCharacter otherChar = client.getChannelServer().getPlayerStorage().getCharacterById(pt.getMemberByIndex(1).getId());
+        MapleCharacter otherChar = client.getChannelServer().getOnlinePlayers().findById(pt.getMemberByIndex(1).getId());
         if (otherChar == null || otherChar.getId() == client.getPlayer().getId()) {
             return false;
         }

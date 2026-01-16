@@ -84,7 +84,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     map_id = cp.Decode4();
                 } else {
                     String target_name = cp.DecodeStr();
-                    target_chr = chr.getClient().getChannelServer().getPlayerStorage().getCharacterByName(target_name);
+                    target_chr = chr.getClient().getChannelServer().getOnlinePlayers().findByName(target_name);
                     if (target_chr == null) {
                         return false;
                     }

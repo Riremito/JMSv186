@@ -65,7 +65,7 @@ public class MapleCarnivalParty {
 
     public void warp(final MapleMap map, final String portalname) {
         for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getPlayerStorage().getCharacterById(chr);
+            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
             if (c != null) {
                 c.changeMap(map, map.getPortal(portalname));
             }
@@ -74,7 +74,7 @@ public class MapleCarnivalParty {
 
     public void warp(final MapleMap map, final int portalid) {
         for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getPlayerStorage().getCharacterById(chr);
+            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
             if (c != null) {
                 c.changeMap(map, map.getPortal(portalid));
             }
@@ -113,7 +113,7 @@ public class MapleCarnivalParty {
         final String sound = winner ? "MobCarnival/Win" : "MobCarnival/Lose";
         boolean done = false;
         for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getPlayerStorage().getCharacterById(chr);
+            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
             if (c != null) {
                 c.getClient().getSession().write(ResWrapper.showEffect(effect));
                 c.getClient().getSession().write(ResWrapper.playSound(sound));

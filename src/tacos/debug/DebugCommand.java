@@ -170,7 +170,7 @@ public class DebugCommand {
                 for (TacosChannel srv_channel : world.getChannels()) {
                     String msg = srv_channel.getName() + " : ";
                     String player_names = "";
-                    for (MapleCharacter player : srv_channel.getPlayerStorage().getAllCharacters()) {
+                    for (MapleCharacter player : srv_channel.getOnlinePlayers().get()) {
                         if (player_names.length() != 0) {
                             player_names += ", ";
                         }
@@ -182,7 +182,7 @@ public class DebugCommand {
                 {
                     String msg = world.getITC().getName() + " : ";
                     String player_names = "";
-                    for (MapleCharacter player : world.getITC().getPlayerStorage().getAllCharacters()) {
+                    for (MapleCharacter player : world.getITC().getOnlinePlayers().get()) {
                         if (player_names.length() != 0) {
                             player_names += ", ";
                         }
@@ -194,7 +194,7 @@ public class DebugCommand {
                 {
                     String msg = world.getCashShop().getName() + " : ";
                     String player_names = "";
-                    for (MapleCharacter player : world.getCashShop().getPlayerStorage().getAllCharacters()) {
+                    for (MapleCharacter player : world.getCashShop().getOnlinePlayers().get()) {
                         if (player_names.length() != 0) {
                             player_names += ", ";
                         }
@@ -674,7 +674,7 @@ public class DebugCommand {
             }
             // カスタムコマンド
             case "/wh": {
-                for (MapleCharacter victim : c.getChannelServer().getPlayerStorage().getAllCharacters()) {
+                for (MapleCharacter victim : c.getChannelServer().getOnlinePlayers().get()) {
                     if (victim != chr) {
                         victim.changeMap(chr.getMap(), chr.getMap().findClosestSpawnpoint(chr.getPosition()));
                     }

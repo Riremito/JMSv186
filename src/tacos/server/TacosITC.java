@@ -18,7 +18,6 @@
  */
 package tacos.server;
 
-import odin.handling.channel.PlayerStorage;
 import odin.server.MTSStorage;
 import tacos.constants.TacosConstants;
 import tacos.network.PacketHandler_ITC;
@@ -31,18 +30,18 @@ import tacos.property.Property_Shop;
 public class TacosITC extends TacosServer {
 
     private int world_id;
-    private PlayerStorage players;
+    private OnlinePlayers onlines;
 
     public TacosITC(String server_name) {
         super(server_name);
         setType(TacosServerType.ITC_SERVER);
 
-        this.players = new PlayerStorage(-20);
+        this.onlines = new OnlinePlayers();
     }
 
     @Override
     public void shutdown() {
-        this.players.disconnectAll();
+        this.onlines.disconnectAll();
         MTSStorage.getInstance().saveBuyNow(true);
         super.shutdown();
     }
@@ -51,8 +50,8 @@ public class TacosITC extends TacosServer {
         return TacosWorld.find(this.world_id);
     }
 
-    public PlayerStorage getPlayerStorage() {
-        return this.players;
+    public OnlinePlayers getOnlinePlayers() {
+        return this.onlines;
     }
 
     public static boolean init() {

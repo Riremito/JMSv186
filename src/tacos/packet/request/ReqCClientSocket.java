@@ -171,7 +171,7 @@ public class ReqCClientSocket {
             return false;
         }
 
-        c.getChannelServer().getPlayerStorage().registerPlayer(chr);
+        c.getChannelServer().getOnlinePlayers().add(chr);
 
         switch (DQ_Accounts.getLoginState(c)) {
             case LOGIN_SERVER_TRANSITION:
@@ -340,7 +340,7 @@ public class ReqCClientSocket {
         }
 
         c.getWorld().removeMigratingPlayer(chr);
-        c.getWorld().getITC().getPlayerStorage().registerPlayer(chr);
+        c.getWorld().getITC().getOnlinePlayers().add(chr);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetITC(chr));
@@ -376,7 +376,7 @@ public class ReqCClientSocket {
         }
 
         chr.getWorld().removeMigratingPlayer(chr);
-        c.getWorld().getCashShop().getPlayerStorage().registerPlayer(chr);
+        c.getWorld().getCashShop().getOnlinePlayers().add(chr);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetCashShop(c));

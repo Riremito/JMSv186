@@ -295,7 +295,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final MapleCharacter getLeader(final MapleClient c) {
-        return c.getChannelServer().getPlayerStorage().getCharacterById(leader);
+        return c.getChannelServer().getOnlinePlayers().findById(leader);
     }
 
     public final int getGP() {
@@ -790,7 +790,7 @@ public class MapleGuild implements java.io.Serializable {
     // so this will be running mostly on a channel server, unlike the rest
     // of the class
     public static final MapleGuildResponse sendInvite(final MapleClient c, final String targetName) {
-        final MapleCharacter mc = c.getChannelServer().getPlayerStorage().getCharacterByName(targetName);
+        final MapleCharacter mc = c.getChannelServer().getOnlinePlayers().findByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }

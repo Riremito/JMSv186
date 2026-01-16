@@ -19,7 +19,6 @@
 package tacos.server;
 
 import tacos.property.Property_Shop;
-import odin.handling.channel.PlayerStorage;
 import tacos.constants.TacosConstants;
 import tacos.network.PacketHandler_CashShop;
 
@@ -30,17 +29,17 @@ import tacos.network.PacketHandler_CashShop;
 public class TacosCashShop extends TacosServer {
 
     private int world_id;
-    private PlayerStorage players;
+    private OnlinePlayers onlines;
 
     public TacosCashShop(String server_name) {
         super(server_name);
         setType(TacosServerType.CASHSHOP_SERVER);
-        this.players = new PlayerStorage(-10);
+        this.onlines = new OnlinePlayers();
     }
 
     @Override
     public void shutdown() {
-        this.players.disconnectAll();
+        this.onlines.disconnectAll();
         super.shutdown();
     }
 
@@ -48,8 +47,8 @@ public class TacosCashShop extends TacosServer {
         return TacosWorld.find(this.world_id);
     }
 
-    public PlayerStorage getPlayerStorage() {
-        return this.players;
+    public OnlinePlayers getOnlinePlayers() {
+        return this.onlines;
     }
 
     public static boolean init() {
