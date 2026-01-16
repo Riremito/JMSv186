@@ -242,7 +242,7 @@ public class ReqCClientSocket {
                 chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
             }
         }
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Version.LessOrEqual(Region.JMS, 131) || Region.check(Region.BMS)) {
             chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
         } else {
             chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
