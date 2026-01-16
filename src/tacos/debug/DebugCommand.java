@@ -59,7 +59,6 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
-import tacos.server.TacosServer;
 import odin.server.shops.HiredMerchant;
 import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -69,6 +68,7 @@ import tacos.script.TacosScriptPortal;
 import tacos.script.TacosScriptQuest;
 import tacos.script.TacosScriptReactor;
 import tacos.server.TacosChannel;
+import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 
 /**
@@ -158,15 +158,15 @@ public class DebugCommand {
                 chr.DebugMsg("InfoMode = " + chr.GetInformation());
                 return true;
             }
-            case "/server": {
-                for (TacosServer server : TacosServer.get()) {
-                    String msg = server.getName() + " : " + server.getNumberOfSessions();
-                    chr.DebugMsg(msg);
-                }
-                return true;
-            }
             case "/players": {
                 TacosWorld world = chr.getWorld();
+                {
+                    TacosLogin srv_login = world.getLogin();
+                    String msg = srv_login.getName() + " : ";
+                    msg += "clients = " + srv_login.getClients().size() + ", ";
+                    msg += "authorized = " + srv_login.getAuthorizedClients().size();
+                    chr.DebugMsg(msg);
+                }
                 for (TacosChannel srv_channel : world.getChannels()) {
                     String msg = srv_channel.getName() + " : ";
                     String player_names = "";

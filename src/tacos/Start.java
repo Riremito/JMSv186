@@ -41,6 +41,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
 import tacos.network.MapleAESOFB;
+import tacos.property.Property_World;
 import tacos.server.TacosServer;
 import tacos.server.TacosCashShop;
 import tacos.server.TacosChannel;
@@ -123,6 +124,9 @@ public class Start {
         // ?_?
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
+        // world 0.
+        TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
+        TacosWorld.add(world);
         // login server
         TacosLogin.init();
         // game servers

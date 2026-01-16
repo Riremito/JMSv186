@@ -251,7 +251,7 @@ public class ResCLogin {
                                 sp.Encode1(TacosWorld.find(world_id).getChannels().size()); // number of  channels
                                 for (int i = 0; i < TacosWorld.find(world_id).getChannels().size(); i++) {
                                     sp.EncodeStr(TacosWorld.find(world_id).getChannels().get(i).getName());
-                                    sp.Encode4(TacosWorld.find(world_id).getChannels().get(i).getNumberOfSessions() * 200);
+                                    sp.Encode4(TacosWorld.find(world_id).getChannels().get(i).getOnlinePlayers().get().size() * 200);
                                     sp.Encode1(server_id); // serverId
                                     sp.Encode1(i); // channel
                                     sp.Encode1(0);
@@ -666,7 +666,7 @@ public class ResCLogin {
             // チャンネル名
             sp.EncodeStr(channel.getName()); // sName
             // 接続人数表示
-            sp.Encode4(channel.getNumberOfSessions() * 200); // nUserNo
+            sp.Encode4(channel.getOnlinePlayers().get().size() * 200); // nUserNo
             // ワールドID
             sp.Encode1(world.getId()); // nWorldID
             sp.Encode1(channel.getWorld().getId()); // nChannelID

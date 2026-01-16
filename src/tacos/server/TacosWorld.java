@@ -61,6 +61,7 @@ public class TacosWorld {
     private String name;
     private int flag;
     private String event_desc;
+    private TacosLogin login = null;
     private ArrayList<TacosChannel> channels = new ArrayList<>();
     private TacosCashShop cashshop = null;
     private TacosITC itc = null;
@@ -137,6 +138,14 @@ public class TacosWorld {
 
     public TacosITC getITC() {
         return this.itc;
+    }
+
+    public void setLogin(TacosLogin login) {
+        this.login = login;
+    }
+
+    public TacosLogin getLogin() {
+        return this.login;
     }
 
     public boolean addMigratingPlayer(MapleCharacter player) {

@@ -18,6 +18,8 @@
  */
 package tacos.server;
 
+import java.util.ArrayList;
+import odin.client.MapleClient;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.network.PacketHandler_Login;
@@ -29,9 +31,36 @@ import tacos.property.Property_Login;
  */
 public class TacosLogin extends TacosServer {
 
+    private ArrayList<MapleClient> clients = new ArrayList<>();
+    private ArrayList<MapleClient> authorized_clients = new ArrayList<>();
+
     public TacosLogin(String server_name) {
         super(server_name);
         setType(TacosServerType.LOGIN_SERVER);
+    }
+
+    public ArrayList<MapleClient> getClients() {
+        return this.clients;
+    }
+
+    public void addClient(MapleClient client) {
+        this.clients.add(client);
+    }
+
+    public void removeClient(MapleClient client) {
+        this.clients.remove(client);
+    }
+
+    public ArrayList<MapleClient> getAuthorizedClients() {
+        return this.authorized_clients;
+    }
+
+    public void addAuthorizedClient(MapleClient client) {
+        this.authorized_clients.add(client);
+    }
+
+    public void removeAuthorizedClient(MapleClient client) {
+        this.authorized_clients.remove(client);
     }
 
     public int getWolrdStatus(int world_id) {
@@ -69,10 +98,12 @@ public class TacosLogin extends TacosServer {
     }
 
     public static void init() {
+        TacosWorld world = TacosWorld.find(0);
         TacosLogin login_server = new TacosLogin("Login");
         TacosServer.add(login_server);
         login_server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
         login_server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
+        world.setLogin(login_server);
     }
 
 }

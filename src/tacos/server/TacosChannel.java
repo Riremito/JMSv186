@@ -195,8 +195,7 @@ public class TacosChannel extends TacosServer {
 
     // init
     public static void init() {
-        TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
-        TacosWorld.add(world);
+        TacosWorld world = TacosWorld.find(0);
 
         for (int i = 0; i < Property_World.getChannels(); i++) {
             int channel = i + 1;
@@ -235,6 +234,7 @@ public class TacosChannel extends TacosServer {
             server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
             server.setWorld(dummy_world);
             dummy_world.addChannel(server);
+            server.onlines = new OnlinePlayers();
         }
     }
 

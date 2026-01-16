@@ -36,7 +36,9 @@ import odin.server.Randomizer;
 import odin.tools.FileoutputUtil;
 import org.apache.mina.common.ExecutorThreadModel;
 import tacos.packet.ClientPacketHeader;
+import tacos.server.TacosLogin;
 import tacos.server.TacosServer;
+import tacos.server.TacosServerType;
 
 /**
  *
@@ -131,6 +133,9 @@ public class PacketHandler extends IoHandlerAdapter {
         MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, true, false);
         MapleClient client = new MapleClient(session);
         client.setServer(this.server);
+        if (this.server.getType() == TacosServerType.LOGIN_SERVER) {
+            ((TacosLogin) this.server).addClient(client);
+        }
 
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
         session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
@@ -152,6 +157,10 @@ public class PacketHandler extends IoHandlerAdapter {
                 MapleCharacter chr = client.getPlayer();
                 if (chr != null) {
                     client.setPlayer(null);
+                }
+                if (this.server.getType() == TacosServerType.LOGIN_SERVER) {
+                    ((TacosLogin) this.server).removeClient(client);
+                    ((TacosLogin) this.server).removeAuthorizedClient(client);
                 }
             } finally {
                 session.close();

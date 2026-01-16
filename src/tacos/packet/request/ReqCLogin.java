@@ -63,14 +63,16 @@ public class ReqCLogin {
     }
 
     // CLogin::OnPacket
-    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_CheckPassword: {
                 // ログイン
-                if (OnCheckPassword(c, cp)) {
-                    DebugLogger.InfoLog("[LOGIN MAPLEID] \"" + c.getMapleId() + "\"");
+                if (OnCheckPassword(client, cp)) {
+                    client.getLoginServer().removeClient(client);
+                    client.getLoginServer().addAuthorizedClient(client);
+                    DebugLogger.InfoLog("[LOGIN MAPLEID] \"" + client.getMapleId() + "\"");
                     if (ContentState.CS_NETCAFE.get()) {
-                        c.SendPacket(ResCClientSocket.AuthenMessage());
+                        client.SendPacket(ResCClientSocket.AuthenMessage());
                     }
                 }
                 return true;
@@ -78,38 +80,38 @@ public class ReqCLogin {
             case CP_Check2ndPassword: {
                 // 2次パスワード入力
                 DebugLogger.TestLog("Check2ndPassword");
-                OnWorldInfoRequest(c);
+                OnWorldInfoRequest(client);
                 return true;
             }
             case CP_WorldInfoRequest: {
                 // ワールド情報の取得
-                OnWorldInfoRequest(c);
+                OnWorldInfoRequest(client);
                 return true;
             }
             case CP_SelectWorld: {
                 // チャンネル選択
-                OnSelectWorld(c, cp);
+                OnSelectWorld(client, cp);
                 return true;
             }
             case CP_CheckUserLimit: {
                 // JMSは不要
-                OnCheckUserLimit(c, cp);
+                OnCheckUserLimit(client, cp);
                 return true;
             }
             case CP_CheckDuplicatedID: {
                 // キャラクター名の確認
                 String character_name = cp.DecodeStr();
-                OnCheckDuplicatedID(c, character_name);
+                OnCheckDuplicatedID(client, character_name);
                 return true;
             }
             case CP_CreateNewCharacter: {
                 // キャラクター作成
-                OnCreateNewCharacter(c, cp);
+                OnCreateNewCharacter(client, cp);
                 return true;
             }
             case CP_DeleteCharacter: {
                 // キャラクター削除
-                OnDeleteCharacter(c, cp);
+                OnDeleteCharacter(client, cp);
                 return true;
             }
             case CP_CheckPinCode: {
@@ -117,25 +119,25 @@ public class ReqCLogin {
                 String password_2 = cp.DecodeStr(); // 2次パスワード (KMS160)
                 int character_id = cp.Decode4();
 
-                OnSelectCharacter(c, character_id);
+                OnSelectCharacter(client, character_id);
                 return true;
             }
             case CP_SelectCharacter: {
                 // キャラクター選択
                 int character_id = cp.Decode4();
-                OnSelectCharacter(c, character_id);
+                OnSelectCharacter(client, character_id);
                 return true;
             }
             case CP_ViewAllChar: {
                 // JMS186 : @000A
-                c.SendPacket(ResCLogin.ViewAllCharResult(c, true));
-                c.SendPacket(ResCLogin.ViewAllCharResult(c, false));
+                client.SendPacket(ResCLogin.ViewAllCharResult(client, true));
+                client.SendPacket(ResCLogin.ViewAllCharResult(client, false));
                 return true;
             }
             case CP_JMS_CheckGameGuardUpdated: {
                 // JMS147 : @0010
                 // ログインボタンの有効化 (GameGuard Update)
-                c.SendPacket(ResCLogin.CheckGameGuardUpdated(true));
+                client.SendPacket(ResCLogin.CheckGameGuardUpdated(true));
                 return true;
             }
             case CP_JMS_MapLogin: {
@@ -151,7 +153,7 @@ public class ReqCLogin {
             case CP_JMS_GetMapLogin: {
                 // JMS186 : @001A
                 // MapLoginの設定を取得 (UI.wz/MapLogin.img)
-                c.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
+                client.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
                 return true;
             }
             default: {
@@ -508,6 +510,7 @@ public class ReqCLogin {
         TacosChannel game_server = TacosWorld.find(client.getSelectedWorld()).getChannelServer(client.getSelectedChannel() + 1);
         DQ_Accounts.updateLoginState(client, MapleClientState.LOGIN_SERVER_TRANSITION);
         client.sendSelectCharacterResult(game_server, character_id);
+        client.getLoginServer().removeAuthorizedClient(client);
         return true;
     }
 

@@ -119,7 +119,7 @@ public class TacosServer {
 
     public int getNumberOfSessions() {
         if (!this.server_status) {
-            return 5; // 200 * 5 for world select.
+            return 0;
         }
         return getIoAcceptor().getManagedSessions(this.server_inet_socket_address).size();
     }
