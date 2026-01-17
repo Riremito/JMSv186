@@ -103,6 +103,7 @@ import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.script.TacosScriptNPC;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -2394,19 +2395,34 @@ public class ReqCUser {
     }
 
     public static boolean OnGroupMessage(MapleCharacter chr, ClientPacket cp) {
-        int type = cp.Decode1();
-        byte numRecipients = cp.Decode1();
-        int recipients[] = new int[numRecipients];
+        TacosWorld world = chr.getWorld();
+        ArrayList<MapleCharacter> players = new ArrayList<>();
+        // update_time
+        int nChatTarget = cp.Decode1(); // nChatTarget
+        byte nMemberCnt = cp.Decode1(); // nMemberCnt
+        int[] adwGroupMemberID = new int[nMemberCnt]; // adwGroupMemberID
+        for (byte i = 0; i < nMemberCnt; i++) {
+            adwGroupMemberID[i] = cp.Decode4();
+        }
+        String sText = cp.DecodeStr(); // sText
 
-        for (byte i = 0; i < numRecipients; i++) {
-            recipients[i] = cp.Decode4();
+        for (int player_id : adwGroupMemberID) {
+            MapleCharacter player = world.findOnlinePlayerById(player_id);
+            if (player == null) {
+                continue;
+            }
+            players.add(player);
         }
 
-        String chattext = cp.DecodeStr();
-
-        switch (OpsChatGroup.find(type)) {
+        switch (OpsChatGroup.find(nChatTarget)) {
             case CG_Friend: {
-                OdinWorld.Buddy.buddyChat(recipients, chr.getId(), chr.getName(), chattext);
+                for (MapleCharacter friend : players) {
+                    if (!friend.getBuddylist().containsVisible(chr.getId())) {
+                        DebugLogger.ErrorLog("OnGroupMessage : CG_Friend");
+                        continue;
+                    }
+                    friend.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Friend, chr.getName(), sText));
+                }
                 return true;
             }
             case CG_Party: {
@@ -2414,7 +2430,7 @@ public class ReqCUser {
                 if (party != null) {
                     return true;
                 }
-                OdinWorld.Party.partyChat(party.getId(), chattext, chr.getName());
+                OdinWorld.Party.partyChat(party.getId(), sText, chr.getName());
                 return true;
             }
             case CG_Guild: {
@@ -2422,7 +2438,7 @@ public class ReqCUser {
                 if (guild_id <= 0) {
                     return true;
                 }
-                OdinWorld.Guild.guildChat(guild_id, chr.getName(), chr.getId(), chattext);
+                OdinWorld.Guild.guildChat(guild_id, chr.getName(), chr.getId(), sText);
                 return true;
             }
             case CG_Alliance: {
@@ -2430,7 +2446,7 @@ public class ReqCUser {
                 if (guild_id <= 0) {
                     return true;
                 }
-                OdinWorld.Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), chattext);
+                OdinWorld.Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), sText);
                 return true;
             }
             case CG_Couple: {
@@ -2447,7 +2463,7 @@ public class ReqCUser {
             }
         }
 
-        DebugLogger.ErrorLog("OnGroupMessage : not coded = " + type);
+        DebugLogger.ErrorLog("OnGroupMessage : not coded = " + nChatTarget);
         return false;
     }
 

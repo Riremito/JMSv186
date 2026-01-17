@@ -153,15 +153,6 @@ public class OdinWorld extends TacosWorld {
 
     public static class Buddy {
 
-        public static void buddyChat(int[] recipientCharacterIds, int cidFrom, String nameFrom, String chattext) {
-            for (int characterId : recipientCharacterIds) {
-                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayerById(characterId, false);
-                if (chr != null && chr.getBuddylist().containsVisible(cidFrom)) {
-                    chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Friend, nameFrom, chattext));
-                }
-            }
-        }
-
         private static void updateBuddies(int characterId, int channel, int[] buddies, boolean offline, int gmLevel, boolean isHidden) {
             for (int buddy : buddies) {
                 MapleCharacter chr = TacosWorld.find(0).findOnlinePlayerById(buddy, false);
