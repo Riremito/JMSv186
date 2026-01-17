@@ -32,7 +32,6 @@ import tacos.database.ExtraDB;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
-import odin.handling.world.CharacterIdChannelPair;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
@@ -47,10 +46,12 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -200,9 +201,14 @@ public class ReqCClientSocket {
         }
         // friend
         OdinWorld.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannelId(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
-        for (CharacterIdChannelPair onlineBuddy : OdinWorld.Find.multiBuddyFind(chr.getId(), chr.getBuddylist().getBuddyIds())) {
-            final BuddylistEntry ble = chr.getBuddylist().get(onlineBuddy.getCharacterId());
-            ble.setChannel(onlineBuddy.getChannel());
+        TacosWorld world = chr.getWorld();
+        for (int friend_id : chr.getBuddylist().getBuddyIds()) {
+            TacosCharacter friend = world.findOnlinePlayerById(friend_id);
+            if (friend == null) {
+                continue;
+            }
+            BuddylistEntry ble = chr.getBuddylist().get(friend.getId());
+            ble.setChannel(friend.getChannelId());
             chr.getBuddylist().put(ble);
         }
         // guild

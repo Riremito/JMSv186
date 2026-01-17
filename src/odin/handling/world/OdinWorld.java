@@ -8,7 +8,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -692,21 +691,6 @@ public class OdinWorld extends TacosWorld {
             if (c != null && c.getFamilyId() == guildid) {
                 c.getClient().getSession().write(packet);
             }
-        }
-    }
-
-    public static class Find {
-
-        public static CharacterIdChannelPair[] multiBuddyFind(int charIdFrom, int[] characterIds) {
-            List<CharacterIdChannelPair> foundsChars = new ArrayList<>(characterIds.length);
-            for (int i : characterIds) {
-                MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(i, false);
-                if (player != null) {
-                    foundsChars.add(new CharacterIdChannelPair(i, player.getChannelId()));
-                }
-            }
-            Collections.sort(foundsChars);
-            return foundsChars.toArray(new CharacterIdChannelPair[foundsChars.size()]);
         }
     }
 
