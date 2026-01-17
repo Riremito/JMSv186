@@ -173,7 +173,6 @@ public class MapleCharacter extends TacosCharacter {
     private CashShop cs;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
-    private BuddyList buddylist;
     private transient PlayerRandomStream CRand;
     private transient MapleShop shop;
     private transient MapleDragon dragon;
@@ -2003,10 +2002,6 @@ public class MapleCharacter extends TacosCharacter {
         return invincible;
     }
 
-    public BuddyList getBuddylist() {
-        return buddylist;
-    }
-
     public void addFame(int famechange) {
         this.fame += famechange;
     }
@@ -3627,15 +3622,6 @@ public class MapleCharacter extends TacosCharacter {
     public static enum FameStatus {
 
         OK, NOT_TODAY, NOT_THIS_MONTH
-    }
-
-    public byte getBuddyCapacity() {
-        return buddylist.getCapacity();
-    }
-
-    public void setBuddyCapacity(byte capacity) {
-        buddylist.setCapacity(capacity);
-        client.getSession().write(ResWrapper.updateBuddyCapacity(capacity));
     }
 
     public void addCooldown(int skillId, long startTime, long length) {
@@ -5352,13 +5338,6 @@ public class MapleCharacter extends TacosCharacter {
                         }
                     }
                 }
-                if (bl != null) {
-                    if (!client.getServerTransition()) {
-                        OdinWorld.Buddy.loggedOff(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
-                    } else { // Change channel
-                        OdinWorld.Buddy.loggedOn(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
-                    }
-                }
                 if (gid > 0) {
                     OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);
                 }
@@ -5382,11 +5361,6 @@ public class MapleCharacter extends TacosCharacter {
                 if (party != null) {
                     chrp.setOnline(false);
                     OdinWorld.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
-                }
-                if (!client.getServerTransition()) {
-                    OdinWorld.Buddy.loggedOff(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
-                } else { // Change channel
-                    OdinWorld.Buddy.loggedOn(namez, idz, client.getChannelId(), bl.getBuddyIds(), gmLevel, hidden);
                 }
                 if (gid > 0) {
                     OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);

@@ -20,6 +20,8 @@ package tacos.client;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import odin.client.BuddyList;
+import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.MonsterBook;
@@ -526,6 +528,66 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public ArdentmillPortal getArdentmillPortal() {
         return this.portal_ardentmill;
+    }
+
+    // friend
+    protected BuddyList buddylist;
+
+    public BuddyList getBuddylist() {
+        return this.buddylist;
+    }
+
+    public byte getBuddyCapacity() {
+        return this.buddylist.getCapacity();
+    }
+
+    public void setBuddyCapacity(byte capacity) {
+        this.buddylist.setCapacity(capacity);
+        SendPacket(ResWrapper.updateBuddyCapacity(capacity));
+    }
+
+    // 相互にフレンド登録されているフレンドにチャンネル情報を通知
+    public boolean updateOnlineFriend(TacosCharacter friend, boolean isOnline) {
+        // 相互にフレンド登録されているか確認
+        BuddylistEntry ble = this.buddylist.get(friend.getId());
+        if (ble == null) {
+            return false;
+        }
+        if (!ble.isVisible()) {
+            return false;
+        }
+        // フレンドのチャンネル情報を更新
+        ble.setChannel(isOnline ? friend.getChannelId() : -1);
+        this.buddylist.put(ble);
+        SendPacket(ResWrapper.updateBuddyChannel(ble.getCharacterId(), isOnline ? (ble.getChannel() - 1) : -1)); // from 0.
+        return true;
+    }
+
+    // フレンドへチャンネルを通知
+    public void notityOnlineToFriends(boolean isOnline) {
+        TacosWorld world = getWorld();
+        for (int friend_id : this.buddylist.getBuddyIds()) {
+            TacosCharacter friend = world.findOnlinePlayerById(friend_id);
+            if (friend == null) {
+                continue;
+            }
+            friend.updateOnlineFriend(this, isOnline);
+        }
+    }
+
+    // フレンドのチャンネル情報を取得
+    public void setOnlineFriends() {
+        TacosWorld world = getWorld();
+        for (int friend_id : this.buddylist.getBuddyIds()) {
+            TacosCharacter friend = world.findOnlinePlayerById(friend_id);
+            if (friend == null) {
+                continue;
+            }
+            // オンラインのフレンドのチャンネル情報を更新
+            BuddylistEntry ble = this.buddylist.get(friend.getId());
+            ble.setChannel(friend.getChannelId());
+            this.buddylist.put(ble);
+        }
     }
 
     // clone

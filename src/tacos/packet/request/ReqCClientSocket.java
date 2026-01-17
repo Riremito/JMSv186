@@ -46,12 +46,10 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
-import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
-import tacos.server.TacosWorld;
 
 /**
  *
@@ -200,17 +198,8 @@ public class ReqCClientSocket {
             OdinWorld.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
         }
         // friend
-        OdinWorld.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannelId(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
-        TacosWorld world = chr.getWorld();
-        for (int friend_id : chr.getBuddylist().getBuddyIds()) {
-            TacosCharacter friend = world.findOnlinePlayerById(friend_id);
-            if (friend == null) {
-                continue;
-            }
-            BuddylistEntry ble = chr.getBuddylist().get(friend.getId());
-            ble.setChannel(friend.getChannelId());
-            chr.getBuddylist().put(ble);
-        }
+        chr.setOnlineFriends();
+        chr.notityOnlineToFriends(true);
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
@@ -347,6 +336,7 @@ public class ReqCClientSocket {
 
         c.getWorld().removeMigratingPlayer(chr);
         c.getWorld().getITC().getOnlinePlayers().add(chr);
+        chr.notityOnlineToFriends(true);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetITC(chr));
@@ -383,6 +373,7 @@ public class ReqCClientSocket {
 
         chr.getWorld().removeMigratingPlayer(chr);
         c.getWorld().getCashShop().getOnlinePlayers().add(chr);
+        chr.notityOnlineToFriends(true);
 
         DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         chr.SendPacket(ResCStage.SetCashShop(c));

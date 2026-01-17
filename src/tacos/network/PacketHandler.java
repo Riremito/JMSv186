@@ -157,6 +157,7 @@ public class PacketHandler extends IoHandlerAdapter {
                 MapleCharacter chr = client.getPlayer();
                 if (chr != null) {
                     client.setPlayer(null);
+                    chr.notityOnlineToFriends(false);
                 }
                 if (this.server.getType() == TacosServerType.LOGIN_SERVER) {
                     ((TacosLogin) this.server).removeClient(client);

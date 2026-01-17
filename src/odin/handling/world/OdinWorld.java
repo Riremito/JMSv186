@@ -153,27 +153,6 @@ public class OdinWorld extends TacosWorld {
 
     public static class Buddy {
 
-        private static void updateBuddies(int characterId, int channel, int[] buddies, boolean offline, int gmLevel, boolean isHidden) {
-            for (int buddy : buddies) {
-                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayerById(buddy, false);
-                if (chr != null) {
-                    BuddylistEntry ble = chr.getBuddylist().get(characterId);
-                    if (ble != null && ble.isVisible()) {
-                        int mcChannel;
-                        if (offline || (isHidden && chr.getGMLevel() < gmLevel)) {
-                            ble.setChannel(-1);
-                            mcChannel = -1;
-                        } else {
-                            ble.setChannel(channel);
-                            mcChannel = channel - 1;
-                        }
-                        chr.getBuddylist().put(ble);
-                        chr.getClient().getSession().write(ResWrapper.updateBuddyChannel(ble.getCharacterId(), mcChannel));
-                    }
-                }
-            }
-        }
-
         public static void buddyChanged(int cid, int cidFrom, String name, int channel, BuddyOperation operation, int level, int job, String group) {
             MapleCharacter addChar = TacosWorld.find(0).findOnlinePlayerById(cid, false);
             if (addChar != null) {
@@ -182,13 +161,13 @@ public class OdinWorld extends TacosWorld {
                     case ADDED:
                         if (buddylist.contains(cidFrom)) {
                             buddylist.put(new BuddylistEntry(name, cidFrom, group, channel, true, level, job));
-                            addChar.getClient().getSession().write(ResWrapper.updateBuddyChannel(cidFrom, channel - 1));
+                            addChar.SendPacket(ResWrapper.updateBuddyChannel(cidFrom, channel - 1));
                         }
                         break;
                     case DELETED:
                         if (buddylist.contains(cidFrom)) {
                             buddylist.put(new BuddylistEntry(name, cidFrom, group, -1, buddylist.get(cidFrom).isVisible(), level, job));
-                            addChar.getClient().getSession().write(ResWrapper.updateBuddyChannel(cidFrom, -1));
+                            addChar.SendPacket(ResWrapper.updateBuddyChannel(cidFrom, -1));
                         }
                         break;
                 }
@@ -213,13 +192,6 @@ public class OdinWorld extends TacosWorld {
             return BuddyAddResult.OK;
         }
 
-        public static void loggedOn(String name, int characterId, int channel, int[] buddies, int gmLevel, boolean isHidden) {
-            updateBuddies(characterId, channel, buddies, false, gmLevel, isHidden);
-        }
-
-        public static void loggedOff(String name, int characterId, int channel, int[] buddies, int gmLevel, boolean isHidden) {
-            updateBuddies(characterId, channel, buddies, true, gmLevel, isHidden);
-        }
     }
 
     public static class Messenger {
