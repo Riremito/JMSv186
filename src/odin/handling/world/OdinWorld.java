@@ -1,8 +1,5 @@
 package odin.handling.world;
 
-import odin.client.BuddyList;
-import odin.client.BuddyList.BuddyAddResult;
-import odin.client.BuddyList.BuddyOperation;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
@@ -149,49 +145,6 @@ public class OdinWorld extends TacosWorld {
         public static MapleParty disbandParty(int partyid) {
             return parties.remove(partyid);
         }
-    }
-
-    public static class Buddy {
-
-        public static void buddyChanged(int cid, int cidFrom, String name, int channel, BuddyOperation operation, int level, int job, String group) {
-            MapleCharacter addChar = TacosWorld.find(0).findOnlinePlayerById(cid, false);
-            if (addChar != null) {
-                final BuddyList buddylist = addChar.getBuddylist();
-                switch (operation) {
-                    case ADDED:
-                        if (buddylist.contains(cidFrom)) {
-                            buddylist.put(new BuddylistEntry(name, cidFrom, group, channel, true, level, job));
-                            addChar.SendPacket(ResWrapper.updateBuddyChannel(cidFrom, channel - 1));
-                        }
-                        break;
-                    case DELETED:
-                        if (buddylist.contains(cidFrom)) {
-                            buddylist.put(new BuddylistEntry(name, cidFrom, group, -1, buddylist.get(cidFrom).isVisible(), level, job));
-                            addChar.SendPacket(ResWrapper.updateBuddyChannel(cidFrom, -1));
-                        }
-                        break;
-                }
-            }
-        }
-
-        public static BuddyAddResult requestBuddyAdd(String addName, int channelFrom, int cidFrom, String nameFrom, int levelFrom, int jobFrom) {
-            final MapleCharacter addChar = TacosWorld.find(0).findOnlinePlayer(addName, false);
-            if (addChar != null) {
-                final BuddyList buddylist = addChar.getBuddylist();
-                if (buddylist.isFull()) {
-                    return BuddyAddResult.BUDDYLIST_FULL;
-                }
-                if (!buddylist.contains(cidFrom)) {
-                    buddylist.addBuddyRequest(addChar.getClient(), cidFrom, nameFrom, channelFrom, levelFrom, jobFrom);
-                } else {
-                    if (buddylist.containsVisible(cidFrom)) {
-                        return BuddyAddResult.ALREADY_ON_LIST;
-                    }
-                }
-            }
-            return BuddyAddResult.OK;
-        }
-
     }
 
     public static class Messenger {

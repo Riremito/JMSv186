@@ -570,7 +570,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_FriendRequest: {
-                ReqSub_FriendRequest.OnFriendRequest(chr, cp);
+                ReqSub_FriendRequest.OnFriendRequest(cp, chr);
                 return true;
             }
             case CP_MemoRequest: {

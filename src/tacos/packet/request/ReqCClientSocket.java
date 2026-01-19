@@ -18,8 +18,6 @@
  */
 package tacos.packet.request;
 
-import odin.client.BuddylistEntry;
-import odin.client.CharacterNameAndId;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.constants.MapleClientState;
@@ -220,11 +218,6 @@ public class ReqCClientSocket {
         if (chr.getMessenger() != null) {
             OdinWorld.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(c.getPlayer()));
             OdinWorld.Messenger.updateMessenger(chr.getMessenger().getId(), c.getPlayer().getName(), c.getChannelId());
-        }
-        // idk - 2
-        CharacterNameAndId pendingBuddyRequest = chr.getBuddylist().pollPendingRequest();
-        if (pendingBuddyRequest != null) {
-            chr.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "マイ友未指定", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
         }
 
         chr.sendSetField(true);

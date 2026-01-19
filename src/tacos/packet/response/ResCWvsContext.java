@@ -1787,11 +1787,10 @@ public class ResCWvsContext {
                 break;
             }
             case FriendRes_Invite: {
-                // 9
-                sp.Encode4(frs.friend_id);
+                sp.Encode4(frs.friend_id); // dwFriendID
                 sp.EncodeStr(frs.friend_name);
-                sp.Encode4(frs.friend_level);
-                sp.Encode4(frs.friend_job);
+                sp.Encode4(frs.friend_level); // nLevel
+                sp.Encode4(frs.friend_job); // nJobCode
                 // CWvsContext::CFriend::Insert, 39 bytes
                 sp.Encode4(frs.friend_id);
                 sp.EncodeBuffer(frs.friend_name, 13);

@@ -25,6 +25,7 @@ public class BuddylistEntry {
     private String name, group;
     private int cid, channel, level, job;
     private boolean visible;
+    private boolean hidden = false;
 
     /**
      *
@@ -42,6 +43,14 @@ public class BuddylistEntry {
         this.visible = visible;
         this.level = level;
         this.job = job;
+    }
+
+    public boolean getHidden() {
+        return this.hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
     }
 
     /**

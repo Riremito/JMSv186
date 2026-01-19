@@ -25,38 +25,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Deque;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.io.Serializable;
-
 import tacos.database.DatabaseConnection;
-import tacos.packet.response.wrapper.ResWrapper;
 
-public class BuddyList implements Serializable {
+public class BuddyList {
 
-    public static enum BuddyOperation {
-
-        ADDED, DELETED
-    }
-
-    public static enum BuddyAddResult {
-
-        BUDDYLIST_FULL, ALREADY_ON_LIST, OK
-    }
-    private static final long serialVersionUID = 1413738569L;
-    private Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<Integer, BuddylistEntry>();
+    private Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<>();
     private byte capacity;
-    private Deque<CharacterNameAndId> pendingRequests = new LinkedList<CharacterNameAndId>();
 
     public BuddyList(byte capacity) {
         super();
         this.capacity = capacity;
-    }
-
-    public boolean contains(int characterId) {
-        return buddies.containsKey(Integer.valueOf(characterId));
     }
 
     public boolean containsVisible(int characterId) {
@@ -76,7 +56,7 @@ public class BuddyList implements Serializable {
     }
 
     public BuddylistEntry get(int characterId) {
-        return buddies.get(Integer.valueOf(characterId));
+        return buddies.get(characterId);
     }
 
     public BuddylistEntry get(String characterName) {
@@ -90,11 +70,11 @@ public class BuddyList implements Serializable {
     }
 
     public void put(BuddylistEntry entry) {
-        buddies.put(Integer.valueOf(entry.getCharacterId()), entry);
+        buddies.put(entry.getCharacterId(), entry);
     }
 
     public void remove(int characterId) {
-        buddies.remove(Integer.valueOf(characterId));
+        buddies.remove(characterId);
     }
 
     public Collection<BuddylistEntry> getBuddies() {
@@ -114,20 +94,6 @@ public class BuddyList implements Serializable {
         return buddyIds;
     }
 
-    public void loadFromTransfer(final Map<CharacterNameAndId, Boolean> data) {
-        CharacterNameAndId buddyid;
-        boolean pair;
-        for (final Map.Entry<CharacterNameAndId, Boolean> qs : data.entrySet()) {
-            buddyid = qs.getKey();
-            pair = qs.getValue();
-            if (!pair) {
-                pendingRequests.push(buddyid);
-            } else {
-                put(new BuddylistEntry(buddyid.getName(), buddyid.getId(), buddyid.getGroup(), -1, true, buddyid.getLevel(), buddyid.getJob()));
-            }
-        }
-    }
-
     public void loadFromDb(int characterId) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = con.prepareStatement("SELECT b.buddyid, b.pending, c.name as buddyname, c.job as buddyjob, c.level as buddylevel, b.groupname FROM buddies as b, characters as c WHERE c.id = b.buddyid AND b.characterid = ?");
@@ -137,7 +103,7 @@ public class BuddyList implements Serializable {
             int buddyid = rs.getInt("buddyid");
             String buddyname = rs.getString("buddyname");
             if (rs.getInt("pending") == 1) {
-                pendingRequests.push(new CharacterNameAndId(buddyid, buddyname, rs.getInt("buddylevel"), rs.getInt("buddyjob"), rs.getString("groupname")));
+                continue;
             } else {
                 put(new BuddylistEntry(buddyname, buddyid, rs.getString("groupname"), -1, true, rs.getInt("buddylevel"), rs.getInt("buddyjob")));
             }
@@ -151,16 +117,4 @@ public class BuddyList implements Serializable {
         ps.close();
     }
 
-    public CharacterNameAndId pollPendingRequest() {
-        return pendingRequests.pollLast();
-    }
-
-    public void addBuddyRequest(MapleClient c, int cidFrom, String nameFrom, int channelFrom, int levelFrom, int jobFrom) {
-        put(new BuddylistEntry(nameFrom, cidFrom, "マイ友未指定", channelFrom, false, levelFrom, jobFrom));
-        if (pendingRequests.isEmpty()) {
-            c.getSession().write(ResWrapper.requestBuddylistAdd(cidFrom, nameFrom, levelFrom, jobFrom));
-        } else {
-            pendingRequests.push(new CharacterNameAndId(cidFrom, nameFrom, levelFrom, jobFrom, "マイ友未指定"));
-        }
-    }
 }
