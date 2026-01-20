@@ -61,7 +61,7 @@ public enum OpsMessage {
             OpsMessage.MS_SystemMessage.set(9);
             return;
         }
-        if (Version.LessOrEqual(Region.KMS, 84)) {
+        if (Version.LessOrEqual(Region.KMS, 84) || Version.LessOrEqual(Region.GMS, 83)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);
