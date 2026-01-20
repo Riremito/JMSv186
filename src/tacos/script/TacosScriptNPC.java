@@ -62,6 +62,16 @@ public class TacosScriptNPC extends TacosScript {
         OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc_icon_id, -1, (byte) -1, (Invocable) engine, npc_script_id);
         engine.put("cm", cm);
         cms.put(c, cm);
+
+        // TODO : remove
+        IScriptNPC_with_start script_ws = ((Invocable) engine).getInterface(IScriptNPC_with_start.class);
+        if (script_ws != null) {
+            DebugLogger.DebugLog("IScriptNPC_with_start is detected.");
+            c.getPlayer().setConversation(1);
+            script_ws.start();
+            return true;
+        }
+
         IScriptNPC script = ((Invocable) engine).getInterface(IScriptNPC.class);
 
         if (script == null) {
