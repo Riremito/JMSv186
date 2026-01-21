@@ -28,7 +28,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import tacos.server.TacosFriend;
 
 /**
@@ -166,6 +168,44 @@ public class DQ_Characters {
         }
 
         return null;
+    }
+
+    public static boolean updateRanking() {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            String query = "SELECT c.id, c.job, c.exp, c.level, c.name, c.jobRank, c.jobRankMove, c.rank, c.rankMove";
+            query += ", a.lastlogin AS lastlogin, a.loggedin FROM " + DB_TABLE_NAME + " AS c LEFT JOIN accounts AS a ON c.accountid = a.id WHERE c.gm = 0 AND a.banned = 0 ";
+            query += "ORDER BY c.level DESC , c.exp DESC , c.fame DESC , c.meso DESC , c.rank ASC";
+
+            try (PreparedStatement charSelect = con.prepareStatement(query); ResultSet rs = charSelect.executeQuery(); PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET jobRank = ?, jobRankMove = ?, rank = ?, rankMove = ? WHERE id = ?")) {
+                int rank = 0;
+                Map<Integer, Integer> rankMap = new LinkedHashMap<>();
+                while (rs.next()) {
+                    int job = rs.getInt("job");
+                    int job_category = job / 100;
+
+                    if (!rankMap.containsKey(job_category)) {
+                        rankMap.put(job_category, 0);
+                    }
+
+                    int jobRank = rankMap.get(job_category) + 1;
+                    rankMap.put(job_category, jobRank);
+                    rank++;
+                    ps.setInt(1, jobRank);
+                    ps.setInt(2, rs.getInt("jobRank") - jobRank);
+                    ps.setInt(3, rank);
+                    ps.setInt(4, rs.getInt("rank") - rank);
+                    ps.setInt(5, rs.getInt("id"));
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateRanking");
+        }
+
+        return false;
     }
 
 }

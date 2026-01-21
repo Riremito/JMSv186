@@ -35,11 +35,11 @@ import tacos.debug.DebugLogger;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.server.MTSStorage;
 import odin.server.RandomRewards;
-import odin.server.RankingWorker;
 import odin.server.SpeedRunner;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
+import tacos.database.query.DQ_Characters;
 import tacos.network.MapleAESOFB;
 import tacos.property.Property_World;
 import tacos.server.TacosServer;
@@ -148,8 +148,8 @@ public class Start {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        DebugLogger.SetupLog("RANKING");
-        RankingWorker.getInstance().run();
+
+        DQ_Characters.updateRanking();
 
         Runtime.getRuntime().addShutdownHook(new Thread(
                 () -> {
