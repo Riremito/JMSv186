@@ -43,17 +43,17 @@ public class DQ_Characters {
         List<Integer> character_ids = new ArrayList<>();
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT id, name FROM " + DB_TABLE_NAME + " WHERE accountid = ? AND world = ?");
-            ps.setInt(1, c.getId());
-            ps.setInt(2, c.getSelectedWorld());
+            try (PreparedStatement ps = con.prepareStatement("SELECT id, name FROM " + DB_TABLE_NAME + " WHERE accountid = ? AND world = ?")) {
+                ps.setInt(1, c.getId());
+                ps.setInt(2, c.getSelectedWorld());
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int character_id = rs.getInt("id");
-                character_ids.add(character_id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int character_id = rs.getInt("id");
+                        character_ids.add(character_id);
+                    }
+                }
             }
-            rs.close();
-            ps.close();
         } catch (SQLException e) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "getCharatcerIds");
         }
@@ -63,19 +63,18 @@ public class DQ_Characters {
     public static int getIdByName(String name) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT id FROM " + DB_TABLE_NAME + " WHERE name = ?");
-            ps.setString(1, name);
-
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return -1;
+            int id;
+            try (PreparedStatement ps = con.prepareStatement("SELECT id FROM " + DB_TABLE_NAME + " WHERE name = ?")) {
+                ps.setString(1, name);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        rs.close();
+                        ps.close();
+                        return -1;
+                    }
+                    id = rs.getInt("id");
+                }
             }
-
-            int id = rs.getInt("id");
-            rs.close();
-            ps.close();
             return id;
         } catch (SQLException e) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "getIdByName");
@@ -86,46 +85,44 @@ public class DQ_Characters {
 
     public static boolean deleteCharacter(MapleClient c, int character_id) {
         try {
-            final Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT guildid, guildrank, familyid, name FROM " + DB_TABLE_NAME + " WHERE id = ? AND accountid = ?");
-            ps.setInt(1, character_id);
-            ps.setInt(2, c.getId());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                DebugLogger.ErrorLog("deleteCharacter : 1");
-                return true;
-            }
-            if (rs.getInt("guildid") > 0) { // is in a guild when deleted
-                if (rs.getInt("guildrank") == 1) { //cant delete when leader
-                    rs.close();
-                    ps.close();
-                    DebugLogger.ErrorLog("deleteCharacter : 2");
-                    return false;
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT guildid, guildrank, familyid, name FROM " + DB_TABLE_NAME + " WHERE id = ? AND accountid = ?")) {
+                ps.setInt(1, character_id);
+                ps.setInt(2, c.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        rs.close();
+                        ps.close();
+                        DebugLogger.ErrorLog("deleteCharacter : 1");
+                        return true;
+                    }
+                    if (rs.getInt("guildid") > 0) { // is in a guild when deleted
+                        if (rs.getInt("guildrank") == 1) { //cant delete when leader
+                            rs.close();
+                            ps.close();
+                            DebugLogger.ErrorLog("deleteCharacter : 2");
+                            return false;
+                        }
+                        OdinWorld.Guild.deleteGuildCharacter(rs.getInt("guildid"), character_id);
+                    }
+                    if (rs.getInt("familyid") > 0) {
+                        OdinWorld.Family.getFamily(rs.getInt("familyid")).leaveFamily(character_id);
+                    }
                 }
-                OdinWorld.Guild.deleteGuildCharacter(rs.getInt("guildid"), character_id);
             }
-            if (rs.getInt("familyid") > 0) {
-                OdinWorld.Family.getFamily(rs.getInt("familyid")).leaveFamily(character_id);
-            }
-            rs.close();
-            ps.close();
 
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM " + DB_TABLE_NAME + " WHERE id = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM monsterbook WHERE charid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM hiredmerch WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_cart WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mts_items WHERE characterid = ?", character_id);
-            //MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM cheatlog WHERE characterid = ?", cid);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM mountdata WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryitems WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM famelog WHERE characterid_to = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM dueypackages WHERE RecieverId = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM wishlist WHERE characterid = ?", character_id);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ?", character_id);
-            MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM buddies WHERE buddyid = ?", character_id);
+            DQ_Buddies.removeByCharacterId(character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM keymap WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM skills WHERE characterid = ?", character_id);
@@ -135,7 +132,7 @@ public class DQ_Characters {
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM queststatus WHERE characterid = ?", character_id);
             MapleCharacter.deleteWhereCharacterId(con, "DELETE FROM inventoryslot WHERE characterid = ?", character_id);
             return true;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteCharacter");
         }
         return false;

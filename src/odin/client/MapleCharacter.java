@@ -1056,16 +1056,8 @@ public class MapleCharacter extends TacosCharacter {
             ps.executeUpdate();
             ps.close();
 
-            deleteWhereCharacterId(con, "DELETE FROM buddies WHERE characterid = ? AND pending = 0");
-            ps = con.prepareStatement("INSERT INTO buddies (characterid, `buddyid`, `pending`) VALUES (?, ?, 0)");
-            ps.setInt(1, id);
-            for (BuddylistEntry entry : buddylist.getBuddies()) {
-                if (entry.isVisible()) {
-                    ps.setInt(2, entry.getCharacterId());
-                    ps.execute();
-                }
-            }
-            ps.close();
+            DQ_Buddies.removePending(this);
+            DQ_Buddies.update(this);
 
             ps = con.prepareStatement("UPDATE accounts SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?");
             ps.setInt(1, nexonPoint);

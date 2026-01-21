@@ -72,4 +72,66 @@ public class DQ_Buddies {
         return null;
     }
 
+    public static boolean removeByCharacterId(int character_id) {
+        // 削除中のキャラクターの友達を他のプレイヤーの友達リストから削除
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+                ps.setInt(1, character_id);
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "removeByCharacterId : 1");
+            return false;
+        }
+        // 削除中のキャラクターを他のプレイヤーの友達リストから削除
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE buddyid = ?")) {
+                ps.setInt(1, character_id);
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "removeByCharacterId :  2");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean removePending(TacosCharacter chr) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ? AND pending = 0")) {
+                ps.setInt(1, chr.getId());
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "removePending");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean update(TacosCharacter chr) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO buddies (characterid, `buddyid`, `pending`) VALUES (?, ?, 0)")) {
+                ps.setInt(1, chr.getId());
+                for (BuddylistEntry entry : chr.getBuddylist().getBuddies()) {
+                    if (entry.isVisible()) {
+                        ps.setInt(2, entry.getCharacterId());
+                        ps.execute();
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "update");
+            return false;
+        }
+
+        return true;
+    }
+
 }
