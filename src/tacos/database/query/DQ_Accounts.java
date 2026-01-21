@@ -49,37 +49,36 @@ public class DQ_Accounts {
     public static boolean resetLoginState() {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET loggedin = 0");
-            ps.executeUpdate();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET loggedin = 0")) {
+                ps.executeUpdate();
+            }
             return true;
         } catch (SQLException ex) {
-            DebugLogger.ExceptionLog("Database Error : " + DB_TABLE_NAME);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "resetLoginState");
         }
         return false;
     }
 
-    public static final MapleClientState getLoginState(MapleClient client) {
-        Connection con = DatabaseConnection.getConnection();
+    public static MapleClientState getLoginState(MapleClient client) {
         try {
-            PreparedStatement ps;
-            ps = con.prepareStatement("SELECT loggedin, lastlogin, `birthday` + 0 AS `bday` FROM " + DB_TABLE_NAME + " WHERE id = ?");
-            ps.setInt(1, client.getId());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                ps.close();
-                throw new DatabaseException("Everything sucks");
-            }
-            MapleClientState state = MapleClientState.find(rs.getByte("loggedin"));
-
-            if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
-                if (rs.getTimestamp("lastlogin").getTime() + 20000 < System.currentTimeMillis()) { // connecting to chanserver timeout
-                    state = MapleClientState.LOGIN_NOTLOGGEDIN;
-                    updateLoginState(client, state);
+            Connection con = DatabaseConnection.getConnection();
+            MapleClientState state;
+            try (PreparedStatement ps = con.prepareStatement("SELECT loggedin, lastlogin, `birthday` + 0 AS `bday` FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+                ps.setInt(1, client.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        ps.close();
+                        throw new DatabaseException("Everything sucks");
+                    }
+                    state = MapleClientState.find(rs.getByte("loggedin"));
+                    if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
+                        if (rs.getTimestamp("lastlogin").getTime() + 20000 < System.currentTimeMillis()) { // connecting to chanserver timeout
+                            state = MapleClientState.LOGIN_NOTLOGGEDIN;
+                            updateLoginState(client, state);
+                        }
+                    }
                 }
             }
-            rs.close();
-            ps.close();
             if (state == MapleClientState.LOGIN_LOGGEDIN) {
                 client.setLoggedIn(true);
             } else {
@@ -87,6 +86,7 @@ public class DQ_Accounts {
             }
             return state;
         } catch (SQLException e) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getLoginState");
             client.setLoggedIn(false);
             throw new DatabaseException("error getting login state", e);
         }
@@ -96,14 +96,14 @@ public class DQ_Accounts {
         String ip_addr = client.getSessionIPAddress();
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET loggedin = ?, SessionIP = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?");
-            ps.setInt(1, newstate.get());
-            ps.setString(2, ip_addr);
-            ps.setInt(3, client.getId());
-            ps.executeUpdate();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET loggedin = ?, SessionIP = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?")) {
+                ps.setInt(1, newstate.get());
+                ps.setString(2, ip_addr);
+                ps.setInt(3, client.getId());
+                ps.executeUpdate();
+            }
         } catch (SQLException e) {
-            System.err.println("error updating login state" + e);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateLoginState");
         }
         if (newstate == MapleClientState.LOGIN_NOTLOGGEDIN || newstate == MapleClientState.LOGIN_WAITING) {
             client.setLoggedIn(false);
@@ -159,56 +159,55 @@ public class DQ_Accounts {
         String password2_hash = getSHA256(DEFAULT_PASSWORD2);
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (name, password, 2ndpassword, ACash, gender) VALUES (?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS);
-            ps.setString(1, maple_id);
-            ps.setString(2, password1_hash);
-            ps.setString(3, password2_hash);
-            ps.setInt(4, DEFAULT_POINT);
-            ps.setByte(5, DEFAULT_GENDER);
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            rs.next();
-            rs.close();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (name, password, 2ndpassword, ACash, gender) VALUES (?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, maple_id);
+                ps.setString(2, password1_hash);
+                ps.setString(3, password2_hash);
+                ps.setInt(4, DEFAULT_POINT);
+                ps.setByte(5, DEFAULT_GENDER);
+                ps.executeUpdate();
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    rs.next();
+                }
+            }
 
             DebugLogger.InfoLog("[AutoRegister] \"" + maple_id + "\"");
             return true;
         } catch (SQLException e) {
-            DebugLogger.ExceptionLog("Database Error : " + DB_TABLE_NAME);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "autoRegister");
         }
 
         return false;
     }
 
     public static boolean updatePassword(MapleClient client, String password) {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement pss;
         try {
-            pss = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE id = ?");
-            String password1_salt = getSalt();
-            pss.setString(1, getSHA256(password + password1_salt));
-            pss.setString(2, password1_salt);
-            pss.setInt(3, client.getId());
-            pss.executeUpdate();
-            pss.close();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE id = ?")) {
+                String password1_salt = getSalt();
+                ps.setString(1, getSHA256(password + password1_salt));
+                ps.setString(2, password1_salt);
+                ps.setInt(3, client.getId());
+                ps.executeUpdate();
+            }
             return true;
         } catch (SQLException ex) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "updatePassword");
         }
+
         return false;
     }
 
     public static boolean resetPassword(String maple_id, String password) {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement pss;
         try {
-            pss = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE name = ?");
-            String password1_salt = getSalt();
-            pss.setString(1, getSHA256(password + password1_salt));
-            pss.setString(2, password1_salt);
-            pss.setString(3, maple_id);
-            pss.executeUpdate();
-            pss.close();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE name = ?")) {
+                String password1_salt = getSalt();
+                ps.setString(1, getSHA256(password + password1_salt));
+                ps.setString(2, password1_salt);
+                ps.setString(3, maple_id);
+                ps.executeUpdate();
+            }
             return true;
         } catch (SQLException ex) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "resetPassword");
@@ -220,79 +219,78 @@ public class DQ_Accounts {
         int loginok = 5;
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE name = ?");
-            ps.setString(1, maple_id);
-            ResultSet rs = ps.executeQuery();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE name = ?")) {
+                ps.setString(1, maple_id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        int accId = rs.getInt("id");
+                        int banned = rs.getInt("banned");
+                        String password1_hash = rs.getString("password");
+                        String password1_salt = rs.getString("salt");
+                        String password2_hash = rs.getString("2ndpassword");
+                        String password2_salt = rs.getString("salt2");
+                        boolean gameMaster = rs.getInt("gm") > 0;
+                        byte gender = rs.getByte("gender");
+                        ps.close();
 
-            if (rs.next()) {
-                int accId = rs.getInt("id");
-                int banned = rs.getInt("banned");
-                String password1_hash = rs.getString("password");
-                String password1_salt = rs.getString("salt");
-                String password2_hash = rs.getString("2ndpassword");
-                String password2_salt = rs.getString("salt2");
-                boolean gameMaster = rs.getInt("gm") > 0;
-                byte gender = rs.getByte("gender");
-                ps.close();
+                        client.setId(accId);
+                        client.setPassword2Hash(password2_hash);
+                        client.setPassword2Salt(password2_salt);
+                        client.setGameMaster(gameMaster);
+                        client.setGender(gender);
 
-                client.setId(accId);
-                client.setPassword2Hash(password2_hash);
-                client.setPassword2Salt(password2_salt);
-                client.setGameMaster(gameMaster);
-                client.setGender(gender);
-
-                if (banned > 0 && !gameMaster) {
-                    loginok = 3;
-                } else {
-                    if (banned == -1) {
-                        DebugLogger.ErrorLog("banned == -1");
-                    }
-                    MapleClientState loginstate = getLoginState(client);
-                    if (loginstate.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get()) { // already loggedin
-                        client.setLoggedIn(false);
-                        loginok = 7;
-                    } else {
-                        if (password1_hash.equals(getSHA256((password1_salt == null) ? password : password + password1_salt))) {
-                            loginok = 0;
-                            if (password1_salt == null) {
-                                // set salt
-                                updatePassword(client, password);
-                            }
+                        if (banned > 0 && !gameMaster) {
+                            loginok = 3;
                         } else {
-                            client.setLoggedIn(false);
-                            loginok = 4;
+                            if (banned == -1) {
+                                DebugLogger.ErrorLog("banned == -1");
+                            }
+                            MapleClientState loginstate = getLoginState(client);
+                            if (loginstate.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get()) { // already loggedin
+                                client.setLoggedIn(false);
+                                loginok = 7;
+                            } else {
+                                if (password1_hash.equals(getSHA256((password1_salt == null) ? password : password + password1_salt))) {
+                                    loginok = 0;
+                                    if (password1_salt == null) {
+                                        // set salt
+                                        updatePassword(client, password);
+                                    }
+                                } else {
+                                    client.setLoggedIn(false);
+                                    loginok = 4;
+                                }
+                            }
                         }
                     }
                 }
             }
-            rs.close();
-            ps.close();
         } catch (SQLException e) {
-            System.err.println("ERROR" + e);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "login");
         }
+
         return loginok;
     }
 
-    public static final boolean checkLoginIP(MapleClient c) {
+    public static boolean checkLoginIP(MapleClient c) {
         boolean ret = false;
 
         try {
-            final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT SessionIP FROM " + DB_TABLE_NAME + " WHERE id = ?");
-            ps.setInt(1, c.getId());
-            final ResultSet rs = ps.executeQuery();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT SessionIP FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+                ps.setInt(1, c.getId());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        final String sessionIP = rs.getString("SessionIP");
 
-            if (rs.next()) {
-                final String sessionIP = rs.getString("SessionIP");
-
-                if (sessionIP != null) {
-                    ret = c.getSessionIPAddress().equals(sessionIP.split(":")[0]);
+                        if (sessionIP != null) {
+                            ret = c.getSessionIPAddress().equals(sessionIP.split(":")[0]);
+                        }
+                    }
                 }
             }
-
-            rs.close();
-            ps.close();
-        } catch (final SQLException e) {
-            DebugLogger.ExceptionLog("checkLoginIP");
+        } catch (SQLException e) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "checkLoginIP");
         }
 
         if (!ret) {

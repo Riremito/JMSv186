@@ -117,7 +117,7 @@ public class DQ_Buddies {
     public static boolean update(TacosCharacter chr) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO buddies (characterid, `buddyid`, `pending`) VALUES (?, ?, 0)")) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, `buddyid`, `pending`) VALUES (?, ?, 0)")) {
                 ps.setInt(1, chr.getId());
                 for (BuddylistEntry entry : chr.getBuddylist().getBuddies()) {
                     if (entry.isVisible()) {

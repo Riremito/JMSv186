@@ -18,13 +18,12 @@
  */
 package tacos.database;
 
+import java.sql.Connection;
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -32,13 +31,14 @@ import java.util.logging.Logger;
  */
 public class ExtraDB {
 
+    private static final String DB_TABLE_NAME = "__root";
+
     // data
     public static final String DATA_PET_HP = "pet_hp";
     public static final String DATA_PET_MP = "pet_mp";
     public static final String DATA_PET_CURE = "pet_cure";
 
     public static void loadData(MapleCharacter chr) {
-        DebugLogger.DebugLog("ExtraDB : Load");
         ExtraDBData pet_hp = get(chr, DATA_PET_HP);
         if (pet_hp.getOk()) {
             chr.setPetAutoHPItem(pet_hp.getInt());
@@ -54,19 +54,10 @@ public class ExtraDB {
     }
 
     public static void saveData(MapleCharacter chr) {
-        DebugLogger.DebugLog("ExtraDB : Save");
         setInt(chr, DATA_PET_HP, chr.getPetAutoHPItem());
         setInt(chr, DATA_PET_MP, chr.getPetAutoMPItem());
         setInt(chr, DATA_PET_CURE, chr.getPetAutoCureItem());
     }
-
-    public static void copyData(MapleCharacter src, MapleCharacter dst) {
-        //dst.setPetAutoHPItem(src.getPetAutoHPItem());
-        //dst.setPetAutoMPItem(src.getPetAutoMPItem());
-        //dst.setPetAutoCureItem(src.getPetAutoCureItem());
-    }
-
-    private static final String table_name = "__root";
 
     public static boolean setInt(MapleCharacter chr, String data_name, int value) {
         ExtraDBData edd = get(chr, data_name);
@@ -81,16 +72,17 @@ public class ExtraDB {
         }
 
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO " + table_name + " (maple_id, character_id, data_name, value_int) VALUES (?, ?, ?, ?);");
-            ps.setInt(1, chr.getAccountID());
-            ps.setInt(2, chr.getId());
-            ps.setString(3, data_name);
-            ps.setInt(4, value);
-            ps.executeUpdate();
-            ps.close();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (maple_id, character_id, data_name, value_int) VALUES (?, ?, ?, ?);")) {
+                ps.setInt(1, chr.getAccountID());
+                ps.setInt(2, chr.getId());
+                ps.setString(3, data_name);
+                ps.setInt(4, value);
+                ps.executeUpdate();
+            }
             return true;
         } catch (SQLException ex) {
-            Logger.getLogger(ExtraDB.class.getName()).log(Level.SEVERE, null, ex);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "setInt");
         }
 
         return false;
@@ -108,16 +100,17 @@ public class ExtraDB {
             return true;
         }
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO " + table_name + " (maple_id, character_id, data_name, value_str) VALUES (?, ?, ?, ?);");
-            ps.setInt(1, chr.getAccountID());
-            ps.setInt(2, chr.getId());
-            ps.setString(3, data_name);
-            ps.setString(4, value);
-            ps.executeUpdate();
-            ps.close();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (maple_id, character_id, data_name, value_str) VALUES (?, ?, ?, ?);")) {
+                ps.setInt(1, chr.getAccountID());
+                ps.setInt(2, chr.getId());
+                ps.setString(3, data_name);
+                ps.setString(4, value);
+                ps.executeUpdate();
+            }
             return true;
         } catch (SQLException ex) {
-            Logger.getLogger(ExtraDB.class.getName()).log(Level.SEVERE, null, ex);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "setStr");
         }
 
         return false;
@@ -125,32 +118,34 @@ public class ExtraDB {
 
     private static boolean updateInt(MapleCharacter chr, String data_name, int value) {
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE " + table_name + " SET `value_int` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;");
-            ps.setInt(1, value);
-            ps.setInt(2, chr.getAccountID());
-            ps.setInt(3, chr.getId());
-            ps.setString(4, data_name);
-            ps.execute();
-            ps.close();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `value_int` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;")) {
+                ps.setInt(1, value);
+                ps.setInt(2, chr.getAccountID());
+                ps.setInt(3, chr.getId());
+                ps.setString(4, data_name);
+                ps.execute();
+            }
             return true;
         } catch (SQLException ex) {
-            Logger.getLogger(ExtraDB.class.getName()).log(Level.SEVERE, null, ex);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateInt");
         }
         return true;
     }
 
     private static boolean updateStr(MapleCharacter chr, String data_name, String value) {
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE " + table_name + " SET `value_str` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;");
-            ps.setString(1, value);
-            ps.setInt(2, chr.getAccountID());
-            ps.setInt(3, chr.getId());
-            ps.setString(4, data_name);
-            ps.execute();
-            ps.close();
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `value_str` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;")) {
+                ps.setString(1, value);
+                ps.setInt(2, chr.getAccountID());
+                ps.setInt(3, chr.getId());
+                ps.setString(4, data_name);
+                ps.execute();
+            }
             return true;
         } catch (SQLException ex) {
-            Logger.getLogger(ExtraDB.class.getName()).log(Level.SEVERE, null, ex);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateStr");
         }
         return true;
     }
@@ -159,53 +154,23 @@ public class ExtraDB {
         ExtraDBData edd = new ExtraDBData();
 
         try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT `value_int`, `value_str` from " + table_name + " where maple_id = ? AND character_id = ? AND data_name = ?;");
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT `value_int`, `value_str` from " + DB_TABLE_NAME + " where maple_id = ? AND character_id = ? AND data_name = ?;");
             ps.setInt(1, chr.getAccountID());
             ps.setInt(2, chr.getId());
             ps.setString(3, data_name);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                edd.setInt(rs.getInt("value_int"));
-                edd.setStr(rs.getString("value_str"));
-                edd.setOk(true);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    edd.setInt(rs.getInt("value_int"));
+                    edd.setStr(rs.getString("value_str"));
+                    edd.setOk(true);
+                }
             }
-            rs.close();
         } catch (SQLException ex) {
-            Logger.getLogger(ExtraDB.class.getName()).log(Level.SEVERE, null, ex);
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "get");
         }
 
         return edd;
     }
 
-    public static class ExtraDBData {
-
-        private boolean ok = false;
-        private int value_int = 0;
-        private String value_str = "";
-
-        public void setOk(boolean ok) {
-            this.ok = ok;
-        }
-
-        public void setInt(int value_int) {
-            this.value_int = value_int;
-        }
-
-        public void setStr(String value_str) {
-            this.value_str = value_str;
-        }
-
-        public int getInt() {
-            return this.value_int;
-        }
-
-        public String getStr() {
-            return this.value_str;
-        }
-
-        public boolean getOk() {
-            return this.ok;
-        }
-
-    }
 }
