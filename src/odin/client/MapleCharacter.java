@@ -130,6 +130,7 @@ import tacos.client.TacosCharacter;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Accounts;
+import tacos.database.query.DQ_Buddies;
 import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Notes;
 import tacos.debug.DebugLogger;
@@ -606,7 +607,11 @@ public class MapleCharacter extends TacosCharacter {
                 rs.close();
                 ps.close();
 
-                ret.buddylist.loadFromDb(charid);
+                // 友達リスト読み込み
+                for (BuddylistEntry ble : DQ_Buddies.load(ret)) {
+                    ret.buddylist.put(ble);
+                }
+
                 ret.storage = MapleStorage.loadStorage(ret.accountid);
                 ret.cs = new CashShop(ret.accountid, charid, ret.getJob());
 

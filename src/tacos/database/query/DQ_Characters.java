@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import tacos.server.TacosFriend;
 
 /**
  *
@@ -138,6 +139,36 @@ public class DQ_Characters {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteCharacter");
         }
         return false;
+    }
+
+    public static TacosFriend findOfflineFriend(int world_id, String name) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE world = ? AND name = ?")) {
+                ps.setInt(1, world_id);
+                ps.setString(2, name);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        TacosFriend friend = new TacosFriend();
+                        int friend_id = rs.getInt("id");
+                        String friend_name = rs.getString("name");
+                        int friend_level = rs.getInt("level");
+                        int friend_job = rs.getInt("job");
+                        int friend_limit = rs.getInt("buddyCapacity");
+
+                        friend.setId(friend_id);
+                        friend.setName(friend_name);
+                        friend.setLevel(friend_level);
+                        friend.setJob(friend_job);
+                        return friend;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "findOfflineFriend");
+        }
+
+        return null;
     }
 
 }

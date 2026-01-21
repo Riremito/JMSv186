@@ -20,23 +20,16 @@ package tacos.packet.request.sub;
 
 import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
-import odin.client.CharacterNameAndId;
 import odin.client.MapleCharacter;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsFriend;
 import tacos.packet.ops.arg.ArgFriend;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.server.TacosFriend;
 
 /**
  *
@@ -67,49 +60,41 @@ public class ReqSub_FriendRequest {
                     chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
                     return true;
                 }
-                BuddylistEntry ble = buddylist.get(friend_name);
-                if (ble != null) {
-                    if (ble.getGroup().equals(friend_tag)) {
+                BuddylistEntry ble_found = buddylist.get(friend_name);
+                if (ble_found != null) {
+                    if (ble_found.getGroup().equals(friend_tag)) {
                         chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_AlreadySet));
                         return true;
                     }
-                    ble.setGroup(friend_tag);
+                    ble_found.setGroup(friend_tag);
                     chr.SendPacket(ResWrapper.updateBuddylist(chr));
                     return true;
                 }
 
-                // online
-                MapleCharacter friend = chr.getWorld().findOnlinePlayer(friend_name);
-                if (friend != null) {
-                    if (friend.getBuddylist().isFull()) {
+                TacosFriend friend = TacosFriend.findByName(chr, friend_name);
+                // invalid character name
+                if (friend == null) {
+                    chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_UnknownUser));
+                    return true;
+                }
+                if (friend.getOnline()) {
+                    if (friend.getCharacter().getBuddylist().isFull()) {
                         chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullOther));
                         return true;
                     }
-                    BuddylistEntry ble_online = new BuddylistEntry(friend_name, friend.getId(), friend_tag, 0, true, friend.getLevel(), friend.getJob());
-                    chr.getBuddylist().put(ble_online);
-
+                    MapleCharacter online_friend = friend.getCharacter();
                     BuddylistEntry ble_hidden = new BuddylistEntry(chr.getName(), chr.getId(), friend_tag, chr.getChannelId(), true, chr.getLevel(), chr.getJob());
                     ble_hidden.setHidden(true);
-                    friend.getBuddylist().put(ble_hidden);
+                    online_friend.getBuddylist().put(ble_hidden);
                     ArgFriend arg = new ArgFriend();
                     arg.flag = OpsFriend.FriendRes_SetFriend_Done;
-                    arg.chr = friend;
-                    friend.SendPacket(ResCWvsContext.FriendResult(arg));
+                    arg.chr = online_friend;
+                    online_friend.SendPacket(ResCWvsContext.FriendResult(arg));
                     // 事前に友達リストに追加しないと拒否を押した場合に無限ループが発生する
-                    friend.SendPacket(ResWrapper.requestBuddylistAdd(chr.getId(), chr.getName(), chr.getLevel(), chr.getJob()));
-                } else {
-                    CharacterIdNameBuddyCapacity cibc = getCharacterIdAndNameFromDatabase(friend_name, friend_tag);
-                    // invalid character name
-                    if (cibc == null) {
-                        chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_UnknownUser));
-                        return true;
-                    }
-                    // TODO : check friend is full or not.
-                    // offline
-                    BuddylistEntry ble_offline = new BuddylistEntry(friend_name, cibc.getId(), friend_tag, 0, true, cibc.getLevel(), cibc.getJob());
-                    chr.getBuddylist().put(ble_offline);
+                    online_friend.SendPacket(ResWrapper.requestBuddylistAdd(chr.getId(), chr.getName(), chr.getLevel(), chr.getJob()));
                 }
-
+                BuddylistEntry ble_new = new BuddylistEntry(friend.getName(), friend.getId(), friend_tag, 0, true, friend.getLevel(), friend.getJob());
+                chr.getBuddylist().put(ble_new);
                 ArgFriend arg = new ArgFriend();
                 arg.flag = OpsFriend.FriendRes_SetFriend_Done;
                 arg.chr = chr;
@@ -188,43 +173,6 @@ public class ReqSub_FriendRequest {
         }
 
         return false;
-    }
-
-    private static class CharacterIdNameBuddyCapacity extends CharacterNameAndId {
-
-        private int buddyCapacity;
-
-        public CharacterIdNameBuddyCapacity(int id, String name, int level, int job, String group, int buddyCapacity) {
-            super(id, name, level, job, group);
-            this.buddyCapacity = buddyCapacity;
-        }
-
-        public int getBuddyCapacity() {
-            return buddyCapacity;
-        }
-    }
-
-    private static CharacterIdNameBuddyCapacity getCharacterIdAndNameFromDatabase(String name, String group) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps;
-            ps = con.prepareStatement("SELECT * FROM characters WHERE name LIKE ?");
-            ps.setString(1, name);
-            ResultSet rs = ps.executeQuery();
-            CharacterIdNameBuddyCapacity ret = null;
-            if (rs.next()) {
-                if (rs.getInt("gm") == 0) {
-                    ret = new CharacterIdNameBuddyCapacity(rs.getInt("id"), rs.getString("name"), rs.getInt("level"), rs.getInt("job"), group, rs.getInt("buddyCapacity"));
-                }
-            }
-            rs.close();
-            ps.close();
-            return ret;
-        } catch (SQLException ex) {
-            Logger.getLogger(ReqSub_FriendRequest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return null;
     }
 
 }

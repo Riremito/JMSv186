@@ -20,14 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import tacos.database.DatabaseConnection;
 
 public class BuddyList {
 
@@ -35,7 +30,6 @@ public class BuddyList {
     private byte capacity;
 
     public BuddyList(byte capacity) {
-        super();
         this.capacity = capacity;
     }
 
@@ -92,29 +86,6 @@ public class BuddyList {
             buddyIds[i++] = ble.getCharacterId();
         }
         return buddyIds;
-    }
-
-    public void loadFromDb(int characterId) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("SELECT b.buddyid, b.pending, c.name as buddyname, c.job as buddyjob, c.level as buddylevel, b.groupname FROM buddies as b, characters as c WHERE c.id = b.buddyid AND b.characterid = ?");
-        ps.setInt(1, characterId);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            int buddyid = rs.getInt("buddyid");
-            String buddyname = rs.getString("buddyname");
-            if (rs.getInt("pending") == 1) {
-                continue;
-            } else {
-                put(new BuddylistEntry(buddyname, buddyid, rs.getString("groupname"), -1, true, rs.getInt("buddylevel"), rs.getInt("buddyjob")));
-            }
-        }
-        rs.close();
-        ps.close();
-
-        ps = con.prepareStatement("DELETE FROM buddies WHERE pending = 1 AND characterid = ?");
-        ps.setInt(1, characterId);
-        ps.executeUpdate();
-        ps.close();
     }
 
 }

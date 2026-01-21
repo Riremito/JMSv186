@@ -27,15 +27,7 @@ public class BuddylistEntry {
     private boolean visible;
     private boolean hidden = false;
 
-    /**
-     *
-     * @param name
-     * @param characterId
-     * @param channel should be -1 if the buddy is offline
-     * @param visible
-     */
     public BuddylistEntry(String name, int characterId, String group, int channel, boolean visible, int level, int job) {
-        super();
         this.name = name;
         this.cid = characterId;
         this.group = group;
@@ -53,10 +45,6 @@ public class BuddylistEntry {
         this.hidden = hidden;
     }
 
-    /**
-     * @return the channel the character is on. If the character is offline
-     * returns -1.
-     */
     public int getChannel() {
         return channel;
     }
@@ -105,29 +93,4 @@ public class BuddylistEntry {
         this.group = g;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + cid;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final BuddylistEntry other = (BuddylistEntry) obj;
-        if (cid != other.cid) {
-            return false;
-        }
-        return true;
-    }
 }
