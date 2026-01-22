@@ -65,6 +65,22 @@ public class LazyDatabase {
                     chr.setPetAutoCureItem(ld.getInt());
                     break;
                 }
+                case RETURN_MAP_FREEMARKET: {
+                    chr.getFreeMarketPortal().setReturnMapId(ld.getInt());
+                    break;
+                }
+                case RETURN_PORTAL_FREEMARKET: {
+                    chr.getFreeMarketPortal().setReturnPortalName(ld.getStr());
+                    break;
+                }
+                case RETURN_MAP_ARDENTMILL: {
+                    chr.getArdentmillPortal().setReturnMapId(ld.getInt());
+                    break;
+                }
+                case RETURN_PORTAL_ARDENTMILL: {
+                    chr.getArdentmillPortal().setReturnPortalName(ld.getStr());
+                    break;
+                }
                 default: {
                     break;
                 }
@@ -93,6 +109,22 @@ public class LazyDatabase {
                     value_int = chr.getPetAutoCureItem();
                     break;
                 }
+                case RETURN_MAP_FREEMARKET: {
+                    value_int = chr.getFreeMarketPortal().getReturnMapId();
+                    break;
+                }
+                case RETURN_PORTAL_FREEMARKET: {
+                    value_str = chr.getFreeMarketPortal().getReturnPortalName();
+                    break;
+                }
+                case RETURN_MAP_ARDENTMILL: {
+                    value_int = chr.getArdentmillPortal().getReturnMapId();
+                    break;
+                }
+                case RETURN_PORTAL_ARDENTMILL: {
+                    value_str = chr.getArdentmillPortal().getReturnPortalName();
+                    break;
+                }
                 default: {
                     break;
                 }
@@ -111,7 +143,7 @@ public class LazyDatabase {
                     break;
                 }
                 case TYPE_STR: {
-                    if (!ld.getStr().equals(ld.getStr())) {
+                    if (!ld.getStr().equals(value_str)) {
                         ld.setStr(value_str);
                         if (ld.getOk()) {
                             updateStr(chr, ld);

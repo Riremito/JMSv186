@@ -34,7 +34,7 @@ public class SharedPortal {
     private String target_portal_name;
     // leave
     private int return_map_id = TacosConstants.MAP_ID_PERION; // PerionFM!
-    private String return_portal_name = null;
+    private String return_portal_name = "";
 
     public SharedPortal(int target_map_id, String target_portal_name) {
         this.target_map_id = target_map_id;
@@ -46,7 +46,7 @@ public class SharedPortal {
         if (map_to == null) {
             return false;
         }
-        TacosPortal portal_to = (portal_name != null) ? map_to.getPortal(portal_name) : map_to.getPortal(0);
+        TacosPortal portal_to = portal_name.equals("") ? map_to.getPortal(0) : map_to.getPortal(portal_name);
         if (portal_to == null) {
             return false;
         }
@@ -76,6 +76,22 @@ public class SharedPortal {
             return false;
         }
         return usePortal(chr, this.return_map_id, this.return_portal_name);
+    }
+
+    public int getReturnMapId() {
+        return this.return_map_id;
+    }
+
+    public void setReturnMapId(int return_map_id) {
+        this.return_map_id = return_map_id;
+    }
+
+    public String getReturnPortalName() {
+        return this.return_portal_name;
+    }
+
+    public void setReturnPortalName(String return_portal_name) {
+        this.return_portal_name = return_portal_name;
     }
 
 }
