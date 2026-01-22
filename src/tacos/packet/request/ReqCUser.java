@@ -96,7 +96,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
 import tacos.constants.MapleClientState;
-import tacos.database.ExtraDB;
+import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
@@ -865,7 +865,7 @@ public class ReqCUser {
             return false;
         }
 
-        ExtraDB.saveData(chr);
+        LazyDatabase.saveData(chr);
         return chr.changeChannel(channel + 1);
     }
 
@@ -886,7 +886,7 @@ public class ReqCUser {
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         chr.sendMigrateCommand(chr.getWorld().getCashShop());
         chr.saveToDB(false, false);
-        ExtraDB.saveData(chr);
+        LazyDatabase.saveData(chr);
         chr.getMap().removePlayer(chr);
         return true;
     }
@@ -2516,7 +2516,7 @@ public class ReqCUser {
         DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         chr.sendMigrateCommand(chr.getWorld().getITC());
         chr.saveToDB(false, false);
-        ExtraDB.saveData(chr);
+        LazyDatabase.saveData(chr);
         chr.getMap().removePlayer(chr);
         return true;
     }

@@ -19,6 +19,7 @@
 package tacos.client;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
@@ -40,6 +41,7 @@ import odin.server.maps.MapleMapObjectType;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.constants.TacosConstants;
+import tacos.database.LazyData;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsMovePathAttr;
@@ -77,6 +79,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     protected MonsterBook monsterbook = null;
     private FreeMarketPortal portal_fm = new FreeMarketPortal();
     private ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
+    private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
 
     public void SendPacket(MaplePacket packet) {
         this.client.SendPacket(packet);
@@ -528,6 +531,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public ArdentmillPortal getArdentmillPortal() {
         return this.portal_ardentmill;
+    }
+
+    public ArrayList<LazyData> getLazyDataList() {
+        return this.lazy_data_list;
     }
 
     // friend

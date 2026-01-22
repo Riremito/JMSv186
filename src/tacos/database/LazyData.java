@@ -22,11 +22,21 @@ package tacos.database;
  *
  * @author Riremito
  */
-public class ExtraDBData {
+public class LazyData {
 
-    private boolean ok = false;
+    private LazyDataNames name;
+    private boolean ok;
     private int value_int = 0;
     private String value_str = "";
+
+    public LazyData(LazyDataNames name) {
+        this.name = name;
+        this.ok = false;
+    }
+
+    public LazyDataNames getDataName() {
+        return this.name;
+    }
 
     public void setOk(boolean ok) {
         this.ok = ok;

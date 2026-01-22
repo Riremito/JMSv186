@@ -26,7 +26,7 @@ import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.database.ExtraDB;
+import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
@@ -148,7 +148,6 @@ public class ReqCClientSocket {
         int character_id = cp.Decode4();
         MapleCharacter transfer = c.getWorld().findMigratingPlayer(character_id);
         MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : transfer;
-        ExtraDB.loadData(chr);
         c.setPlayer(chr);
         c.setId(chr.getAccountID());
         chr.setChannelId(c.getChannelServer().getChannel());
@@ -161,6 +160,9 @@ public class ReqCClientSocket {
         chr.setClient(c);
         if (transfer != null) {
             chr.updateMapById(chr.getPosMap(), chr.getPortal()); // new channel is required to update map.
+        }
+        if (transfer == null) {
+            LazyDatabase.loadData(chr);
         }
 
         if (!DQ_Accounts.checkLoginIP(c)) {

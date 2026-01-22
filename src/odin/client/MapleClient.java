@@ -22,7 +22,7 @@ package odin.client;
 
 import tacos.constants.MapleClientState;
 import java.util.List;
-import tacos.database.ExtraDB;
+import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Characters;
 import java.util.ArrayList;
@@ -102,7 +102,7 @@ public class MapleClient extends TacosClient {
             getPlayer().removalTask();
             getPlayer().saveToDB(true, fromCS);
             if (!fromCS) {
-                ExtraDB.saveData(getPlayer());
+                LazyDatabase.saveData(getPlayer());
             }
         }
         if (shutdown) {
