@@ -43,7 +43,8 @@ public class DebugMan {
         ((DebugMan) dm).updateStatus(action);
 
         int m_nSelect = -1;
-        if (action == 1) {
+        // JMS is always 1, CMS104 is not 1.
+        if (action != 0) {
             if (type == OpsScriptMan.SM_ASKMENU) {
                 m_nSelect = cp.Decode4();
             }

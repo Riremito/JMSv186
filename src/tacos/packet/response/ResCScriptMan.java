@@ -114,6 +114,9 @@ public class ResCScriptMan {
                         sp.Encode4(id);
                     }
                 }
+                if (Version.GreaterOrEqual(Region.CMS, 104)) {
+                    sp.Encode4(0);
+                }
                 break;
             }
             case SM_ASKMEMBERSHOPAVATAR: {
