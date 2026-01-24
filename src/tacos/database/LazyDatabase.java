@@ -52,6 +52,7 @@ public class LazyDatabase {
             if (!ld.getOk()) {
                 continue;
             }
+            DebugLogger.DebugLog("LazyDB load : " + ld.getDataName().name() + " = " + ld.getInt() + ", \"" + ld.getStr() + "\"");
             switch (ld.getDataName()) {
                 case PET_ITEM_HP: {
                     chr.setPetAutoHPItem(ld.getInt());
@@ -133,6 +134,7 @@ public class LazyDatabase {
                 case TYPE_INT: {
                     if (ld.getInt() != value_int) {
                         ld.setInt(value_int);
+                        DebugLogger.DebugLog("LazyDB save : " + ld.getDataName().name() + " = " + ld.getInt() + ", \"" + ld.getStr() + "\"");
                         if (ld.getOk()) {
                             updateInt(chr, ld);
                         } else {
@@ -145,6 +147,7 @@ public class LazyDatabase {
                 case TYPE_STR: {
                     if (!ld.getStr().equals(value_str)) {
                         ld.setStr(value_str);
+                        DebugLogger.DebugLog("LazyDB save : " + ld.getDataName().name() + " = " + ld.getInt() + ", \"" + ld.getStr() + "\"");
                         if (ld.getOk()) {
                             updateStr(chr, ld);
                         } else {
