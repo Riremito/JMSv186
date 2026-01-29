@@ -20,7 +20,6 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.constants.MapleClientState;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -508,7 +507,6 @@ public class ReqCLogin {
             return false;
         }
         TacosChannel game_server = TacosWorld.find(client.getSelectedWorld()).getChannelServer(client.getSelectedChannel() + 1);
-        DQ_Accounts.updateLoginState(client, MapleClientState.LOGIN_SERVER_TRANSITION);
         client.sendSelectCharacterResult(game_server, character_id);
         client.getLoginServer().removeAuthorizedClient(client);
         return true;

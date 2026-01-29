@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import tacos.constants.MapleClientState;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
@@ -129,7 +128,6 @@ import odin.tools.FileoutputUtil;
 import tacos.client.TacosCharacter;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
-import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Buddies;
 import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Notes;
@@ -4551,8 +4549,6 @@ public class MapleCharacter extends TacosCharacter {
 
         getWorld().addMigratingPlayer(this);
         getChannelServer().getOnlinePlayers().remove(this);
-        DQ_Accounts.updateLoginState(client, MapleClientState.CHANGE_CHANNEL);
-
         sendMigrateCommand(ch_server);
         saveToDB(false, false);
         getMap().removePlayer(this);

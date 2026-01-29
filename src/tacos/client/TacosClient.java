@@ -48,7 +48,6 @@ public class TacosClient extends BaseClient {
     private byte gender = 0;
     private int charslots = TacosConstants.DEFAULT_CHARSLOT;
     // server info
-    private boolean logged_in = false;
     private int loginAttempt = 0;
     private int world = 0;
     private int selected_world = 0;
@@ -58,7 +57,6 @@ public class TacosClient extends BaseClient {
 
     public TacosClient(IoSession session) {
         super(session);
-        this.logged_in = false;
     }
 
     public TacosServer getServer() {
@@ -187,14 +185,6 @@ public class TacosClient extends BaseClient {
     public boolean setCharSlots(int charslots) {
         this.charslots = charslots;
         return true;
-    }
-
-    public boolean isLoggedIn() {
-        return this.logged_in;
-    }
-
-    public void setLoggedIn(boolean logged_in) {
-        this.logged_in = logged_in;
     }
 
     public int loginAttempt() {

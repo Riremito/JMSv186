@@ -31,8 +31,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import tacos.config.CodePage;
 
 /**
@@ -79,15 +77,9 @@ public class DQ_Accounts {
                     }
                 }
             }
-            if (state == MapleClientState.LOGIN_LOGGEDIN) {
-                client.setLoggedIn(true);
-            } else {
-                client.setLoggedIn(false);
-            }
             return state;
         } catch (SQLException e) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "getLoginState");
-            client.setLoggedIn(false);
             throw new DatabaseException("error getting login state", e);
         }
     }
@@ -104,14 +96,6 @@ public class DQ_Accounts {
             }
         } catch (SQLException e) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateLoginState");
-        }
-        if (newstate == MapleClientState.LOGIN_NOTLOGGEDIN || newstate == MapleClientState.LOGIN_WAITING) {
-            client.setLoggedIn(false);
-            client.setServerTransition(false);
-        } else {
-            boolean serverTransition = (newstate == MapleClientState.LOGIN_SERVER_TRANSITION || newstate == MapleClientState.CHANGE_CHANNEL);
-            client.setServerTransition(serverTransition);
-            client.setLoggedIn(!serverTransition);
         }
     }
 
@@ -247,7 +231,6 @@ public class DQ_Accounts {
                             }
                             MapleClientState loginstate = getLoginState(client);
                             if (loginstate.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get()) { // already loggedin
-                                client.setLoggedIn(false);
                                 loginok = 7;
                             } else {
                                 if (password1_hash.equals(getSHA256((password1_salt == null) ? password : password + password1_salt))) {
@@ -257,7 +240,6 @@ public class DQ_Accounts {
                                         updatePassword(client, password);
                                     }
                                 } else {
-                                    client.setLoggedIn(false);
                                     loginok = 4;
                                 }
                             }
@@ -300,21 +282,12 @@ public class DQ_Accounts {
         return ret;
     }
 
-    private final static Lock login_mutex = new ReentrantLock(true);
-
     public static boolean finishLogin(MapleClient c) {
-        login_mutex.lock();
-        try {
-            final MapleClientState state = getLoginState(c);
-            if (state.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get() && state != MapleClientState.LOGIN_WAITING) {
-                // already loggedin
-                c.setLoggedIn(false);
-                return false;
-            }
-            updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
-        } finally {
-            login_mutex.unlock();
+        MapleClientState state = getLoginState(c);
+        if (state.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get() && state != MapleClientState.LOGIN_WAITING) {
+            return false;
         }
+        updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         return true;
     }
 

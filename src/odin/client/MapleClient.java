@@ -20,33 +20,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import tacos.constants.MapleClientState;
 import java.util.List;
 import tacos.database.LazyDatabase;
-import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Characters;
 import java.util.ArrayList;
 import org.apache.mina.common.IoSession;
 import tacos.client.TacosClient;
+import tacos.constants.MapleClientState;
+import tacos.database.query.DQ_Accounts;
 
 public class MapleClient extends TacosClient {
 
     public static final String CLIENT_KEY = "CLIENT";
 
-    private boolean serverTransition = false;
     private List<Integer> character_ids = null;
     private List<MapleCharacter> characters = null;
 
     public MapleClient(IoSession session) {
         super(session);
-    }
-
-    public boolean getServerTransition() {
-        return this.serverTransition;
-    }
-
-    public void setServerTransition(boolean serverTransition) {
-        this.serverTransition = serverTransition;
     }
 
     public List<Integer> getCharacterIds() {
@@ -94,13 +85,11 @@ public class MapleClient extends TacosClient {
     }
 
     public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS, boolean shutdown) {
-        if (!isLoggedIn()) {
-            return false;
-        }
+        MapleCharacter chr = getPlayer();
         // save to DB
-        if (getPlayer() != null) {
-            getPlayer().removalTask();
-            getPlayer().saveToDB(true, fromCS);
+        if (chr != null) {
+            chr.removalTask();
+            chr.saveToDB(true, fromCS);
             if (!fromCS) {
                 LazyDatabase.saveData(getPlayer());
             }
@@ -110,11 +99,11 @@ public class MapleClient extends TacosClient {
             return true;
         }
         // dc
-        if (getPlayer() != null) {
-            getPlayer().disconnect(RemoveInChannelServer, fromCS);
-        }
-        if (!serverTransition) {
-            DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
+        if (chr != null) {
+            chr.disconnect(RemoveInChannelServer, fromCS);
+            if (getWorld().findMigratingPlayer(chr.getId()) == null) {
+                DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
+            }
         }
         return true;
     }

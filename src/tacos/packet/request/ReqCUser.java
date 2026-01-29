@@ -95,9 +95,7 @@ import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
-import tacos.constants.MapleClientState;
 import tacos.database.LazyDatabase;
-import tacos.database.query.DQ_Accounts;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsTransferChannel;
@@ -839,7 +837,6 @@ public class ReqCUser {
     public static void OnUserTransferFieldRequest_ITC(MapleCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getWorld().getITC().getOnlinePlayers().remove(chr);
-        DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
         } finally {
@@ -850,7 +847,6 @@ public class ReqCUser {
     public static void OnUserTransferFieldRequest_CS(MapleCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getWorld().getCashShop().getOnlinePlayers().remove(chr);
-        DQ_Accounts.updateLoginState(chr.getClient(), MapleClientState.LOGIN_SERVER_TRANSITION);
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
         } finally {
@@ -883,7 +879,6 @@ public class ReqCUser {
         chr.changeRemoval();
         chr.getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getOnlinePlayers().remove(chr);
-        DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         chr.sendMigrateCommand(chr.getWorld().getCashShop());
         chr.saveToDB(false, false);
         LazyDatabase.saveData(chr);
@@ -2513,7 +2508,6 @@ public class ReqCUser {
         chr.changeRemoval();
         chr.getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getOnlinePlayers().remove(chr);
-        DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
         chr.sendMigrateCommand(chr.getWorld().getITC());
         chr.saveToDB(false, false);
         LazyDatabase.saveData(chr);
