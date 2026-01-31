@@ -158,6 +158,7 @@ public class ReqCClientSocket {
         }
         TacosWorld world = client.getWorld();
         MapleCharacter transfer = world.findMigratingPlayer(character_id);
+        // channge channel, enter & leave itc/cs.
         if (transfer != null) {
             MapleClient old_client = transfer.getClient();
             String maple_id = old_client.getMapleId();
@@ -172,11 +173,13 @@ public class ReqCClientSocket {
 
         switch (client.getServer().getType()) {
             case GAME_SERVER: {
+                // login or changechannel & leave itc/cs.
                 MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, client, true) : transfer;
                 if (chr == null) {
                     client.loginFailed("OnMigrateIn : GAME_SERVER.");
                     return false;
                 }
+                // login.
                 if (transfer == null) {
                     client.setPlayer(chr);
                     client.setId(chr.getAccountID());
@@ -185,6 +188,7 @@ public class ReqCClientSocket {
                     LazyDatabase.loadData(chr);
                     DQ_Accounts.updateLoginState(client, MapleClientState.LOGIN_LOGGEDIN);
                 }
+                // change channel.
                 if (transfer != null) {
                     chr.setChannelId(client.getChannelServer().getChannel());
                     chr.updateMapById(chr.getPosMap(), chr.getPortal());
@@ -299,6 +303,7 @@ public class ReqCClientSocket {
                     client.loginFailed("OnMigrateIn : ITC_SERVER.");
                     return false;
                 }
+                // enter itc.
                 world.getITC().getOnlinePlayers().add(transfer);
                 transfer.notityOnlineToFriends(true);
                 transfer.SendPacket(ResCStage.SetITC(transfer));
@@ -310,6 +315,7 @@ public class ReqCClientSocket {
                     client.loginFailed("OnMigrateIn : CASHSHOP_SERVER.");
                     return false;
                 }
+                // enter cs.
                 world.getCashShop().getOnlinePlayers().add(transfer);
                 transfer.notityOnlineToFriends(true);
                 transfer.SendPacket(ResCStage.SetCashShop(client));
@@ -327,6 +333,4 @@ public class ReqCClientSocket {
         return true;
     }
 
-    // CClientSocket::OnMigrateOut
-    // CClientSocket::OnCenterMigrateOutResult
 }
