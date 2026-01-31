@@ -146,12 +146,22 @@ public class ReqCClientSocket {
             int unk1 = cp.Decode4();
         }
         int character_id = cp.Decode4(); // m_dwCharacterId
-        /*
-        cp.DecodeBuffer(16); // MachineId (HWID)
-        cp.Decode1(); // GM (JMS186, 2 bytes)
-        cp.Decode1(); // unk 0
-        cp.DecodeBuffer(8); // m_aClientKey
-         */
+        if (Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180)) { // 180+
+            byte[] machine_id = cp.DecodeBuffer(16); // MachineId (HWID)
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 131)) {
+            short unk2 = cp.Decode2(); // 0, GM?
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 146)) { // 146+
+            byte unk3 = cp.Decode1(); // 0, not in JMS131.
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 180)) { // 180+
+            byte[] client_key = cp.DecodeBuffer(8); // m_aClientKey
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 95)) {
+            int unk4 = cp.Decode4(); // not in JMS.
+        }
+
         if (client.getPlayer() != null) {
             client.loginFailed("OnMigrateIn : client already has character.");
             return false;
