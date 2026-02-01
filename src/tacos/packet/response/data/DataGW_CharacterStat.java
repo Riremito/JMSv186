@@ -327,7 +327,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp()); // nEXP
         data.Encode2(chr.getFame()); // nPOP
 
-        if ((Region.IsJMS() || Region.IsCMS() || Region.IsTHMS() || Region.IsTWMS() || Region.IsGMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB()))
+        if ((Region.IsJMS() || Region.IsCMS() || Region.IsTHMS() || Region.IsTWMS() || Version.GreaterOrEqual(Region.GMS, 62) || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB()))
                 && ServerConfig.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
@@ -350,7 +350,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (Region.IsGMS() || (Region.IsEMS() && Version.PreBB()) || Region.IsBMS()) {
+        if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.IsEMS() && Version.PreBB()) || Region.IsBMS()) {
             data.Encode4(0);
         }
 
