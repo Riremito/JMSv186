@@ -353,7 +353,7 @@ public class ResCLogin {
                                 // 1, 通常
                                 sp.Encode1(1);
                             }
-                            sp.Encode8(0); // m_dtChatUnblockDate
+                            sp.Encode8(0); // m_dtChatUnblockDate or client key (never used in JMS?)
                             sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
                             break;
                         }
@@ -499,7 +499,7 @@ public class ResCLogin {
                                 sp.Encode4(0);
                                 sp.Encode1(1); // pic
                                 sp.Encode1(0);
-                                sp.Encode8(0);
+                                sp.Encode8(0); // client key. for migrate packet.
                             }
                             break;
                         }

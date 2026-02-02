@@ -158,7 +158,7 @@ public class ReqCClientSocket {
             byte unk3 = cp.Decode1(); // 0, not in JMS131.
         }
         if (Version.GreaterOrEqual(Region.JMS, 180)) { // 180+
-            byte[] client_key = cp.DecodeBuffer(8); // m_aClientKey
+            byte[] client_key = cp.DecodeBuffer(8); // m_aClientKey, jms always sends 0. but GMS supports this.
         }
         if (Version.GreaterOrEqual(Region.KMS, 95)) {
             int unk4 = cp.Decode4(); // not in JMS.
