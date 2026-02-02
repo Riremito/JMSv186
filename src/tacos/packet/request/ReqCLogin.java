@@ -37,6 +37,7 @@ import tacos.database.query.DQ_Characters;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugUser;
 import java.util.ArrayList;
+import java.util.Random;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsNewCharacter;
@@ -562,23 +563,26 @@ public class ReqCLogin {
 
     private static long lastUpdate = 0;
 
-    public void registerClient(MapleClient c) {
-        if (this.login_server.isAdminOnly() && !c.isGameMaster()) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.INVALID_ADMIN_IP));
+    public void registerClient(MapleClient client) {
+        if (this.login_server.isAdminOnly() && !client.isGameMaster()) {
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, ResCLogin.LoginResult.INVALID_ADMIN_IP));
             return;
         }
         if (System.currentTimeMillis() - lastUpdate > 600000) {
             // Update once every 10 minutes
             lastUpdate = System.currentTimeMillis();
         }
-        if (DQ_Accounts.finishLogin(c)) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.SUCCESS));
+        if (DQ_Accounts.finishLogin(client)) {
+            Random rand = new Random();
+            long client_key = rand.nextLong();
+            client.setClientKey(client_key);
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, ResCLogin.LoginResult.SUCCESS));
         } else {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
             return;
         }
         // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
-        OnWorldInfoRequest(c);
+        OnWorldInfoRequest(client);
     }
 
     public boolean checkCharacterName(final String character_name) {

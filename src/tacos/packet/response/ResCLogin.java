@@ -451,7 +451,7 @@ public class ResCLogin {
                                     sp.Encode1(0);
                                 }
                                 if (Version.GreaterOrEqual(Region.GMS, 84)) {
-                                    sp.Encode8(0);
+                                    sp.Encode8(client.getClientKey());
                                 }
                             } else if (Version.GreaterOrEqual(Region.GMS, 131)) {
                                 // GMS131
@@ -499,7 +499,7 @@ public class ResCLogin {
                                 sp.Encode4(0);
                                 sp.Encode1(1); // pic
                                 sp.Encode1(0);
-                                sp.Encode8(0); // client key. for migrate packet.
+                                sp.Encode8(client.getClientKey()); // client key. for migrate packet.
                             }
                             break;
                         }

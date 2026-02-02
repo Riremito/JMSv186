@@ -147,18 +147,21 @@ public class ReqCClientSocket {
             int unk1 = cp.Decode4();
         }
         int character_id = cp.Decode4(); // m_dwCharacterId
-        if (Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180)) { // 180+
+        if (Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 91)) { // 180+
             byte[] machine_id = cp.DecodeBuffer(16); // MachineId (HWID)
             client.setMachineId(machine_id);
         }
         if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 131)) {
             short unk2 = cp.Decode2(); // 0, GM?
+        } else if (Version.GreaterOrEqual(Region.GMS, 61)) {
+            byte unk2 = cp.Decode1(); // 1 byte
         }
-        if (Version.GreaterOrEqual(Region.JMS, 146)) { // 146+
+        if (Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.GMS, 61)) { // 146+
             byte unk3 = cp.Decode1(); // 0, not in JMS131.
         }
-        if (Version.GreaterOrEqual(Region.JMS, 180)) { // 180+
-            byte[] client_key = cp.DecodeBuffer(8); // m_aClientKey, jms always sends 0. but GMS supports this.
+        if (Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 84)) { // 180+
+            long client_key = cp.Decode8(); // m_aClientKey, jms always sends 0. but GMS supports this.
+            client.setClientKey(client_key);
         }
         if (Version.GreaterOrEqual(Region.KMS, 95)) {
             int unk4 = cp.Decode4(); // not in JMS.
@@ -188,6 +191,15 @@ public class ReqCClientSocket {
                     DebugLogger.ErrorLog("IP : new_client = " + client.getIPAddress());
                     DebugLogger.ErrorLog("IP : old_client = " + old_client.getIPAddress());
                     client.loginFailed("OnMigrateIn : invalid ip address.");
+                    return false;
+                }
+            }
+            // check client key. TODO : null check.
+            if (client.getClientKey() != 0) {
+                if (old_client.getClientKey() != client.getClientKey()) {
+                    DebugLogger.ErrorLog("client key : new_client = " + client.getClientKey());
+                    DebugLogger.ErrorLog("client key : old_client = " + old_client.getClientKey());
+                    client.loginFailed("OnMigrateIn : invalid client key.");
                     return false;
                 }
             }

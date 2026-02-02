@@ -42,6 +42,7 @@ public class TacosClient extends BaseClient {
     private TacosServer server;
     private int id = 0;
     private String machine_id = null;
+    private long client_key = 0;
     private String nexon_id = null;
     private String maple_id = null;
     private String password2_hash = null;
@@ -145,6 +146,14 @@ public class TacosClient extends BaseClient {
 
     public void setMachineId(byte machine_id[]) {
         this.machine_id = TacosTools.DatatoString(machine_id);
+    }
+
+    public long getClientKey() {
+        return this.client_key;
+    }
+
+    public void setClientKey(long client_key) {
+        this.client_key = client_key;
     }
 
     public String getNexonId() {
