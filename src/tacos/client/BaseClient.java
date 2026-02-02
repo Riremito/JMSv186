@@ -48,8 +48,9 @@ public class BaseClient {
         // TODO : close session.
     }
 
-    public String getSessionIPAddress() {
-        return this.session.getRemoteAddress().toString().split(":")[0];
+    public String getIPAddress() {
+        // /IP:Port
+        return this.session.getRemoteAddress().toString().split(":")[0].replace("/", "");
     }
 
 }

@@ -164,15 +164,16 @@ public class ReqCLogin {
     }
 
     // KMS beta to KMS149 and JMS302.
-    public boolean OnCheckPassword(MapleClient c, ClientPacket cp) {
+    public boolean OnCheckPassword(MapleClient client, ClientPacket cp) {
         // KMS160 or later, JMS308 or later.
         if (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) {
-            return OnCheckPassword_KMS160(c, cp);
+            return OnCheckPassword_KMS160(client, cp);
         }
         // KMS149 or before, JMS302 or before.
         String maple_id = cp.DecodeStr(); // clean GMS83+ clients set password here by NMCO.
         String password = cp.DecodeStr(); // clean GMS83+ clients set passport here by NMCO.
-        byte hwid[] = cp.DecodeBuffer(16);
+        byte machine_id[] = cp.DecodeBuffer(16);
+
         // you can ignore all data after hwid.
         int unk1 = cp.Decode4(); // 0
         byte unk2 = (Version.GreaterOrEqual(Region.KMS, 31) || Version.GreaterOrEqual(Region.JMS, 131)) ? cp.Decode1() : 2; // old KMS uses 0?
@@ -180,13 +181,14 @@ public class ReqCLogin {
         // GMS83, BYTE
         // GMS83, DWORD
 
-        return checkLogin(c, maple_id, password);
+        client.setMachineId(machine_id);
+        return checkLogin(client, maple_id, password);
     }
 
     // after KMS160 and JMS308.
     // around phantom or tempest update.
-    public boolean OnCheckPassword_KMS160(MapleClient c, ClientPacket cp) {
-        byte hwid[] = cp.DecodeBuffer(16);
+    public boolean OnCheckPassword_KMS160(MapleClient client, ClientPacket cp) {
+        byte machine_id[] = cp.DecodeBuffer(16);
         int unk1 = cp.Decode4(); // 0
         byte unk2 = cp.Decode1(); // 2
         byte unk3 = (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
@@ -194,7 +196,8 @@ public class ReqCLogin {
         String maple_id = cp.DecodeStr();
         String password = cp.DecodeStr();
 
-        return checkLogin(c, maple_id, password);
+        client.setMachineId(machine_id);
+        return checkLogin(client, maple_id, password);
     }
 
     public boolean OnCreateNewCharacter(MapleClient c, ClientPacket cp) {

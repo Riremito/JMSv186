@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 import tacos.config.CodePage;
+import tacos.tools.TacosTools;
 
 /**
  *
@@ -85,7 +86,7 @@ public class DQ_Accounts {
     }
 
     public static void updateLoginState(MapleClient client, MapleClientState newstate) {
-        String ip_addr = client.getSessionIPAddress();
+        String ip_addr = client.getIPAddress();
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET loggedin = ?, SessionIP = ?, lastlogin = CURRENT_TIMESTAMP() WHERE id = ?")) {
@@ -99,29 +100,11 @@ public class DQ_Accounts {
         }
     }
 
-    public static String BYTEtoString(byte b) {
-        byte high = (byte) ((b >> 4) & 0x0F);
-        byte low = (byte) (b & 0x0F);
-        high += (high <= 0x09) ? 0x30 : 0x37;
-        low += (low <= 0x09) ? 0x30 : 0x37;
-        return new String(new byte[]{high, low});
-    }
-
-    public static String DatatoString(byte hex[]) {
-        String data = "";
-
-        for (byte b : hex) {
-            data += BYTEtoString(b);
-        }
-
-        return data;
-    }
-
     public static String getSHA256(String text) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(text.getBytes(CodePage.getCodePage()), 0, text.length());
-            return DatatoString(md.digest());
+            return TacosTools.DatatoString(md.digest());
         } catch (NoSuchAlgorithmException ex) {
         }
         DebugLogger.ErrorLog("getSHA256");
@@ -132,7 +115,7 @@ public class DQ_Accounts {
         String salt = "";
         Random rand = new Random();
         for (int i = 0; i < 8; i++) {
-            salt += BYTEtoString((byte) (rand.nextInt() % 0x100));
+            salt += TacosTools.BYTEtoString((byte) (rand.nextInt() % 0x100));
         }
         return salt;
     }
@@ -266,7 +249,7 @@ public class DQ_Accounts {
                         final String sessionIP = rs.getString("SessionIP");
 
                         if (sessionIP != null) {
-                            ret = c.getSessionIPAddress().equals(sessionIP.split(":")[0]);
+                            ret = c.getIPAddress().equals(sessionIP.split(":")[0]);
                         }
                     }
                 }

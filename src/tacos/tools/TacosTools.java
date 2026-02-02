@@ -31,6 +31,22 @@ import tacos.debug.DebugLogger;
  */
 public class TacosTools {
 
+    public static String DatatoString(byte[] hex) {
+        String data = "";
+        for (byte b : hex) {
+            data += BYTEtoString(b);
+        }
+        return data;
+    }
+
+    public static String BYTEtoString(byte b) {
+        byte high = (byte) ((b >> 4) & 15);
+        byte low = (byte) (b & 15);
+        high += (high <= 9) ? 48 : 55;
+        low += (low <= 9) ? 48 : 55;
+        return new String(new byte[]{high, low});
+    }
+
     public static int bytesToInt(byte[] data) {
         // length check is needed?
         return data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
@@ -71,4 +87,5 @@ public class TacosTools {
         GAME_SERVER_IP_VALUE_CACHE = getIPAddressValue(server_ip);
         return GAME_SERVER_IP_VALUE_CACHE;
     }
+
 }

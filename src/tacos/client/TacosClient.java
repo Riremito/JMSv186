@@ -30,6 +30,7 @@ import tacos.server.TacosITC;
 import tacos.server.TacosLogin;
 import tacos.server.TacosServer;
 import tacos.server.TacosWorld;
+import tacos.tools.TacosTools;
 
 /**
  *
@@ -40,6 +41,7 @@ public class TacosClient extends BaseClient {
     // account info
     private TacosServer server;
     private int id = 0;
+    private String machine_id = null;
     private String nexon_id = null;
     private String maple_id = null;
     private String password2_hash = null;
@@ -129,12 +131,20 @@ public class TacosClient extends BaseClient {
         closeSession();
     }
 
+    public int getId() {
+        return this.id;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
 
-    public int getId() {
-        return this.id;
+    public String getMachineId() {
+        return this.machine_id;
+    }
+
+    public void setMachineId(byte machine_id[]) {
+        this.machine_id = TacosTools.DatatoString(machine_id);
     }
 
     public String getNexonId() {

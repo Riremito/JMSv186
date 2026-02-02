@@ -43,6 +43,7 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
+import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
@@ -148,6 +149,7 @@ public class ReqCClientSocket {
         int character_id = cp.Decode4(); // m_dwCharacterId
         if (Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180)) { // 180+
             byte[] machine_id = cp.DecodeBuffer(16); // MachineId (HWID)
+            client.setMachineId(machine_id);
         }
         if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 131)) {
             short unk2 = cp.Decode2(); // 0, GM?
@@ -171,6 +173,25 @@ public class ReqCClientSocket {
         // channge channel, enter & leave itc/cs.
         if (transfer != null) {
             MapleClient old_client = transfer.getClient();
+            // check machine id.
+            if (client.getMachineId() != null) {
+                if (!old_client.getMachineId().equals(client.getMachineId())) {
+                    // TODO : detect hwid randomizer.
+                    DebugLogger.ErrorLog("MachineId : new_client = " + client.getMachineId());
+                    DebugLogger.ErrorLog("MachineId : old_client = " + old_client.getMachineId());
+                    client.loginFailed("OnMigrateIn : invalid machine id.");
+                    return false;
+                }
+            } else {
+                // ip check for old versions because there is no machine id in migrate packet.
+                if (!old_client.getIPAddress().equals(client.getIPAddress())) {
+                    DebugLogger.ErrorLog("IP : new_client = " + client.getIPAddress());
+                    DebugLogger.ErrorLog("IP : old_client = " + old_client.getIPAddress());
+                    client.loginFailed("OnMigrateIn : invalid ip address.");
+                    return false;
+                }
+            }
+
             String maple_id = old_client.getMapleId();
             String nexon_id = old_client.getNexonId();
             client.setMapleId(maple_id);
