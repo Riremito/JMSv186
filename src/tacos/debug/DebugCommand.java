@@ -308,6 +308,43 @@ public class DebugCommand {
                 ds.start(chr);
                 return true;
             }
+            case "/ds2": {
+                DebugShop ds = new DebugShop();
+
+                if (splitted.length < 2) {
+                    return true;
+                }
+                // to make list. TODO : fix
+                if (list_NameData_Item == null) {
+                    searchString(chr, "item", "TESTTEST");
+                }
+
+                String search_string = "";
+                for (int i = 1; i < splitted.length; i++) {
+                    if (!search_string.isEmpty()) {
+                        search_string += " ";
+                    }
+                    search_string += splitted[i];
+                }
+
+                int shop_item_count = 0;
+                for (NameData nd : list_NameData_Item) {
+                    if (nd.name.contains(search_string)) {
+                        if (nd.available) {
+                            ds.addItem(nd.id);
+                            shop_item_count++;
+                            if (100 <= shop_item_count) {
+                                chr.DebugMsg("item search hits over 100 item names.");
+                                break;
+                            }
+                        }
+                    }
+                }
+                chr.DebugMsg("search results = " + shop_item_count);
+
+                ds.start(chr);
+                return true;
+            }
             case "/check": {
                 chr.DebugMsg("X  : " + chr.getPosition().x);
                 chr.DebugMsg("Y  : " + chr.getPosition().y);
