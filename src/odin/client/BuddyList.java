@@ -27,9 +27,9 @@ import java.util.Map;
 public class BuddyList {
 
     private Map<Integer, BuddylistEntry> buddies = new LinkedHashMap<>();
-    private byte capacity;
+    private int capacity;
 
-    public BuddyList(byte capacity) {
+    public BuddyList(int capacity) {
         this.capacity = capacity;
     }
 
@@ -41,11 +41,11 @@ public class BuddyList {
         return ble.isVisible();
     }
 
-    public byte getCapacity() {
+    public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(byte capacity) {
+    public void setCapacity(int capacity) {
         this.capacity = capacity;
     }
 

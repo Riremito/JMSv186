@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import odin.client.PlayerStats;
 import tacos.server.TacosFriend;
 
 /**
@@ -40,6 +41,113 @@ import tacos.server.TacosFriend;
 public class DQ_Characters {
 
     public static final String DB_TABLE_NAME = "characters";
+
+    public static boolean loadStat(MapleCharacter ret) {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+            ps.setInt(1, ret.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return false;
+                }
+                PlayerStats stat = ret.getStat();
+
+                String name = rs.getString("name");
+                ret.setName(name);
+                int gender = rs.getByte("gender");
+                ret.setGender(gender);
+                int subcategory = rs.getInt("subcategory");
+                ret.setSubcategory(subcategory);
+
+                int stat_skin = rs.getByte("skincolor");
+                int stat_face = rs.getInt("face");
+                int stat_hair = rs.getInt("hair");
+                int stat_level = rs.getShort("level");
+                int stat_job = rs.getShort("job");
+                int stat_str = rs.getShort("str");
+                int stat_dex = rs.getShort("dex");
+                int stat_int = rs.getShort("int");
+                int stat_luk = rs.getShort("luk");
+                int stat_hp = rs.getShort("hp");
+                int stat_mhp = rs.getShort("maxhp");
+                int stat_mp = rs.getShort("mp");
+                int stat_mmp = rs.getShort("maxmp");
+                int stat_remainingAp = rs.getShort("ap");
+                String stat_remainingSp = rs.getString("sp");
+                int stat_exp = rs.getInt("exp");
+                int stat_pop = rs.getShort("fame");
+                int stat_meso = rs.getInt("meso");
+                ret.setSkinColor(stat_skin);
+                ret.setFace(stat_face);
+                ret.setHair(stat_hair);
+                ret.setLevel(stat_level);
+                ret.setJob(stat_job);
+                stat.str = stat_str;
+                stat.dex = stat_dex;
+                stat.int_ = stat_int;
+                stat.luk = stat_luk;
+                stat.hp = stat_hp;
+                stat.maxhp = stat_mhp;
+                stat.mp = stat_mp;
+                stat.maxmp = stat_mmp;
+                ret.setRemainingAp(stat_remainingAp);
+                ret.setRemainingSps(stat_remainingSp);
+                ret.setExp(stat_exp);
+                ret.setFame(stat_pop);
+                ret.setMeso(stat_meso);
+
+                int money_tama = rs.getInt("tama");
+                ret.setTama(money_tama);
+
+                int hpApUsed = rs.getShort("hpApUsed");
+                ret.setHpApUsed(hpApUsed);
+
+                int gmLevel = rs.getByte("gm");
+                ret.setGM(gmLevel);
+
+                int accountid = rs.getInt("accountid");
+                ret.setAccountID(accountid);
+
+                int dwPosMap = rs.getInt("map");
+                int nPortal = rs.getByte("spawnpoint");
+                ret.setPosMapAndPortal(dwPosMap, nPortal);
+
+                int world_id = rs.getByte("world");
+                ret.setWorldId(world_id);
+                // guild
+                int guildid = rs.getInt("guildid");
+                int guildrank = rs.getByte("guildrank");
+                int allianceRank = rs.getByte("allianceRank");
+                ret.setGuildId(guildid);
+                ret.setGuildRank(guildrank);
+                ret.setAllianceRank(allianceRank);
+                // family
+                int currentrep = rs.getInt("currentrep");
+                int totalrep = rs.getInt("totalrep");
+                ret.setCurrentRep(currentrep);
+                ret.setTotalRep(totalrep);
+                ret.makeMFC(rs.getInt("familyid"), rs.getInt("seniorid"), rs.getInt("junior1"), rs.getInt("junior2"));
+                // friend
+                int buddy_capacity = rs.getByte("buddyCapacity");
+                ret.setBuddylist(buddy_capacity);
+                // ranking
+                int rank = rs.getInt("rank");
+                int rankMove = rs.getInt("rankMove");
+                int jobRank = rs.getInt("jobRank");
+                int jobRankMove = rs.getInt("jobRankMove");
+                ret.setRank(rank, rankMove, jobRank, jobRankMove);
+                // marriage
+                int marriageId = rs.getInt("marriageId");
+                ret.setMarriageId(marriageId);
+                // mount?
+                ret.setMount();
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "loadStat");
+        }
+
+        return true;
+    }
 
     public static List<Integer> getCharatcerIds(MapleClient c) {
         List<Integer> character_ids = new ArrayList<>();

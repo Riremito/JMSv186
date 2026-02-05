@@ -780,7 +780,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket updateMount(MapleCharacter chr, boolean levelup) {
+    public static MaplePacket updateMount(TacosCharacter chr, boolean levelup) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetTamingMobInfo);
 
         sp.Encode4(chr.getId());

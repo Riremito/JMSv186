@@ -20,33 +20,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world.guild;
 
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 
-public class MapleGuildCharacter implements java.io.Serializable { // alias for a character
+public class MapleGuildCharacter { // alias for a character
 
-    public static final long serialVersionUID = 2058609046116597760L;
-    private byte channel = -1, guildrank, allianceRank;
-    private short level;
+    private int channel = -1, guildrank, allianceRank;
+    private int level;
     private int id, jobid, guildid;
     private boolean online;
     private String name;
 
     // either read from active character...
     // if it's online
-    public MapleGuildCharacter(final MapleCharacter c) {
-        name = c.getName();
-        level = (short) c.getLevel();
-        id = c.getId();
-        channel = (byte) c.getClient().getChannelId();
-        jobid = c.getJob();
-        guildrank = c.getGuildRank();
-        guildid = c.getGuildId();
-        allianceRank = c.getAllianceRank();
+    public MapleGuildCharacter(TacosCharacter chr) {
+        name = chr.getName();
+        level = chr.getLevel();
+        id = chr.getId();
+        channel = chr.getChannelId();
+        jobid = chr.getJob();
+        guildrank = chr.getGuildRank();
+        guildid = chr.getGuildId();
+        allianceRank = chr.getAllianceRank();
         online = true;
     }
 
     // or we could just read from the database
-    public MapleGuildCharacter(final int id, final short lv, final String name, final byte channel, final int job, final byte rank, final byte allianceRank, final int gid, final boolean on) {
+    public MapleGuildCharacter(int id, int lv, String name, int channel, int job, int rank, int allianceRank, int gid, boolean on) {
         this.level = lv;
         this.id = id;
         this.name = name;
@@ -64,7 +63,7 @@ public class MapleGuildCharacter implements java.io.Serializable { // alias for 
         return level;
     }
 
-    public void setLevel(short l) {
+    public void setLevel(int l) {
         level = l;
     }
 
@@ -72,7 +71,7 @@ public class MapleGuildCharacter implements java.io.Serializable { // alias for 
         return id;
     }
 
-    public void setChannel(byte ch) {
+    public void setChannel(int ch) {
         channel = ch;
     }
 
@@ -96,11 +95,11 @@ public class MapleGuildCharacter implements java.io.Serializable { // alias for 
         guildid = gid;
     }
 
-    public void setGuildRank(byte rank) {
+    public void setGuildRank(int rank) {
         guildrank = rank;
     }
 
-    public byte getGuildRank() {
+    public int getGuildRank() {
         return guildrank;
     }
 
@@ -116,11 +115,11 @@ public class MapleGuildCharacter implements java.io.Serializable { // alias for 
         online = f;
     }
 
-    public void setAllianceRank(byte rank) {
+    public void setAllianceRank(int rank) {
         allianceRank = rank;
     }
 
-    public byte getAllianceRank() {
+    public int getAllianceRank() {
         return allianceRank;
     }
 }

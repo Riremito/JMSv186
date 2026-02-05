@@ -30,10 +30,13 @@ import odin.client.PlayerStats;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
+import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.MapleMessenger;
 import odin.handling.world.OdinWorld;
+import odin.handling.world.family.MapleFamilyCharacter;
+import odin.handling.world.guild.MapleGuildCharacter;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapFactory;
@@ -110,6 +113,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getWorldId() {
         return this.world_id;
+    }
+
+    public void setWorldId(int world_id) {
+        this.world_id = world_id;
     }
 
     public int getChannelId() {
@@ -219,6 +226,11 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getPosMap() {
         return this.dwPosMap;
+    }
+
+    public void setPosMapAndPortal(int dwPosMap, int nPortal) {
+        setPosMap(dwPosMap);
+        setPortal(nPortal);
     }
 
     private void setPosMap(int dwPosMap) {
@@ -354,8 +366,8 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.laststat.clearStatMask();
     }
 
-    protected byte gender;
-    protected byte skinColor;
+    protected int gender;
+    protected int skinColor;
     protected int face;
     protected int hair;
     protected int level;
@@ -369,15 +381,15 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     protected int gashaEXP = 0;
     protected List<MaplePet> pets;
 
-    public byte getGender() {
+    public int getGender() {
         return gender;
     }
 
-    public void setGender(byte gender) {
+    public void setGender(int gender) {
         this.gender = gender;
     }
 
-    public byte getSkinColor() {
+    public int getSkinColor() {
         return this.skinColor;
     }
 
@@ -409,6 +421,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.remainingAp;
     }
 
+    public void setRemainingAp(int remainingAp) {
+        this.remainingAp = remainingAp;
+    }
+
     public int getRemainingSp() {
         // default
         return this.remainingSp[GameConstants.getSkillBook(this.job)];
@@ -432,6 +448,13 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return ret;
     }
 
+    public void setRemainingSps(String remainingSp) {
+        String sps[] = remainingSp.split(",");
+        for (int i = 0; i < this.remainingSp.length; i++) {
+            this.remainingSp[i] = Integer.parseInt(sps[i]);
+        }
+    }
+
     public int getExp() {
         return this.exp;
     }
@@ -446,6 +469,179 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getGashaEXP() {
         return this.gashaEXP;
+    }
+
+    // guild
+    protected MapleGuildCharacter mgc;
+    protected int guildid = 0;
+    protected int guildrank = 5;
+    protected int allianceRank = 5;
+
+    public int getGuildId() {
+        return guildid;
+    }
+
+    public void setGuildId(int guildid) {
+        this.guildid = guildid;
+        if (this.guildid > 0) {
+            if (this.mgc == null) {
+                this.mgc = new MapleGuildCharacter(this);
+
+            } else {
+                this.mgc.setGuildId(guildid);
+            }
+        } else {
+            this.mgc = null;
+        }
+    }
+
+    public int getGuildRank() {
+        return this.guildrank;
+    }
+
+    public void setGuildRank(int guildrank) {
+        this.guildrank = guildrank;
+        if (this.mgc != null) {
+            this.mgc.setGuildRank(guildrank);
+        }
+    }
+
+    public int getAllianceRank() {
+        return this.allianceRank;
+    }
+
+    public void setAllianceRank(int allianceRank) {
+        this.allianceRank = allianceRank;
+        if (this.mgc != null) {
+            this.mgc.setAllianceRank(allianceRank);
+        }
+    }
+
+    // family
+    protected MapleFamilyCharacter mfc;
+    protected int currentrep;
+    protected int totalrep;
+
+    public int getCurrentRep() {
+        return this.currentrep;
+    }
+
+    public int getTotalRep() {
+        return this.totalrep;
+    }
+
+    public void setCurrentRep(int currentrep) {
+        this.currentrep = currentrep;
+        if (this.mfc != null) {
+            this.mfc.setCurrentRep(currentrep);
+        }
+    }
+
+    public void setTotalRep(int totalrep) {
+        this.totalrep = totalrep;
+        if (this.mfc != null) {
+            this.mfc.setTotalRep(totalrep);
+        }
+    }
+
+    protected int subcategory = 0;
+
+    public int getSubcategory() {
+        if (this.job >= 430 && this.job <= 434) {
+            return 1;
+        }
+        return this.subcategory;
+    }
+
+    public void setSubcategory(int subcategory) {
+        this.subcategory = subcategory;
+    }
+
+    protected MapleMount mount = null;
+
+    public MapleMount getMount() {
+        return this.mount;
+    }
+
+    public boolean setMount() {
+        int mount_id = 1004;
+        switch (this.job / 1000) {
+            case 0: {
+                mount_id = 1004;
+                break;
+            }
+            case 1: {
+                mount_id = 10001004;
+                break;
+            }
+            case 2: {
+                if (GameConstants.isAran(this.job)) {
+                    mount_id = 20001004;
+                }
+                if (GameConstants.isEvan(this.job)) {
+                    mount_id = 20011004;
+                }
+                break;
+            }
+            case 3: {
+                mount_id = 30001004;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        this.mount = new MapleMount(this, 0, mount_id, 0, 1, 0);
+        return true;
+    }
+
+    // ranking
+    protected int rank = 1;
+    protected int rankMove = 0;
+    protected int jobRank = 1;
+    protected int jobRankMove = 0;
+
+    public void setRank(int rank, int rank_move, int rank_job, int rank_job_move) {
+        this.rank = rank;
+        this.rankMove = rank_move;
+        this.jobRank = rank_job;
+        this.jobRankMove = rank_job_move;
+    }
+
+    public int getRank() {
+        return this.rank;
+    }
+
+    public int getRankMove() {
+        return this.rankMove;
+    }
+
+    public int getJobRank() {
+        return this.jobRank;
+    }
+
+    public int getJobRankMove() {
+        return this.jobRankMove;
+    }
+
+    protected int marriageId = 0;
+    protected int marriageItemId = 0;
+
+    public int getMarriageId() {
+        return this.marriageId;
+    }
+
+    public void setMarriageId(int marriageId) {
+        this.marriageId = marriageId;
+    }
+
+    public int getMarriageItemId() {
+        return marriageItemId;
+    }
+
+    public void setMarriageItemId(int marriageItemId) {
+        this.marriageItemId = marriageItemId;
     }
 
     public MaplePet getPet(int index) {
@@ -490,10 +686,36 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.messenger;
     }
 
+    protected int accountid;
     protected String name;
+    protected int gmLevel;
+
+    public int getAccountID() {
+        return this.accountid;
+    }
+
+    public void setAccountID(int accountid) {
+        this.accountid = accountid;
+    }
 
     public String getName() {
         return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isGM() {
+        return this.gmLevel > 0;
+    }
+
+    public void setGM(int gmLevel) {
+        this.gmLevel = gmLevel;
+    }
+
+    public boolean isAdmin() {
+        return gmLevel >= 5;
     }
 
     public void setMessenger(MapleMessenger messenger) {
@@ -538,17 +760,21 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     // friend
-    protected BuddyList buddylist;
+    protected BuddyList buddylist = null;
 
     public BuddyList getBuddylist() {
         return this.buddylist;
     }
 
-    public byte getBuddyCapacity() {
+    public void setBuddylist(int capacity) {
+        this.buddylist = new BuddyList(capacity);
+    }
+
+    public int getBuddyCapacity() {
         return this.buddylist.getCapacity();
     }
 
-    public void setBuddyCapacity(byte capacity) {
+    public void setBuddyCapacity(int capacity) {
         this.buddylist.setCapacity(capacity);
         SendPacket(ResWrapper.updateBuddyCapacity(capacity));
     }

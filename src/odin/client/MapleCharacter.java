@@ -129,6 +129,7 @@ import tacos.client.TacosCharacter;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Buddies;
+import tacos.database.query.DQ_Characters;
 import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Notes;
 import tacos.debug.DebugLogger;
@@ -146,13 +147,11 @@ public class MapleCharacter extends TacosCharacter {
 
     private String chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
-    private byte dojoRecord, gmLevel, guildrank = 5, allianceRank = 5, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
-    private int subcategory;
+    private byte dojoRecord, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
     private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
-    private int accountid, bookCover, dojo,
-            guildid = 0, fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
-            rank = 1, rankMove = 0, jobRank = 1, jobRankMove = 0, marriageId, marriageItemId = 0,
-            currentrep, totalrep, linkMid = 0, coconutteam = 0, followid = 0, battleshipHP = 0;
+    private int bookCover, dojo,
+            fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
+            linkMid = 0, coconutteam = 0, followid = 0, battleshipHP = 0;
     private Point old = new Point(0, 0);
     private boolean smega, hidden, hasSummon = false;
     private int[] wishlist, rocks, savedLocations, regrocks;
@@ -178,13 +177,10 @@ public class MapleCharacter extends TacosCharacter {
     private transient RockPaperScissors rps;
     private MapleStorage storage;
     private transient MapleTrade trade;
-    private MapleMount mount;
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
     private MapleParty party;
     private boolean invincible = false, canTalk = true, followinitiator = false, followon = false;
-    private MapleGuildCharacter mgc;
-    private MapleFamilyCharacter mfc;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient ScheduledFuture<?> beholderHealingSchedule, beholderBuffSchedule, BerserkSchedule,
             dragonBloodSchedule, fairySchedule, mapTimeLimitTask, fishing;
@@ -319,10 +315,10 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    public static MapleCharacter loadCharFromDB(int charid, MapleClient client, boolean channelserver) {
-        final MapleCharacter ret = new MapleCharacter(channelserver);
+    public static MapleCharacter loadCharFromDB(int character_id, MapleClient client, boolean channelserver) {
+        MapleCharacter ret = new MapleCharacter(channelserver);
         ret.client = client;
-        ret.id = charid;
+        ret.id = character_id;
 
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = null;
@@ -330,68 +326,14 @@ public class MapleCharacter extends TacosCharacter {
         ResultSet rs = null;
 
         try {
+            DQ_Characters.loadStat(ret);
+
             ps = con.prepareStatement("SELECT * FROM characters WHERE id = ?");
-            ps.setInt(1, charid);
+            ps.setInt(1, character_id);
             rs = ps.executeQuery();
             if (!rs.next()) {
                 throw new RuntimeException("Loading the Char Failed (char not found)");
             }
-            ret.name = rs.getString("name");
-            ret.level = rs.getShort("level");
-            ret.fame = rs.getShort("fame");
-
-            ret.stats.str = rs.getShort("str");
-            ret.stats.dex = rs.getShort("dex");
-            ret.stats.int_ = rs.getShort("int");
-            ret.stats.luk = rs.getShort("luk");
-            ret.stats.maxhp = rs.getShort("maxhp");
-            ret.stats.maxmp = rs.getShort("maxmp");
-            ret.stats.hp = rs.getShort("hp");
-            ret.stats.mp = rs.getShort("mp");
-
-            ret.exp = rs.getInt("exp");
-            ret.hpApUsed = rs.getShort("hpApUsed");
-            final String[] sp = rs.getString("sp").split(",");
-            for (int i = 0; i < ret.remainingSp.length; i++) {
-                ret.remainingSp[i] = Integer.parseInt(sp[i]);
-            }
-            ret.remainingAp = rs.getShort("ap");
-            ret.meso = rs.getInt("meso");
-            ret.tama = rs.getInt("tama");
-            ret.gmLevel = rs.getByte("gm");
-            byte skin_id = rs.getByte("skincolor");
-            ret.gender = rs.getByte("gender");
-            int job_id = rs.getShort("job");
-            int hair_id = rs.getInt("hair");
-            int face_id = rs.getInt("face");
-
-            // check invalid ids
-            ret.setSkinColor(skin_id);
-            ret.setJob(job_id);
-            ret.setHair(hair_id);
-            ret.setFace(face_id);
-
-            ret.accountid = rs.getInt("accountid");
-            ret.dwPosMap = rs.getInt("map");
-            ret.nPortal = rs.getByte("spawnpoint");
-            ret.world_id = rs.getByte("world");
-            ret.guildid = rs.getInt("guildid");
-            ret.guildrank = rs.getByte("guildrank");
-            ret.allianceRank = rs.getByte("allianceRank");
-            ret.currentrep = rs.getInt("currentrep");
-            ret.totalrep = rs.getInt("totalrep");
-            ret.makeMFC(rs.getInt("familyid"), rs.getInt("seniorid"), rs.getInt("junior1"), rs.getInt("junior2"));
-            if (ret.guildid > 0) {
-                ret.mgc = new MapleGuildCharacter(ret);
-            }
-            ret.buddylist = new BuddyList(rs.getByte("buddyCapacity"));
-            ret.subcategory = rs.getInt("subcategory");
-            ret.mount = new MapleMount(ret, 0, ret.job > 1000 && ret.job < 2000 ? 10001004 : (ret.job >= 2000 ? (ret.job == 2001 || (ret.job >= 2200 && ret.job <= 2218) ? 20011004 : (ret.job >= 3000 ? 30001004 : 20001004)) : 1004), (byte) 0, (byte) 1, 0);
-            ret.rank = rs.getInt("rank");
-            ret.rankMove = rs.getInt("rankMove");
-            ret.jobRank = rs.getInt("jobRank");
-            ret.jobRankMove = rs.getInt("jobRankMove");
-            ret.marriageId = rs.getInt("marriageId");
 
             if (channelserver) {
                 ret.updateMapById(ret.dwPosMap, ret.nPortal);
@@ -418,7 +360,7 @@ public class MapleCharacter extends TacosCharacter {
 
             boolean compensate_previousEvans = false;
             ps = con.prepareStatement("SELECT * FROM queststatus WHERE characterid = ?");
-            ps.setInt(1, charid);
+            ps.setInt(1, character_id);
             rs = ps.executeQuery();
             pse = con.prepareStatement("SELECT * FROM queststatusmobs WHERE queststatusid = ?");
 
@@ -450,10 +392,10 @@ public class MapleCharacter extends TacosCharacter {
 
             if (channelserver) {
                 ret.CRand = new PlayerRandomStream();
-                ret.monsterbook = MonsterBook.loadCards(charid);
+                ret.monsterbook = MonsterBook.loadCards(character_id);
 
                 ps = con.prepareStatement("SELECT * FROM inventoryslot where characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
 
                 if (!rs.next()) {
@@ -468,7 +410,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
                 rs.close();
 
-                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, charid).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, character_id).values()) {
                     if (!DWI_Validation.isValidItemID(mit.getLeft().getItemId())) {
                         DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                         continue;
@@ -508,7 +450,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
 
                 ps = con.prepareStatement("SELECT * FROM questinfo WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
 
                 while (rs.next()) {
@@ -518,7 +460,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
 
                 ps = con.prepareStatement("SELECT skillid, skilllevel, masterlevel, expiration FROM skills WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 ISkill skil;
                 while (rs.next()) {
@@ -540,7 +482,7 @@ public class MapleCharacter extends TacosCharacter {
                 rs = ps.executeQuery();
                 byte maxlevel_ = 0;
                 while (rs.next()) {
-                    if (rs.getInt("id") != charid) { // Not this character
+                    if (rs.getInt("id") != character_id) { // Not this character
                         byte maxlevel = (byte) (rs.getShort("level") / 10);
 
                         if (maxlevel > 20) {
@@ -551,7 +493,7 @@ public class MapleCharacter extends TacosCharacter {
                             ret.BlessOfFairy_Origin = rs.getString("name");
                         }
 
-                    } else if (charid < 17000 && !compensate_previousEvans && ret.job >= 2200 && ret.job <= 2218) { //compensate, watch max charid
+                    } else if (character_id < 17000 && !compensate_previousEvans && ret.job >= 2200 && ret.job <= 2218) { //compensate, watch max charid
                         for (int i = 0; i <= GameConstants.getSkillBook(ret.job); i++) {
                             ret.remainingSp[i] += 2; //2 that they missed. gg
                         }
@@ -571,7 +513,7 @@ public class MapleCharacter extends TacosCharacter {
                 // END
 
                 ps = con.prepareStatement("SELECT * FROM skillmacros WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 int position;
                 while (rs.next()) {
@@ -585,7 +527,7 @@ public class MapleCharacter extends TacosCharacter {
                 DQ_KeyMap.loadKeyMap(ret);
 
                 ps = con.prepareStatement("SELECT `locationtype`,`map` FROM savedlocations WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 while (rs.next()) {
                     ret.savedLocations[rs.getInt("locationtype")] = rs.getInt("map");
@@ -594,7 +536,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
 
                 ps = con.prepareStatement("SELECT `characterid_to`,`when` FROM famelog WHERE characterid = ? AND DATEDIFF(NOW(),`when`) < 30");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 ret.lastfametime = 0;
                 ret.lastmonthfameids = new ArrayList<Integer>(31);
@@ -611,10 +553,10 @@ public class MapleCharacter extends TacosCharacter {
                 }
 
                 ret.storage = MapleStorage.loadStorage(ret.accountid);
-                ret.cs = new CashShop(ret.accountid, charid, ret.getJob());
+                ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
 
                 ps = con.prepareStatement("SELECT sn FROM wishlist WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 int i = 0;
                 while (rs.next()) {
@@ -629,7 +571,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
 
                 ps = con.prepareStatement("SELECT mapid FROM trocklocations WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 int r = 0;
                 while (rs.next()) {
@@ -644,7 +586,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
 
                 ps = con.prepareStatement("SELECT mapid FROM regrocklocations WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 r = 0;
                 while (rs.next()) {
@@ -659,7 +601,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
 
                 ps = con.prepareStatement("SELECT * FROM mountdata WHERE characterid = ?");
-                ps.setInt(1, charid);
+                ps.setInt(1, character_id);
                 rs = ps.executeQuery();
                 if (!rs.next()) {
                     throw new RuntimeException("No mount data found on SQL column");
@@ -671,7 +613,7 @@ public class MapleCharacter extends TacosCharacter {
 
                 ret.stats.recalcLocalStats(true);
             } else { // Not channel server
-                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(true, charid).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(true, character_id).values()) {
                     ret.getInventory(mit.getRight()).addFromDB(mit.getLeft());
                 }
             }
@@ -718,8 +660,8 @@ public class MapleCharacter extends TacosCharacter {
             ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
             ps.setShort(13, (short) 0); // Remaining AP
             ps.setByte(14, (byte) 0); // GM Level
-            ps.setByte(15, chr.skinColor);
-            ps.setByte(16, chr.gender);
+            ps.setByte(15, (byte) chr.skinColor);
+            ps.setByte(16, (byte) chr.gender);
             ps.setInt(17, chr.job);
             ps.setInt(18, chr.hair);
             ps.setInt(19, chr.face);
@@ -735,7 +677,7 @@ public class MapleCharacter extends TacosCharacter {
             ps.setShort(22, (short) 0); // HP ap used
             ps.setByte(23, (byte) 0); // Spawnpoint
             ps.setInt(24, -1); // Party
-            ps.setByte(25, chr.buddylist.getCapacity()); // Buddylist
+            ps.setByte(25, (byte) chr.buddylist.getCapacity()); // Buddylist
             ps.setInt(26, 0); // Monster book cover
             ps.setInt(27, 0); // Dojo
             ps.setInt(28, 0); // Dojo record
@@ -880,9 +822,9 @@ public class MapleCharacter extends TacosCharacter {
             final String sp = sps.toString();
             ps.setString(12, sp.substring(0, sp.length() - 1));
             ps.setInt(13, remainingAp);
-            ps.setByte(14, gmLevel);
-            ps.setByte(15, skinColor);
-            ps.setByte(16, gender);
+            ps.setByte(14, (byte) gmLevel);
+            ps.setByte(15, (byte) skinColor);
+            ps.setByte(16, (byte) gender);
             ps.setInt(17, job);
             ps.setInt(18, hair);
             ps.setInt(19, face);
@@ -904,7 +846,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.setByte(23, (byte) (closest != null ? closest.getId() : 0));
             }
             ps.setInt(24, party != null ? party.getId() : -1);
-            ps.setShort(25, buddylist.getCapacity());
+            ps.setShort(25, (byte) buddylist.getCapacity());
             ps.setInt(26, bookCover);
             ps.setInt(27, dojo);
             ps.setInt(28, dojoRecord);
@@ -1612,7 +1554,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void dispelSkill(int skillid) {
-        final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
+        final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
 
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (skillid == 0) {
@@ -1895,11 +1837,11 @@ public class MapleCharacter extends TacosCharacter {
         return hidden;
     }
 
-    public void setHpApUsed(short hpApUsed) {
+    public void setHpApUsed(int hpApUsed) {
         this.hpApUsed = hpApUsed;
     }
 
-    public void setSkinColor(byte skinColor) {
+    public void setSkinColor(int skinColor) {
         if (!DWI_Validation.isValidSkinID(skinColor)) {
             DebugLogger.ErrorLog("Invalid skin id : " + skinColor);
             this.skinColor = DWI_Dafault.SKIN;
@@ -1907,10 +1849,6 @@ public class MapleCharacter extends TacosCharacter {
         }
 
         this.skinColor = skinColor;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setExp(int exp) {
@@ -1939,7 +1877,7 @@ public class MapleCharacter extends TacosCharacter {
         this.face = face;
     }
 
-    public void setFame(short fame) {
+    public void setFame(int fame) {
         this.fame = fame;
     }
 
@@ -2550,20 +2488,8 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public boolean isGM() {
-        return gmLevel > 0;
-    }
-
-    public boolean isAdmin() {
-        return gmLevel >= 5;
-    }
-
     public int getGMLevel() {
         return gmLevel;
-    }
-
-    public boolean hasGmLevel(int level) {
-        return gmLevel >= level;
     }
 
     // removeFromSlot like
@@ -2783,10 +2709,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public int getControlledSize() {
         return controlled.size();
-    }
-
-    public int getAccountID() {
-        return accountid;
     }
 
     public void mobKilled(final int id, final int skillID) {
@@ -3381,70 +3303,8 @@ public class MapleCharacter extends TacosCharacter {
         return mfc.getJunior2();
     }
 
-    public int getCurrentRep() {
-        return currentrep;
-    }
-
-    public int getTotalRep() {
-        return totalrep;
-    }
-
-    public void setCurrentRep(int _rank) {
-        currentrep = _rank;
-        if (mfc != null) {
-            mfc.setCurrentRep(_rank);
-        }
-    }
-
-    public void setTotalRep(int _rank) {
-        totalrep = _rank;
-        if (mfc != null) {
-            mfc.setTotalRep(_rank);
-        }
-    }
-
-    public int getGuildId() {
-        return guildid;
-    }
-
-    public byte getGuildRank() {
-        return guildrank;
-    }
-
-    public void setGuildId(int _id) {
-        guildid = _id;
-        if (guildid > 0) {
-            if (mgc == null) {
-                mgc = new MapleGuildCharacter(this);
-
-            } else {
-                mgc.setGuildId(guildid);
-            }
-        } else {
-            mgc = null;
-        }
-    }
-
-    public void setGuildRank(byte _rank) {
-        guildrank = _rank;
-        if (mgc != null) {
-            mgc.setGuildRank(_rank);
-        }
-    }
-
     public MapleGuildCharacter getMGC() {
         return mgc;
-    }
-
-    public void setAllianceRank(byte rank) {
-        allianceRank = rank;
-        if (mgc != null) {
-            mgc.setAllianceRank(rank);
-        }
-    }
-
-    public byte getAllianceRank() {
-        return allianceRank;
     }
 
     public MapleGuild getGuild() {
@@ -3947,14 +3807,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public String getADBoard() {
         return chalktext;
-    }
-
-    public MapleMount getMount() {
-        //if (mount == null) { //lazy initialization cause im lazy
-        //	final IItem mount = getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -22);
-        //	this.mount = new MapleMount(this, mount != null ? mount.getItemId() : 0, job > 1000 && job < 2000 ? 10001004 : (job >= 2000 ? (job == 2001 || job >= 2200 ? 20011004 : 20001004) : 1004), 0, 1, 0);
-        //}
-        return mount;
     }
 
     public int[] getWishlist() {
@@ -4492,17 +4344,6 @@ public class MapleCharacter extends TacosCharacter {
         this.pyramidSubway = ps;
     }
 
-    public int getSubcategory() {
-        if (job >= 430 && job <= 434) {
-            return 1; //dont set it
-        }
-        return subcategory;
-    }
-
-    public void setSubcategory(int subcat) {
-        subcategory = subcat;
-    }
-
     public int itemQuantity(final int itemid) {
         return getInventory(GameConstants.getInventoryType(itemid)).countById(itemid);
     }
@@ -4521,22 +4362,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void setNextConsume(long nc) {
         this.nextConsume = nc;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public int getRankMove() {
-        return rankMove;
-    }
-
-    public int getJobRank() {
-        return jobRank;
-    }
-
-    public int getJobRankMove() {
-        return jobRankMove;
     }
 
     public boolean changeChannel(int channel) {
@@ -4605,22 +4430,6 @@ public class MapleCharacter extends TacosCharacter {
             }
             setFollowId(0);
         }
-    }
-
-    public int getMarriageId() {
-        return marriageId;
-    }
-
-    public void setMarriageId(final int mi) {
-        this.marriageId = mi;
-    }
-
-    public int getMarriageItemId() {
-        return marriageItemId;
-    }
-
-    public void setMarriageItemId(final int mi) {
-        this.marriageItemId = mi;
     }
 
     public boolean isStaff() {
