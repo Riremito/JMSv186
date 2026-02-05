@@ -226,6 +226,11 @@ public class ResCUserRemote {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActivePortableChair);
         sp.Encode4(characterid);
         sp.Encode4(itemid);
+
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            sp.Encode4(0);
+        }
+
         return sp.get();
     }
 
