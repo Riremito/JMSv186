@@ -28,6 +28,7 @@ import org.apache.mina.common.IoSession;
 import tacos.client.TacosClient;
 import tacos.constants.MapleClientState;
 import tacos.database.query.DQ_Accounts;
+import tacos.server.TacosServerType;
 
 public class MapleClient extends TacosClient {
 
@@ -96,6 +97,10 @@ public class MapleClient extends TacosClient {
         }
         if (shutdown) {
             closeSession();
+            return true;
+        }
+        if (getServer().getType() == TacosServerType.LOGIN_SERVER) {
+            DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
             return true;
         }
         // dc

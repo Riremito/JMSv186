@@ -220,7 +220,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.map;
     }
 
-    private void setMap(MapleMap map) {
+    public void setMap(MapleMap map) {
         this.map = map;
     }
 

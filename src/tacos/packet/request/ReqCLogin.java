@@ -38,6 +38,7 @@ import tacos.debug.DebugLogger;
 import tacos.debug.DebugUser;
 import java.util.ArrayList;
 import java.util.Random;
+import odin.client.PlayerStats;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsNewCharacter;
@@ -201,9 +202,9 @@ public class ReqCLogin {
         return checkLogin(client, maple_id, password);
     }
 
-    public boolean OnCreateNewCharacter(MapleClient c, ClientPacket cp) {
+    public boolean OnCreateNewCharacter(MapleClient client, ClientPacket cp) {
         String character_name;
-        byte character_gender = c.getGender();
+        byte character_gender = client.getGender();
         int job_type = 0;
         int job_id = 0;
         short job_dualblade = 0;
@@ -211,7 +212,8 @@ public class ReqCLogin {
         int hair_id = 0;
         int hair_color = 0;
         int skin_color = 0;
-        ArrayList<Integer> item_ids = new ArrayList<Integer>();
+        ArrayList<Integer> item_ids = new ArrayList<>();
+        boolean is_dice = false;
         int dice_str = 0;
         int dice_dex = 0;
         int dice_int = 0;
@@ -333,7 +335,8 @@ public class ReqCLogin {
             item_ids.add(equip_weapon);
         }
 
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            is_dice = true;
             dice_str = cp.Decode1();
             dice_dex = cp.Decode1();
             dice_int = cp.Decode1();
@@ -343,50 +346,62 @@ public class ReqCLogin {
                     || dice_str < 4 || dice_str < 4 || dice_dex < 4 || dice_int < 4 || dice_luk < 4
                     || 12 < dice_str || 12 < dice_dex || 12 < dice_int || 12 < dice_luk) {
                 DebugLogger.DebugLog("dice error");
-                c.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
+                client.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
                 return false;
             }
         }
         // data check
         if (!DWI_Validation.isValidFaceID(face_id) || !DWI_Validation.isValidHairID(hair_id)) {
             DebugLogger.DebugLog("Character creation error");
-            c.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
+            client.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
             return false;
         }
         // name check
         if (!checkCharacterName(character_name)) {
-            c.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
+            client.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
             return false;
         }
 
-        MapleCharacter newchar = MapleCharacter.getDefault(c);
-        newchar.setFace(face_id);
-        newchar.setHair(hair_id + hair_color);
-        newchar.setGender(character_gender);
-        newchar.setName(character_name);
-        newchar.setSkinColor((byte) skin_color);
-        newchar.setJob(job_id);
-        newchar.setSubcategory(job_dualblade);
+        MapleCharacter chr = new MapleCharacter();
+        chr.init_step1();
+        chr.setClient(client);
+        chr.setFace(face_id);
+        chr.setHair(hair_id + hair_color);
+        chr.setGender(character_gender);
+        chr.setName(character_name);
+        chr.setSkinColor(skin_color);
+        chr.setJob(job_id);
+        chr.setSubcategory(job_dualblade);
 
-        // dice
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            newchar.getStat().str = dice_str;
-            newchar.getStat().dex = dice_dex;
-            newchar.getStat().int_ = dice_int;
-            newchar.getStat().luk = dice_luk;
-        }
+        PlayerStats stat = chr.getStat();
+        stat.str = is_dice ? dice_str : 12;
+        stat.dex = is_dice ? dice_dex : 5;
+        stat.int_ = is_dice ? dice_int : 4;
+        stat.luk = is_dice ? dice_luk : 4;
+        stat.maxhp = 50;
+        stat.hp = 50;
+        stat.maxmp = 50;
+        stat.mp = 50;
 
-        MapleInventory equip = newchar.getInventory(MapleInventoryType.EQUIPPED);
-        final MapleItemInformationProvider li = MapleItemInformationProvider.getInstance();
+        chr.setAccountID(client.getId());
+        chr.setLevel(1);
+        chr.setRemainingAp(0);
+        chr.setFame(0);
+        chr.setExp(0);
+        chr.setMeso(0);
+        chr.setMap(null);
+        chr.setGM(0);
+        chr.setTama(0);
+        chr.setBuddylist(20);
 
         for (int id : item_ids) {
-            SetDefaultEquip(newchar, id);
+            SetDefaultEquip(chr, id);
         }
 
-        DebugUser.AddStarterSet(newchar);
-        MapleCharacter.saveNewCharToDB(newchar);
-        c.SendPacket(ResCLogin.CreateNewCharacterResult(newchar, true));
-        c.addCharacter(newchar);
+        DebugUser.AddStarterSet(chr);
+        MapleCharacter.saveNewCharToDB(chr);
+        client.SendPacket(ResCLogin.CreateNewCharacterResult(chr, true));
+        client.addCharacter(chr);
         return true;
     }
 

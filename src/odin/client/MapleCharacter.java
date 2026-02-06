@@ -147,7 +147,7 @@ public class MapleCharacter extends TacosCharacter {
 
     private String chalktext, BlessOfFairy_Origin;
     private long lastCombo, lastfametime, keydown_skill;
-    private byte dojoRecord, fairyExp = 10, numClones; // Make this a quest record, TODO : Transfer it somehow with the current data
+    private byte dojoRecord, fairyExp = 10;
     private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
     private int bookCover, dojo,
             fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
@@ -160,10 +160,9 @@ public class MapleCharacter extends TacosCharacter {
     private List<MapleDoor> doors;
     private transient Set<MapleMonster> controlled;
     private transient Set<MapleMapObject> visibleMapObjects;
-//    private transient ReentrantReadWriteLock visibleMapObjectsLock;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
-    private Map<ISkill, SkillEntry> skills = new LinkedHashMap<ISkill, SkillEntry>();
+    private Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
     private transient Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentEnumMap<MapleBuffStat, MapleBuffStatValueHolder>(MapleBuffStat.class);
     private transient Map<Integer, MapleSummon> summons;
     private transient Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<Integer, MapleCoolDownValueHolder>();
@@ -222,101 +221,56 @@ public class MapleCharacter extends TacosCharacter {
         return portal_count;
     }
 
-    private MapleCharacter(final boolean ChannelServer) {
-        setStance(0);
-        setPosition(new Point(0, 0));
-
+    // all
+    public void init_step1() {
         inventory = new MapleInventory[MapleInventoryType.values().length];
         for (MapleInventoryType type : MapleInventoryType.values()) {
             inventory[type.ordinal()] = new MapleInventory(type);
         }
-        quests = new LinkedHashMap<MapleQuest, MapleQuestStatus>(); // Stupid erev quest.
+        quests = new LinkedHashMap<>(); // Stupid erev quest.
         stats = new PlayerStats(this);
         for (int i = 0; i < remainingSp.length; i++) {
             remainingSp[i] = 0;
         }
-        if (ChannelServer) {
-            lastCombo = 0;
-            mulung_energy = 0;
-            combo = 0;
-            keydown_skill = 0;
-            smega = true;
-            petStore = new byte[3];
-            for (int i = 0; i < petStore.length; i++) {
-                petStore[i] = (byte) -1;
-            }
-            wishlist = new int[10];
-            rocks = new int[10];
-            regrocks = new int[5];
-            clones = new WeakReference[1];
-            clones[0] = new WeakReference<MapleCharacter>(null);
-            inst = new AtomicInteger();
-            inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
-            doors = new ArrayList<MapleDoor>();
-            controlled = new LinkedHashSet<MapleMonster>();
-            summons = new LinkedHashMap<Integer, MapleSummon>();
-            visibleMapObjects = new LinkedHashSet<MapleMapObject>();
-//            visibleMapObjectsLock = new ReentrantReadWriteLock();
-            pendingCarnivalRequests = new LinkedList<MapleCarnivalChallenge>();
-            savedLocations = new int[SavedLocationType.values().length];
-            for (int i = 0; i < SavedLocationType.values().length; i++) {
-                savedLocations[i] = -1;
-            }
-            questinfo = new LinkedHashMap<Integer, String>();
-            pets = new ArrayList<MaplePet>();
-        }
     }
 
-    public static MapleCharacter getDefault(final MapleClient client) {
-        MapleCharacter ret = new MapleCharacter(false);
-        ret.client = client;
-        ret.map = null;
-        ret.exp = 0;
-        ret.gmLevel = 0;
-        ret.job = 0;
-        ret.meso = 0;
-        ret.level = 1;
-        ret.remainingAp = 0;
-        ret.fame = 0;
-        ret.accountid = client.getId();
-        ret.buddylist = new BuddyList((byte) 20);
-
-        ret.stats.str = 12;
-        ret.stats.dex = 5;
-        ret.stats.int_ = 4;
-        ret.stats.luk = 4;
-        ret.stats.maxhp = 50;
-        ret.stats.hp = 50;
-        ret.stats.maxmp = 50;
-        ret.stats.mp = 50;
-
-        // パチンコ
-        ret.tama = 0;
-
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps;
-            ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
-            ps.setInt(1, ret.accountid);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                ret.client.setMapleId(rs.getString("name"));
-                ret.nexonPoint = rs.getInt("ACash");
-                ret.maplePoint = rs.getInt("mPoints");
-                ret.points = rs.getInt("points");
-                ret.vpoints = rs.getInt("vpoints");
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.err.println("Error getting character default" + e);
+    // channel
+    public void init_step2() {
+        lastCombo = 0;
+        mulung_energy = 0;
+        combo = 0;
+        keydown_skill = 0;
+        smega = true;
+        petStore = new byte[3];
+        for (int i = 0; i < petStore.length; i++) {
+            petStore[i] = (byte) -1;
         }
-        return ret;
+        wishlist = new int[10];
+        rocks = new int[10];
+        regrocks = new int[5];
+        clones = new WeakReference[1];
+        clones[0] = new WeakReference<>(null);
+        inst = new AtomicInteger();
+        inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
+        doors = new ArrayList<>();
+        controlled = new LinkedHashSet<>();
+        summons = new LinkedHashMap<>();
+        visibleMapObjects = new LinkedHashSet<>();
+        pendingCarnivalRequests = new LinkedList<>();
+        savedLocations = new int[SavedLocationType.values().length];
+        for (int i = 0; i < SavedLocationType.values().length; i++) {
+            savedLocations[i] = -1;
+        }
+        questinfo = new LinkedHashMap<>();
+        pets = new ArrayList<>();
     }
 
     public static MapleCharacter loadCharFromDB(int character_id, MapleClient client, boolean channelserver) {
-        MapleCharacter ret = new MapleCharacter(channelserver);
+        MapleCharacter ret = new MapleCharacter();
+        ret.init_step1();
+        if (channelserver) {
+            ret.init_step2();
+        }
         ret.client = client;
         ret.id = character_id;
 
@@ -4879,13 +4833,15 @@ public class MapleCharacter extends TacosCharacter {
 
     // クローン
     public MapleCharacter cloneCopy() {
-        MapleClient cs = new MapleClient(new MockIOSession());
+        MapleClient client_clone = new MapleClient(new MockIOSession());
 
         final int minus = (getId() + Randomizer.nextInt(getId())); // really randomize it, dont want it to fail
 
-        MapleCharacter ret = new MapleCharacter(true);
+        MapleCharacter ret = new MapleCharacter();
+        ret.init_step1();
+        ret.init_step2();
         ret.id = minus;
-        ret.client = cs;
+        ret.client = client_clone;
         ret.exp = 0;
         ret.meso = 0;
         ret.remainingAp = 0;
