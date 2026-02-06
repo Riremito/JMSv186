@@ -576,7 +576,7 @@ public class ResCWvsContext {
             // Monster Book (JMS)
             sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
         }
-        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84)) {
+        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
@@ -596,7 +596,7 @@ public class ResCWvsContext {
                 }
             }
             // JMS v180-v186, v187以降消滅
-            if (Version.PreBB() && Region.IsJMS()) {
+            if (Version.PreBB() && (Region.IsJMS() || Version.GreaterOrEqual(Region.GMS, 91))) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
