@@ -99,6 +99,8 @@ public class DQ_Characters {
                         return true;
                     }
                 }
+
+                // ?_? rollback?
             }
         } catch (SQLException ex) {
             DatabaseConnection.rollback();
