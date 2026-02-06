@@ -486,7 +486,7 @@ public class Structure {
             data.Encode4(0);
             data.Encode4(0);
         }
-        if (Version.PostBB()) {
+        if (Version.PostBB() && !Version.LessOrEqual(Region.GMS, 95)) {
             data.Encode4(0);
         }
 

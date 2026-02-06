@@ -362,6 +362,12 @@ public class ResCWvsContext {
                 sp.Encode4(0); // not used
                 sp.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
 
+                if (Version.Equal(Region.GMS, 95)) {
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    break;
+                }
+
                 if (Version.GreaterOrEqual(Region.GMS, 111)) {
                     sp.Encode1(0);
                     sp.Encode4(0);
@@ -492,7 +498,7 @@ public class ResCWvsContext {
             sp.Encode2(player.getFame());
         }
 
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
             sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
         }
         String sCommunity = "-";
@@ -517,7 +523,7 @@ public class ResCWvsContext {
         }
 
         sp.EncodeStr(sCommunity);
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
             sp.EncodeStr(sAlliance);
         }
         // Pre-BB
@@ -566,7 +572,7 @@ public class ResCWvsContext {
                 sp.Encode4(wishlist[x]);
             }
         }
-        if (ServerConfig.JMS147orLater()) {
+        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
             // Monster Book (JMS)
             sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
         }

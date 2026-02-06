@@ -931,19 +931,34 @@ public class ReqCUser {
         }
 
         // v95 1 byte cd->nCombatOrders
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            cp.Decode1();
+        }
         if (Version.LessOrEqual(Region.KMS, 114)) {
             // ?
         } else if (ServerConfig.JMS180orLater()) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
             // v95 4 bytes SKILLLEVELDATA::GetCrc
+            if (Version.GreaterOrEqual(Region.GMS, 95)) {
+                cp.Decode4();
+                cp.Decode4();
+                if (attack.AttackHeader == ClientPacketHeader.CP_UserMagicAttack) {
+                    cp.Decode4();
+                    cp.Decode4();
+                    cp.Decode4();
+                    cp.Decode4();
+                    cp.Decode4();
+                    cp.Decode4();
+                }
+            }
         }
 
-        if (Version.PostBB()) {
+        if (Version.PostBB() && !Version.GreaterOrEqual(Region.GMS, 95)) {
             cp.Decode1();
         }
 
-        if (Version.LessOrEqual(Region.KMS, 95)) {
+        if (Version.LessOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.GMS, 95)) {
             // ?
         } else if (ServerConfig.JMS164orLater()) {
             cp.Decode4(); // Crc
@@ -954,7 +969,7 @@ public class ReqCUser {
             attack.tKeyDown = cp.Decode4();
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 114) || ServerConfig.JMS194orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 95)) {
             if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode1();
             }
@@ -1001,7 +1016,7 @@ public class ReqCUser {
 
         int damage;
         List<OdinPair<Integer, Boolean>> allDamageNumbers = null;
-        attack.allDamage = new ArrayList<AttackPair>();
+        attack.allDamage = new ArrayList<>();
 
         if (attack.IsMesoExplosion()) { // Meso Explosion
             return parseMesoExplosion(cp, attack);
@@ -1021,12 +1036,12 @@ public class ReqCUser {
             cp.Decode2(); // Mob Something
             cp.Decode2(); // v366->tDelay
 
-            allDamageNumbers = new ArrayList<OdinPair<Integer, Boolean>>();
+            allDamageNumbers = new ArrayList<>();
 
             for (int j = 0; j < attack.GetDamagePerMob(); j++) {
                 damage = cp.Decode4(); // 366->aDamage[i]
 
-                allDamageNumbers.add(new OdinPair<Integer, Boolean>(Integer.valueOf(damage), false));
+                allDamageNumbers.add(new OdinPair<>(Integer.valueOf(damage), false));
             }
 
             if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.THMS, 87)) {
@@ -1128,7 +1143,7 @@ public class ReqCUser {
         }
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88)) {
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
         }
@@ -1136,7 +1151,7 @@ public class ReqCUser {
         cp.Decode1(); // unk
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88)) {
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
             cp.Decode4();
@@ -1893,7 +1908,7 @@ public class ReqCUser {
 
         byte unk = cp.Decode1();
 
-        if (Version.LessOrEqual(Region.KMS, 65)) {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.GMS, 95)) {
         } else {
             int time_stamp_2 = cp.Decode4();
             chr.updateTick(time_stamp_2);

@@ -167,7 +167,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 }
                 // リバース武器
-                if (ServerConfig.JMS164orLater() || Region.IsVMS()) {
+                if (ServerConfig.JMS164orLater() || Region.IsVMS() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
@@ -223,7 +223,7 @@ public class DataGW_ItemSlotBase {
                 if (!hasUniqueId) {
                     data.Encode8(0);
                 }
-                if (ServerConfig.JMS164orLater()) {
+                if (ServerConfig.JMS164orLater() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
@@ -264,7 +264,7 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
 
-                if (ServerConfig.JMS164orLater() || Region.IsVMS()) {
+                if (ServerConfig.JMS164orLater() || Region.IsVMS() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }

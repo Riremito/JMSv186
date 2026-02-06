@@ -616,7 +616,7 @@ public class DataCharacterData {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                     }
                     if ((datamask & 0x4000000) != 0) {
-                        if (ServerConfig.KMS138orLater()  || Version.Equal(Region.KMST, 391)) {
+                        if (ServerConfig.KMS138orLater() || Version.Equal(Region.KMST, 391)) {
                             data.Encode2(0);
                         }
                     }
@@ -1093,7 +1093,7 @@ public class DataCharacterData {
                     if ((datamask & 131072) != 0) {
                         data.Encode4(chr.getMonsterBookCover());
                     }
-                    if (Version.GreaterOrEqual(Region.GMS, 72)) {
+                    if (Version.GreaterOrEqual(Region.GMS, 68)) {
                         if ((datamask & 65536) != 0) {
                             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                         }
@@ -1103,7 +1103,7 @@ public class DataCharacterData {
                             data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                         }
                     }
-                    if (Version.GreaterOrEqual(Region.GMS, 72)) {
+                    if (Version.GreaterOrEqual(Region.GMS, 68)) {
                         if ((datamask & 524288) != 0) {
                             data.Encode2(0);
                         }

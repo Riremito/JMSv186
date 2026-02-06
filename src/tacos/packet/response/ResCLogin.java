@@ -436,7 +436,7 @@ public class ResCLogin {
                                 sp.Encode4(client.getId()); // m_dwAccountId
                                 sp.Encode1(client.getGender()); // m_nGender
                                 sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
-                                if (ServerConfig.JMS164orLater()) {
+                                if (Version.GreaterOrEqual(Region.GMS, 68)) {
                                     sp.Encode1(client.isGameMaster() ? 0x80 : 0); // Admin F1
                                 }
                                 sp.Encode1(0);
