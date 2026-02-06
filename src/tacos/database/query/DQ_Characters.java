@@ -103,6 +103,7 @@ public class DQ_Characters {
                 // ?_? rollback?
             }
         } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "add");
             DatabaseConnection.rollback();
         } finally {
             DatabaseConnection.commit();

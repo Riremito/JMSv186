@@ -42,7 +42,10 @@ public class DQ_KeyMap {
     private static int[] array2_th = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 4, 4, 5, 5, 6, 6, 6, 6, 6, 6, 6};
     private static int[] array3_th = {10, 12, 13, 18, 22, 27, 8, 5, 0, 4, 26, 1, 23, 19, 14, 15, 52, 2, 24, 17, 11, 3, 20, 25, 16, 21, 9, 50, 51, 6, 7, 53, 54, 100, 101, 102, 103, 104, 105, 106};
 
-    public static boolean setDefautKeyMap(TacosCharacter chr) {
+    public static boolean add(TacosCharacter chr) {
+        if (!DatabaseConnection.setManual()) {
+            return false;
+        }
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, `key`, `type`, `action`) VALUES (?, ?, ?, ?)")) {
@@ -56,7 +59,11 @@ public class DQ_KeyMap {
                 return true;
             }
         } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "setDefautKeyMap");
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "add");
+            DatabaseConnection.rollback();
+        } finally {
+            DatabaseConnection.commit();
+            DatabaseConnection.setAuto();
         }
 
         return false;

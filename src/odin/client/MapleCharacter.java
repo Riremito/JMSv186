@@ -130,7 +130,9 @@ import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Buddies;
 import tacos.database.query.DQ_Characters;
+import tacos.database.query.DQ_Inventoryslot;
 import tacos.database.query.DQ_KeyMap;
+import tacos.database.query.DQ_Mountdata;
 import tacos.database.query.DQ_Notes;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
@@ -598,6 +600,15 @@ public class MapleCharacter extends TacosCharacter {
         if (!DQ_Characters.add(chr)) {
             return false;
         }
+        if (!DQ_Inventoryslot.add(chr)) {
+            return false;
+        }
+        if (!DQ_Mountdata.add(chr)) {
+            return false;
+        }
+        if (!DQ_KeyMap.add(chr)) {
+            return false;
+        }
 
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
@@ -630,33 +641,13 @@ public class MapleCharacter extends TacosCharacter {
             ps.close();
             pse.close();
 
-            ps = con.prepareStatement("INSERT INTO inventoryslot (characterid, `equip`, `use`, `setup`, `etc`, `cash`) VALUES (?, ?, ?, ?, ?, ?)");
-            ps.setInt(1, chr.id);
-            ps.setByte(2, (byte) DeveloperMode.DM_INV_SLOT_EQUIP.getInt()); // Eq
-            ps.setByte(3, (byte) DeveloperMode.DM_INV_SLOT_USE.getInt()); // Use
-            ps.setByte(4, (byte) DeveloperMode.DM_INV_SLOT_SETUP.getInt()); // Setup
-            ps.setByte(5, (byte) DeveloperMode.DM_INV_SLOT_ETC.getInt()); // ETC
-            ps.setByte(6, (byte) DeveloperMode.DM_INV_SLOT_CASH.getInt()); // Cash
-            ps.execute();
-            ps.close();
-
-            ps = con.prepareStatement("INSERT INTO mountdata (characterid, `Level`, `Exp`, `Fatigue`) VALUES (?, ?, ?, ?)");
-            ps.setInt(1, chr.id);
-            ps.setByte(2, (byte) 1);
-            ps.setInt(3, 0);
-            ps.setByte(4, (byte) 0);
-            ps.execute();
-            ps.close();
-
-            List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
-            for (final MapleInventory iv : chr.inventory) {
+            List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<>();
+            for (MapleInventory iv : chr.inventory) {
                 for (final IItem item : iv.list()) {
-                    listing.add(new OdinPair<IItem, MapleInventoryType>(item, iv.getType()));
+                    listing.add(new OdinPair<>(item, iv.getType()));
                 }
             }
             ItemLoader.INVENTORY.saveItems(listing, con, chr.id);
-
-            DQ_KeyMap.setDefautKeyMap(chr);
 
             con.commit();
             return true;
