@@ -99,6 +99,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public TacosWorld getWorld() {
         return this.client.getWorld();
     }

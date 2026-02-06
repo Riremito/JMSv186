@@ -26,6 +26,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import tacos.debug.DebugLogger;
 
 /**
  * All OdinMS servers maintain a Database Connection. This class therefore
@@ -41,6 +42,56 @@ public class DatabaseConnection {
 
     public static final Connection getConnection() {
         return connected.get();
+    }
+
+    public static boolean setManual() {
+        DebugLogger.DebugLog("setManual");
+        try {
+            Connection con = connected.get();
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            con.setAutoCommit(false);
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("setManual");
+        }
+        return false;
+    }
+
+    public static boolean setAuto() {
+        DebugLogger.DebugLog("setAuto");
+        try {
+            Connection con = connected.get();
+            con.setAutoCommit(true);
+            con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("setAuto");
+        }
+        return false;
+    }
+
+    public static boolean commit() {
+        DebugLogger.DebugLog("commit");
+        try {
+            Connection con = connected.get();
+            con.commit();
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("commit");
+        }
+        return false;
+    }
+
+    public static boolean rollback() {
+        DebugLogger.DebugLog("rollback");
+        try {
+            Connection con = connected.get();
+            con.rollback();
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("rollback");
+        }
+        return false;
     }
 
     public static final void closeAll() throws SQLException {

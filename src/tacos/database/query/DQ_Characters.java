@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import odin.client.PlayerStats;
+import tacos.config.DeveloperMode;
 import tacos.server.TacosFriend;
 
 /**
@@ -41,6 +42,73 @@ import tacos.server.TacosFriend;
 public class DQ_Characters {
 
     public static final String DB_TABLE_NAME = "characters";
+
+    public static boolean add(MapleCharacter chr) {
+        if (!DatabaseConnection.setManual()) {
+            return false;
+        }
+
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            PlayerStats stat = chr.getStat();
+
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, spawnpoint, party, buddyCapacity, monsterbookcover, dojo_pts, dojoRecord, pets, subcategory, marriageId, currentrep, totalrep, accountid, name, world, tama) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS)) {
+                ps.setInt(1, 1); // Level
+                ps.setShort(2, (short) 0); // Fame
+                ps.setInt(3, stat.getStr()); // Str
+                ps.setInt(4, stat.getDex()); // Dex
+                ps.setInt(5, stat.getInt()); // Int
+                ps.setInt(6, stat.getLuk()); // Luk
+                ps.setInt(7, 0); // EXP
+                ps.setInt(8, stat.getHp()); // HP
+                ps.setInt(9, stat.getMp());
+                ps.setInt(10, stat.getMaxHp()); // MP
+                ps.setInt(11, stat.getMaxMp());
+                ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
+                ps.setShort(13, (short) 0); // Remaining AP
+                ps.setByte(14, (byte) 0); // GM Level
+                ps.setByte(15, (byte) chr.getSkinColor());
+                ps.setByte(16, (byte) chr.getGender());
+                ps.setInt(17, chr.getJob());
+                ps.setInt(18, chr.getHair());
+                ps.setInt(19, chr.getFace());
+                ps.setInt(20, DeveloperMode.DM_FIRST_MAP_ID.getInt()); // 0, 130030000, 900090000, 914000000
+                ps.setInt(21, chr.getMeso()); // Meso
+                ps.setShort(22, (short) 0); // HP ap used
+                ps.setByte(23, (byte) 0); // Spawnpoint
+                ps.setInt(24, -1); // Party
+                ps.setByte(25, (byte) chr.getBuddyCapacity()); // Buddylist
+                ps.setInt(26, 0); // Monster book cover
+                ps.setInt(27, 0); // Dojo
+                ps.setInt(28, 0); // Dojo record
+                ps.setString(29, "-1,-1,-1");
+                ps.setInt(30, chr.getSubcategory()); // dual blade
+                ps.setInt(31, 0); //marriage ID
+                ps.setInt(32, 0); //current reps
+                ps.setInt(33, 0); //total reps
+                ps.setInt(34, chr.getAccountID());
+                ps.setString(35, chr.getName());
+                ps.setByte(36, (byte) chr.getClient().getSelectedWorld());
+                ps.setInt(37, chr.getTama());
+                ps.executeUpdate();
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        int character_id = rs.getInt(1);
+                        chr.setId(character_id);
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            DatabaseConnection.rollback();
+        } finally {
+            DatabaseConnection.commit();
+            DatabaseConnection.setAuto();
+        }
+
+        return false;
+    }
 
     public static boolean loadStat(MapleCharacter ret) {
         Connection con = DatabaseConnection.getConnection();

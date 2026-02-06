@@ -588,73 +588,20 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    public static void saveNewCharToDB(MapleCharacter chr) {
+    public static boolean saveNewCharToDB(MapleCharacter chr) {
         Connection con = DatabaseConnection.getConnection();
 
         PreparedStatement ps = null;
         PreparedStatement pse = null;
         ResultSet rs = null;
+
+        if (!DQ_Characters.add(chr)) {
+            return false;
+        }
+
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
-
-            ps = con.prepareStatement("INSERT INTO characters (level, fame, str, dex, luk, `int`, exp, hp, mp, maxhp, maxmp, sp, ap, gm, skincolor, gender, job, hair, face, map, meso, hpApUsed, spawnpoint, party, buddyCapacity, monsterbookcover, dojo_pts, dojoRecord, pets, subcategory, marriageId, currentrep, totalrep, accountid, name, world, tama) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
-            ps.setInt(1, 1); // Level
-            ps.setShort(2, (short) 0); // Fame
-            final PlayerStats stat = chr.stats;
-            ps.setInt(3, stat.getStr()); // Str
-            ps.setInt(4, stat.getDex()); // Dex
-            ps.setInt(5, stat.getInt()); // Int
-            ps.setInt(6, stat.getLuk()); // Luk
-            ps.setInt(7, 0); // EXP
-            ps.setInt(8, stat.getHp()); // HP
-            ps.setInt(9, stat.getMp());
-            ps.setInt(10, stat.getMaxHp()); // MP
-            ps.setInt(11, stat.getMaxMp());
-            ps.setString(12, "0,0,0,0,0,0,0,0,0,0"); // Remaining SP
-            ps.setShort(13, (short) 0); // Remaining AP
-            ps.setByte(14, (byte) 0); // GM Level
-            ps.setByte(15, (byte) chr.skinColor);
-            ps.setByte(16, (byte) chr.gender);
-            ps.setInt(17, chr.job);
-            ps.setInt(18, chr.hair);
-            ps.setInt(19, chr.face);
-
-            if (chr.name.toUpperCase().indexOf("GM") == 0) {
-                ps.setInt(20, 100000000);
-            } else {
-                //ps.setInt(20, type == 1 ? 0 : (type == 0 ? 130030000 : (type == 3 ? 900090000 : 914000000)));
-                ps.setInt(20, DeveloperMode.DM_FIRST_MAP_ID.getInt());
-            }
-
-            ps.setInt(21, chr.getMeso()); // Meso
-            ps.setShort(22, (short) 0); // HP ap used
-            ps.setByte(23, (byte) 0); // Spawnpoint
-            ps.setInt(24, -1); // Party
-            ps.setByte(25, (byte) chr.buddylist.getCapacity()); // Buddylist
-            ps.setInt(26, 0); // Monster book cover
-            ps.setInt(27, 0); // Dojo
-            ps.setInt(28, 0); // Dojo record
-            ps.setString(29, "-1,-1,-1");
-            ps.setInt(30, chr.subcategory); // dual blade
-            ps.setInt(31, 0); //marriage ID
-            ps.setInt(32, 0); //current reps
-            ps.setInt(33, 0); //total reps
-            ps.setInt(34, chr.getAccountID());
-            ps.setString(35, chr.name);
-            ps.setByte(36, (byte) chr.getClient().getSelectedWorld());
-            ps.setInt(37, chr.tama);
-            ps.executeUpdate();
-
-            rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                chr.id = rs.getInt(1);
-            } else {
-                throw new DatabaseException("Inserting char failed.");
-            }
-            ps.close();
-            rs.close();
-
             DebugLogger.InfoLog("[NEW CHARACTER] \"" + chr.name + "\"");
 
             ps = con.prepareStatement("INSERT INTO queststatus (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
@@ -712,6 +659,7 @@ public class MapleCharacter extends TacosCharacter {
             DQ_KeyMap.setDefautKeyMap(chr);
 
             con.commit();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("[charsave] Error saving character data");
@@ -739,6 +687,8 @@ public class MapleCharacter extends TacosCharacter {
                 System.err.println("[charsave] Error going back to autocommit mode");
             }
         }
+
+        return false;
     }
 
     public void saveToDB(boolean dc, boolean fromcs) {
