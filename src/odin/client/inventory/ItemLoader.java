@@ -60,14 +60,9 @@ public enum ItemLoader {
         this.arg = Arrays.asList(arg);
     }
 
-    public int getValue() {
-        return value;
-    }
-
-    //does not need connection con to be auto commit
     public Map<Integer, OdinPair<IItem, MapleInventoryType>> loadItems(boolean login, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
-        Map<Integer, OdinPair<IItem, MapleInventoryType>> items = new LinkedHashMap<Integer, OdinPair<IItem, MapleInventoryType>>();
+        Map<Integer, OdinPair<IItem, MapleInventoryType>> items = new LinkedHashMap<>();
         if (lulz.size() != arg.size()) {
             return items;
         }
@@ -145,7 +140,7 @@ public enum ItemLoader {
                         }
                     }
                 }
-                items.put(rs.getInt("inventoryitemid"), new OdinPair<IItem, MapleInventoryType>(equip.copy(), mit));
+                items.put(rs.getInt("inventoryitemid"), new OdinPair<>(equip.copy(), mit));
             } else {
                 Item item = new Item(rs.getInt("itemid"), rs.getShort("position"), rs.getShort("quantity"), rs.getByte("flag"));
                 item.setUniqueId(rs.getInt("uniqueid"));
@@ -166,7 +161,7 @@ public enum ItemLoader {
                         item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
                     }
                 }
-                items.put(rs.getInt("inventoryitemid"), new OdinPair<IItem, MapleInventoryType>(item.copy(), mit));
+                items.put(rs.getInt("inventoryitemid"), new OdinPair<>(item.copy(), mit));
             }
         }
 
@@ -180,7 +175,7 @@ public enum ItemLoader {
         saveItems(items, con, id);
     }
 
-    public void saveItems(List<OdinPair<IItem, MapleInventoryType>> items, final Connection con, Integer... id) throws SQLException {
+    public void saveItems(List<OdinPair<IItem, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
         if (lulz.size() != arg.size()) {
             return;

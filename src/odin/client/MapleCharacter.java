@@ -134,6 +134,7 @@ import tacos.database.query.DQ_Inventoryslot;
 import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Mountdata;
 import tacos.database.query.DQ_Notes;
+import tacos.database.query.DQ_Queststatus;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
@@ -593,10 +594,6 @@ public class MapleCharacter extends TacosCharacter {
     public static boolean saveNewCharToDB(MapleCharacter chr) {
         Connection con = DatabaseConnection.getConnection();
 
-        PreparedStatement ps = null;
-        PreparedStatement pse = null;
-        ResultSet rs = null;
-
         if (!DQ_Characters.add(chr)) {
             return false;
         }
@@ -609,37 +606,14 @@ public class MapleCharacter extends TacosCharacter {
         if (!DQ_KeyMap.add(chr)) {
             return false;
         }
+        if (!DQ_Queststatus.add(chr)) {
+            return false;
+        }
 
         try {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
             DebugLogger.InfoLog("[NEW CHARACTER] \"" + chr.name + "\"");
-
-            ps = con.prepareStatement("INSERT INTO queststatus (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
-            pse = con.prepareStatement("INSERT INTO queststatusmobs VALUES (DEFAULT, ?, ?, ?)");
-            ps.setInt(1, chr.id);
-            for (final MapleQuestStatus q : chr.quests.values()) {
-                ps.setInt(2, q.getQuest().getId());
-                ps.setInt(3, q.getStatus());
-                ps.setInt(4, (int) (q.getCompletionTime() / 1000));
-                ps.setInt(5, q.getForfeited());
-                ps.setString(6, q.getCustomData());
-                ps.executeUpdate();
-                rs = ps.getGeneratedKeys();
-                rs.next();
-
-                if (q.hasMobKills()) {
-                    for (int mob : q.getMobKills().keySet()) {
-                        pse.setInt(1, rs.getInt(1));
-                        pse.setInt(2, mob);
-                        pse.setInt(3, q.getMobKills(mob));
-                        pse.executeUpdate();
-                    }
-                }
-                rs.close();
-            }
-            ps.close();
-            pse.close();
 
             List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<>();
             for (MapleInventory iv : chr.inventory) {
@@ -662,15 +636,6 @@ public class MapleCharacter extends TacosCharacter {
             }
         } finally {
             try {
-                if (pse != null) {
-                    pse.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-                if (rs != null) {
-                    rs.close();
-                }
                 con.setAutoCommit(true);
                 con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
             } catch (SQLException e) {
