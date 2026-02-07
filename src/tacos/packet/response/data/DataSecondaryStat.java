@@ -103,7 +103,7 @@ public class DataSecondaryStat {
                     } else {
                         data.Encode2(effect);
                     }
-                    data.Encode4(skill_id);
+                    data.Encode4(mse.isSkill() ? skill_id : -skill_id);
                     if (ServerConfig.JMS146orLater()) {
                         data.Encode4(buff_time);
                     } else {
