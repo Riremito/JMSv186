@@ -130,6 +130,7 @@ import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Buddies;
 import tacos.database.query.DQ_Characters;
+import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Inventoryslot;
 import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Mountdata;
@@ -592,12 +593,13 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public static boolean saveNewCharToDB(MapleCharacter chr) {
-        Connection con = DatabaseConnection.getConnection();
-
         if (!DQ_Characters.add(chr)) {
             return false;
         }
         if (!DQ_Inventoryslot.add(chr)) {
+            return false;
+        }
+        if (!DQ_Inventoryitems.add(chr)) {
             return false;
         }
         if (!DQ_Mountdata.add(chr)) {
@@ -610,47 +612,14 @@ public class MapleCharacter extends TacosCharacter {
             return false;
         }
 
-        try {
-            con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-            con.setAutoCommit(false);
-            DebugLogger.InfoLog("[NEW CHARACTER] \"" + chr.name + "\"");
-
-            List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<>();
-            for (MapleInventory iv : chr.inventory) {
-                for (final IItem item : iv.list()) {
-                    listing.add(new OdinPair<>(item, iv.getType()));
-                }
-            }
-            ItemLoader.INVENTORY.saveItems(listing, con, chr.id);
-
-            con.commit();
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("[charsave] Error saving character data");
-            try {
-                con.rollback();
-            } catch (SQLException ex) {
-                e.printStackTrace();
-                System.err.println("[charsave] Error Rolling Back");
-            }
-        } finally {
-            try {
-                con.setAutoCommit(true);
-                con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
-            } catch (SQLException e) {
-                e.printStackTrace();
-                System.err.println("[charsave] Error going back to autocommit mode");
-            }
-        }
-
-        return false;
+        return true;
     }
 
     public void saveToDB(boolean dc, boolean fromcs) {
         if (clone) {
             return;
         }
+        DQ_Inventoryitems.add(this);
 
         Connection con = DatabaseConnection.getConnection();
 
@@ -768,8 +737,6 @@ public class MapleCharacter extends TacosCharacter {
             ps.setByte(6, getInventory(MapleInventoryType.CASH).getSlotLimit());
             ps.execute();
             ps.close();
-
-            saveInventory(con);
 
             deleteWhereCharacterId(con, "DELETE FROM questinfo WHERE characterid = ?");
             ps = con.prepareStatement("INSERT INTO questinfo (`characterid`, `quest`, `customData`) VALUES (?, ?, ?)");
@@ -946,20 +913,6 @@ public class MapleCharacter extends TacosCharacter {
         ps.setInt(1, id);
         ps.executeUpdate();
         ps.close();
-    }
-
-    public void saveInventory(final Connection con) throws SQLException {
-        List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
-        for (final MapleInventory iv : inventory) {
-            for (final IItem item : iv.list()) {
-                listing.add(new OdinPair<IItem, MapleInventoryType>(item, iv.getType()));
-            }
-        }
-        if (con != null) {
-            ItemLoader.INVENTORY.saveItems(listing, con, id);
-        } else {
-            ItemLoader.INVENTORY.saveItems(listing, id);
-        }
     }
 
     public final PlayerRandomStream CRand() {
