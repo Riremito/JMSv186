@@ -24,7 +24,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.Item;
-import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleMount;
@@ -368,7 +367,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
                 rs.close();
 
-                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(false, character_id).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(ret, false).values()) {
                     if (!DWI_Validation.isValidItemID(mit.getLeft().getItemId())) {
                         DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                         continue;
@@ -571,8 +570,10 @@ public class MapleCharacter extends TacosCharacter {
 
                 ret.stats.recalcLocalStats(true);
             } else { // Not channel server
-                for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.INVENTORY.loadItems(true, character_id).values()) {
-                    ret.getInventory(mit.getRight()).addFromDB(mit.getLeft());
+                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(ret, true).values()) {
+                    if (mit.getRight() == MapleInventoryType.EQUIPPED) {
+                        ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getLeft());
+                    }
                 }
             }
         } catch (SQLException ess) {
