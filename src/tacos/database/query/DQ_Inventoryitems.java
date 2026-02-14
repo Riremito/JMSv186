@@ -18,6 +18,7 @@
  */
 package tacos.database.query;
 
+import tacos.database.ops.InvTypeDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,7 +59,7 @@ public class DQ_Inventoryitems {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE type = ? AND characterid = ?;")) {
-                ps.setByte(1, (byte) InvTypeDB.INVENTORY.get());
+                ps.setByte(1, (byte) InvTypeDB.Inventory.get());
                 ps.setInt(2, chr.getId());
                 ps.executeUpdate();
                 return true;
@@ -96,7 +97,7 @@ public class DQ_Inventoryitems {
                         ps.setInt(8, item.getUniqueId());
                         ps.setLong(9, item.getExpiration());
                         ps.setByte(10, item.getFlag());
-                        ps.setByte(11, (byte) InvTypeDB.INVENTORY.get()); // inventory, storage...
+                        ps.setByte(11, (byte) InvTypeDB.Inventory.get()); // inventory, storage...
                         ps.setString(12, item.getGiftFrom());
                         ps.executeUpdate();
                         // equip stat
@@ -130,7 +131,7 @@ public class DQ_Inventoryitems {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE type = ? AND characterid = ?;")) {
-                ps.setByte(1, (byte) InvTypeDB.INVENTORY.get());
+                ps.setByte(1, (byte) InvTypeDB.Inventory.get());
                 ps.setInt(2, chr.getId());
                 // AND inventorytype = MapleInventoryType.EQUIPPED.getType()
                 ResultSet rs = ps.executeQuery();

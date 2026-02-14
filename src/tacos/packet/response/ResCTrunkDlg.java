@@ -21,12 +21,13 @@ package tacos.packet.response;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
-import java.util.Collection;
+import java.util.List;
+import odin.server.MapleStorage;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsDBCHAR;
 import tacos.packet.ops.OpsTrunk;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 
@@ -36,90 +37,111 @@ import tacos.packet.response.data.DataGW_ItemSlotBase;
  */
 public class ResCTrunkDlg {
 
-    // アイテムを入れる
-    // storeStorage
-    public static MaplePacket ItemIn(byte slots, MapleInventoryType type, Collection<IItem> items) {
+    // CTrunkDlg::OnPacket
+    public static MaplePacket TrunkResult(MapleStorage storage, OpsTrunk ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
-        sp.Encode1(OpsTrunk.TrunkRes_PutSuccess.get());
-        sp.Encode1(slots);
-        sp.Encode2(type.getBitfieldEncoding());
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode2(0);
-            sp.Encode4(0);
-        }
-        sp.Encode1((byte) items.size());
-        for (IItem item : items) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
-        }
-        return sp.get();
-    }
 
-    public static MaplePacket Error(OpsTrunk ops) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
         sp.Encode1(ops.get());
+        switch (ops) {
+            case TrunkRes_GetSuccess: // goto.
+            case TrunkRes_PutSuccess: {
+                sp.EncodeBuffer(SetGetItems(storage, storage.getLastModified().get()));
+                break;
+            }
+            case TrunkRes_SortItem: {
+                sp.EncodeBuffer(SetGetItems(storage, OpsDBCHAR.DBCHAR_ALL.get()));
+                break;
+            }
+            case TrunkRes_MoneySuccess: {
+                sp.EncodeBuffer(SetGetItems(storage, OpsDBCHAR.DBCHAR_MONEY.get()));
+                break;
+            }
+            case TrunkRes_OpenTrunkDlg: {
+                sp.EncodeBuffer(SetTrunkDlg(storage));
+                break;
+            }
+            case TrunkRes_ServerMsg: {
+                byte isMsg = 0;
+                sp.Encode1(isMsg);
+                if (isMsg != 0) {
+                    sp.EncodeStr("msg.");
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
         return sp.get();
     }
 
-    // アイテムを取り出す
-    // takeOutStorage
-    public static MaplePacket ItemOut(byte slots, MapleInventoryType type, Collection<IItem> items) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
-        sp.Encode1(OpsTrunk.TrunkRes_GetSuccess.get());
-        sp.Encode1(slots);
-        sp.Encode2(type.getBitfieldEncoding());
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode2(0);
-            sp.Encode4(0);
-        }
-        sp.Encode1((byte) items.size());
-        for (IItem item : items) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
-        }
-        return sp.get();
+    // CTrunkDlg::SetTrunkDlg
+    public static byte[] SetTrunkDlg(MapleStorage storage) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(storage.getNpcId()); // m_dwNpcTemplateID
+        data.EncodeBuffer(SetGetItems(storage, OpsDBCHAR.DBCHAR_ALL.get()));
+        return data.get().getBytes();
     }
 
-    // メルの出し入れ
-    public static MaplePacket MesoInOut(byte slots, int meso) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
-        sp.Encode1(OpsTrunk.TrunkRes_PutSuccess.get());
-        sp.Encode1(slots);
-        sp.Encode2(2);
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode2(0);
-            sp.Encode4(0);
-        }
-        sp.Encode4(meso);
-        return sp.get();
-    }
+    // CTrunkDlg::SetGetItems
+    public static byte[] SetGetItems(MapleStorage storage, long dbcharFlag) {
+        ServerPacket data = new ServerPacket();
 
-    // 倉庫を開く
-    // getStorage
-    public static MaplePacket Open(int npcId, byte slots, Collection<IItem> items, int meso) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
-        if (Version.LessOrEqual(Region.KMS, 31)) {
-            // may be other operation uses different header value
+        data.Encode1(storage.getSlots()); // m_nSlotCount
+        if (Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
+            data.Encode2((short) dbcharFlag);
         } else {
-            sp.Encode1(OpsTrunk.TrunkRes_OpenTrunkDlg.get());
-        }
-        sp.Encode4(npcId);
-        sp.Encode1(slots);
-
-        if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
-            sp.Encode2(126);
-        } else {
-            sp.Encode8(126);
+            data.Encode8(dbcharFlag); // dbcharFlag
         }
 
-        sp.Encode4(meso);
-        sp.Encode1(0);
-        sp.Encode1(0);
-        sp.Encode1((byte) items.size());
-        for (IItem item : items) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+        // 0x02
+        if ((dbcharFlag & OpsDBCHAR.DBCHAR_MONEY.get()) != 0) {
+            data.Encode4(storage.getMeso()); // m_nMoney
         }
-        sp.Encode1(0);
-        sp.Encode1(0);
-        return sp.get();
+        // 0x04, Equip
+        if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTEQUIP.get()) != 0) {
+            List<IItem> items = storage.filterItems(MapleInventoryType.EQUIP);
+            data.Encode1(items.size()); // nCount
+            for (IItem item : items) {
+                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            }
+        }
+        // 0x08, Consume
+        if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTCONSUME.get()) != 0) {
+            List<IItem> items = storage.filterItems(MapleInventoryType.USE);
+            data.Encode1(items.size()); // nCount
+            for (IItem item : items) {
+                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            }
+        }
+        // 0x10, Install
+        if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTINSTALL.get()) != 0) {
+            List<IItem> items = storage.filterItems(MapleInventoryType.SETUP);
+            data.Encode1(items.size()); // nCount
+            for (IItem item : items) {
+                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            }
+        }
+        // 0x20, Etc
+        if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTETC.get()) != 0) {
+            List<IItem> items = storage.filterItems(MapleInventoryType.ETC);
+            data.Encode1(items.size()); // nCount
+            for (IItem item : items) {
+                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            }
+        }
+        // 0x40, Cash
+        if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTCASH.get()) != 0) {
+            List<IItem> items = storage.filterItems(MapleInventoryType.CASH);
+            data.Encode1(items.size()); // nCount
+            for (IItem item : items) {
+                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            }
+        }
+
+        return data.get().getBytes();
     }
 
 }

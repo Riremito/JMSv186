@@ -10,8 +10,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
-
 import odin.constants.GameConstants;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.IItem;
@@ -22,44 +20,45 @@ import tacos.database.DatabaseException;
 import java.util.EnumMap;
 import tacos.packet.response.ResCTrunkDlg;
 import tacos.odin.OdinPair;
+import tacos.packet.ops.OpsDBCHAR;
+import tacos.packet.ops.OpsTrunk;
 
-public class MapleStorage implements Serializable {
+public class MapleStorage {
 
-    private static final long serialVersionUID = 9179541993413738569L;
     private int id;
     private int accountId;
     private List<IItem> items;
     private int meso;
     private byte slots;
     private boolean changed = false;
-    private Map<MapleInventoryType, List<IItem>> typeItems = new EnumMap<MapleInventoryType, List<IItem>>(MapleInventoryType.class);
+    private Map<MapleInventoryType, List<IItem>> typeItems = new EnumMap<>(MapleInventoryType.class);
+    private int npc_id = 1012003;
 
     private MapleStorage(int id, byte slots, int meso, int accountId) {
         this.id = id;
         this.slots = slots;
-        this.items = new LinkedList<IItem>();
+        this.items = new LinkedList<>();
         this.meso = meso;
         this.accountId = accountId;
     }
 
     public static int create(int id) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("INSERT INTO storages (accountid, slots, meso) VALUES (?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
-        ps.setInt(1, id);
-        ps.setInt(2, 4);
-        ps.setInt(3, 0);
-        ps.executeUpdate();
-
-        int storageid;
-        ResultSet rs = ps.getGeneratedKeys();
-        if (rs.next()) {
-            storageid = rs.getInt(1);
-            ps.close();
-            rs.close();
-            return storageid;
+        try (PreparedStatement ps = con.prepareStatement("INSERT INTO storages (accountid, slots, meso) VALUES (?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, id);
+            ps.setInt(2, 4);
+            ps.setInt(3, 0);
+            ps.executeUpdate();
+            int storageid;
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    storageid = rs.getInt(1);
+                    ps.close();
+                    rs.close();
+                    return storageid;
+                }
+            }
         }
-        ps.close();
-        rs.close();
         throw new DatabaseException("Inserting char failed.");
     }
 
@@ -100,16 +99,16 @@ public class MapleStorage implements Serializable {
         try {
             Connection con = DatabaseConnection.getConnection();
 
-            PreparedStatement ps = con.prepareStatement("UPDATE storages SET slots = ?, meso = ? WHERE storageid = ?");
-            ps.setInt(1, slots);
-            ps.setInt(2, meso);
-            ps.setInt(3, id);
-            ps.executeUpdate();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE storages SET slots = ?, meso = ? WHERE storageid = ?")) {
+                ps.setInt(1, slots);
+                ps.setInt(2, meso);
+                ps.setInt(3, id);
+                ps.executeUpdate();
+            }
 
-            List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
+            List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<>();
             for (final IItem item : items) {
-                listing.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+                listing.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
             }
             ItemLoader.STORAGE.saveItems(listing, accountId);
         } catch (SQLException ex) {
@@ -117,30 +116,34 @@ public class MapleStorage implements Serializable {
         }
     }
 
-    public IItem takeOut(byte slot) {
-        if (slot >= items.size() || slot < 0) {
+    public IItem takeOut(int type, int slot) {
+        List<IItem> fitems = typeItems.get(MapleInventoryType.getByType((byte) type));
+        if (fitems == null || fitems.size() < slot) {
             return null;
         }
+        IItem item_get = fitems.get(slot);
+        if (item_get == null) {
+            return null;
+        }
+
         changed = true;
-        IItem ret = items.remove(slot);
-        MapleInventoryType type = GameConstants.getInventoryType(ret.getItemId());
-        typeItems.put(type, new ArrayList<IItem>(filterItems(type)));
-        return ret;
+        items.remove(item_get);
+        fitems.remove(item_get);
+        return item_get;
     }
 
-    public void store(IItem item) {
+    public void store(MapleInventoryType type, IItem item) {
         changed = true;
         items.add(item);
-        MapleInventoryType type = GameConstants.getInventoryType(item.getItemId());
-        typeItems.put(type, new ArrayList<IItem>(filterItems(type)));
+        typeItems.get(type).add(item);
     }
 
     public List<IItem> getItems() {
         return Collections.unmodifiableList(items);
     }
 
-    private List<IItem> filterItems(MapleInventoryType type) {
-        List<IItem> ret = new LinkedList<IItem>();
+    public List<IItem> filterItems(MapleInventoryType type) {
+        List<IItem> ret = new LinkedList<>();
 
         for (IItem item : items) {
             if (GameConstants.getInventoryType(item.getItemId()) == type) {
@@ -150,23 +153,7 @@ public class MapleStorage implements Serializable {
         return ret;
     }
 
-    public byte getSlot(MapleInventoryType type, byte slot) {
-        // MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        byte ret = 0;
-        final List<IItem> it = typeItems.get(type);
-        if (slot >= it.size() || slot < 0) {
-            return -1;
-        }
-        for (IItem item : items) {
-            if (item == it.get(slot)) {
-                return ret;
-            }
-            ret++;
-        }
-        return -1;
-    }
-
-    public void sendStorage(MapleClient c, int npcId) {
+    public void sendStorage(MapleClient client, int npc_id) {
         // sort by inventorytype to avoid confusion
         Collections.sort(items, new Comparator<IItem>() {
 
@@ -181,17 +168,54 @@ public class MapleStorage implements Serializable {
             }
         });
         for (MapleInventoryType type : MapleInventoryType.values()) {
-            typeItems.put(type, new ArrayList<IItem>(items));
+            typeItems.put(type, new ArrayList<>(items));
         }
-        c.getSession().write(ResCTrunkDlg.Open(npcId, slots, items, meso));
+        this.npc_id = npc_id;
+        client.SendPacket(ResCTrunkDlg.TrunkResult(this, OpsTrunk.TrunkRes_OpenTrunkDlg));
     }
 
-    public void sendStored(MapleClient c, MapleInventoryType type) {
-        c.getSession().write(ResCTrunkDlg.ItemIn(slots, type, typeItems.get(type)));
+    public int getNpcId() {
+        return this.npc_id;
     }
 
-    public void sendTakenOut(MapleClient c, MapleInventoryType type) {
-        c.getSession().write(ResCTrunkDlg.ItemOut(slots, type, typeItems.get(type)));
+    private OpsDBCHAR lastModified = OpsDBCHAR.DBCHAR_ALL;
+
+    public OpsDBCHAR getLastModified() {
+        return this.lastModified;
+    }
+
+    public boolean setLastModified(int type) {
+        switch (type) {
+            case 1: {
+                setLastModified(OpsDBCHAR.DBCHAR_ITEMSLOTEQUIP);
+                return true;
+            }
+            case 2: {
+                setLastModified(OpsDBCHAR.DBCHAR_ITEMSLOTCONSUME);
+                return true;
+            }
+            case 3: {
+                setLastModified(OpsDBCHAR.DBCHAR_ITEMSLOTINSTALL);
+                return true;
+            }
+            case 4: {
+                setLastModified(OpsDBCHAR.DBCHAR_ITEMSLOTETC);
+                return true;
+            }
+            case 5: {
+                setLastModified(OpsDBCHAR.DBCHAR_ITEMSLOTCASH);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    public void setLastModified(OpsDBCHAR lastModified) {
+        this.lastModified = lastModified;
     }
 
     public int getMeso() {
@@ -213,10 +237,6 @@ public class MapleStorage implements Serializable {
         }
         changed = true;
         this.meso = meso;
-    }
-
-    public void sendMeso(MapleClient c) {
-        c.getSession().write(ResCTrunkDlg.MesoInOut(slots, meso));
     }
 
     public boolean isFull() {

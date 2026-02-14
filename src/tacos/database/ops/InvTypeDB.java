@@ -16,29 +16,28 @@
  *
  *
  */
-package tacos.database.query;
+package tacos.database.ops;
 
 /**
  *
  * @author Riremito
  */
 public enum InvTypeDB {
-    INVENTORY(0),
-    STORAGE(1),
+    Inventory,
+    Employee,
+    Trunk,
+    StoreBank,
+    Parcel,
+    CashShop,
+    ITC,
     UNKNOWN;
-
-    private int value = -1;
 
     InvTypeDB() {
 
     }
 
-    InvTypeDB(int value) {
-        this.value = value;
-    }
-
     public int get() {
-        return this.value;
+        return this.ordinal();
     }
 
 }

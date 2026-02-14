@@ -140,6 +140,31 @@ public enum OpsTrunk implements IPacketOps {
             return;
         }
 
+        if (Version.LessOrEqual(Region.JMS, 147)) {
+            TrunkReq_Load.set(0);
+            TrunkReq_Save.set(1);
+            TrunkReq_Close.set(2);
+            TrunkReq_GetItem.set(3);
+            TrunkReq_PutItem.set(4);
+            TrunkReq_SortItem.set(5);
+            TrunkReq_Money.set(6);
+            TrunkReq_CloseDialog.set(7);
+            TrunkRes_GetSuccess.set(8);
+            TrunkRes_GetUnknown.set(9);
+            TrunkRes_GetNoMoney.set(10);
+            TrunkRes_PutSuccess.set(11);
+            TrunkRes_PutIncorrectRequest.set(12);
+            TrunkRes_SortItem.set(13);
+            TrunkRes_PutNoMoney.set(14);
+            TrunkRes_PutNoSpace.set(15);
+            TrunkRes_PutUnknown.set(16);
+            TrunkRes_MoneySuccess.set(17);
+            TrunkRes_MoneyUnknown.set(18);
+            // unk
+            TrunkRes_OpenTrunkDlg.set(20);
+            return;
+        }
+
         // JMS186
         TrunkReq_Load.set(0);
         TrunkReq_Save.set(1);
@@ -161,6 +186,7 @@ public enum OpsTrunk implements IPacketOps {
         TrunkRes_PutUnknown.set(17);
         TrunkRes_MoneySuccess.set(18);
         TrunkRes_MoneyUnknown.set(19);
+        // unk
         TrunkRes_OpenTrunkDlg.set(21);
         return;
     }
