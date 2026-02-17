@@ -383,7 +383,7 @@ public class ReqCLogin {
         stat.maxmp = 50;
         stat.mp = 50;
 
-        chr.setAccountID(client.getId());
+        chr.setAccountId(client.getId());
         chr.setLevel(1);
         chr.setRemainingAp(0);
         chr.setFame(0);

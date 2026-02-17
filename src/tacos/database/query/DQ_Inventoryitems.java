@@ -24,14 +24,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IEquip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
@@ -49,7 +48,7 @@ public class DQ_Inventoryitems {
 
     public static final String DB_TABLE_NAME = "inventoryitems";
 
-    public static boolean delete(MapleCharacter chr) {
+    public static boolean delete(InvTypeDB itb, int owner_id) {
         /*
         if (!DatabaseConnection.setManual()) {
             return false;
@@ -59,8 +58,8 @@ public class DQ_Inventoryitems {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE type = ? AND characterid = ?;")) {
-                ps.setByte(1, (byte) InvTypeDB.Inventory.get());
-                ps.setInt(2, chr.getId());
+                ps.setByte(1, (byte) itb.ordinal());
+                ps.setInt(2, owner_id);
                 ps.executeUpdate();
                 return true;
             }
@@ -75,40 +74,45 @@ public class DQ_Inventoryitems {
         return false;
     }
 
-    public static boolean add(MapleCharacter chr) {
+    public static boolean add(InvTypeDB itb, int owner_id, ArrayList<IItem> items) {
         if (!DatabaseConnection.setManual()) {
             return false;
         }
 
-        delete(chr);
+        delete(itb, owner_id);
 
         try {
             Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, itemid, inventorytype, position, quantity, owner, GM_Log, uniqueid, expiredate, flag, type, sender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
-                for (MapleInventory iv : chr.getInventorys()) {
-                    for (IItem item : iv.list()) {
-                        ps.setInt(1, chr.getId());
-                        ps.setInt(2, item.getItemId());
-                        ps.setInt(3, iv.getType().getType()); // equip, consume...
-                        ps.setInt(4, item.getPosition());
-                        ps.setInt(5, item.getQuantity());
-                        ps.setString(6, item.getOwner());
-                        ps.setString(7, item.getGMLog());
-                        ps.setInt(8, item.getUniqueId());
-                        ps.setLong(9, item.getExpiration());
-                        ps.setByte(10, item.getFlag());
-                        ps.setByte(11, (byte) InvTypeDB.Inventory.get()); // inventory, storage...
-                        ps.setString(12, item.getGiftFrom());
-                        ps.executeUpdate();
-                        // equip stat
-                        if (iv.getType() == MapleInventoryType.EQUIP || iv.getType() == MapleInventoryType.EQUIPPED) {
-                            try (ResultSet rs = ps.getGeneratedKeys()) {
-                                if (!rs.next()) {
-                                    return false;
-                                }
-                                int unique_id = rs.getInt(1);
-                                DQ_Inventoryequipment.add(unique_id, (IEquip) item);
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (type, characterid, itemid, inventorytype, position, quantity, owner, GM_Log, uniqueid, expiredate, flag, sender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
+
+                for (IItem item : items) {
+                    MapleInventoryType inv_type = GameConstants.getInventoryType(item.getItemId());
+                    if (inv_type == MapleInventoryType.EQUIP) {
+                        if (item.getPosition() < 0) {
+                            inv_type = MapleInventoryType.EQUIPPED;
+                        }
+                    }
+                    ps.setByte(1, (byte) itb.ordinal()); // inventory, storage...
+                    ps.setInt(2, owner_id);
+                    ps.setInt(3, item.getItemId());
+                    ps.setInt(4, inv_type.getType()); // equip, consume...
+                    ps.setInt(5, item.getPosition());
+                    ps.setInt(6, item.getQuantity());
+                    ps.setString(7, item.getOwner());
+                    ps.setString(8, item.getGMLog());
+                    ps.setInt(9, item.getUniqueId());
+                    ps.setLong(10, item.getExpiration());
+                    ps.setByte(11, item.getFlag());
+                    ps.setString(12, item.getGiftFrom());
+                    ps.executeUpdate();
+                    // equip stat
+                    if (inv_type == MapleInventoryType.EQUIP || inv_type == MapleInventoryType.EQUIPPED) {
+                        try (ResultSet rs = ps.getGeneratedKeys()) {
+                            if (!rs.next()) {
+                                return false;
                             }
+                            int unique_id = rs.getInt(1);
+                            DQ_Inventoryequipment.add(unique_id, (IEquip) item);
                         }
                     }
                 }
@@ -126,13 +130,17 @@ public class DQ_Inventoryitems {
         return false;
     }
 
-    public static Map<Integer, OdinPair<IItem, MapleInventoryType>> load(MapleCharacter chr, boolean is_avatar_look) {
+    public static Map<Integer, OdinPair<IItem, MapleInventoryType>> load(InvTypeDB itb, int owner_id) {
+        return load(itb, owner_id, false);
+    }
+
+    public static Map<Integer, OdinPair<IItem, MapleInventoryType>> load(InvTypeDB itb, int owner_id, boolean is_avatar_look) {
         Map<Integer, OdinPair<IItem, MapleInventoryType>> items = new LinkedHashMap<>();
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE type = ? AND characterid = ?;")) {
-                ps.setByte(1, (byte) InvTypeDB.Inventory.get());
-                ps.setInt(2, chr.getId());
+                ps.setByte(1, (byte) itb.ordinal());
+                ps.setInt(2, owner_id);
                 // AND inventorytype = MapleInventoryType.EQUIPPED.getType()
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {

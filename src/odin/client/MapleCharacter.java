@@ -124,6 +124,7 @@ import odin.server.shops.HiredMerchant;
 import odin.tools.ConcurrentEnumMap;
 import odin.tools.FileoutputUtil;
 import tacos.client.TacosCharacter;
+import tacos.database.ops.InvTypeDB;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Buddies;
@@ -365,7 +366,7 @@ public class MapleCharacter extends TacosCharacter {
                 ps.close();
                 rs.close();
 
-                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(ret, false).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, ret.id).values()) {
                     if (!DWI_Validation.isValidItemID(mit.getLeft().getItemId())) {
                         DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                         continue;
@@ -567,7 +568,7 @@ public class MapleCharacter extends TacosCharacter {
 
                 ret.stats.recalcLocalStats(true);
             } else { // Not channel server
-                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(ret, true).values()) {
+                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, ret.id, true).values()) {
                     if (mit.getRight() == MapleInventoryType.EQUIPPED) {
                         ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getLeft());
                     }
@@ -597,7 +598,7 @@ public class MapleCharacter extends TacosCharacter {
         if (!DQ_Inventoryslot.add(chr)) {
             return false;
         }
-        if (!DQ_Inventoryitems.add(chr)) {
+        if (!DQ_Inventoryitems.add(InvTypeDB.Inventory, chr.getId(), chr.getAllItems())) {
             return false;
         }
         if (!DQ_Mountdata.add(chr)) {
@@ -617,7 +618,10 @@ public class MapleCharacter extends TacosCharacter {
         if (clone) {
             return;
         }
-        DQ_Inventoryitems.add(this);
+        DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
+        if (storage != null) {
+            storage.update();
+        }
 
         Connection con = DatabaseConnection.getConnection();
 
@@ -832,10 +836,6 @@ public class MapleCharacter extends TacosCharacter {
             ps.setInt(5, client.getId());
             ps.execute();
             ps.close();
-
-            if (storage != null) {
-                storage.update();
-            }
 
             if (cs != null) {
                 cs.save();
@@ -2340,10 +2340,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public Runnable checkItemSlot(short item_slot, int item_id) {
         return checkItemSlot(item_slot, item_id, (short) 1);
-    }
-
-    public final MapleInventory[] getInventorys() {
-        return inventory;
     }
 
     public final void expirationTask() {

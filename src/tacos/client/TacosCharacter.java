@@ -667,8 +667,21 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     protected MapleInventory[] inventory;
 
+    public final MapleInventory[] getInventorys() {
+        return this.inventory;
+    }
+
     public MapleInventory getInventory(MapleInventoryType type) {
         return this.inventory[type.ordinal()];
+    }
+
+    public ArrayList<IItem> getAllItems() {
+        ArrayList<IItem> items = new ArrayList<>();
+        for (MapleInventory iv : getInventorys()) {
+            items.addAll(iv.list());
+        }
+
+        return items;
     }
 
     public void equipChanged() {
@@ -695,11 +708,11 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     protected String name;
     protected int gmLevel;
 
-    public int getAccountID() {
+    public int getAccountId() {
         return this.accountid;
     }
 
-    public void setAccountID(int accountid) {
+    public void setAccountId(int accountid) {
         this.accountid = accountid;
     }
 

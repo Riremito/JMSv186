@@ -24,20 +24,12 @@ package tacos.database.ops;
  */
 public enum InvTypeDB {
     Inventory,
-    Employee,
     Trunk,
+    Employee,
     StoreBank,
     Parcel,
     CashShop,
     ITC,
     UNKNOWN;
-
-    InvTypeDB() {
-
-    }
-
-    public int get() {
-        return this.ordinal();
-    }
 
 }

@@ -209,7 +209,7 @@ public class ReqCClientSocket {
             client.setMapleId(maple_id);
             client.setNexonId(nexon_id);
             client.setPlayer(transfer);
-            client.setId(transfer.getAccountID());
+            client.setId(transfer.getAccountId());
             transfer.setClient(client);
             world.removeMigratingPlayer(transfer);
         }
@@ -225,7 +225,7 @@ public class ReqCClientSocket {
                 // login.
                 if (transfer == null) {
                     client.setPlayer(chr);
-                    client.setId(chr.getAccountID());
+                    client.setId(chr.getAccountId());
                     chr.setChannelId(client.getChannelServer().getChannel());
                     chr.setClient(client);
                     LazyDatabase.loadData(chr);

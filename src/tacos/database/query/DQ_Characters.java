@@ -86,7 +86,7 @@ public class DQ_Characters {
                 ps.setInt(31, 0); //marriage ID
                 ps.setInt(32, 0); //current reps
                 ps.setInt(33, 0); //total reps
-                ps.setInt(34, chr.getAccountID());
+                ps.setInt(34, chr.getAccountId());
                 ps.setString(35, chr.getName());
                 ps.setByte(36, (byte) chr.getClient().getSelectedWorld());
                 ps.setInt(37, chr.getTama());
@@ -177,7 +177,7 @@ public class DQ_Characters {
                 ret.setGM(gmLevel);
 
                 int accountid = rs.getInt("accountid");
-                ret.setAccountID(accountid);
+                ret.setAccountId(accountid);
 
                 int dwPosMap = rs.getInt("map");
                 int nPortal = rs.getByte("spawnpoint");

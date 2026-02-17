@@ -49,14 +49,14 @@ public class HiredMerchantHandler {
 //	slea.readInt(); // TimeStamp
 
         if (client.getPlayer().getMap().allowPersonalShop()) {
-            final byte state = checkExistance(client.getPlayer().getAccountID(), client.getPlayer().getId());
+            final byte state = checkExistance(client.getPlayer().getAccountId(), client.getPlayer().getId());
 
             switch (state) {
                 case 1:
                     client.getPlayer().dropMessage(1, "Please claim your items from Fredrick first.");
                     break;
                 case 0:
-                    boolean merch = client.getWorld().hasMerchant(client.getPlayer().getAccountID());
+                    boolean merch = client.getWorld().hasMerchant(client.getPlayer().getAccountId());
                     if (!merch) {
 //		    c.getPlayer().dropMessage(1, "The Hired Merchant is temporary disabled until it's fixed.");
                         client.getSession().write(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenPossible));
@@ -103,12 +103,12 @@ public class HiredMerchantHandler {
         switch (operation) {
             case 20: {
                 final int conv = client.getPlayer().getConversation();
-                boolean merch = client.getWorld().hasMerchant(client.getPlayer().getAccountID());
+                boolean merch = client.getWorld().hasMerchant(client.getPlayer().getAccountId());
                 if (merch) {
                     client.getPlayer().dropMessage(1, "Please close the existing store and try again.");
                     client.getPlayer().setConversation(0);
                 } else if (conv == 3) { // Hired Merch
-                    final MerchItemPackage pack = loadItemFrom_Database(client.getPlayer().getId(), client.getPlayer().getAccountID());
+                    final MerchItemPackage pack = loadItemFrom_Database(client.getPlayer().getId(), client.getPlayer().getAccountId());
 
                     if (pack == null) {
                         client.getPlayer().dropMessage(1, "You do not have any item(s) with Fredrick.");
@@ -118,7 +118,7 @@ public class HiredMerchantHandler {
                             client.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
                             return;
                         }
-                        if (deletePackage(client.getPlayer().getId(), client.getPlayer().getAccountID(), pack.getPackageid())) {
+                        if (deletePackage(client.getPlayer().getId(), client.getPlayer().getAccountId(), pack.getPackageid())) {
                             client.getPlayer().gainMeso(pack.getMesos(), false);
                             client.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x1d));
                         } else {
@@ -141,7 +141,7 @@ public class HiredMerchantHandler {
                 if (client.getPlayer().getConversation() != 3) {
                     return;
                 }
-                final MerchItemPackage pack = loadItemFrom_Database(client.getPlayer().getId(), client.getPlayer().getAccountID());
+                final MerchItemPackage pack = loadItemFrom_Database(client.getPlayer().getId(), client.getPlayer().getAccountId());
 
                 if (pack == null) {
                     client.getPlayer().dropMessage(1, "An unknown error occured.");
@@ -151,7 +151,7 @@ public class HiredMerchantHandler {
                     client.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
                     return;
                 }
-                if (deletePackage(client.getPlayer().getId(), client.getPlayer().getAccountID(), pack.getPackageid())) {
+                if (deletePackage(client.getPlayer().getId(), client.getPlayer().getAccountId(), pack.getPackageid())) {
                     client.getPlayer().gainMeso(pack.getMesos(), false);
                     for (IItem item : pack.getItems()) {
                         MapleInventoryManipulator.addFromDrop(client, item, false);

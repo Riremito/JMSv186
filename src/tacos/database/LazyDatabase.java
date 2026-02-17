@@ -171,7 +171,7 @@ public class LazyDatabase {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT `value_int`, `value_str` from " + DB_TABLE_NAME + " where maple_id = ? AND character_id = ? AND data_name = ?;")) {
-                ps.setInt(1, chr.getAccountID());
+                ps.setInt(1, chr.getAccountId());
                 ps.setInt(2, chr.getId());
                 ps.setString(3, ldn.getName());
                 try (ResultSet rs = ps.executeQuery()) {
@@ -200,7 +200,7 @@ public class LazyDatabase {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (maple_id, character_id, data_name, value_int) VALUES (?, ?, ?, ?);")) {
-                ps.setInt(1, chr.getAccountID());
+                ps.setInt(1, chr.getAccountId());
                 ps.setInt(2, chr.getId());
                 ps.setString(3, ld.getDataName().getName());
                 ps.setInt(4, ld.getInt());
@@ -218,7 +218,7 @@ public class LazyDatabase {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (maple_id, character_id, data_name, value_str) VALUES (?, ?, ?, ?);")) {
-                ps.setInt(1, chr.getAccountID());
+                ps.setInt(1, chr.getAccountId());
                 ps.setInt(2, chr.getId());
                 ps.setString(3, ld.getDataName().getName());
                 ps.setString(4, ld.getStr());
@@ -237,7 +237,7 @@ public class LazyDatabase {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `value_int` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;")) {
                 ps.setInt(1, ld.getInt());
-                ps.setInt(2, chr.getAccountID());
+                ps.setInt(2, chr.getAccountId());
                 ps.setInt(3, chr.getId());
                 ps.setString(4, ld.getDataName().getName());
                 ps.execute();
@@ -255,7 +255,7 @@ public class LazyDatabase {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `value_str` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;")) {
                 ps.setString(1, ld.getStr());
-                ps.setInt(2, chr.getAccountID());
+                ps.setInt(2, chr.getAccountId());
                 ps.setInt(3, chr.getId());
                 ps.setString(4, ld.getDataName().getName());
                 ps.execute();

@@ -37,8 +37,6 @@ import tacos.odin.OdinPair;
 
 public enum ItemLoader {
 
-    INVENTORY("inventoryitems", "inventoryequipment", 0, "characterid"),
-    STORAGE("inventoryitems", "inventoryequipment", 1, "accountid"),
     CASHSHOP_EXPLORER("csitems", "csequipment", 2, "accountid"),
     CASHSHOP_CYGNUS("csitems", "csequipment", 3, "accountid"),
     CASHSHOP_ARAN("csitems", "csequipment", 4, "accountid"),

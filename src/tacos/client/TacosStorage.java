@@ -25,8 +25,11 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import tacos.config.DeveloperMode;
+import tacos.database.ops.InvTypeDB;
+import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Storages;
 import tacos.debug.DebugLogger;
+import tacos.odin.OdinPair;
 import tacos.packet.ops.OpsDBCHAR;
 import tacos.wz.ids.DWI_Validation;
 
@@ -43,7 +46,7 @@ public class TacosStorage {
     private boolean changed = false;
 
     public TacosStorage(TacosCharacter chr) {
-        this.account_id = chr.getAccountID();
+        this.account_id = chr.getAccountId();
     }
 
     public int getAccountId() {
@@ -77,7 +80,9 @@ public class TacosStorage {
     public boolean load() {
         if (DQ_Storages.load(this)) {
             DebugLogger.DebugLog("storage is found.");
-            DQ_Storages.loadItems(this);
+            for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Trunk, this.account_id).values()) {
+                this.items.add(mit.getLeft());
+            }
             return true;
         }
         DebugLogger.DebugLog("storage is created.");
@@ -90,7 +95,7 @@ public class TacosStorage {
         }
         this.changed = false;
         DQ_Storages.update(this);
-        DQ_Storages.updateItems(this);
+        DQ_Inventoryitems.add(InvTypeDB.Trunk, this.account_id, this.items);
         return true;
     }
     private int npc_id = 1012003;

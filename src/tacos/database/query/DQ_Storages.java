@@ -22,16 +22,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import odin.client.inventory.IItem;
-import odin.client.inventory.ItemLoader;
-import odin.client.inventory.MapleInventoryType;
-import odin.constants.GameConstants;
 import tacos.client.TacosStorage;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
 
 /**
  *
@@ -62,19 +55,6 @@ public class DQ_Storages {
         }
 
         return false;
-    }
-
-    public static boolean loadItems(TacosStorage storage) {
-        ArrayList<IItem> items = storage.getItems();
-        items.clear();
-        try {
-            for (OdinPair<IItem, MapleInventoryType> mit : ItemLoader.STORAGE.loadItems(false, storage.getAccountId()).values()) {
-                items.add(mit.getLeft());
-            }
-        } catch (SQLException ex) {
-            return false;
-        }
-        return true;
     }
 
     public static boolean create(TacosStorage storage) {
@@ -110,19 +90,6 @@ public class DQ_Storages {
         }
 
         return false;
-    }
-
-    public static boolean updateItems(TacosStorage storage) {
-        List<OdinPair<IItem, MapleInventoryType>> listing = new ArrayList<>();
-        for (final IItem item : storage.getItems()) {
-            listing.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
-        }
-        try {
-            ItemLoader.STORAGE.saveItems(listing, storage.getAccountId());
-        } catch (SQLException ex) {
-            return false;
-        }
-        return true;
     }
 
 }
