@@ -335,12 +335,12 @@ public class ReqCCashShop {
         }
 
         // スロット数上限確認
-        if (TRUNK_SLOT_LIMIT < (chr.getStorage().getSlots() + 4)) {
+        if (TRUNK_SLOT_LIMIT < (chr.getStorage().getSlot() + 4)) {
             return false;
         }
 
         usePoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE);
-        chr.getStorage().increaseSlots((byte) 4);
+        chr.getStorage().setSlot(chr.getStorage().getSlot() + 4);
         return true;
     }
 

@@ -77,7 +77,10 @@ import odin.server.SpeedRunner;
 import odin.server.maps.SpeedRunType;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
+import tacos.client.TacosStorage;
+import tacos.packet.ops.OpsTrunk;
 import tacos.packet.response.ResCScriptMan;
+import tacos.packet.response.ResCTrunkDlg;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
@@ -453,7 +456,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void sendStorage() {
         client.getPlayer().setConversation(4);
-        client.getPlayer().getStorage().sendStorage(client, npc);
+        TacosStorage storage = client.getPlayer().getStorage();
+        storage.setNpcId(npc);
+        client.SendPacket(ResCTrunkDlg.TrunkResult(client.getPlayer().getStorage(), OpsTrunk.TrunkRes_OpenTrunkDlg));
     }
 
     public void openShop(int id) {

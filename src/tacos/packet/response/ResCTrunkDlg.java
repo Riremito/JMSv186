@@ -24,7 +24,7 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.util.List;
-import odin.server.MapleStorage;
+import tacos.client.TacosStorage;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsDBCHAR;
@@ -38,7 +38,7 @@ import tacos.packet.response.data.DataGW_ItemSlotBase;
 public class ResCTrunkDlg {
 
     // CTrunkDlg::OnPacket
-    public static MaplePacket TrunkResult(MapleStorage storage, OpsTrunk ops) {
+    public static MaplePacket TrunkResult(TacosStorage storage, OpsTrunk ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
 
         sp.Encode1(ops.get());
@@ -77,7 +77,7 @@ public class ResCTrunkDlg {
     }
 
     // CTrunkDlg::SetTrunkDlg
-    public static byte[] SetTrunkDlg(MapleStorage storage) {
+    private static byte[] SetTrunkDlg(TacosStorage storage) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(storage.getNpcId()); // m_dwNpcTemplateID
@@ -86,10 +86,10 @@ public class ResCTrunkDlg {
     }
 
     // CTrunkDlg::SetGetItems
-    public static byte[] SetGetItems(MapleStorage storage, long dbcharFlag) {
+    private static byte[] SetGetItems(TacosStorage storage, long dbcharFlag) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode1(storage.getSlots()); // m_nSlotCount
+        data.Encode1(storage.getSlot()); // m_nSlotCount
         if (Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
             data.Encode2((short) dbcharFlag);
         } else {

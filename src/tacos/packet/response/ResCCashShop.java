@@ -218,7 +218,7 @@ public class ResCCashShop {
                 for (IItem item : csi.getInventory()) {
                     sp.EncodeBuffer(DataGW_CashItemInfo.Encode(item, c));
                 }
-                sp.Encode2(c.getPlayer().getStorage().getSlots()); // m_nTrunkCount
+                sp.Encode2(c.getPlayer().getStorage().getSlot()); // m_nTrunkCount
                 sp.Encode2(c.getCharSlots()); // m_nCharacterSlotCount
                 sp.Encode2(0);// m_nBuyCharacterCount
                 sp.Encode2(c.getCharaterCount());// m_nCharacterCount
@@ -284,7 +284,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResIncTrunkCountDone
             case CashItemRes_IncTrunkCount_Done: {
-                sp.Encode2(c.getPlayer().getStorage().getSlots());
+                sp.Encode2(c.getPlayer().getStorage().getSlot());
                 break;
             }
             // CCashShop::OnCashItemResIncTrunkCountFailed

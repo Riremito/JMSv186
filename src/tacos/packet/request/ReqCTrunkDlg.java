@@ -30,7 +30,7 @@ import tacos.packet.ops.OpsTrunk;
 import tacos.packet.response.ResCTrunkDlg;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleStorage;
+import tacos.client.TacosStorage;
 
 /**
  *
@@ -38,12 +38,13 @@ import odin.server.MapleStorage;
  */
 public class ReqCTrunkDlg {
 
+    // CTrunkDlg::OnPacket
     public static boolean OnPacket(ClientPacket cp, MapleClient client) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
-        MapleStorage storage = chr.getStorage();
+        TacosStorage storage = chr.getStorage();
 
         byte mode = cp.Decode1();
 
@@ -51,13 +52,13 @@ public class ReqCTrunkDlg {
             case TrunkReq_GetItem: {
                 byte type = cp.Decode1();
                 byte slot = cp.Decode1();
-                IItem item = storage.takeOut(type, slot);
+                IItem item = storage.getItem(type, slot);
                 if (item == null) {
                     return false;
                 }
 
                 if (!MapleInventoryManipulator.checkSpace(client, item.getItemId(), item.getQuantity(), item.getOwner())) {
-                    storage.store(GameConstants.getInventoryType(item.getItemId()), item);
+                    storage.putItem(item);
                     chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_GetUnknown));
                     return false;
                 }
@@ -128,9 +129,9 @@ public class ReqCTrunkDlg {
                     return false;
                 }
 
-                storage.store(type, item);
+                storage.putItem(item);
                 storage.setLastModified(type.getType());
-                client.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_PutSuccess));
+                chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_PutSuccess));
                 return true;
             }
             case TrunkReq_Money: {
@@ -158,11 +159,10 @@ public class ReqCTrunkDlg {
 
                 storage.setMeso(storageMesos - meso);
                 chr.gainMeso(meso, false, true, false);
-                client.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_MoneySuccess));
+                chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_MoneySuccess));
                 return true;
             }
             case TrunkReq_CloseDialog: {
-                storage.close();
                 chr.setConversation(0);
                 return true;
             }

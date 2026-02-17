@@ -83,6 +83,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private FreeMarketPortal portal_fm = new FreeMarketPortal();
     private ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
     private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
+    protected TacosStorage storage = null;
 
     public void SendPacket(MaplePacket packet) {
         this.client.SendPacket(packet);
@@ -825,6 +826,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             ble.setChannel(friend.getChannelId());
             this.buddylist.put(ble);
         }
+    }
+
+    public TacosStorage getStorage() {
+        if (this.storage == null) {
+            this.storage = new TacosStorage(this);
+            this.storage.load();
+        }
+        return this.storage;
     }
 
     // clone

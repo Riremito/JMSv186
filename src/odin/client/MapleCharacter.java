@@ -95,7 +95,6 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
-import odin.server.MapleStorage;
 import odin.server.MapleTrade;
 import odin.server.Randomizer;
 import odin.server.RandomRewards;
@@ -177,7 +176,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleShop shop;
     private transient MapleDragon dragon;
     private transient RockPaperScissors rps;
-    private MapleStorage storage;
     private transient MapleTrade trade;
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
@@ -509,7 +507,6 @@ public class MapleCharacter extends TacosCharacter {
                     ret.buddylist.put(ble);
                 }
 
-                ret.storage = MapleStorage.loadStorage(ret.accountid);
                 ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
 
                 ps = con.prepareStatement("SELECT sn FROM wishlist WHERE characterid = ?");
@@ -837,8 +834,9 @@ public class MapleCharacter extends TacosCharacter {
             ps.close();
 
             if (storage != null) {
-                storage.saveToDB();
+                storage.update();
             }
+
             if (cs != null) {
                 cs.save();
             }
@@ -2816,10 +2814,6 @@ public class MapleCharacter extends TacosCharacter {
         throw new UnsupportedOperationException();
     }
 
-    public MapleStorage getStorage() {
-        return storage;
-    }
-
     public void addVisibleMapObject(MapleMapObject mo) {
         if (clone) {
             return;
@@ -4748,7 +4742,6 @@ public class MapleCharacter extends TacosCharacter {
         ret.keydown_skill = 0;
         ret.lastmonthfameids = lastmonthfameids;
         ret.lastfametime = lastfametime;
-        ret.storage = storage;
         ret.cs = this.cs;
         ret.client.setMapleId(client.getMapleId());
         ret.nexonPoint = nexonPoint;
