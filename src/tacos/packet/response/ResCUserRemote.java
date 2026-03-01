@@ -36,6 +36,7 @@ import tacos.packet.response.data.DataCUser;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 import tacos.client.TacosCharacter;
+import tacos.config.ContentCustom;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacketHeader;
 
@@ -56,10 +57,11 @@ public class ResCUserRemote {
     // CUserRemote::OnAttack
     public static MaplePacket UserAttack(AttackInfo attack) {
         ServerPacket sp = new ServerPacket(attack.GetHeader());
+        boolean is_hide_damage = ContentCustom.CC_HIDE_DAMAGE.get();
 
         if (Version.LessOrEqual(Region.JMS, 147)) {
             sp.Encode4(attack.CharacterId);
-            sp.Encode1(attack.HitKey);
+            sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // & 0xF0 to hide damages.
             sp.Encode1(attack.SkillLevel); // nPassiveSLV
             if (0 < attack.nSkillID) {
                 sp.Encode4(attack.nSkillID); // nSkillID
@@ -73,6 +75,9 @@ public class ResCUserRemote {
                 if (oned.attack != null) {
                     sp.Encode4(oned.objectid);
                     sp.Encode1(7);
+                    if (is_hide_damage) {
+                        continue;
+                    }
                     if (attack.IsMesoExplosion()) {
                         sp.Encode1(oned.attack.size());
                     }
