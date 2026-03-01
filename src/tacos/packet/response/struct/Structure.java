@@ -486,8 +486,10 @@ public class Structure {
             data.Encode4(0);
             data.Encode4(0);
         }
-        if (Version.PostBB() && !Version.LessOrEqual(Region.GMS, 95)) {
-            data.Encode4(0);
+        if (Version.PostBB()) {
+            if (!Version.Equal(Region.KMST, 330) && !Version.LessOrEqual(Region.GMS, 95)) {
+                data.Encode4(0);
+            }
         }
 
         if (Version.LessOrEqual(Region.JMS, 131)) {
