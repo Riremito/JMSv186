@@ -120,7 +120,7 @@ public class ResCUserRemote {
                     sp.Encode1(oned.attack.size());
                 }
                 for (OdinPair<Integer, Boolean> eachd : oned.attack) {
-                    if (Version.LessOrEqual(Region.JMS, 131)) {
+                    if (Version.LessOrEqual(Region.JMS, 131) || Version.Equal(Region.KMST, 330)) {
                         sp.Encode4(eachd.getLeft() | ((eachd.getRight() ? 1 : 0) << 31));
                     } else {
                         sp.Encode1(eachd.getRight() ? 1 : 0);
