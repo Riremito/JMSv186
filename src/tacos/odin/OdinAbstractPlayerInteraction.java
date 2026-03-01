@@ -801,6 +801,11 @@ public abstract class OdinAbstractPlayerInteraction {
         client.SendPacket(ResCUserLocal.Teleport((byte) 6));
     }
 
+    // Oribs PQ, 920010700
+    public void instantwarp(int map_id, int porta_id) {
+        client.SendPacket(ResCUserLocal.Teleport((byte) porta_id));
+    }
+
     public final boolean dojoAgent_NextMap(final boolean dojo, final boolean fromresting) {
         if (dojo) {
             return Event_DojoAgent.warpNextMap(client.getPlayer(), fromresting);
