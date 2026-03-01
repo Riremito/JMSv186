@@ -73,7 +73,7 @@ public class DataSecondaryStat {
         }
         // JMS v187+
         if (Version.PostBB()) {
-            if (!Region.IsIMS() && !Region.IsTHMS()) {
+            if (!Region.IsIMS() && !Region.IsTHMS() && !Version.Equal(Region.KMST, 330)) {
                 data.Encode4(buff_mask[4]);
             }
         }

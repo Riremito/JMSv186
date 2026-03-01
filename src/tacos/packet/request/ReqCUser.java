@@ -817,7 +817,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserTransferFieldRequest(ClientPacket cp, MapleCharacter chr) {
-        boolean isKMS95orLater = Version.GreaterOrEqual(Region.KMS, 95) || Region.check(Region.IMS) || Region.check(Region.MSEA); // not in KMST391
+        boolean isKMS95orLater = Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.KMST, 330) || Region.check(Region.IMS) || Region.check(Region.MSEA); // not in KMST391
         short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
         int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
         byte portal_count = cp.Decode1();

@@ -204,7 +204,7 @@ public class ResCWvsContext {
         }
         // JMS v187+
         if (Version.PostBB()) {
-            if (!Region.IsIMS() && !Region.IsTHMS()) {
+            if (!Region.IsIMS() && !Region.IsTHMS() && !Version.Equal(Region.KMST, 330)) {
                 sp.Encode4(buff_mask[4]);
             }
         }

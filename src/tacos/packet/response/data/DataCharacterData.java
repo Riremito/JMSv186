@@ -570,7 +570,7 @@ public class DataCharacterData {
                         }
                     }
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 65) || Version.Equal(Region.KMST, 391)) {
+                if (Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.KMST, 330)) {
                     if ((datamask & 0x40000) != 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }

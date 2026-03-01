@@ -362,6 +362,12 @@ public class DataGW_CharacterStat {
         if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 92)) {
             data.Encode2(chr.getSubcategory());
         }
+
+        if (Version.Equal(Region.KMST, 330)) {
+            data.Encode4(0); // same as JMS187?
+            return data.get().getBytes();
+        }
+
         // KMS, CMS, EMS
         if (Region.IsKMS() || Region.IsCMS() || Region.IsGMS() || Region.IsEMS() || Region.IsIMS() || Region.IsMSEA()) {
             return data.get().getBytes();
@@ -394,7 +400,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
         // Post BB
-        if (Region.IsJMS() && Version.getVersion() == 187) {
+        if (Version.Equal(Region.JMS, 187)) {
             data.Encode4(0);
         }
         // JMS v188+

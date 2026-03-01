@@ -755,7 +755,7 @@ public class ResCLogin {
             sp.EncodeStr("");
         }
 
-        if (Region.check(Region.KMSB) || (Region.IsKMS() && !Version.GreaterOrEqual(Region.KMS, 160)) || Region.IsCMS() || Region.IsIMS()) {
+        if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.KMS, 149) || Region.check(Region.KMST) || Region.IsCMS() || Region.IsIMS()) {
             sp.Encode4(1000000);
         }
 
@@ -919,8 +919,7 @@ public class ResCLogin {
             return sp.get();
         }
         // BIGBANG
-        if (Region.IsJMS()
-                && Version.getVersion() == 187) {
+        if (Version.Equal(Region.JMS, 187)) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots);
