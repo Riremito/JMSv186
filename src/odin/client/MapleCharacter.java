@@ -61,7 +61,6 @@ import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.PlayerBuffValueHolder;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
@@ -1433,24 +1432,6 @@ public class MapleCharacter extends TacosCharacter {
             }
         }
         return -1;
-    }
-
-    public void silentGiveBuffs(List<PlayerBuffValueHolder> buffs) {
-        if (buffs == null) {
-            return;
-        }
-        for (PlayerBuffValueHolder mbsvh : buffs) {
-            mbsvh.effect.silentApplyBuff(this, mbsvh.startTime);
-        }
-    }
-
-    public List<PlayerBuffValueHolder> getAllBuffs() {
-        List<PlayerBuffValueHolder> ret = new ArrayList<PlayerBuffValueHolder>();
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            ret.add(new PlayerBuffValueHolder(mbsvh.startTime, mbsvh.effect));
-        }
-        return ret;
     }
 
     public void cancelMagicDoor() {
