@@ -2084,8 +2084,8 @@ public class ReqCUser {
     public static boolean OnUserPortalScriptRequest(MapleCharacter chr, ClientPacket cp) {
         byte portal_count = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         String portal_name = cp.DecodeStr();
-        short chr_x = cp.Decode2();
-        short chr_y = cp.Decode2();
+        short chr_x = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
+        short chr_y = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
 
         return chr.usePortalScript(portal_name);
     }

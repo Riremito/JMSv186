@@ -257,13 +257,14 @@ public class DataGW_ItemSlotBase {
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
                 data.Encode8(SharedDate.getMagicalExpirationDate()); // dateDead
+                if (Version.LessOrEqual(Region.KMS, 1)) {
+                    break;
+                }
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
-
                 if (Version.LessOrEqual(Region.KMS, 31)) {
                     break;
                 }
-
                 if (ServerConfig.JMS164orLater() || Region.IsVMS() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS

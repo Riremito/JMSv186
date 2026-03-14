@@ -49,11 +49,13 @@ public class Property_Database {
             return false;
         }
         // jdbc:mysql://127.0.0.1:3306/jms_v186?autoReconnect=true&characterEncoding=utf8
+        // jms_v186 : linux checks uppercase/lower case for database name, but windows does not check it.
+        // autoReconnect=true&characterEncoding=utf8 : these arguments should be like this, do not change these to lowercase/uppercase.
         url = conf.get("database.url");
         if (url.isEmpty()) {
             String database_host = conf.get("database.host");
             String database_port = conf.get("database.port");
-            url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + Region.GetRegionName() + "_v" + Version.getVersion() + "?autoReconnect=true&characterEncoding=utf8";
+            url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + Region.GetRegionName().toLowerCase() + "_v" + Version.getVersion() + "?autoReconnect=true&characterEncoding=utf8";
         }
         user = conf.get("database.user");
         password = conf.get("database.password");
