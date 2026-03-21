@@ -206,8 +206,7 @@ public class TacosChannel extends TacosServer {
             server.mapFactory.setChannel(channel);
             server.onlines = new OnlinePlayers();
             TacosServer.add(server);
-            server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
-            server.run(TacosConstants.SERVER_LOCAL_IP, channel_port, new PacketHandler_Game(server, channel));
+            server.run(TacosConstants.SERVER_GLOBAL_IP, channel_port, new PacketHandler_Game(server, channel));
             server.setWorld(world);
             world.addChannel(server);
             // property
@@ -231,7 +230,6 @@ public class TacosChannel extends TacosServer {
             String channel_name = Property_Dummy_World.getName() + "-" + channel;
             int language = Region.check(Region.EMS) ? i % Property_Dummy_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
-            server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
             server.setWorld(dummy_world);
             dummy_world.addChannel(server);
             server.onlines = new OnlinePlayers();

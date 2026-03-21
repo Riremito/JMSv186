@@ -218,6 +218,9 @@ public class DebugCommand {
             }
             case "/shutdown": {
                 // CTRL + C & Y
+                if (chr.getName().equals("リレミト") || chr.getName().equals("Riremito")) {
+                    System.exit(0);
+                }
                 return true;
             }
             case "/resetpassword": {

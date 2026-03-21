@@ -101,8 +101,7 @@ public class TacosLogin extends TacosServer {
         TacosWorld world = TacosWorld.find(0);
         TacosLogin login_server = new TacosLogin("Login");
         TacosServer.add(login_server);
-        login_server.setGlobalIP(TacosConstants.SERVER_GLOBAL_IP);
-        login_server.run(TacosConstants.SERVER_LOCAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
+        login_server.run(TacosConstants.SERVER_GLOBAL_IP, Property_Login.getPort(), new PacketHandler_Login(login_server));
         world.setLogin(login_server);
     }
 
