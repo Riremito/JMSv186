@@ -61,12 +61,13 @@ public class MapleFamily implements java.io.Serializable {
             ps.setInt(1, fid);
             ResultSet rs = ps.executeQuery();
 
-            if (!rs.first()) {
+            if (!rs.next()) {
                 rs.close();
                 ps.close();
                 id = -1;
                 return;
             }
+
             id = fid;
             leaderid = rs.getInt("leaderid");
             notice = rs.getString("notice");

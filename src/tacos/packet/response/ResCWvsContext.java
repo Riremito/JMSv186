@@ -712,7 +712,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket showNotes(ResultSet notes, int count) throws SQLException {
+    public static MaplePacket MemoResult(ResultSet notes, int count) throws SQLException {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MemoResult);
 
         sp.Encode1(3);

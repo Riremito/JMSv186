@@ -79,7 +79,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.setInt(1, guildid);
             ResultSet rs = ps.executeQuery();
 
-            if (!rs.first()) {
+            if (!rs.next()) {
                 rs.close();
                 ps.close();
                 id = -1;
@@ -109,7 +109,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.setInt(1, guildid);
             rs = ps.executeQuery();
 
-            if (!rs.first()) {
+            if (!rs.next()) {
                 System.err.println("No members in guild " + id + ".  Impossible... guild is disbanding");
                 rs.close();
                 ps.close();
@@ -486,7 +486,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.first()) {// name taken
+            if (rs.next()) {// name taken
                 rs.close();
                 ps.close();
                 return 0;

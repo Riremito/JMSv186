@@ -52,26 +52,24 @@ public class MapleGuildAlliance implements java.io.Serializable {
 
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM alliances WHERE id = ?");
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.first()) {
-                rs.close();
-                ps.close();
-                allianceid = -1;
-                return;
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM alliances WHERE id = ?")) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) {
+                        allianceid = -1;
+                        return;
+                    }
+                    allianceid = id;
+                    name = rs.getString("name");
+                    capacity = rs.getInt("capacity");
+                    for (int i = 1; i < 6; i++) {
+                        guilds[i - 1] = rs.getInt("guild" + i);
+                        ranks[i - 1] = rs.getString("rank" + i);
+                    }
+                    leaderid = rs.getInt("leaderid");
+                    notice = rs.getString("notice");
+                }
             }
-            allianceid = id;
-            name = rs.getString("name");
-            capacity = rs.getInt("capacity");
-            for (int i = 1; i < 6; i++) {
-                guilds[i - 1] = rs.getInt("guild" + i);
-                ranks[i - 1] = rs.getString("rank" + i);
-            }
-            leaderid = rs.getInt("leaderid");
-            notice = rs.getString("notice");
-            rs.close();
-            ps.close();
         } catch (SQLException se) {
             System.err.println("unable to read guild information from sql");
             se.printStackTrace();
@@ -122,7 +120,7 @@ public class MapleGuildAlliance implements java.io.Serializable {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.first()) {// name taken
+            if (!rs.next()) {// name taken
                 rs.close();
                 ps.close();
                 return ret;

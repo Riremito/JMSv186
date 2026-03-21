@@ -3391,23 +3391,25 @@ public class MapleCharacter extends TacosCharacter {
         DQ_Notes.sendNote(to, getName(), msg, fame);
     }
 
+    /*
+    // TODO : remove last, and first.
     public void showNote() {
         try {
             Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM notes WHERE `to`=?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            ps.setString(1, getName());
-            ResultSet rs = ps.executeQuery();
-            rs.last();
-            int count = rs.getRow();
-            rs.first();
-            client.getSession().write(ResCWvsContext.showNotes(rs, count));
-            rs.close();
-            ps.close();
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM notes WHERE `to`=?", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE)) {
+                ps.setString(1, getName());
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.last();
+                    int count = rs.getRow();
+                    rs.first();
+                    client.SendPacket(ResCWvsContext.MemoResult(rs, count));
+                }
+            }
         } catch (SQLException e) {
             System.err.println("Unable to show note" + e);
         }
     }
-
+     */
     public void deleteNote(int id, int fame) {
         try {
             Connection con = DatabaseConnection.getConnection();

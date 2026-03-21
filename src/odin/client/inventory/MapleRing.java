@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import odin.client.MapleCharacter;
-import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -115,11 +114,7 @@ public class MapleRing implements Serializable {
     public static int makeRing(int itemid, MapleCharacter partner1, String partner2, int id2, String msg, int sn) throws Exception { //return partner1 the id
         int[] ringID = {MapleInventoryIdentifier.getInstance(), MapleInventoryIdentifier.getInstance()};
         //[1] = partner1, [0] = partner2
-        try {
-            addToDB(itemid, partner1, partner2, id2, ringID);
-        } catch (MySQLIntegrityConstraintViolationException mslcve) {
-            return 0;
-        }
+        addToDB(itemid, partner1, partner2, id2, ringID);
         MapleInventoryManipulator.addRing(partner1, itemid, ringID[1], sn);
         partner1.getCashInventory().gift(id2, partner1.getName(), msg, sn, ringID[0]);
         return 1;

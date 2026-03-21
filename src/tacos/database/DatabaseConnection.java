@@ -107,18 +107,19 @@ public class DatabaseConnection {
         @Override
         protected final Connection initialValue() {
             try {
-                Class.forName("com.mysql.jdbc.Driver"); // touch the mysql driver
+                Class.forName("com.mysql.cj.jdbc.Driver"); // touch the mysql driver
             } catch (final ClassNotFoundException e) {
                 System.err.println("ERROR" + e);
             }
+            final Connection con;
             try {
-                final Connection con = DriverManager.getConnection(Property_Database.getUrl(), Property_Database.getUser(), Property_Database.getPassword());
-                allConnections.add(con);
-                return con;
-            } catch (SQLException e) {
-                System.err.println("ERROR" + e);
+                con = DriverManager.getConnection(Property_Database.getUrl(), Property_Database.getUser(), Property_Database.getPassword());
+            } catch (SQLException ex) {
+                System.getLogger(DatabaseConnection.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 return null;
             }
+            allConnections.add(con);
+            return con;
         }
     }
 }

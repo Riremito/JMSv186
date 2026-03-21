@@ -45,22 +45,23 @@ public class SpeedRunner {
     }
 
     public final void loadSpeedRunData(SpeedRunType type) throws SQLException {
-        PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM speedruns WHERE type = ? ORDER BY time LIMIT 25"); //or should we do less
-        ps.setString(1, type.name());
-        StringBuilder ret = new StringBuilder("#rThese are the speedrun times for " + type.name() + ".#k\r\n\r\n");
-        Map<Integer, String> rett = new LinkedHashMap<>();
-        ResultSet rs = ps.executeQuery();
-        int rank = 1;
-        boolean cont = rs.first();
-        boolean changed = cont;
-        while (cont) {
-            addSpeedRunData(ret, rett, rs.getString("members"), rs.getString("leader"), rank, rs.getString("timestring"));
-            rank++;
-            cont = rs.next();
+        StringBuilder ret;
+        Map<Integer, String> rett;
+        int rank;
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM speedruns WHERE type = ? ORDER BY time LIMIT 25") //or should we do less
+        ) {
+            ps.setString(1, type.name());
+            ret = new StringBuilder("#rThese are the speedrun times for " + type.name() + ".#k\r\n\r\n");
+            rett = new LinkedHashMap<>();
+            try (ResultSet rs = ps.executeQuery()) {
+                rank = 1;
+                while (rs.next()) {
+                    addSpeedRunData(ret, rett, rs.getString("members"), rs.getString("leader"), rank, rs.getString("timestring"));
+                    rank++;
+                }
+            }
         }
-        rs.close();
-        ps.close();
-        if (changed) {
+        if (rank != 1) {
             speedRunData.put(type, new OdinPair<>(ret.toString(), rett));
         }
     }

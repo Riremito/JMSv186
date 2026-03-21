@@ -354,9 +354,10 @@ public class DQ_Characters {
             Connection con = DatabaseConnection.getConnection();
             String query = "SELECT c.id, c.job, c.exp, c.level, c.name, c.jobRank, c.jobRankMove, c.rank, c.rankMove";
             query += ", a.lastlogin AS lastlogin, a.loggedin FROM " + DB_TABLE_NAME + " AS c LEFT JOIN accounts AS a ON c.accountid = a.id WHERE c.gm = 0 AND a.banned = 0 ";
-            query += "ORDER BY c.level DESC , c.exp DESC , c.fame DESC , c.meso DESC , c.rank ASC";
+            query += "ORDER BY c.level DESC , c.exp DESC , c.fame DESC , c.meso DESC , c.rank ASC;";
 
-            try (PreparedStatement charSelect = con.prepareStatement(query); ResultSet rs = charSelect.executeQuery(); PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET jobRank = ?, jobRankMove = ?, rank = ?, rankMove = ? WHERE id = ?")) {
+            // MYSQL 8, rank should be escaped.
+            try (PreparedStatement charSelect = con.prepareStatement(query); ResultSet rs = charSelect.executeQuery(); PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET jobRank = ?, jobRankMove = ?, `rank` = ?, rankMove = ? WHERE id = ?;")) {
                 int rank = 0;
                 Map<Integer, Integer> rankMap = new LinkedHashMap<>();
                 while (rs.next()) {
@@ -382,6 +383,7 @@ public class DQ_Characters {
             }
         } catch (SQLException ex) {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateRanking");
+            System.getLogger(DatabaseConnection.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
 
         return false;
