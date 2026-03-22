@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMapleTV;
-import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import tacos.packet.response.ResCMapleTVMan;
 import odin.server.maps.MapleMap;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -34,7 +34,7 @@ import odin.server.maps.MapleMap;
  */
 public class Req_MapleTV {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;
@@ -64,7 +64,7 @@ public class Req_MapleTV {
                     name_to = cp.DecodeStr();
                 }
 
-                MapleCharacter chr_to = name_to.equals("") ? null : ReqSub_UserConsumeCashItemUseRequest.findCharacterByName(name_to);
+                MapleCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
 
                 if ((nFlag & 2) != 0 && chr_to == null) {
                     chr.SendPacket(ResCMapleTVMan.MapleTVSendMessageResult(OpsMapleTV.MapleTVResCode_WrongUser));

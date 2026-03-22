@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -29,7 +30,7 @@ public class ResCField_Coconut {
 
     // not checked.
     public static MaplePacket CoconutHit(int nTarget, int nDelay, int nState) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CoconutHit);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CoconutHit);
         sp.Encode2(nTarget); // -1 = ALL
         sp.Encode2(nDelay); // nDelay
         sp.Encode1(nState); // 1 = spawn, 3 = destroy
@@ -37,7 +38,7 @@ public class ResCField_Coconut {
     }
 
     public static MaplePacket CoconutScore(int[] coconutscore) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_CoconutScore);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CoconutScore);
         sp.Encode2(coconutscore[0]); // maple team score
         sp.Encode2(coconutscore[1]); // story team score
         return sp.get();

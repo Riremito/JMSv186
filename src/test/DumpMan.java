@@ -24,8 +24,8 @@ import tacos.debug.DebugLogger;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import tacos.packet.ClientPacket;
-import tacos.packet.ServerPacket;
+import tacos.packet.ClientPacketHeader;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -43,7 +43,7 @@ public class DumpMan {
         try {
             fw = new FileWriter("dump/ServerPacket.properties");
             PrintWriter pw = new PrintWriter(fw);
-            for (ServerPacket.Header header : ServerPacket.Header.values()) {
+            for (ServerPacketHeader header : ServerPacketHeader.values()) {
                 pw.println(header.name() + " = " + "-1");
             }
             pw.close();
@@ -51,7 +51,7 @@ public class DumpMan {
 
             fw = new FileWriter("dump/ClientPacket.properties");
             pw = new PrintWriter(fw);
-            for (ClientPacket.Header header : ClientPacket.Header.values()) {
+            for (ClientPacketHeader header : ClientPacketHeader.values()) {
                 pw.println(header.name() + " = " + "-1");
             }
             pw.close();
@@ -65,7 +65,7 @@ public class DumpMan {
         try {
             fw = new FileWriter("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties");
             PrintWriter pw = new PrintWriter(fw);
-            for (ServerPacket.Header header : ServerPacket.Header.values()) {
+            for (ServerPacketHeader header : ServerPacketHeader.values()) {
                 int val = (short) header.get();
                 if (val != -1) {
                     DebugLogger.DebugLog(String.format("@%04X", val) + " : " + header.name());
@@ -77,7 +77,7 @@ public class DumpMan {
 
             fw = new FileWriter("properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties");
             pw = new PrintWriter(fw);
-            for (ClientPacket.Header header : ClientPacket.Header.values()) {
+            for (ClientPacketHeader header : ClientPacketHeader.values()) {
                 int val = (short) header.get();
                 if (val != -1) {
                     DebugLogger.DebugLog(String.format("@%04X", val) + " : " + header.name());

@@ -41,7 +41,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tacos.packet.response.wrapper.WrapCITC;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MTSStorage {
     //stores all carts all mts items, updates every hour
@@ -144,7 +144,7 @@ public class MTSStorage {
     private final void loadBuyNow() {
         int lastPackage = 0;
         int cId;
-        Map<Integer, Pair<IItem, MapleInventoryType>> items;
+        Map<Integer, OdinPair<IItem, MapleInventoryType>> items;
         final Connection con = DatabaseConnection.getConnection();
         try {
             final PreparedStatement ps = con.prepareStatement("SELECT * FROM mts_items WHERE tab = 1");
@@ -157,7 +157,7 @@ public class MTSStorage {
                 }
                 items = ItemLoader.MTS.loadItems(false, lastPackage);
                 if (items != null && items.size() > 0) {
-                    for (Pair<IItem, MapleInventoryType> i : items.values()) {
+                    for (OdinPair<IItem, MapleInventoryType> i : items.values()) {
                         buyNow.put(lastPackage, new MTSItemInfo(rs.getInt("price"), i.getLeft(), rs.getString("seller"), lastPackage, cId, rs.getLong("expiration")));
                     }
                 }
@@ -181,7 +181,7 @@ public class MTSStorage {
         final Map<Integer, ArrayList<IItem>> expire = new HashMap<Integer, ArrayList<IItem>>();
         final List<Integer> toRemove = new ArrayList<Integer>();
         final long now = System.currentTimeMillis();
-        final Map<Integer, ArrayList<Pair<IItem, MapleInventoryType>>> items = new HashMap<Integer, ArrayList<Pair<IItem, MapleInventoryType>>>();
+        final Map<Integer, ArrayList<OdinPair<IItem, MapleInventoryType>>> items = new HashMap<Integer, ArrayList<OdinPair<IItem, MapleInventoryType>>>();
         final Connection con = DatabaseConnection.getConnection();
         mutex.writeLock().lock(); //lock wL so rL will also be locked
         try {
@@ -206,9 +206,9 @@ public class MTSStorage {
                     ps.setLong(6, m.getEndingDate());
                     ps.executeUpdate();
                     if (!items.containsKey(m.getId())) {
-                        items.put(m.getId(), new ArrayList<Pair<IItem, MapleInventoryType>>());
+                        items.put(m.getId(), new ArrayList<OdinPair<IItem, MapleInventoryType>>());
                     }
-                    items.get(m.getId()).add(new Pair<IItem, MapleInventoryType>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
+                    items.get(m.getId()).add(new OdinPair<IItem, MapleInventoryType>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
                 }
             }
             for (int i : toRemove) {
@@ -224,7 +224,7 @@ public class MTSStorage {
             System.out.println("Saving MTS items...");
         }
         try {
-            for (Entry<Integer, ArrayList<Pair<IItem, MapleInventoryType>>> ite : items.entrySet()) {
+            for (Entry<Integer, ArrayList<OdinPair<IItem, MapleInventoryType>>> ite : items.entrySet()) {
                 ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
             }
         } catch (SQLException e) {

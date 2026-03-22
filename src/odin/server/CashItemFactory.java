@@ -1,6 +1,6 @@
 package odin.server;
 
-import tacos.data.wz.DW_Etc;
+import tacos.wz.data.EtcWz;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
 import odin.server.CashItemInfo.CashModInfo;
+import odin.provider.IMapleData;
 
 public class CashItemFactory {
 
@@ -32,7 +32,7 @@ public class CashItemFactory {
 
     public void initialize() {
         final List<Integer> itemids = new ArrayList<Integer>();
-        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
             final int itemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             final int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
@@ -70,7 +70,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
             int SN = MapleDataTool.getIntConvert("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
@@ -102,7 +102,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : DW_Etc.getCommodity().getChildren()) {
+        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
             int ItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;
@@ -128,13 +128,13 @@ public class CashItemFactory {
         if (itemPackage.get(itemId) != null) {
             return itemPackage.get(itemId);
         }
-        final List<CashItemInfo> packageItems = new ArrayList<CashItemInfo>();
+        final List<CashItemInfo> packageItems = new ArrayList<>();
 
-        if (DW_Etc.getCashPackage() == null || DW_Etc.getCashPackage().getChildByPath(itemId + "/SN") == null) {
+        if (EtcWz.get().getCashPackage() == null || EtcWz.get().getCashPackage().getChildByPath(itemId + "/SN") == null) {
             return null;
         }
-        for (MapleData d : DW_Etc.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
-            packageItems.add(itemStats.get(Integer.valueOf(MapleDataTool.getIntConvert(d))));
+        for (IMapleData d : EtcWz.get().getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
+            packageItems.add(itemStats.get(MapleDataTool.getIntConvert(d)));
         }
         itemPackage.put(itemId, packageItems);
         return packageItems;

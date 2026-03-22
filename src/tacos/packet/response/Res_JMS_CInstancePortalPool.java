@@ -21,6 +21,7 @@ package tacos.packet.response;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleDynamicPortal;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -29,7 +30,7 @@ import odin.server.maps.MapleDynamicPortal;
 public class Res_JMS_CInstancePortalPool {
 
     public static MaplePacket CreatePinkBeanEventPortal(MapleDynamicPortal dynamic_portal) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_JMS_InstancePortalCreated);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_InstancePortalCreated);
         sp.Encode1(1);
         sp.Encode4(dynamic_portal.getItemID()); // item id
         sp.Encode4(dynamic_portal.getObjectId()); // object id

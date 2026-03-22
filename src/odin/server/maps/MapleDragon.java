@@ -48,12 +48,12 @@ public class MapleDragon extends AbstractAnimatedMapleMapObject {
 
     @Override
     public void sendSpawnData(MapleClient client) {
-        client.getSession().write(ResCUser_Dragon.spawnDragon(this));
+        client.SendPacket(ResCUser_Dragon.spawnDragon(this));
     }
 
     @Override
     public void sendDestroyData(MapleClient client) {
-        client.getSession().write(ResCUser_Dragon.removeDragon(this.owner));
+        client.SendPacket(ResCUser_Dragon.removeDragon(this));
     }
 
     public int getOwner() {
@@ -66,6 +66,6 @@ public class MapleDragon extends AbstractAnimatedMapleMapObject {
 
     @Override
     public MapleMapObjectType getType() {
-        return MapleMapObjectType.SUMMON;
+        return MapleMapObjectType.DRAGON;
     }
 }

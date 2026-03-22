@@ -30,12 +30,13 @@ public class DataGW_WildHunterInfo {
 
     // GW_WildHunterInfo::Decode
     public static byte[] Encode() {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        p.Encode1(0);
+        data.Encode1(0);
         for (int i = 0; i < 5; i++) {
-            p.Encode4(0);
+            data.Encode4(0);
         }
-        return p.get().getBytes();
+
+        return data.get().getBytes();
     }
 }

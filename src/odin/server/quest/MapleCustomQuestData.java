@@ -26,25 +26,25 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import odin.provider.MapleData;
-import odin.provider.MapleDataEntity;
 import odin.provider.WzXML.MapleDataType;
+import odin.provider.IMapleDataEntity;
+import odin.provider.IMapleData;
 
-public class MapleCustomQuestData implements MapleData, Serializable {
+public class MapleCustomQuestData implements IMapleData, Serializable {
 
     private static final long serialVersionUID = -8600005891655365066L;
     private List<MapleCustomQuestData> children = new LinkedList<MapleCustomQuestData>();
     private String name;
     private Object data;
-    private MapleDataEntity parent;
+    private IMapleDataEntity parent;
 
-    public MapleCustomQuestData(String name, Object data, MapleDataEntity parent) {
+    public MapleCustomQuestData(String name, Object data, IMapleDataEntity parent) {
         this.name = name;
         this.data = data;
         this.parent = parent;
     }
 
-    public void addChild(MapleData child) {
+    public void addChild(IMapleData child) {
         children.add((MapleCustomQuestData) child);
     }
 
@@ -56,13 +56,13 @@ public class MapleCustomQuestData implements MapleData, Serializable {
         return MapleDataType.UNKNOWN_TYPE;
     }
 
-    public List<MapleData> getChildren() {
-        MapleData[] ret = new MapleData[children.size()];
+    public List<IMapleData> getChildren() {
+        IMapleData[] ret = new IMapleData[children.size()];
         ret = children.toArray(ret);
-        return new ArrayList<MapleData>(Arrays.asList(ret));
+        return new ArrayList<IMapleData>(Arrays.asList(ret));
     }
 
-    public MapleData getChildByPath(String name) {
+    public IMapleData getChildByPath(String name) {
         if (name.equals(this.name)) {
             return this;
         }
@@ -74,7 +74,7 @@ public class MapleCustomQuestData implements MapleData, Serializable {
             lookup = name.substring(0, name.indexOf("/"));
             nextName = name.substring(name.indexOf("/") + 1);
         }
-        for (MapleData child : children) {
+        for (IMapleData child : children) {
             if (child.getName().equals(lookup)) {
                 return child.getChildByPath(nextName);
             }
@@ -86,11 +86,11 @@ public class MapleCustomQuestData implements MapleData, Serializable {
         return data;
     }
 
-    public Iterator<MapleData> iterator() {
+    public Iterator<IMapleData> iterator() {
         return getChildren().iterator();
     }
 
-    public MapleDataEntity getParent() {
+    public IMapleDataEntity getParent() {
         return parent;
     }
 }

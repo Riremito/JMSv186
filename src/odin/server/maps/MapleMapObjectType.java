@@ -21,16 +21,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 public enum MapleMapObjectType {
-
-    NPC,
-    MONSTER,
-    ITEM,
     PLAYER,
-    DOOR,
-    DYNAMIC_PORTAL,
-    SUMMON,
     SHOP,
+    // PET
+    DRAGON,
+    // FOX
+    SUMMON,
+    MONSTER,
+    NPC,
+    HIRED_MERCHANT,
+    ITEM,
     MIST,
-    REACTOR,
-    HIRED_MERCHANT;
+    DOOR,
+    // GATE
+    DYNAMIC_PORTAL,
+    REACTOR;
 }

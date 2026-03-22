@@ -23,6 +23,7 @@ import odin.client.MapleClient;
 import odin.handling.channel.handler.PlayerHandler;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -30,7 +31,7 @@ import odin.server.maps.MapleMap;
  */
 public class Req_Farm {
 
-    public static boolean OnPacket(ClientPacket.Header header, ClientPacket cp, MapleClient c) {
+    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient c) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;

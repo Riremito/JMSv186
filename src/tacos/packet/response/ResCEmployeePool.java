@@ -21,6 +21,7 @@ package tacos.packet.response;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.shops.HiredMerchant;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -29,7 +30,7 @@ import odin.server.shops.HiredMerchant;
 public class ResCEmployeePool {
 
     public static MaplePacket EmployeeEnterField(HiredMerchant hm) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_EmployeeEnterField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeEnterField);
 
         sp.Encode4(hm.getOwnerId()); // dwEmployerID
         sp.Encode4(hm.getItemId()); // dwTemplateID (Employee NPC Look)
@@ -39,14 +40,14 @@ public class ResCEmployeePool {
     }
 
     public static MaplePacket EmployeeLeaveField(HiredMerchant hm) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_EmployeeLeaveField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeLeaveField);
 
         sp.Encode4(hm.getOwnerId());
         return sp.get();
     }
 
     public static MaplePacket EmployeeMiniRoomBalloon(HiredMerchant hm) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_EmployeeMiniRoomBalloon);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeMiniRoomBalloon);
 
         sp.Encode4(hm.getOwnerId());
         sp.EncodeBuffer(CEmployee_SetBalloon(hm));

@@ -1,0 +1,973 @@
+package odin.handling.world;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import odin.client.MapleCharacter;
+import tacos.database.DatabaseConnection;
+import tacos.network.MaplePacket;
+import odin.handling.world.family.MapleFamily;
+import odin.handling.world.family.MapleFamilyCharacter;
+import odin.handling.world.guild.MapleBBSThread;
+import odin.handling.world.guild.MapleGuild;
+import odin.handling.world.guild.MapleGuildAlliance;
+import odin.handling.world.guild.MapleGuildCharacter;
+import odin.handling.world.guild.MapleGuildSummary;
+import java.util.Collection;
+import tacos.packet.ops.OpsChatGroup;
+import tacos.packet.response.ResCField;
+import tacos.packet.response.ResCUIMessenger;
+import tacos.packet.response.ResCUserPool;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.wrapper.ResWrapper;
+import tacos.server.TacosWorld;
+
+public class OdinWorld extends TacosWorld {
+
+    public OdinWorld() {
+    }
+
+    //Touch everything...
+    public static void init() {
+        OdinWorld.Guild.lock.toString();
+        OdinWorld.Alliance.lock.toString();
+        OdinWorld.Family.lock.toString();
+        OdinWorld.Messenger.getMessenger(0);
+        OdinWorld.Party.getParty(0);
+    }
+
+    public static class Party {
+
+        private static Map<Integer, MapleParty> parties = new HashMap<Integer, MapleParty>();
+        private static final AtomicInteger runningPartyId = new AtomicInteger();
+
+        static {
+            Connection con = DatabaseConnection.getConnection();
+            PreparedStatement ps;
+            try {
+                ps = con.prepareStatement("SELECT MAX(party)+2 FROM characters");
+                ResultSet rs = ps.executeQuery();
+                rs.next();
+                runningPartyId.set(rs.getInt(1));
+                rs.close();
+                ps.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public static void partyChat(int partyid, String chattext, String namefrom) {
+            MapleParty party = getParty(partyid);
+            if (party == null) {
+                throw new IllegalArgumentException("no party with the specified partyid exists");
+            }
+
+            for (MaplePartyCharacter partychar : party.getMembers()) {
+                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
+                if (chr != null && !chr.getName().equalsIgnoreCase(namefrom)) { //Extra check just in case
+                    chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Party, namefrom, chattext));
+                }
+            }
+        }
+
+        public static void updateParty(int partyid, PartyOperation operation, MaplePartyCharacter target) {
+            MapleParty party = getParty(partyid);
+            if (party == null) {
+                return; //Don't update, just return. And definitely don't throw a damn exception.
+                //throw new IllegalArgumentException("no party with the specified partyid exists");
+            }
+            switch (operation) {
+                case JOIN:
+                    party.addMember(target);
+                    break;
+                case EXPEL:
+                case LEAVE:
+                    party.removeMember(target);
+                    break;
+                case DISBAND:
+                    disbandParty(partyid);
+                    break;
+                case SILENT_UPDATE:
+                case LOG_ONOFF:
+                    party.updateMember(target);
+                    break;
+                case CHANGE_LEADER:
+                case CHANGE_LEADER_DC:
+                    party.setLeader(target);
+                    break;
+                default:
+                    throw new RuntimeException("Unhandeled updateParty operation " + operation.name());
+            }
+
+            for (MaplePartyCharacter partychar : party.getMembers()) {
+                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
+                if (chr != null) {
+                    if (operation == PartyOperation.DISBAND) {
+                        chr.setParty(null);
+                    } else {
+                        chr.setParty(party);
+                    }
+                    chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                }
+            }
+            switch (operation) {
+                case LEAVE:
+                case EXPEL: {
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target.getName(), false);
+                    if (chr != null) {
+                        chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                        chr.setParty(null);
+                    }
+                    break;
+                }
+            }
+        }
+
+        public static MapleParty createParty(MaplePartyCharacter chrfor) {
+            int partyid = runningPartyId.getAndIncrement();
+            MapleParty party = new MapleParty(partyid, chrfor);
+            parties.put(party.getId(), party);
+            return party;
+        }
+
+        public static MapleParty getParty(int partyid) {
+            return parties.get(partyid);
+        }
+
+        public static MapleParty disbandParty(int partyid) {
+            return parties.remove(partyid);
+        }
+    }
+
+    public static class Messenger {
+
+        private static Map<Integer, MapleMessenger> messengers = new HashMap<Integer, MapleMessenger>();
+        private static final AtomicInteger runningMessengerId = new AtomicInteger();
+
+        static {
+            runningMessengerId.set(1);
+        }
+
+        public static MapleMessenger createMessenger(MapleMessengerCharacter chrfor) {
+            int messengerid = runningMessengerId.getAndIncrement();
+            MapleMessenger messenger = new MapleMessenger(messengerid, chrfor);
+            messengers.put(messenger.getId(), messenger);
+            return messenger;
+        }
+
+        public static void declineChat(String target, String namefrom) {
+            MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target, false);
+            if (chr != null) {
+                MapleMessenger messenger = chr.getMessenger();
+                if (messenger != null) {
+                    chr.getClient().getSession().write(ResCUIMessenger.messengerNote(namefrom, 5, 0));
+                }
+            }
+        }
+
+        public static MapleMessenger getMessenger(int messengerid) {
+            return messengers.get(messengerid);
+        }
+
+        public static void leaveMessenger(int messengerid, MapleMessengerCharacter target) {
+            MapleMessenger messenger = getMessenger(messengerid);
+            if (messenger == null) {
+                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
+            }
+            int position = messenger.getPositionByName(target.getName());
+            messenger.removeMember(target);
+
+            for (MapleMessengerCharacter mmc : messenger.getMembers()) {
+                if (mmc != null) {
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(mmc.getName());
+                    if (chr != null) {
+                        chr.getClient().getSession().write(ResCUIMessenger.removeMessengerPlayer(position));
+                    }
+                }
+            }
+        }
+
+        public static void silentLeaveMessenger(int messengerid, MapleMessengerCharacter target) {
+            MapleMessenger messenger = getMessenger(messengerid);
+            if (messenger == null) {
+                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
+            }
+            messenger.silentRemoveMember(target);
+        }
+
+        public static void silentJoinMessenger(int messengerid, MapleMessengerCharacter target) {
+            MapleMessenger messenger = getMessenger(messengerid);
+            if (messenger == null) {
+                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
+            }
+            messenger.silentAddMember(target);
+        }
+
+        public static void updateMessenger(int messengerid, String namefrom, int fromchannel) {
+            MapleMessenger messenger = getMessenger(messengerid);
+            int position = messenger.getPositionByName(namefrom);
+
+            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
+                if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
+                    if (chr != null) {
+                        MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(namefrom, false);
+                        chr.SendPacket(ResCUIMessenger.updateMessengerPlayer(namefrom, from, position, fromchannel - 1));
+                    }
+                }
+            }
+        }
+
+        public static void joinMessenger(int messengerid, MapleMessengerCharacter target, String from, int fromchannel) {
+            MapleMessenger messenger = getMessenger(messengerid);
+            if (messenger == null) {
+                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
+            }
+            messenger.addMember(target);
+            int position = messenger.getPositionByName(target.getName());
+            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
+                if (messengerchar != null) {
+                    int mposition = messenger.getPositionByName(messengerchar.getName());
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
+                    if (chr != null) {
+                        if (!messengerchar.getName().equals(from)) {
+                            MapleCharacter fromCh = TacosWorld.find(0).findOnlinePlayer(from);
+                            chr.SendPacket(ResCUIMessenger.addMessengerPlayer(from, fromCh, position, fromchannel - 1));
+                            fromCh.SendPacket(ResCUIMessenger.addMessengerPlayer(chr.getName(), chr, mposition, messengerchar.getChannel() - 1));
+                        } else {
+                            chr.SendPacket(ResCUIMessenger.joinMessenger(mposition));
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void messengerChat(int messengerid, String chattext, String namefrom) {
+            MapleMessenger messenger = getMessenger(messengerid);
+            if (messenger == null) {
+                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
+            }
+
+            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
+                if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
+                    if (chr != null) {
+                        chr.SendPacket(ResCUIMessenger.messengerChat(chattext));
+                    }
+                } //Whisp Monitor Code
+                else if (messengerchar != null) {
+                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
+                }
+                //
+            }
+        }
+
+        public static void messengerInvite(String sender, int messengerid, String target, int fromchannel, boolean gm) {
+            if (TacosWorld.find(0).findOnlinePlayer(target, false) != null) {
+                MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(sender, false);
+                MapleCharacter targeter = TacosWorld.find(0).findOnlinePlayer(target, false);
+                if (targeter != null && targeter.getMessenger() == null) {
+                    if (!targeter.isGM() || gm) {
+                        targeter.SendPacket(ResCUIMessenger.messengerInvite(sender, messengerid));
+                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 1));
+                    } else {
+                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 0));
+                    }
+                } else {
+                    from.SendPacket(ResCUIMessenger.messengerChat(sender + " : " + target + " is already using Maple Messenger"));
+                }
+            }
+
+        }
+    }
+
+    public static class Guild {
+
+        private static final Map<Integer, MapleGuild> guilds = new LinkedHashMap<Integer, MapleGuild>();
+        private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+        static {
+            //System.out.println("[MapleGuild] Loading Guilds");
+            Collection<MapleGuild> allGuilds = MapleGuild.loadAll();
+            for (MapleGuild g : allGuilds) {
+                if (g.isProper()) {
+                    guilds.put(g.getId(), g);
+                }
+            }
+        }
+
+        public static int createGuild(int leaderId, String name) {
+            return MapleGuild.createGuild(leaderId, name);
+        }
+
+        public static MapleGuild getGuild(int id) {
+            MapleGuild ret = null;
+            lock.readLock().lock();
+            try {
+                ret = guilds.get(id);
+            } finally {
+                lock.readLock().unlock();
+            }
+            if (ret == null) {
+                lock.writeLock().lock();
+                try {
+                    ret = new MapleGuild(id);
+                    if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
+                        return null;
+                    }
+                    guilds.put(id, ret);
+                } finally {
+                    lock.writeLock().unlock();
+                }
+            }
+            return ret; //Guild doesn't exist?
+        }
+
+        public static MapleGuild getGuildByName(String guildName) {
+            lock.readLock().lock();
+            try {
+                for (MapleGuild g : guilds.values()) {
+                    if (g.getName().equalsIgnoreCase(guildName)) {
+                        return g;
+                    }
+                }
+                return null;
+            } finally {
+                lock.readLock().unlock();
+            }
+        }
+
+        public static MapleGuild getGuild(MapleCharacter mc) {
+            return getGuild(mc.getGuildId());
+        }
+
+        public static void setGuildMemberOnline(MapleGuildCharacter mc, boolean bOnline, int channel) {
+            MapleGuild g = getGuild(mc.getGuildId());
+            if (g != null) {
+                g.setOnline(mc.getId(), bOnline, channel);
+            }
+        }
+
+        public static void guildPacket(int gid, MaplePacket message) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.broadcast(message);
+            }
+        }
+
+        public static int addGuildMember(MapleGuildCharacter mc) {
+            MapleGuild g = getGuild(mc.getGuildId());
+            if (g != null) {
+                return g.addGuildMember(mc);
+            }
+            return 0;
+        }
+
+        public static void leaveGuild(MapleGuildCharacter mc) {
+            MapleGuild g = getGuild(mc.getGuildId());
+            if (g != null) {
+                g.leaveGuild(mc);
+            }
+        }
+
+        public static void guildChat(int gid, String name, int cid, String msg) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.guildChat(name, cid, msg);
+            }
+        }
+
+        public static void changeRank(int gid, int cid, int newRank) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.changeRank(cid, newRank);
+            }
+        }
+
+        public static void expelMember(MapleGuildCharacter initiator, String name, int cid) {
+            MapleGuild g = getGuild(initiator.getGuildId());
+            if (g != null) {
+                g.expelMember(initiator, name, cid);
+            }
+        }
+
+        public static void setGuildNotice(int gid, String notice) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.setGuildNotice(notice);
+            }
+        }
+
+        public static void memberLevelJobUpdate(MapleGuildCharacter mc) {
+            MapleGuild g = getGuild(mc.getGuildId());
+            if (g != null) {
+                g.memberLevelJobUpdate(mc);
+            }
+        }
+
+        public static void changeRankTitle(int gid, String[] ranks) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.changeRankTitle(ranks);
+            }
+        }
+
+        public static void setGuildEmblem(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.setGuildEmblem(bg, bgcolor, logo, logocolor);
+            }
+        }
+
+        public static void disbandGuild(int gid) {
+            MapleGuild g = getGuild(gid);
+            lock.writeLock().lock();
+            try {
+                if (g != null) {
+                    g.disbandGuild();
+                    guilds.remove(gid);
+                }
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+
+        public static void deleteGuildCharacter(int guildid, int charid) {
+
+            //ensure it's loaded on world server
+            //setGuildMemberOnline(mc, false, -1);
+            MapleGuild g = getGuild(guildid);
+            if (g != null) {
+                MapleGuildCharacter mc = g.getMGC(charid);
+                if (mc != null) {
+                    if (mc.getGuildRank() > 1) //not leader
+                    {
+                        g.leaveGuild(mc);
+                    } else {
+                        g.disbandGuild();
+                    }
+                }
+            }
+        }
+
+        public static boolean increaseGuildCapacity(int gid) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                return g.increaseCapacity();
+            }
+            return false;
+        }
+
+        public static void gainGP(int gid, int amount) {
+            MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.gainGP(amount);
+            }
+        }
+
+        public static int getGP(final int gid) {
+            final MapleGuild g = getGuild(gid);
+            if (g != null) {
+                return g.getGP();
+            }
+            return 0;
+        }
+
+        public static int getInvitedId(final int gid) {
+            final MapleGuild g = getGuild(gid);
+            if (g != null) {
+                return g.getInvitedId();
+            }
+            return 0;
+        }
+
+        public static void setInvitedId(final int gid, final int inviteid) {
+            final MapleGuild g = getGuild(gid);
+            if (g != null) {
+                g.setInvitedId(inviteid);
+            }
+        }
+
+        public static int getGuildLeader(final String guildName) {
+            final MapleGuild mga = getGuildByName(guildName);
+            if (mga != null) {
+                return mga.getLeaderId();
+            }
+            return 0;
+        }
+
+        public static void save() {
+            System.out.println("Saving guilds...");
+            lock.writeLock().lock();
+            try {
+                for (MapleGuild a : guilds.values()) {
+                    a.writeToDB(false);
+                }
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+
+        public static List<MapleBBSThread> getBBS(final int gid) {
+            final MapleGuild g = getGuild(gid);
+            if (g != null) {
+                return g.getBBS();
+            }
+            return null;
+        }
+
+        public static int addBBSThread(final int guildid, final String title, final String text, final int icon, final boolean bNotice, final int posterID) {
+            final MapleGuild g = getGuild(guildid);
+            if (g != null) {
+                return g.addBBSThread(title, text, icon, bNotice, posterID);
+            }
+            return -1;
+        }
+
+        public static final void editBBSThread(final int guildid, final int localthreadid, final String title, final String text, final int icon, final int posterID, final int guildRank) {
+            final MapleGuild g = getGuild(guildid);
+            if (g != null) {
+                g.editBBSThread(localthreadid, title, text, icon, posterID, guildRank);
+            }
+        }
+
+        public static final void deleteBBSThread(final int guildid, final int localthreadid, final int posterID, final int guildRank) {
+            final MapleGuild g = getGuild(guildid);
+            if (g != null) {
+                g.deleteBBSThread(localthreadid, posterID, guildRank);
+            }
+        }
+
+        public static final void addBBSReply(final int guildid, final int localthreadid, final String text, final int posterID) {
+            final MapleGuild g = getGuild(guildid);
+            if (g != null) {
+                g.addBBSReply(localthreadid, text, posterID);
+            }
+        }
+
+        public static final void deleteBBSReply(final int guildid, final int localthreadid, final int replyid, final int posterID, final int guildRank) {
+            final MapleGuild g = getGuild(guildid);
+            if (g != null) {
+                g.deleteBBSReply(localthreadid, replyid, posterID, guildRank);
+            }
+        }
+
+        public static void changeEmblem(int gid, int affectedPlayers, MapleGuildSummary mgs) {
+            Broadcast.sendGuildPacket(affectedPlayers, ResCWvsContext.guildEmblemChange(gid, mgs.getLogoBG(), mgs.getLogoBGColor(), mgs.getLogo(), mgs.getLogoColor()), -1, gid);
+            setGuildAndRank(affectedPlayers, -1, -1, -1);	//respawn player
+        }
+
+        public static void setGuildAndRank(int cid, int guildid, int rank, int alliancerank) {
+            MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
+            if (mc == null) {
+                return;
+            }
+            boolean bDifferentGuild;
+            if (guildid == -1 && rank == -1) { //just need a respawn
+                bDifferentGuild = true;
+            } else {
+                bDifferentGuild = guildid != mc.getGuildId();
+                mc.setGuildId(guildid);
+                mc.setGuildRank((byte) rank);
+                mc.setAllianceRank((byte) alliancerank);
+                mc.saveGuildStatus();
+            }
+            if (bDifferentGuild) {
+                mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(cid), false);
+                mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
+            }
+        }
+    }
+
+    public static class Broadcast {
+
+        public static void sendGuildPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
+            if (targetIds == exception) {
+                return;
+            }
+            final MapleCharacter c = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+            if (c != null && c.getGuildId() == guildid) {
+                c.getClient().getSession().write(packet);
+            }
+        }
+
+        public static void sendFamilyPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
+            if (targetIds == exception) {
+                return;
+            }
+            final MapleCharacter c = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+            if (c != null && c.getFamilyId() == guildid) {
+                c.getClient().getSession().write(packet);
+            }
+        }
+    }
+
+    public static class Alliance {
+
+        private static final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<Integer, MapleGuildAlliance>();
+        private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+        static {
+            //System.out.println("[MapleGuildAlliance] Loading GuildAlliances");
+            Collection<MapleGuildAlliance> allGuilds = MapleGuildAlliance.loadAll();
+            for (MapleGuildAlliance g : allGuilds) {
+                alliances.put(g.getId(), g);
+            }
+        }
+
+        public static MapleGuildAlliance getAlliance(final int allianceid) {
+            MapleGuildAlliance ret = null;
+            lock.readLock().lock();
+            try {
+                ret = alliances.get(allianceid);
+            } finally {
+                lock.readLock().unlock();
+            }
+            if (ret == null) {
+                lock.writeLock().lock();
+                try {
+                    ret = new MapleGuildAlliance(allianceid);
+                    if (ret == null || ret.getId() <= 0) { //failed to load
+                        return null;
+                    }
+                    alliances.put(allianceid, ret);
+                } finally {
+                    lock.writeLock().unlock();
+                }
+            }
+            return ret;
+        }
+
+        public static int getAllianceLeader(final int allianceid) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.getLeaderId();
+            }
+            return 0;
+        }
+
+        public static void updateAllianceRanks(final int allianceid, final String[] ranks) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                mga.setRank(ranks);
+            }
+        }
+
+        public static void updateAllianceNotice(final int allianceid, final String notice) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                mga.setNotice(notice);
+            }
+        }
+
+        public static boolean canInvite(final int allianceid) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.getCapacity() > mga.getNoGuilds();
+            }
+            return false;
+        }
+
+        public static boolean changeAllianceLeader(final int allianceid, final int cid) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.setLeaderId(cid);
+            }
+            return false;
+        }
+
+        public static boolean changeAllianceRank(final int allianceid, final int cid, final int change) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.changeAllianceRank(cid, change);
+            }
+            return false;
+        }
+
+        public static boolean changeAllianceCapacity(final int allianceid) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.setCapacity();
+            }
+            return false;
+        }
+
+        public static boolean disbandAlliance(final int allianceid) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.disband();
+            }
+            return false;
+        }
+
+        public static boolean addGuildToAlliance(final int allianceid, final int gid) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.addGuild(gid);
+            }
+            return false;
+        }
+
+        public static boolean removeGuildFromAlliance(final int allianceid, final int gid, final boolean expelled) {
+            final MapleGuildAlliance mga = getAlliance(allianceid);
+            if (mga != null) {
+                return mga.removeGuild(gid, expelled);
+            }
+            return false;
+        }
+
+        public static void sendGuild(final int allianceid) {
+            final MapleGuildAlliance alliance = getAlliance(allianceid);
+            if (alliance != null) {
+                sendGuild(ResCWvsContext.getAllianceUpdate(alliance), -1, allianceid);
+                sendGuild(ResCWvsContext.getGuildAlliance(alliance), -1, allianceid);
+            }
+        }
+
+        public static void sendGuild(final MaplePacket packet, final int exceptionId, final int allianceid) {
+            final MapleGuildAlliance alliance = getAlliance(allianceid);
+            if (alliance != null) {
+                for (int i = 0; i < alliance.getNoGuilds(); i++) {
+                    int gid = alliance.getGuildId(i);
+                    if (gid > 0 && gid != exceptionId) {
+                        Guild.guildPacket(gid, packet);
+                    }
+                }
+            }
+        }
+
+        public static boolean createAlliance(final String alliancename, final int cid, final int cid2, final int gid, final int gid2) {
+            final int allianceid = MapleGuildAlliance.createToDb(cid, alliancename, gid, gid2);
+            if (allianceid <= 0) {
+                return false;
+            }
+            final MapleGuild g = Guild.getGuild(gid), g_ = Guild.getGuild(gid2);
+            g.setAllianceId(allianceid);
+            g_.setAllianceId(allianceid);
+            g.changeARank(true);
+            g_.changeARank(false);
+
+            final MapleGuildAlliance alliance = getAlliance(allianceid);
+
+            sendGuild(ResCWvsContext.createGuildAlliance(alliance), -1, allianceid);
+            sendGuild(ResCWvsContext.getAllianceInfo(alliance), -1, allianceid);
+            sendGuild(ResCWvsContext.getGuildAlliance(alliance), -1, allianceid);
+            sendGuild(ResCWvsContext.changeAlliance(alliance, true), -1, allianceid);
+            return true;
+        }
+
+        public static void allianceChat(final int gid, final String name, final int cid, final String msg) {
+            final MapleGuild g = Guild.getGuild(gid);
+            if (g != null) {
+                final MapleGuildAlliance ga = getAlliance(g.getAllianceId());
+                if (ga != null) {
+                    for (int i = 0; i < ga.getNoGuilds(); i++) {
+                        final MapleGuild g_ = Guild.getGuild(ga.getGuildId(i));
+                        if (g_ != null) {
+                            g_.allianceChat(name, cid, msg);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void setNewAlliance(final int gid, final int allianceid) {
+            final MapleGuildAlliance alliance = getAlliance(allianceid);
+            final MapleGuild guild = Guild.getGuild(gid);
+            if (alliance != null && guild != null) {
+                for (int i = 0; i < alliance.getNoGuilds(); i++) {
+                    if (gid == alliance.getGuildId(i)) {
+                        guild.setAllianceId(allianceid);
+                        guild.broadcast(ResCWvsContext.getAllianceInfo(alliance));
+                        guild.broadcast(ResCWvsContext.getGuildAlliance(alliance));
+                        guild.broadcast(ResCWvsContext.changeAlliance(alliance, true));
+                        guild.changeARank();
+                        guild.writeToDB(false);
+                    } else {
+                        final MapleGuild g_ = Guild.getGuild(alliance.getGuildId(i));
+                        if (g_ != null) {
+                            g_.broadcast(ResCWvsContext.addGuildToAlliance(alliance, guild));
+                            g_.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, guild, true));
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void setOldAlliance(final int gid, final boolean expelled, final int allianceid) {
+            final MapleGuildAlliance alliance = getAlliance(allianceid);
+            final MapleGuild g_ = Guild.getGuild(gid);
+            if (alliance != null) {
+                for (int i = 0; i < alliance.getNoGuilds(); i++) {
+                    final MapleGuild guild = Guild.getGuild(alliance.getGuildId(i));
+                    if (guild == null) {
+                        if (gid != alliance.getGuildId(i)) {
+                            alliance.removeGuild(gid, false);
+                        }
+                        continue; //just skip
+                    }
+                    if (g_ == null || gid == alliance.getGuildId(i)) {
+                        guild.changeARank(5);
+                        guild.setAllianceId(0);
+                        guild.broadcast(ResCWvsContext.disbandAlliance(allianceid));
+                    } else if (g_ != null) {
+                        guild.broadcast(ResWrapper.BroadCastMsgEvent("[" + g_.getName() + "] Guild has left the alliance."));
+                        guild.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, g_, false));
+                        guild.broadcast(ResCWvsContext.removeGuildFromAlliance(alliance, g_, expelled));
+                    }
+
+                }
+            }
+
+            if (gid == -1) {
+                lock.writeLock().lock();
+                try {
+                    alliances.remove(allianceid);
+                } finally {
+                    lock.writeLock().unlock();
+                }
+            }
+        }
+
+        public static List<MaplePacket> getAllianceInfo(final int allianceid, final boolean start) {
+            List<MaplePacket> ret = new ArrayList<MaplePacket>();
+            final MapleGuildAlliance alliance = getAlliance(allianceid);
+            if (alliance != null) {
+                if (start) {
+                    ret.add(ResCWvsContext.getAllianceInfo(alliance));
+                    ret.add(ResCWvsContext.getGuildAlliance(alliance));
+                }
+                ret.add(ResCWvsContext.getAllianceUpdate(alliance));
+            }
+            return ret;
+        }
+
+        public static void save() {
+            System.out.println("Saving alliances...");
+            lock.writeLock().lock();
+            try {
+                for (MapleGuildAlliance a : alliances.values()) {
+                    a.saveToDb();
+                }
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+    public static class Family {
+
+        private static final Map<Integer, MapleFamily> families = new LinkedHashMap<Integer, MapleFamily>();
+        private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+
+        static {
+            //System.out.println("[MapleFamily] Loading Families");
+            Collection<MapleFamily> allGuilds = MapleFamily.loadAll();
+            for (MapleFamily g : allGuilds) {
+                if (g.isProper()) {
+                    families.put(g.getId(), g);
+                }
+            }
+        }
+
+        public static MapleFamily getFamily(int id) {
+            MapleFamily ret = null;
+            lock.readLock().lock();
+            try {
+                ret = families.get(id);
+            } finally {
+                lock.readLock().unlock();
+            }
+            if (ret == null) {
+                lock.writeLock().lock();
+                try {
+                    ret = new MapleFamily(id);
+                    if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
+                        return null;
+                    }
+                    families.put(id, ret);
+                } finally {
+                    lock.writeLock().unlock();
+                }
+            }
+            return ret;
+        }
+
+        public static void memberFamilyUpdate(MapleFamilyCharacter mfc, MapleCharacter mc) {
+            MapleFamily f = getFamily(mfc.getFamilyId());
+            if (f != null) {
+                f.memberLevelJobUpdate(mc);
+            }
+        }
+
+        public static void setFamilyMemberOnline(MapleFamilyCharacter mfc, boolean bOnline, int channel) {
+            MapleFamily f = getFamily(mfc.getFamilyId());
+            if (f != null) {
+                f.setOnline(mfc.getId(), bOnline, channel);
+            }
+        }
+
+        public static int setRep(int fid, int cid, int addrep, int oldLevel) {
+            MapleFamily f = getFamily(fid);
+            if (f != null) {
+                return f.setRep(cid, addrep, oldLevel);
+            }
+            return 0;
+        }
+
+        public static void save() {
+            System.out.println("Saving families...");
+            lock.writeLock().lock();
+            try {
+                for (MapleFamily a : families.values()) {
+                    a.writeToDB(false);
+                }
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+
+        public static void setFamily(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {
+            MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
+            if (mc == null) {
+                return;
+            }
+            boolean bDifferent = mc.getFamilyId() != familyid || mc.getSeniorId() != seniorid || mc.getJunior1() != junior1 || mc.getJunior2() != junior2;
+            mc.setFamily(familyid, seniorid, junior1, junior2);
+            mc.setCurrentRep(currentrep);
+            mc.setTotalRep(totalrep);
+            if (bDifferent) {
+                mc.saveFamilyStatus();
+            }
+        }
+
+        public static void familyPacket(int gid, MaplePacket message, int cid) {
+            MapleFamily f = getFamily(gid);
+            if (f != null) {
+                f.broadcast(message, -1, f.getMFC(cid).getPedigree());
+            }
+        }
+
+        public static void disbandFamily(int gid) {
+            MapleFamily g = getFamily(gid);
+            lock.writeLock().lock();
+            try {
+                if (g != null) {
+                    g.disbandFamily();
+                    families.remove(gid);
+                }
+            } finally {
+                lock.writeLock().unlock();
+            }
+        }
+    }
+
+}

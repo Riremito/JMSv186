@@ -24,30 +24,28 @@ import odin.client.inventory.IItem;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.MapleStat;
 import odin.constants.GameConstants;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMapObjectType;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class PlayersHandler {
 
-    public static void Note(final SeekableLittleEndianAccessor slea, final MapleCharacter chr) {
-        final byte type = slea.readByte();
+    public static void Note(ClientPacket cp, final MapleCharacter chr) {
+        final byte type = cp.Decode1();
 
         switch (type) {
             case 0:
-                String name = slea.readMapleAsciiString();
-                String msg = slea.readMapleAsciiString();
-                boolean fame = slea.readByte() > 0;
-                slea.readInt(); //0?
-                IItem itemz = chr.getCashInventory().findByCashId(slea.readLong());
+                String name = cp.DecodeStr();
+                String msg = cp.DecodeStr();
+                boolean fame = cp.Decode1() > 0;
+                cp.Decode4(); //0?
+                IItem itemz = chr.getCashInventory().findByCashId(cp.Decode8());
                 if (itemz == null || !itemz.getGiftFrom().equalsIgnoreCase(name) || !chr.getCashInventory().canSendNote(itemz.getUniqueId())) {
                     return;
                 }
@@ -59,12 +57,13 @@ public class PlayersHandler {
                 }
                 break;
             case 1:
-                final byte num = slea.readByte();
-                slea.skip(2);
+                final byte num = cp.Decode1();
+                //slea.skip(2);
+                cp.Decode2(); // ?_?
 
                 for (int i = 0; i < num; i++) {
-                    final int id = slea.readInt();
-                    chr.deleteNote(id, slea.readByte() > 0 ? 1 : 0);
+                    final int id = cp.Decode4();
+                    chr.deleteNote(id, cp.Decode1() > 0 ? 1 : 0);
                 }
                 break;
             default:
@@ -85,7 +84,7 @@ public class PlayersHandler {
             case OK:
                 if (Math.abs(target.getFame() + famechange) <= 30000) {
                     target.addFame(famechange);
-                    target.updateSingleStat(MapleStat.FAME, target.getFame());
+                    target.sendStatChanged();
                 }
                 //if (!chr.isGM()) {
                 chr.hasGivenFame(target);
@@ -102,25 +101,25 @@ public class PlayersHandler {
         }
     }
 
-    public static void TransformPlayer(final SeekableLittleEndianAccessor slea, final MapleClient c, final MapleCharacter chr) {
+    public static void TransformPlayer(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
         // D9 A4 FD 00
         // 11 00
         // A0 C0 21 00
         // 07 00 64 66 62 64 66 62 64
-        chr.updateTick(slea.readInt());
-        final byte slot = (byte) slea.readShort();
-        final int itemId = slea.readInt();
-        final String target = slea.readMapleAsciiString().toLowerCase();
+        chr.updateTick(cp.Decode4());
+        final byte slot = (byte) cp.Decode2();
+        final int itemId = cp.Decode4();
+        final String target = cp.DecodeStr().toLowerCase();
 
         final IItem toUse = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
         switch (itemId) {
             case 2212000:
-                for (final MapleCharacter search_chr : c.getPlayer().getMap().getCharactersThreadsafe()) {
+                for (final MapleCharacter search_chr : c.getPlayer().getMap().getCharacters()) {
                     if (search_chr.getName().toLowerCase().equals(target)) {
                         MapleItemInformationProvider.getInstance().getItemEffect(2210023).applyTo(search_chr);
                         search_chr.dropMessage(6, chr.getName() + " has played a prank on you!");
@@ -131,9 +130,9 @@ public class PlayersHandler {
         }
     }
 
-    public static void FollowRequest(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        MapleCharacter tt = c.getPlayer().getMap().getCharacterById(slea.readInt());
-        if (slea.readByte() > 0) {
+    public static void FollowRequest(ClientPacket cp, final MapleClient c) {
+        MapleCharacter tt = c.getPlayer().getMap().getCharacterById(cp.Decode4());
+        if (cp.Decode1() > 0) {
             //1 when changing map
             tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
             if (tt != null && tt.getFollowId() == c.getPlayer().getId()) {
@@ -144,7 +143,7 @@ public class PlayersHandler {
             }
             return;
         }
-        if (slea.readByte() > 0) { //cancelling follow
+        if (cp.Decode1() > 0) { //cancelling follow
             tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
             if (tt != null && tt.getFollowId() == c.getPlayer().getId() && c.getPlayer().isFollowOn()) {
                 c.getPlayer().checkFollow();
@@ -163,11 +162,11 @@ public class PlayersHandler {
         }
     }
 
-    public static void FollowReply(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().getFollowId() > 0 && c.getPlayer().getFollowId() == slea.readInt()) {
+    public static void FollowReply(ClientPacket cp, final MapleClient c) {
+        if (c.getPlayer().getFollowId() > 0 && c.getPlayer().getFollowId() == cp.Decode4()) {
             MapleCharacter tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
             if (tt != null && tt.getPosition().distanceSq(c.getPlayer().getPosition()) < 10000 && tt.getFollowId() == 0 && tt.getId() != c.getPlayer().getId()) { //estimate, should less
-                boolean accepted = slea.readByte() > 0;
+                boolean accepted = cp.Decode1() > 0;
                 if (accepted) {
                     tt.setFollowId(c.getPlayer().getId());
                     tt.setFollowOn(true);
@@ -192,69 +191,70 @@ public class PlayersHandler {
         }
     }
 
-    public static void RingAction(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final byte mode = slea.readByte();
+    public static void RingAction(ClientPacket cp, final MapleClient c) {
+        MapleCharacter chr = c.getPlayer();
+        final byte mode = cp.Decode1();
         if (mode == 0) {
-            final String name = slea.readMapleAsciiString();
-            final int itemid = slea.readInt();
+            final String name = cp.DecodeStr();
+            final int itemid = cp.Decode4();
             final int newItemId = 1112300 + (itemid - 2240004);
-            final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
+            final MapleCharacter player = c.getChannelServer().getOnlinePlayers().findByName(name);
             int errcode = 0;
             if (c.getPlayer().getMarriageId() > 0) {
                 errcode = 0x17;
-            } else if (chr == null) {
+            } else if (player == null) {
                 errcode = 0x12;
-            } else if (chr.getMapId() != c.getPlayer().getMapId()) {
+            } else if (player.getMapId() != c.getPlayer().getMapId()) {
                 errcode = 0x13;
             } else if (!c.getPlayer().haveItem(itemid, 1) || itemid < 2240004 || itemid > 2240015) {
                 errcode = 0x0D;
-            } else if (chr.getMarriageId() > 0 || chr.getMarriageItemId() > 0) {
+            } else if (player.getMarriageId() > 0 || player.getMarriageItemId() > 0) {
                 errcode = 0x18;
             } else if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "")) {
                 errcode = 0x14;
-            } else if (!MapleInventoryManipulator.checkSpace(chr.getClient(), newItemId, 1, "")) {
+            } else if (!MapleInventoryManipulator.checkSpace(player.getClient(), newItemId, 1, "")) {
                 errcode = 0x15;
             }
             if (errcode > 0) {
                 c.getSession().write(ResCWvsContext.sendEngagement((byte) errcode, 0, null, null));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 return;
             }
             c.getPlayer().setMarriageItemId(itemid);
-            chr.getClient().getSession().write(ResCWvsContext.sendEngagementRequest(c.getPlayer().getName(), c.getPlayer().getId()));
+            player.getClient().getSession().write(ResCWvsContext.sendEngagementRequest(c.getPlayer().getName(), c.getPlayer().getId()));
             //1112300 + (itemid - 2240004)
         } else if (mode == 1) {
             c.getPlayer().setMarriageItemId(0);
         } else if (mode == 2) { //accept/deny proposal
-            final boolean accepted = slea.readByte() > 0;
-            final String name = slea.readMapleAsciiString();
-            final int id = slea.readInt();
-            final MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(name);
-            if (c.getPlayer().getMarriageId() > 0 || chr == null || chr.getId() != id || chr.getMarriageItemId() <= 0 || !chr.haveItem(chr.getMarriageItemId(), 1) || chr.getMarriageId() > 0) {
+            final boolean accepted = cp.Decode1() > 0;
+            final String name = cp.DecodeStr();
+            final int id = cp.Decode4();
+            final MapleCharacter player = c.getChannelServer().getOnlinePlayers().findByName(name);
+            if (c.getPlayer().getMarriageId() > 0 || player == null || player.getId() != id || player.getMarriageItemId() <= 0 || !player.haveItem(player.getMarriageItemId(), 1) || player.getMarriageId() > 0) {
                 c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x1D, 0, null, null));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 return;
             }
             if (accepted) {
-                final int newItemId = 1112300 + (chr.getMarriageItemId() - 2240004);
-                if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "") || !MapleInventoryManipulator.checkSpace(chr.getClient(), newItemId, 1, "")) {
+                final int newItemId = 1112300 + (player.getMarriageItemId() - 2240004);
+                if (!MapleInventoryManipulator.checkSpace(c, newItemId, 1, "") || !MapleInventoryManipulator.checkSpace(player.getClient(), newItemId, 1, "")) {
                     c.getSession().write(ResCWvsContext.sendEngagement((byte) 0x15, 0, null, null));
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateStat();
                     return;
                 }
                 MapleInventoryManipulator.addById(c, newItemId, (short) 1);
-                MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, chr.getMarriageItemId(), 1, false, false);
-                MapleInventoryManipulator.addById(chr.getClient(), newItemId, (short) 1);
-                chr.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x10, newItemId, chr, c.getPlayer()));
-                chr.setMarriageId(c.getPlayer().getId());
-                c.getPlayer().setMarriageId(chr.getId());
+                MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.USE, player.getMarriageItemId(), 1, false, false);
+                MapleInventoryManipulator.addById(player.getClient(), newItemId, (short) 1);
+                player.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x10, newItemId, player, c.getPlayer()));
+                player.setMarriageId(c.getPlayer().getId());
+                c.getPlayer().setMarriageId(player.getId());
             } else {
-                chr.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x1E, 0, null, null));
+                player.getClient().getSession().write(ResCWvsContext.sendEngagement((byte) 0x1E, 0, null, null));
             }
-            c.getSession().write(WrapCWvsContext.updateStat());
-            chr.setMarriageItemId(0);
+            chr.updateStat();
+            player.setMarriageItemId(0);
         } else if (mode == 3) { //drop, only works for ETC
-            final int itemId = slea.readInt();
+            final int itemId = cp.Decode4();
             final MapleInventoryType type = GameConstants.getInventoryType(itemId);
             final IItem item = c.getPlayer().getInventory(type).findById(itemId);
             if (item != null && type == MapleInventoryType.ETC && itemId / 10000 == 421) {

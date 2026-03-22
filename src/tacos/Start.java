@@ -24,29 +24,30 @@ import tacos.config.Content;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.config.property.Property;
-import tacos.data.client.DC_Exp;
+import tacos.property.Property;
+import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
-import tacos.server.ServerOdinLogin;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import java.sql.SQLException;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.server.MTSStorage;
 import odin.server.RandomRewards;
-import odin.server.RankingWorker;
 import odin.server.SpeedRunner;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
-import odin.server.events.MapleOxQuizFactory;
+import tacos.database.query.DQ_Characters;
 import tacos.network.MapleAESOFB;
-import tacos.server.Server;
-import tacos.server.Server_CashShop;
-import tacos.server.Server_Game;
-import tacos.server.Server_Login;
+import tacos.property.Property_World;
+import tacos.server.TacosServer;
+import tacos.server.TacosCashShop;
+import tacos.server.TacosChannel;
+import tacos.server.TacosLogin;
+import tacos.server.TacosITC;
+import tacos.server.TacosWorld;
 import test.ToolMan;
 
 /**
@@ -87,7 +88,7 @@ public class Start {
         ClientEdit.init();
         // update exp table
         DebugLogger.SetupLog("EXP_TABLE");
-        DC_Exp.init();
+        SharedExpTable.init();
         // update packet enum values
         DebugLogger.SetupLog("PACKET_OPS");
         tacos.packet.ops.PacketOps.initAll();
@@ -101,8 +102,6 @@ public class Start {
         // set codepage
         DebugLogger.SetupLog("CODEPAGE");
         CodePage.init();
-        // ログインサーバー上のゲームサーバー情報
-        ServerOdinLogin.SetWorldConfig(); // TODO : fix
         // database
         DQ_Accounts.resetLoginState();
         // 管理画面
@@ -111,7 +110,7 @@ public class Start {
             ToolMan.Open();
         }
 
-        World.init();
+        OdinWorld.init();
 
         WorldTimer.getInstance().start();
         EtcTimer.getInstance().start();
@@ -125,12 +124,21 @@ public class Start {
         // ?_?
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
-        Server_Login.init();
-        Server_CashShop.init();
-        Server_Game.init();
+        // world 0.
+        TacosWorld world = new TacosWorld(0, Property_World.getName(), Property_World.getFlags(), Property_World.getEvent());
+        TacosWorld.add(world);
+        // login server
+        TacosLogin.init();
+        // game servers
+        TacosChannel.init();
+        // cashshop server
+        TacosCashShop.init();
+        // itc server
+        TacosITC.init();
+        // map updates
+        TacosWorld.find(0).registerRespawn(); // TODO : fix
 
         RandomRewards.getInstance();
-        MapleOxQuizFactory.getInstance().initialize();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
         MTSStorage.load();
@@ -140,19 +148,18 @@ public class Start {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        World.registerRespawn();
-        DebugLogger.SetupLog("RANKING");
-        RankingWorker.getInstance().run();
+
+        DQ_Characters.updateRanking();
 
         Runtime.getRuntime().addShutdownHook(new Thread(
                 () -> {
                     DebugLogger.InfoLog("shutdown...");
-                    for (Server server : Server.get()) {
+                    for (TacosServer server : TacosServer.get()) {
                         server.shutdown();
                     }
-                    World.Guild.save();
-                    World.Alliance.save();
-                    World.Family.save();
+                    OdinWorld.Guild.save();
+                    OdinWorld.Alliance.save();
+                    OdinWorld.Family.save();
                     try {
                         DatabaseConnection.closeAll();
                     } catch (SQLException ex) {

@@ -37,15 +37,15 @@ import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
 import java.util.ArrayList;
 import tacos.packet.response.ResCEmployeePool;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCUser;
 import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.server.TacosWorld;
 
 public abstract class AbstractPlayerStore extends AbstractMapleMapObject implements IMaplePlayerShop {
 
@@ -62,12 +62,12 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
         this.ownerId = owner.getId();
-        this.owneraccount = owner.getAccountID();
+        this.owneraccount = owner.getAccountId();
         this.itemId = itemId;
         this.des = desc;
         this.pass = pass;
         this.map = owner.getMapId();
-        this.channel = owner.getClient().getChannel();
+        this.channel = owner.getClient().getChannelId();
         chrs = new WeakReference[slots];
         for (int i = 0; i < chrs.length; i++) {
             chrs[i] = new WeakReference<MapleCharacter>(null);
@@ -159,7 +159,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             final int packageid = rs.getInt(1);
             rs.close();
             ps.close();
-            List<Pair<IItem, MapleInventoryType>> iters = new ArrayList<Pair<IItem, MapleInventoryType>>();
+            List<OdinPair<IItem, MapleInventoryType>> iters = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
             IItem item;
             for (MaplePlayerShopItem pItems : items) {
                 if (pItems.item == null || pItems.bundles <= 0) {
@@ -170,7 +170,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
                 }
                 item = pItems.item.copy();
                 item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-                iters.add(new Pair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+                iters.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
             }
             ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
             return true;
@@ -200,9 +200,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         int i = getFreeSlot();
         if (i > 0) {
             if (getShopType() >= 3) {
-                broadcastToVisitors(ResCField.getMiniGameNewVisitor(visitor, i, (MapleMiniGame) this));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameNewVisitor(visitor, i, (MapleMiniGame) this));
             } else {
-                broadcastToVisitors(ResCField.shopVisitorAdd(visitor, i));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
             }
             chrs[i - 1] = new WeakReference<MapleCharacter>(visitor);
             if (!isOwner(visitor)) {
@@ -219,7 +219,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         final byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
-            broadcastToVisitors(ResCField.shopVisitorLeave(slot), slot);
+            broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
             chrs[slot - 1] = new WeakReference<MapleCharacter>(null);
             if (shouldUpdate) {
                 update();
@@ -246,9 +246,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             MapleCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.getClient().getSession().write(ResCField.shopErrorMessage(error, type));
+                    visitor.getClient().getSession().write(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
                 }
-                broadcastToVisitors(ResCField.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
+                broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
                 chrs[i] = new WeakReference<MapleCharacter>(null);
             }
@@ -280,11 +280,11 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     @Override
-    public List<Pair<Byte, MapleCharacter>> getVisitors() {
-        List<Pair<Byte, MapleCharacter>> chrz = new LinkedList<Pair<Byte, MapleCharacter>>();
+    public List<OdinPair<Byte, MapleCharacter>> getVisitors() {
+        List<OdinPair<Byte, MapleCharacter>> chrz = new LinkedList<OdinPair<Byte, MapleCharacter>>();
         for (byte i = 0; i < chrs.length; i++) { //include owner or no
             if (chrs[i] != null && chrs[i].get() != null) {
-                chrz.add(new Pair<Byte, MapleCharacter>((byte) (i + 1), chrs[i].get()));
+                chrz.add(new OdinPair<Byte, MapleCharacter>((byte) (i + 1), chrs[i].get()));
             }
         }
         return chrz;
@@ -357,7 +357,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     public MapleMap getMap() {
-        return ServerOdinGame.getInstance(channel).getMapFactory().getMap(map);
+        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(map);
     }
 
     @Override

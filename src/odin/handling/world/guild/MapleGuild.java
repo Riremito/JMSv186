@@ -31,13 +31,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleCharacterUtil;
 import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleBBSThread.MapleBBSReply;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -46,11 +45,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import tacos.database.query.DQ_Notes;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.ServerPacket;
 
 public class MapleGuild implements java.io.Serializable {
 
@@ -79,7 +79,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.setInt(1, guildid);
             ResultSet rs = ps.executeQuery();
 
-            if (!rs.first()) {
+            if (!rs.next()) {
                 rs.close();
                 ps.close();
                 id = -1;
@@ -109,7 +109,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.setInt(1, guildid);
             rs = ps.executeQuery();
 
-            if (!rs.first()) {
+            if (!rs.next()) {
                 System.err.println("No members in guild " + id + ".  Impossible... guild is disbanding");
                 rs.close();
                 ps.close();
@@ -272,7 +272,7 @@ public class MapleGuild implements java.io.Serializable {
                 ps.close();
 
                 if (allianceid > 0) {
-                    final MapleGuildAlliance alliance = World.Alliance.getAlliance(allianceid);
+                    final MapleGuildAlliance alliance = OdinWorld.Alliance.getAlliance(allianceid);
                     if (alliance != null) {
                         alliance.removeGuild(id, false);
                     }
@@ -295,7 +295,7 @@ public class MapleGuild implements java.io.Serializable {
     }
 
     public final MapleCharacter getLeader(final MapleClient c) {
-        return c.getChannelServer().getPlayerStorage().getCharacterById(leader);
+        return c.getChannelServer().getOnlinePlayers().findById(leader);
     }
 
     public final int getGP() {
@@ -375,15 +375,15 @@ public class MapleGuild implements java.io.Serializable {
             for (MapleGuildCharacter mgc : members) {
                 if (bcop == BCOp.DISBAND) {
                     if (mgc.isOnline()) {
-                        World.Guild.setGuildAndRank(mgc.getId(), 0, 5, 5);
+                        OdinWorld.Guild.setGuildAndRank(mgc.getId(), 0, 5, 5);
                     } else {
                         setOfflineGuildStatus(0, (byte) 5, (byte) 5, mgc.getId());
                     }
                 } else if (mgc.isOnline() && mgc.getId() != exceptionId) {
                     if (bcop == BCOp.EMBELMCHANGE) {
-                        World.Guild.changeEmblem(id, mgc.getId(), new MapleGuildSummary(this));
+                        OdinWorld.Guild.changeEmblem(id, mgc.getId(), new MapleGuildSummary(this));
                     } else {
-                        World.Broadcast.sendGuildPacket(mgc.getId(), packet, exceptionId, id);
+                        OdinWorld.Broadcast.sendGuildPacket(mgc.getId(), packet, exceptionId, id);
                     }
                 }
             }
@@ -429,7 +429,7 @@ public class MapleGuild implements java.io.Serializable {
         if (bBroadcast) {
             broadcast(ResCWvsContext.guildMemberOnline(id, cid, online), cid);
             if (allianceid > 0) {
-                World.Alliance.sendGuild(ResCWvsContext.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
+                OdinWorld.Alliance.sendGuild(ResCWvsContext.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
             }
         }
         bDirty = true; // member formation has changed, update notifications
@@ -486,7 +486,7 @@ public class MapleGuild implements java.io.Serializable {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.first()) {// name taken
+            if (rs.next()) {// name taken
                 rs.close();
                 ps.close();
                 return 0;
@@ -534,7 +534,7 @@ public class MapleGuild implements java.io.Serializable {
         gainGP(50);
         broadcast(ResCWvsContext.newGuildMember(mgc));
         if (allianceid > 0) {
-            World.Alliance.sendGuild(allianceid);
+            OdinWorld.Alliance.sendGuild(allianceid);
         }
         return 1;
     }
@@ -547,12 +547,12 @@ public class MapleGuild implements java.io.Serializable {
             bDirty = true;
             members.remove(mgc);
             if (mgc.isOnline()) {
-                World.Guild.setGuildAndRank(mgc.getId(), 0, 5, 5);
+                OdinWorld.Guild.setGuildAndRank(mgc.getId(), 0, 5, 5);
             } else {
                 setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, mgc.getId());
             }
             if (allianceid > 0) {
-                World.Alliance.sendGuild(allianceid);
+                OdinWorld.Alliance.sendGuild(allianceid);
             }
         } finally {
             wL.unlock();
@@ -573,12 +573,12 @@ public class MapleGuild implements java.io.Serializable {
 
                     gainGP(-50);
                     if (allianceid > 0) {
-                        World.Alliance.sendGuild(allianceid);
+                        OdinWorld.Alliance.sendGuild(allianceid);
                     }
                     if (mgc.isOnline()) {
-                        World.Guild.setGuildAndRank(cid, 0, 5, 5);
+                        OdinWorld.Guild.setGuildAndRank(cid, 0, 5, 5);
                     } else {
-                        MapleCharacterUtil.sendNote(mgc.getName(), initiator.getName(), "You have been expelled from the guild.", 0);
+                        DQ_Notes.sendNote(mgc.getName(), initiator.getName(), "You have been expelled from the guild.", 0);
                         setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, cid);
                     }
                     members.remove(mgc);
@@ -617,14 +617,14 @@ public class MapleGuild implements java.io.Serializable {
         for (final MapleGuildCharacter mgc : members) {
             if (cid == mgc.getId()) {
                 if (mgc.isOnline()) {
-                    World.Guild.setGuildAndRank(cid, this.id, mgc.getGuildRank(), newRank);
+                    OdinWorld.Guild.setGuildAndRank(cid, this.id, mgc.getGuildRank(), newRank);
                 } else {
                     setOfflineGuildStatus((short) this.id, (byte) mgc.getGuildRank(), (byte) newRank, cid);
                 }
                 mgc.setAllianceRank((byte) newRank);
                 //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.changeAllianceRank(allianceid, mgc), -1, allianceid);
                 //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.updateAllianceRank(allianceid, mgc), -1, allianceid);
-                World.Alliance.sendGuild(allianceid);
+                OdinWorld.Alliance.sendGuild(allianceid);
                 return;
             }
         }
@@ -636,7 +636,7 @@ public class MapleGuild implements java.io.Serializable {
         for (final MapleGuildCharacter mgc : members) {
             if (cid == mgc.getId()) {
                 if (mgc.isOnline()) {
-                    World.Guild.setGuildAndRank(cid, this.id, newRank, mgc.getAllianceRank());
+                    OdinWorld.Guild.setGuildAndRank(cid, this.id, newRank, mgc.getAllianceRank());
                 } else {
                     setOfflineGuildStatus((short) this.id, (byte) newRank, (byte) mgc.getAllianceRank(), cid);
                 }
@@ -672,7 +672,7 @@ public class MapleGuild implements java.io.Serializable {
                 }
                 broadcast(ResCWvsContext.guildMemberLevelJobUpdate(mgc));
                 if (allianceid > 0) {
-                    World.Alliance.sendGuild(ResCWvsContext.updateAlliance(mgc, allianceid), id, allianceid);
+                    OdinWorld.Alliance.sendGuild(ResCWvsContext.updateAlliance(mgc, allianceid), id, allianceid);
                 }
                 break;
             }
@@ -762,24 +762,27 @@ public class MapleGuild implements java.io.Serializable {
         }
     }
 
-    public final void addMemberData(final MaplePacketLittleEndianWriter mplew) {
-        mplew.write(members.size());
+    public final byte[] addMemberData() {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(members.size());
 
         for (final MapleGuildCharacter mgc : members) {
-            mplew.writeInt(mgc.getId());
+            data.Encode4(mgc.getId());
         }
         for (final MapleGuildCharacter mgc : members) {
-            mplew.writeAsciiString(mgc.getName(), 13);
-            mplew.writeInt(mgc.getJobId());
-            mplew.writeInt(mgc.getLevel());
-            mplew.writeInt(mgc.getGuildRank());
-            mplew.writeInt(mgc.isOnline() ? 1 : 0);
-            mplew.writeInt(signature);
+            data.EncodeBuffer(mgc.getName(), 13);
+            data.Encode4(mgc.getJobId());
+            data.Encode4(mgc.getLevel());
+            data.Encode4(mgc.getGuildRank());
+            data.Encode4(mgc.isOnline() ? 1 : 0);
+            data.Encode4(signature);
 
             if (Version.GreaterOrEqual(Region.JMS, 164)) {
-                mplew.writeInt(mgc.getAllianceRank());
+                data.Encode4(mgc.getAllianceRank());
             }
         }
+        return data.get().getBytes();
     }
 
     // null indicates successful invitation being sent
@@ -787,7 +790,7 @@ public class MapleGuild implements java.io.Serializable {
     // so this will be running mostly on a channel server, unlike the rest
     // of the class
     public static final MapleGuildResponse sendInvite(final MapleClient c, final String targetName) {
-        final MapleCharacter mc = c.getChannelServer().getPlayerStorage().getCharacterByName(targetName);
+        final MapleCharacter mc = c.getChannelServer().getOnlinePlayers().findByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }
@@ -850,7 +853,7 @@ public class MapleGuild implements java.io.Serializable {
         }
     }
 
-    public static void setOfflineGuildStatus(int guildid, byte guildrank, byte alliancerank, int cid) {
+    public static void setOfflineGuildStatus(int guildid, int guildrank, int alliancerank, int cid) {
         try {
             java.sql.Connection con = DatabaseConnection.getConnection();
             java.sql.PreparedStatement ps = con.prepareStatement("UPDATE characters SET guildid = ?, guildrank = ?, alliancerank = ? WHERE id = ?");

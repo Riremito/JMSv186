@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
+import java.util.LinkedHashMap;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
@@ -40,12 +41,11 @@ import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.life.MapleNPC;
 import odin.server.quest.MapleQuest;
-import odin.scripting.NPCScriptManager;
-import odin.scripting.NPCConversationManager;
+import tacos.odin.OdinNPCConversationManager;
 import odin.server.MapleItemInformationProvider;
-import odin.tools.ArrayMap;
-import odin.tools.Pair;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.odin.OdinPair;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 
 public class NPCHandler {
 
@@ -59,7 +59,7 @@ public class NPCHandler {
             return;
         }
         if (chr.getConversation() != 0) {
-            chr.dropMessage(-1, "You already are talking to an NPC. Use @ea if this is not intended.");
+            chr.DebugMsg("NPCTalk = err " + chr.getConversation());
             return;
         }
 
@@ -67,7 +67,7 @@ public class NPCHandler {
             chr.setConversation(1);
             npc.sendShop(c);
         } else {
-            NPCScriptManager.getInstance().start(c, npc.getId());
+            TacosScriptNPC.getInstance().start(c, npc.getId());
         }
     }
 
@@ -126,12 +126,12 @@ public class NPCHandler {
                 final int npc = cp.Decode4();
                 short pos_x = cp.Decode2();
                 short pos_y = cp.Decode2();
-                NPCScriptManager.getInstance().startQuest(c, npc, quest);
+                TacosScriptQuest.getInstance().startQuest(c, npc, quest);
                 break;
             }
             case 5: { // Scripted End Quest
                 final int npc = cp.Decode4();
-                NPCScriptManager.getInstance().endQuest(c, npc, quest, false);
+                TacosScriptQuest.getInstance().endQuest(c, npc, quest, false);
                 chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
                 chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
                 break;
@@ -141,8 +141,11 @@ public class NPCHandler {
         chr.DebugMsg("Quest ID = " + quest + ", Action = " + action);
     }
 
-    public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, byte action, int selection, String text) {
-        final NPCConversationManager cm = NPCScriptManager.getInstance().getCM(c);
+    public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, int action, int selection, String text) {
+        OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(c);
+        if (cm == null) {
+            cm = TacosScriptQuest.getInstance().getCM(c);
+        }
         byte lastMsg = (byte) smt.get();
 
         if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {
@@ -159,11 +162,11 @@ public class NPCHandler {
             if (action != 0) {
                 cm.setGetText(text);
                 if (cm.getType() == 0) {
-                    NPCScriptManager.getInstance().startQuest(c, action, lastMsg, -1);
+                    TacosScriptQuest.getInstance().startQuest(c, action, lastMsg, -1);
                 } else if (cm.getType() == 1) {
-                    NPCScriptManager.getInstance().endQuest(c, action, lastMsg, -1);
+                    TacosScriptQuest.getInstance().endQuest(c, action, lastMsg, -1);
                 } else {
-                    NPCScriptManager.getInstance().action(c, action, lastMsg, -1);
+                    TacosScriptNPC.getInstance().action(c, action, lastMsg, -1);
                 }
             } else {
                 cm.dispose();
@@ -178,11 +181,11 @@ public class NPCHandler {
 
         if (selection >= -1 && action != -1) {
             if (cm.getType() == 0) {
-                NPCScriptManager.getInstance().startQuest(c, action, lastMsg, selection);
+                TacosScriptQuest.getInstance().startQuest(c, action, lastMsg, selection);
             } else if (cm.getType() == 1) {
-                NPCScriptManager.getInstance().endQuest(c, action, lastMsg, selection);
+                TacosScriptQuest.getInstance().endQuest(c, action, lastMsg, selection);
             } else {
-                NPCScriptManager.getInstance().action(c, action, lastMsg, selection);
+                TacosScriptNPC.getInstance().action(c, action, lastMsg, selection);
             }
             return;
         }
@@ -200,7 +203,7 @@ public class NPCHandler {
         int price = 0;
         Map<String, Integer> eqStats;
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final Map<Equip, Integer> eqs = new ArrayMap<Equip, Integer>();
+        final Map<Equip, Integer> eqs = new LinkedHashMap<>();
         final MapleInventoryType[] types = {MapleInventoryType.EQUIP, MapleInventoryType.EQUIPPED};
         for (MapleInventoryType type : types) {
             for (IItem item : c.getPlayer().getInventory(type)) {
@@ -229,11 +232,11 @@ public class NPCHandler {
         }
     }
 
-    public static final void repair(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (c.getPlayer().getMapId() != 240000000 || slea.available() < 4) { //leafre for now
+    public static final void repair(ClientPacket cp, final MapleClient c) {
+        if (c.getPlayer().getMapId() != 240000000/* || slea.available() < 4*/) { //leafre for now
             return;
         }
-        final int position = slea.readInt(); //who knows why this is a int
+        final int position = cp.Decode4(); //who knows why this is a int
         final MapleInventoryType type = position < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
         final IItem item = c.getPlayer().getInventory(type).getItem((byte) position);
         if (item == null) {
@@ -275,7 +278,7 @@ public class NPCHandler {
 
         final MapleQuest quest = MapleQuest.getInstance(qid);
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Pair<Integer, List<Integer>> questItemInfo = null;
+        OdinPair<Integer, List<Integer>> questItemInfo = null;
         boolean found = false;
         for (IItem i : chr.getInventory(MapleInventoryType.ETC)) {
             if (i.getItemId() / 10000 == 422) {
@@ -297,14 +300,14 @@ public class NPCHandler {
         }
     }
 
-    public static final void RPSGame(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        if (slea.available() == 0 || !c.getPlayer().getMap().containsNPC(9000019)) {
+    public static final void RPSGame(ClientPacket cp, final MapleClient c) {
+        if (/*slea.available() == 0 || */!c.getPlayer().getMap().containsNPC(9000019)) {
             if (c.getPlayer().getRPS() != null) {
                 c.getPlayer().getRPS().dispose(c);
             }
             return;
         }
-        final byte mode = slea.readByte();
+        final byte mode = cp.Decode1();
         switch (mode) {
             case 0: //start game
             case 5: //retry
@@ -318,7 +321,7 @@ public class NPCHandler {
                 }
                 break;
             case 1: //answer
-                if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().answer(c, slea.readByte())) {
+                if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().answer(c, cp.Decode1())) {
                     c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;

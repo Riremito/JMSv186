@@ -30,6 +30,7 @@ import odin.client.MapleClient;
 import odin.client.MapleQuestStatus;
 import tacos.packet.response.ResCField;
 import odin.server.quest.MapleQuest;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public class MapleMiniGame extends AbstractPlayerStore {
 
@@ -99,7 +100,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
                 }
                 points[i] = 0;
             }
-            this.broadcastToVisitors(ResCField.getMiniGameResult(this, tie ? 1 : 2, x));
+            this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, tie ? 1 : 2, x));
             this.setOpen(true);
             update();
             checkExitAfterGame();
@@ -157,7 +158,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
             closeShop(false, false, 0);
             return;
         }
-        c.getSession().write(ResCField.getMiniGame(c, this));
+        c.getSession().write(ResCMiniRoomBaseDlg.getMiniGame(c, this));
     }
 
     public void setReady(int slot) {
@@ -172,12 +173,12 @@ public class MapleMiniGame extends AbstractPlayerStore {
         if (piece[move1][move2] == 0 && isOpen()) {
             piece[move1][move2] = type;
             // なんか勝てないし、if文の中に入れるとゲームが進まないので謎
-            this.broadcastToVisitors(ResCField.getMiniGameMoveOmok(move1, move2, type));
+            this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameMoveOmok(move1, move2, type));
             boolean found = false;
             for (int y = 0; y < 15; y++) {
                 for (int x = 0; x < 15; x++) {
                     if (!found && searchCombo(x, y, type)) {
-                        this.broadcastToVisitors(ResCField.getMiniGameResult(this, 2, getVisitorSlot(chr)));
+                        this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, 2, getVisitorSlot(chr)));
                         this.setOpen(true);
                         update();
                         checkExitAfterGame();

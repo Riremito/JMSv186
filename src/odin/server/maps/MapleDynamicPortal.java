@@ -22,7 +22,6 @@ package odin.server.maps;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.server.ServerOdinGame;
 import java.awt.Point;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 
@@ -50,18 +49,19 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
         setPosition(new Point(x, y));
     }
 
+    // test
     public final void warp(MapleCharacter chr) {
-        int map_id_from = chr.getMapId();
-        MapleMap map_to = ServerOdinGame.getInstance(chr.getClient().getChannel()).getMapFactory().getMap(map_id);
+        int map_id_from = chr.getPosMap();
+        MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(map_id);
         MapleDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
 
         if (dynamic_portal_to != null) {
             // dynamic portal is there
             // currently not working, because SetField does not have xy coordinates
-            chr.changeMap(map_to, dynamic_portal_to.getPosition());
+            chr.changeMapDynamicPortal(map_to, dynamic_portal_to.getPosition());
         } else {
             // no dynamic portal
-            chr.changeMap(map_to, map_to.getPortal(0).getPosition());
+            chr.changeMapDynamicPortal(map_to, map_to.getPortal(0).getPosition());
         }
     }
 

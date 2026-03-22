@@ -23,8 +23,9 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
-import odin.scripting.ReactorScriptManager;
 import odin.server.maps.MapleReactor;
+import tacos.packet.ClientPacketHeader;
+import tacos.script.TacosScriptReactor;
 
 /**
  *
@@ -32,7 +33,7 @@ import odin.server.maps.MapleReactor;
  */
 public class ReqCReactorPool {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_ReactorHit: {
                 int oid = cp.Decode4();
@@ -72,7 +73,7 @@ public class ReqCReactorPool {
                     return false;
                 }
 
-                ReactorScriptManager.getInstance().act(c, reactor);
+                TacosScriptReactor.getInstance().act(c, reactor);
                 return true;
             }
             case CP_RequireFieldObstacleStatus: {

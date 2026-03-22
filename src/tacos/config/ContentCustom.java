@@ -26,6 +26,8 @@ public enum ContentCustom {
     CC_WZ_MAP_ADDED,
     CC_EQUIP_STAT_RANDOMIZER,
     CC_MASTER_MONSTER_TIMER,
+    CC_REMOVE_ALL_CASHITEM(0),
+    CC_HIDE_DAMAGE(false),
     UNKNOWN;
 
     int value;

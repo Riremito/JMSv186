@@ -49,23 +49,6 @@ public class StringUtil {
     }
 
     /**
-     * Gets a string padded from the right to <code>length</code> by
-     * <code>padchar</code>.
-     *
-     * @param in The input string to be padded.
-     * @param padchar The character to pad with.
-     * @param length The length to pad to.
-     * @return The padded string.
-     */
-    public static final String getRightPaddedStr(final String in, final char padchar, final int length) {
-        StringBuilder builder = new StringBuilder(in);
-        for (int x = in.length(); x < length; x++) {
-            builder.append(padchar);
-        }
-        return builder.toString();
-    }
-
-    /**
      * Joins an array of strings starting from string <code>start</code> with a
      * space.
      *
@@ -94,26 +77,6 @@ public class StringUtil {
             }
         }
         return builder.toString();
-    }
-
-    /**
-     * Makes an enum name human readable (fixes spaces, capitalization, etc)
-     *
-     * @param enumName The name of the enum to neaten up.
-     * @return The human-readable enum name.
-     */
-    public static final String makeEnumHumanReadable(final String enumName) {
-        StringBuilder builder = new StringBuilder(enumName.length() + 1);
-        for (String word : enumName.split("_")) {
-            if (word.length() <= 2) {
-                builder.append(word); // assume that it's an abbrevation
-            } else {
-                builder.append(word.charAt(0));
-                builder.append(word.substring(1).toLowerCase());
-            }
-            builder.append(' ');
-        }
-        return builder.substring(0, enumName.length());
     }
 
     /**

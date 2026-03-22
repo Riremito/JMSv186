@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import tacos.packet.response.wrapper.ResWrapper;
 
 import odin.server.Randomizer;
-import odin.server.maps.MapleMap;
+import tacos.server.map.TacosMap;
 
 public class SpawnPointAreaBoss extends Spawns {
 
@@ -86,7 +86,7 @@ public class SpawnPointAreaBoss extends Spawns {
     }
 
     @Override
-    public final MapleMonster spawnMonster(final MapleMap map) {
+    public final MapleMonster spawnMonster(TacosMap map) {
         final MapleMonster mob = new MapleMonster(monster);
 
         mob.setPosition(getPosition());

@@ -21,6 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import static tacos.packet.ops.OpsITC.ITCRes_GetITCList_Failed;
 import tacos.packet.ops.arg.ArgITCNormalItemResult;
 
@@ -32,14 +33,14 @@ public class ResCITC {
 
     // CITC::OnChargeParamResult
     public static final MaplePacket ITCChargeParamResult() {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCChargeParamResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCChargeParamResult);
 
         return sp.get();
     }
 
     // CITC::OnQueryCashResult
     public static MaplePacket ITCQueryCashResult(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCQueryCashResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCQueryCashResult);
 
         sp.Encode4(chr.getNexonPoint()); // nNexonCash (signed)
         sp.Encode4(chr.getMaplePoint()); // nMaplePoint (signed)
@@ -48,7 +49,7 @@ public class ResCITC {
 
     // CITC::OnNormalItemResult
     public static final MaplePacket ITCNormalItemResult(ArgITCNormalItemResult arg) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ITCNormalItemResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(arg.ops_res.get());
         switch (arg.ops_res) {

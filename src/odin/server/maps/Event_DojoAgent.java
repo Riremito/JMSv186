@@ -24,7 +24,6 @@ import java.awt.Point;
 
 import odin.client.MapleCharacter;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
 import odin.handling.world.MaplePartyCharacter;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Randomizer;
@@ -38,16 +37,14 @@ public class Event_DojoAgent {
             point2 = new Point(-193, 0),
             point3 = new Point(355, 0);
 
-    public static boolean warpStartAgent(final MapleCharacter c, final boolean party) {
+    public static boolean warpStartAgent(MapleCharacter player, boolean party) {
         final int stage = 1;
         final int mapid = baseAgentMapId + (stage * 100);
-
-        final ServerOdinGame ch = c.getClient().getChannelServer();
         for (int i = mapid; i < mapid + 15; i++) {
-            final MapleMap map = ch.getMapFactory().getMap(i);
+            final MapleMap map = player.getChannelServer().getMapFactory().getMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                c.changeMap(map, map.getPortal(0));
+                player.changeMap(map, map.getPortal(0));
                 map.respawn(true);
                 return true;
             }
@@ -55,30 +52,29 @@ public class Event_DojoAgent {
         return false;
     }
 
-    public static boolean warpNextMap_Agent(final MapleCharacter c, final boolean fromResting) {
-        final int currentmap = c.getMapId();
+    public static boolean warpNextMap_Agent(MapleCharacter player, boolean fromResting) {
+        final int currentmap = player.getMapId();
         final int thisStage = (currentmap - baseAgentMapId) / 100;
 
-        MapleMap map = c.getMap();
+        MapleMap map = player.getMap();
         if (map.getSpawnedMonstersOnMap() > 0) {
             return false;
         }
         if (!fromResting) {
             clearMap(map, true);
-            c.modifyCSPoints(1, 40, true);
+            player.modifyCSPoints(1, 40, true);
         }
-        final ServerOdinGame ch = c.getClient().getChannelServer();
         if (currentmap >= 970032700 && currentmap <= 970032800) {
-            map = ch.getMapFactory().getMap(baseAgentMapId);
-            c.changeMap(map, map.getPortal(0));
+            map = player.getChannelServer().getMapFactory().getMap(baseAgentMapId);
+            player.changeMap(map, map.getPortal(0));
             return true;
         }
         final int nextmapid = baseAgentMapId + ((thisStage + 1) * 100);
         for (int i = nextmapid; i < nextmapid + 7; i++) {
-            map = ch.getMapFactory().getMap(i);
+            map = player.getChannelServer().getMapFactory().getMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                c.changeMap(map, map.getPortal(0));
+                player.changeMap(map, map.getPortal(0));
                 map.respawn(true);
                 return true;
             }
@@ -86,18 +82,17 @@ public class Event_DojoAgent {
         return false;
     }
 
-    public static boolean warpStartDojo(final MapleCharacter c, final boolean party) {
+    public static boolean warpStartDojo(MapleCharacter player, boolean party) {
         int stage = 1;
         if (party || stage <= -1 || stage > 38) {
             stage = 1;
         }
         int mapid = 925020000 + (stage * 100);
         boolean canenter = false;
-        final ServerOdinGame ch = c.getClient().getChannelServer();
         for (int x = 0; x < 15; x++) { //15 maps each stage
             boolean canenterr = true;
             for (int i = 1; i < 39; i++) { //only 32 stages, but 38 maps
-                MapleMap map = ch.getMapFactory().getMap(925020000 + 100 * i + x);
+                MapleMap map = player.getChannelServer().getMapFactory().getMap(925020000 + 100 * i + x);
                 if (map.getCharactersSize() > 0) {
                     canenterr = false;
                     break;
@@ -111,18 +106,18 @@ public class Event_DojoAgent {
                 break;
             }
         }
-        final MapleMap map = ch.getMapFactory().getMap(mapid);
-        final MapleMap mapidd = c.getMap();
+        final MapleMap map = player.getChannelServer().getMapFactory().getMap(mapid);
+        final MapleMap mapidd = player.getMap();
         if (canenter) {
-            if (party && c.getParty() != null) {
-                for (MaplePartyCharacter mem : c.getParty().getMembers()) {
+            if (party && player.getParty() != null) {
+                for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                     MapleCharacter chr = mapidd.getCharacterById(mem.getId());
                     if (chr != null) {
                         chr.changeMap(map, map.getPortal(0));
                     }
                 }
             } else {
-                c.changeMap(map, map.getPortal(0));
+                player.changeMap(map, map.getPortal(0));
             }
             spawnMonster(map, stage);
         }
@@ -141,18 +136,16 @@ public class Event_DojoAgent {
     // 925022400 ~ 925022409
     // 925023000 ~ 925023009
     // 925023600 ~ 925023609
-    public static boolean warpNextMap(final MapleCharacter c, final boolean fromResting) {
+    public static boolean warpNextMap(MapleCharacter player, final boolean fromResting) {
         try {
-            final MapleMap currentmap = c.getMap();
+            final MapleMap currentmap = player.getMap();
             final int temp = (currentmap.getId() - 925000000) / 100;
             final int thisStage = (int) (temp - ((temp / 100) * 100));
             final int points = getDojoPoints(thisStage);
-
-            final ServerOdinGame ch = c.getClient().getChannelServer();
             if (!fromResting) {
                 clearMap(currentmap, true);
-                if (c.getParty() != null && c.getParty().getMembers().size() > 1) {
-                    for (MaplePartyCharacter mem : c.getParty().getMembers()) {
+                if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
+                    for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         MapleCharacter chr = currentmap.getCharacterById(mem.getId());
                         if (chr != null) {
                             final int point = (points * 3);
@@ -163,17 +156,17 @@ public class Event_DojoAgent {
                     }
                 } else {
                     final int point = ((points + 1) * 3);
-                    c.modifyCSPoints(1, point * 4, true);
-                    c.setDojo(c.getDojo() + point);
-                    c.SendPacket(Mulung_Pts(point, c.getDojo()));
+                    player.modifyCSPoints(1, point * 4, true);
+                    player.setDojo(player.getDojo() + point);
+                    player.SendPacket(Mulung_Pts(point, player.getDojo()));
                 }
 
             }
             if (currentmap.getId() >= 925023800 && currentmap.getId() <= 925023814) {
-                final MapleMap map = ch.getMapFactory().getMap(925020003);
+                final MapleMap map = player.getChannelServer().getMapFactory().getMap(925020003);
 
-                if (c.getParty() != null) {
-                    for (MaplePartyCharacter mem : c.getParty().getMembers()) {
+                if (player.getParty() != null) {
+                    for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         MapleCharacter chr = currentmap.getCharacterById(mem.getId());
                         if (chr != null) {
                             chr.changeMap(map, map.getPortal(1));
@@ -181,43 +174,43 @@ public class Event_DojoAgent {
                         }
                     }
                 } else {
-                    c.modifyCSPoints(1, 5000, true);
-                    c.changeMap(map, map.getPortal(1));
+                    player.modifyCSPoints(1, 5000, true);
+                    player.changeMap(map, map.getPortal(1));
                 }
                 return true;
             }
 
             //final int nextmapid = 925020000 + ((thisStage + 1) * 100);
-            final MapleMap map = ch.getMapFactory().getMap(currentmap.getId() + 100);
+            final MapleMap map = player.getChannelServer().getMapFactory().getMap(currentmap.getId() + 100);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                if (c.getParty() != null) {
-                    for (MaplePartyCharacter mem : c.getParty().getMembers()) {
+                if (player.getParty() != null) {
+                    for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         MapleCharacter chr = currentmap.getCharacterById(mem.getId());
                         if (chr != null) {
                             chr.changeMap(map, map.getPortal(0));
                         }
                     }
                 } else {
-                    c.changeMap(map, map.getPortal(0));
+                    player.changeMap(map, map.getPortal(0));
                 }
                 spawnMonster(map, thisStage + 1);
                 return true;
             } else { //wtf, find a new map
                 int basemap = currentmap.getId() / 100 * 100 + 100;
                 for (int x = 0; x < 15; x++) {
-                    MapleMap mapz = ch.getMapFactory().getMap(basemap + x);
+                    MapleMap mapz = player.getChannelServer().getMapFactory().getMap(basemap + x);
                     if (mapz.getCharactersSize() == 0) {
                         clearMap(mapz, false);
-                        if (c.getParty() != null) {
-                            for (MaplePartyCharacter mem : c.getParty().getMembers()) {
+                        if (player.getParty() != null) {
+                            for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                                 MapleCharacter chr = currentmap.getCharacterById(mem.getId());
                                 if (chr != null) {
                                     chr.changeMap(mapz, mapz.getPortal(0));
                                 }
                             }
                         } else {
-                            c.changeMap(mapz, mapz.getPortal(0));
+                            player.changeMap(mapz, mapz.getPortal(0));
                         }
                         spawnMonster(mapz, thisStage + 1);
                         return true;

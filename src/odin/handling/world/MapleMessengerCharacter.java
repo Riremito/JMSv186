@@ -34,7 +34,7 @@ public class MapleMessengerCharacter implements Serializable {
 
     public MapleMessengerCharacter(MapleCharacter maplechar) {
         this.name = maplechar.getName();
-        this.channel = maplechar.getClient().getChannel();
+        this.channel = maplechar.getClient().getChannelId();
         this.id = maplechar.getId();
         this.online = true;
     }

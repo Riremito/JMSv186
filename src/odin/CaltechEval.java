@@ -19,15 +19,6 @@ public class CaltechEval {
     int[] OperatorsPrecedence;
     int NOPERATORS;
 
-    public static void main(String[] args) {
-        if (args == null || args.length != 1) {
-            System.exit(0);
-        }
-
-        CaltechEval m = new CaltechEval(args[0]);
-        System.out.println(args[0].replace(" ", "") + " = " + m.evaluate());
-    }
-
     public CaltechEval(String s) {
         init();
         expression = s.replace(" ", "");

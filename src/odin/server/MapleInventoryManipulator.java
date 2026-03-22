@@ -23,7 +23,6 @@ import tacos.config.Version;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.AramiaFireWorks;
 
 public class MapleInventoryManipulator {
@@ -46,11 +45,12 @@ public class MapleInventoryManipulator {
     }
 
     public static short addbyItem(final MapleClient c, final IItem item, final boolean fromcs) {
+        MapleCharacter chr = c.getPlayer();
         final MapleInventoryType type = GameConstants.getInventoryType(item.getItemId());
         final short newSlot = c.getPlayer().getInventory(type).addItem(item);
         if (newSlot == -1) {
             if (!fromcs) {
-                c.getSession().write(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 c.getSession().write(ResWrapper.getShowInventoryFull());
             }
             return newSlot;
@@ -97,9 +97,10 @@ public class MapleInventoryManipulator {
     }
 
     public static byte addId(MapleClient c, int itemId, short quantity, String owner, MaplePet pet, long period) {
+        MapleCharacter chr = c.getPlayer();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && c.getPlayer().haveItem(itemId, 1, true, false)) {
-            c.getSession().write(WrapCWvsContext.updateInv());
+            chr.updateInv();
             c.getSession().write(ResWrapper.showItemUnavailable());
             return -1;
         }
@@ -137,7 +138,7 @@ public class MapleInventoryManipulator {
 
                         newSlot = c.getPlayer().getInventory(type).addItem(nItem);
                         if (newSlot == -1) {
-                            c.getSession().write(WrapCWvsContext.updateInv());
+                            chr.updateInv();
                             c.getSession().write(ResWrapper.getShowInventoryFull());
                             return -1;
                         }
@@ -158,7 +159,7 @@ public class MapleInventoryManipulator {
                         }
                     } else {
                         c.getPlayer().havePartyQuest(itemId);
-                        c.getSession().write(WrapCWvsContext.updateStat());
+                        chr.updateInv();
                         return (byte) newSlot;
                     }
                 }
@@ -168,7 +169,7 @@ public class MapleInventoryManipulator {
                 newSlot = c.getPlayer().getInventory(type).addItem(nItem);
 
                 if (newSlot == -1) {
-                    c.getSession().write(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                     c.getSession().write(ResWrapper.getShowInventoryFull());
                     return -1;
                 }
@@ -177,7 +178,7 @@ public class MapleInventoryManipulator {
                 }
 
                 c.SendPacket(ResWrapper.addInventorySlot(type, nItem));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateInv();
             }
         } else {
             if (quantity == 1) {
@@ -191,7 +192,7 @@ public class MapleInventoryManipulator {
                 }
                 newSlot = c.getPlayer().getInventory(type).addItem(nEquip);
                 if (newSlot == -1) {
-                    c.getSession().write(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                     c.getSession().write(ResWrapper.getShowInventoryFull());
                     return -1;
                 }
@@ -205,12 +206,13 @@ public class MapleInventoryManipulator {
     }
 
     public static IItem addbyId_Gachapon(final MapleClient c, final int itemId, short quantity) {
+        MapleCharacter chr = c.getPlayer();
         if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() == -1 || c.getPlayer().getInventory(MapleInventoryType.USE).getNextFreeSlot() == -1 || c.getPlayer().getInventory(MapleInventoryType.ETC).getNextFreeSlot() == -1 || c.getPlayer().getInventory(MapleInventoryType.SETUP).getNextFreeSlot() == -1) {
             return null;
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && c.getPlayer().haveItem(itemId, 1, true, false)) {
-            c.getSession().write(WrapCWvsContext.updateInv());
+            chr.updateInv();
             c.getSession().write(ResWrapper.showItemUnavailable());
             return null;
         }
@@ -304,10 +306,11 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean addFromDrop(final MapleClient c, IItem item, final boolean show, final boolean enhance) {
+        MapleCharacter chr = c.getPlayer();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
         if (ii.isPickupRestricted(item.getItemId()) && c.getPlayer().haveItem(item.getItemId(), 1, true, false)) {
-            c.getSession().write(WrapCWvsContext.updateInv());
+            chr.updateInv();
             c.getSession().write(ResWrapper.showItemUnavailable());
             return false;
         }
@@ -319,8 +322,7 @@ public class MapleInventoryManipulator {
             final short slotMax = ii.getSlotMax(c, item.getItemId());
             final List<IItem> existing = c.getPlayer().getInventory(type).listById(item.getItemId());
             if (!GameConstants.isRechargable(item.getItemId())) {
-                if (quantity <= 0) { //wth
-                    c.getSession().write(WrapCWvsContext.updateInv());
+                if (quantity <= 0) { //wthchr.updateInv();
                     c.getSession().write(ResWrapper.showItemUnavailable());
                     return false;
                 }
@@ -351,7 +353,7 @@ public class MapleInventoryManipulator {
                     nItem.setPet(item.getPet());
                     short newSlot = c.getPlayer().getInventory(type).addItem(nItem);
                     if (newSlot == -1) {
-                        c.getSession().write(WrapCWvsContext.updateInv());
+                        chr.updateInv();
                         c.getSession().write(ResWrapper.getShowInventoryFull());
                         item.setQuantity((short) (quantity + newQ));
                         return false;
@@ -366,12 +368,12 @@ public class MapleInventoryManipulator {
                 nItem.setPet(item.getPet());
                 final short newSlot = c.getPlayer().getInventory(type).addItem(nItem);
                 if (newSlot == -1) {
-                    c.getSession().write(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                     c.getSession().write(ResWrapper.getShowInventoryFull());
                     return false;
                 }
                 c.SendPacket(ResWrapper.addInventorySlot(type, nItem));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateInv();
             }
         } else {
             if (quantity == 1) {
@@ -381,7 +383,7 @@ public class MapleInventoryManipulator {
                 final short newSlot = c.getPlayer().getInventory(type).addItem(item);
 
                 if (newSlot == -1) {
-                    c.getSession().write(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                     c.getSession().write(ResWrapper.getShowInventoryFull());
                     return false;
                 }
@@ -429,9 +431,10 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean checkSpace(final MapleClient c, final int itemid, int quantity, final String owner) {
+        MapleCharacter chr = c.getPlayer();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemid) && c.getPlayer().haveItem(itemid, 1, true, false)) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return false;
         }
         if (quantity <= 0 && !GameConstants.isRechargable(itemid)) {
@@ -544,8 +547,8 @@ public class MapleInventoryManipulator {
     }
 
     public static void equip(final MapleClient c, final short src, short dst) {
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final MapleCharacter chr = c.getPlayer();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return;
         }
@@ -554,20 +557,20 @@ public class MapleInventoryManipulator {
         Equip target = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
 
         if (source == null || source.getDurability() == 0) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
 
         final Map<String, Integer> stats = ii.getEquipStats(source.getItemId());
         if (dst < -999 && !GameConstants.isEvanDragonItem(source.getItemId())) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         } else if (dst >= -999 && dst < -99 && stats.get("cash") == 0) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
         if (!ii.canEquip(stats, source.getItemId(), chr.getLevel(), chr.getJob(), chr.getFame(), statst.getTotalStr(), statst.getTotalDex(), statst.getTotalLuk(), statst.getTotalInt(), c.getPlayer().getStat().levelBonus)) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
         /*
@@ -577,14 +580,14 @@ public class MapleInventoryManipulator {
         }
          */
         if (!ii.isCash(source.getItemId()) && !GameConstants.isMountItemAvailable(source.getItemId(), c.getPlayer().getJob())) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
         if (GameConstants.isKatara(source.getItemId())) {
             dst = (byte) -10; //shield slot
         }
         if (GameConstants.isEvanDragonItem(source.getItemId()) && (chr.getJob() < 2200 || chr.getJob() > 2218)) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
 
@@ -593,7 +596,7 @@ public class MapleInventoryManipulator {
                 final IItem top = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
                 if (top != null && GameConstants.isOverall(top.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        c.getSession().write(WrapCWvsContext.updateInv());
+                        chr.updateInv();
                         c.getSession().write(ResWrapper.getShowInventoryFull());
                         return;
                     }
@@ -606,7 +609,7 @@ public class MapleInventoryManipulator {
                 final IItem bottom = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -6);
                 if (top != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull(bottom != null && GameConstants.isOverall(source.getItemId()) ? 1 : 0)) {
-                        c.getSession().write(WrapCWvsContext.updateInv());
+                        chr.updateInv();
                         c.getSession().write(ResWrapper.getShowInventoryFull());
                         return;
                     }
@@ -614,7 +617,7 @@ public class MapleInventoryManipulator {
                 }
                 if (bottom != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        c.getSession().write(WrapCWvsContext.updateInv());
+                        chr.updateInv();
                         c.getSession().write(ResWrapper.getShowInventoryFull());
                         return;
                     }
@@ -626,13 +629,13 @@ public class MapleInventoryManipulator {
                 IItem weapon = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
                 if (GameConstants.isKatara(source.getItemId())) {
                     if ((chr.getJob() != 900 && (chr.getJob() < 430 || chr.getJob() > 434)) || weapon == null || !GameConstants.isDagger(weapon.getItemId())) {
-                        c.getSession().write(WrapCWvsContext.updateInv());
+                        chr.updateInv();
                         c.getSession().write(ResWrapper.getShowInventoryFull());
                         return;
                     }
                 } else if (weapon != null && GameConstants.isTwoHanded(weapon.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        c.getSession().write(WrapCWvsContext.updateInv());
+                        chr.updateInv();
                         c.getSession().write(ResWrapper.getShowInventoryFull());
                         return;
                     }
@@ -644,7 +647,7 @@ public class MapleInventoryManipulator {
                 IItem shield = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10);
                 if (shield != null && GameConstants.isTwoHanded(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        c.getSession().write(WrapCWvsContext.updateInv());
+                        chr.updateInv();;
                         c.getSession().write(ResWrapper.getShowInventoryFull());
                         return;
                     }
@@ -656,7 +659,7 @@ public class MapleInventoryManipulator {
         source = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(src); // Equip
         target = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst); // Currently equipping
         if (source == null) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
         if (stats.get("equipTradeBlock") == 1) { // Block trade when equipped.
@@ -695,13 +698,7 @@ public class MapleInventoryManipulator {
                 chr.cancelBuffStats(MapleBuffStat.LIGHTNING_CHARGE);
             }
         }
-        if (GameConstants.isDragonItem(source.getItemId())) {
-            chr.finishAchievement(8);
-        } else if (GameConstants.isReverseItem(source.getItemId())) {
-            chr.finishAchievement(9);
-        } else if (GameConstants.isTimelessItem(source.getItemId())) {
-            chr.finishAchievement(10);
-        } else if (source.getItemId() == 1122017) {
+        if (source.getItemId() == 1122017) {
             chr.startFairySchedule(true, true);
         }
         c.getSession().write(ResWrapper.moveInventoryItem(MapleInventoryType.EQUIP, src, dst, (byte) 2));
@@ -709,6 +706,7 @@ public class MapleInventoryManipulator {
     }
 
     public static void unequip(final MapleClient c, final short src, final short dst) {
+        MapleCharacter chr = c.getPlayer();
         Equip source = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).getItem(src);
         Equip target = (Equip) c.getPlayer().getInventory(MapleInventoryType.EQUIP).getItem(dst);
 
@@ -716,7 +714,7 @@ public class MapleInventoryManipulator {
             return;
         }
         if (target != null && src <= 0) { // do not allow switching with equip
-            c.getSession().write(WrapCWvsContext.updateInv());
+            chr.updateInv();
             return;
         }
         c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).removeSlot(src);
@@ -756,7 +754,8 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean drop(final MapleClient c, MapleInventoryType type, final short src, short quantity, final boolean npcInduced) {
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleCharacter chr = c.getPlayer();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (src < 0) {
             type = MapleInventoryType.EQUIPPED;
         }
@@ -765,17 +764,17 @@ public class MapleInventoryManipulator {
         }
         final IItem source = c.getPlayer().getInventory(type).getItem(src);
         if (quantity < 0 || source == null || (!npcInduced && GameConstants.isPet(source.getItemId())) || (quantity == 0 && !GameConstants.isRechargable(source.getItemId()))) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return false;
         }
 
         final byte flag = source.getFlag();
         if (quantity > source.getQuantity()) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return false;
         }
         if (ItemFlag.LOCK.check(flag) || (quantity != 1 && type == MapleInventoryType.EQUIP)) { // hack
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return false;
         }
         final Point dropPos = new Point(c.getPlayer().getPosition());

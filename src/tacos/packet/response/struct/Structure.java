@@ -20,7 +20,7 @@ import odin.server.life.MapleMonster;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
 import odin.tools.KoreanDateUtil;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class Structure {
 
@@ -380,7 +380,7 @@ public class Structure {
     // v165, v186
     public static final byte[] addRingInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        Pair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
+        OdinPair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
         List<MapleRing> cRing = aRing.getLeft();
 
         data.Encode2(cRing.size());
@@ -487,7 +487,9 @@ public class Structure {
             data.Encode4(0);
         }
         if (Version.PostBB()) {
-            data.Encode4(0);
+            if (!Version.Equal(Region.KMST, 330) && !Version.LessOrEqual(Region.GMS, 95)) {
+                data.Encode4(0);
+            }
         }
 
         if (Version.LessOrEqual(Region.JMS, 131)) {
@@ -591,32 +593,34 @@ public class Structure {
 
     // addAnnounceBox
     public static final byte[] AnnounceBox(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
+
         if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr) && chr.getPlayerShop().getShopType() != 1 && chr.getPlayerShop().isAvailable()) {
-            p.EncodeBuffer(Interaction(chr.getPlayerShop()));
+            data.EncodeBuffer(Interaction(chr.getPlayerShop()));
         } else {
-            p.Encode1(0);
+            data.Encode1(0);
         }
 
-        return p.get().getBytes();
+        return data.get().getBytes();
     }
 
     // addInteraction
     public static final byte[] Interaction(IMaplePlayerShop shop) {
-        ServerPacket p = new ServerPacket();
-        p.Encode1(shop.getGameType());
-        p.Encode4(((AbstractPlayerStore) shop).getObjectId());
-        p.EncodeStr(shop.getDescription());
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(shop.getGameType());
+        data.Encode4(((AbstractPlayerStore) shop).getObjectId());
+        data.EncodeStr(shop.getDescription());
         if (shop.getShopType() != 1) {
-            p.Encode1(shop.getPassword().length() > 0 ? 1 : 0); //password = false
+            data.Encode1(shop.getPassword().length() > 0 ? 1 : 0); //password = false
         }
-        p.Encode1(shop.getItemId() % 10);
-        p.Encode1(shop.getSize()); //current size
-        p.Encode1(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
+        data.Encode1(shop.getItemId() % 10);
+        data.Encode1(shop.getSize()); //current size
+        data.Encode1(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
         if (shop.getShopType() != 1) {
-            p.Encode1(shop.isOpen() ? 0 : 1);
+            data.Encode1(shop.isOpen() ? 0 : 1);
         }
 
-        return p.get().getBytes();
+        return data.get().getBytes();
     }
 }

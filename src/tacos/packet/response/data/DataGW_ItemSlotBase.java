@@ -23,7 +23,7 @@ import tacos.config.Content;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.data.client.DC_Date;
+import tacos.shared.SharedDate;
 import tacos.packet.ServerPacket;
 
 /**
@@ -167,7 +167,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 }
                 // リバース武器
-                if (ServerConfig.JMS164orLater() || Region.IsVMS()) {
+                if (ServerConfig.JMS164orLater() || Region.IsVMS() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
@@ -178,7 +178,7 @@ public class DataGW_ItemSlotBase {
                 }
                 // ビシャスのハンマー
                 if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 73) || Region.IsBMS()) {
-                    if (!Region.IsKMS() || Version.GreaterOrEqual(Region.KMS, 95)) {
+                    if (!Region.IsKMS() || Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.KMST, 330)) {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
@@ -223,7 +223,7 @@ public class DataGW_ItemSlotBase {
                 if (!hasUniqueId) {
                     data.Encode8(0);
                 }
-                if (ServerConfig.JMS164orLater()) {
+                if (ServerConfig.JMS164orLater() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
@@ -256,15 +256,16 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8(DC_Date.getMagicalExpirationDate()); // dateDead
+                data.Encode8(SharedDate.getMagicalExpirationDate()); // dateDead
+                if (Version.LessOrEqual(Region.KMS, 1)) {
+                    break;
+                }
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
-
                 if (Version.LessOrEqual(Region.KMS, 31)) {
                     break;
                 }
-
-                if (ServerConfig.JMS164orLater() || Region.IsVMS()) {
+                if (ServerConfig.JMS164orLater() || Region.IsVMS() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }
@@ -603,7 +604,7 @@ public class DataGW_ItemSlotBase {
             data.Encode8(item.getUniqueId());
         }
 
-        data.Encode8(DC_Date.getNoExpirationDate());
+        data.Encode8(SharedDate.getNoExpirationDate());
 
         if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);

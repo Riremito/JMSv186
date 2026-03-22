@@ -22,6 +22,7 @@ import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleDragon;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -30,29 +31,29 @@ import odin.server.maps.MapleDragon;
 public class ResCUser_Dragon {
 
     public static MaplePacket moveDragon(MapleDragon dragon, ParseCMovePath data) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonMove);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonMove);
         sp.Encode4(dragon.getOwner());
         sp.EncodeBuffer(data.get());
         return sp.get();
     }
 
     // not coded in GMS v95, but KMST v2.1029 removes dragon when you change other job.
-    public static MaplePacket removeDragon(int chrid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonLeaveField);
+    public static MaplePacket removeDragon(MapleDragon dragon) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonLeaveField);
 
-        sp.Encode4(chrid);
+        sp.Encode4(dragon.getOwner());
         return sp.get();
     }
 
-    public static MaplePacket spawnDragon(MapleDragon d) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DragonEnterField);
+    public static MaplePacket spawnDragon(MapleDragon dragon) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonEnterField);
 
-        sp.Encode4(d.getOwner());
-        sp.Encode4(d.getPosition().x);
-        sp.Encode4(d.getPosition().y);
-        sp.Encode1(d.getStance()); // move action (left, right)
+        sp.Encode4(dragon.getOwner());
+        sp.Encode4(dragon.getPosition().x);
+        sp.Encode4(dragon.getPosition().y);
+        sp.Encode1(dragon.getStance()); // move action (left, right)
         sp.Encode2(0); // not used
-        sp.Encode2(d.getJobId());
+        sp.Encode2(dragon.getJobId());
         return sp.get();
     }
 

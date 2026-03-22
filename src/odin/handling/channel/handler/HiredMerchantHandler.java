@@ -35,43 +35,42 @@ import odin.constants.GameConstants;
 import odin.client.inventory.ItemLoader;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import odin.handling.world.World;
 import java.util.Map;
 import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.response.ResCStoreBankDlg;
 import tacos.packet.response.ResCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MerchItemPackage;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class HiredMerchantHandler {
 
-    public static final void UseHiredMerchant(MapleClient c) {
+    public static final void UseHiredMerchant(MapleClient client) {
 //	slea.readInt(); // TimeStamp
 
-        if (c.getPlayer().getMap().allowPersonalShop()) {
-            final byte state = checkExistance(c.getPlayer().getAccountID(), c.getPlayer().getId());
+        if (client.getPlayer().getMap().allowPersonalShop()) {
+            final byte state = checkExistance(client.getPlayer().getAccountId(), client.getPlayer().getId());
 
             switch (state) {
                 case 1:
-                    c.getPlayer().dropMessage(1, "Please claim your items from Fredrick first.");
+                    client.getPlayer().dropMessage(1, "Please claim your items from Fredrick first.");
                     break;
                 case 0:
-                    boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
+                    boolean merch = client.getWorld().hasMerchant(client.getPlayer().getAccountId());
                     if (!merch) {
 //		    c.getPlayer().dropMessage(1, "The Hired Merchant is temporary disabled until it's fixed.");
-                        c.getSession().write(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenPossible));
+                        client.getSession().write(ResCWvsContext.EntrustedShopCheckResult(OpsEntrustedShop.EntrustedShopRes_OpenPossible));
                     } else {
-                        c.getPlayer().dropMessage(1, "Please close the existing store and try again.");
+                        client.getPlayer().dropMessage(1, "Please close the existing store and try again.");
                     }
                     break;
                 default:
-                    c.getPlayer().dropMessage(1, "An unknown error occured.");
+                    client.getPlayer().dropMessage(1, "An unknown error occured.");
                     break;
             }
         } else {
             DebugLogger.ErrorLog("UseHiredMerchant dc.");
-            c.getSession().close();
+            client.getSession().close();
         }
     }
 
@@ -96,75 +95,75 @@ public class HiredMerchantHandler {
         }
     }
 
-    public static final void MerchantItemStore(MapleClient c, byte operation, String str) {
-        if (c.getPlayer() == null) {
+    public static final void MerchantItemStore(MapleClient client, byte operation, String str) {
+        if (client.getPlayer() == null) {
             return;
         }
 
         switch (operation) {
             case 20: {
-                final int conv = c.getPlayer().getConversation();
-                boolean merch = World.hasMerchant(c.getPlayer().getAccountID());
+                final int conv = client.getPlayer().getConversation();
+                boolean merch = client.getWorld().hasMerchant(client.getPlayer().getAccountId());
                 if (merch) {
-                    c.getPlayer().dropMessage(1, "Please close the existing store and try again.");
-                    c.getPlayer().setConversation(0);
+                    client.getPlayer().dropMessage(1, "Please close the existing store and try again.");
+                    client.getPlayer().setConversation(0);
                 } else if (conv == 3) { // Hired Merch
-                    final MerchItemPackage pack = loadItemFrom_Database(c.getPlayer().getId(), c.getPlayer().getAccountID());
+                    final MerchItemPackage pack = loadItemFrom_Database(client.getPlayer().getId(), client.getPlayer().getAccountId());
 
                     if (pack == null) {
-                        c.getPlayer().dropMessage(1, "You do not have any item(s) with Fredrick.");
-                        c.getPlayer().setConversation(0);
+                        client.getPlayer().dropMessage(1, "You do not have any item(s) with Fredrick.");
+                        client.getPlayer().setConversation(0);
                     } else if (pack.getItems().size() <= 0) { //error fix for complainers.
-                        if (!check(c.getPlayer(), pack)) {
-                            c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
+                        if (!check(client.getPlayer(), pack)) {
+                            client.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
                             return;
                         }
-                        if (deletePackage(c.getPlayer().getId(), c.getPlayer().getAccountID(), pack.getPackageid())) {
-                            c.getPlayer().gainMeso(pack.getMesos(), false);
-                            c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x1d));
+                        if (deletePackage(client.getPlayer().getId(), client.getPlayer().getAccountId(), pack.getPackageid())) {
+                            client.getPlayer().gainMeso(pack.getMesos(), false);
+                            client.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x1d));
                         } else {
-                            c.getPlayer().dropMessage(1, "An unknown error occured.");
+                            client.getPlayer().dropMessage(1, "An unknown error occured.");
                         }
                     } else {
-                        c.getSession().write(ResCStoreBankDlg.merchItemStore_ItemData(pack));
+                        client.getSession().write(ResCStoreBankDlg.merchItemStore_ItemData(pack));
                     }
                 }
                 break;
             }
             case 25: { // Request take out iteme
-                if (c.getPlayer().getConversation() != 3) {
+                if (client.getPlayer().getConversation() != 3) {
                     return;
                 }
-                c.getSession().write(ResCStoreBankDlg.merchItemStore((byte) 0x24));
+                client.getSession().write(ResCStoreBankDlg.merchItemStore((byte) 0x24));
                 break;
             }
             case 26: { // Take out item
-                if (c.getPlayer().getConversation() != 3) {
+                if (client.getPlayer().getConversation() != 3) {
                     return;
                 }
-                final MerchItemPackage pack = loadItemFrom_Database(c.getPlayer().getId(), c.getPlayer().getAccountID());
+                final MerchItemPackage pack = loadItemFrom_Database(client.getPlayer().getId(), client.getPlayer().getAccountId());
 
                 if (pack == null) {
-                    c.getPlayer().dropMessage(1, "An unknown error occured.");
+                    client.getPlayer().dropMessage(1, "An unknown error occured.");
                     return;
                 }
-                if (!check(c.getPlayer(), pack)) {
-                    c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
+                if (!check(client.getPlayer(), pack)) {
+                    client.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x21));
                     return;
                 }
-                if (deletePackage(c.getPlayer().getId(), c.getPlayer().getAccountID(), pack.getPackageid())) {
-                    c.getPlayer().gainMeso(pack.getMesos(), false);
+                if (deletePackage(client.getPlayer().getId(), client.getPlayer().getAccountId(), pack.getPackageid())) {
+                    client.getPlayer().gainMeso(pack.getMesos(), false);
                     for (IItem item : pack.getItems()) {
-                        MapleInventoryManipulator.addFromDrop(c, item, false);
+                        MapleInventoryManipulator.addFromDrop(client, item, false);
                     }
-                    c.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x1d));
+                    client.getSession().write(ResCStoreBankDlg.merchItem_Message((byte) 0x1d));
                 } else {
-                    c.getPlayer().dropMessage(1, "An unknown error occured.");
+                    client.getPlayer().dropMessage(1, "An unknown error occured.");
                 }
                 break;
             }
             case 27: { // Exit
-                c.getPlayer().setConversation(0);
+                client.getPlayer().setConversation(0);
                 break;
             }
         }
@@ -237,11 +236,11 @@ public class HiredMerchantHandler {
             ps.close();
             rs.close();
 
-            Map<Integer, Pair<IItem, MapleInventoryType>> items = ItemLoader.HIRED_MERCHANT.loadItems(false, packageid, accountid, charid);
+            Map<Integer, OdinPair<IItem, MapleInventoryType>> items = ItemLoader.HIRED_MERCHANT.loadItems(false, packageid, accountid, charid);
             if (items != null) {
                 List<IItem> iters = new ArrayList<IItem>();
-                for (Pair<IItem, MapleInventoryType> z : items.values()) {
-                    iters.add(z.left);
+                for (OdinPair<IItem, MapleInventoryType> z : items.values()) {
+                    iters.add(z.getLeft());
                 }
                 pack.setItems(iters);
             }

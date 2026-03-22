@@ -20,7 +20,7 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -28,11 +28,11 @@ import odin.tools.data.output.MaplePacketLittleEndianWriter;
  */
 public class ResCField_Massacre {
 
-    public static final MaplePacket sendPyramidUpdate(final int amount) {
-        final MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_MassacreIncGauge.get());
-        mplew.writeInt(amount); //1-132 ?
-        return mplew.getPacket();
+    public static MaplePacket sendPyramidUpdate(int amount) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MassacreIncGauge);
+
+        sp.Encode4(amount); //1-132 ?
+        return sp.get();
     }
-    
+
 }

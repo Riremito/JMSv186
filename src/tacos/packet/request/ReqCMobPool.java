@@ -6,7 +6,7 @@ import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.data.wz.DW_Skill;
+import tacos.wz.data.SkillWz;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.handler.MobHandler;
 import tacos.packet.ClientPacket;
@@ -16,11 +16,12 @@ import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
+import tacos.packet.ClientPacketHeader;
 
 public class ReqCMobPool {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;
@@ -153,9 +154,9 @@ public class ReqCMobPool {
             move_path.update(monster);
         }
 
-        final MapleMap map = chr.getMap();
-        map.moveMonster(monster, monster.getPosition());
-        map.broadcastMessage(chr, ResCMobPool.moveMonster(bNextAttackPossible, bLeft, mob_skill, monster.getObjectId(), move_path), monster.getPosition());
+        MapleMap map = chr.getMap();
+        map.updateMapObject(monster);
+        map.broadcastMessageTo(chr, ResCMobPool.moveMonster(bNextAttackPossible, bLeft, mob_skill, monster.getObjectId(), move_path), monster.getPosition());
         return true;
     }
 
@@ -168,11 +169,11 @@ public class ReqCMobPool {
             boolean used = false;
 
             if (size > 0) {
-                final Pair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
+                final OdinPair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
                 realskill = skillToUse.getLeft();
                 level = skillToUse.getRight();
                 // Skill ID and Level
-                final MobSkill mobSkill = DW_Skill.getMobSkillData(realskill, level);
+                final MobSkill mobSkill = SkillWz.get().getMobSkillData(realskill, level);
 
                 if (mobSkill != null && !mobSkill.checkCurrentBuff(chr, monster)) {
                     final long now = System.currentTimeMillis();

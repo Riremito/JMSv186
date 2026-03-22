@@ -33,6 +33,7 @@ import tacos.packet.response.wrapper.WrapCITC;
 import odin.server.MTSCart;
 import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -40,7 +41,7 @@ import odin.server.MapleInventoryManipulator;
  */
 public class ReqCITC {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online (ITC).");

@@ -25,18 +25,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.provider.MapleDataDirectoryEntry;
-import odin.provider.MapleDataEntity;
-import odin.provider.MapleDataEntry;
-import odin.provider.MapleDataFileEntry;
+import odin.provider.IMapleDataEntity;
+import odin.provider.IMapleDataEntry;
+import odin.provider.IMapleDataDirectoryEntry;
+import odin.provider.IMapleDataFileEntry;
 
-public class WZDirectoryEntry extends WZEntry implements MapleDataDirectoryEntry {
+public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntry {
 
-    private List<MapleDataDirectoryEntry> subdirs = new ArrayList<MapleDataDirectoryEntry>();
-    private List<MapleDataFileEntry> files = new ArrayList<MapleDataFileEntry>();
-    private Map<String, MapleDataEntry> entries = new HashMap<String, MapleDataEntry>();
+    private List<IMapleDataDirectoryEntry> subdirs = new ArrayList<>();
+    private List<IMapleDataFileEntry> files = new ArrayList<>();
+    private Map<String, IMapleDataEntry> entries = new HashMap<>();
 
-    public WZDirectoryEntry(String name, int size, int checksum, MapleDataEntity parent) {
+    public WZDirectoryEntry(String name, int size, int checksum, IMapleDataEntity parent) {
         super(name, size, checksum, parent);
     }
 
@@ -44,25 +44,28 @@ public class WZDirectoryEntry extends WZEntry implements MapleDataDirectoryEntry
         super(null, 0, 0, null);
     }
 
-    public void addDirectory(MapleDataDirectoryEntry dir) {
+    public void addDirectory(IMapleDataDirectoryEntry dir) {
         subdirs.add(dir);
         entries.put(dir.getName(), dir);
     }
 
-    public void addFile(MapleDataFileEntry fileEntry) {
+    public void addFile(IMapleDataFileEntry fileEntry) {
         files.add(fileEntry);
         entries.put(fileEntry.getName(), fileEntry);
     }
 
-    public List<MapleDataDirectoryEntry> getSubdirectories() {
+    @Override
+    public List<IMapleDataDirectoryEntry> getSubDirectories() {
         return Collections.unmodifiableList(subdirs);
     }
 
-    public List<MapleDataFileEntry> getFiles() {
+    @Override
+    public List<IMapleDataFileEntry> getFiles() {
         return Collections.unmodifiableList(files);
     }
 
-    public MapleDataEntry getEntry(String name) {
+    @Override
+    public IMapleDataEntry getEntry(String name) {
         return entries.get(name);
     }
 }

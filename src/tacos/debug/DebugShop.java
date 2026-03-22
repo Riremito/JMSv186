@@ -25,18 +25,18 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import tacos.data.wz.DW_Item;
-import tacos.data.wz.ids.DWI_LoadXML;
-import tacos.data.wz.ids.DWI_Validation;
+import tacos.wz.data.ItemWz;
+import tacos.wz.ids.DWI_LoadXML;
+import tacos.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.provider.MapleData;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
+import odin.provider.IMapleData;
 
 /**
  *
@@ -190,9 +190,9 @@ public class DebugShop {
     public boolean setRechargeAll(int item_recharge_price) {
         int item_sub_types[] = {207, 233};
         for (int item_sub_type : item_sub_types) {
-            MapleData md_item_sub_type = DW_Item.getItemImg(item_sub_type);
+            IMapleData md_item_sub_type = ItemWz.get().getItemImg(item_sub_type);
             if (md_item_sub_type != null) {
-                for (MapleData md_item : md_item_sub_type.getChildren()) {
+                for (IMapleData md_item : md_item_sub_type.getChildren()) {
                     int item_id = Integer.parseInt(md_item.getName());
                     this.addItemRecharge(item_id, item_recharge_price);
                 }
@@ -203,9 +203,9 @@ public class DebugShop {
 
     public boolean setItemTest(int item_sub_type) {
         int item_count = 0;
-        MapleData md_item_sub_type = DW_Item.getItemImg(item_sub_type);
+        IMapleData md_item_sub_type = ItemWz.get().getItemImg(item_sub_type);
         if (md_item_sub_type != null) {
-            for (MapleData md_item : md_item_sub_type.getChildren()) {
+            for (IMapleData md_item : md_item_sub_type.getChildren()) {
                 int item_id = Integer.parseInt(md_item.getName());
                 this.addItem(item_id);
                 item_count++;

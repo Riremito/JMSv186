@@ -28,9 +28,10 @@ public class DataCClientOptMan {
 
     // CClientOptMan::DecodeOpt
     public static byte[] EncodeOpt() {
-        ServerPacket p = new ServerPacket();
-        p.Encode2(0); // not 0, Encode4, Encode4
-        return p.get().getBytes();
+        ServerPacket data = new ServerPacket();
+
+        data.Encode2(0); // not 0, Encode4, Encode4
+        return data.get().getBytes();
     }
-    
+
 }

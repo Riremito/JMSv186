@@ -1,0 +1,158 @@
+/*
+This file is part of the OdinMS Maple Story Server
+Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
+Matthias Butz <matze@odinms.de>
+Jan Christian Meyer <vimes@odinms.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3
+as published by the Free Software Foundation. You may not use, modify
+or distribute this program under any other version of the
+GNU Affero General Public License.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package tacos.odin;
+
+import java.awt.Point;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import odin.client.inventory.Equip;
+import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
+import odin.constants.GameConstants;
+import odin.client.MapleClient;
+import odin.client.inventory.MapleInventoryType;
+import odin.server.MapleCarnivalFactory;
+import odin.server.MapleCarnivalFactory.MCSkill;
+import odin.server.MapleItemInformationProvider;
+import odin.server.Randomizer;
+import odin.server.maps.ReactorDropEntry;
+import odin.server.maps.MapleReactor;
+import odin.server.life.MapleMonster;
+import tacos.script.TacosScriptReactor;
+
+public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
+
+    private MapleReactor reactor;
+
+    public OdinReactorActionManager(MapleClient client, MapleReactor reactor) {
+        super(client);
+        this.reactor = reactor;
+    }
+
+    public void spawnZakum() {
+        this.reactor.getMap().spawnZakum(this.reactor);
+    }
+
+    // only used for meso = false, really. No minItems because meso is used to fill the gap
+    public void dropItems() {
+        dropItems(false, 0, 0, 0, 0);
+    }
+
+    public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso) {
+        dropItems(meso, mesoChance, minMeso, maxMeso, 0);
+    }
+
+    public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
+        List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getReactorId());
+        List<ReactorDropEntry> items = new LinkedList<>();
+
+        if (meso) {
+            if (Math.random() < (1 / (double) mesoChance)) {
+                items.add(new ReactorDropEntry(0, mesoChance, -1));
+            }
+        }
+
+        int numItems = 0;
+        // narrow list down by chances
+        final Iterator<ReactorDropEntry> iter = chances.iterator();
+        // for (DropEntry d : chances){
+        while (iter.hasNext()) {
+            ReactorDropEntry d = (ReactorDropEntry) iter.next();
+            if (Math.random() < (1 / (double) d.chance) && (d.questid <= 0 || getPlayer().getQuestStatus(d.questid) == 1)) {
+                numItems++;
+                items.add(d);
+            }
+        }
+
+        // if a minimum number of drops is required, add meso
+        while (items.size() < minItems) {
+            items.add(new ReactorDropEntry(0, mesoChance, -1));
+            numItems++;
+        }
+        final Point dropPos = reactor.getPosition();
+
+        dropPos.x -= (12 * numItems);
+
+        int range, mesoDrop;
+        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        for (final ReactorDropEntry d : items) {
+            if (d.itemId == 0) {
+                range = maxMeso - minMeso;
+                mesoDrop = Randomizer.nextInt(range) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
+                reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor, getPlayer(), false, (byte) 0);
+            } else {
+                IItem drop;
+                if (GameConstants.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
+                    drop = new Item(d.itemId, (byte) 0, (short) 1, (byte) 0);
+                } else {
+                    drop = ii.randomizeStats((Equip) ii.getEquipById(d.itemId));
+                }
+                reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, false);
+            }
+            dropPos.x += 25;
+        }
+    }
+
+    @Override
+    public void spawnNpc(int npcId) {
+        spawnNpc(npcId, getPosition());
+    }
+
+    // returns slightly above the reactor's position for monster spawns
+    public Point getPosition() {
+        Point pos = reactor.getPosition();
+        pos.y -= 10;
+        return pos;
+    }
+
+    public MapleReactor getReactor() {
+        return this.reactor;
+    }
+
+    public void killMonster(int mob_id) {
+        reactor.getMap().killMonster(mob_id);
+    }
+
+    // summon one monster on reactor location
+    @Override
+    public void spawnMonster(int id) {
+        spawnMonster(id, 1, getPosition());
+    }
+
+    // summon monsters on reactor location
+    @Override
+    public void spawnMonster(int id, int qty) {
+        spawnMonster(id, qty, getPosition());
+    }
+
+    public boolean dispelAllMonsters(int num) {
+        MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
+        if (skil == null) {
+            return false;
+        }
+        for (MapleMonster mons : getMap().getAllMonsters()) {
+            mons.dispelSkill(skil.getSkill());
+        }
+        return true;
+    }
+}

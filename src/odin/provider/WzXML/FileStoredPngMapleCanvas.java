@@ -26,9 +26,9 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import odin.provider.MapleCanvas;
+import odin.provider.IMapleCanvas;
 
-public class FileStoredPngMapleCanvas implements MapleCanvas {
+public class FileStoredPngMapleCanvas implements IMapleCanvas {
 
     private File file;
     private int width;

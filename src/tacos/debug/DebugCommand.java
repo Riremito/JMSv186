@@ -25,16 +25,15 @@ import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
-import tacos.config.property.Property_Packet;
+import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
-import tacos.data.client.DC_Exp;
-import tacos.data.wz.DW_Item;
-import tacos.data.wz.DW_Skill;
-import tacos.data.wz.DW_String;
-import tacos.data.wz.ids.DWI_Random;
-import tacos.data.wz.ids.DWI_Validation;
-import tacos.data.wz.ids.DWI_LoadXML;
-import tacos.server.ServerOdinGame;
+import tacos.shared.SharedExpTable;
+import tacos.wz.data.ItemWz;
+import tacos.wz.data.SkillWz;
+import tacos.wz.data.StringWz;
+import tacos.wz.ids.DWI_Random;
+import tacos.wz.ids.DWI_Validation;
+import tacos.wz.ids.DWI_LoadXML;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +44,7 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
-import odin.scripting.NPCScriptManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -62,8 +59,17 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
-import tacos.server.Server;
 import odin.server.shops.HiredMerchant;
+import tacos.database.query.DQ_Accounts;
+import tacos.packet.response.ResCMiniRoomBaseDlg;
+import odin.provider.IMapleData;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptPortal;
+import tacos.script.TacosScriptQuest;
+import tacos.script.TacosScriptReactor;
+import tacos.server.TacosChannel;
+import tacos.server.TacosLogin;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -124,12 +130,22 @@ public class DebugCommand {
                 chr.DebugMsg3("YELLOW.");
                 return true;
             }
+            case "/threadid": {
+                chr.DebugMsg("thread id = " + DebugLogger.getThreadId());
+                return true;
+            }
             case "/reload": {
                 // PacketHeader設定再読み込み
                 Property_Packet.reload();
                 DebugLogger.InfoLog("Packet Header values are reloaded.");
                 chr.DebugMsg("Packet Header values are reloaded.");
-                chr.UpdateStat(true);
+                TacosScriptPortal.getInstance().clearScripts();
+                TacosScriptNPC.getInstance().clearScripts();
+                TacosScriptQuest.getInstance().clearScripts();
+                TacosScriptReactor.getInstance().clearScripts();
+                DebugLogger.InfoLog("script cache is cleared.");
+                chr.DebugMsg("script cache is cleared.");
+                chr.sendStatChanged(true);
                 return true;
             }
             case "/debugmode": {
@@ -142,22 +158,84 @@ public class DebugCommand {
                 chr.DebugMsg("InfoMode = " + chr.GetInformation());
                 return true;
             }
-            case "/server": {
-                for (Server server : Server.get()) {
-                    String msg = server.getName() + " : " + server.getNumberOfSessions();
+            case "/players": {
+                TacosWorld world = chr.getWorld();
+                {
+                    TacosLogin srv_login = world.getLogin();
+                    String msg = srv_login.getName() + " : ";
+                    msg += "clients = " + srv_login.getClients().size() + ", ";
+                    msg += "authorized = " + srv_login.getAuthorizedClients().size();
+                    chr.DebugMsg(msg);
+                }
+                for (TacosChannel srv_channel : world.getChannels()) {
+                    String msg = srv_channel.getName() + " : ";
+                    String player_names = "";
+                    for (MapleCharacter player : srv_channel.getOnlinePlayers().get()) {
+                        if (player_names.length() != 0) {
+                            player_names += ", ";
+                        }
+                        player_names += player.getName();
+                    }
+                    msg += player_names;
+                    chr.DebugMsg(msg);
+                }
+                {
+                    String msg = world.getITC().getName() + " : ";
+                    String player_names = "";
+                    for (MapleCharacter player : world.getITC().getOnlinePlayers().get()) {
+                        if (player_names.length() != 0) {
+                            player_names += ", ";
+                        }
+                        player_names += player.getName();
+                    }
+                    msg += player_names;
+                    chr.DebugMsg(msg);
+                }
+                {
+                    String msg = world.getCashShop().getName() + " : ";
+                    String player_names = "";
+                    for (MapleCharacter player : world.getCashShop().getOnlinePlayers().get()) {
+                        if (player_names.length() != 0) {
+                            player_names += ", ";
+                        }
+                        player_names += player.getName();
+                    }
+                    msg += player_names;
                     chr.DebugMsg(msg);
                 }
                 return true;
             }
+            case "/msg": {
+                TacosChannel srv_channel = chr.getChannelServer();
+                if (splitted.length < 2) {
+                    srv_channel.setServerMessage("");
+                    srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
+                    return true;
+                }
+                srv_channel.setServerMessage(splitted[1]);
+                srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
+                return true;
+            }
             case "/shutdown": {
                 // CTRL + C & Y
+                if (chr.getName().equals("リレミト") || chr.getName().equals("Riremito")) {
+                    System.exit(0);
+                }
+                return true;
+            }
+            case "/resetpassword": {
+                if (splitted.length < 3) {
+                    return true;
+                }
+                DQ_Accounts.resetPassword(splitted[1], splitted[2]);
+                chr.DebugMsg("Password Reset = " + splitted[1]);
                 return true;
             }
             case "/ea":
             case "/stuck":
             case "/unlock": {
                 // フリーズ解除
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case "/save": {
@@ -233,6 +311,43 @@ public class DebugCommand {
                 ds.start(chr);
                 return true;
             }
+            case "/ds2": {
+                DebugShop ds = new DebugShop();
+
+                if (splitted.length < 2) {
+                    return true;
+                }
+                // to make list. TODO : fix
+                if (list_NameData_Item == null) {
+                    searchString(chr, "item", "TESTTEST");
+                }
+
+                String search_string = "";
+                for (int i = 1; i < splitted.length; i++) {
+                    if (!search_string.isEmpty()) {
+                        search_string += " ";
+                    }
+                    search_string += splitted[i];
+                }
+
+                int shop_item_count = 0;
+                for (NameData nd : list_NameData_Item) {
+                    if (nd.name.contains(search_string)) {
+                        if (nd.available) {
+                            ds.addItem(nd.id);
+                            shop_item_count++;
+                            if (100 <= shop_item_count) {
+                                chr.DebugMsg("item search hits over 100 item names.");
+                                break;
+                            }
+                        }
+                    }
+                }
+                chr.DebugMsg("search results = " + shop_item_count);
+
+                ds.start(chr);
+                return true;
+            }
             case "/check": {
                 chr.DebugMsg("X  : " + chr.getPosition().x);
                 chr.DebugMsg("Y  : " + chr.getPosition().y);
@@ -242,9 +357,9 @@ public class DebugCommand {
             }
             case "/hm": {
                 List<Integer> ids = new ArrayList<>();
-                MapleData md_item_sub_type = DW_Item.getItemImg(503);
+                IMapleData md_item_sub_type = ItemWz.get().getItemImg(503);
                 if (md_item_sub_type != null) {
-                    for (MapleData md_item : md_item_sub_type.getChildren()) {
+                    for (IMapleData md_item : md_item_sub_type.getChildren()) {
                         int item_id = Integer.parseInt(md_item.getName());
                         ids.add(item_id);
                     }
@@ -309,8 +424,12 @@ public class DebugCommand {
                 }
                 return true;
             }
+            case "/mg": {
+                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
+                return true;
+            }
             case "/pnpc": {
-                PlayerNPC pnpc = new PlayerNPC(chr, 9901000, chr.getMap(), chr);
+                PlayerNPC pnpc = new PlayerNPC(chr, 9901000, chr.getMap());
                 pnpc.update(chr);
                 chr.getMap().addMapObject(pnpc);
                 pnpc.sendSpawnData(chr.getClient());
@@ -386,7 +505,7 @@ public class DebugCommand {
 
                 chr.getStat().setHp(new_hp);
                 chr.getStat().setMp(new_mp);
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
 
                 chr.DebugMsg("HP : " + chr.getStat().getHp() + " / " + chr.getStat().getMaxHp());
                 chr.DebugMsg("MP : " + chr.getStat().getMp() + " / " + chr.getStat().getMaxMp());
@@ -441,7 +560,7 @@ public class DebugCommand {
                         return false;
                     }
                 }
-                chr.gainExp(DC_Exp.getExpNeededForLevel(chr.getLevel()), true, true, true);
+                chr.gainExp(SharedExpTable.getExpNeededForLevel(chr.getLevel()), true, true, true);
                 return true;
             }
             case "/level":
@@ -465,7 +584,7 @@ public class DebugCommand {
                 }
 
                 for (int i = chr.getLevel(); i < new_level; i++) {
-                    chr.gainExp(DC_Exp.getExpNeededForLevel(i), true, true, true);
+                    chr.gainExp(SharedExpTable.getExpNeededForLevel(i), true, true, true);
                 }
                 return true;
             }
@@ -494,7 +613,7 @@ public class DebugCommand {
                 return true;
             }
             case "/prevmap": {
-                int index = DWI_Random.getMapIndex(c.getPlayer().getMapId());
+                int index = DWI_Random.getMapIndex(chr.getPosMap());
                 int map_id = DWI_Random.getMapByIndex(index - 1);
 
                 if (map_id <= 0) {
@@ -505,7 +624,7 @@ public class DebugCommand {
                 return true;
             }
             case "/nextmap": {
-                int index = DWI_Random.getMapIndex(c.getPlayer().getMapId());
+                int index = DWI_Random.getMapIndex(chr.getPosMap());
                 int map_id = DWI_Random.getMapByIndex(index + 1);
 
                 if (map_id <= 0) {
@@ -550,7 +669,7 @@ public class DebugCommand {
                 chr.setSkinColor((byte) (skinid % 100));
                 chr.setFace(faceid);
                 chr.setHair(hairid);
-                chr.UpdateStat(false);
+                chr.sendStatChanged(false);
                 chr.DebugMsg("[RandomBeauty] SkinID = " + skinid + ", FaceID = " + faceid + ", HairID = " + hairid);
                 return true;
             }
@@ -588,14 +707,14 @@ public class DebugCommand {
             }
             case "/randommap": {
                 int mapid = DWI_LoadXML.getMap().getRandom();
-                MapleMap map = ServerOdinGame.getInstance(c.getChannel()).getMapFactory().getMap(mapid);
+                MapleMap map = chr.getChannelServer().getMapFactory().getMap(mapid);
                 chr.changeMap(map, map.getPortal(0));
                 chr.DebugMsg("[RandomMap] " + map.getId() + " - " + map.getStreetName() + "_" + map.getMapName()); // MapName code is buggy.
                 return true;
             }
             // カスタムコマンド
             case "/wh": {
-                for (MapleCharacter victim : c.getChannelServer().getPlayerStorage().getAllCharacters()) {
+                for (MapleCharacter victim : c.getChannelServer().getOnlinePlayers().get()) {
                     if (victim != chr) {
                         victim.changeMap(chr.getMap(), chr.getMap().findClosestSpawnpoint(chr.getPosition()));
                     }
@@ -617,7 +736,7 @@ public class DebugCommand {
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
                 chr.getMap().addMapObject(dynamic_portal);
                 chr.getMap().broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
-                chr.DebugMsg("[AddPortal] " + chr.getMapId() + " -> " + map_id_to);
+                chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);
                 return true;
             }
             case "/slot": {
@@ -651,7 +770,7 @@ public class DebugCommand {
             return false;
         }
 
-        MapleMap map = chr.getClient().getChannelServer().getMapFactory().getMap(map_id);
+        MapleMap map = chr.getChannelServer().getMapFactory().getMap(map_id);
         chr.changeMap(map, map.getPortal(0));
         return true;
     }
@@ -666,7 +785,7 @@ public class DebugCommand {
         if (npc == null || npc.getName().equals("MISSINGNO")) {
             return false;
         }
-        NPCScriptManager.getInstance().start(c, npc_id, npc_script_id);
+        TacosScriptNPC.getInstance().start(c, npc_script_id, npc_id);
         return true;
     }
 
@@ -795,7 +914,7 @@ public class DebugCommand {
     }
 
     private static boolean getBasicSkill(MapleCharacter chr) {
-        for (int skill_id : DW_Skill.getBasicSkill(chr, debug_basic_job)) {
+        for (int skill_id : SkillWz.get().getBasicSkill(chr, debug_basic_job)) {
             if (!checkDebugBasicSkill(skill_id)) {
                 continue;
             }
@@ -807,7 +926,7 @@ public class DebugCommand {
     }
 
     private static boolean resetBasicSkill(MapleCharacter chr) {
-        for (int skill_id : DW_Skill.getBasicSkill(chr, debug_basic_job)) {
+        for (int skill_id : SkillWz.get().getBasicSkill(chr, debug_basic_job)) {
             chr.DebugMsg("RemoveSkill : " + skill_id);
             ISkill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
@@ -836,7 +955,7 @@ public class DebugCommand {
             case "npc": {
                 if (list_NameData_Npc == null) {
                     list_NameData_Npc = new ArrayList<>();
-                    for (MapleData wz_data : DW_String.getNpc().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getNpc().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -861,7 +980,7 @@ public class DebugCommand {
             case "mob": {
                 if (list_NameData_Mob == null) {
                     list_NameData_Mob = new ArrayList<>();
-                    for (MapleData wz_data : DW_String.getMob().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getMob().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -886,8 +1005,8 @@ public class DebugCommand {
             case "item": {
                 if (list_NameData_Item == null) {
                     list_NameData_Item = new ArrayList<>();
-                    for (MapleData wz_root : DW_String.getEqp().getChildren()) {
-                        for (MapleData wz_data : wz_root.getChildren()) {
+                    for (IMapleData wz_root : StringWz.get().getEqp().getChildren()) {
+                        for (IMapleData wz_data : wz_root.getChildren()) {
                             int id = Integer.parseInt(wz_data.getName());
                             String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                             NameData nd = new NameData();
@@ -897,7 +1016,7 @@ public class DebugCommand {
                             list_NameData_Item.add(nd);
                         }
                     }
-                    for (MapleData wz_data : DW_String.getConsume().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getConsume().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -906,7 +1025,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : DW_String.getIns().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getIns().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -915,7 +1034,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : DW_String.getEtc().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getEtc().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -924,7 +1043,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : DW_String.getPet().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getPet().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -933,7 +1052,7 @@ public class DebugCommand {
                         nd.name = name;
                         list_NameData_Item.add(nd);
                     }
-                    for (MapleData wz_data : DW_String.getCash().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getCash().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
                         String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
@@ -957,8 +1076,8 @@ public class DebugCommand {
             case "map": {
                 if (list_NameData_Map == null) {
                     list_NameData_Map = new ArrayList<>();
-                    for (MapleData wz_root : DW_String.getMap().getChildren()) {
-                        for (MapleData wz_data : wz_root.getChildren()) {
+                    for (IMapleData wz_root : StringWz.get().getMap().getChildren()) {
+                        for (IMapleData wz_data : wz_root.getChildren()) {
                             int id = Integer.parseInt(wz_data.getName());
                             String mapName = MapleDataTool.getString(wz_data.getChildByPath("mapName"), "");
                             String streetName = MapleDataTool.getString(wz_data.getChildByPath("streetName"), "");
@@ -986,7 +1105,7 @@ public class DebugCommand {
             case "skill": {
                 if (list_NameData_Skill == null) {
                     list_NameData_Skill = new ArrayList<>();
-                    for (MapleData wz_data : DW_String.getSkill().getChildren()) {
+                    for (IMapleData wz_data : StringWz.get().getSkill().getChildren()) {
                         if (wz_data.getChildByPath("bookName") != null) {
                             continue;
                         }
@@ -1042,7 +1161,7 @@ public class DebugCommand {
         for (int i = 0; i < mob_ids.size(); i++) {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
-            MapleData md_mob = DW_String.getMob().getChildByPath(Integer.toString(mob_id));
+            IMapleData md_mob = StringWz.get().getMob().getChildByPath(Integer.toString(mob_id));
             String mob_name = md_mob != null ? MapleDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
             if (!DWI_Validation.isValidMobID(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");

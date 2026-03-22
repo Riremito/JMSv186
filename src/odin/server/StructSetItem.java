@@ -8,8 +8,8 @@ import java.util.Map;
 public class StructSetItem {
 
     public int completeCount, setItemID;
-    public Map<Integer, SetItem> items = new LinkedHashMap<Integer, SetItem>();
-    public List<Integer> itemIDs = new ArrayList<Integer>();
+    public Map<Integer, SetItem> items = new LinkedHashMap<>();
+    public List<Integer> itemIDs = new ArrayList<>();
 
     public static class SetItem {
 
@@ -17,6 +17,6 @@ public class StructSetItem {
     }
 
     public Map<Integer, SetItem> getItems() {
-        return new LinkedHashMap<Integer, SetItem>(items);
+        return new LinkedHashMap<>(items);
     }
 }

@@ -23,6 +23,7 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCUserRemote;
 
 /**
@@ -33,7 +34,7 @@ public class ResCUserPool {
 
     // CUserPool::OnUserEnterField
     public static MaplePacket UserEnterField(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserEnterField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEnterField);
 
         sp.Encode4(chr.getId());
 
@@ -49,7 +50,7 @@ public class ResCUserPool {
 
     // CUserPool::OnUserLeaveField
     public static MaplePacket UserLeaveField(int player_id) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_UserLeaveField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserLeaveField);
         sp.Encode4(player_id);
         return sp.get();
     }

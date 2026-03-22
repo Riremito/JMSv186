@@ -27,6 +27,7 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
 import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -35,7 +36,7 @@ import odin.server.life.PlayerNPC;
 public class ResCNpcPool {
     
     public static MaplePacket ImitatedNPCData(PlayerNPC npc) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_ImitatedNPCData);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ImitatedNPCData);
         
         int number_of_npcs = (npc.getCharacter() == null) ? 0 : 1;
         sp.Encode1(number_of_npcs); // number of npcs
@@ -49,7 +50,7 @@ public class ResCNpcPool {
     }
     
     public static MaplePacket NpcEnterField(MapleNPC npc, boolean show) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcEnterField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcEnterField);
         
         sp.Encode4(npc.getObjectId()); // dwNpcId
         sp.Encode4(npc.getId()); // NpcTemplate
@@ -77,14 +78,14 @@ public class ResCNpcPool {
     }
     
     public static MaplePacket NpcLeaveField(MapleNPC npc) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcLeaveField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcLeaveField);
         
         sp.Encode4(npc.getObjectId());
         return sp.get();
     }
     
     public static MaplePacket NpcChangeController(MapleNPC npc, boolean is_local, boolean show) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcChangeController);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcChangeController);
         
         sp.Encode1(is_local ? 1 : 0);
         sp.Encode4(npc.getObjectId());
@@ -97,7 +98,7 @@ public class ResCNpcPool {
     }
     
     public static MaplePacket NpcMove(MapleNPC npc, int nChatIdx, int m_nOneTimeAction, ParseCMovePath move_path) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_NpcMove);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcMove);
         
         sp.Encode4(npc.getObjectId());
         sp.Encode1(nChatIdx);

@@ -27,21 +27,24 @@ import java.util.Iterator;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.network.MaplePacket;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCWvsContext;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class GuildHandler {
 
-    public static final void DenyGuildRequest(final String from, final MapleClient c) {
-        final MapleCharacter cfrom = c.getChannelServer().getPlayerStorage().getCharacterByName(from);
+    public static final void DenyGuildRequest(ClientPacket cp, final MapleClient c) {
+        byte unk1 = cp.Decode1();
+        String from = cp.DecodeStr();
+
+        final MapleCharacter cfrom = c.getChannelServer().getOnlinePlayers().findByName(from);
         if (cfrom != null) {
             cfrom.getClient().getSession().write(ResCWvsContext.denyGuildInvitation(c.getPlayer().getName()));
         }
     }
 
-    private static final boolean isGuildNameAcceptable(final String name) {
+    private static boolean isGuildNameAcceptable(final String name) {
         if (name.getBytes().length < 3 || name.getBytes().length > 12) {
             return false;
         }
@@ -53,7 +56,7 @@ public class GuildHandler {
         return true;
     }
 
-    private static final void respawnPlayer(final MapleCharacter mc) {
+    private static void respawnPlayer(final MapleCharacter mc) {
         mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(mc.getId()), false);
         mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
     }
@@ -82,7 +85,7 @@ public class GuildHandler {
     private static final java.util.List<Invited> invited = new java.util.LinkedList<Invited>();
     private static long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
-    public static final void Guild(final SeekableLittleEndianAccessor slea, final MapleClient c) {
+    public static final void Guild(ClientPacket cp, final MapleClient c) {
         if (System.currentTimeMillis() >= nextPruneTime) {
             Iterator<Invited> itr = invited.iterator();
             Invited inv;
@@ -95,7 +98,7 @@ public class GuildHandler {
             nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
         }
 
-        switch (slea.readByte()) {
+        switch (cp.Decode1()) {
             case 0x02: // Create guild
                 if (c.getPlayer().getGuildId() > 0 || c.getPlayer().getMapId() != 200000301) {
                     c.getPlayer().dropMessage(1, "You cannot create a new Guild while in one.");
@@ -104,13 +107,13 @@ public class GuildHandler {
                     c.getPlayer().dropMessage(1, "You do not have enough mesos to create a Guild.");
                     return;
                 }
-                final String guildName = slea.readMapleAsciiString();
+                final String guildName = cp.DecodeStr();
 
                 if (!isGuildNameAcceptable(guildName)) {
                     c.getPlayer().dropMessage(1, "The Guild name you have chosen is not accepted.");
                     return;
                 }
-                int guildId = World.Guild.createGuild(c.getPlayer().getId(), guildName);
+                int guildId = OdinWorld.Guild.createGuild(c.getPlayer().getId(), guildName);
                 if (guildId == 0) {
                     c.getSession().write(ResCWvsContext.genericGuildMessage((byte) 0x1c));
                     return;
@@ -120,7 +123,7 @@ public class GuildHandler {
                 c.getPlayer().setGuildRank((byte) 1);
                 c.getPlayer().saveGuildStatus();
                 c.getSession().write(ResCWvsContext.showGuildInfo(c.getPlayer()));
-                World.Guild.setGuildMemberOnline(c.getPlayer().getMGC(), true, c.getChannel());
+                OdinWorld.Guild.setGuildMemberOnline(c.getPlayer().getMGC(), true, c.getChannelId());
                 c.getPlayer().dropMessage(1, "You have successfully created a Guild.");
                 respawnPlayer(c.getPlayer());
                 break;
@@ -128,7 +131,7 @@ public class GuildHandler {
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) { // 1 == guild master, 2 == jr
                     return;
                 }
-                String name = slea.readMapleAsciiString();
+                String name = cp.DecodeStr();
                 final MapleGuildResponse mgr = MapleGuild.sendInvite(c, name);
 
                 if (mgr != null) {
@@ -144,8 +147,8 @@ public class GuildHandler {
                 if (c.getPlayer().getGuildId() > 0) {
                     return;
                 }
-                guildId = slea.readInt();
-                int cid = slea.readInt();
+                guildId = cp.Decode4();
+                int cid = cp.Decode4();
 
                 if (cid != c.getPlayer().getId()) {
                     return;
@@ -160,15 +163,15 @@ public class GuildHandler {
                         c.getPlayer().setGuildRank((byte) 5);
                         itr.remove();
 
-                        int s = World.Guild.addGuildMember(c.getPlayer().getMGC());
+                        int s = OdinWorld.Guild.addGuildMember(c.getPlayer().getMGC());
                         if (s == 0) {
                             c.getPlayer().dropMessage(1, "The Guild you are trying to join is already full.");
                             c.getPlayer().setGuildId(0);
                             return;
                         }
                         c.getSession().write(ResCWvsContext.showGuildInfo(c.getPlayer()));
-                        final MapleGuild gs = World.Guild.getGuild(guildId);
-                        for (MaplePacket pack : World.Alliance.getAllianceInfo(gs.getAllianceId(), true)) {
+                        final MapleGuild gs = OdinWorld.Guild.getGuild(guildId);
+                        for (MaplePacket pack : OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true)) {
                             if (pack != null) {
                                 c.getSession().write(pack);
                             }
@@ -180,23 +183,23 @@ public class GuildHandler {
                 }
                 break;
             case 0x07: // leaving
-                cid = slea.readInt();
-                name = slea.readMapleAsciiString();
+                cid = cp.Decode4();
+                name = cp.DecodeStr();
 
                 if (cid != c.getPlayer().getId() || !name.equals(c.getPlayer().getName()) || c.getPlayer().getGuildId() <= 0) {
                     return;
                 }
-                World.Guild.leaveGuild(c.getPlayer().getMGC());
+                OdinWorld.Guild.leaveGuild(c.getPlayer().getMGC());
                 c.getSession().write(ResCWvsContext.showGuildInfo(null));
                 break;
             case 0x08: // Expel
-                cid = slea.readInt();
-                name = slea.readMapleAsciiString();
+                cid = cp.Decode4();
+                name = cp.DecodeStr();
 
                 if (c.getPlayer().getGuildRank() > 2 || c.getPlayer().getGuildId() <= 0) {
                     return;
                 }
-                World.Guild.expelMember(c.getPlayer().getMGC(), name, cid);
+                OdinWorld.Guild.expelMember(c.getPlayer().getMGC(), name, cid);
                 break;
             case 0x0d: // Guild rank titles change
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() != 1) {
@@ -204,20 +207,20 @@ public class GuildHandler {
                 }
                 String ranks[] = new String[5];
                 for (int i = 0; i < 5; i++) {
-                    ranks[i] = slea.readMapleAsciiString();
+                    ranks[i] = cp.DecodeStr();
                 }
 
-                World.Guild.changeRankTitle(c.getPlayer().getGuildId(), ranks);
+                OdinWorld.Guild.changeRankTitle(c.getPlayer().getGuildId(), ranks);
                 break;
             case 0x0e: // Rank change
-                cid = slea.readInt();
-                byte newRank = slea.readByte();
+                cid = cp.Decode4();
+                byte newRank = cp.Decode1();
 
                 if ((newRank <= 1 || newRank > 5) || c.getPlayer().getGuildRank() > 2 || (newRank <= 2 && c.getPlayer().getGuildRank() != 1) || c.getPlayer().getGuildId() <= 0) {
                     return;
                 }
 
-                World.Guild.changeRank(c.getPlayer().getGuildId(), cid, newRank);
+                OdinWorld.Guild.changeRank(c.getPlayer().getGuildId(), cid, newRank);
                 break;
             case 0x0f: // guild emblem change
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() != 1 || c.getPlayer().getMapId() != 200000301) {
@@ -228,22 +231,22 @@ public class GuildHandler {
                     c.getPlayer().dropMessage(1, "You do not have enough mesos to create a Guild.");
                     return;
                 }
-                final short bg = slea.readShort();
-                final byte bgcolor = slea.readByte();
-                final short logo = slea.readShort();
-                final byte logocolor = slea.readByte();
+                final short bg = cp.Decode2();
+                final byte bgcolor = cp.Decode1();
+                final short logo = cp.Decode2();
+                final byte logocolor = cp.Decode1();
 
-                World.Guild.setGuildEmblem(c.getPlayer().getGuildId(), bg, bgcolor, logo, logocolor);
+                OdinWorld.Guild.setGuildEmblem(c.getPlayer().getGuildId(), bg, bgcolor, logo, logocolor);
 
                 c.getPlayer().gainMeso(-15000000, true, false, true);
                 respawnPlayer(c.getPlayer());
                 break;
             case 0x10: // guild notice change
-                final String notice = slea.readMapleAsciiString();
+                final String notice = cp.DecodeStr();
                 if (notice.length() > 100 || c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) {
                     return;
                 }
-                World.Guild.setGuildNotice(c.getPlayer().getGuildId(), notice);
+                OdinWorld.Guild.setGuildNotice(c.getPlayer().getGuildId(), notice);
                 break;
         }
     }

@@ -1,192 +1,82 @@
 # JMS エミュ鯖
-## 現状
-+ JMS147, 164, 186, 188, 194, 302, 308で動くように修正中
-    + JMS147から164の間のバージョンはほぼ同じ処理で動くはず
-    + JMS165から186の間のバージョンも同様
-    + JMS187から194の間のバージョンも同様
-+ クライアントの状態的な問題 (Virtualized)
-    + Virtualizer的な問題を考えるとJMS308が一番高いバージョンとなる
-    + GMS111/CMS104/TWMS148
-        + JMS308より古いバージョンの選択肢
-    + JMS308/EMS89
-        + JMS308付近の選択肢
-    + KMS18X
-        + JMS308より新しいバージョンの選択肢
-        + KMS190は良くなかったのでKMS183~KMS189のどれかが良い
+## Readme
++ [日本語](./Readme.md)
++ [English](./Readme_EN.md)
 
-## 開発環境構築
-### Java
-+ jre-8u111-windows-x64
-+ jdk-8u111-nb-8_2-windows-x64
-+ jce_policy-8
-    + AESが動作しないので以下を参考にJDK/JREのファイルを上書きする
-        + [参考](https://qiita.com/mizuki_takahashi/items/cc26a7fd51aa04396e92)
-        + アカウント作成しないとダウンロード出来ないので注意
-+ NetBeans IDE 8.2
-+ jdk-17.0.11_windows-x64_bin.exe
-    + 実行時に必要 (ビルド時は不要)
-### DB
-+ Wampserver2.4-x64.exe
-    + MySQL 5.6.12 が入っています
-    + phpMyAdmin 4.0.4 が入っています
+## 開発環境
++ OS
+    + Windows
++ Java
+    + [JDK 25 : jdk-25_windows-x64_bin.exe](https://www.oracle.com/jp/java/technologies/downloads/#jdk25-windows)
++ IDE
+    + [NetBeans 29 : Apache-NetBeans-29.exe](https://netbeans.apache.org/front/main/download/nb29/)
+    + [日本語化 : org-apache-netbeans-localise-ja-0.0.4.nbm](https://github.com/junichi11/netbeans-translations-ja/releases)
++ Database
+    + [Wampserver : wampserver3.4.0_x64.exe](https://wampserver.aviatechno.net/)
+        + MySQL 8.4.7
+        + Apache 2.4.65
+        + PHP 8.3.28
+        + phpMyAdmin 5.2.3
+
+## 実行環境
++ OS
+    + Windows or Linux
++ Java
+    + JDK 25
++ Database
+    + MySQL 8
+
+## ビルド準備
+## ソースコード
++ このリポジトリをクローンする。
+    + developブランチを推奨します。
++ `JMSv186` という名前のフォルダであるものとして以下の手順を進めていく。
 ### wz_xml
-+ https://github.com/Riremito/wz_xml
-+ 利用するバージョンのXMLを解凍する
-    + `/JMSv186/wz_xml/xml_JMS_v186/`
-        + このように配置する
-### jms_scripts
-+ https://github.com/Riremito/jms_scripts
-    + 他のサーバー用のscriptも放り込めば大体動くはず
-    + `/JMSv186/scripts/scripts_jms/`
-        + このように配置する
-### ビルド手順
-+ このリポジトリをクローン (developブランチ推奨)
-+ NetBeansを実行して以下の手順でビルド
-    + ファイル -> 新規プロジェクト -> カテゴリ = Java, プロジェクト = 既存のソースを使用するJavaプロジェクト
-    + プロジェクト名 = JMSv186 (なんでもOK)
-    + ソース・パッケージフォルダ = src
-    + 一旦プロジェクトが読み込まれるので続ける
-    + 右クリックからプロパティ
-    + ライブラリを選択 -> JAR/フォルダの追加 = libディレクトリに.jarファイルがあるので全て選択して追加
-    + 追加したプロジェクトを右クリックしてビルド
-### DB設定
-+ Wampを実行
-+ タスクアイコンクリックするとメニューが出るので以下をする
-    + Start all Services
-    + phpMyAdminを開く
-+ ユーザー名 `root`, パスワード `空欄` で管理画面へ入る
-+ `sql` フォルダ内のファイルを以下の手順でインポートする
-+ DBを作成する
-    + JMS v186 を利用したい場合は `jms_v186` という名前に変更する
-        + JMS以外の場合は `kms_v95` のようにバージョンの前にKMSなどを付与する
-     `v186_empty.sql` をインポートする
-    + 対象のバージョンのDBへ `init_data_set.sql`をインポートする、しなくても良い
++ 利用するバージョンのXMLを https://github.com/Riremito/wz_xml から取得し、解凍を行う。
++ JMS147の場合は `JMSv186/wz_xml/xml_JMS_v147/` に必要なファイルを設置する。
+### scripts
++ Scriptを https://github.com/Riremito/jms_scripts から取得する。
++ `JMSv186/scripts/scripts_jms/` に必要なファイルを設置する。
+### データベース
++ Wampserverを実行し、phpmyadminへブラウザからアクセスする。
+    + ユーザー名 `root`, パスワード `空欄` で管理画面へ入れます。
++ JMS147の場合は `jms_v147` という名前のデータベースを作成する。
++ 作成したデータベースに `JMSv186/sql` フォルダ内のファイルを以下の順序でインポートする。
+    + `jms_v147_empty.sql`
+    + `init_data_set.sql`
+        + こちらはインポートしなくても問題ない。
 
-## サーバーの実行
-### 実行方法
-+ `run_JMS_v186.1.bat` 等実行したいバージョンの `bat` ファイルを実行する
-### サーバーの仕様
-+ ログインサーバー
-    + 自動登録
+## ビルド
++ NetBeansでプロジェクトを開く。
++ プロパティを開き、ライブラリにClassPathに `JMSv186/lib` フォルダに存在する全ての.jarファイルを追加する。
++ ビルドする。
+
+## サーバーの実行方法
+### Windows
++ `run_JMS_v147.0.bat` 等実行したいバージョンの `.bat` ファイルを実行する。
+    + `run_any.bat JMS 147 0` など `run_any.bat` に引数を渡すことでも実行可能。
+### Linux
++ `bash run_any.sh JMS 147 0` など `run_any.sh` に引数を渡すことで実行可能。
+
+## サーバー仕様
+### アカウント
++ 自動登録
++ 性別変更方法
     + ログインする時に `MapleID` と`MapleID_` は同じ扱いとなります
-        + `MapleID` だと男キャラクターの作成が可能で、 `MapleID_` だと女キャラクターの作成が可能です
-        + `GMMapleID` の場合はGM状態となります
-    + 2次パスワード
-        + 内部的にパスワードは `777777`で固定となっていますが、無効化しているので不要です
+    + `MapleID` だと男キャラクターの作成が可能で、 `MapleID_` だと女キャラクターの作成が可能です。
+### コマンド
++ TODO
 
-## クライアントの準備
-### フルクライアント
-+ Web Archiveなどから探す
-### Local Host Client
-+ 面倒くさい人用
-    + https://forum.ragezone.com/threads/localhost-workshop.1202021/
-    + https://forum.ragezone.com/threads/some-localhost-clients-jms-cms-twms.1225637/
-+ Local Hostを自分で作成したい人用
-    + https://github.com/Riremito/EmuClient
-    + https://github.com/Riremito/LocalHost
-        + IP変更可能可能なので、公開したい場合はこれを利用すると楽だと思います
-    + https://github.com/Riremito/FixThemida
-        + 古いクライアントをWindows 10で実行可能にするためのツール
-        + JMS164前後のバージョンのクライアントはWindows 10に対応しておらずこれを利用しないと実行出来ないので注意
-### バグ修正 & 起動高速化
-+ https://github.com/Riremito/iGPUplz
-    + JMS187以下で画面が壊れる場合は必須
-    + JMS188以上で起動速度を高速化したい場合も必要
-
-## Version
-### Pre-BB & VS2006 (JMS186 or before)
-|Date|Version|Updates|memo|
-|---|---|---|---|
-|2007/08|JMS131|||
-|2008/06|JMS146|Before Pirate||
-||GMS61||near JMS146|
-|2008/07|JMS147|Pirate|client is extremely changed from JMS146|
-|2008/07|TWMS77|Pirate & Magatia|near JMS147|
-|2009/01|GMS65|Pirate & Magatia|near JMS147|
-||BMS24|Final Version|near JMS147-JMS164|
-||VMS35|Final Version|near JMS147-JMS164|
-|2008/12|KMS65||near JMS164|
-|2009/05|TWMS94||near JMS164|
-|2009/06|GMS72||near JMS164|
-|2009/07|JMS164|Before Knights of Cygnus||
-|2009/07|JMS165|Knights of Cygnus||
-|2009/08|EMS55|Knights of Cygnus|near JMS165|
-||KMS71||near JMS165|
-|2009/09|KMS84||near JMS180|
-|2010/02|GMS83||near JMS180|
-|2010/04|JMS180|||
-|2010/02|KMS92|Dual Blade||
-|2010/03|KMS95||near JMS185 or before|
-|2010/09|JMS186|Before BIGBANG||
-|2010/09|CMS85||near JMS186|
-|2010/09|TWMS121||near JMS186|
-|2010/10|GMS91||near JMS186|
-|2010/11|THMS87||near JMS186|
-|2011/01|MSEA100||near JMS186|
-||EMS70||near JMS186|
-
-### Pre-BB & VS2008 (not in JMS & KMS)
-|Date|Versions|
-|---|---|
-||CMS86|
-||TWMS122|
-||THMS88|
-||GMS92|
-||MSEA101 to MSEA102|
-||EMS71 to EMS72|
-
-### Post-BB & VS2006 (JMS187, KMS112 or before)
-|Date|Version|
-|---|---|
-||KMST330||
-||KMS101 to KMS112|
-|2010/11|JMS187|
-
-### Post-BB & VS2008 (JMS188 to JMS194, KMS113 or later)
-|Date|Version|Updates|memo|
-|---|---|---|---|
-|2010/10|KMS114||near JMS188|
-|2010/12|JMS188|Mechanic||
-|2010/12|TWMS125||near JMS188|
-|2011/01|GMS95||near JMS188|
-|2011/07|THMS96||near JMS194|
-|2011/10|EMS76||near JMS188|
-|2014/05|IMS1||near JMS188|
-|2011/06|JMS194|Before Professions||
-||KMS118|||
-
-### Renaissance to Phantom (JMS200 to JMS214)
-|Date|Version|Updates|memo|
-|---|---|---|---|
-|2011/07|JMST110|||
-||JMS200|||
-||KMS119|||
-|2011/01|KMS121|||
-|2011/02|KMS127|||
-|2011/07|KMST391|||
-||KMS138|||
-||KMS148|||
-|2011/12|KMS149|||
-|2012/08|CMS104|||
-|2012/08|TWMS148|||
-|2012/05|KMS160|||
-
-### Sengoku (JMS300) to Angelic Buster (JMS308)
-|Date|Version|Updates|memo|
-|---|---|---|---|
-|2012/06|JMS302|Sengoku & Kanna||
-|2012/08|KMS169|Angelic Buster||
-|2013/01|JMS308|Angelic Buster||
-|2013/03|EMS89|Angelic Buster||
-
-### More (JMS309 or later)
-|Date|Version|Updates|memo|
-|---|---|---|---|
-||KMS174|||
-||KMS183|||
-|2013/07|KMS197|||
-|2013/08|KMS200|||
-|2014/02|KMS211|||
-|2014/06|JMS327|||
-|2014/11|JMS334|||
-|2016/10|JMS354|||
+## クライアント
+### 入手方法
++ フルクライアントを入手する
+    + Web Archiveや[ragezone](https://forum.ragezone.com/threads/maplestory-client-localhost-archive.1101897/)で探す
++ LocalHostクライアントを入手する
+    + [ragezone](https://forum.ragezone.com/threads/some-localhost-clients-kms-jms-cms-twms.1225637/)で探す
++ `JMS_v147.0_L.exe` などのLocalHostクライアントをフルクライアントのフォルダに入れる。
+### 実行方法
++ LocalHostクライアントを実行する。
+### その他
++ [バグ修正と起動高速化ツール](https://github.com/Riremito/iGPUplz)
+    + JMS187以下で画面が崩壊する場合は必須
+    + JMS188以上で起動速度を高速化したい場合もオススメ

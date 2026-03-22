@@ -46,6 +46,7 @@ import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.SummonMovementType;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -54,7 +55,7 @@ import odin.server.maps.SummonMovementType;
 public class ReqCSummonedPool {
 
     // CUser::OnSummonedPacket
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return false;
@@ -111,7 +112,7 @@ public class ReqCSummonedPool {
             }
         }
 
-        DebugLogger.ErrorLog("Not coded: " + cp.GetOpcodeName());
+        DebugLogger.ErrorLog("Not coded: " + header.name());
         return false;
     }
 
@@ -125,7 +126,7 @@ public class ReqCSummonedPool {
             move_path.update(summon);
         }
 
-        chr.getMap().broadcastMessage(chr, ResCSummonedPool.moveSummon(summon, move_path), summon.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.moveSummon(summon, move_path), summon.getPosition());
         return true;
     }
 
@@ -200,7 +201,7 @@ public class ReqCSummonedPool {
         }
 
         if (!summon.isChangedMap()) {
-            map.broadcastMessage(chr, ResCSummonedPool.summonAttack(summon.getOwnerId(), summon.getObjectId(), animation, allDamage, chr.getLevel()), summon.getPosition());
+            map.broadcastMessageTo(chr, ResCSummonedPool.summonAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
         }
         final ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
         final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
@@ -250,7 +251,7 @@ public class ReqCSummonedPool {
                 if (summon.getHP() <= 0) {
                     chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
                 }
-                chr.getMap().broadcastMessage(chr, ResCSummonedPool.damageSummon(chr.getId(), summon.getSkill(), damage, unkByte, monsterIdFrom), summon.getPosition());
+                chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.damageSummon(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
                 break;
             }
         }

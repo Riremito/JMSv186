@@ -20,34 +20,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import odin.client.MapleCharacter;
 import java.lang.ref.WeakReference;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.ScheduledFuture;
-import java.io.Serializable;
+import odin.client.MapleCharacter;
 
 import tacos.database.DatabaseConnection;
 import tacos.packet.response.ResCWvsContext;
 import odin.server.Randomizer;
+import tacos.client.TacosCharacter;
 
-public class MapleMount implements Serializable {
+public class MapleMount {
 
-    private static final long serialVersionUID = 9179541993413738569L;
     private int itemid, skillid, exp;
-    private byte fatigue, level;
-    private transient boolean changed = false;
-    private transient ScheduledFuture<?> tirednessSchedule = null;
-    private transient WeakReference<MapleCharacter> owner;
+    private int fatigue, level;
+    private boolean changed = false;
+    private ScheduledFuture<?> tirednessSchedule = null;
+    private WeakReference<TacosCharacter> owner;
 
-    public MapleMount(MapleCharacter owner, int id, int skillid, byte fatigue, byte level, int exp) {
+    public MapleMount(TacosCharacter owner, int id, int skillid, int fatigue, int level, int exp) {
         this.itemid = id;
         this.skillid = skillid;
         this.fatigue = fatigue;
         this.level = level;
         this.exp = exp;
-        this.owner = new WeakReference<MapleCharacter>(owner);
+        this.owner = new WeakReference<>(owner);
     }
 
     public void saveMount(final int charid) throws SQLException {
@@ -56,9 +55,9 @@ public class MapleMount implements Serializable {
         }
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = con.prepareStatement("UPDATE mountdata set `Level` = ?, `Exp` = ?, `Fatigue` = ? WHERE characterid = ?");
-        ps.setByte(1, level);
+        ps.setByte(1, (byte) level);
         ps.setInt(2, exp);
-        ps.setByte(3, fatigue);
+        ps.setByte(3, (byte) fatigue);
         ps.setInt(4, charid);
         ps.close();
     }
@@ -95,7 +94,7 @@ public class MapleMount implements Serializable {
         return skillid;
     }
 
-    public byte getFatigue() {
+    public int getFatigue() {
         return fatigue;
     }
 
@@ -103,7 +102,7 @@ public class MapleMount implements Serializable {
         return exp;
     }
 
-    public byte getLevel() {
+    public int getLevel() {
         return level;
     }
 
@@ -134,25 +133,11 @@ public class MapleMount implements Serializable {
         changed = true;
         this.fatigue++;
         if (fatigue > 100 && owner.get() != null) {
-            owner.get().dispelSkill(1004);
+            ((MapleCharacter) owner.get()).dispelSkill(1004);
         }
-        update();
+        owner.get().getMap().broadcastMessage(ResCWvsContext.updateMount(owner.get(), false));
     }
 
-    /*    public void startSchedule() {
-    tirednessSchedule = TimerManager.getInstance().register(new Runnable() {
-
-    public void run() {
-    increaseFatigue();
-    }
-    }, 30000, 30000);
-    }*/
-
- /*    public void cancelSchedule() {
-    if (tirednessSchedule != null) {
-    tirednessSchedule.cancel(false);
-    }
-    }*/
     public void increaseExp() {
         int e;
         if (level >= 1 && level <= 7) {
@@ -167,11 +152,4 @@ public class MapleMount implements Serializable {
         setExp(exp + e);
     }
 
-    public void update() {
-        final MapleCharacter chr = owner.get();
-        if (chr != null) {
-//	    cancelSchedule();
-            chr.getMap().broadcastMessage(ResCWvsContext.updateMount(chr, false));
-        }
-    }
 }

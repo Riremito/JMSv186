@@ -18,43 +18,37 @@
  */
 package tacos.packet.request;
 
-import odin.client.BuddylistEntry;
-import odin.client.CharacterNameAndId;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MapleClientState;
+import tacos.constants.MapleClientState;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.config.property.Property_Shop;
-import tacos.database.ExtraDB;
+import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
-import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
-import tacos.server.ServerOdinGame;
-import odin.handling.world.CharacterIdChannelPair;
-import odin.handling.world.CharacterTransfer;
 import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.PlayerBuffStorage;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
+import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;
-import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.response.ResCClientSocket;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCFuncKeyMappedMan;
-import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
-import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
+import tacos.debug.DebugLogger;
+import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsCashItem;
+import tacos.packet.response.ResCCashShop;
+import tacos.packet.response.ResCStage;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -63,14 +57,10 @@ import odin.server.maps.MapleMap;
 public class ReqCClientSocket {
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_Login(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket_Login(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
-            case CP_MigrateIn: {
-                OnMigrateIn(cp, c);
-                return true;
-            }
             case CP_AliveAck: {
-                c.recvPong();
+                client.recvPong();
                 return true;
             }
             case CP_ExceptionLog: {
@@ -87,18 +77,15 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
-            case CP_MigrateIn: // Enter Game Server (Login)
-            {
-                OnMigrateIn(cp, c);
+            case CP_MigrateIn: {
+                // enter game server, change channel, leave cs/mts.
+                OnMigrateIn(cp, client);
                 return true;
             }
             case CP_AliveAck: {
-                c.recvPong();
-                return true;
-            }
-            case CP_ExceptionLog: {
+                client.recvPong();
                 return true;
             }
             case CP_SecurityPacket: {
@@ -112,15 +99,15 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_CS_ITC(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket_ITC(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
-                int character_id = cp.Decode4();
-                ReqCCashShop.EnterCS(character_id, c);
+                // enter mts.
+                OnMigrateIn(cp, client);
                 return true;
             }
             case CP_AliveAck: {
-                c.recvPong();
+                client.recvPong();
                 return true;
             }
             case CP_SecurityPacket: {
@@ -133,226 +120,260 @@ public class ReqCClientSocket {
         return false;
     }
 
-    public static boolean OnMigrateIn(ClientPacket cp, MapleClient c) {
+    // CClientSocket::ProcessPacket
+    public static boolean OnPacket_CS(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+        switch (header) {
+            case CP_MigrateIn: {
+                // enter cashshop.
+                OnMigrateIn(cp, client);
+                return true;
+            }
+            case CP_AliveAck: {
+                client.recvPong();
+                return true;
+            }
+            case CP_SecurityPacket: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean OnMigrateIn(ClientPacket cp, MapleClient client) {
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             int unk1 = cp.Decode4();
         }
-        int character_id = cp.Decode4();
-        EnterGameServer(c, character_id);
-        return true;
-    }
-
-    public static final boolean ChangeChannel(MapleCharacter chr, int channel) {
-        if (!chr.isAlive() || chr.getEventInstance() != null || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
-            return false;
+        int character_id = cp.Decode4(); // m_dwCharacterId
+        if (Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 91)) { // 180+
+            byte[] machine_id = cp.DecodeBuffer(16); // MachineId (HWID)
+            client.setMachineId(machine_id);
         }
-        ExtraDB.saveData(chr);
-        chr.changeChannel(channel + 1);
-        return true;
-    }
-
-    // CClientSocket::OnCenterMigrateInResult
-    public static boolean EnterGameServer(MapleClient c, int character_id) {
-        // ログイン or CH変更
-        ServerOdinGame channel = c.getChannelServer();
-        CharacterTransfer transfer = channel.getPlayerStorage().getPendingCharacter(character_id);
-        MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, c, true) : MapleCharacter.ReconstructChr(transfer, c, true);
-        ExtraDB.loadData(chr);
-        c.setPlayer(chr);
-        c.setId(chr.getAccountID());
-
-        if (!DQ_Accounts.checkLoginIP(c)) {
-            c.loginFailed("EnterGameServer 1."); // Remote hack
-            return false;
+        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 131)) {
+            short unk2 = cp.Decode2(); // 0, GM?
+        } else if (Version.GreaterOrEqual(Region.GMS, 61)) {
+            byte unk2 = cp.Decode1(); // 1 byte
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.GMS, 61)) { // 146+
+            byte unk3 = cp.Decode1(); // 0, not in JMS131.
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 84)) { // 180+
+            long client_key = cp.Decode8(); // m_aClientKey, jms always sends 0. but GMS supports this.
+            client.setClientKey(client_key);
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 95)) {
+            int unk4 = cp.Decode4(); // not in JMS.
         }
 
-        switch (DQ_Accounts.getLoginState(c)) {
-            case LOGIN_SERVER_TRANSITION:
-            case CHANGE_CHANNEL: {
-                if (World.isCharacterListConnected(c)) {
-                    c.loginFailed("EnterGameServer 2.");
+        if (client.getPlayer() != null) {
+            client.loginFailed("OnMigrateIn : client already has character.");
+            return false;
+        }
+        TacosWorld world = client.getWorld();
+        MapleCharacter transfer = world.findMigratingPlayer(character_id);
+        // channge channel, enter & leave itc/cs.
+        if (transfer != null) {
+            MapleClient old_client = transfer.getClient();
+            // check machine id.
+            if (client.getMachineId() != null) {
+                if (!old_client.getMachineId().equals(client.getMachineId())) {
+                    // TODO : detect hwid randomizer.
+                    DebugLogger.ErrorLog("MachineId : new_client = " + client.getMachineId());
+                    DebugLogger.ErrorLog("MachineId : old_client = " + old_client.getMachineId());
+                    client.loginFailed("OnMigrateIn : invalid machine id.");
                     return false;
                 }
-                // OK
+            } else {
+                // ip check for old versions because there is no machine id in migrate packet.
+                if (!old_client.getIPAddress().equals(client.getIPAddress())) {
+                    DebugLogger.ErrorLog("IP : new_client = " + client.getIPAddress());
+                    DebugLogger.ErrorLog("IP : old_client = " + old_client.getIPAddress());
+                    client.loginFailed("OnMigrateIn : invalid ip address.");
+                    return false;
+                }
+            }
+            // check client key. TODO : null check.
+            if (client.getClientKey() != 0) {
+                if (old_client.getClientKey() != client.getClientKey()) {
+                    DebugLogger.ErrorLog("client key : new_client = " + client.getClientKey());
+                    DebugLogger.ErrorLog("client key : old_client = " + old_client.getClientKey());
+                    client.loginFailed("OnMigrateIn : invalid client key.");
+                    return false;
+                }
+            }
+
+            String maple_id = old_client.getMapleId();
+            String nexon_id = old_client.getNexonId();
+            client.setMapleId(maple_id);
+            client.setNexonId(nexon_id);
+            client.setPlayer(transfer);
+            client.setId(transfer.getAccountId());
+            transfer.setClient(client);
+            world.removeMigratingPlayer(transfer);
+        }
+
+        switch (client.getServer().getType()) {
+            case GAME_SERVER: {
+                // login or changechannel & leave itc/cs.
+                MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, client, true) : transfer;
+                if (chr == null) {
+                    client.loginFailed("OnMigrateIn : GAME_SERVER.");
+                    return false;
+                }
+                // login.
+                if (transfer == null) {
+                    client.setPlayer(chr);
+                    client.setId(chr.getAccountId());
+                    chr.setChannelId(client.getChannelServer().getChannel());
+                    chr.setClient(client);
+                    LazyDatabase.loadData(chr);
+                    DQ_Accounts.updateLoginState(client, MapleClientState.LOGIN_LOGGEDIN);
+                }
+                // change channel.
                 if (transfer != null) {
-                    DebugLogger.DebugLog(chr, "CC");
+                    chr.setChannelId(client.getChannelServer().getChannel());
+                    chr.updateMapById(chr.getPosMap(), chr.getPortal());
+                }
+                client.getChannelServer().getOnlinePlayers().add(chr);
+                // pet
+                chr.spawnSavedPets();
+                // group            
+                if (chr.getParty() != null) {
+                    OdinWorld.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
+                }
+                // friend
+                chr.setOnlineFriends();
+                chr.notityOnlineToFriends(true);
+                // guild
+                MapleGuild gs = null;
+                if (0 < chr.getGuildId()) {
+                    OdinWorld.Guild.setGuildMemberOnline(chr.getMGC(), true, client.getChannelId());
+                    gs = OdinWorld.Guild.getGuild(chr.getGuildId());
+                    if (gs == null) {
+                        chr.setGuildId(0);
+                        chr.setGuildRank((byte) 5);
+                        chr.setAllianceRank((byte) 5);
+                        chr.saveGuildStatus();
+                    }
+                }
+                // family
+                if (0 < chr.getFamilyId()) {
+                    OdinWorld.Family.setFamilyMemberOnline(chr.getMFC(), true, client.getChannelId());
+                }
+                // idk - 1
+                if (chr.getMessenger() != null) {
+                    OdinWorld.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(client.getPlayer()));
+                    OdinWorld.Messenger.updateMessenger(chr.getMessenger().getId(), client.getPlayer().getName(), client.getChannelId());
+                }
+
+                chr.sendSetField(true);
+                // initialize
+                chr.updateStat(); // TWMS148 gets weird stat without sending this.
+                chr.SendPacket(ResCWvsContext.ForcedStatReset());
+                // pet
+                for (final MaplePet pet : chr.getPets()) {
+                    if (pet.getSummoned()) {
+                        chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
+                    }
+                }
+                if (Version.LessOrEqual(Region.JMS, 131) || Region.check(Region.BMS)) {
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 } else {
-                    DebugLogger.DebugLog(chr, "Login");
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
+                }
+                // keyboard
+                chr.SendPacket(ResCFuncKeyMappedMan.FuncKeyMappedInit(chr, false));
+                chr.SendPacket(ResCFuncKeyMappedMan.getMacros(chr));
+                // quest
+                for (MapleQuestStatus status : chr.getStartedQuests()) {
+                    if (status.hasMobKills()) {
+                        chr.SendPacket(ResWrapper.updateQuestMobKills(status));
+                    }
+                }
+                // group
+                chr.updatePartyMemberHP();
+                // friend
+                chr.SendPacket(ResWrapper.updateBuddylist(chr));
+                // guild
+                if (0 < chr.getGuildId()) {
+                    chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
+                    List<MaplePacket> packetList = OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true);
+                    if (packetList != null) {
+                        for (MaplePacket pack : packetList) {
+                            if (pack != null) {
+                                chr.SendPacket(pack);
+                            }
+                        }
+                    }
+                }
+                // family
+                chr.SendPacket(ResCWvsContext.getFamilyData());
+                chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+                chr.sendStatChanged(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
+                //chr.showNote();
+                chr.baseSkills(); // ?_?
+                // 精霊のペンダント
+                //chr.startFairySchedule(false);
+                // 期限切れ
+                //chr.expirationTask();
+                //if (chr.getJob() == 132) {
+                //chr.checkBerserk();
+                //}
+                // internet cafe
+                if (ContentState.CS_NETCAFE.get()) {
+                    chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
+                }
+                // 上部スライドメッセージ
+                chr.SendPacket(ResWrapper.BroadCastMsgSlide(chr.getChannelServer().getServerMessage()));
+                // [other players]
+                // your pet
+                // [entering map]
+                MapleMap map = chr.getMap();
+                map.addPlayer(chr);
+                for (final MaplePet pet : chr.getPets()) {
+                    if (pet.getSummoned()) {
+                        map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
+                    }
                 }
                 break;
             }
+            case ITC_SERVER: {
+                if (transfer == null) {
+                    client.loginFailed("OnMigrateIn : ITC_SERVER.");
+                    return false;
+                }
+                // enter itc.
+                world.getITC().getOnlinePlayers().add(transfer);
+                transfer.notityOnlineToFriends(true);
+                transfer.SendPacket(ResCStage.SetITC(transfer));
+                ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(transfer.getId()), client);
+                break;
+            }
+            case CASHSHOP_SERVER: {
+                if (transfer == null) {
+                    client.loginFailed("OnMigrateIn : CASHSHOP_SERVER.");
+                    return false;
+                }
+                // enter cs.
+                world.getCashShop().getOnlinePlayers().add(transfer);
+                transfer.notityOnlineToFriends(true);
+                transfer.SendPacket(ResCStage.SetCashShop(client));
+                transfer.SendPacket(ResCCashShop.CashShopQueryCashResult(transfer));
+                transfer.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, client));
+                ReqCCashShop.updateFreeCouponDate(transfer);
+                break;
+            }
             default: {
-                DebugLogger.ErrorLog("invalid client state.");
+                client.loginFailed("OnMigrateIn : unk.");
                 return false;
             }
         }
 
-        // entering game server
-        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
-        channel.addPlayer(chr);
-        // [update character data in server]
-        // character
-        chr.silentGiveBuffs(PlayerBuffStorage.getBuffsFromStorage(chr.getId()));
-        chr.giveCoolDowns(PlayerBuffStorage.getCooldownsFromStorage(chr.getId()));
-        chr.giveSilentDebuff(PlayerBuffStorage.getDiseaseFromStorage(chr.getId()));
-        // pet
-        chr.spawnSavedPets();
-        // group            
-        if (chr.getParty() != null) {
-            World.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
-        }
-        // friend
-        World.Buddy.loggedOn(chr.getName(), chr.getId(), c.getChannel(), chr.getBuddylist().getBuddyIds(), chr.getGMLevel(), chr.isHidden());
-        for (CharacterIdChannelPair onlineBuddy : World.Find.multiBuddyFind(chr.getId(), chr.getBuddylist().getBuddyIds())) {
-            final BuddylistEntry ble = chr.getBuddylist().get(onlineBuddy.getCharacterId());
-            ble.setChannel(onlineBuddy.getChannel());
-            chr.getBuddylist().put(ble);
-        }
-        // guild
-        MapleGuild gs = null;
-        if (0 < chr.getGuildId()) {
-            World.Guild.setGuildMemberOnline(chr.getMGC(), true, c.getChannel());
-            gs = World.Guild.getGuild(chr.getGuildId());
-            if (gs == null) {
-                chr.setGuildId(0);
-                chr.setGuildRank((byte) 5);
-                chr.setAllianceRank((byte) 5);
-                chr.saveGuildStatus();
-            }
-        }
-        // family
-        if (0 < chr.getFamilyId()) {
-            World.Family.setFamilyMemberOnline(chr.getMFC(), true, c.getChannel());
-        }
-        // idk - 1
-        if (chr.getMessenger() != null) {
-            World.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(c.getPlayer()));
-            World.Messenger.updateMessenger(chr.getMessenger().getId(), c.getPlayer().getName(), c.getChannel());
-        }
-        // idk - 2
-        CharacterNameAndId pendingBuddyRequest = chr.getBuddylist().pollPendingRequest();
-        if (pendingBuddyRequest != null) {
-            chr.getBuddylist().put(new BuddylistEntry(pendingBuddyRequest.getName(), pendingBuddyRequest.getId(), "マイ友未指定", -1, false, pendingBuddyRequest.getLevel(), pendingBuddyRequest.getJob()));
-        }
-        // [update character data in client by packet]
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            // 分割 SetField
-            chr.SendPacket(ResCStage.SetField_JMS_302(chr, 1, true, null, 0, 0));
-            chr.SendPacket(ResCStage.SetField_JMS_302(chr, 2, true, null, 0, -1));
-        } else {
-            chr.SendPacket(ResWrapper.getCharInfo(chr));
-        }
-        // initialize
-        chr.SendPacket(WrapCWvsContext.updateInv()); // TWMS148 gets weird stat without sending this.
-        chr.SendPacket(ResCWvsContext.ForcedStatReset());
-        // pet
-        for (final MaplePet pet : chr.getPets()) {
-            if (pet.getSummoned()) {
-                chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
-            }
-        }
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
-        } else {
-            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
-            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
-            chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
-        }
-        // keyboard
-        chr.SendPacket(ResCFuncKeyMappedMan.getKeymap(chr, false));
-        chr.SendPacket(ResCFuncKeyMappedMan.getMacros(chr));
-        // quest
-        for (MapleQuestStatus status : chr.getStartedQuests()) {
-            if (status.hasMobKills()) {
-                chr.SendPacket(ResWrapper.updateQuestMobKills(status));
-            }
-        }
-        // group
-        chr.updatePartyMemberHP();
-        // friend
-        chr.SendPacket(ResWrapper.updateBuddylist(chr));
-        // guild
-        if (0 < chr.getGuildId()) {
-            chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
-            List<MaplePacket> packetList = World.Alliance.getAllianceInfo(gs.getAllianceId(), true);
-            if (packetList != null) {
-                for (MaplePacket pack : packetList) {
-                    if (pack != null) {
-                        chr.SendPacket(pack);
-                    }
-                }
-            }
-        }
-        // family
-        chr.SendPacket(ResCWvsContext.getFamilyData());
-        chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
-        chr.UpdateStat(true); // this gives you crash, if you did not send pet spawn packet in JMS131.
-        //chr.showNote();
-        chr.baseSkills(); // ?_?
-        // 精霊のペンダント
-        //chr.startFairySchedule(false);
-        // 期限切れ
-        //chr.expirationTask();
-        //if (chr.getJob() == 132) {
-        //chr.checkBerserk();
-        //}
-        // internet cafe
-        if (ContentState.CS_NETCAFE.get()) {
-            chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
-        }
-        // 上部スライドメッセージ
-        chr.SendPacket(ResWrapper.BroadCastMsgSlide(channel.getServerMessage()));
-        // [other players]
-        // your pet
-        // [entering map]
-        MapleMap map = chr.getMap();
-        map.addPlayer(chr);
-        for (final MaplePet pet : chr.getPets()) {
-            if (pet.getSummoned()) {
-                map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
-            }
-        }
-        // notice
-        if (transfer != null) {
-            // Change Channel OK
-            return true;
-        }
-
-        DebugLogger.DebugLog("users = " + World.getConnected().get(0));
         return true;
     }
 
-    public static final void EnterCS(final MapleClient c, final MapleCharacter chr, final boolean mts) {
-        // temporary off
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            //chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
-            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
-            return;
-        }
-
-        if (!chr.isAlive() || chr.getEventInstance() != null || c.getChannelServer() == null) {
-            chr.SendPacket(ResCField.TransferChannelReqIgnored(mts ? OpsTransferChannel.TC_ITCSVR_DISCONNECTED : OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
-            return;
-        }
-        final ServerOdinGame ch = ServerOdinGame.getInstance(c.getChannel());
-        chr.changeRemoval();
-        if (chr.getMessenger() != null) {
-            MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(chr);
-            World.Messenger.leaveMessenger(chr.getMessenger().getId(), messengerplayer);
-        }
-        PlayerBuffStorage.addBuffsToStorage(chr.getId(), chr.getAllBuffs());
-        PlayerBuffStorage.addCooldownsToStorage(chr.getId(), chr.getCooldowns());
-        PlayerBuffStorage.addDiseaseToStorage(chr.getId(), chr.getAllDiseases());
-        World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), mts ? -20 : -10);
-        ch.removePlayer(chr);
-        DQ_Accounts.updateLoginState(c, MapleClientState.CHANGE_CHANNEL);
-        c.SendPacket(ResCClientSocket.MigrateCommand(Property_Shop.getPort()));
-        chr.saveToDB(false, false);
-        ExtraDB.saveData(chr);
-        chr.getMap().removePlayer(chr);
-        c.setMigrating();
-    }
-
-    // CClientSocket::OnMigrateOut
-    // CClientSocket::OnCenterMigrateOutResult
 }

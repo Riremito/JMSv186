@@ -1,14 +1,14 @@
 package odin.server;
 
-import tacos.data.wz.DW_Etc;
+import tacos.wz.data.EtcWz;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import odin.provider.MapleData;
 import odin.provider.MapleDataTool;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
+import odin.provider.IMapleData;
 
 public class ItemMakerFactory {
 
@@ -26,7 +26,7 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        if (DW_Etc.getItemMake() == null) {
+        if (EtcWz.get().getItemMake() == null) {
             return;
         }
 
@@ -35,11 +35,11 @@ public class ItemMakerFactory {
         GemCreateEntry ret;
         ItemMakerCreateEntry imt;
 
-        for (MapleData dataType : DW_Etc.getItemMake().getChildren()) {
+        for (IMapleData dataType : EtcWz.get().getItemMake().getChildren()) {
             int type = Integer.parseInt(dataType.getName());
             switch (type) {
                 case 0: { // Caching of gem
-                    for (MapleData itemFolder : dataType.getChildren()) {
+                    for (IMapleData itemFolder : dataType.getChildren()) {
                         reqLevel = MapleDataTool.getInt("reqLevel", itemFolder, 0);
                         reqMakerLevel = (byte) MapleDataTool.getInt("reqSkillLevel", itemFolder, 0);
                         cost = MapleDataTool.getInt("meso", itemFolder, 0);
@@ -48,8 +48,8 @@ public class ItemMakerFactory {
 
                         ret = new GemCreateEntry(cost, reqLevel, reqMakerLevel, quantity);
 
-                        for (MapleData rewardNRecipe : itemFolder.getChildren()) {
-                            for (MapleData ind : rewardNRecipe.getChildren()) {
+                        for (IMapleData rewardNRecipe : itemFolder.getChildren()) {
+                            for (IMapleData ind : rewardNRecipe.getChildren()) {
                                 if (rewardNRecipe.getName().equals("randomReward")) {
                                     ret.addRandomReward(MapleDataTool.getInt("item", ind, 0), MapleDataTool.getInt("prob", ind, 0));
 // MapleDataTool.getInt("itemNum", ind, 0)
@@ -67,7 +67,7 @@ public class ItemMakerFactory {
                 case 4: // Bowman
                 case 8: // Thief
                 case 16: { // Pirate
-                    for (MapleData itemFolder : dataType.getChildren()) {
+                    for (IMapleData itemFolder : dataType.getChildren()) {
                         reqLevel = MapleDataTool.getInt("reqLevel", itemFolder, 0);
                         reqMakerLevel = (byte) MapleDataTool.getInt("reqSkillLevel", itemFolder, 0);
                         cost = MapleDataTool.getInt("meso", itemFolder, 0);
@@ -77,8 +77,8 @@ public class ItemMakerFactory {
 
                         imt = new ItemMakerCreateEntry(cost, reqLevel, reqMakerLevel, quantity, totalupgrades, stimulator);
 
-                        for (MapleData Recipe : itemFolder.getChildren()) {
-                            for (MapleData ind : Recipe.getChildren()) {
+                        for (IMapleData Recipe : itemFolder.getChildren()) {
+                            for (IMapleData ind : Recipe.getChildren()) {
                                 if (Recipe.getName().equals("recipe")) {
                                     imt.addReqItem(MapleDataTool.getInt("item", ind, 0), MapleDataTool.getInt("count", ind, 0));
                                 }
@@ -104,8 +104,8 @@ public class ItemMakerFactory {
 
         private int reqLevel, reqMakerLevel;
         private int cost, quantity;
-        private List<Pair<Integer, Integer>> randomReward = new ArrayList<Pair<Integer, Integer>>();
-        private List<Pair<Integer, Integer>> reqRecipe = new ArrayList<Pair<Integer, Integer>>();
+        private List<OdinPair<Integer, Integer>> randomReward = new ArrayList<OdinPair<Integer, Integer>>();
+        private List<OdinPair<Integer, Integer>> reqRecipe = new ArrayList<OdinPair<Integer, Integer>>();
 
         public GemCreateEntry(int cost, int reqLevel, int reqMakerLevel, int quantity) {
             this.cost = cost;
@@ -118,11 +118,11 @@ public class ItemMakerFactory {
             return quantity;
         }
 
-        public List<Pair<Integer, Integer>> getRandomReward() {
+        public List<OdinPair<Integer, Integer>> getRandomReward() {
             return randomReward;
         }
 
-        public List<Pair<Integer, Integer>> getReqRecipes() {
+        public List<OdinPair<Integer, Integer>> getReqRecipes() {
             return reqRecipe;
         }
 
@@ -139,11 +139,11 @@ public class ItemMakerFactory {
         }
 
         protected void addRandomReward(int itemId, int prob) {
-            randomReward.add(new Pair<Integer, Integer>(itemId, prob));
+            randomReward.add(new OdinPair<Integer, Integer>(itemId, prob));
         }
 
         protected void addReqRecipe(int itemId, int count) {
-            reqRecipe.add(new Pair<Integer, Integer>(itemId, count));
+            reqRecipe.add(new OdinPair<Integer, Integer>(itemId, count));
         }
     }
 
@@ -152,7 +152,7 @@ public class ItemMakerFactory {
         private int reqLevel;
         private int cost, quantity, stimulator;
         private byte tuc, reqMakerLevel;
-        private List<Pair<Integer, Integer>> reqItems = new ArrayList<Pair<Integer, Integer>>(); // itemId / amount
+        private List<OdinPair<Integer, Integer>> reqItems = new ArrayList<OdinPair<Integer, Integer>>(); // itemId / amount
         private List<Integer> reqEquips = new ArrayList<Integer>();
 
         public ItemMakerCreateEntry(int cost, int reqLevel, byte reqMakerLevel, int quantity, byte tuc, int stimulator) {
@@ -172,7 +172,7 @@ public class ItemMakerFactory {
             return quantity;
         }
 
-        public List<Pair<Integer, Integer>> getReqItems() {
+        public List<OdinPair<Integer, Integer>> getReqItems() {
             return reqItems;
         }
 
@@ -197,7 +197,7 @@ public class ItemMakerFactory {
         }
 
         protected void addReqItem(int itemId, int amount) {
-            reqItems.add(new Pair<Integer, Integer>(itemId, amount));
+            reqItems.add(new OdinPair<Integer, Integer>(itemId, amount));
         }
     }
 }

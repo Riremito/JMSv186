@@ -20,12 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.database;
 
-import tacos.config.property.Property_Database;
+import tacos.property.Property_Database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
+import tacos.debug.DebugLogger;
 
 /**
  * All OdinMS servers maintain a Database Connection. This class therefore
@@ -43,6 +44,56 @@ public class DatabaseConnection {
         return connected.get();
     }
 
+    public static boolean setManual() {
+        DebugLogger.DebugLog("setManual");
+        try {
+            Connection con = connected.get();
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            con.setAutoCommit(false);
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("setManual");
+        }
+        return false;
+    }
+
+    public static boolean setAuto() {
+        DebugLogger.DebugLog("setAuto");
+        try {
+            Connection con = connected.get();
+            con.setAutoCommit(true);
+            con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("setAuto");
+        }
+        return false;
+    }
+
+    public static boolean commit() {
+        DebugLogger.DebugLog("commit");
+        try {
+            Connection con = connected.get();
+            con.commit();
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("commit");
+        }
+        return false;
+    }
+
+    public static boolean rollback() {
+        DebugLogger.DebugLog("rollback");
+        try {
+            Connection con = connected.get();
+            con.rollback();
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.ErrorLog("rollback");
+        }
+        return false;
+    }
+
     public static final void closeAll() throws SQLException {
         for (final Connection disconnect : ThreadLocalConnection.allConnections) {
             disconnect.close();
@@ -56,18 +107,19 @@ public class DatabaseConnection {
         @Override
         protected final Connection initialValue() {
             try {
-                Class.forName("com.mysql.jdbc.Driver"); // touch the mysql driver
+                Class.forName("com.mysql.cj.jdbc.Driver"); // touch the mysql driver
             } catch (final ClassNotFoundException e) {
                 System.err.println("ERROR" + e);
             }
+            final Connection con;
             try {
-                final Connection con = DriverManager.getConnection(Property_Database.getUrl(), Property_Database.getUser(), Property_Database.getPassword());
-                allConnections.add(con);
-                return con;
-            } catch (SQLException e) {
-                System.err.println("ERROR" + e);
+                con = DriverManager.getConnection(Property_Database.getUrl(), Property_Database.getUser(), Property_Database.getPassword());
+            } catch (SQLException ex) {
+                System.getLogger(DatabaseConnection.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
                 return null;
             }
+            allConnections.add(con);
+            return con;
         }
     }
 }

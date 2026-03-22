@@ -18,8 +18,9 @@
  */
 package tacos.network;
 
+import java.util.concurrent.ThreadPoolExecutor;
+import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.config.Content;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
@@ -33,6 +34,11 @@ import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import odin.server.Randomizer;
 import odin.tools.FileoutputUtil;
+import org.apache.mina.common.ExecutorThreadModel;
+import tacos.packet.ClientPacketHeader;
+import tacos.server.TacosLogin;
+import tacos.server.TacosServer;
+import tacos.server.TacosServerType;
 
 /**
  *
@@ -76,19 +82,29 @@ public class PacketHandler extends IoHandlerAdapter {
         cfg = new SocketAcceptorConfig();
         cfg.getSessionConfig().setTcpNoDelay(true);
         cfg.setDisconnectOnUnbind(true);
+        // java uses thread for all packets.
+        // this settings change it to single thread. and all channel work under same thread.
+        ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance("client");
+        ThreadPoolExecutor eventExecutor = (ThreadPoolExecutor) threadModel.getExecutor();
+        eventExecutor.setCorePoolSize(1);
+        eventExecutor.setMaximumPoolSize(1);
+        cfg.setThreadModel(threadModel);
         cfg.getFilterChain().addLast("codec", pcf);
         return cfg;
     }
 
+    private TacosServer server;
     protected String server_name;
     protected int channel = -1;
 
-    public PacketHandler(int channel) {
+    public PacketHandler(TacosServer server, int channel) {
+        this.server = server;
+        this.server_name = server.getName();
         this.channel = channel;
     }
 
-    public PacketHandler() {
-        this.channel = -1;
+    public TacosServer getServer() {
+        return this.server;
     }
 
     protected void log(IoSession session, String text) {
@@ -105,7 +121,7 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionOpened(final IoSession session) throws Exception {
         log(session, "sessionOpened.");
-        if (((IPacketHandler) this).isShutdown()) {
+        if (this.server.isShutdown()) {
             session.close();
             return;
         }
@@ -115,8 +131,11 @@ public class PacketHandler extends IoHandlerAdapter {
 
         MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true, true);
         MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, true, false);
-        final MapleClient client = new MapleClient(session);
-        client.setChannel(this.channel);
+        MapleClient client = new MapleClient(session);
+        client.setServer(this.server);
+        if (this.server.getType() == TacosServerType.LOGIN_SERVER) {
+            ((TacosLogin) this.server).addClient(client);
+        }
 
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
         session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
@@ -130,11 +149,20 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionClosed(final IoSession session) throws Exception {
         log(session, "sessionClosed.");
-        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         if (client != null) {
             try {
                 client.disconnect(true, false);
+                MapleCharacter chr = client.getPlayer();
+                if (chr != null) {
+                    client.setPlayer(null);
+                    chr.notityOnlineToFriends(false);
+                }
+                if (this.server.getType() == TacosServerType.LOGIN_SERVER) {
+                    ((TacosLogin) this.server).removeClient(client);
+                    ((TacosLogin) this.server).removeAuthorizedClient(client);
+                }
             } finally {
                 session.close();
                 session.removeAttribute(MapleClient.CLIENT_KEY);
@@ -167,34 +195,18 @@ public class PacketHandler extends IoHandlerAdapter {
         log(session, "messageReceived.");
         try {
             ClientPacket cp = new ClientPacket((byte[]) message);
-            if (cp.getSize() < Content.PacketHeaderSize.getInt()) {
+            if (!cp.check()) {
+                log(session, "messageReceived : invalid packet size.");
                 return;
             }
+
             // client
-            MapleClient c = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
-            if (c.isMigrating()) {
-                log(session, "messageReceived : Migrating.");
-                return;
-            }
-
-            short header_val = 0;
-            if (Content.PacketHeaderSize.getInt() == 2) {
-                header_val = cp.Decode2();
-            } else {
-                header_val = (short) (cp.Decode1() & 0xFF);
-            }
-
-            ClientPacket.Header header = ClientPacket.ToHeader(header_val);
-
-            // not coded
-            if (header == ClientPacket.Header.UNKNOWN) {
-                DebugLogger.CPLog(cp);
-                return;
-            }
-
-            if (!((IPacketHandler) this).OnPacket(c, header, cp)) {
+            MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+            ClientPacketHeader header = cp.DecodeHeader();
+            if (!((IPacketHandler) this).OnPacket(client, header, cp)) {
                 DebugLogger.CPLog(cp);
             }
+
         } catch (Exception e) {
             FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
             e.printStackTrace();

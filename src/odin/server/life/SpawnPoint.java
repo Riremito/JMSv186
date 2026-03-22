@@ -26,8 +26,8 @@ import tacos.packet.response.wrapper.ResWrapper;
 
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleReactor;
+import tacos.server.map.TacosMap;
 
 public class SpawnPoint extends Spawns {
 
@@ -99,7 +99,7 @@ public class SpawnPoint extends Spawns {
     }
 
     @Override
-    public final MapleMonster spawnMonster(final MapleMap map) {
+    public final MapleMonster spawnMonster(TacosMap map) {
         final MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(pos);
         mob.setCarnivalTeam(carnivalTeam);
@@ -118,7 +118,7 @@ public class SpawnPoint extends Spawns {
         });
         map.spawnMonster(mob, -2);
         if (carnivalTeam > -1) {
-            for (MapleReactor r : map.getAllReactorsThreadsafe()) { //parsing through everytime a monster is spawned? not good idea
+            for (MapleReactor r : map.getAllReactors()) { //parsing through everytime a monster is spawned? not good idea
                 if (r.getName().startsWith(String.valueOf(carnivalTeam)) && r.getReactorId() == (9980000 + carnivalTeam) && r.getState() < 5) {
                     final int num = Integer.parseInt(r.getName().substring(1, 2)); //00, 01, etc
                     final MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);

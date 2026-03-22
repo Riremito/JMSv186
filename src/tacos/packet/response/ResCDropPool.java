@@ -27,6 +27,7 @@ import tacos.network.MaplePacket;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMapItem;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -94,7 +95,7 @@ public class ResCDropPool {
     // CDropPool::OnDropEnterField
     // dropItemFromMapObject
     public static MaplePacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom, int mobid) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DropEnterField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropEnterField);
 
         sp.Encode1(et.get());
         sp.Encode4(drop.getObjectId());
@@ -143,7 +144,7 @@ public class ResCDropPool {
     // removeItemFromMap
     // explodeDrop
     public static MaplePacket DropLeaveField(MapleMapItem drop, LeaveType lt, MapleCharacter chr, int pet_slot) {
-        ServerPacket sp = new ServerPacket(ServerPacket.Header.LP_DropLeaveField);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropLeaveField);
 
         sp.Encode1(lt.get());
         sp.Encode4(drop.getObjectId());

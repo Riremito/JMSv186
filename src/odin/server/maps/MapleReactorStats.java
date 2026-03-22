@@ -23,7 +23,7 @@ package odin.server.maps;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class MapleReactorStats {
 
@@ -56,7 +56,7 @@ public class MapleReactorStats {
         return br;
     }
 
-    public void addState(byte state, int type, Pair<Integer, Integer> reactItem, byte nextState, int timeOut) {
+    public void addState(byte state, int type, OdinPair<Integer, Integer> reactItem, byte nextState, int timeOut) {
         StateData newState = new StateData(type, reactItem, nextState, timeOut);
         stateInfo.put(state, newState);
     }
@@ -79,7 +79,7 @@ public class MapleReactorStats {
         }
     }
 
-    public Pair<Integer, Integer> getReactItem(byte state) {
+    public OdinPair<Integer, Integer> getReactItem(byte state) {
         StateData nextState = stateInfo.get(state);
         if (nextState != null) {
             return nextState.getReactItem();
@@ -100,10 +100,10 @@ public class MapleReactorStats {
     private static class StateData {
 
         private int type, timeOut;
-        private Pair<Integer, Integer> reactItem;
+        private OdinPair<Integer, Integer> reactItem;
         private byte nextState;
 
-        private StateData(int type, Pair<Integer, Integer> reactItem, byte nextState, int timeOut) {
+        private StateData(int type, OdinPair<Integer, Integer> reactItem, byte nextState, int timeOut) {
             this.type = type;
             this.reactItem = reactItem;
             this.nextState = nextState;
@@ -118,7 +118,7 @@ public class MapleReactorStats {
             return nextState;
         }
 
-        private Pair<Integer, Integer> getReactItem() {
+        private OdinPair<Integer, Integer> getReactItem() {
             return reactItem;
         }
 

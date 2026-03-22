@@ -38,7 +38,6 @@ import tacos.debug.DebugLogger;
 import java.util.Map;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.LeaveType;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
@@ -50,7 +49,7 @@ import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.tools.AttackPair;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class DamageParse {
 
@@ -62,7 +61,7 @@ public class DamageParse {
         }
         if (attack.skill != 0) {
             if (effect == null) {
-                player.getClient().getSession().write(WrapCWvsContext.updateStat());
+                player.updateStat();
                 DebugLogger.ErrorLog("applyAttack : 1");
                 return;
             }
@@ -187,8 +186,8 @@ public class DamageParse {
                 }
                 overallAttackCount = 0; // Tracking of Shadow Partner additional damage.
                 Integer eachd;
-                for (Pair<Integer, Boolean> eachde : oned.attack) {
-                    eachd = eachde.left;
+                for (OdinPair<Integer, Boolean> eachde : oned.attack) {
+                    eachd = eachde.getLeft();
                     overallAttackCount++;
 
                     if (overallAttackCount - 1 == attackCount) { // Is a Shadow partner hit so let's divide it once
@@ -225,9 +224,6 @@ public class DamageParse {
                     if (player == null) { // o_O
                         DebugLogger.ErrorLog("applyAttack : 11");
                         return;
-                    }
-                    if (player.getClient().getChannelServer().isAdminOnly()) {
-                        player.dropMessage(-1, "Damage: " + eachd);
                     }
                     totDamageToOneMonster += eachd;
                     //force the miss even if they dont miss. popular wz edit
@@ -530,8 +526,8 @@ public class DamageParse {
                 }
                 overallAttackCount = 0;
                 Integer eachd;
-                for (Pair<Integer, Boolean> eachde : oned.attack) {
-                    eachd = eachde.left;
+                for (OdinPair<Integer, Boolean> eachde : oned.attack) {
+                    eachd = eachde.getLeft();
                     overallAttackCount++;
                     if (fixeddmg != -1) {
                         eachd = monsterstats.getOnlyNoramlAttack() ? 0 : fixeddmg; // Magic is always not a normal attack
@@ -687,8 +683,8 @@ public class DamageParse {
         final ISkill skill = SkillFactory.getSkill(4211003);
         final MapleStatEffect s = skill.getEffect(player.getSkillLevel(skill));
 
-        for (final Pair<Integer, Boolean> eachde : oned.attack) {
-            final Integer eachd = eachde.left;
+        for (final OdinPair<Integer, Boolean> eachde : oned.attack) {
+            final Integer eachd = eachde.getLeft();
             if (s.makeChanceResult()) {
 
                 MapTimer.getInstance().schedule(new Runnable() {
@@ -862,8 +858,8 @@ public class DamageParse {
         }
         for (AttackPair p : attack.allDamage) {
             if (p.attack != null) {
-                for (Pair<Integer, Boolean> eachd : p.attack) {
-                    eachd.left /= rate; //too ex.
+                for (OdinPair<Integer, Boolean> eachd : p.attack) {
+                    eachd = new OdinPair<>(eachd.getLeft() / rate, eachd.getRight());
                 }
             }
         }
@@ -878,25 +874,24 @@ public class DamageParse {
                 if (p.attack != null) {
                     int hit = 0;
                     final int mid_att = p.attack.size() / 2;
-                    final List<Pair<Integer, Boolean>> eachd_copy = new ArrayList<Pair<Integer, Boolean>>(p.attack);
-                    for (Pair<Integer, Boolean> eachd : p.attack) {
+                    final List<OdinPair<Integer, Boolean>> eachd_copy = new ArrayList<>(p.attack);
+                    for (OdinPair<Integer, Boolean> eachd : p.attack) {
                         hit++;
-                        if (!eachd.right) {
+                        boolean right = eachd.getRight();
+                        if (!eachd.getRight()) {
                             if (attack.skill == 4221001) { //assassinate never crit first 3, always crit last
-                                eachd.right = (hit == 4 && Randomizer.nextInt(100) < 90);
-                            } else if (attack.skill == 3221007 || eachd.left > 199999) { //snipe always crit
-                                eachd.right = true;
+                                right = (hit == 4 && Randomizer.nextInt(100) < 90);
+                            } else if (attack.skill == 3221007 || eachd.getLeft() > 199999) { //snipe always crit
+                                right = true;
                             } else if (shadow && hit > mid_att) { //shadowpartner copies second half to first half
-                                eachd.right = eachd_copy.get(hit - 1 - mid_att).right;
+                                right = eachd_copy.get(hit - 1 - mid_att).getRight();
                             } else {
                                 //rough calculation
                                 //eachd.right = (Randomizer.nextInt(100)/*chr.CRand().CRand32__Random_ForMonster() % 100*/) < CriticalRate;
                                 //eachd.right = (chr.CRand().CRand32__Random_ForMonster() % 100) < CriticalRate;
                                 //eachd.right = (double)((((chr.CRand().CRand32__Random_ForMonster() % 7) * 4) % 10000000) * 0.0000100000010000001) < (double)CriticalRate;
-
                             }
-                            eachd_copy.get(hit - 1).right = eachd.right;
-                            //System.out.println("CRITICAL RATE: " + CriticalRate + ", passive rate: " + chr.getStat().passive_sharpeye_rate() + ", critical: " + eachd.right);
+                            eachd_copy.set(hit - 1, new OdinPair<>(eachd.getLeft(), right));
                         }
                     }
                 }

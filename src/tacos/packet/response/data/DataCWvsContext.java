@@ -59,7 +59,7 @@ public class DataCWvsContext {
             // KMS65 : 39 bytes
             data_friend.Encode4(friend.getCharacterId());
             data_friend.EncodeBuffer(friend.getName(), 13);
-            data_friend.Encode1(0);
+            data_friend.Encode1(friend.getHidden() ? 1 : 0);
             data_friend.Encode4(friend.getChannel() == -1 ? -1 : friend.getChannel() - 1);
             if (friend.getGroup() != null) {
                 data_friend.EncodeBuffer(friend.getGroup(), 17); // マイ友 (tag)

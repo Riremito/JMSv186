@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -64,7 +65,7 @@ public class ResCUIItemUpgrade {
 
     // ビシャスのハンマーの成功ダイアログで表示される残りアップグレード数を通知する
     public static MaplePacket Update(int hammered) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_GoldHammerResult);
+        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
         // ビシャスのハンマーの使用回数を通知するフラグ, 0x38,0x39以外なら何でもOK
         p.Encode1(Action.UPDATE.Get());
         // 未使用
@@ -76,7 +77,7 @@ public class ResCUIItemUpgrade {
 
     // ビシャスのハンマーの成功ダイアログを表示
     public static MaplePacket Success() {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_GoldHammerResult);
+        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
         // 成功フラグ
         p.Encode1(Action.SUCCESS.Get());
         /*
@@ -89,7 +90,7 @@ public class ResCUIItemUpgrade {
 
     // ビシャスのハンマーの失敗ダイアログを表示, クライアント側で弾かれるのでチート以外では表示されることがないメッセージ
     public static MaplePacket Failure(int error) {
-        ServerPacket p = new ServerPacket(ServerPacket.Header.LP_GoldHammerResult);
+        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
         // 失敗フラグ
         p.Encode1(Action.FAILURE.Get());
         /*

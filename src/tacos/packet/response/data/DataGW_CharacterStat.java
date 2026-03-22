@@ -28,6 +28,7 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChangeStat;
 
@@ -116,8 +117,8 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
             data.Encode8(0);
-            data.Encode4(chr.getMapId());
-            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode4(chr.getPosMap());
+            data.Encode1(chr.getPortal());
             data.Encode2(chr.getSubcategory());
             if (GameConstants.is_demonslayer(chr.getJob())) {
                 data.Encode4(0);
@@ -168,8 +169,8 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
             data.Encode8(0);
-            data.Encode4(chr.getMapId());
-            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode4(chr.getPosMap());
+            data.Encode1(chr.getPortal());
             data.Encode2(chr.getSubcategory());
             if (GameConstants.is_demonslayer(chr.getJob())) {
                 data.Encode4(0);
@@ -211,8 +212,8 @@ public class DataGW_CharacterStat {
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
                 data.Encode4(0);
             }
-            data.Encode4(chr.getMapId());
-            data.Encode1(chr.getInitialSpawnpoint());
+            data.Encode4(chr.getPosMap());
+            data.Encode1(chr.getPortal());
             if (Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
             }
@@ -323,20 +324,20 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        data.Encode4(chr.getExp());
-        data.Encode2(chr.getFame());
+        data.Encode4(chr.getExp()); // nEXP
+        data.Encode2(chr.getFame()); // nPOP
 
-        if ((Region.IsJMS() || Region.IsCMS() || Region.IsTHMS() || Region.IsTWMS() || Region.IsGMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB()))
+        if ((Region.IsJMS() || Region.IsCMS() || Region.IsTHMS() || Region.IsTWMS() || Version.GreaterOrEqual(Region.GMS, 62) || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB()))
                 && ServerConfig.JMS146orLater()) {
-            data.Encode4(chr.getGashaEXP()); // Gachapon exp
+            data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
         if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.IsCMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB())) {
             data.Encode8(0);
         }
 
-        data.Encode4(chr.getMapId()); // current map id
-        data.Encode1(chr.getInitialSpawnpoint()); // spawnpoint
+        data.Encode4(chr.getPosMap()); // dwPosMap
+        data.Encode1(chr.getPortal()); // nPortal
 
         if (Region.IsVMS()) {
             return data.get().getBytes();
@@ -349,7 +350,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
 
-        if (Region.IsGMS() || (Region.IsEMS() && Version.PreBB()) || Region.IsBMS()) {
+        if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.IsEMS() && Version.PreBB()) || Region.IsBMS()) {
             data.Encode4(0);
         }
 
@@ -361,6 +362,12 @@ public class DataGW_CharacterStat {
         if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 92)) {
             data.Encode2(chr.getSubcategory());
         }
+
+        if (Version.Equal(Region.KMST, 330)) {
+            data.Encode4(0); // same as JMS187?
+            return data.get().getBytes();
+        }
+
         // KMS, CMS, EMS
         if (Region.IsKMS() || Region.IsCMS() || Region.IsGMS() || Region.IsEMS() || Region.IsIMS() || Region.IsMSEA()) {
             return data.get().getBytes();
@@ -393,7 +400,7 @@ public class DataGW_CharacterStat {
             return data.get().getBytes();
         }
         // Post BB
-        if (Region.IsJMS() && Version.getVersion() == 187) {
+        if (Version.Equal(Region.JMS, 187)) {
             data.Encode4(0);
         }
         // JMS v188+
@@ -416,17 +423,17 @@ public class DataGW_CharacterStat {
 
     // DecodeBuffer size 0x0C
     public static byte[] EncodePachinko(MapleCharacter chr) {
-        ServerPacket p = new ServerPacket();
+        ServerPacket data = new ServerPacket();
 
-        p.Encode4(chr.getId());
-        p.Encode4(chr.getTama());
-        p.Encode4(0);
-        return p.get().getBytes();
+        data.Encode4(chr.getId());
+        data.Encode4(chr.getTama());
+        data.Encode4(0);
+        return data.get().getBytes();
     }
 
     // GW_CharacterStat::DecodeChangeStat
     // GW_CharacterStat::EncodeChangeStat
-    public static byte[] EncodeChangeStat(MapleCharacter chr, int statmask) {
+    public static byte[] EncodeChangeStat(TacosCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) | Version.GreaterOrEqual(Region.GMS, 111)) {

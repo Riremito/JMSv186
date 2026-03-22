@@ -30,9 +30,7 @@ import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
-import tacos.server.ServerOdinGame;
 import odin.handling.channel.handler.PlayerHandler;
-import odin.handling.world.World;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,7 +50,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
@@ -87,13 +84,13 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     map_id = cp.Decode4();
                 } else {
                     String target_name = cp.DecodeStr();
-                    target_chr = chr.getClient().getChannelServer().getPlayerStorage().getCharacterByName(target_name);
+                    target_chr = chr.getClient().getChannelServer().getOnlinePlayers().findByName(target_name);
                     if (target_chr == null) {
                         return false;
                     }
                     map_id = target_chr.getMap().getId();
                 }
-                if (FieldLimitType.VipRock.check(chr.getClient().getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
+                if (FieldLimitType.VipRock.check(chr.getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
                     return false;
                 }
                 item_use.run();
@@ -133,7 +130,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 final int buff = miip.getStateChangeItem(cash_item_id);
                 if (buff != 0) {
-                    for (MapleCharacter mChar : map.getCharactersThreadsafe()) {
+                    for (MapleCharacter mChar : map.getCharacters()) {
                         miip.getItemEffect(buff).applyTo(mChar);
                     }
                 }
@@ -159,7 +156,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 523: {
                 // OnUserShopScannerItemUseRequest
                 int target_item_id = cp.Decode4();
-                final List<HiredMerchant> hms = chr.getClient().getChannelServer().searchMerchant(target_item_id);
+                final List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
                 chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
                 item_use.run();
                 return true;
@@ -172,7 +169,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 533: // 速達
             {
                 chr.SendPacket(ResCParcelDlg.Open(true, false));
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return true;
             }
             case 537: // 5370000
@@ -180,7 +177,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String message = cp.DecodeStr();
                 chr.setADBoard(message);
                 map.broadcastMessage(ResCUser.UserADBoard(chr));
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return true;
             }
             case 545: {
@@ -190,7 +187,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 ds.setRechargeAll();
                 ds.setRandomItems(3);
                 ds.start(chr);
-                chr.SendPacket(WrapCWvsContext.updateInv());
+                chr.updateInv();
                 return true;
             }
             case 557: // 5570000
@@ -326,18 +323,8 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
-    public static MapleCharacter findCharacterByName(String name_to) {
-        int ch = World.Find.findChannel(name_to);
-        if (ch != -1) {
-            MapleCharacter chr_to = ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name_to);
-            return chr_to;
-        }
-
-        return null;
-    }
-
     public static boolean cashItem507_Megaphone(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
-        byte channel = (byte) chr.getClient().getChannel();
+        byte channel = (byte) chr.getClient().getChannelId();
         switch (cash_item_id) {
             // メガホン
             case 5070000: {
@@ -347,7 +334,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.bm = OpsBroadcastMsg.BM_SPEAKERCHANNEL;
                 bma.chr = chr;
                 bma.message = message;
-                chr.getClient().getChannelServer().broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getChannelServer().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // 拡声器
@@ -360,7 +347,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // 高機能拡声器 (使えない)
@@ -377,7 +364,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // ドクロ拡声器
@@ -390,7 +377,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.chr = chr;
                 bma.message = message;
                 bma.ear = ear;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             case 5075000: // メッセージ送信機 (MapleTV)
@@ -403,7 +390,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = name_to.equals("") ? null : findCharacterByName(name_to);
+                MapleCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
                 return true;
             }
@@ -427,7 +414,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = findCharacterByName(name_to);
+                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
                 return true;
             }
@@ -441,7 +428,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = name_to.equals("") ? null : findCharacterByName(name_to);
+                MapleCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
                 return true;
             }
@@ -466,7 +453,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = findCharacterByName(name_to);
+                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
                 return true;
             }
@@ -489,7 +476,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.message = message;
                 bma.ear = ear;
                 bma.item = item;
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             // 三連拡声器
@@ -518,7 +505,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 bma.multi_line = true;
                 bma.messages = messages;
 
-                World.Broadcast.broadcastSmega(ResCWvsContext.BroadcastMsg(bma).getBytes());
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
                 return true;
             }
             default: {
@@ -526,7 +513,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             }
         }
 
-        chr.SendPacket(WrapCWvsContext.updateStat());
+        chr.updateStat();
         return false;
     }
 
@@ -545,7 +532,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String pet_name = cp.DecodeStr();
 
                 if (pet == null) {
-                    chr.SendPacket(WrapCWvsContext.updateInv());
+                    chr.updateInv();
                     return false;
                 }
 

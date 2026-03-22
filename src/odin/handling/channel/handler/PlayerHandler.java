@@ -35,21 +35,18 @@ import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.data.wz.DW_Mob;
-import tacos.data.wz.DW_Skill;
+import tacos.wz.data.MobWz;
+import tacos.wz.data.SkillWz;
 import tacos.debug.DebugLogger;
-import tacos.server.ServerOdinGame;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
-import odin.server.events.MapleSnowball.MapleSnowballs;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
 import odin.server.life.MobSkill;
@@ -163,7 +160,7 @@ public class PlayerHandler {
                 return;
             }
             if (type != -1) { // Bump damage
-                final MobAttackInfo attackInfo = DW_Mob.getMobAttackInfo(attacker, type);
+                final MobAttackInfo attackInfo = MobWz.get().getMobAttackInfo(attacker, type);
                 if (attackInfo != null) {
                     if (attackInfo.isDeadlyAttack()) {
                         isDeadlyAttack = true;
@@ -171,7 +168,7 @@ public class PlayerHandler {
                     } else {
                         mpattack += attackInfo.getMpBurn();
                     }
-                    final MobSkill skill = DW_Skill.getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
+                    final MobSkill skill = SkillWz.get().getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
                     if (skill != null && (damage == -1 || damage > 0)) {
                         //skill.applyEffect(chr, attacker, false);
                     }
@@ -193,7 +190,7 @@ public class PlayerHandler {
             //if (slea.available() == 3) {
             byte level = cp.Decode1();
             if (level > 0) {
-                final MobSkill skill = DW_Skill.getMobSkillData(cp.Decode2(), level);
+                final MobSkill skill = SkillWz.get().getMobSkillData(cp.Decode2(), level);
                 if (skill != null) {
                     //skill.applyEffect(chr, attacker, false);
                 }
@@ -206,7 +203,7 @@ public class PlayerHandler {
                     bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                     attacker.damage(chr, bouncedamage, true);
                     damage -= bouncedamage;
-                    chr.getMap().broadcastMessage(chr, ResCMobPool.Damage(attacker, bouncedamage), chr.getPosition());
+                    chr.getMap().broadcastMessageTo(chr, ResCMobPool.Damage(attacker, bouncedamage), chr.getPosition());
                     is_pg = true;
                 }
             }
@@ -353,7 +350,7 @@ public class PlayerHandler {
     public static final void UseItemEffect(final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = chr.getInventory(MapleInventoryType.CASH).findById(itemId);
         if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-            c.getSession().write(WrapCWvsContext.updateStat());
+            chr.updateInv();
             return;
         }
         if (itemId != 5510000) {
@@ -393,7 +390,7 @@ public class PlayerHandler {
 
         if (effect.getCooldown() > 0) {
             if (chr.skillisCooling(skillid)) {
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 return;
             }
             if (skillid != 5221006) { // Battleship
@@ -422,7 +419,7 @@ public class PlayerHandler {
                 chr.getMap().broadcastMessage(chr, ResCUserRemote.showBuffeffect(chr.getId(), skillid, 1, slea.readByte()), chr.getPosition());
                 c.getSession().write(MaplePacketCreator.enableActions());
                  */
-                chr.UpdateStat(true);
+                chr.sendStatChanged(true);
                 break;
             default:
                 if (pos == null) {
@@ -433,13 +430,13 @@ public class PlayerHandler {
                     if (!FieldLimitType.MysticDoor.check(chr.getMap().getFieldLimit())) {
                         effect.applyTo(chr, pos);
                     } else {
-                        chr.UpdateStat(true);
+                        chr.sendStatChanged(true);
                     }
                 } else {
                     final int mountid = MapleStatEffect.parseMountInfo(chr, skill.getId());
                     if (mountid != 0 && mountid != GameConstants.getMountItem(skill.getId()) && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null && chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) == null) {
                         if (!GameConstants.isMountItemAvailable(mountid, chr.getJob())) {
-                            chr.UpdateStat(true);
+                            chr.sendStatChanged(true);
                             return;
                         }
                     }
@@ -479,7 +476,7 @@ public class PlayerHandler {
 
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateStat();
                     DebugLogger.ErrorLog("closeRangeAttack : 4");
                     return;
                 }
@@ -489,9 +486,6 @@ public class PlayerHandler {
         }
         attackCount *= (mirror ? 2 : 1);
         if (!energy) {
-            if ((chr.getMapId() == 109060000 || chr.getMapId() == 109060002 || chr.getMapId() == 109060004) && attack.skill == 0) {
-                MapleSnowballs.hitSnowball(chr);
-            }
             // handle combo orbconsume
             int numFinisherOrbs = 0;
             final Integer comboBuff = chr.getBuffedValue(MapleBuffStat.COMBO);
@@ -566,7 +560,7 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, c.getPlayer(), attackCount, maxdamage, effect, mirror ? AttackType.NON_RANGED_WITH_MIRROR : AttackType.NON_RANGED);
 
         // クローン : 攻撃
@@ -606,7 +600,7 @@ public class PlayerHandler {
             }
             if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
                 if (chr.skillisCooling(attack.skill)) {
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateStat();
                     DebugLogger.ErrorLog("rangedAttack : 2");
                     return;
                 }
@@ -696,7 +690,7 @@ public class PlayerHandler {
             }
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttack(attack, skill, chr, bulletCount, basedamage, effect, ShadowPartner != null ? AttackType.RANGED_WITH_SHADOWPARTNER : AttackType.RANGED);
 
         // クローン : 攻撃
@@ -722,7 +716,7 @@ public class PlayerHandler {
         }
         if (effect.getCooldown() > 0/* && !chr.isGM()*/) {
             if (chr.skillisCooling(attack.skill)) {
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 DebugLogger.ErrorLog("MagicDamage : 2");
                 return;
             }
@@ -730,7 +724,7 @@ public class PlayerHandler {
             chr.addCooldown(attack.skill, System.currentTimeMillis(), effect.getCooldown() * 1000);
         }
         chr.checkFollow();
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         DamageParse.applyAttackMagic(attack, skill, c.getPlayer(), effect);
 
         // クローン : 攻撃
@@ -744,7 +738,7 @@ public class PlayerHandler {
 
     public static final void DropMeso(final int meso, final MapleCharacter chr) {
         if (!chr.isAlive() || (meso < 10 || meso > 50000) || (meso > chr.getMeso())) {
-            chr.getClient().getSession().write(WrapCWvsContext.updateStat());
+            chr.updateStat();
             return;
         }
         chr.gainMeso(-meso, false, true);
@@ -771,9 +765,10 @@ public class PlayerHandler {
         }
     }
 
-    public static final void ChangeMap(MapleClient c, int map_id) {
-        final MapleMap to = ServerOdinGame.getInstance(c.getChannel()).getMapFactory().getMap(map_id);
-        c.getPlayer().changeMap(to, to.getPortal(0));
+    public static void ChangeMap(MapleClient client, int map_id) {
+        MapleCharacter player = client.getPlayer();
+        MapleMap to = player.getChannelServer().getMapFactory().getMap(map_id);
+        player.changeMap(to, to.getPortal(0));
     }
 
 }

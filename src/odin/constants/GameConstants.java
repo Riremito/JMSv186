@@ -37,6 +37,7 @@ public class GameConstants {
             MapleMapObjectType.MONSTER,
             MapleMapObjectType.DOOR,
             MapleMapObjectType.REACTOR,
+            MapleMapObjectType.DRAGON,
             MapleMapObjectType.SUMMON,
             MapleMapObjectType.NPC,
             MapleMapObjectType.MIST));
@@ -53,7 +54,6 @@ public class GameConstants {
         9102328, 9102329, 9102330, 9102331, 9102332, 9102333}; //miracle cube and stuff
 
     public static final int[] blockedSkills = {4341003};
-    public static final String MASTER = "%&HYGEomgLOL";
     public static final String[] RESERVED = {"Rental"};
 
     public static int getMountExpNeededForLevel(final int level) {
@@ -70,10 +70,6 @@ public class GameConstants {
 
     public static int getReverseRequiredEXP(final int level) {
         return 60 + (level * 5);
-    }
-
-    public static int maxViewRangeSq() {
-        return 800000; // 800 * 800
     }
 
     public static boolean isJobFamily(final int baseJob, final int currentJob) {

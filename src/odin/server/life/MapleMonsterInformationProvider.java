@@ -21,14 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.constants.GameConstants;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 import odin.client.inventory.MapleInventoryType;
@@ -36,64 +34,18 @@ import tacos.database.DatabaseConnection;
 
 public class MapleMonsterInformationProvider {
 
-    private static final MapleMonsterInformationProvider instance = new MapleMonsterInformationProvider();
-    private final Map<Integer, List<MonsterDropEntry>> drops = new HashMap<Integer, List<MonsterDropEntry>>();
-    private final List<MonsterGlobalDropEntry> globaldrops = new ArrayList<MonsterGlobalDropEntry>();
+    private static MapleMonsterInformationProvider instance = new MapleMonsterInformationProvider();
+    private Map<Integer, List<MonsterDropEntry>> drops = new HashMap<>();
 
-    protected MapleMonsterInformationProvider() {
-        retrieveGlobal();
-    }
-
-    public static final MapleMonsterInformationProvider getInstance() {
+    public static MapleMonsterInformationProvider getInstance() {
         return instance;
     }
 
-    public final List<MonsterGlobalDropEntry> getGlobalDrop() {
-        return globaldrops;
-    }
-
-    private final void retrieveGlobal() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-
-        try {
-            final Connection con = DatabaseConnection.getConnection();
-            ps = con.prepareStatement("SELECT * FROM drop_data_global WHERE chance > 0");
-            rs = ps.executeQuery();
-
-            while (rs.next()) {
-                globaldrops.add(
-                        new MonsterGlobalDropEntry(
-                                rs.getInt("itemid"),
-                                rs.getInt("chance"),
-                                rs.getInt("continent"),
-                                rs.getByte("dropType"),
-                                rs.getInt("minimum_quantity"),
-                                rs.getInt("maximum_quantity"),
-                                rs.getShort("questid")));
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.err.println("Error retrieving drop" + e);
-        } finally {
-            try {
-                if (ps != null) {
-                    ps.close();
-                }
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (SQLException ignore) {
-            }
-        }
-    }
-
-    public final List<MonsterDropEntry> retrieveDrop(final int monsterId) {
+    public List<MonsterDropEntry> retrieveDrop(final int monsterId) {
         if (drops.containsKey(monsterId)) {
             return drops.get(monsterId);
         }
-        final List<MonsterDropEntry> ret = new LinkedList<MonsterDropEntry>();
+        final List<MonsterDropEntry> ret = new LinkedList<>();
 
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -136,7 +88,5 @@ public class MapleMonsterInformationProvider {
 
     public final void clearDrops() {
         drops.clear();
-        globaldrops.clear();
-        retrieveGlobal();
     }
 }

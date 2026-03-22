@@ -25,28 +25,28 @@ import odin.client.MapleClient;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import tacos.packet.response.ResCWvsContext;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.packet.ClientPacket;
 
 public class PartyHandler {
 
-    public static final void DenyPartyRequest(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final int action = slea.readByte();
-        final int partyid = slea.readInt();
+    public static final void DenyPartyRequest(ClientPacket cp, final MapleClient c) {
+        final int action = cp.Decode1();
+        final int partyid = cp.Decode4();
         if (c.getPlayer().getParty() == null) {
-            MapleParty party = World.Party.getParty(partyid);
+            MapleParty party = OdinWorld.Party.getParty(partyid);
             if (party != null) {
                 if (action == 0x1B) { //accept
                     if (party.getMembers().size() < 6) {
-                        World.Party.updateParty(partyid, PartyOperation.JOIN, new MaplePartyCharacter(c.getPlayer()));
+                        OdinWorld.Party.updateParty(partyid, PartyOperation.JOIN, new MaplePartyCharacter(c.getPlayer()));
                         c.getPlayer().receivePartyMemberHP();
                         c.getPlayer().updatePartyMemberHP();
                     } else {
                         c.getSession().write(ResCWvsContext.partyStatusMessage(17));
                     }
                 } else if (action != 0x16) {
-                    final MapleCharacter cfrom = c.getChannelServer().getPlayerStorage().getCharacterById(party.getLeader().getId());
+                    final MapleCharacter cfrom = c.getChannelServer().getOnlinePlayers().findById(party.getLeader().getId());
                     if (cfrom != null) {
                         cfrom.getClient().getSession().write(ResCWvsContext.partyStatusMessage(23, c.getPlayer().getName()));
                     }
@@ -60,15 +60,15 @@ public class PartyHandler {
 
     }
 
-    public static final void PartyOperatopn(final SeekableLittleEndianAccessor slea, final MapleClient c) {
-        final int operation = slea.readByte();
+    public static final void PartyOperation(ClientPacket cp, final MapleClient c) {
+        final int operation = cp.Decode1();
         MapleParty party = c.getPlayer().getParty();
         MaplePartyCharacter partyplayer = new MaplePartyCharacter(c.getPlayer());
 
         switch (operation) {
             case 1: // create
                 if (c.getPlayer().getParty() == null) {
-                    party = World.Party.createParty(partyplayer);
+                    party = OdinWorld.Party.createParty(partyplayer);
                     c.getPlayer().setParty(party);
                     c.getSession().write(ResCWvsContext.partyCreated(party.getId()));
 
@@ -83,18 +83,12 @@ public class PartyHandler {
             case 2: // leave
                 if (party != null) { //are we in a party? o.O"
                     if (partyplayer.equals(party.getLeader())) { // disband
-                        World.Party.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
-                        if (c.getPlayer().getEventInstance() != null) {
-                            c.getPlayer().getEventInstance().disbandParty();
-                        }
+                        OdinWorld.Party.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
                         if (c.getPlayer().getPyramidSubway() != null) {
                             c.getPlayer().getPyramidSubway().fail(c.getPlayer());
                         }
                     } else {
-                        World.Party.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
-                        if (c.getPlayer().getEventInstance() != null) {
-                            c.getPlayer().getEventInstance().leftParty(c.getPlayer());
-                        }
+                        OdinWorld.Party.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
                         if (c.getPlayer().getPyramidSubway() != null) {
                             c.getPlayer().getPyramidSubway().fail(c.getPlayer());
                         }
@@ -103,12 +97,12 @@ public class PartyHandler {
                 }
                 break;
             case 3: // accept invitation
-                final int partyid = slea.readInt();
+                final int partyid = cp.Decode4();
                 if (c.getPlayer().getParty() == null) {
-                    party = World.Party.getParty(partyid);
+                    party = OdinWorld.Party.getParty(partyid);
                     if (party != null) {
                         if (party.getMembers().size() < 6) {
-                            World.Party.updateParty(party.getId(), PartyOperation.JOIN, partyplayer);
+                            OdinWorld.Party.updateParty(party.getId(), PartyOperation.JOIN, partyplayer);
                             c.getPlayer().receivePartyMemberHP();
                             c.getPlayer().updatePartyMemberHP();
                         } else {
@@ -123,7 +117,7 @@ public class PartyHandler {
                 break;
             case 4: // invite
                 // TODO store pending invitations and check against them
-                final MapleCharacter invited = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+                final MapleCharacter invited = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (invited != null) {
                     if (invited.getParty() == null && party != null) {
                         if (party.getMembers().size() < 6) {
@@ -141,17 +135,9 @@ public class PartyHandler {
                 break;
             case 5: // expel
                 if (partyplayer.equals(party.getLeader())) {
-                    final MaplePartyCharacter expelled = party.getMemberById(slea.readInt());
+                    final MaplePartyCharacter expelled = party.getMemberById(cp.Decode4());
                     if (expelled != null) {
-                        World.Party.updateParty(party.getId(), PartyOperation.EXPEL, expelled);
-                        if (c.getPlayer().getEventInstance() != null) {
-                            /*if leader wants to boot someone, then the whole party gets expelled
-                            TODO: Find an easier way to get the character behind a MaplePartyCharacter
-                            possibly remove just the expellee.*/
-                            if (expelled.isOnline()) {
-                                c.getPlayer().getEventInstance().disbandParty();
-                            }
-                        }
+                        OdinWorld.Party.updateParty(party.getId(), PartyOperation.EXPEL, expelled);
                         if (c.getPlayer().getPyramidSubway() != null && expelled.isOnline()) {
                             c.getPlayer().getPyramidSubway().fail(c.getPlayer());
                         }
@@ -160,9 +146,9 @@ public class PartyHandler {
                 break;
             case 6: // change leader
                 if (party != null) {
-                    final MaplePartyCharacter newleader = party.getMemberById(slea.readInt());
+                    final MaplePartyCharacter newleader = party.getMemberById(cp.Decode4());
                     if (newleader != null && partyplayer.equals(party.getLeader())) {
-                        World.Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, newleader);
+                        OdinWorld.Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, newleader);
                     }
                 }
                 break;

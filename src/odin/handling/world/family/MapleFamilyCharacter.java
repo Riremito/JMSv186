@@ -40,7 +40,7 @@ public class MapleFamilyCharacter implements java.io.Serializable {
         name = c.getName();
         level = c.getLevel();
         id = c.getId();
-        channel = c.getClient().getChannel();
+        channel = c.getClient().getChannelId();
         jobid = c.getJob();
         familyid = fid;
         junior1 = j1;

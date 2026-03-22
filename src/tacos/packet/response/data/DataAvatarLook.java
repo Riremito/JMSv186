@@ -18,7 +18,6 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -27,6 +26,7 @@ import tacos.config.ServerConfig;
 import tacos.config.Version;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 
 /**
@@ -36,7 +36,7 @@ import tacos.packet.ServerPacket;
 public class DataAvatarLook {
 
     // AvatarLook::Decode, AvatarLook::AvatarLook
-    public static byte[] Encode(MapleCharacter chr) {
+    public static byte[] Encode(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
         data.Encode1(chr.getGender()); // nGender
         data.Encode1(chr.getSkinColor()); // nSkin
@@ -47,8 +47,8 @@ public class DataAvatarLook {
         }
         data.Encode1(0); // ignored byte
         data.Encode4(chr.getHair());
-        final Map<Byte, Integer> myEquip = new LinkedHashMap<Byte, Integer>();
-        final Map<Byte, Integer> maskedEquip = new LinkedHashMap<Byte, Integer>();
+        final Map<Byte, Integer> myEquip = new LinkedHashMap<>();
+        final Map<Byte, Integer> maskedEquip = new LinkedHashMap<>();
         MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIPPED);
         for (final IItem item : equip.list()) {
             if (item.getPosition() < -128) {

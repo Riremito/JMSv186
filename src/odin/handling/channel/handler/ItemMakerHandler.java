@@ -42,7 +42,7 @@ import odin.server.ItemMakerFactory.ItemMakerCreateEntry;
 import odin.server.Randomizer;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleInventoryManipulator;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public class ItemMakerHandler {
 
@@ -443,11 +443,11 @@ public class ItemMakerHandler {
         }
     }
 
-    private static final int getRandomGem(final List<Pair<Integer, Integer>> rewards) {
+    private static final int getRandomGem(final List<OdinPair<Integer, Integer>> rewards) {
         int itemid;
         final List<Integer> items = new ArrayList<Integer>();
 
-        for (final Pair p : rewards) {
+        for (final OdinPair p : rewards) {
             itemid = (Integer) p.getLeft();
             for (int i = 0; i < (Integer) p.getRight(); i++) {
                 items.add(itemid);
@@ -456,14 +456,14 @@ public class ItemMakerHandler {
         return items.get(Randomizer.nextInt(items.size()));
     }
 
-    private static final int checkRequiredNRemove(final MapleClient c, final List<Pair<Integer, Integer>> recipe) {
+    private static final int checkRequiredNRemove(final MapleClient c, final List<OdinPair<Integer, Integer>> recipe) {
         int itemid = 0;
-        for (final Pair<Integer, Integer> p : recipe) {
+        for (final OdinPair<Integer, Integer> p : recipe) {
             if (!c.getPlayer().haveItem(p.getLeft(), p.getRight(), false, true)) {
                 return 0;
             }
         }
-        for (final Pair<Integer, Integer> p : recipe) {
+        for (final OdinPair<Integer, Integer> p : recipe) {
             itemid = p.getLeft();
             MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemid), itemid, p.getRight(), false, false);
         }

@@ -32,13 +32,6 @@ public class FileoutputUtil {
     // Logging output file
     public static final String Acc_Stuck = "Log_AccountStuck.rtf",
             Login_Error = "Log_Login_Error.rtf",
-            //Timer_Log = "Log_Timer_Except.rtf",
-            //MapTimer_Log = "Log_MapTimer_Except.rtf",
-            // IP_Log = "Log_AccountIP.rtf",
-            //GMCommand_Log = "Log_GMCommand.rtf",
-            Zakum_Log = "Log_Zakum.rtf",
-            Horntail_Log = "Log_Horntail.rtf",
-            Pinkbean_Log = "Log_Pinkbean.rtf",
             ScriptEx_Log = "Log_Script_Except.rtf",
             PacketEx_Log = "Log_Packet_Except.rtf" // I cba looking for every error, adding this back in.
             + "";

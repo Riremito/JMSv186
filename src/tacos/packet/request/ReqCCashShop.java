@@ -20,28 +20,20 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MapleClientState;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import tacos.data.client.DC_Date;
-import tacos.data.wz.ids.DWI_Validation;
-import tacos.database.query.DQ_Accounts;
+import tacos.shared.SharedDate;
+import tacos.wz.ids.DWI_Validation;
 import tacos.debug.DebugLogger;
-import tacos.server.ServerOdinCashShop;
-import tacos.server.ServerOdinGame;
-import odin.handling.world.CharacterTransfer;
-import odin.handling.world.World;
 import java.util.ArrayList;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
-import tacos.packet.response.ResCClientSocket;
-import tacos.packet.response.ResCStage;
 import odin.server.CashItemFactory;
 import odin.server.CashItemInfo;
-import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
+import tacos.packet.ClientPacketHeader;
 
 /**
  *
@@ -49,7 +41,7 @@ import odin.server.MapleInventoryManipulator;
  */
 public class ReqCCashShop {
 
-    public static boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online (CS).");
@@ -57,12 +49,6 @@ public class ReqCCashShop {
         }
 
         switch (header) {
-            // アバターランダムボックスのオープン処理
-            case CP_CashGachaponOpenRequest: {
-                // TODO : rename or move
-                long box_SN = cp.Decode8();
-                return OnGachaponOpen(c, box_SN);
-            }
             case CP_CashShopChargeParamRequest: {
                 chr.SendPacket(ResCCashShop.CashShopChargeParamResult(chr));
                 return true;
@@ -102,68 +88,12 @@ public class ReqCCashShop {
         return false;
     }
 
-    public static void EnterCS(final int playerid, final MapleClient c) {
-        CharacterTransfer transfer = ServerOdinCashShop.getPlayerStorage().getPendingCharacter(playerid);
-        boolean mts = false;
-        if (transfer == null) {
-            transfer = ServerOdinCashShop.getPlayerStorageMTS().getPendingCharacter(playerid);
-            mts = true;
-            if (transfer == null) {
-                c.loginFailed("EnterCS 1.");
-                return;
-            }
-        }
-        MapleCharacter chr = MapleCharacter.ReconstructChr(transfer, c, false);
-        c.setPlayer(chr);
-        c.setId(chr.getAccountID());
-        if (!DQ_Accounts.checkLoginIP(c)) {
-            c.loginFailed("EnterCS 2."); // Remote hack
-            return;
-        }
-        final MapleClientState state = DQ_Accounts.getLoginState(c);
-        boolean allowLogin = false;
-        if (state == MapleClientState.LOGIN_SERVER_TRANSITION || state == MapleClientState.CHANGE_CHANNEL) {
-            if (!World.isCharacterListConnected(c)) {
-                allowLogin = true;
-            }
-        }
-        if (!allowLogin) {
-            c.loginFailed("EnterCS 3.");
-            return;
-        }
-        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
-        if (mts) {
-            ServerOdinCashShop.getPlayerStorageMTS().registerPlayer(chr);
-            c.SendPacket(ResCStage.SetITC(chr));
-            ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(c.getPlayer().getId()), c);
-        } else {
-            ServerOdinCashShop.getPlayerStorage().registerPlayer(chr);
-            c.SendPacket(ResCStage.SetCashShop(c));
-            c.SendPacket(ResCCashShop.CashShopQueryCashResult(c.getPlayer()));
-            c.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, c));
-            updateFreeCouponDate(c.getPlayer());
-        }
-    }
-
-    public static void LeaveCS(MapleClient c, MapleCharacter chr) {
-        ServerOdinCashShop.getPlayerStorageMTS().deregisterPlayer(chr);
-        ServerOdinCashShop.getPlayerStorage().deregisterPlayer(chr);
-        DQ_Accounts.updateLoginState(c, MapleClientState.LOGIN_SERVER_TRANSITION);
-        try {
-            World.ChannelChange_Data(new CharacterTransfer(chr), chr.getId(), c.getChannel());
-            c.SendPacket(ResCClientSocket.MigrateCommand(ServerOdinGame.getInstance(c.getChannel()).getPort()));
-        } finally {
-            chr.saveToDB(false, true);
-            c.setMigrating();
-        }
-    }
-
     private static int FREE_COUPON_ITEM_ID = 5221000;
 
-    private static void updateFreeCouponDate(MapleCharacter chr) {
+    public static void updateFreeCouponDate(MapleCharacter chr) {
         IItem item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
         if (item != null) {
-            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, DC_Date.getMagicalExpirationDate()));
+            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, SharedDate.getMagicalExpirationDate()));
         } else {
             chr.SendPacket(ResCCashShop.FreeCouponDialog(false, 0));
         }
@@ -405,12 +335,12 @@ public class ReqCCashShop {
         }
 
         // スロット数上限確認
-        if (TRUNK_SLOT_LIMIT < (chr.getStorage().getSlots() + 4)) {
+        if (TRUNK_SLOT_LIMIT < (chr.getStorage().getSlot() + 4)) {
             return false;
         }
 
         usePoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE);
-        chr.getStorage().increaseSlots((byte) 4);
+        chr.getStorage().setSlot(chr.getStorage().getSlot() + 4);
         return true;
     }
 
@@ -544,7 +474,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean OnGachaponOpen(MapleClient c, long box_SN) {
+    public static boolean OnGachaponOpen(MapleClient c, long box_SN) {
         MapleCharacter chr = c.getPlayer();
 
         if (chr == null) {

@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import odin.client.MapleCharacter;
 
 import odin.client.MapleClient;
 import odin.client.MapleQuestStatus;
@@ -31,9 +32,6 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCWvsContext;
-import odin.scripting.EventManager;
-import odin.scripting.NPCScriptManager;
 import odin.server.Randomizer;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
@@ -41,6 +39,8 @@ import odin.server.life.MapleMonster;
 import odin.server.quest.MapleQuest;
 import odin.server.quest.MapleQuest.MedalQuest;
 import odin.tools.FileoutputUtil;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 
 public class MapScriptMethods {
 
@@ -321,24 +321,6 @@ public class MapScriptMethods {
                         c.getPlayer().getMap().startMapEffect("Destroy the Lord Pirate!", 5120020);
                         break;
                 }
-                final EventManager em = c.getChannelServer().getEventSM().getEventManager("Pirate");
-                if (c.getPlayer().getMapId() == 925100500 && em != null && em.getProperty("stage5") != null) {
-                    int mobId = Randomizer.nextBoolean() ? 9300107 : 9300119; //lord pirate
-                    final int st = Integer.parseInt(em.getProperty("stage5"));
-                    switch (st) {
-                        case 1:
-                            mobId = Randomizer.nextBoolean() ? 9300119 : 9300105; //angry
-                            break;
-                        case 2:
-                            mobId = Randomizer.nextBoolean() ? 9300106 : 9300105; //enraged
-                            break;
-                    }
-                    final MapleMonster shammos = MapleLifeFactory.getMonster(mobId);
-                    if (c.getPlayer().getEventInstance() != null) {
-                        c.getPlayer().getEventInstance().registerMonster(shammos);
-                    }
-                    c.getPlayer().getMap().spawnMonsterOnGroundBelow(shammos, new Point(411, 236));
-                }
                 break;
             }
             case astaroth_summon: {
@@ -409,14 +391,6 @@ public class MapScriptMethods {
             case shammos_Fenter: {
                 if (c.getPlayer().getMapId() >= 921120100 && c.getPlayer().getMapId() < 921120500) {
                     final MapleMonster shammos = MapleLifeFactory.getMonster(9300275);
-                    if (c.getPlayer().getEventInstance() != null) {
-                        c.getPlayer().getEventInstance().registerMonster(shammos);
-                        if (c.getPlayer().getEventInstance().getProperty("HP") != null) {
-                            shammos.setHp(Long.parseLong(c.getPlayer().getEventInstance().getProperty("HP")));
-                        } else {
-                            c.getPlayer().getEventInstance().setProperty("HP", "50000");
-                        }
-                    }
                     c.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(c.getPlayer().getMap().getPortal(0).getPosition()), 12);
                     shammos.switchController(c.getPlayer(), false);
                     c.getSession().write(ResCMobPool.getNodeProperties(shammos, c.getPlayer().getMap()));
@@ -468,7 +442,8 @@ public class MapScriptMethods {
     }
 
     public static void startScript_User(MapleClient c, String scriptName) {
-        if (c.getPlayer() == null) {
+        MapleCharacter chr = c.getPlayer();
+        if (chr == null) {
             return;
         } //o_O
         String data = "";
@@ -480,18 +455,14 @@ public class MapScriptMethods {
             }
             case shammos_Enter: { //nothing to go on inside the map
                 c.getSession().write(ResWrapper.sendPyramidEnergy("shammos_LastStage", String.valueOf((c.getPlayer().getMapId() % 1000) / 100)));
-                if (c.getPlayer().getEventInstance() != null && c.getPlayer().getMapId() == 921120500) {
-                    NPCScriptManager.getInstance().dispose(c); //only boss map.
-                    NPCScriptManager.getInstance().start(c, 2022006);
+                if (c.getPlayer().getMapId() == 921120500) {
+                    TacosScriptNPC.getInstance().dispose(c);
+                    TacosScriptQuest.getInstance().dispose(c);
+                    TacosScriptNPC.getInstance().start(c, 2022006);
                 }
                 break;
             }
-            case start_itemTake: { //nothing to go on inside the map
-                final EventManager em = c.getChannelServer().getEventSM().getEventManager("OrbisPQ");
-                if (em != null && em.getProperty("pre").equals("0")) {
-                    NPCScriptManager.getInstance().dispose(c);
-                    NPCScriptManager.getInstance().start(c, 2013001);
-                }
+            case start_itemTake: {
                 break;
             }
             case PRaid_W_Enter: {
@@ -534,7 +505,7 @@ public class MapScriptMethods {
             case evanTogether:
             case aranTutorAlone:
             case evanAlone: { //no idea
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             }
             case startEreb:
@@ -543,7 +514,7 @@ public class MapScriptMethods {
             case evanleaveD: {
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             }
             case dojang_Msg: {
@@ -593,7 +564,7 @@ public class MapScriptMethods {
                     case 900090004:
                         c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                         c.getSession().write(ResCUserLocal.IntroLock(false));
-                        c.getSession().write(WrapCWvsContext.updateStat());
+                        chr.updateStat();
                         final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(900010000);
                         c.getPlayer().changeMap(mapto, mapto.getPortal(0));
                         return;
@@ -603,7 +574,7 @@ public class MapScriptMethods {
             case TD_MC_title: {
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
                 break;
             }
@@ -611,7 +582,7 @@ public class MapScriptMethods {
                 if (c.getPlayer().getMapId() == 104000000) {
                     c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                     c.getSession().write(ResCUserLocal.IntroLock(false));
-                    c.getSession().write(WrapCWvsContext.updateStat());
+                    chr.updateStat();
                     c.getSession().write(ResWrapper.MapNameDisplay(c.getPlayer().getMapId()));
                 }
                 MedalQuest m = null;
@@ -672,7 +643,7 @@ public class MapScriptMethods {
             case go1020000:
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
             case go20000:
             case go30000:
             case go40000:
@@ -752,7 +723,7 @@ public class MapScriptMethods {
                 c.getSession().write(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
                 c.getSession().write(ResCUserLocal.IntroDisableUI(false));
                 c.getSession().write(ResCUserLocal.IntroLock(false));
-                c.getSession().write(WrapCWvsContext.updateStat());
+                chr.updateStat();
                 break;
             }
             case rienArrow: {

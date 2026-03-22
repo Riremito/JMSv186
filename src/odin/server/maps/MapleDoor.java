@@ -28,14 +28,14 @@ import odin.client.MapleClient;
 import tacos.debug.DebugLogger;
 import java.lang.ref.WeakReference;
 import tacos.packet.response.ResCTownPortalPool;
-import odin.server.MaplePortal;
 import odin.server.Randomizer;
+import tacos.server.map.TacosPortal;
 
 public class MapleDoor extends AbstractMapleMapObject {
 
     private WeakReference<MapleCharacter> owner;
     private MapleMap map_town;
-    private MaplePortal townPortal;
+    private TacosPortal townPortal;
     private MapleMap map_field;
     private int skillId, ownerId;
     private boolean is_town_door;
@@ -45,7 +45,7 @@ public class MapleDoor extends AbstractMapleMapObject {
 
     public MapleDoor(final MapleCharacter owner, final Point targetPosition, final int skillId) {
         super();
-        this.owner = new WeakReference<MapleCharacter>(owner);
+        this.owner = new WeakReference<>(owner);
         this.ownerId = owner.getId();
         this.map_field = owner.getMap();
         setPosition(targetPosition);
@@ -59,7 +59,7 @@ public class MapleDoor extends AbstractMapleMapObject {
 
     public MapleDoor(final MapleDoor origDoor) {
         super();
-        this.owner = new WeakReference<MapleCharacter>(origDoor.owner.get());
+        this.owner = new WeakReference<>(origDoor.owner.get());
         this.map_town = origDoor.map_town;
         this.townPortal = origDoor.townPortal;
         this.map_field = origDoor.map_field;
@@ -105,17 +105,17 @@ public class MapleDoor extends AbstractMapleMapObject {
         return map_field.getId();
     }
 
-    private final MaplePortal getFreePortal() {
-        final List<MaplePortal> freePortals = new ArrayList<MaplePortal>();
+    private TacosPortal getFreePortal() {
+        final List<TacosPortal> freePortals = new ArrayList<>();
 
-        for (final MaplePortal port : map_town.getPortals()) {
-            if (port.getType() == MaplePortal.DOOR_PORTAL) {
+        for (final TacosPortal port : map_town.getPortals()) {
+            if (port.getType() == TacosPortal.DOOR_PORTAL) {
                 freePortals.add(port);
                 DebugLogger.DebugLog("MYSTIC = " + (byte) port.getId());
             }
         }
         // already used
-        for (final MapleMapObject obj : map_town.getAllDoorsThreadsafe()) {
+        for (final MapleMapObject obj : map_town.getAllDoors()) {
             MapleDoor door = (MapleDoor) obj;
             freePortals.remove(door.getTownPortal());
         }
@@ -161,7 +161,7 @@ public class MapleDoor extends AbstractMapleMapObject {
         return map_town;
     }
 
-    public final MaplePortal getTownPortal() {
+    public final TacosPortal getTownPortal() {
         return townPortal;
     }
 

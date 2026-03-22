@@ -20,36 +20,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleCharacterUtil;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.handling.world.MaplePartyCharacter;
-import odin.handling.world.World;
+import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.WrapCWvsContext;
 import odin.server.maps.FieldLimitType;
-import odin.tools.data.input.SeekableLittleEndianAccessor;
+import tacos.database.query.DQ_Notes;
+import tacos.packet.ClientPacket;
 
 public class FamilyHandler {
 
-    public static final void RequestFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter chr = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+    public static final void RequestFamily(ClientPacket cp, MapleClient c) {
+        MapleCharacter chr = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (chr != null) {
             c.getSession().write(ResCWvsContext.getFamilyPedigree(chr));
         }
     }
 
-    public static final void OpenFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void OpenFamily(ClientPacket cp, MapleClient c) {
         c.getSession().write(ResCWvsContext.getFamilyInfo(c.getPlayer()));
     }
 
-    public static final void UseFamily(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        int type = slea.readInt();
+    public static final void UseFamily(ClientPacket cp, MapleClient c) {
+        int type = cp.Decode4();
         MapleFamilyBuffEntry entry = MapleFamilyBuff.getBuffEntry(type);
         if (entry == null) {
             return;
@@ -61,7 +60,7 @@ public class FamilyHandler {
         MapleCharacter victim = null;
         switch (type) {
             case 0: //teleport: need add check for if not a safe place
-                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+                victim = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                     success = false;
@@ -76,7 +75,7 @@ public class FamilyHandler {
                 }
                 break;
             case 1: // TODO give a check to the player being forced somewhere else..
-                victim = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+                victim = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                 } else if (victim == null || (victim.isGM() && !c.getPlayer().isGM())) {
@@ -91,18 +90,16 @@ public class FamilyHandler {
                 }
                 return; //RETURN not break
             case 4: // 6 family members in pedigree online Drop Rate & Exp Rate + 100% 30 minutes
-                final MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId());
+                final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
                 List<MapleFamilyCharacter> chrs = fam.getMFC(c.getPlayer().getId()).getOnlineJuniors(fam);
                 if (chrs.size() < 7) {
                     success = false;
                 } else {
                     for (MapleFamilyCharacter chrz : chrs) {
-                        int chr = World.Find.findChannel(chrz.getId());
-                        if (chr == -1) {
-                            continue; //STOP WTF?! take reps though..
+                        MapleCharacter chrr = c.getWorld().findOnlinePlayerById(chrz.getId());
+                        if (chrr != null) {
+                            entry.applyTo(chrr);
                         }
-                        MapleCharacter chrr = World.getStorage(chr).getCharacterById(chrz.getId());
-                        entry.applyTo(chrr);
                         //chrr.getClient().getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
                     }
                 }
@@ -143,11 +140,11 @@ public class FamilyHandler {
         }
     }
 
-    public static final void FamilyOperation(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void FamilyOperation(ClientPacket cp, MapleClient c) {
         if (c.getPlayer() == null) {
             return;
         }
-        MapleCharacter addChr = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+        MapleCharacter addChr = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (addChr == null) {
             c.getPlayer().dropMessage(1, "The name you requested is incorrect or he/she is currently not logged in.");
         } else if (addChr.getFamilyId() == c.getPlayer().getFamilyId() && addChr.getFamilyId() > 0) {
@@ -169,26 +166,27 @@ public class FamilyHandler {
         } else if (c.getPlayer().isGM() || !addChr.isGM()) {
             addChr.getClient().getSession().write(ResCWvsContext.sendFamilyInvite(c.getPlayer().getId(), c.getPlayer().getLevel(), c.getPlayer().getJob(), c.getPlayer().getName()));
         }
-        c.getSession().write(WrapCWvsContext.updateStat());
+        MapleCharacter chr = c.getPlayer();
+        chr.updateStat();
     }
 
-    public static final void FamilyPrecept(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId());
+    public static final void FamilyPrecept(ClientPacket cp, MapleClient c) {
+        MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
         if (fam == null || fam.getLeaderId() != c.getPlayer().getId()) {
             return;
         }
-        fam.setNotice(slea.readMapleAsciiString());
+        fam.setNotice(cp.DecodeStr());
     }
 
-    public static final void FamilySummon(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void FamilySummon(ClientPacket cp, MapleClient c) {
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
-        MapleCharacter tt = c.getChannelServer().getPlayerStorage().getCharacterByName(slea.readMapleAsciiString());
+        MapleCharacter tt = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (c.getPlayer().getFamilyId() > 0 && tt != null && tt.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(tt.getMap().getFieldLimit())
                 && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && c.getPlayer().isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
-                && c.getPlayer().getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep && c.getPlayer().getEventInstance() == null && tt.getEventInstance() == null) {
+                && c.getPlayer().getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep) {
             //whew lots of checks
-            boolean accepted = slea.readByte() > 0;
+            boolean accepted = cp.Decode1() > 0;
             if (accepted) {
                 c.getPlayer().changeMap(tt.getMap(), tt.getMap().getPortal(0));
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
@@ -203,13 +201,13 @@ public class FamilyHandler {
         c.getPlayer().setTeleportName("");
     }
 
-    public static final void DeleteJunior(final SeekableLittleEndianAccessor slea, MapleClient c) {
-        int juniorid = slea.readInt();
+    public static final void DeleteJunior(ClientPacket cp, MapleClient c) {
+        int juniorid = cp.Decode4();
         if (c.getPlayer().getFamilyId() <= 0 || juniorid <= 0 || (c.getPlayer().getJunior1() != juniorid && c.getPlayer().getJunior2() != juniorid)) {
             return;
         }
         //junior is not required to be online.
-        final MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId());
+        final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
         final MapleFamilyCharacter other = fam.getMFC(juniorid);
         final MapleFamilyCharacter oth = c.getPlayer().getMFC();
         boolean junior2 = oth.getJunior2() == juniorid;
@@ -223,7 +221,7 @@ public class FamilyHandler {
         //if (!other.isOnline()) {
         MapleFamily.setOfflineFamilyStatus(other.getFamilyId(), other.getSeniorId(), other.getJunior1(), other.getJunior2(), other.getCurrentRep(), other.getTotalRep(), other.getId());
         //}
-        MapleCharacterUtil.sendNote(other.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
+        DQ_Notes.sendNote(other.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
         if (!fam.splitFamily(juniorid)) { //juniorid splits to make their own family. function should handle the rest
             if (!junior2) {
                 fam.resetGens(); //just lost a generation
@@ -232,15 +230,16 @@ public class FamilyHandler {
             fam.resetPedigree();
         }
         c.getPlayer().dropMessage(1, "Broke up with (" + other.getName() + ").\r\nFamily relationship has ended.");
-        c.getSession().write(WrapCWvsContext.updateStat());
+        MapleCharacter chr = c.getPlayer();
+        chr.updateStat();
     }
 
-    public static final void DeleteSenior(final SeekableLittleEndianAccessor slea, MapleClient c) {
+    public static final void DeleteSenior(ClientPacket cp, MapleClient c) {
         if (c.getPlayer().getFamilyId() <= 0 || c.getPlayer().getSeniorId() <= 0) {
             return;
         }
         //not required to be online
-        final MapleFamily fam = World.Family.getFamily(c.getPlayer().getFamilyId()); //this is old family
+        final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId()); //this is old family
         final MapleFamilyCharacter mgc = fam.getMFC(c.getPlayer().getSeniorId());
         final MapleFamilyCharacter mgc_ = c.getPlayer().getMFC();
         mgc_.setSeniorId(0);
@@ -254,7 +253,7 @@ public class FamilyHandler {
         MapleFamily.setOfflineFamilyStatus(mgc.getFamilyId(), mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
         //}
         c.getPlayer().saveFamilyStatus();
-        MapleCharacterUtil.sendNote(mgc.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
+        DQ_Notes.sendNote(mgc.getName(), c.getPlayer().getName(), c.getPlayer().getName() + " has requested to sever ties with you, so the family relationship has ended.", 0);
         if (!fam.splitFamily(c.getPlayer().getId())) { //now, we're the family leader
             if (!junior2) {
                 fam.resetGens(); //just lost a generation
@@ -263,15 +262,16 @@ public class FamilyHandler {
             fam.resetPedigree();
         }
         c.getPlayer().dropMessage(1, "Broke up with (" + mgc.getName() + ").\r\nFamily relationship has ended.");
-        c.getSession().write(WrapCWvsContext.updateStat());
+        MapleCharacter chr = c.getPlayer();
+        chr.updateStat();
     }
 
-    public static final void AcceptFamily(SeekableLittleEndianAccessor slea, MapleClient c) {
-        MapleCharacter inviter = c.getPlayer().getMap().getCharacterById(slea.readInt());
+    public static final void AcceptFamily(ClientPacket cp, MapleClient c) {
+        MapleCharacter inviter = c.getPlayer().getMap().getCharacterById(cp.Decode4());
         if (inviter != null && c.getPlayer().getSeniorId() == 0 && (c.getPlayer().isGM() || !inviter.isHidden())
-                && inviter.getLevel() - 20 < c.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(slea.readMapleAsciiString()) && inviter.getNoJuniors() < 2
+                && inviter.getLevel() - 20 < c.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2
                 /*&& inviter.getFamily().getGens() < 1000*/ && c.getPlayer().getLevel() >= 10) {
-            boolean accepted = slea.readByte() > 0;
+            boolean accepted = cp.Decode1() > 0;
             inviter.getClient().getSession().write(ResCWvsContext.sendFamilyJoinResponse(accepted, c.getPlayer().getName()));
             if (accepted) {
                 //c.getSession().write(FamilyPacket.sendFamilyMessage(0));
@@ -279,7 +279,7 @@ public class FamilyHandler {
                 MapleFamilyCharacter old = c.getPlayer().getMFC();
                 if (inviter.getFamilyId() != 0) {
 
-                    MapleFamily fam = World.Family.getFamily(inviter.getFamilyId());
+                    MapleFamily fam = OdinWorld.Family.getFamily(inviter.getFamilyId());
                     //if old isn't null, don't set the familyid yet, mergeFamily will take care of it
                     c.getPlayer().setFamily(old == null ? inviter.getFamilyId() : old.getFamilyId(), inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
                     MapleFamilyCharacter mf = inviter.getMFC();
@@ -290,10 +290,10 @@ public class FamilyHandler {
                     }
                     inviter.saveFamilyStatus();
                     if (old != null) { //has junior
-                        MapleFamily.mergeFamily(fam, World.Family.getFamily(old.getFamilyId()));
+                        MapleFamily.mergeFamily(fam, OdinWorld.Family.getFamily(old.getFamilyId()));
                     } else {
                         fam.addFamilyMember(c.getPlayer().getMFC());
-                        fam.setOnline(c.getPlayer().getId(), true, c.getChannel());
+                        fam.setOnline(c.getPlayer().getId(), true, c.getChannelId());
                         c.getPlayer().saveFamilyStatus();
                     }
                     if ((inviter.getNoJuniors() == 1 || old != null) && fam != null) {//just got their first junior whoopee
@@ -309,12 +309,12 @@ public class FamilyHandler {
                         MapleFamily.setOfflineFamilyStatus(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2(), c.getPlayer().getCurrentRep(), c.getPlayer().getTotalRep(), c.getPlayer().getId());
                         inviter.setFamily(id, 0, c.getPlayer().getId(), 0); //load the family
                         c.getPlayer().setFamily(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
-                        MapleFamily fam = World.Family.getFamily(id);
-                        fam.setOnline(inviter.getId(), true, inviter.getClient().getChannel());
+                        MapleFamily fam = OdinWorld.Family.getFamily(id);
+                        fam.setOnline(inviter.getId(), true, inviter.getClient().getChannelId());
                         if (old != null) { //has junior
-                            MapleFamily.mergeFamily(fam, World.Family.getFamily(old.getFamilyId()));
+                            MapleFamily.mergeFamily(fam, OdinWorld.Family.getFamily(old.getFamilyId()));
                         } else {
-                            fam.setOnline(c.getPlayer().getId(), true, c.getChannel());
+                            fam.setOnline(c.getPlayer().getId(), true, c.getChannelId());
                         }
                         fam.resetGens();
                         fam.resetDescendants();

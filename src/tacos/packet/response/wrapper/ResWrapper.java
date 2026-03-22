@@ -23,8 +23,6 @@ import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.config.Region;
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
@@ -41,15 +39,12 @@ import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
-import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
-import tacos.packet.response.struct.TestHelper;
 import odin.server.Randomizer;
-import odin.server.maps.MapleMap;
-import odin.tools.HexTool;
 import odin.tools.StringUtil;
-import odin.tools.data.output.MaplePacketLittleEndianWriter;
+import tacos.packet.ServerPacketHeader;
+import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
  *
@@ -149,25 +144,27 @@ public class ResWrapper {
     }
 
     public static MaplePacket updateSpecialItemUse(IItem item, byte invType, short pos) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        mplew.writeShort(ServerPacket.Header.LP_InventoryOperation.get());
-        mplew.write(0); // could be from drop
-        mplew.write(2); // always 2
-        mplew.write(3); // quantity > 0 (?)
-        mplew.write(invType); // Inventory type
-        mplew.writeShort(pos); // item slot
-        mplew.write(0);
-        mplew.write(invType);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryOperation);
+
+        sp.Encode1(0); // could be from drop
+        sp.Encode1(2); // always 2
+        sp.Encode1(3); // quantity > 0 (?)
+        sp.Encode1(invType); // Inventory type
+        sp.Encode2(pos); // item slot
+        sp.Encode1(0);
+        sp.Encode1(invType);
         if (item.getType() == 1) {
-            mplew.writeShort(pos);
+            sp.Encode2(pos);
         } else {
-            mplew.write(pos);
+            sp.Encode1(pos);
         }
-        TestHelper.addItemInfo(mplew, item, true, true);
+
+        sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+
         if (item.getPosition() < 0) {
-            mplew.write(2); //?
+            sp.Encode1(2); //?
         }
-        return mplew.getPacket();
+        return sp.get();
     }
 
     // 装着時交換不可など
@@ -559,45 +556,14 @@ public class ResWrapper {
         return ResCWvsContext.FriendResult(frs);
     }
 
-    // プレイヤー情報の初期化
-    public static final MaplePacket getCharInfo(final MapleCharacter chr) {
-        return ResCStage.SetField(chr, true, null, 0);
-    }
-
-    // マップ移動
-    public static final MaplePacket getWarpToMap(final MapleMap to, final int spawnPoint, final MapleCharacter chr) {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            return ResCStage.SetField_JMS_302(chr, 1, false, to, spawnPoint, 0);
-        }
-        return ResCStage.SetField(chr, false, to, spawnPoint);
-    }
-
-    public static MaplePacket getNPCTalkText(int npc, String talk) {
-        return ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKTEXT, (byte) 0, talk, false, false);
-    }
-
-    public static MaplePacket getNPCTalk(int npc, OpsScriptMan smt, String talk, String endBytes, byte type) {
-        byte[] ebb = HexTool.getByteArrayFromHexString(endBytes);
-        boolean prev = false;
-        boolean next = false;
-        if (ebb.length == 2) {
-            if (ebb[0] == 1) {
-                prev = true;
-            }
-            if (ebb[0] == 2) {
-                next = true;
-            }
-        }
-        return ResCScriptMan.ScriptMessage(npc, smt, type, talk, prev, next);
-    }
-
     public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
-        ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, talk, false, false).getBytes());
-        sp.Encode4(def);
-        sp.Encode4(min);
-        sp.Encode4(max);
-        return sp.get();
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, talk, false, false).getBytes());
+        data.Encode4(def);
+        data.Encode4(min);
+        data.Encode4(max);
+        return data.get();
     }
 
     public static final MaplePacket getMapSelection(final int npcid, final String sel) {
@@ -605,13 +571,16 @@ public class ResWrapper {
     }
 
     public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
-        ServerPacket sp = new ServerPacket();
-        sp.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, talk, false, false).getBytes());
-        sp.Encode1(args.length);
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, talk, false, false).getBytes());
+        data.Encode1(args.length);
+
         for (int i = 0; i < args.length; i++) {
-            sp.Encode4(args[i]);
+            data.Encode4(args[i]);
         }
-        return sp.get();
+
+        return data.get();
     }
 
     public static MaplePacket showItemUnavailable() {

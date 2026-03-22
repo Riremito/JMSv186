@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import odin.client.MapleCharacter;
-import tacos.server.ServerOdinGame;
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -13,13 +12,14 @@ import java.util.concurrent.ScheduledFuture;
 import tacos.packet.response.ResCField;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.MapleMap;
+import tacos.server.TacosWorld;
 
 public class MapleSquad {
 
     private WeakReference<MapleCharacter> leader;
     private final String leaderName;
-    private Map<String, String> members = new LinkedHashMap<String, String>();
-    private Map<String, String> bannedMembers = new LinkedHashMap<String, String>();
+    private Map<String, String> members = new LinkedHashMap<>();
+    private Map<String, String> bannedMembers = new LinkedHashMap<>();
     private final int ch;
     private final long startTime;
     private final int expiration;
@@ -29,7 +29,7 @@ public class MapleSquad {
     private ScheduledFuture<?> removal;
 
     public MapleSquad(final int ch, final String type, final MapleCharacter leader, final int expiration) {
-        this.leader = new WeakReference<MapleCharacter>(leader);
+        this.leader = new WeakReference<>(leader);
         this.members.put(leader.getName(), MapleCarnivalChallenge.getJobBasicNameById(leader.getJob()));
         this.leaderName = leader.getName();
         this.ch = ch;
@@ -43,7 +43,7 @@ public class MapleSquad {
     }
 
     public MapleMap getBeginMap() {
-        return ServerOdinGame.getInstance(ch).getMapFactory().getMap(beginMapId);
+        return this.leader.get().getChannelServer().getMapFactory().getMap(beginMapId);
     }
 
     public void clear() {
@@ -55,13 +55,13 @@ public class MapleSquad {
         members.clear();
         bannedMembers.clear();
         leader = null;
-        ServerOdinGame.getInstance(ch).removeMapleSquad(type);
+        TacosWorld.find(0).getChannelServer(ch).removeMapleSquad(type); // TODO : fix
         this.status = 0;
 
     }
 
     public MapleCharacter getChar(String name) {
-        return ServerOdinGame.getInstance(ch).getPlayerStorage().getCharacterByName(name);
+        return this.leader.get().getChannelServer().getOnlinePlayers().findByName(name);
     }
 
     public long getTimeLeft() {
@@ -87,7 +87,7 @@ public class MapleSquad {
     public MapleCharacter getLeader() {
         if (leader == null || leader.get() == null) {
             if (members.size() > 0 && getChar(leaderName) != null) {
-                leader = new WeakReference<MapleCharacter>(getChar(leaderName));
+                leader = new WeakReference<>(getChar(leaderName));
             } else {
                 if (status != 0) {
                     clear();
@@ -108,11 +108,11 @@ public class MapleSquad {
     }
 
     public List<String> getMembers() {
-        return new LinkedList<String>(members.keySet());
+        return new LinkedList<>(members.keySet());
     }
 
     public List<String> getBannedMembers() {
-        return new LinkedList<String>(bannedMembers.keySet());
+        return new LinkedList<>(bannedMembers.keySet());
     }
 
     public int getSquadSize() {
@@ -283,7 +283,7 @@ public class MapleSquad {
     }
 
     public final Map<String, Integer> getJobs() {
-        final Map<String, Integer> jobs = new LinkedHashMap<String, Integer>();
+        final Map<String, Integer> jobs = new LinkedHashMap<>();
         for (Entry<String, String> chr : members.entrySet()) {
             if (jobs.containsKey(chr.getValue())) {
                 jobs.put(chr.getValue(), jobs.get(chr.getValue()) + 1);

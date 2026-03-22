@@ -19,11 +19,12 @@
 package tacos.network;
 
 import odin.client.MapleClient;
-import tacos.server.ServerOdinLogin;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
 import tacos.packet.request.ReqCLogin;
 import tacos.packet.request.ReqCUser;
+import tacos.server.TacosLogin;
 
 /**
  *
@@ -31,27 +32,25 @@ import tacos.packet.request.ReqCUser;
  */
 public class PacketHandler_Login extends PacketHandler implements IPacketHandler {
 
-    public PacketHandler_Login() {
-        super(-1);
-        this.server_name = "Login";
+    private ReqCLogin rCLogin;
+
+    public PacketHandler_Login(TacosLogin login_server) {
+        super(login_server, -1);
+        rCLogin = new ReqCLogin(login_server);
     }
 
     @Override
-    public boolean isShutdown() {
-        return ServerOdinLogin.isShutdown();
-    }
-
-    @Override
-    public boolean OnPacket(MapleClient c, ClientPacket.Header header, ClientPacket cp) throws Exception {
-        if (header.between(ClientPacket.Header.CP_BEGIN_SOCKET, ClientPacket.Header.CP_END_SOCKET)) {
+    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
+        if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
             if (ReqCClientSocket.OnPacket_Login(c, header, cp)) {
                 return true;
             }
-            return ReqCLogin.OnPacket(c, header, cp);
+            return rCLogin.OnPacket(c, header, cp);
         }
-        if (header.between(ClientPacket.Header.CP_BEGIN_USER, ClientPacket.Header.CP_END_USER)) {
+        if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
             return ReqCUser.OnPacket_Login(c, header, cp);
         }
         return false;
     }
+
 }

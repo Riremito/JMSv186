@@ -33,12 +33,10 @@ import tacos.database.DatabaseConnection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import odin.tools.Pair;
+import tacos.odin.OdinPair;
 
 public enum ItemLoader {
 
-    INVENTORY("inventoryitems", "inventoryequipment", 0, "characterid"),
-    STORAGE("inventoryitems", "inventoryequipment", 1, "accountid"),
     CASHSHOP_EXPLORER("csitems", "csequipment", 2, "accountid"),
     CASHSHOP_CYGNUS("csitems", "csequipment", 3, "accountid"),
     CASHSHOP_ARAN("csitems", "csequipment", 4, "accountid"),
@@ -60,14 +58,9 @@ public enum ItemLoader {
         this.arg = Arrays.asList(arg);
     }
 
-    public int getValue() {
-        return value;
-    }
-
-    //does not need connection con to be auto commit
-    public Map<Integer, Pair<IItem, MapleInventoryType>> loadItems(boolean login, Integer... id) throws SQLException {
+    public Map<Integer, OdinPair<IItem, MapleInventoryType>> loadItems(boolean login, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
-        Map<Integer, Pair<IItem, MapleInventoryType>> items = new LinkedHashMap<Integer, Pair<IItem, MapleInventoryType>>();
+        Map<Integer, OdinPair<IItem, MapleInventoryType>> items = new LinkedHashMap<>();
         if (lulz.size() != arg.size()) {
             return items;
         }
@@ -145,7 +138,7 @@ public enum ItemLoader {
                         }
                     }
                 }
-                items.put(rs.getInt("inventoryitemid"), new Pair<IItem, MapleInventoryType>(equip.copy(), mit));
+                items.put(rs.getInt("inventoryitemid"), new OdinPair<>(equip.copy(), mit));
             } else {
                 Item item = new Item(rs.getInt("itemid"), rs.getShort("position"), rs.getShort("quantity"), rs.getByte("flag"));
                 item.setUniqueId(rs.getInt("uniqueid"));
@@ -166,7 +159,7 @@ public enum ItemLoader {
                         item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
                     }
                 }
-                items.put(rs.getInt("inventoryitemid"), new Pair<IItem, MapleInventoryType>(item.copy(), mit));
+                items.put(rs.getInt("inventoryitemid"), new OdinPair<>(item.copy(), mit));
             }
         }
 
@@ -175,12 +168,12 @@ public enum ItemLoader {
         return items;
     }
 
-    public void saveItems(List<Pair<IItem, MapleInventoryType>> items, Integer... id) throws SQLException {
+    public void saveItems(List<OdinPair<IItem, MapleInventoryType>> items, Integer... id) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         saveItems(items, con, id);
     }
 
-    public void saveItems(List<Pair<IItem, MapleInventoryType>> items, final Connection con, Integer... id) throws SQLException {
+    public void saveItems(List<OdinPair<IItem, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
         if (lulz.size() != arg.size()) {
             return;
@@ -224,8 +217,8 @@ public enum ItemLoader {
         query_2.append(")");
         ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
         PreparedStatement pse = con.prepareStatement("INSERT INTO " + table_equip + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        final Iterator<Pair<IItem, MapleInventoryType>> iter = items.iterator();
-        Pair<IItem, MapleInventoryType> pair;
+        final Iterator<OdinPair<IItem, MapleInventoryType>> iter = items.iterator();
+        OdinPair<IItem, MapleInventoryType> pair;
         while (iter.hasNext()) {
             pair = iter.next();
             IItem item = pair.getLeft();
