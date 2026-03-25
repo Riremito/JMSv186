@@ -85,6 +85,25 @@ public enum OpsScriptMan {
         if (Version.PostBB()) {
             return;
         }
+
+        if (Version.Equal(Region.BMS, 24)) {
+            SM_SAY.set(0);
+            SM_ASKYESNO.set(1);
+            SM_ASKTEXT.set(2);
+            SM_ASKNUMBER.set(4);
+            SM_ASKMENU.set(5);
+            SM_ASKQUIZ.set(6);
+            SM_ASKSPEEDQUIZ.set(7);
+            SM_ASKAVATAR.set(8);
+            SM_ASKPET.set(9);
+            SM_ASKPETALL.set(10);
+            SM_ASKACCEPT.set(13);
+            SM_ASKBOXTEXT.set(14);
+            SM_SAYIMAGE.set(-1);
+            SM_ASKSLIDEMENU.set(-1);
+            return;
+        }
+
         if (Version.LessOrEqual(Region.KMS, 84)) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);

@@ -62,7 +62,7 @@ import odin.server.shops.HiredMerchant;
 public class ReqSub_UserConsumeCashItemUseRequest {
 
     public static boolean OnUserConsumeCashItemUseRequestInternal(MapleMap map, MapleCharacter chr, ClientPacket cp) {
-        int timestamp = ServerConfig.JMS180orLater() ? cp.Decode4() : 0;
+        int timestamp = (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) ? cp.Decode4() : 0;
         short cash_item_slot = cp.Decode2();
         int cash_item_id = cp.Decode4();
 

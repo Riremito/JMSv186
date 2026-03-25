@@ -907,7 +907,7 @@ public class ReqCUser {
         // DR_Check
         if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
             // ?
-        } else if (ServerConfig.JMS180orLater()) {
+        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
@@ -917,7 +917,7 @@ public class ReqCUser {
         // DR_Check
         if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
             // ?
-        } else if (ServerConfig.JMS180orLater()) {
+        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -936,7 +936,7 @@ public class ReqCUser {
         }
         if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
             // ?
-        } else if (ServerConfig.JMS180orLater()) {
+        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
             // v95 4 bytes SKILLLEVELDATA::GetCrc
@@ -960,7 +960,7 @@ public class ReqCUser {
 
         if (Version.LessOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.GMS, 95)) {
             // ?
-        } else if (ServerConfig.JMS164orLater()) {
+        } else if (ServerConfig.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // Crc
         }
 
@@ -977,7 +977,7 @@ public class ReqCUser {
 
         attack.BuffKey = cp.Decode1();
 
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 165)) {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 165) || Version.Equal(Region.BMS, 24)) {
             attack.AttackActionKey = cp.Decode1();
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
@@ -1143,7 +1143,7 @@ public class ReqCUser {
         }
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
         }
@@ -1151,7 +1151,7 @@ public class ReqCUser {
         cp.Decode1(); // unk
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
             cp.Decode4();
@@ -1162,7 +1162,7 @@ public class ReqCUser {
             // nothing
         } else {
             // not in JMS147
-            if (ServerConfig.JMS164orLater()) {
+            if (ServerConfig.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
                 cp.Decode4();
             }
         }

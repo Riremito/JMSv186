@@ -137,14 +137,15 @@ public class ReqCMobPool {
         byte unk2 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
         int unk3 = Version.LessOrEqual(Region.KMS, 43) ? 1 : cp.Decode4(); // 1
 
-        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater() || Version.Equal(Region.BMS, 24)) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
-            cp.Decode4();
-
             if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
                 DebugLogger.DebugLog("0x00FFDDCC... " + String.format("08X", ffddcc_1) + " | " + String.format("08X", ffddcc_2));
             }
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
+            cp.Decode4();
         }
 
         byte unk4 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;

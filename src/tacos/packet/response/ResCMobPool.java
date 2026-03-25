@@ -227,7 +227,7 @@ public class ResCMobPool {
         // CMob::SetTemporaryStat
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
-        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164)) { // TODO
+        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164) || Version.Equal(Region.BMS, 24)) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));
@@ -310,7 +310,7 @@ public class ResCMobPool {
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
-        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164)) { // TODO
+        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164) || Version.Equal(Region.BMS, 24)) { // TODO
             sp.Encode4(0); // 後でなおす
         } else {
             sp.EncodeBuffer(Structure.MonsterStatus(life));

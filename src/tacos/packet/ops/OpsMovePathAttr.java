@@ -84,7 +84,7 @@ public enum OpsMovePathAttr {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.KMS, 65)) {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.BMS, 24)) {
             MPA_FALLDOWN.set(15);
             return;
         }
