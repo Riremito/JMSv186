@@ -1,1 +1,0 @@
-run_any.bat JMST 110 0

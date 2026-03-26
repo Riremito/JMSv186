@@ -1,1 +1,0 @@
-run_any.bat GMS 65 1

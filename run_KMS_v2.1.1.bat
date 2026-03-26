@@ -1,1 +1,0 @@
-run_any.bat KMS 1 1

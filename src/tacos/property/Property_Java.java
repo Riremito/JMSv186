@@ -19,6 +19,8 @@
 package tacos.property;
 
 import java.io.File;
+import tacos.config.Region;
+import tacos.config.Version;
 
 /**
  *
@@ -31,11 +33,11 @@ public class Property_Java {
 
     public static boolean setPath() {
         // cmd line arguments
-        path_wz_xml = System.getProperty("riresaba.path.wz");
-        path_scripts = System.getProperty("riresaba.path.script");
+        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Region.GetRegionName() + "_v" + Version.getVersion() + "/";
+        path_scripts = System.getProperty("user.dir") + "/scripts/scripts_" + Region.GetRegionName() + "/";
 
         if (!(new File(path_scripts)).isDirectory()) {
-            path_scripts = "scripts/scripts_JMS/";
+            path_scripts = System.getProperty("user.dir") + "/scripts/scripts_JMS/";
         }
         return true;
     }
