@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@ package tacos.property;
  *
  * @author Riremito
  */
-public class Property_Shop {
+public class Property_ITC {
 
     private static String ip = "127.0.0.1";
-    private static int port = 8596;
+    private static int port = 8597;
 
     public static String getIP() {
         return ip;
@@ -42,7 +42,7 @@ public class Property_Shop {
         }
 
         ip = conf.get("ip");
-        port = conf.getInt("port.cashshop");
+        port = conf.getInt("port.itc");
         return true;
     }
 }

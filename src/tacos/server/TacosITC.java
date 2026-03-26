@@ -19,9 +19,8 @@
 package tacos.server;
 
 import odin.server.MTSStorage;
-import tacos.constants.TacosConstants;
 import tacos.network.PacketHandler_ITC;
-import tacos.property.Property_Shop;
+import tacos.property.Property_ITC;
 
 /**
  *
@@ -57,7 +56,7 @@ public class TacosITC extends TacosServer {
     public static boolean init() {
         TacosITC server_itc = new TacosITC("ITC");
         TacosServer.add(server_itc);
-        server_itc.run(TacosConstants.SERVER_GLOBAL_IP, Property_Shop.getPort() + 1, new PacketHandler_ITC(server_itc));
+        server_itc.run(Property_ITC.getIP(), Property_ITC.getPort(), new PacketHandler_ITC(server_itc));
         server_itc.world_id = 0;
         TacosWorld.find(server_itc.world_id).setITC(server_itc);
         return true;

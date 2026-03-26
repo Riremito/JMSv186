@@ -28,7 +28,6 @@ public class Property_Dummy_World {
 
     private static int channels;
     private static int languages = 1;
-    private static int port_default;
     private static int flags;
     private static String name;
     private static String message;
@@ -40,10 +39,6 @@ public class Property_Dummy_World {
 
     public static int getLanguages() {
         return languages;
-    }
-
-    public static int getPort() {
-        return port_default;
     }
 
     public static int getFlags() {
@@ -72,7 +67,6 @@ public class Property_Dummy_World {
             languages = 5;
             channels = 2 * languages;
         }
-        port_default = conf.getInt("server.port");
         flags = conf.getInt("server.flags");
         name = conf.get("server.name");
         message = conf.get("server.message");

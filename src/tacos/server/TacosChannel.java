@@ -29,7 +29,6 @@ import odin.server.MapleSquad;
 import odin.server.maps.MapleMapFactory;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
-import tacos.constants.TacosConstants;
 import tacos.network.MaplePacket;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.network.PacketHandler_Game;
@@ -206,7 +205,7 @@ public class TacosChannel extends TacosServer {
             server.mapFactory.setChannel(channel);
             server.onlines = new OnlinePlayers();
             TacosServer.add(server);
-            server.run(TacosConstants.SERVER_GLOBAL_IP, channel_port, new PacketHandler_Game(server, channel));
+            server.run(Property_World.getIP(), channel_port, new PacketHandler_Game(server, channel));
             server.setWorld(world);
             world.addChannel(server);
             // property

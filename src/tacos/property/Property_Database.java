@@ -44,13 +44,10 @@ public class Property_Database {
     }
 
     public static boolean init() {
-        Property conf = new Property("properties/database.properties");
+        Property conf = new Property("properties/tacos.properties");
         if (!conf.open()) {
             return false;
         }
-        // jdbc:mysql://127.0.0.1:3306/jms_v186?autoReconnect=true&characterEncoding=utf8
-        // jms_v186 : linux checks uppercase/lower case for database name, but windows does not check it.
-        // autoReconnect=true&characterEncoding=utf8 : these arguments should be like this, do not change these to lowercase/uppercase.
         // ?autoReconnect=true&characterEncoding=utf8&useSSL=false : MySQL 8
         url = conf.get("database.url");
         if (url.isEmpty()) {

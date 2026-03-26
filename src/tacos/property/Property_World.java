@@ -28,10 +28,11 @@ import tacos.config.Region;
  */
 public class Property_World {
 
+    private static String ip = "127.0.0.1";
+    private static int port_default;
     // info
     private static int channels;
     private static int languages = 1;
-    private static int port_default;
     private static int flags;
     private static String name;
     private static String message;
@@ -58,16 +59,20 @@ public class Property_World {
     private static boolean drop_god_equip;
     private static int master_monster_timer;
 
+    public static String getIP() {
+        return ip;
+    }
+
+    public static int getPort() {
+        return port_default;
+    }
+
     public static int getChannels() {
         return channels;
     }
 
     public static int getLanguages() {
         return languages;
-    }
-
-    public static int getPort() {
-        return port_default;
     }
 
     public static int getFlags() {
@@ -107,6 +112,13 @@ public class Property_World {
     }
 
     public static boolean init() {
+        Property conf0 = new Property("properties/tacos.properties");
+        if (!conf0.open()) {
+            return false;
+        }
+        ip = conf0.get("ip");
+        port_default = conf0.getInt("port.channel");
+
         Property conf = new Property("properties/kaede.properties");
         if (!conf.open()) {
             return false;
@@ -118,7 +130,6 @@ public class Property_World {
             languages = 5;
             channels = 2 * languages;
         }
-        port_default = conf.getInt("server.port");
         flags = conf.getInt("server.flags");
         name = conf.get("server.name");
         message = conf.get("server.message");

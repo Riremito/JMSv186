@@ -25,7 +25,6 @@ package tacos.constants;
 public class TacosConstants {
 
     // server setup.
-    public static final String SERVER_GLOBAL_IP = "127.0.0.1"; // or 0.0.0.0
     public static final int SERVER_GLOBAL_IP_VALUE = 0x0100007F; // 127.0.0.1
 
     // game server info for GMS116 or later.

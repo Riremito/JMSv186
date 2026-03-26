@@ -35,7 +35,7 @@ public class Property {
     private Properties prop = null;
 
     Property(String path) {
-        this.path = path;
+        this.path = System.getProperty("user.dir") + "/" + path;
     }
 
     public boolean open() {
@@ -53,7 +53,11 @@ public class Property {
     }
 
     public String get(String name) {
-        return prop.getProperty(name);
+        String str = prop.getProperty(name);
+        if (str == null) {
+            return "";
+        }
+        return str;
     }
 
     public String get(String name, String defval) {
@@ -83,6 +87,10 @@ public class Property {
         }
         if (!Property_Shop.init()) {
             DebugLogger.ErrorLog("Property_Shop");
+            return false;
+        }
+        if (!Property_ITC.init()) {
+            DebugLogger.ErrorLog("Property_ITC");
             return false;
         }
         if (!Property_World.init()) {

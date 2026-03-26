@@ -24,9 +24,14 @@ package tacos.property;
  */
 public class Property_Login {
 
+    private static String ip = "127.0.0.1";
     private static int port = 8484;
     private static int user_limit = 100;
     private static boolean anti_cheat = false;
+
+    public static String getIP() {
+        return ip;
+    }
 
     public static int getPort() {
         return port;
@@ -41,14 +46,15 @@ public class Property_Login {
     }
 
     public static boolean init() {
-        Property conf = new Property("properties/login.properties");
+        Property conf = new Property("properties/tacos.properties");
         if (!conf.open()) {
             return false;
         }
 
-        port = conf.getInt("server.port");
-        user_limit = conf.getInt("server.userlimit");
-        anti_cheat = conf.getBoolean("server.antihack");
+        ip = conf.get("ip");
+        port = conf.getInt("port.login");
+        user_limit = conf.getInt("login.userlimit");
+        anti_cheat = conf.getBoolean("login.antihack");
         return true;
     }
 }
