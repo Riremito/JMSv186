@@ -26,14 +26,17 @@ import java.util.AbstractMap;
  */
 public class OdinPair<K, V> extends AbstractMap.SimpleEntry {
 
+    @SuppressWarnings("unchecked")
     public OdinPair(K key, V value) {
         super(key, value);
     }
 
+    @SuppressWarnings("unchecked")
     public K getLeft() {
         return (K) getKey();
     }
 
+    @SuppressWarnings("unchecked")
     public V getRight() {
         return (V) getValue();
     }

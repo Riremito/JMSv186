@@ -236,6 +236,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // channel
+    @SuppressWarnings("unchecked")
     public void init_step2() {
         lastCombo = 0;
         mulung_energy = 0;

@@ -58,6 +58,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     protected List<BoughtItem> bought = new LinkedList<>();
     protected List<MaplePlayerShopItem> items = new LinkedList<>();
 
+    @SuppressWarnings("unchecked")
     public AbstractPlayerStore(MapleCharacter owner, int itemId, String desc, String pass, int slots) {
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
@@ -70,7 +71,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         this.channel = owner.getClient().getChannelId();
         chrs = new WeakReference[slots];
         for (int i = 0; i < chrs.length; i++) {
-            chrs[i] = new WeakReference<MapleCharacter>(null);
+            chrs[i] = new WeakReference<>(null);
         }
     }
 
