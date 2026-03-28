@@ -39,8 +39,8 @@ import odin.tools.FileoutputUtil;
 
 public class CommandProcessor {
 
-    private final static HashMap<String, CommandObject> commands = new HashMap<String, CommandObject>();
-    private final static HashMap<Integer, ArrayList<String>> commandList = new HashMap<Integer, ArrayList<String>>();
+    private final static HashMap<String, CommandObject> commands = new HashMap<>();
+    private final static HashMap<Integer, ArrayList<String>> commandList = new HashMap<>();
 
     static {
 
@@ -52,11 +52,11 @@ public class CommandProcessor {
             try {
                 PlayerGMRank rankNeeded = (PlayerGMRank) clasz.getMethod("getPlayerLevelRequired", new Class<?>[]{}).invoke(null, (Object[]) null);
                 Class<?>[] a = clasz.getDeclaredClasses();
-                ArrayList<String> cL = new ArrayList<String>();
+                ArrayList<String> cL = new ArrayList<>();
                 for (Class<?> c : a) {
                     try {
                         if (!Modifier.isAbstract(c.getModifiers()) && !c.isSynthetic()) {
-                            Object o = c.newInstance();
+                            Object o = c.getDeclaredConstructor().newInstance();
                             boolean enabled;
                             try {
                                 enabled = c.getDeclaredField("enabled").getBoolean(c.getDeclaredField("enabled"));

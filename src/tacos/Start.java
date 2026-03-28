@@ -21,7 +21,6 @@ package tacos;
 import tacos.config.ClientEdit;
 import tacos.config.CodePage;
 import tacos.config.Content;
-import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.property.Property;
@@ -48,7 +47,6 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosITC;
 import tacos.server.TacosWorld;
-import test.ToolMan;
 
 /**
  *
@@ -104,12 +102,6 @@ public class Start {
         CodePage.init();
         // database
         DQ_Accounts.resetLoginState();
-        // 管理画面
-        if (DeveloperMode.DM_ADMIN_TOOL.get()) {
-            DebugLogger.SetupLog("admin tool is opened.");
-            ToolMan.Open();
-        }
-
         OdinWorld.init();
 
         WorldTimer.getInstance().start();

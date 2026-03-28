@@ -54,9 +54,9 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     protected int ownerId, owneraccount, itemId, channel, map;
     protected AtomicInteger meso = new AtomicInteger(0);
     protected WeakReference<MapleCharacter> chrs[];
-    protected List<String> visitors = new LinkedList<String>();
-    protected List<BoughtItem> bought = new LinkedList<BoughtItem>();
-    protected List<MaplePlayerShopItem> items = new LinkedList<MaplePlayerShopItem>();
+    protected List<String> visitors = new LinkedList<>();
+    protected List<BoughtItem> bought = new LinkedList<>();
+    protected List<MaplePlayerShopItem> items = new LinkedList<>();
 
     public AbstractPlayerStore(MapleCharacter owner, int itemId, String desc, String pass, int slots) {
         this.setPosition(owner.getPosition());
@@ -159,7 +159,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             final int packageid = rs.getInt(1);
             rs.close();
             ps.close();
-            List<OdinPair<IItem, MapleInventoryType>> iters = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
+            List<OdinPair<IItem, MapleInventoryType>> iters = new ArrayList<>();
             IItem item;
             for (MaplePlayerShopItem pItems : items) {
                 if (pItems.item == null || pItems.bundles <= 0) {
@@ -170,12 +170,11 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
                 }
                 item = pItems.item.copy();
                 item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-                iters.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+                iters.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
             }
             ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
             return true;
         } catch (SQLException se) {
-            se.printStackTrace();
         }
         return false;
     }
@@ -204,7 +203,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             } else {
                 broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
             }
-            chrs[i - 1] = new WeakReference<MapleCharacter>(visitor);
+            chrs[i - 1] = new WeakReference<>(visitor);
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
             }
@@ -220,7 +219,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
-            chrs[slot - 1] = new WeakReference<MapleCharacter>(null);
+            chrs[slot - 1] = new WeakReference<>(null);
             if (shouldUpdate) {
                 update();
             }
@@ -250,7 +249,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
                 }
                 broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
-                chrs[i] = new WeakReference<MapleCharacter>(null);
+                chrs[i] = new WeakReference<>(null);
             }
         }
         update();
@@ -281,10 +280,10 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
 
     @Override
     public List<OdinPair<Byte, MapleCharacter>> getVisitors() {
-        List<OdinPair<Byte, MapleCharacter>> chrz = new LinkedList<OdinPair<Byte, MapleCharacter>>();
+        List<OdinPair<Byte, MapleCharacter>> chrz = new LinkedList<>();
         for (byte i = 0; i < chrs.length; i++) { //include owner or no
             if (chrs[i] != null && chrs[i].get() != null) {
-                chrz.add(new OdinPair<Byte, MapleCharacter>((byte) (i + 1), chrs[i].get()));
+                chrz.add(new OdinPair<>((byte) (i + 1), chrs[i].get()));
             }
         }
         return chrz;

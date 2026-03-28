@@ -187,7 +187,7 @@ public class DebugLogger {
     }
 
     public static long getThreadId() {
-        return Thread.currentThread().getId();
+        return Thread.currentThread().threadId();
     }
 
 }
