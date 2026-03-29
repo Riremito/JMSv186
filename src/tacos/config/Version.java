@@ -24,8 +24,8 @@ package tacos.config;
  */
 public class Version {
 
-    private static int version = 186;
-    private static int version_sub = 1;
+    private static int version = 147;
+    private static int version_sub = 0;
 
     public static int getVersion() {
         return version;

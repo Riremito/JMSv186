@@ -33,6 +33,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import tacos.debug.DebugLogger;
 
 /**
  * Provides a class for encrypting MapleStory packets with AES OFB encryption.
@@ -85,6 +86,7 @@ public class MapleAESOFB {
             aes_key[24] = (byte) 0x08;
             aes_key[28] = (byte) 0xB0;
             skey = new SecretKeySpec(aes_key, "AES");
+            DebugLogger.InfoLog("aes_key = GMS126");
             return true;
         }
         if (Version.Equal(Region.GMS, 131)) {
@@ -97,8 +99,10 @@ public class MapleAESOFB {
             aes_key[24] = (byte) 0x38;
             aes_key[28] = (byte) 0xAE;
             skey = new SecretKeySpec(aes_key, "AES");
+            DebugLogger.InfoLog("aes_key = GMS131");
             return true;
         }
+        DebugLogger.InfoLog("aes_key = default");
         return false;
     }
 

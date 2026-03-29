@@ -55,10 +55,9 @@ import tacos.server.TacosWorld;
 public class Start {
 
     public final static void main(final String args[]) {
-        // default = JMS186.1
         // set region & version
-        DebugLogger.SetupLog("VERSION");
         if (3 <= args.length) {
+            DebugLogger.SetupLog("SET_VERSION");
             String server_region = args[0];
             int server_version = Integer.parseInt(args[1]);
             int server_version_sub = Integer.parseInt(args[2]);
@@ -70,12 +69,14 @@ public class Start {
 
             Version.setVersion(server_version, server_version_sub);
         }
-        DebugLogger.InfoLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
+        // default = JMS 147 0
+        DebugLogger.SetupLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
         // DevLog
         DebugLogger.SetupLog("DEV_LOG");
         DebugLogger.init();
         // TODO : debug config
         // AES
+        DebugLogger.SetupLog("AES_KEY");
         MapleAESOFB.setAesKey();
         // update content flags
         DebugLogger.SetupLog("FLAG_CONTENT");
@@ -95,11 +96,10 @@ public class Start {
         if (!Property.initAll()) {
             return;
         }
-        //Debug.InfoLog("wz_xml directory : " + Property_Java.getDir_WzXml());
-        //Debug.InfoLog("scripts directory : " + Property_Java.getDir_Scripts());
         // set codepage
-        DebugLogger.SetupLog("CODEPAGE");
+        DebugLogger.SetupLog("CODE_PAGE");
         CodePage.init();
+        DebugLogger.InfoLog("codepage = " + CodePage.getCodePage().name());
         // database
         DQ_Accounts.resetLoginState();
         OdinWorld.init();
@@ -113,6 +113,12 @@ public class Start {
         BuffTimer.getInstance().start();
         PingTimer.getInstance().start();
 
+        /*
+        DebugLogger.SetupLog("INFO");
+        DebugLogger.InfoLog("wz_xml : " + Property_Java.getDir_WzXml());
+        DebugLogger.InfoLog("scripts : " + Property_Java.getDir_Scripts());
+         */
+        DebugLogger.SetupLog("RUN");
         // ?_?
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
