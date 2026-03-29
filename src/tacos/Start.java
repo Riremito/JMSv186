@@ -68,6 +68,11 @@ public class Start {
             }
 
             Version.setVersion(server_version, server_version_sub);
+        } else {
+            // Version Selector
+            if (args.length == 1 && args[0].equals("vs")) {
+                VersionSelector.open();
+            }
         }
         // default = JMS 147 0
         DebugLogger.SetupLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
