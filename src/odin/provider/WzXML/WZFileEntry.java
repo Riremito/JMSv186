@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.provider.WzXML;
 
 import odin.provider.IMapleDataEntity;
-import odin.provider.IMapleDataFileEntry;
+import odin.provider.IMapleDataEntry;
 
-public class WZFileEntry extends WZEntry implements IMapleDataFileEntry {
+public class WZFileEntry extends WZEntry implements IMapleDataEntry {
 
     private int offset;
 

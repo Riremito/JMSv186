@@ -30,7 +30,7 @@ public interface IMapleDataDirectoryEntry extends IMapleDataEntry {
 
     public List<IMapleDataDirectoryEntry> getSubDirectories();
 
-    public List<IMapleDataFileEntry> getFiles();
+    public List<IMapleDataEntry> getFiles();
 
     public IMapleDataEntry getEntry(String name);
 }

@@ -36,7 +36,7 @@ import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
-import odin.provider.IMapleDataFileEntry;
+import odin.provider.IMapleDataEntry;
 
 /**
  *
@@ -87,7 +87,7 @@ public class SkillWz extends TacosWz {
         int skillid;
         IMapleData summon_data;
         SummonSkillEntry sse;
-        for (IMapleDataFileEntry topDir : getRootDirectory().getFiles()) { // Loop thru jobs
+        for (IMapleDataEntry topDir : getRootDirectory().getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
                 for (IMapleData data : getData(topDir.getName())) { // Loop thru each jobs
                     if (data.getName().equals("skill")) {

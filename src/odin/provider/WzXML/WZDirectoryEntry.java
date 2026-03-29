@@ -28,12 +28,11 @@ import java.util.Map;
 import odin.provider.IMapleDataEntity;
 import odin.provider.IMapleDataEntry;
 import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataFileEntry;
 
 public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntry {
 
     private List<IMapleDataDirectoryEntry> subdirs = new ArrayList<>();
-    private List<IMapleDataFileEntry> files = new ArrayList<>();
+    private List<IMapleDataEntry> files = new ArrayList<>();
     private Map<String, IMapleDataEntry> entries = new HashMap<>();
 
     public WZDirectoryEntry(String name, int size, int checksum, IMapleDataEntity parent) {
@@ -49,7 +48,7 @@ public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntr
         entries.put(dir.getName(), dir);
     }
 
-    public void addFile(IMapleDataFileEntry fileEntry) {
+    public void addFile(IMapleDataEntry fileEntry) {
         files.add(fileEntry);
         entries.put(fileEntry.getName(), fileEntry);
     }
@@ -60,7 +59,7 @@ public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntr
     }
 
     @Override
-    public List<IMapleDataFileEntry> getFiles() {
+    public List<IMapleDataEntry> getFiles() {
         return Collections.unmodifiableList(files);
     }
 

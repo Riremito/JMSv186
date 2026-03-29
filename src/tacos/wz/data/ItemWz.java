@@ -32,7 +32,7 @@ import odin.server.StructPotentialItem;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataFileEntry;
+import odin.provider.IMapleDataEntry;
 
 /**
  *
@@ -71,7 +71,7 @@ public class ItemWz extends TacosWz {
         String target_dir_name = String.format("%08d", id);
 
         for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
-            for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
+            for (IMapleDataEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
                     IMapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
@@ -105,7 +105,7 @@ public class ItemWz extends TacosWz {
         String target_img_name = String.format("%04d.img", item_sub_type);
 
         for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
-            for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
+            for (IMapleDataEntry mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
                     IMapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
@@ -130,7 +130,7 @@ public class ItemWz extends TacosWz {
 
         for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
             if (mdde.getName().equals("Pet")) {
-                for (IMapleDataFileEntry mdfe : mdde.getFiles()) {
+                for (IMapleDataEntry mdfe : mdde.getFiles()) {
                     if (mdfe.getName().equals(target_img_name)) {
                         IMapleData md_pet = getData(mdde.getName() + "/" + mdfe.getName());
                         if (md_pet == null) {
