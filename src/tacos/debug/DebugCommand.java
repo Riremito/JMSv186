@@ -502,7 +502,9 @@ public class DebugCommand {
                     new_hp = (int) (new_hp * (ratio / 100.0));
                     new_mp = (int) (new_mp * (ratio / 100.0));
                 }
+                int damage = chr.getStat().getHp() - new_hp;
 
+                chr.SendPacket(ResCUserLocal.NotifyHPDecByField(damage));
                 chr.getStat().setHp(new_hp);
                 chr.getStat().setMp(new_mp);
                 chr.sendStatChanged(true);

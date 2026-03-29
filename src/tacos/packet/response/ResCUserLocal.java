@@ -219,6 +219,12 @@ public class ResCUserLocal {
         return sp.get();
     }
 
+    public static MaplePacket NotifyHPDecByField(int nDamage) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyHPDecByField);
+        sp.Encode4(nDamage);
+        return sp.get();
+    }
+
     // CUserLocal::OnBalloonMsg
     public static MaplePacket BalloonMsg(String hint, int width, int height) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserBalloonMsg);
