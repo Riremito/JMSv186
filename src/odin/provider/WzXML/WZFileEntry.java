@@ -31,13 +31,4 @@ public class WZFileEntry extends WZEntry implements IMapleDataFileEntry {
         super(name, size, checksum, parent);
     }
 
-    @Override
-    public int getOffset() {
-        return offset;
-    }
-
-    @Override
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
 }

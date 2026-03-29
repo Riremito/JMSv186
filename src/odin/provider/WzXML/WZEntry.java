@@ -45,21 +45,6 @@ public class WZEntry implements IMapleDataEntry {
     }
 
     @Override
-    public int getSize() {
-        return size;
-    }
-
-    @Override
-    public int getChecksum() {
-        return checksum;
-    }
-
-    @Override
-    public int getOffset() {
-        return offset;
-    }
-
-    @Override
     public IMapleDataEntity getParent() {
         return parent;
     }

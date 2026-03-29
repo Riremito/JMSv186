@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.provider;
 
 import java.awt.Point;
-import java.awt.image.BufferedImage;
 import odin.provider.WzXML.MapleDataType;
 import tacos.wz.TacosWzExpression;
 
@@ -143,10 +142,6 @@ public class MapleDataTool {
         }
         // post bb
         return TacosWzExpression.getInt(MapleDataTool.getString(data), common_level);
-    }
-
-    public static BufferedImage getImage(IMapleData data) {
-        return ((IMapleCanvas) data.getData()).getImage();
     }
 
     public static Point getPoint(IMapleData data) {

@@ -29,9 +29,4 @@ public interface IMapleDataEntry extends IMapleDataEntity {
     @Override
     public String getName();
 
-    public int getSize();
-
-    public int getChecksum();
-
-    public int getOffset();
 }

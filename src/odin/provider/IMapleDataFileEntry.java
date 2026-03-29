@@ -22,5 +22,4 @@ package odin.provider;
 
 public interface IMapleDataFileEntry extends IMapleDataEntry {
 
-    public void setOffset(int offset);
 }
