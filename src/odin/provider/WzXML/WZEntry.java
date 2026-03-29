@@ -26,16 +26,10 @@ import odin.provider.IMapleDataEntry;
 public class WZEntry implements IMapleDataEntry {
 
     private String name;
-    private int size;
-    private int checksum;
-    private int offset;
     private IMapleDataEntity parent;
 
     public WZEntry(String name, int size, int checksum, IMapleDataEntity parent) {
-        super();
         this.name = name;
-        this.size = size;
-        this.checksum = checksum;
         this.parent = parent;
     }
 

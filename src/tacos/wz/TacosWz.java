@@ -30,7 +30,7 @@ import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataProvider;
 import odin.provider.WzXML.WZDirectoryEntry;
-import odin.provider.WzXML.WZFileEntry;
+import odin.provider.WzXML.WZEntry;
 import odin.provider.WzXML.XMLDomMapleData;
 import tacos.config.ContentCustom;
 import tacos.odin.OdinPair;
@@ -93,7 +93,7 @@ public class TacosWz implements IMapleDataProvider {
             }
             if (fn.endsWith(".xml")) {
                 String fn_img = fn.substring(0, fn.length() - 4);
-                entry.addFile(new WZFileEntry(fn_img, 0, 0, entry));
+                entry.addFile(new WZEntry(fn_img, 0, 0, entry));
                 continue;
             }
             DebugLogger.XmlLog("what's this2? " + file.getName());
