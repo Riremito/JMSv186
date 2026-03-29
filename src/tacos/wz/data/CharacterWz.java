@@ -23,7 +23,7 @@ import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataEntry;
+import odin.provider.IMapleDataEntity;
 
 /**
  *
@@ -53,7 +53,7 @@ public class CharacterWz extends TacosWz {
 
         String target_img_name = String.format("%08d.img", id);
         for (IMapleDataDirectoryEntry mdde : rootDirectory.getSubDirectories()) {
-            for (IMapleDataEntry mdfe : mdde.getFiles()) {
+            for (IMapleDataEntity mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
                     IMapleData md_equip = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_equip == null) {

@@ -32,7 +32,7 @@ import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataEntry;
+import odin.provider.IMapleDataEntity;
 
 /**
  *
@@ -95,7 +95,7 @@ public class MobWz extends TacosWz {
         map_QuestCountGroup = new HashMap<>();
         for (IMapleDataDirectoryEntry mapz : getRootDirectory().getSubDirectories()) {
             if (mapz.getName().equals("QuestCountGroup")) {
-                for (IMapleDataEntry entry : mapz.getFiles()) {
+                for (IMapleDataEntity entry : mapz.getFiles()) {
                     final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
                     IMapleData dat = getData("QuestCountGroup/" + entry.getName());
                     if (dat != null && dat.getChildByPath("info") != null) {

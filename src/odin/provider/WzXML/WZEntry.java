@@ -21,9 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.provider.WzXML;
 
 import odin.provider.IMapleDataEntity;
-import odin.provider.IMapleDataEntry;
 
-public class WZEntry implements IMapleDataEntry {
+public class WZEntry implements IMapleDataEntity {
 
     private String name;
     private IMapleDataEntity parent;
