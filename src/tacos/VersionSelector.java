@@ -89,6 +89,7 @@ public class VersionSelector {
                 "KMST v391.1",
                 "JMST v110.0",
                 "CMS v85.1",
+                "CMS v88.1",
                 "CMS v104.1",
                 //"TWMS v74.1",
                 "TWMS v77.1",
