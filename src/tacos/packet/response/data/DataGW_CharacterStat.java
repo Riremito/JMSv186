@@ -50,7 +50,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
             // none
         } else if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.IsBMS() || Region.IsVMS()) {
             data.EncodeZeroBytes(8);

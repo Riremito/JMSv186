@@ -366,7 +366,7 @@ public class ResCLogin {
                             sp.Encode4(0);
                             sp.Encode1(0);
                             sp.Encode1(0);
-                            if (Version.PreBB()) {
+                            if (Version.LessOrEqual(Region.CMS, 88)) {
                                 sp.Encode1(0);
                             }
                             sp.Encode8(0); // buffer
@@ -971,7 +971,7 @@ public class ResCLogin {
 
     public static byte[] CharList_CMS(MapleClient c) {
         ServerPacket data = new ServerPacket();
-        if (Version.PreBB()) {
+        if (Version.LessOrEqual(Region.CMS, 88)) {
             data.Encode4(1000000);
         }
         List<MapleCharacter> chars = c.loadCharactersFromDB();
