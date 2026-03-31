@@ -114,7 +114,7 @@ public class ResCScriptMan {
                         sp.Encode4(id);
                     }
                 }
-                if (Version.GreaterOrEqual(Region.CMS, 104)) {
+                if (Version.GreaterOrEqual(Region.CMS, 88)) {
                     sp.Encode4(0);
                 }
                 break;

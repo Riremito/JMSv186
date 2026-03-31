@@ -253,10 +253,8 @@ public class ResCStage {
             }
             // CWvsContext::SetSaleInfo
             {
-                if (Region.check(Region.GMS) || Region.check(Region.BMS)) {
-                    sp.Encode4(0);
-                }
-                if (Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.EMS, 73)) {
+                if (Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.CMS, 88) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.EMS, 73)
+                        || Region.check(Region.GMS) || Region.check(Region.BMS)) {
                     sp.Encode4(0); // NotSaleCount
                 }
                 sp.EncodeBuffer(DataCS_COMMODITY.SetSaleInfo());

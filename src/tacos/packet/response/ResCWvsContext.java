@@ -159,7 +159,7 @@ public class ResCWvsContext {
         if (Version.PreBB()) {
             if (Region.IsJMS()) {
                 // Pet
-                if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
+                if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
                     int v5 = 0; // CVecCtrlUser::AddMovementInfo
                     sp.Encode1(v5);
                 }

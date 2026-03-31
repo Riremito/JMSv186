@@ -443,48 +443,48 @@ public class DataGW_CharacterStat {
         }
 
         // Skin
-        if ((statmask & OpsChangeStat.CS_SKIN.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_SKIN.get()) != 0) {
             data.Encode1(chr.getSkinColor());
         }
         // Face
-        if ((statmask & OpsChangeStat.CS_FACE.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_FACE.get()) != 0) {
             data.Encode4(chr.getFace());
         }
         // Hair
-        if ((statmask & OpsChangeStat.CS_HAIR.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_HAIR.get()) != 0) {
             data.Encode4(chr.getHair());
         }
         // Pet 1
-        if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
             MaplePet pet = chr.getPet(0);
             data.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Level
-        if ((statmask & OpsChangeStat.CS_LEV.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_LEV.get()) != 0) {
             data.Encode1(chr.getLevel());
         }
         // Job
-        if ((statmask & OpsChangeStat.CS_JOB.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_JOB.get()) != 0) {
             data.Encode2(chr.getJob());
         }
         // STR
-        if ((statmask & OpsChangeStat.CS_STR.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_STR.get()) != 0) {
             data.Encode2(chr.getStat().getStr());
         }
         // DEX
-        if ((statmask & OpsChangeStat.CS_DEX.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_DEX.get()) != 0) {
             data.Encode2(chr.getStat().getDex());
         }
         // INT
-        if ((statmask & OpsChangeStat.CS_INT.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_INT.get()) != 0) {
             data.Encode2(chr.getStat().getInt());
         }
         // LUK
-        if ((statmask & OpsChangeStat.CS_LUK.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_LUK.get()) != 0) {
             data.Encode2(chr.getStat().getLuk());
         }
         // HP
-        if ((statmask & OpsChangeStat.CS_HP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_HP.get()) != 0) {
             if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getHp());
             } else {
@@ -492,7 +492,7 @@ public class DataGW_CharacterStat {
             }
         }
         // MAXHP
-        if ((statmask & OpsChangeStat.CS_MHP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_MHP.get()) != 0) {
             if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getMaxHp());
             } else {
@@ -500,7 +500,7 @@ public class DataGW_CharacterStat {
             }
         }
         // MP
-        if ((statmask & OpsChangeStat.CS_MP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_MP.get()) != 0) {
             if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getMp());
             } else {
@@ -508,7 +508,7 @@ public class DataGW_CharacterStat {
             }
         }
         // MAXMP
-        if ((statmask & OpsChangeStat.CS_MMP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_MMP.get()) != 0) {
             if (Version.PreBB()) {
                 data.Encode2(chr.getStat().getMaxMp());
             } else {
@@ -516,11 +516,11 @@ public class DataGW_CharacterStat {
             }
         }
         // AP
-        if ((statmask & OpsChangeStat.CS_AP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_AP.get()) != 0) {
             data.Encode2(chr.getRemainingAp());
         }
         // SP
-        if ((statmask & OpsChangeStat.CS_SP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_SP.get()) != 0) {
             if (GameConstants.is_extendsp_job(chr.getJob())) {
                 data.Encode1(chr.getRemainingSpSize());
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
@@ -538,7 +538,7 @@ public class DataGW_CharacterStat {
             }
         }
         // EXP
-        if ((statmask & OpsChangeStat.CS_EXP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_EXP.get()) != 0) {
             if (Version.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode8(chr.getExp());
             } else {
@@ -546,7 +546,7 @@ public class DataGW_CharacterStat {
             }
         }
         // 人気度
-        if ((statmask & OpsChangeStat.CS_POP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_POP.get()) != 0) {
             if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(chr.getFame());
             } else {
@@ -554,7 +554,7 @@ public class DataGW_CharacterStat {
             }
         }
         // Meso
-        if ((statmask & OpsChangeStat.CS_MONEY.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_MONEY.get()) != 0) {
             if (Version.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode8(chr.getMeso());
             } else {
@@ -563,17 +563,17 @@ public class DataGW_CharacterStat {
         }
         // v188 ここから+1
         // Pet 2
-        if ((statmask & OpsChangeStat.CS_PETSN2.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_PETSN2.get()) != 0) {
             MaplePet pet = chr.getPet(1);
             data.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // Pet 3
-        if ((statmask & OpsChangeStat.CS_PETSN3.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_PETSN3.get()) != 0) {
             MaplePet pet = chr.getPet(2);
             data.Encode8((pet != null && pet.getSummoned()) ? pet.getUniqueId() : 0);
         }
         // 兵法書, GashaExp
-        if ((statmask & OpsChangeStat.CS_TEMPEXP.get()) > 0) {
+        if ((statmask & OpsChangeStat.CS_TEMPEXP.get()) != 0) {
             data.Encode4(chr.getGashaEXP());
         }
 
