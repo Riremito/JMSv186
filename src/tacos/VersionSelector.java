@@ -20,6 +20,11 @@ package tacos;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.JComboBox;
@@ -141,21 +146,60 @@ public class VersionSelector {
 
         comboBox.addActionListener(e -> {
             String selected = (String) comboBox.getSelectedItem();
-            Pattern pattern = Pattern.compile("([A-Z]{3,}) v([0-9]{1,})\\.([0-9])");
-            Matcher matcher = pattern.matcher(selected);
-            if (matcher.matches()) {
-                String server_region = matcher.group(1);
-                int server_version = Integer.parseInt(matcher.group(2));
-                int server_version_sub = Integer.parseInt(matcher.group(3));
-                Region.setRegion(server_region);
-                Version.setVersion(server_version, server_version_sub);
-            }
+            writeConfig(selected); // write
             dialog.dispose();
         });
 
         comboBox.setPreferredSize(new Dimension(200, 60));
         dialog.add(comboBox);
-        dialog.setVisible(true);
-        return true;
+        dialog.setVisible(true); // close -> use previous result.
+        String ver_text = readConfig(); // read
+        return setConfig(ver_text); // set
     }
+
+    public static boolean autoConfig() {
+        String ver_text = readConfig();
+        return setConfig(ver_text);
+    }
+
+    public static boolean setConfig(String ver_text) {
+        Pattern pattern = Pattern.compile("([A-Z]{3,}) v([0-9]{1,})\\.([0-9])");
+        Matcher matcher = pattern.matcher(ver_text);
+        if (matcher.matches()) {
+            String server_region = matcher.group(1);
+            int server_version = Integer.parseInt(matcher.group(2));
+            int server_version_sub = Integer.parseInt(matcher.group(3));
+            Region.setRegion(server_region);
+            Version.setVersion(server_version, server_version_sub);
+            return true;
+        }
+
+        return false;
+    }
+
+    public static final String CONF_PATH = "properties/vs.properties";
+    public static final String CONF_VAR = "vs.selected";
+
+    public static boolean writeConfig(String ver_text) {
+        Properties prop = new Properties();
+        prop.setProperty(CONF_VAR, ver_text);
+        try (OutputStream output = new FileOutputStream(CONF_PATH)) {
+            prop.store(output, "");
+            return true;
+        } catch (IOException io) {
+        }
+        return false;
+    }
+
+    public static String readConfig() {
+        Properties prop = new Properties();
+        try (FileInputStream fis = new FileInputStream(CONF_PATH)) {
+            prop.load(fis);
+            String ver_text = prop.getProperty(CONF_VAR);
+            return ver_text;
+        } catch (IOException e) {
+        }
+        return "JMS v147.0";
+    }
+
 }
