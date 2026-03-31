@@ -822,14 +822,23 @@ public class DataCharacterData {
                     }
                 } else {
                     // CMS104, same as TWMS148
-                    if ((datamask & 262144) != 0) {
+                    if ((datamask & 0x40000) != 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
                     }
-                    if ((datamask & 2097152) != 0 && (chr.getJob() / 100 == 33)) {
+                    if ((datamask & 0x200000) != 0 && (chr.getJob() / 100 == 33)) {
                         data.EncodeBuffer(DataGW_WildHunterInfo.Encode());
                     }
-                    if ((datamask & 4194304) != 0) {
+                    if ((datamask & 0x400000) != 0) {
                         data.Encode2(0);
+                    }
+                    if (Version.Equal(Region.CMS, 88)) {
+                        if ((datamask & 0x800000) != 0) {
+                            data.Encode2(0);
+                        }
+                        if ((datamask & 0x1000000) != 0) {
+                            data.Encode2(0);
+                        }
+                        break;
                     }
                     if ((datamask & 67108864) != 0) {
                         data.Encode2(0);

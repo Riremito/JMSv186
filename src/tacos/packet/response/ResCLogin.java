@@ -31,6 +31,7 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
+import tacos.packet.response.struct.TestHelper;
 import tacos.property.Property_World;
 import tacos.server.TacosChannel;
 import tacos.server.TacosServer;
@@ -369,12 +370,12 @@ public class ResCLogin {
                             if (Version.LessOrEqual(Region.CMS, 88)) {
                                 sp.Encode1(0);
                             }
-                            sp.Encode8(0); // buffer
+                            sp.Encode8(TestHelper.getTime(System.currentTimeMillis())); // buffer
                             sp.Encode1(0);
-                            sp.Encode8(0); // buffer
+                            sp.Encode8(TestHelper.getTime(System.currentTimeMillis())); // buffer
                             sp.Encode8(0); // buffer
                             sp.EncodeStr("");
-                            sp.Encode1(0);
+                            sp.Encode1(1); // 0 = open blue message box.
                             sp.EncodeStr(String.valueOf(client.getId()));
                             sp.EncodeStr(client.getMapleId());
                             sp.Encode1(1);

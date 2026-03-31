@@ -241,28 +241,26 @@ public class ResCStage {
         sp.EncodeBuffer(DataCharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
-            if (Region.IsEMS() || Region.IsGMS() || Region.IsBMS()) {
-                sp.Encode1(1); // EMS v55
+            if (Region.check(Region.GMS) || Region.check(Region.EMS) || Region.check(Region.BMS)) {
+                sp.Encode1(1); // EMS55
             }
-            if (!(Region.IsVMS() || Region.IsTHMS() || Region.IsMSEA())) {
+            // not asia soft.
+            if (!(Region.check(Region.MSEA) || Region.check(Region.THMS) || Region.check(Region.VMS))) {
                 sp.EncodeStr(c.getMapleId());
             }
-            if (Region.IsEMS()) {
-                sp.Encode1(0); // EMS v55
+            if (Region.check(Region.EMS)) {
+                sp.Encode1(0); // EMS55
             }
             // CWvsContext::SetSaleInfo
             {
-                if (Region.IsGMS() || Region.IsBMS()) {
+                if (Region.check(Region.GMS) || Region.check(Region.BMS)) {
                     sp.Encode4(0);
                 }
-
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.TWMS, 121)) {
-                    if (Region.IsJMS() || Region.IsTWMS() || Region.IsEMS()) {
-                        sp.Encode4(0); // NotSaleCount
-                    }
+                if (Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.EMS, 73)) {
+                    sp.Encode4(0); // NotSaleCount
                 }
                 sp.EncodeBuffer(DataCS_COMMODITY.SetSaleInfo());
-                if (ServerConfig.JMS180orLater() && !Region.IsEMS()) { // X EMS v55
+                if (ServerConfig.JMS180orLater() && !Region.check(Region.EMS) && !Region.check(Region.GMS)) { // X EMS v55
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
                 sp.EncodeBuffer(ResCCashShop.getDiscountRates());
@@ -276,14 +274,14 @@ public class ResCStage {
         }
         sp.Encode1(0); // m_bEventOn
 
-        if (Region.IsIMS()) {
+        if (Region.check(Region.IMS)) {
             sp.Encode1(0);
         }
-
         // m_nHighestCharacterLevelInThisAccount
-        if (Region.IsGMS()) {
+        if (Region.check(Region.GMS)) {
             sp.Encode4(0);
         }
+
         return sp.get();
     }
 
