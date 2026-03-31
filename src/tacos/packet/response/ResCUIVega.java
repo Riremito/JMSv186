@@ -67,18 +67,18 @@ public class ResCUIVega {
 
     // ベガの呪文書の結果
     public static MaplePacket Result(boolean isSuccess) {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_VegaResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_VegaResult);
         // 成功可否
-        p.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
-        return p.get();
+        sp.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
+        return sp.get();
     }
 
     // ベガの呪文書開始
     public static MaplePacket Start() {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_VegaResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_VegaResult);
         // 0x3E or 0x40
-        p.Encode1(Action.START.Get());
-        return p.get();
+        sp.Encode1(Action.START.Get());
+        return sp.get();
     }
 
 }

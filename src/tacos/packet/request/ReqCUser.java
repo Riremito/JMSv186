@@ -1775,110 +1775,68 @@ public class ReqCUser {
         int time_stamp = cp.Decode4();
         int count = cp.Decode4(); // ループ数
 
-        int PrimaryStat = 0;
-        int amount = 0;
-        int SecondaryStat = 0;
-        int amount2 = 0;
+        ArrayList<OpsChangeStat> stats = new ArrayList<>();
+        ArrayList<Integer> points = new ArrayList<>();
+        if (count != 2) {
+            return false;
+        }
 
         for (int i = 0; i < count; i++) {
             long stat = 0;
-
+            int point = 0;
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
                 stat = cp.Decode8();
             } else {
                 stat = cp.Decode4();
             }
-
-            int point = cp.Decode4();
-
-            // test
-            if (i == 0) {
-                PrimaryStat = (int) stat;
-                amount = point;
-            } else if (i == 1) {
-                SecondaryStat = (int) stat;
-                amount2 = point;
+            point = cp.Decode4();
+            // check.
+            OpsChangeStat ops = OpsChangeStat.find((int) stat);
+            if (ops.ordinal() < OpsChangeStat.CS_STR.ordinal() || OpsChangeStat.CS_LUK.ordinal() < ops.ordinal()) {
+                return false;
             }
+            if (point < 0 || 999 < point) {
+                return false;
+            }
+            stats.add(ops);
+            points.add(point);
         }
 
-        if (amount < 0 || amount2 < 0) {
+        int total_point = 0;
+        for (int point : points) {
+            total_point += point;
+        }
+        if (chr.getRemainingAp() != total_point) {
             return false;
         }
 
-        chr.updateTick(time_stamp);
-
-        final PlayerStats playerst = chr.getStat();
-        if (chr.getRemainingAp() == amount + amount2) {
-            switch (PrimaryStat) {
-                case 64:
-                    // Str
-                    if (playerst.getStr() + amount > 999) {
-                        return false;
-                    }
-                    playerst.setStr((short) (playerst.getStr() + amount));
+        chr.setRemainingAp(0);
+        for (int i = 0; i < stats.size(); i++) {
+            switch (stats.get(i)) {
+                case CS_STR: {
+                    chr.getStat().setStr(chr.getStat().getStr() + points.get(i));
                     break;
-                case 128:
-                    // Dex
-                    if (playerst.getDex() + amount > 999) {
-                        return false;
-                    }
-                    playerst.setDex((short) (playerst.getDex() + amount));
+                }
+                case CS_DEX: {
+                    chr.getStat().setDex(chr.getStat().getDex() + points.get(i));
                     break;
-                case 256:
-                    // Int
-                    if (playerst.getInt() + amount > 999) {
-                        return false;
-                    }
-                    playerst.setInt((short) (playerst.getInt() + amount));
+                }
+                case CS_INT: {
+                    chr.getStat().setInt(chr.getStat().getInt() + points.get(i));
                     break;
-                case 512:
-                    // Luk
-                    if (playerst.getLuk() + amount > 999) {
-                        return false;
-                    }
-                    playerst.setLuk((short) (playerst.getLuk() + amount));
+                }
+                case CS_LUK: {
+                    chr.getStat().setLuk(chr.getStat().getLuk() + points.get(i));
                     break;
-                default:
-                    chr.sendStatChanged(true);
-                    return false;
+                }
+                default: {
+                    break;
+                }
             }
-            switch (SecondaryStat) {
-                case 64:
-                    // Str
-                    if (playerst.getStr() + amount2 > 999) {
-                        return false;
-                    }
-                    playerst.setStr((short) (playerst.getStr() + amount2));
-                    break;
-                case 128:
-                    // Dex
-                    if (playerst.getDex() + amount2 > 999) {
-                        return false;
-                    }
-                    playerst.setDex((short) (playerst.getDex() + amount2));
-                    break;
-                case 256:
-                    // Int
-                    if (playerst.getInt() + amount2 > 999) {
-                        return false;
-                    }
-                    playerst.setInt((short) (playerst.getInt() + amount2));
-                    break;
-                case 512:
-                    // Luk
-                    if (playerst.getLuk() + amount2 > 999) {
-                        return false;
-                    }
-                    playerst.setLuk((short) (playerst.getLuk() + amount2));
-                    break;
-                default:
-                    chr.sendStatChanged(true);
-                    return false;
-            }
-            chr.setRemainingAp((short) (chr.getRemainingAp() - (amount + amount2)));
-            chr.sendStatChanged(true);
         }
 
+        chr.sendStatChanged(true);
+        chr.updateTick(time_stamp);
         return true;
     }
 
@@ -1899,10 +1857,10 @@ public class ReqCUser {
             update_mask[1] = cp.Decode4();
         }
 
-        if ((update_mask[0] & OpsChangeStat.CS_HP.get()) > 0) {
+        if ((update_mask[0] & OpsChangeStat.CS_HP.get()) != 0) {
             heal_hp = cp.Decode2();
         }
-        if ((update_mask[0] & OpsChangeStat.CS_MP.get()) > 0) {
+        if ((update_mask[0] & OpsChangeStat.CS_MP.get()) != 0) {
             heal_mp = cp.Decode2();
         }
 

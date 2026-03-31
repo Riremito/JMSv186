@@ -30,7 +30,7 @@ public class ResCUIItemUpgrade {
 
     private enum Action {
         // 成功
-        SUCCESS((byte) 0x38),
+        SUCCESS((byte) 0x38), // CMS88 = 0x40
         // 失敗
         FAILURE((byte) 0x39),
         // 強化成功通知 (上記の値以外なら何でも更新通知扱いとなる)
@@ -65,42 +65,42 @@ public class ResCUIItemUpgrade {
 
     // ビシャスのハンマーの成功ダイアログで表示される残りアップグレード数を通知する
     public static MaplePacket Update(int hammered) {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
         // ビシャスのハンマーの使用回数を通知するフラグ, 0x38,0x39以外なら何でもOK
-        p.Encode1(Action.UPDATE.Get());
+        sp.Encode1(Action.UPDATE.Get());
         // 未使用
-        p.Encode4(0);
+        sp.Encode4(0);
         // 2 - 使用回数 = 残り回数
-        p.Encode4(hammered);
-        return p.get();
+        sp.Encode4(hammered);
+        return sp.get();
     }
 
     // ビシャスのハンマーの成功ダイアログを表示
     public static MaplePacket Success() {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
         // 成功フラグ
-        p.Encode1(Action.SUCCESS.Get());
+        sp.Encode1(Action.SUCCESS.Get());
         /*
         0x00        アップグレード可能回数が1回増えました。あと(2 - hammered)回増やすことが出来ます。
         0x00以外    原因不明の不具合
          */
-        p.Encode4(0);
-        return p.get();
+        sp.Encode4(0);
+        return sp.get();
     }
 
     // ビシャスのハンマーの失敗ダイアログを表示, クライアント側で弾かれるのでチート以外では表示されることがないメッセージ
     public static MaplePacket Failure(int error) {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
         // 失敗フラグ
-        p.Encode1(Action.FAILURE.Get());
+        sp.Encode1(Action.FAILURE.Get());
         /*
         0x01            このアイテムには使用できません。
         0x02            すでにアップグレード可能回数を超えました。これ以上使用することができません。
         0x03            ホーンテイルのネックレスには使用できません。
         上記以外        原因不明の不具合
          */
-        p.Encode4(error);
-        return p.get();
+        sp.Encode4(error);
+        return sp.get();
     }
 
 }

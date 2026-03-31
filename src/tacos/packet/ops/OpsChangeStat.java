@@ -80,6 +80,32 @@ public enum OpsChangeStat {
     }
 
     public static void init() {
+        if (Version.Equal(Region.CMS, 88)) {
+            // same as JMS146?
+            CS_SKIN.set(1);
+            CS_FACE.set(1 << 1);
+            CS_HAIR.set(1 << 2);
+            CS_PETSN.set(1 << 3);
+            CS_PETSN2.set(1 << 4);
+            CS_PETSN3.set(1 << 5);
+            CS_LEV.set(1 << 6);
+            CS_JOB.set(1 << 7);
+            CS_STR.set(1 << 8);
+            CS_DEX.set(1 << 9);
+            CS_INT.set(1 << 10);
+            CS_LUK.set(1 << 11);
+            CS_HP.set(1 << 12);
+            CS_MHP.set(1 << 13);
+            CS_MP.set(1 << 14);
+            CS_MMP.set(1 << 15);
+            CS_AP.set(1 << 16);
+            CS_SP.set(1 << 17);
+            CS_EXP.set(1 << 18);
+            CS_POP.set(1 << 19);
+            CS_MONEY.set(1 << 20);
+            CS_TEMPEXP.set(1 << 21); // OK. wz data lost exp values?
+            return;
+        }
         if (Version.PostBB()) {
             CS_PETSN2.set(0x00100000);
             CS_PETSN3.set(0x00200000);
@@ -92,7 +118,7 @@ public enum OpsChangeStat {
             return;
         }
         // JMS146 only?
-        if (Region.IsJMS() && ServerConfig.JMS146orLater()) {
+        if (Version.Equal(Region.JMS, 146)) {
             CS_SKIN.set(1);
             CS_FACE.set(1 << 1);
             CS_HAIR.set(1 << 2);
