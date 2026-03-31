@@ -106,6 +106,9 @@ public class Start {
         CodePage.init();
         DebugLogger.InfoLog("codepage = " + CodePage.getCodePage().name());
         // database
+        if (!DatabaseConnection.checkDatabase()) {
+            System.exit(0);
+        }
         DQ_Accounts.resetLoginState();
         OdinWorld.init();
 
