@@ -180,6 +180,7 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_AskUserWhetherUsePamsSong,
     LP_TransferChannel,
     LP_DisallowedDeliveryQuestList,
+    LP_CMS_CharacterCash,
     LP_MacroSysDataInit,
     LP_END_CHARACTERDATA,
     // CStage::OnPacket

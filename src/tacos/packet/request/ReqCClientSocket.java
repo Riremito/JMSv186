@@ -269,6 +269,10 @@ public class ReqCClientSocket {
                 }
 
                 chr.sendSetField(true);
+                if (Region.check(Region.CMS)) {
+                    // CMS causes crash without sending this packet when you use npc talk's avatar change.
+                    chr.SendPacket(ResCWvsContext.CharacterCash(chr));
+                }
                 // initialize
                 chr.updateStat(); // TWMS148 gets weird stat without sending this.
                 chr.SendPacket(ResCWvsContext.ForcedStatReset());

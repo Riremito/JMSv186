@@ -2172,4 +2172,12 @@ public class ResCWvsContext {
         return sp.get();
     }
 
+    public static MaplePacket CharacterCash(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CMS_CharacterCash);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(chr.getMaplePoint());
+        return sp.get();
+    }
+
 }
