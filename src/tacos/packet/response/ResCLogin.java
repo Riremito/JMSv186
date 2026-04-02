@@ -1026,7 +1026,8 @@ public class ResCLogin {
         // ログイン画面の名称
         sp.EncodeStr(LoginScreen);
         if (Version.PostBB()) {
-            sp.Encode4(0);
+            // JMS187 : 2010121510 (2010/12/15 10:00), 職業開放日時
+            sp.Encode4(2010121510); // job unlock date.
         }
         if (Version.GreaterOrEqual(Region.TWMS, 148)) {
             sp.Encode1(1);
