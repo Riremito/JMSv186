@@ -65,7 +65,7 @@ public class ResCUIItemUpgrade {
 
     // ビシャスのハンマーの成功ダイアログで表示される残りアップグレード数を通知する
     public static MaplePacket Update(int hammered) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ItemUpgradeResult);
         // ビシャスのハンマーの使用回数を通知するフラグ, 0x38,0x39以外なら何でもOK
         sp.Encode1(Action.UPDATE.Get());
         // 未使用
@@ -77,7 +77,7 @@ public class ResCUIItemUpgrade {
 
     // ビシャスのハンマーの成功ダイアログを表示
     public static MaplePacket Success() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ItemUpgradeResult);
         // 成功フラグ
         sp.Encode1(Action.SUCCESS.Get());
         /*
@@ -90,7 +90,7 @@ public class ResCUIItemUpgrade {
 
     // ビシャスのハンマーの失敗ダイアログを表示, クライアント側で弾かれるのでチート以外では表示されることがないメッセージ
     public static MaplePacket Failure(int error) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ItemUpgradeResult);
         // 失敗フラグ
         sp.Encode1(Action.FAILURE.Get());
         /*
