@@ -63,6 +63,8 @@ import odin.server.shops.HiredMerchant;
 import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.provider.IMapleData;
+import tacos.client.TacosForcedStat;
+import tacos.packet.response.ResCWvsContext;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptPortal;
 import tacos.script.TacosScriptQuest;
@@ -596,6 +598,22 @@ public class DebugCommand {
             }
             case "/rbs": {
                 resetBasicSkill(chr);
+                return true;
+            }
+            case "/fs": {
+                TacosForcedStat fs = chr.getForcedStat();
+                int index = 1;
+                fs.setSTR((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setDEX((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setINT((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setLUK((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setPAD((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setACC((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setEVA((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setSpeed((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setJump((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
+                chr.DebugMsg("[ForcedStat] : STR DEX INT LUK PAD ACC EVA Speed Jump");
                 return true;
             }
             // Map移動関連
