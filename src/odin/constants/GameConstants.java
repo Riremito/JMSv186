@@ -29,6 +29,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import odin.server.Randomizer;
 import odin.server.maps.MapleMapObjectType;
+import tacos.config.Region;
+import tacos.config.Version;
 
 public class GameConstants {
 
@@ -110,6 +112,9 @@ public class GameConstants {
     }
 
     public static boolean is_extendsp_job(int job_id) {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            return true;
+        }
         // エヴァン
         if (job_id == 2001 || (2200 <= job_id && job_id <= 2218)) {
             return true;
