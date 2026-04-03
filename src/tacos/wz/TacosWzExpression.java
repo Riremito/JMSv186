@@ -21,6 +21,7 @@ package tacos.wz;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.function.Function;
+import tacos.debug.DebugLogger;
 
 /**
  *
@@ -36,6 +37,7 @@ public class TacosWzExpression {
         // expression for post BB Skill.wz. (JMS187+)
         ExpressionBuilder builder = new ExpressionBuilder(val);
         builder.variable("x"); // x : skill level.
+        builder.variable("y"); // y : skill level? (KMS169)
 
         // thank you teto and chronos.
         Function ceil = new Function("u", 1) {
@@ -52,11 +54,19 @@ public class TacosWzExpression {
             }
         };
 
+        // allowed, space, ()*+, -./0123456789, duxy
+        if (!val.matches("[\\s\\(-\\+\\--9duxy]+")) {
+            DebugLogger.ErrorLog("TacosWzExpression : " + val);
+            System.exit(0);
+        }
+
         builder.function(ceil); // u : 切り上げ
         builder.function(floor); // d : 切り捨て
         Expression expression = builder.build();
 
         expression.setVariable("x", level);
+        expression.setVariable("y", level);
+
         int ret = (int) expression.evaluate();
         return ret;
     }
