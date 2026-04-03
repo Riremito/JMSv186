@@ -466,6 +466,9 @@ public class DataGW_CharacterStat {
         // Job
         if ((statmask & OpsChangeStat.CS_JOB.get()) != 0) {
             data.Encode2(chr.getJob());
+            if (Version.GreaterOrEqual(Region.KMS, 197)) {
+                data.Encode2(0);
+            }
         }
         // STR
         if ((statmask & OpsChangeStat.CS_STR.get()) != 0) {

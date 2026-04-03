@@ -301,9 +301,9 @@ public class Structure {
                     data.Encode4(0);
                 }
             }
-            if (Version.GreaterOrEqual(Region.KMS, 197)) {
-                data.Encode2(0);
-            }
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            data.Encode2(0);
         }
         return data.get().getBytes();
     }

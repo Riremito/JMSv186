@@ -180,24 +180,35 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
         sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            sp.Encode1(0);
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            sp.Encode4(0);
+        }
         return sp.get();
     }
 
     public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
-        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
         ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
         for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
             buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
         }
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            sp.Encode4(buff_mask[11]);
+            sp.Encode4(buff_mask[10]);
+            sp.Encode4(buff_mask[9]);
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode4(buff_mask[8]);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(buff_mask[7]);
             sp.Encode4(buff_mask[6]);
             sp.Encode4(buff_mask[5]);
@@ -242,7 +253,10 @@ public class ResCWvsContext {
     public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            sp.Encode1(0);
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
         sp.Encode2(1);
