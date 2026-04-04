@@ -173,6 +173,23 @@ public enum OpsUserEffect {
             // 50 : 紫の謎エフェクト
             return;
         }
+
+        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+            reset();
+            UserEffect_LevelUp.set(0);
+            UserEffect_SkillUse.set(1);
+            UserEffect_SkillAffected.set(2);
+            UserEffect_SkillAffected_Select.set(3);
+            UserEffect_SkillSpecialAffected.set(4);
+            UserEffect_Quest.set(5);
+            UserEffect_Pet.set(6);
+            UserEffect_SkillSpecial.set(7);
+            UserEffect_ProtectOnDieItemUse.set(8); // 翡翠のお守り
+            // 9 : 経験値お守り
+            UserEffect_PlayPortalSE.set(10);
+            UserEffect_JobChanged.set(11);
+            return;
+        }
         if (Version.GreaterOrEqual(Region.JMS, 186)) {
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
