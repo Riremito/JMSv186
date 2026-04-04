@@ -77,6 +77,15 @@ public class ResCLogin {
         return sp.get();
     }
 
+    public static MaplePacket EnableSPWResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EnableSPWResult);
+
+        // ?
+        sp.Encode1(0);
+        sp.Encode1(0);
+        return sp.get();
+    }
+
     // v131 - v186 OK
     public enum LoginResult {
         SUCCESS(0x00),
@@ -924,7 +933,7 @@ public class ResCLogin {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots);
-            sp.Encode4(0); // Character Cards
+            sp.Encode4(1); // Character Cards
             return sp.get();
         }
         if (Version.LessOrEqual(Region.JMS, 131)) {

@@ -292,6 +292,14 @@ public class DataGW_CharacterStat {
             data.Encode1(0);
             data.Encode4(0);
             data.Encode1(0);
+
+            if (Version.Equal(Region.JMST, 110)) {
+                data.Encode8(0);
+                data.Encode4(0);
+                data.Encode4(0);
+                return data.get().getBytes();
+            }
+
             if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126)) {
                 data.Encode1(0);
             }
@@ -550,7 +558,7 @@ public class DataGW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) != 0) {
-            if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());

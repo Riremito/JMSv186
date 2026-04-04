@@ -94,6 +94,9 @@ public class ReqCLogin {
                 OnSelectWorld(client, cp);
                 return true;
             }
+            case CP_LogoutWorld: {
+                return true;
+            }
             case CP_CheckUserLimit: {
                 // JMSは不要
                 OnCheckUserLimit(client, cp);
@@ -108,6 +111,11 @@ public class ReqCLogin {
             case CP_CreateNewCharacter: {
                 // キャラクター作成
                 OnCreateNewCharacter(client, cp);
+                return true;
+            }
+            case CP_CreateNewCharacterInCS: {
+                // キャラクターカード
+                OnCreateNewCharacterInCS(client, cp);
                 return true;
             }
             case CP_DeleteCharacter: {
@@ -139,6 +147,22 @@ public class ReqCLogin {
                 // JMS147 : @0010
                 // ログインボタンの有効化 (GameGuard Update)
                 client.SendPacket(ResCLogin.CheckGameGuardUpdated(true));
+                return true;
+            }
+            case CP_EnableSPWRequest: {
+                boolean isSPW = (cp.Decode1() != 0);
+                int character_id = cp.Decode4();
+                if (isSPW) {
+                    String password2 = cp.DecodeStr();
+                }
+                OnSelectCharacter(client, character_id);
+                return true;
+            }
+            case CP_CheckSPWRequest: {
+                String password2 = cp.DecodeStr();
+                int character_id = cp.Decode4();
+
+                OnSelectCharacter(client, character_id);
                 return true;
             }
             case CP_JMS_MapLogin: {
@@ -419,6 +443,15 @@ public class ReqCLogin {
         item.setPosition((short) -bodypart.get());
         mv_equipped.addFromDB(item);
         return true;
+    }
+
+    public boolean OnCreateNewCharacterInCS(MapleClient client, ClientPacket cp) {
+        String m_sCheckedName = cp.DecodeStr();
+        int m_nCurSelectedRace = cp.Decode4();
+        int m_nCurSelectedSubJob = cp.Decode4(); // JMS187
+        int m_nCharSaleJob = cp.Decode4();// m_nCharSaleJob - 1
+        // equip...
+        return false;
     }
 
     public void OnCheckDuplicatedID(MapleClient c, String character_name) {
