@@ -366,7 +366,6 @@ public enum ClientPacketHeader implements IPacketHeader {
     GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
     // old header names
     SOLOMON, // 名称不明
-    CYGNUS_SUMMON, // 名称不明
     UPDATE_QUEST, // 不明
     QUEST_ITEM, // 不明
     USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
