@@ -91,6 +91,7 @@ public class DamageParse {
         }
         if (attack.GetDamagePerMob() > attackCount) {
             if (attack.skill != 4211006) {
+                // TODO : fix normal attack & shadow partner
                 DebugLogger.ErrorLog("applyAttack : 6");
                 return;
             }

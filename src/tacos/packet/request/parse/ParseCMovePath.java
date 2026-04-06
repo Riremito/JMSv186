@@ -90,10 +90,13 @@ public class ParseCMovePath {
                 if (Version.GreaterOrEqual(Region.JMS, 302)) {
                     return (1 + 54);
                 }
-                if (Version.PostBB() && !Version.Equal(Region.KMST, 330) && !Version.LessOrEqual(Region.GMS, 95)) {
-                    return (1 + 24); // JMS187+
+                if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187)) {
+                    return (1 + 2 * 4 + 1 * 4 + 4);
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 95) || Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 95)) {
+                if (Version.PostBB() && !Version.LessOrEqual(Region.GMS, 95)) {
+                    return (1 + 24); // JMS188
+                }
+                if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 95)) {
                     return (1 + 2 * 4 + 1 * 4 + 4); // KMS95, JMS180-186
                 }
                 return (1 + 2 * 4); // KMS65, JMS131-165
