@@ -140,6 +140,77 @@ public class ReqCSummonedPool {
             return;
         }
 
+        if (Version.Equal(Region.KMST, 330)) {
+            int tick = cp.Decode4();
+            byte animation = cp.Decode1();
+            byte numAttacked = cp.Decode1();
+            short x = cp.Decode2(); // x
+            short y = cp.Decode2(); // y
+            short x2 = cp.Decode2(); // x
+            short y2 = cp.Decode2(); // y
+
+            List<SummonAttackEntry> allDamage = new ArrayList<>();
+
+            for (int i = 0; i < numAttacked; i++) {
+                int mob_object_id = cp.Decode4();
+                int mob_id = cp.Decode4();
+                cp.Decode1();
+                cp.Decode1();
+                cp.Decode1();
+                cp.Decode1();
+                cp.Decode2();
+                cp.Decode2();
+                cp.Decode2();
+                cp.Decode2();
+                cp.Decode2();
+                int damage = cp.Decode4();
+
+                MapleMonster mob = map.getMonsterByOid(mob_object_id);
+
+                if (mob == null) {
+                    continue;
+                }
+
+                allDamage.add(new SummonAttackEntry(mob, damage));
+            }
+
+            if (!summon.isChangedMap()) {
+                map.broadcastMessageTo(chr, ResCSummonedPool.summonAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+            }
+            ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
+            MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
+
+            if (summonEffect == null) {
+                return;
+            }
+            for (SummonAttackEntry attackEntry : allDamage) {
+                int toDamage = attackEntry.getDamage();
+                MapleMonster mob = attackEntry.getMonster();
+
+                if (toDamage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
+                    if (summonEffect.makeChanceResult()) {
+                        for (Map.Entry<MonsterStatus, Integer> z : summonEffect.getMonsterStati().entrySet()) {
+                            mob.applyStatus(chr, new MonsterStatusEffect(z.getKey(), z.getValue(), summonSkill.getId(), null, false), summonEffect.isPoison(), 4000, false);
+                        }
+                    }
+                }
+                mob.damage(chr, toDamage, true);
+                chr.checkMonsterAggro(mob);
+                if (!mob.isAlive()) {
+                    chr.getClient().SendPacket(ResCMobPool.Kill(mob, 1));
+                }
+            }
+
+            if (summon.isGaviota()) {
+                chr.getMap().broadcastMessage(ResCSummonedPool.removeSummon(summon, true));
+                chr.getMap().removeMapObject(summon);
+                chr.removeVisibleMapObject(summon);
+                chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
+                chr.cancelEffectFromBuffStat(MapleBuffStat.REAPER);
+            }
+            return;
+        }
+
         if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
             cp.Decode4();
@@ -152,14 +223,14 @@ public class ReqCSummonedPool {
             cp.Decode4();
         }
 
-        final byte animation = cp.Decode1();
+        byte animation = cp.Decode1();
 
         if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
             cp.Decode4();
         }
 
-        final byte numAttacked = cp.Decode1();
+        byte numAttacked = cp.Decode1();
 
         if (ServerConfig.JMS164orLater()) {
             cp.Decode2(); // x
@@ -168,7 +239,7 @@ public class ReqCSummonedPool {
             cp.Decode2(); // y
         }
 
-        final List<SummonAttackEntry> allDamage = new ArrayList<SummonAttackEntry>();
+        final List<SummonAttackEntry> allDamage = new ArrayList<>();
 
         for (int i = 0; i < numAttacked; i++) {
             final MapleMonster mob = map.getMonsterByOid(cp.Decode4());

@@ -66,40 +66,43 @@ public class ParseCMovePath {
     }
 
     private int getTailDataSize(ClientPacket cp) {
-        // ignore bytes : last Encode1 + unknown bytes (Post-BB)
         switch (cp.getHeader()) {
             case CP_UserMove: {
                 if (Version.LessOrEqual(Region.KMS, 31)) {
                     return (1 + 9);
                 }
-                return (1 + 17); // KMS65, JMS164-302
+                // KMS65, JMS131-302
+                return (1 + 1 * 9 + 2 * 4); // 1 + 17
             }
             case CP_NpcMove:
             case CP_DragonMove:
             case CP_SummonedMove:
             case CP_PetMove: {
-                return (1 + 2 * 4); // JMS186-194
+                // JMS147-194
+                return (1 + 2 * 4); // 1 + 8
             }
             case CP_MobMove: {
                 if (Version.LessOrEqual(Region.KMS, 31)) {
                     return 1;
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 114)) {
-                    return 17;
-                }
                 if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                    // JMS302
                     return (1 + 54);
                 }
-                if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187)) {
-                    return (1 + 2 * 4 + 1 * 4 + 4);
+                if (Version.GreaterOrEqual(Region.JMS, 194)) {
+                    // JMS194
+                    return (1 + 24);
                 }
-                if (Version.PostBB() && !Version.LessOrEqual(Region.GMS, 95)) {
-                    return (1 + 24); // JMS188
+                if (Version.PostBB()) {
+                    // JMS187, JMS188
+                    return (1 + 2 * 4 + 1 * 4 + 4); // 1 + 16
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 95)) {
-                    return (1 + 2 * 4 + 1 * 4 + 4); // KMS95, JMS180-186
+                if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 180)) {
+                    // JMS180
+                    return (1 + 2 * 4 + 1 * 4 + 4); // 1 + 16
                 }
-                return (1 + 2 * 4); // KMS65, JMS131-165
+                // KMS65, JMS131-165
+                return (1 + 2 * 4); // 1 + 8
             }
             default: {
                 DebugLogger.ErrorLog("ParseCMovePath : invalid header.");
