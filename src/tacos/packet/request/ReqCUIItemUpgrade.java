@@ -18,8 +18,11 @@
  */
 package tacos.packet.request;
 
+import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.packet.ClientPacket;
+import tacos.packet.ClientPacketHeader;
+import static tacos.packet.ClientPacketHeader.CP_ItemUpgradeComplete;
 import tacos.packet.response.ResCUIItemUpgrade;
 
 /**
@@ -28,15 +31,32 @@ import tacos.packet.response.ResCUIItemUpgrade;
  */
 public class ReqCUIItemUpgrade {
 
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr == null) {
+            return false;
+        }
+
+        switch (header) {
+            case CP_ItemUpgradeComplete: {
+                OnItemUpgradeComplete(chr, cp);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
     // @0119 [38 00 00 00] [00 00 00 00]
     // 0x38が成功フラグなのでクライアント側から成功可否を通知している可能性がある
-    public static boolean Accept(MapleClient c, ClientPacket p) {
-        // 成功可否
-        int action = p.Decode4();
-        // 用途不明
-        int hammered = p.Decode4();
+    public static boolean OnItemUpgradeComplete(MapleCharacter chr, ClientPacket p) {
+        int action = p.Decode4(); // 成功可否
+        int hammered = p.Decode4(); // 用途不明
         // 関数に成功可否を渡しても良いと思われるが、成功確率が100%なので意味がない
-        c.SendPacket(ResCUIItemUpgrade.Success());
+        chr.SendPacket(ResCUIItemUpgrade.Success());
         return true;
     }
 
