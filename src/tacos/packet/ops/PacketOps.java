@@ -25,6 +25,7 @@ package tacos.packet.ops;
 public class PacketOps {
 
     public static void initAll() {
+        OpsCashItem.init();
         OpsNewCharacter.init();
         OpsDBCHAR.init();
         OpsChangeStat.init();

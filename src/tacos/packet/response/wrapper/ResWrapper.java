@@ -43,8 +43,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
 import odin.server.Randomizer;
 import odin.tools.StringUtil;
-import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.DataGW_ItemSlotBase;
 
 /**
  *
@@ -137,34 +135,6 @@ public class ResWrapper {
         io.update(type, item_rest);
         io.update(type, item_max);
         return ResCWvsContext.InventoryOperation(true, io);
-    }
-
-    public static MaplePacket updateSpecialItemUse(IItem item, byte invType) {
-        return updateSpecialItemUse(item, invType, item.getPosition());
-    }
-
-    public static MaplePacket updateSpecialItemUse(IItem item, byte invType, short pos) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryOperation);
-
-        sp.Encode1(0); // could be from drop
-        sp.Encode1(2); // always 2
-        sp.Encode1(3); // quantity > 0 (?)
-        sp.Encode1(invType); // Inventory type
-        sp.Encode2(pos); // item slot
-        sp.Encode1(0);
-        sp.Encode1(invType);
-        if (item.getType() == 1) {
-            sp.Encode2(pos);
-        } else {
-            sp.Encode1(pos);
-        }
-
-        sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
-
-        if (item.getPosition() < 0) {
-            sp.Encode1(2); //?
-        }
-        return sp.get();
     }
 
     // 装着時交換不可など

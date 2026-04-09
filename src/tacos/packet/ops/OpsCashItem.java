@@ -18,6 +18,9 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Region;
+import tacos.config.Version;
+
 /**
  *
  * @author Riremito
@@ -36,20 +39,20 @@ public enum OpsCashItem implements IPacketOps {
     CashItemReq_BuyNormal(0x21),
     CashItemReq_FreeCashItem(0x2A),
     //
-    CashItemReq_ItemUpgrade(52),
-    CashItemRes_ItemUpgradeSuccess(53),
-    CashItemReq_ItemUpgradeFail(54),
-    CashItemReq_ItemUpgradeReq(55),
-    CashItemReq_ItemUpgradeDone(56),
-    CashItemRes_ItemUpgradeDone(57),
-    CashItemRes_ItemUpgradeErr(58),
-    CashItemReq_Vega(59),
-    CashItemRes_VegaSuccess1(60),
-    CashItemRes_VegaSuccess2(61),
-    CashItemRes_VegaErr(62),
-    CashItemRes_VegaErr2(63),
-    CashItemRes_VegaErr_InvalidItem(64),
-    CashItemRes_VegaFail(65),
+    CashItemReq_ItemUpgrade(51),
+    CashItemRes_ItemUpgradeSuccess(52),
+    CashItemReq_ItemUpgradeFail(53),
+    CashItemReq_ItemUpgradeReq(54),
+    CashItemReq_ItemUpgradeDone(55),
+    CashItemRes_ItemUpgradeDone(56),
+    CashItemRes_ItemUpgradeErr(57),
+    CashItemReq_Vega(58),
+    CashItemRes_VegaSuccess1(59),
+    CashItemRes_VegaSuccess2(60),
+    CashItemRes_VegaErr(61),
+    CashItemRes_VegaErr2(62),
+    CashItemRes_VegaErr_InvalidItem(63),
+    CashItemRes_VegaFail(64),
     //
     CashItemRes_LoadLocker_Done(0x4E),
     CashItemRes_LoadLocker_Failed(0x4F),
@@ -305,6 +308,42 @@ public enum OpsCashItem implements IPacketOps {
             }
         }
         return UNKNOWN;
+    }
+
+    public static void init() {
+        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+            CashItemReq_ItemUpgrade.set(52);
+            CashItemRes_ItemUpgradeSuccess.set(53);
+            CashItemReq_ItemUpgradeFail.set(54);
+            CashItemReq_ItemUpgradeReq.set(55);
+            CashItemReq_ItemUpgradeDone.set(56);
+            CashItemRes_ItemUpgradeDone.set(57);
+            CashItemRes_ItemUpgradeErr.set(58);
+            CashItemReq_Vega.set(59);
+            CashItemRes_VegaSuccess1.set(60);
+            CashItemRes_VegaSuccess2.set(61);
+            CashItemRes_VegaErr.set(62);
+            CashItemRes_VegaErr2.set(63);
+            CashItemRes_VegaErr_InvalidItem.set(64);
+            CashItemRes_VegaFail.set(65);
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            CashItemReq_ItemUpgrade.set(57);
+            CashItemRes_ItemUpgradeSuccess.set(CashItemReq_ItemUpgrade.get() + 1);
+            CashItemReq_ItemUpgradeFail.set(CashItemReq_ItemUpgrade.get() + 2);
+            CashItemReq_ItemUpgradeReq.set(CashItemReq_ItemUpgrade.get() + 3);
+            CashItemReq_ItemUpgradeDone.set(CashItemReq_ItemUpgrade.get() + 4);
+            CashItemRes_ItemUpgradeDone.set(CashItemReq_ItemUpgrade.get() + 5);
+            CashItemRes_ItemUpgradeErr.set(CashItemReq_ItemUpgrade.get() + 6);
+            CashItemReq_Vega.set(CashItemReq_ItemUpgrade.get() + 7);
+            CashItemRes_VegaSuccess1.set(CashItemReq_ItemUpgrade.get() + 8);
+            CashItemRes_VegaSuccess2.set(CashItemReq_ItemUpgrade.get() + 9);
+            CashItemRes_VegaErr.set(CashItemReq_ItemUpgrade.get() + 10);
+            CashItemRes_VegaErr2.set(CashItemReq_ItemUpgrade.get() + 11);
+            CashItemRes_VegaErr_InvalidItem.set(CashItemReq_ItemUpgrade.get() + 12);
+            CashItemRes_VegaFail.set(CashItemReq_ItemUpgrade.get() + 13);
+        }
+        return;
     }
 
 }

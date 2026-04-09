@@ -44,6 +44,7 @@ import odin.server.quest.MapleQuest;
 import tacos.odin.OdinNPCConversationManager;
 import odin.server.MapleItemInformationProvider;
 import tacos.odin.OdinPair;
+import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 
@@ -228,7 +229,7 @@ public class NPCHandler {
         for (Entry<Equip, Integer> eqqz : eqs.entrySet()) {
             ez = eqqz.getKey();
             ez.setDurability(eqqz.getValue());
-            c.getPlayer().forceReAddItem(ez.copy(), ez.getPosition() < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP);
+            c.SendPacket(ResWrapper.addInventorySlot(ez.getPosition() < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP, ez.copy()));
         }
     }
 
@@ -258,7 +259,7 @@ public class NPCHandler {
         }
         c.getPlayer().gainMeso(-price, false);
         eq.setDurability(eqStats.get("durability"));
-        c.getPlayer().forceReAddItem(eq.copy(), type);
+        c.SendPacket(ResWrapper.addInventorySlot(type, eq.copy()));
     }
 
     public static void UpdateQuest(MapleCharacter chr, ClientPacket cp) {

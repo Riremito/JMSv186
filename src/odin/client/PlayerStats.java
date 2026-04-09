@@ -859,7 +859,7 @@ public class PlayerStats implements Serializable {
                 }
                 changed = true;
             }
-            chr.forceReAddItem(eq.copy(), MapleInventoryType.EQUIPPED);
+            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eq.copy()));
         }
         if (changed) {
             chr.equipChanged();
@@ -887,9 +887,9 @@ public class PlayerStats implements Serializable {
                 durabilityHandling.remove(eqq);
                 final short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
                 MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
-                chr.getClient().getSession().write(ResWrapper.updateSpecialItemUse(eqq, (byte) 1, pos));
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, eqq));
             } else {
-                chr.forceReAddItem(eqq.copy(), MapleInventoryType.EQUIPPED);
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eqq.copy()));
             }
         }
         return true;

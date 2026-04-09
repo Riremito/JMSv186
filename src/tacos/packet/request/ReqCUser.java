@@ -1563,7 +1563,7 @@ public class ReqCUser {
         }
         // ベガの呪文書
         if (vegas != 0) {
-            chr.forceReAddItem(toScroll, MapleInventoryType.EQUIP);
+            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, toScroll));
             chr.SendPacket(ResCUIVega.VegaResult(OpsCashItem.CashItemRes_VegaSuccess1));
             chr.SendPacket(ResCUIVega.VegaResult(scrollSuccess == IEquip.ScrollResult.SUCCESS ? OpsCashItem.CashItemRes_VegaSuccess2 : OpsCashItem.CashItemRes_VegaErr2));
         }

@@ -18,6 +18,7 @@
  */
 package tacos.packet.response;
 
+import tacos.config.Region;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -36,7 +37,10 @@ public class ResCUIGoldHammer {
         switch (m_nReturnResult) {
             case GoldHammerRes_Success:
             case GoldHammerRes_Fail: {
-                sp.Encode4(0); // m_nIUC?
+                sp.Encode4(0);
+                if (Region.check(Region.JMS)) {
+                    sp.Encode4(0); // m_nIUC?
+                }
                 break;
             }
             case GoldHammerRes_Done: {
