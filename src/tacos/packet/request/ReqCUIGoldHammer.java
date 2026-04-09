@@ -94,8 +94,8 @@ public class ReqCUIGoldHammer {
     }
 
     public static boolean OnGoldHammerComplete(MapleCharacter chr, ClientPacket cp) {
-        cp.Decode4();
-        cp.Decode4();
+        int unk1 = cp.Decode4();
+        int unk2 = cp.Decode4();
 
         chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Done));
         return true;

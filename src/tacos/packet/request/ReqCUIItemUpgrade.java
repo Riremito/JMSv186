@@ -23,6 +23,7 @@ import odin.client.MapleClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import static tacos.packet.ClientPacketHeader.CP_ItemUpgradeComplete;
+import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCUIItemUpgrade;
 
 /**
@@ -50,13 +51,11 @@ public class ReqCUIItemUpgrade {
         return false;
     }
 
-    // @0119 [38 00 00 00] [00 00 00 00]
-    // 0x38が成功フラグなのでクライアント側から成功可否を通知している可能性がある
     public static boolean OnItemUpgradeComplete(MapleCharacter chr, ClientPacket p) {
-        int action = p.Decode4(); // 成功可否
+        int action = p.Decode4(); // CashItemReq
         int hammered = p.Decode4(); // 用途不明
         // 関数に成功可否を渡しても良いと思われるが、成功確率が100%なので意味がない
-        chr.SendPacket(ResCUIItemUpgrade.Success());
+        chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeDone, hammered));
         return true;
     }
 

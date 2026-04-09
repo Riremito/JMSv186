@@ -21,6 +21,7 @@ package tacos.packet.response;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsCashItem;
 
 /**
  *
@@ -28,56 +29,10 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCUIVega {
 
-    private enum Action {
-        // 成功
-        SUCCESS((byte) 0x3B),
-        // 不明
-        START_NOT_USED((byte) 0x3C),
-        // 開始
-        START((byte) 0x3E),
-        // 失敗
-        FAILURE((byte) 0x40),
-        UNKNOWN((byte) -1);
-
-        public static Action Find(byte b) {
-            for (final Action o : Action.values()) {
-                if (o.Get() == b) {
-                    return o;
-                }
-            }
-
-            return UNKNOWN;
-        }
-
-        private byte value;
-
-        Action(byte b) {
-            value = b;
-        }
-
-        Action() {
-            value = -1;
-        }
-
-        public byte Get() {
-            return value;
-        }
-
-    };
-
-    // ベガの呪文書の結果
-    public static MaplePacket Result(boolean isSuccess) {
+    public static MaplePacket VegaResult(OpsCashItem m_nRet1) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_VegaResult);
-        // 成功可否
-        sp.Encode1((byte) (isSuccess ? Action.SUCCESS.Get() : Action.FAILURE.Get()));
-        return sp.get();
-    }
 
-    // ベガの呪文書開始
-    public static MaplePacket Start() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_VegaResult);
-        // 0x3E or 0x40
-        sp.Encode1(Action.START.Get());
+        sp.Encode1(m_nRet1.get());
         return sp.get();
     }
 

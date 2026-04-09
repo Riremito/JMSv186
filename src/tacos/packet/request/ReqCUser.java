@@ -98,6 +98,7 @@ import odin.tools.AttackPair;
 import tacos.database.LazyDatabase;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.script.TacosScriptNPC;
@@ -1563,8 +1564,8 @@ public class ReqCUser {
         // ベガの呪文書
         if (vegas != 0) {
             chr.forceReAddItem(toScroll, MapleInventoryType.EQUIP);
-            chr.SendPacket(ResCUIVega.Start());
-            chr.SendPacket(ResCUIVega.Result(scrollSuccess == IEquip.ScrollResult.SUCCESS));
+            chr.SendPacket(ResCUIVega.VegaResult(OpsCashItem.CashItemRes_VegaSuccess1));
+            chr.SendPacket(ResCUIVega.VegaResult(scrollSuccess == IEquip.ScrollResult.SUCCESS ? OpsCashItem.CashItemRes_VegaSuccess2 : OpsCashItem.CashItemRes_VegaErr2));
         }
         return true;
     }

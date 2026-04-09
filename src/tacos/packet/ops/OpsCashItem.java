@@ -22,7 +22,7 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsCashItem {
+public enum OpsCashItem implements IPacketOps {
     // JMS v186
     CashItemReq_Buy(0x03),
     CashItemReq_Gift(0x04),
@@ -35,6 +35,22 @@ public enum OpsCashItem {
     CashItemReq_BuyPackage(0x1F),
     CashItemReq_BuyNormal(0x21),
     CashItemReq_FreeCashItem(0x2A),
+    //
+    CashItemReq_ItemUpgrade(52),
+    CashItemRes_ItemUpgradeSuccess(53),
+    CashItemReq_ItemUpgradeFail(54),
+    CashItemReq_ItemUpgradeReq(55),
+    CashItemReq_ItemUpgradeDone(56),
+    CashItemRes_ItemUpgradeDone(57),
+    CashItemRes_ItemUpgradeErr(58),
+    CashItemReq_Vega(59),
+    CashItemRes_VegaSuccess1(60),
+    CashItemRes_VegaSuccess2(61),
+    CashItemRes_VegaErr(62),
+    CashItemRes_VegaErr2(63),
+    CashItemRes_VegaErr_InvalidItem(64),
+    CashItemRes_VegaFail(65),
+    //
     CashItemRes_LoadLocker_Done(0x4E),
     CashItemRes_LoadLocker_Failed(0x4F),
     CashItemRes_LoadGift_Done(0x50),
@@ -260,20 +276,26 @@ public enum OpsCashItem {
     CashItemRes_GashItemGachapon_Failed(0xC0),
     CashItemRes_CashItemGachapon_Done(0xC1),
      */
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 
-    OpsCashItem(int flag) {
-        value = flag;
+    OpsCashItem(int val) {
+        value = val;
     }
 
     OpsCashItem() {
         value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
+    }
+
+    @Override
+    public void set(int val) {
+        this.value = val;
     }
 
     public static OpsCashItem find(int val) {
@@ -284,4 +306,5 @@ public enum OpsCashItem {
         }
         return UNKNOWN;
     }
+
 }

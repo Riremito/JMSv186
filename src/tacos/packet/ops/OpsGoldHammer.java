@@ -42,13 +42,11 @@ public enum OpsGoldHammer implements IPacketOps {
     }
 
     @Override
-
     public int get() {
         return this.value;
     }
 
     @Override
-
     public void set(int val) {
         this.value = val;
     }
