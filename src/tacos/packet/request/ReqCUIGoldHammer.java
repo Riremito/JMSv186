@@ -89,7 +89,7 @@ public class ReqCUIGoldHammer {
         equip.setUpgradeSlots(equip.getUpgradeSlots() + 1);
         item_use.run();
         chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
-        chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Success));
+        chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Success, equip));
         return true;
     }
 
@@ -97,7 +97,7 @@ public class ReqCUIGoldHammer {
         int unk1 = cp.Decode4();
         int unk2 = cp.Decode4();
 
-        chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Done));
+        chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Done, null));
         return true;
     }
 

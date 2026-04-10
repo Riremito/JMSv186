@@ -18,6 +18,7 @@
  */
 package tacos.packet.response;
 
+import odin.client.inventory.IEquip;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -29,14 +30,14 @@ import tacos.packet.ops.OpsCashItem;
  */
 public class ResCUIItemUpgrade {
 
-    public static MaplePacket ItemUpgradeResult(OpsCashItem m_nRet1, int m_nIUC) {
+    public static MaplePacket ItemUpgradeResult(OpsCashItem m_nRet1, IEquip equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ItemUpgradeResult);
 
         sp.Encode1(m_nRet1.get());
         switch (m_nRet1) {
             case CashItemRes_ItemUpgradeSuccess: {
                 sp.Encode4(0); // m_nResult
-                sp.Encode4(m_nIUC); // m_nIUC
+                sp.Encode4(equip.getViciousHammer()); // m_nIUC
                 break;
             }
             case CashItemRes_ItemUpgradeDone: {

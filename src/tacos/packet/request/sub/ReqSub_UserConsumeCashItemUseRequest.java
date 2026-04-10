@@ -207,7 +207,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 // TODO : supports 3+
                 if (2 <= equip.getViciousHammer()) {
-                    chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeErr, 0));
+                    chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeErr, null));
                     return false;
                 }
 
@@ -215,7 +215,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 equip.setUpgradeSlots(equip.getUpgradeSlots() + 1);
 
                 chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
-                chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeSuccess, equip.getViciousHammer()));
+                chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeSuccess, equip));
                 item_use.run();
                 return true;
             }

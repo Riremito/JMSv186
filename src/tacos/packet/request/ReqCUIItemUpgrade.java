@@ -55,7 +55,7 @@ public class ReqCUIItemUpgrade {
         int action = p.Decode4(); // CashItemReq
         int hammered = p.Decode4(); // 用途不明
         // 関数に成功可否を渡しても良いと思われるが、成功確率が100%なので意味がない
-        chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeDone, hammered));
+        chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeDone, null));
         return true;
     }
 
