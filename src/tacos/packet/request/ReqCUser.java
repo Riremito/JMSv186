@@ -1872,7 +1872,7 @@ public class ReqCUser {
 
         byte unk = cp.Decode1();
 
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.GMS, 95)) {
         } else {
             int time_stamp_2 = cp.Decode4();
             chr.updateTick(time_stamp_2);
