@@ -680,6 +680,9 @@ public class ReqCUser {
             {
                 byte screen = cp.Decode1(); // 00 = 800x600, 01 = 1024x768
                 byte unk2 = cp.Decode1();
+                if (Region.check(Region.GMS)) {
+                    return true;
+                }
                 byte unk3 = cp.Decode1();
                 byte unk4 = cp.Decode1();
                 return true;

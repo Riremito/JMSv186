@@ -152,21 +152,5 @@ public class MapleDataTool {
         return getPoint(data.getChildByPath(path));
     }
 
-    public static Point getPoint(String path, IMapleData data, Point def) {
-        final IMapleData pointData = data.getChildByPath(path);
-        if (pointData == null) {
-            return def;
-        }
-        return getPoint(pointData);
-    }
 
-    public static String getFullDataPath(IMapleData data) {
-        String path = "";
-        IMapleDataEntity myData = data;
-        while (myData != null) {
-            path = myData.getName() + "/" + path;
-            myData = myData.getParent();
-        }
-        return path.substring(0, path.length() - 1);
-    }
 }

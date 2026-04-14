@@ -445,9 +445,9 @@ public class ResCLogin {
                             if (Version.PreBB()) {
                                 sp.Encode4(client.getId()); // m_dwAccountId
                                 sp.Encode1(client.getGender()); // m_nGender
-                                sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
+                                sp.Encode1(client.isGameMaster() ? 4 : 0); // m_nGradeCode
                                 if (Version.GreaterOrEqual(Region.GMS, 68)) {
-                                    sp.Encode1(client.isGameMaster() ? 0x80 : 0); // Admin F1
+                                    sp.Encode1(client.isGameMaster() ? (Version.GreaterOrEqual(Region.GMS, 95) ? 0x80 : 0x80) : 0); // Admin F1
                                 }
                                 sp.Encode1(0);
                                 sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
