@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package tacos.packet.request;
 
@@ -54,9 +52,12 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCSummonedPool {
 
-    // CUser::OnSummonedPacket
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    /*
+    CUser::OnSummonedPacket (JMS187)
+    CSummonedPool::OnPacket (JMS188)
+     */
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -66,18 +67,18 @@ public class ReqCSummonedPool {
             return false;
         }
 
-        int oid = cp.Decode4(); // older version = SkillID
+        int m_dwSummonedID = cp.Decode4(); // older version = SkillID
 
         MapleSummon summon = null;
         if (Version.LessOrEqual(Region.JMS, 131)) {
             for (MapleSummon sms : chr.getSummons().values()) {
-                if (sms.getSkill() == oid) {
+                if (sms.getSkill() == m_dwSummonedID) {
                     summon = sms;
                     break;
                 }
             }
         } else {
-            summon = map.getSummonByOid(oid);
+            summon = map.getSummonByOid(m_dwSummonedID);
         }
 
         if (summon == null) {
@@ -86,25 +87,23 @@ public class ReqCSummonedPool {
 
         switch (header) {
             case CP_SummonedMove: {
-                // CSummoned::OnMove
-                // CField::OnSummonedMove
                 OnMove(cp, chr, summon);
                 return true;
             }
             case CP_SummonedAttack: {
-                SummonAttack(cp, summon, chr);
-                return true;
-            }
-            case CP_SummonedHit: {
-                DamageSummon(cp, chr);
+                OnAttack(cp, summon, chr);
                 return true;
             }
             case CP_SummonedSkill: {
-                // ?
+                // CSummoned::OnSkill
                 break;
             }
+            case CP_SummonedHit: {
+                OnHit(cp, chr);
+                return true;
+            }
             case CP_Remove: {
-                // ?
+                // CSummoned::OnRemoved
                 break;
             }
             default: {
@@ -116,6 +115,7 @@ public class ReqCSummonedPool {
         return false;
     }
 
+    // CSummoned::OnMove
     public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleSummon summon) {
         if (summon.getMovementType() == SummonMovementType.STATIONARY || summon.isChangedMap()) {
             return false;
@@ -126,12 +126,12 @@ public class ReqCSummonedPool {
             move_path.update(summon);
         }
 
-        chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.moveSummon(summon, move_path), summon.getPosition());
+        chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedMove(summon, move_path), summon.getPosition());
         return true;
     }
 
-    // SummonAttack
-    public static void SummonAttack(ClientPacket cp, MapleSummon summon, MapleCharacter chr) {
+    // CSummoned::OnAttack
+    public static void OnAttack(ClientPacket cp, MapleSummon summon, MapleCharacter chr) {
         final MapleMap map = chr.getMap();
 
         final SummonSkillEntry sse = SkillFactory.getSummonData(summon.getSkill());
@@ -175,7 +175,7 @@ public class ReqCSummonedPool {
             }
 
             if (!summon.isChangedMap()) {
-                map.broadcastMessageTo(chr, ResCSummonedPool.summonAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+                map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
             }
             ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
             MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
@@ -202,7 +202,7 @@ public class ReqCSummonedPool {
             }
 
             if (summon.isGaviota()) {
-                chr.getMap().broadcastMessage(ResCSummonedPool.removeSummon(summon, true));
+                chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
                 chr.getMap().removeMapObject(summon);
                 chr.removeVisibleMapObject(summon);
                 chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
@@ -217,7 +217,6 @@ public class ReqCSummonedPool {
 
             int tick = cp.Decode4();
             chr.updateTick(tick);
-            summon.CheckSummonAttackFrequency(chr, tick);
 
             cp.Decode4();
             cp.Decode4();
@@ -272,7 +271,7 @@ public class ReqCSummonedPool {
         }
 
         if (!summon.isChangedMap()) {
-            map.broadcastMessageTo(chr, ResCSummonedPool.summonAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+            map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
         }
         final ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
         final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
@@ -299,7 +298,7 @@ public class ReqCSummonedPool {
         }
 
         if (summon.isGaviota()) {
-            chr.getMap().broadcastMessage(ResCSummonedPool.removeSummon(summon, true));
+            chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
             chr.getMap().removeMapObject(summon);
             chr.removeVisibleMapObject(summon);
             chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
@@ -307,10 +306,11 @@ public class ReqCSummonedPool {
         }
     }
 
-    public static final void DamageSummon(ClientPacket p, final MapleCharacter chr) {
-        final int unkByte = p.Decode1();
-        final int damage = p.Decode4();
-        final int monsterIdFrom = p.Decode4();
+    // CSummoned::OnHit
+    public static void OnHit(ClientPacket cp, MapleCharacter chr) {
+        int unkByte = cp.Decode1();
+        int damage = cp.Decode4();
+        int monsterIdFrom = cp.Decode4();
 
         final Iterator<MapleSummon> iter = chr.getSummons().values().iterator();
         MapleSummon summon;
@@ -322,7 +322,7 @@ public class ReqCSummonedPool {
                 if (summon.getHP() <= 0) {
                     chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
                 }
-                chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.damageSummon(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
+                chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
                 break;
             }
         }

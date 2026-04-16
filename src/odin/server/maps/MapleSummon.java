@@ -35,11 +35,6 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     private short hp;
     private boolean changedMap = false;
     private SummonMovementType movementType;
-    // Since player can have more than 1 summon [Pirate] 
-    // Let's put it here instead of cheat tracker
-    private int lastSummonTickCount;
-    private byte Summon_tickResetCount;
-    private long Server_ClientSummonTickDiff;
 
     public MapleSummon(final MapleCharacter owner, final MapleStatEffect skill, final Point pos, final SummonMovementType movementType) {
         super();
@@ -55,12 +50,6 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
         } catch (NullPointerException e) {
             this.fh = 0; //lol, it can be fixed by movement
         }
-
-        if (!isPuppet()) { // Safe up 12 bytes of data, since puppet doesn't attack.
-            lastSummonTickCount = 0;
-            Summon_tickResetCount = 0;
-            Server_ClientSummonTickDiff = 0;
-        }
     }
 
     @Override
@@ -69,7 +58,7 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
 
     @Override
     public final void sendDestroyData(final MapleClient client) {
-        client.getSession().write(ResCSummonedPool.removeSummon(this, false));
+        client.getSession().write(ResCSummonedPool.SummonedLeaveField(this, false));
     }
 
     public final void updateMap(final MapleMap map) {
@@ -197,18 +186,6 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     @Override
     public final MapleMapObjectType getType() {
         return MapleMapObjectType.SUMMON;
-    }
-
-    public final void CheckSummonAttackFrequency(final MapleCharacter chr, final int tickcount) {
-        final int tickdifference = (tickcount - lastSummonTickCount);
-        final long STime_TC = System.currentTimeMillis() - tickcount;
-        final long S_C_Difference = Server_ClientSummonTickDiff - STime_TC;
-        Summon_tickResetCount++;
-        if (Summon_tickResetCount > 4) {
-            Summon_tickResetCount = 0;
-            Server_ClientSummonTickDiff = STime_TC;
-        }
-        lastSummonTickCount = tickcount;
     }
 
     public final boolean isChangedMap() {

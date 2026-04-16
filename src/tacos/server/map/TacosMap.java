@@ -690,7 +690,7 @@ public class TacosMap extends TacosMapData {
 
     public void spawnSummon(MapleSummon summon) {
         addMapObject(summon);
-        spawnRangedMapObject(summon, ResCSummonedPool.spawnSummon(summon, true));
+        spawnRangedMapObject(summon, ResCSummonedPool.SummonedEnterField(summon, true));
     }
 
     public List<MapleMonster> getAllMonsters() {

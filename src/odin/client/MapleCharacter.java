@@ -1242,7 +1242,7 @@ public class MapleCharacter extends TacosCharacter {
                     final int summonId = mbsvh.effect.getSourceId();
                     final MapleSummon summon = summons.get(summonId);
                     if (summon != null) {
-                        map.broadcastMessage(ResCSummonedPool.removeSummon(summon, true));
+                        map.broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
                         map.removeMapObject(summon);
                         removeVisibleMapObject(summon);
                         summons.remove(summonId);
@@ -2827,7 +2827,7 @@ public class MapleCharacter extends TacosCharacter {
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {
-                    client.getSession().write(ResCSummonedPool.spawnSummon(summon, false));
+                    client.getSession().write(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
             }
             if (followid > 0) {
