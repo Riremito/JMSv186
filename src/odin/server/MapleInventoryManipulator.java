@@ -562,7 +562,7 @@ public class MapleInventoryManipulator {
         }
 
         final Map<String, Integer> stats = ii.getEquipStats(source.getItemId());
-        if (dst < -999 && !GameConstants.isEvanDragonItem(source.getItemId())) {
+        if (dst < -999 && !GameConstants.isEvanDragonItem(source.getItemId()) && dst != -1400) {
             chr.updateInv();
             return;
         } else if (dst >= -999 && dst < -99 && stats.get("cash") == 0) {

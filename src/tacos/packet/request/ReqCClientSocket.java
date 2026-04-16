@@ -43,11 +43,13 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
+import tacos.packet.response.ResCUser_FoxMan;
 import tacos.server.TacosWorld;
 
 /**
@@ -281,6 +283,11 @@ public class ReqCClientSocket {
                     if (pet.getSummoned()) {
                         chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
                     }
+                }
+                // fox
+                if (TacosConstants.is_kanna(chr.getJob())) {
+                    // test
+                    chr.SendPacket(ResCUser_FoxMan.FoxManEnterField(chr));
                 }
                 if (Version.LessOrEqual(Region.JMS, 131) || Region.check(Region.BMS)) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));

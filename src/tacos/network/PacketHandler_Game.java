@@ -35,6 +35,7 @@ import tacos.packet.request.ReqCUIGoldHammer;
 import tacos.packet.request.ReqCUIItemUpgrade;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.request.ReqCUser_Dragon;
+import tacos.packet.request.ReqCUser_FoxMan;
 import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.request.Req_MapleTV;
 import tacos.server.TacosServer;
@@ -72,6 +73,10 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
             // dragon
             if (header.between(ClientPacketHeader.CP_BEGIN_DRAGON, ClientPacketHeader.CP_END_DRAGON)) {
                 return ReqCUser_Dragon.OnMove(client, header, cp);
+            }
+            // fox
+            if (header.between(ClientPacketHeader.CP_BEGIN_FOXMAN, ClientPacketHeader.CP_END_FOXMAN)) {
+                return ReqCUser_FoxMan.OnPacket(client, header, cp);
             }
             return ReqCUser.OnPacket(client, header, cp);
         }
