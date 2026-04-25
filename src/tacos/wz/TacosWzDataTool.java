@@ -54,6 +54,7 @@ public class TacosWzDataTool {
         }
         IMapleData data = source.getChildByPath(path);
         if (data == null) {
+            //DebugLogger.XmlDataLog(null, "getIntExpression");
             return def;
         }
         if (data.getType() != MapleDataType.STRING) {
@@ -71,7 +72,7 @@ public class TacosWzDataTool {
         }
         Object ret = data.getData();
         if (ret == null) {
-            DebugLogger.XmlDataLog(data, "def");
+            DebugLogger.XmlDataLog(data, "getInt def");
             return def;
         }
 
@@ -106,7 +107,7 @@ public class TacosWzDataTool {
         }
         String ret = (String) data.getData();
         if (ret == null) {
-            DebugLogger.XmlDataLog(data, "null");
+            DebugLogger.XmlDataLog(data, "getLong def");
             return def;
         }
         return Long.parseLong(ret);
@@ -120,7 +121,7 @@ public class TacosWzDataTool {
         }
         Float ret = (Float) data.getData();
         if (ret == null) {
-            DebugLogger.XmlDataLog(data, "null");
+            DebugLogger.XmlDataLog(data, "getFloat def");
             return def;
         }
         return (Float) data.getData();
@@ -134,7 +135,7 @@ public class TacosWzDataTool {
         }
         Double ret = (Double) data.getData();
         if (ret == null) {
-            DebugLogger.XmlDataLog(data, "def");
+            DebugLogger.XmlDataLog(data, "getDouble def");
             return def;
         }
         return ret;
@@ -147,7 +148,7 @@ public class TacosWzDataTool {
         }
         String ret = (String) data.getData();
         if (ret == null) {
-            DebugLogger.XmlDataLog(data, "def");
+            DebugLogger.XmlDataLog(data, "getString def");
             return def;
         }
         return ret;
@@ -161,7 +162,7 @@ public class TacosWzDataTool {
         }
         Point ret = (Point) data.getData();
         if (ret == null) {
-            DebugLogger.XmlDataLog(data, "def");
+            DebugLogger.XmlDataLog(data, "getPoint def");
             return null;
         }
         return ret;
