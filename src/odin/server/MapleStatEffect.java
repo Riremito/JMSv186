@@ -23,7 +23,6 @@ import tacos.config.ContentState;
 import odin.constants.GameConstants;
 import java.util.Arrays;
 import java.util.Collections;
-import odin.provider.MapleDataTool;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.SummonMovementType;
 import java.util.EnumMap;
@@ -47,6 +46,7 @@ import odin.server.maps.MapleMist;
 import odin.server.maps.MapleSummon;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
+import tacos.wz.TacosWzDataTool;
 
 public class MapleStatEffect implements Serializable {
 
@@ -236,23 +236,23 @@ public class MapleStatEffect implements Serializable {
         if (source == null) {
             return ret;
         }
-        ret.duration = MapleDataTool.getInt("time", source, -1, common_level);
-        ret.hp = (short) MapleDataTool.getInt("hp", source, 0, common_level);
-        ret.hpR = MapleDataTool.getInt("hpR", source, 0, common_level) / 100.0;
-        ret.mp = (short) MapleDataTool.getInt("mp", source, 0, common_level);
-        ret.mpR = MapleDataTool.getInt("mpR", source, 0, common_level) / 100.0;
-        ret.mhpR = (byte) MapleDataTool.getInt("mhpR", source, 0, common_level);
-        ret.mmpR = (byte) MapleDataTool.getInt("mmpR", source, 0, common_level);
-        ret.mpCon = (short) MapleDataTool.getInt("mpCon", source, 0, common_level);
-        ret.hpCon = (short) MapleDataTool.getInt("hpCon", source, 0, common_level);
-        ret.prop = (short) MapleDataTool.getInt("prop", source, 100, common_level);
-        ret.cooldown = MapleDataTool.getInt("cooltime", source, 0, common_level);
-        ret.expinc = MapleDataTool.getInt("expinc", source, 0, common_level);
-        ret.morphId = MapleDataTool.getInt("morph", source, 0, common_level);
-        ret.cp = MapleDataTool.getInt("cp", source, 0, common_level);
-        ret.nuffSkill = MapleDataTool.getInt("nuffSkill", source, 0, common_level);
-        ret.mobCount = (byte) MapleDataTool.getInt("mobCount", source, 1, common_level);
-        ret.exp = MapleDataTool.getInt("exp", source, 0, common_level);
+        ret.duration = TacosWzDataTool.getIntExpression("time", source, -1, common_level);
+        ret.hp = (short) TacosWzDataTool.getIntExpression("hp", source, 0, common_level);
+        ret.hpR = TacosWzDataTool.getIntExpression("hpR", source, 0, common_level) / 100.0;
+        ret.mp = (short) TacosWzDataTool.getIntExpression("mp", source, 0, common_level);
+        ret.mpR = TacosWzDataTool.getIntExpression("mpR", source, 0, common_level) / 100.0;
+        ret.mhpR = (byte) TacosWzDataTool.getIntExpression("mhpR", source, 0, common_level);
+        ret.mmpR = (byte) TacosWzDataTool.getIntExpression("mmpR", source, 0, common_level);
+        ret.mpCon = (short) TacosWzDataTool.getIntExpression("mpCon", source, 0, common_level);
+        ret.hpCon = (short) TacosWzDataTool.getIntExpression("hpCon", source, 0, common_level);
+        ret.prop = (short) TacosWzDataTool.getIntExpression("prop", source, 100, common_level);
+        ret.cooldown = TacosWzDataTool.getIntExpression("cooltime", source, 0, common_level);
+        ret.expinc = TacosWzDataTool.getIntExpression("expinc", source, 0, common_level);
+        ret.morphId = TacosWzDataTool.getIntExpression("morph", source, 0, common_level);
+        ret.cp = TacosWzDataTool.getIntExpression("cp", source, 0, common_level);
+        ret.nuffSkill = TacosWzDataTool.getIntExpression("nuffSkill", source, 0, common_level);
+        ret.mobCount = (byte) TacosWzDataTool.getIntExpression("mobCount", source, 1, common_level);
+        ret.exp = TacosWzDataTool.getIntExpression("exp", source, 0, common_level);
 
         if (skill) {
             switch (sourceid) {
@@ -279,43 +279,43 @@ public class MapleStatEffect implements Serializable {
         }
         final ArrayList<OdinPair<MapleBuffStat, Integer>> statups = new ArrayList<OdinPair<MapleBuffStat, Integer>>();
 
-        ret.mastery = (byte) MapleDataTool.getInt("mastery", source, 0, common_level);
-        ret.watk = (short) MapleDataTool.getInt("pad", source, 0, common_level);
-        ret.wdef = (short) MapleDataTool.getInt("pdd", source, 0, common_level);
-        ret.matk = (short) MapleDataTool.getInt("mad", source, 0, common_level);
-        ret.mdef = (short) MapleDataTool.getInt("mdd", source, 0, common_level);
-        ret.ehp = (short) MapleDataTool.getInt("emhp", source, 0, common_level);
-        ret.emp = (short) MapleDataTool.getInt("emmp", source, 0, common_level);
-        ret.ewatk = (short) MapleDataTool.getInt("epad", source, 0, common_level);
-        ret.ewdef = (short) MapleDataTool.getInt("epdd", source, 0, common_level);
-        ret.emdef = (short) MapleDataTool.getInt("emdd", source, 0, common_level);
-        ret.acc = (short) MapleDataTool.getInt("acc", source, 0, common_level);
-        ret.avoid = (short) MapleDataTool.getInt("eva", source, 0, common_level);
-        ret.speed = (short) MapleDataTool.getInt("speed", source, 0, common_level);
-        ret.jump = (short) MapleDataTool.getInt("jump", source, 0, common_level);
-        ret.expBuff = MapleDataTool.getInt("expBuff", source, 0, common_level);
-        ret.cashup = MapleDataTool.getInt("cashBuff", source, 0, common_level);
-        ret.itemup = MapleDataTool.getInt("itemupbyitem", source, 0, common_level);
-        ret.mesoup = MapleDataTool.getInt("mesoupbyitem", source, 0, common_level);
-        ret.berserk = MapleDataTool.getInt("berserk", source, 0, common_level);
-        ret.berserk2 = MapleDataTool.getInt("berserk2", source, 0, common_level);
+        ret.mastery = (byte) TacosWzDataTool.getIntExpression("mastery", source, 0, common_level);
+        ret.watk = (short) TacosWzDataTool.getIntExpression("pad", source, 0, common_level);
+        ret.wdef = (short) TacosWzDataTool.getIntExpression("pdd", source, 0, common_level);
+        ret.matk = (short) TacosWzDataTool.getIntExpression("mad", source, 0, common_level);
+        ret.mdef = (short) TacosWzDataTool.getIntExpression("mdd", source, 0, common_level);
+        ret.ehp = (short) TacosWzDataTool.getIntExpression("emhp", source, 0, common_level);
+        ret.emp = (short) TacosWzDataTool.getIntExpression("emmp", source, 0, common_level);
+        ret.ewatk = (short) TacosWzDataTool.getIntExpression("epad", source, 0, common_level);
+        ret.ewdef = (short) TacosWzDataTool.getIntExpression("epdd", source, 0, common_level);
+        ret.emdef = (short) TacosWzDataTool.getIntExpression("emdd", source, 0, common_level);
+        ret.acc = (short) TacosWzDataTool.getIntExpression("acc", source, 0, common_level);
+        ret.avoid = (short) TacosWzDataTool.getIntExpression("eva", source, 0, common_level);
+        ret.speed = (short) TacosWzDataTool.getIntExpression("speed", source, 0, common_level);
+        ret.jump = (short) TacosWzDataTool.getIntExpression("jump", source, 0, common_level);
+        ret.expBuff = TacosWzDataTool.getIntExpression("expBuff", source, 0, common_level);
+        ret.cashup = TacosWzDataTool.getIntExpression("cashBuff", source, 0, common_level);
+        ret.itemup = TacosWzDataTool.getIntExpression("itemupbyitem", source, 0, common_level);
+        ret.mesoup = TacosWzDataTool.getIntExpression("mesoupbyitem", source, 0, common_level);
+        ret.berserk = TacosWzDataTool.getIntExpression("berserk", source, 0, common_level);
+        ret.berserk2 = TacosWzDataTool.getIntExpression("berserk2", source, 0, common_level);
         ret.booster = 0;
-        ret.illusion = MapleDataTool.getInt("illusion", source, 0, common_level);
+        ret.illusion = TacosWzDataTool.getIntExpression("illusion", source, 0, common_level);
 
         List<MapleDisease> cure = new ArrayList<MapleDisease>(5);
-        if (MapleDataTool.getInt("poison", source, 0) > 0) {
+        if (TacosWzDataTool.getIntPath("poison", source, 0) > 0) {
             cure.add(MapleDisease.POISON);
         }
-        if (MapleDataTool.getInt("seal", source, 0) > 0) {
+        if (TacosWzDataTool.getIntPath("seal", source, 0) > 0) {
             cure.add(MapleDisease.SEAL);
         }
-        if (MapleDataTool.getInt("darkness", source, 0) > 0) {
+        if (TacosWzDataTool.getIntPath("darkness", source, 0) > 0) {
             cure.add(MapleDisease.DARKNESS);
         }
-        if (MapleDataTool.getInt("weakness", source, 0) > 0) {
+        if (TacosWzDataTool.getIntPath("weakness", source, 0) > 0) {
             cure.add(MapleDisease.WEAKEN);
         }
-        if (MapleDataTool.getInt("curse", source, 0) > 0) {
+        if (TacosWzDataTool.getIntPath("curse", source, 0) > 0) {
             cure.add(MapleDisease.CURSE);
         }
         ret.cureDebuffs = cure;
@@ -326,18 +326,18 @@ public class MapleStatEffect implements Serializable {
             ret.rb = (Point) source.getChildByPath("rb").getData();
         }
 
-        ret.x = MapleDataTool.getInt("x", source, 0, common_level);
-        ret.y = MapleDataTool.getInt("y", source, 0, common_level);
-        ret.z = MapleDataTool.getInt("z", source, 0, common_level);
-        ret.damage = (short) MapleDataTool.getIntConvert("damage", source, 100);
-        ret.attackCount = (byte) MapleDataTool.getIntConvert("attackCount", source, 1);
-        ret.bulletCount = (byte) MapleDataTool.getIntConvert("bulletCount", source, 1);
-        ret.bulletConsume = MapleDataTool.getIntConvert("bulletConsume", source, 0);
-        ret.moneyCon = MapleDataTool.getIntConvert("moneyCon", source, 0);
+        ret.x = TacosWzDataTool.getIntExpression("x", source, 0, common_level);
+        ret.y = TacosWzDataTool.getIntExpression("y", source, 0, common_level);
+        ret.z = TacosWzDataTool.getIntExpression("z", source, 0, common_level);
+        ret.damage = (short) TacosWzDataTool.getIntConvert("damage", source, 100);
+        ret.attackCount = (byte) TacosWzDataTool.getIntConvert("attackCount", source, 1);
+        ret.bulletCount = (byte) TacosWzDataTool.getIntConvert("bulletCount", source, 1);
+        ret.bulletConsume = TacosWzDataTool.getIntConvert("bulletConsume", source, 0);
+        ret.moneyCon = TacosWzDataTool.getIntConvert("moneyCon", source, 0);
 
-        ret.itemCon = MapleDataTool.getInt("itemCon", source, 0);
-        ret.itemConNo = MapleDataTool.getInt("itemConNo", source, 0);
-        ret.moveTo = MapleDataTool.getInt("moveTo", source, -1);
+        ret.itemCon = TacosWzDataTool.getIntPath("itemCon", source, 0);
+        ret.itemConNo = TacosWzDataTool.getIntPath("itemConNo", source, 0);
+        ret.moveTo = TacosWzDataTool.getIntPath("moveTo", source, -1);
 
         Map<MonsterStatus, Integer> monsterStatus = new EnumMap<MonsterStatus, Integer>(MonsterStatus.class);
         if (ret.overTime && ret.getSummonMovementType() == null) {

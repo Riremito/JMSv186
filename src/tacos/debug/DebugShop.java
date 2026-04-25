@@ -294,8 +294,13 @@ public class DebugShop {
             quantity = (int) item.getQuantity();
         }
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-        int item_price = is_recharge_item ? (int) (miip.getWholePrice(item.getItemId()) / (double) miip.getSlotMax(chr.getClient(), item.getItemId())) : (int) miip.getPrice(item.getItemId());
-        item_price *= quantity;
+        int item_price = miip.getWholePrice(item.getItemId());
+        if (is_recharge_item) {
+            double unit_price = miip.getPrice(item.getItemId());
+            item_price += (int) (unit_price * miip.getSlotMax(chr.getClient(), item.getItemId()));
+        } else {
+            item_price *= quantity;
+        }
         if (item_price < 0) {
             item_price = 0;
             DebugLogger.ErrorLog("item price set to 0 : " + item_id + " (" + quantity + ")");

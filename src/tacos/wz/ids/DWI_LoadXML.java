@@ -24,12 +24,12 @@ import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import odin.provider.MapleDataTool;
 import tacos.wz.TacosWz;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
 import odin.provider.IMapleDataProvider;
+import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -202,8 +202,8 @@ public class DWI_LoadXML {
                     int map_id = Integer.parseInt(img_matcher.group(1));
                     IMapleDataProvider map_root = (new TacosWz("Map.wz/Map/" + map_dir.getName() + "/")).getWzRoot();
                     IMapleData map_data = map_root.getData(dir.getName());
-                    if (MapleDataTool.getInt("info/town", map_data) != 0) {
-                        int map_id_return = MapleDataTool.getInt("info/returnMap", map_data);
+                    if (TacosWzDataTool.getIntPath("info/town", map_data, 0) != 0) {
+                        int map_id_return = TacosWzDataTool.getIntPath("info/returnMap", map_data, 0);
                         if (map_id_return == map_id) {
                             DebugLogger.DebugLog("town mapid = " + map_id);
                         }

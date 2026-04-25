@@ -31,12 +31,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.provider.MapleDataTool;
 import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataEntity;
+import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -116,9 +116,9 @@ public class SkillWz extends TacosWz {
                                 summon_data = data2.getChildByPath("summon/attack1/info");
                                 if (summon_data != null) {
                                     sse = new SummonSkillEntry();
-                                    sse.attackAfter = (short) MapleDataTool.getInt("attackAfter", summon_data, 999999);
-                                    sse.type = (byte) MapleDataTool.getInt("type", summon_data, 0);
-                                    sse.mobCount = (byte) MapleDataTool.getInt("mobCount", summon_data, 1);
+                                    sse.attackAfter = (short) TacosWzDataTool.getIntPath("attackAfter", summon_data, 999999);
+                                    sse.type = (byte) TacosWzDataTool.getIntPath("type", summon_data, 0);
+                                    sse.mobCount = (byte) TacosWzDataTool.getIntPath("mobCount", summon_data, 1);
                                     map_SummonSkillInformation.put(skillid, sse);
                                 }
                             }
@@ -187,7 +187,7 @@ public class SkillWz extends TacosWz {
             if (skillData.getChildByPath(String.valueOf(i)) == null) {
                 break;
             }
-            toSummon.add(MapleDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
+            toSummon.add(TacosWzDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
         }
 
         final IMapleData ltd = skillData.getChildByPath("lt");
@@ -200,15 +200,15 @@ public class SkillWz extends TacosWz {
 
         MobSkill ret = new MobSkill(skillId, level);
         ret.addSummons(toSummon);
-        ret.setCoolTime(MapleDataTool.getInt("interval", skillData, 0) * 1000);
-        ret.setDuration(MapleDataTool.getInt("time", skillData, 1) * 1000);
-        ret.setHp(MapleDataTool.getInt("hp", skillData, 100));
-        ret.setMpCon(MapleDataTool.getInt(skillData.getChildByPath("mpCon"), 0));
-        ret.setSpawnEffect(MapleDataTool.getInt("summonEffect", skillData, 0));
-        ret.setX(MapleDataTool.getInt("x", skillData, 1));
-        ret.setY(MapleDataTool.getInt("y", skillData, 1));
-        ret.setProp(MapleDataTool.getInt("prop", skillData, 100) / 100f);
-        ret.setLimit((short) MapleDataTool.getInt("limit", skillData, 0));
+        ret.setCoolTime(TacosWzDataTool.getIntPath("interval", skillData, 0) * 1000);
+        ret.setDuration(TacosWzDataTool.getIntPath("time", skillData, 1) * 1000);
+        ret.setHp(TacosWzDataTool.getIntPath("hp", skillData, 100));
+        ret.setMpCon(TacosWzDataTool.getInt(skillData.getChildByPath("mpCon"), 0));
+        ret.setSpawnEffect(TacosWzDataTool.getIntPath("summonEffect", skillData, 0));
+        ret.setX(TacosWzDataTool.getIntPath("x", skillData, 1));
+        ret.setY(TacosWzDataTool.getIntPath("y", skillData, 1));
+        ret.setProp(TacosWzDataTool.getIntPath("prop", skillData, 100) / 100f);
+        ret.setLimit((short) TacosWzDataTool.getIntPath("limit", skillData, 0));
         ret.setLtRb(lt, rb);
 
         map_mobSkills.put(new OdinPair<>(skillId, level), ret);
@@ -230,13 +230,13 @@ public class SkillWz extends TacosWz {
             // THMS meme
             int mobSkillID = 0;
             try {
-                mobSkillID = MapleDataTool.getInt("mobSkillID", md, 0);
+                mobSkillID = TacosWzDataTool.getIntPath("mobSkillID", md, 0);
             } catch (NumberFormatException e) {
                 // MCSkill.img/4/mobSkillID
                 DebugLogger.ErrorLog("MCSkill.img/" + md.getName() + "/mobSkillID");
                 continue;
             }
-            map_MCSkill.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(MapleDataTool.getInt("spendCP", md, 0), mobSkillID, MapleDataTool.getInt("level", md, 0), MapleDataTool.getInt("target", md, 1) > 1));
+            map_MCSkill.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(TacosWzDataTool.getIntPath("spendCP", md, 0), mobSkillID, TacosWzDataTool.getIntPath("level", md, 0), TacosWzDataTool.getIntPath("target", md, 1) > 1));
         }
         return map_MCSkill;
     }
@@ -248,7 +248,7 @@ public class SkillWz extends TacosWz {
 
         map_MCGuardian = new HashMap<>();
         for (IMapleData md : getData("MCGuardian.img")) {
-            map_MCGuardian.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(MapleDataTool.getInt("spendCP", md, 0), MapleDataTool.getInt("mobSkillID", md, 0), MapleDataTool.getInt("level", md, 0), true));
+            map_MCGuardian.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(TacosWzDataTool.getIntPath("spendCP", md, 0), TacosWzDataTool.getIntPath("mobSkillID", md, 0), TacosWzDataTool.getIntPath("level", md, 0), true));
         }
         return map_MCGuardian;
     }

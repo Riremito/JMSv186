@@ -84,7 +84,7 @@ public class PacketHandler extends IoHandlerAdapter {
         cfg.setDisconnectOnUnbind(true);
         // java uses thread for all packets.
         // this settings change it to single thread. and all channel work under same thread.
-        ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance("client");
+        ExecutorThreadModel threadModel = ExecutorThreadModel.getInstance("client"); // slf4j is used.
         ThreadPoolExecutor eventExecutor = (ThreadPoolExecutor) threadModel.getExecutor();
         eventExecutor.setCorePoolSize(1);
         eventExecutor.setMaximumPoolSize(1);

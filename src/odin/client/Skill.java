@@ -25,10 +25,10 @@ import odin.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
 
-import odin.provider.MapleDataTool;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
 import odin.provider.IMapleData;
+import tacos.wz.TacosWzDataTool;
 
 public class Skill implements ISkill {
 
@@ -63,16 +63,16 @@ public class Skill implements ISkill {
         Skill ret = new Skill(id);
 
         boolean isBuff = false;
-        final int skillType = MapleDataTool.getInt("skillType", data, -1);
-        final String elem = MapleDataTool.getString("elemAttr", data, null);
+        final int skillType = TacosWzDataTool.getIntPath("skillType", data, -1);
+        final String elem = TacosWzDataTool.getStringPath("elemAttr", data, null);
         if (elem != null) {
             ret.element = Element.getFromChar(elem.charAt(0));
         } else {
             ret.element = Element.NEUTRAL;
         }
-        ret.invisible = MapleDataTool.getInt("invisible", data, 0) > 0;
-        ret.timeLimited = MapleDataTool.getInt("timeLimited", data, 0) > 0;
-        ret.masterLevel = MapleDataTool.getInt("masterLevel", data, 0);
+        ret.invisible = TacosWzDataTool.getIntPath("invisible", data, 0) > 0;
+        ret.timeLimited = TacosWzDataTool.getIntPath("timeLimited", data, 0) > 0;
+        ret.masterLevel = TacosWzDataTool.getIntPath("masterLevel", data, 0);
         final IMapleData effect = data.getChildByPath("effect");
         if (skillType != -1) {
             if (skillType == 2) {
@@ -105,7 +105,7 @@ public class Skill implements ISkill {
             }
             ret.action = action;
             isBuff = effect != null && hit == null && ball == null;
-            isBuff |= action_ != null && MapleDataTool.getString("0", action_, "").equals("alert2");
+            isBuff |= action_ != null && TacosWzDataTool.getStringPath("0", action_, "").equals("alert2");
             switch (id) {
                 case 2301002: // heal is alert2 but not overtime...
                 case 2111003: // poison mist
@@ -206,7 +206,7 @@ public class Skill implements ISkill {
             IMapleData common = data.getChildByPath("common");
             if (common != null) {
                 // after bigbang updates
-                int max_level = MapleDataTool.getInt("maxLevel", common, -1);
+                int max_level = TacosWzDataTool.getIntPath("maxLevel", common, -1);
                 for (int level = 1; level <= max_level; level++) {
                     ret.effects.add(MapleStatEffect.loadSkillEffectFromData(common, id, isBuff, (byte) level, level)); // 変数
                 }
@@ -222,13 +222,13 @@ public class Skill implements ISkill {
         if (reqDataRoot != null) {
             for (final IMapleData reqData : reqDataRoot.getChildren()) {
                 ret.requiredSkill = Integer.parseInt(reqData.getName());
-                ret.level = (byte) MapleDataTool.getInt(reqData, 1);
+                ret.level = (byte) TacosWzDataTool.getInt(reqData, 1);
             }
         }
         ret.animationTime = 0;
         if (effect != null) {
             for (final IMapleData effectEntry : effect) {
-                ret.animationTime += MapleDataTool.getIntConvert("delay", effectEntry, 0);
+                ret.animationTime += TacosWzDataTool.getIntConvert("delay", effectEntry, 0);
             }
         }
         return ret;

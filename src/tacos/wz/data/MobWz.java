@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.provider.MapleDataTool;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
 import tacos.odin.OdinPair;
@@ -33,6 +32,7 @@ import odin.tools.StringUtil;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
+import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -70,16 +70,16 @@ public class MobWz extends TacosWz {
         if (mobData != null) {
             IMapleData infoData = mobData.getChildByPath("info/link");
             if (infoData != null) {
-                String linkedmob = MapleDataTool.getString("info/link", mobData);
+                String linkedmob = TacosWzDataTool.getStringPath("info/link", mobData, "");
                 mobData = getData(StringUtil.getLeftPaddedStr(linkedmob + ".img", '0', 11));
             }
             final IMapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
             if (attackData != null) {
                 ret.setDeadlyAttack(attackData.getChildByPath("deadlyAttack") != null);
-                ret.setMpBurn(MapleDataTool.getInt("mpBurn", attackData, 0));
-                ret.setDiseaseSkill(MapleDataTool.getInt("disease", attackData, 0));
-                ret.setDiseaseLevel(MapleDataTool.getInt("level", attackData, 0));
-                ret.setMpCon(MapleDataTool.getInt("conMP", attackData, 0));
+                ret.setMpBurn(TacosWzDataTool.getIntPath("mpBurn", attackData, 0));
+                ret.setDiseaseSkill(TacosWzDataTool.getIntPath("disease", attackData, 0));
+                ret.setDiseaseLevel(TacosWzDataTool.getIntPath("level", attackData, 0));
+                ret.setMpCon(TacosWzDataTool.getIntPath("conMP", attackData, 0));
             }
         }
         map_mobAttacks.put(new OdinPair<>(mob.getId(), attack), ret);
@@ -101,7 +101,7 @@ public class MobWz extends TacosWz {
                     if (dat != null && dat.getChildByPath("info") != null) {
                         List<Integer> z = new ArrayList<>();
                         for (IMapleData da : dat.getChildByPath("info")) {
-                            z.add(MapleDataTool.getInt(da, 0));
+                            z.add(TacosWzDataTool.getInt(da, 0));
                         }
                         map_QuestCountGroup.put(id, z);
                     } else {

@@ -36,11 +36,11 @@ import java.util.List;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.packet.response.wrapper.WrapCUserLocal;
-import odin.provider.MapleDataTool;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.provider.IMapleData;
+import tacos.wz.TacosWzDataTool;
 
 public class MapleQuestAction implements Serializable {
 
@@ -60,13 +60,13 @@ public class MapleQuestAction implements Serializable {
 
     private static boolean canGetItem(IMapleData item, MapleCharacter c) {
         if (item.getChildByPath("gender") != null) {
-            final int gender = MapleDataTool.getInt(item.getChildByPath("gender"));
+            final int gender = TacosWzDataTool.getInt(item.getChildByPath("gender"));
             if (gender != 2 && gender != c.getGender()) {
                 return false;
             }
         }
         if (item.getChildByPath("job") != null) {
-            final int job = MapleDataTool.getInt(item.getChildByPath("job"));
+            final int job = TacosWzDataTool.getInt(item.getChildByPath("job"));
             final List<Integer> code = getJobBy5ByteEncoding(job);
             boolean jobFound = false;
             for (int codec : code) {
@@ -76,7 +76,7 @@ public class MapleQuestAction implements Serializable {
                 }
             }
             if (!jobFound && item.getChildByPath("jobEx") != null) {
-                final int jobEx = MapleDataTool.getInt(item.getChildByPath("jobEx"));
+                final int jobEx = TacosWzDataTool.getInt(item.getChildByPath("jobEx"));
                 final List<Integer> codeEx = getJobBy5ByteEncoding(jobEx);
                 for (int codec : codeEx) {
                     if (codec / 100 == c.getJob() / 100) {
@@ -95,7 +95,7 @@ public class MapleQuestAction implements Serializable {
             int retitem;
 
             for (final IMapleData iEntry : data.getChildren()) {
-                retitem = MapleDataTool.getInt(iEntry.getChildByPath("id"), -1);
+                retitem = TacosWzDataTool.getInt(iEntry.getChildByPath("id"), -1);
                 if (retitem == itemid) {
                     if (!c.haveItem(retitem, 1, true, false)) {
                         MapleInventoryManipulator.addById(c.getClient(), retitem, (short) 1);
@@ -115,7 +115,7 @@ public class MapleQuestAction implements Serializable {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.gainExp(MapleDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(c.getLevel()), true, true, true);
+                c.gainExp(TacosWzDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(c.getLevel()), true, true, true);
                 break;
             case item:
                 // first check for randomness in item selection
@@ -123,9 +123,9 @@ public class MapleQuestAction implements Serializable {
                 IMapleData prop;
                 for (IMapleData iEntry : data.getChildren()) {
                     prop = iEntry.getChildByPath("prop");
-                    if (prop != null && MapleDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
-                        for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
-                            props.put(props.size(), MapleDataTool.getInt(iEntry.getChildByPath("id")));
+                    if (prop != null && TacosWzDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
+                        for (int i = 0; i < TacosWzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
+                            props.put(props.size(), TacosWzDataTool.getInt(iEntry.getChildByPath("id")));
                         }
                     }
                 }
@@ -138,9 +138,9 @@ public class MapleQuestAction implements Serializable {
                     if (!canGetItem(iEntry, c)) {
                         continue;
                     }
-                    final int id = MapleDataTool.getInt(iEntry.getChildByPath("id"), -1);
+                    final int id = TacosWzDataTool.getInt(iEntry.getChildByPath("id"), -1);
                     if (iEntry.getChildByPath("prop") != null) {
-                        if (MapleDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
+                        if (TacosWzDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
                             if (extSelection != extNum++) {
                                 continue;
                             }
@@ -148,7 +148,7 @@ public class MapleQuestAction implements Serializable {
                             continue;
                         }
                     }
-                    final short count = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"), 1);
+                    final short count = (short) TacosWzDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         try {
                             MapleInventoryManipulator.removeById(c.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
@@ -158,7 +158,7 @@ public class MapleQuestAction implements Serializable {
                         }
                         c.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
                     } else { // add items
-                        final int period = MapleDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440; //im guessing.
+                        final int period = TacosWzDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440; //im guessing.
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
                         if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                             final String msg = "You have attained title <" + name + ">";
@@ -175,32 +175,32 @@ public class MapleQuestAction implements Serializable {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), status.getNpc(), MapleDataTool.getInt(data)));
+                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), status.getNpc(), TacosWzDataTool.getInt(data)));
                 break;
             case money:
                 status = c.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.gainMeso(MapleDataTool.getInt(data, 0), true, false, true);
+                c.gainMeso(TacosWzDataTool.getInt(data, 0), true, false, true);
                 break;
             case quest:
                 for (IMapleData qEntry : data) {
                     c.updateQuest(
-                            new MapleQuestStatus(MapleQuest.getInstance(MapleDataTool.getInt(qEntry.getChildByPath("id"))),
-                                    (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
+                            new MapleQuestStatus(MapleQuest.getInstance(TacosWzDataTool.getInt(qEntry.getChildByPath("id"))),
+                                    (byte) TacosWzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             case skill:
                 //TODO needs gain/lost message?
                 for (IMapleData sEntry : data) {
-                    final int skillid = MapleDataTool.getInt(sEntry.getChildByPath("id"));
-                    int skillLevel = MapleDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
-                    int masterLevel = MapleDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
+                    final int skillid = TacosWzDataTool.getInt(sEntry.getChildByPath("id"));
+                    int skillLevel = TacosWzDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
+                    int masterLevel = TacosWzDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
                     final ISkill skillObject = SkillFactory.getSkill(skillid);
 
                     for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
-                        if (skillObject.isBeginnerSkill() || c.getJob() == MapleDataTool.getInt(applicableJob)) {
+                        if (skillObject.isBeginnerSkill() || c.getJob() == TacosWzDataTool.getInt(applicableJob)) {
                             c.changeSkillLevel(skillObject,
                                     (byte) Math.max(skillLevel, c.getSkillLevel(skillObject)),
                                     (byte) Math.max(masterLevel, c.getMasterLevel(skillObject)));
@@ -214,7 +214,7 @@ public class MapleQuestAction implements Serializable {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                final int fameGain = MapleDataTool.getInt(data, 0);
+                final int fameGain = TacosWzDataTool.getInt(data, 0);
                 c.addFame(fameGain);
                 c.sendStatChanged();
                 c.SendPacket(ResWrapper.getShowFameGain(fameGain));
@@ -224,7 +224,7 @@ public class MapleQuestAction implements Serializable {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                final int tobuff = MapleDataTool.getInt(data, -1);
+                final int tobuff = TacosWzDataTool.getInt(data, -1);
                 if (tobuff == -1) {
                     break;
                 }
@@ -241,11 +241,11 @@ public class MapleQuestAction implements Serializable {
                     break;
                 }
                 for (IMapleData iEntry : data.getChildren()) {
-                    final int sp_val = MapleDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
+                    final int sp_val = TacosWzDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
                     if (iEntry.getChildByPath("job") != null) {
                         int finalJob = 0;
                         for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
-                            final int job_val = MapleDataTool.getInt(jEntry, 0);
+                            final int job_val = TacosWzDataTool.getInt(jEntry, 0);
                             if (c.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;
                             }
@@ -274,9 +274,9 @@ public class MapleQuestAction implements Serializable {
 
                 for (IMapleData iEntry : data.getChildren()) {
                     final IMapleData prop = iEntry.getChildByPath("prop");
-                    if (prop != null && MapleDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
-                        for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
-                            props.put(props.size(), MapleDataTool.getInt(iEntry.getChildByPath("id")));
+                    if (prop != null && TacosWzDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
+                        for (int i = 0; i < TacosWzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
+                            props.put(props.size(), TacosWzDataTool.getInt(iEntry.getChildByPath("id")));
                         }
                     }
                 }
@@ -291,9 +291,9 @@ public class MapleQuestAction implements Serializable {
                     if (!canGetItem(iEntry, c)) {
                         continue;
                     }
-                    final int id = MapleDataTool.getInt(iEntry.getChildByPath("id"), -1);
+                    final int id = TacosWzDataTool.getInt(iEntry.getChildByPath("id"), -1);
                     if (iEntry.getChildByPath("prop") != null) {
-                        if (MapleDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
+                        if (TacosWzDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
                             if (extSelection != extNum++) {
                                 continue;
                             }
@@ -301,7 +301,7 @@ public class MapleQuestAction implements Serializable {
                             continue;
                         }
                     }
-                    final short count = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"), 1);
+                    final short count = (short) TacosWzDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         if (!c.haveItem(id, count, false, true)) {
                             c.dropMessage(1, "You are short of some item to complete quest.");
@@ -350,7 +350,7 @@ public class MapleQuestAction implements Serializable {
                 return true;
             }
             case money: {
-                final int meso = MapleDataTool.getInt(data, 0);
+                final int meso = TacosWzDataTool.getInt(data, 0);
                 if (c.getMeso() + meso < 0) { // Giving, overflow
                     c.dropMessage(1, "Meso exceed the max amount, 2147483647.");
                     return false;
@@ -367,7 +367,7 @@ public class MapleQuestAction implements Serializable {
     public void runEnd(MapleCharacter c, Integer extSelection) {
         switch (type) {
             case exp: {
-                c.gainExp(MapleDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(c.getLevel()), true, true, true);
+                c.gainExp(TacosWzDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(c.getLevel()), true, true, true);
                 break;
             }
             case item: {
@@ -376,9 +376,9 @@ public class MapleQuestAction implements Serializable {
 
                 for (IMapleData iEntry : data.getChildren()) {
                     final IMapleData prop = iEntry.getChildByPath("prop");
-                    if (prop != null && MapleDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
-                        for (int i = 0; i < MapleDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
-                            props.put(props.size(), MapleDataTool.getInt(iEntry.getChildByPath("id")));
+                    if (prop != null && TacosWzDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
+                        for (int i = 0; i < TacosWzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
+                            props.put(props.size(), TacosWzDataTool.getInt(iEntry.getChildByPath("id")));
                         }
                     }
                 }
@@ -391,9 +391,9 @@ public class MapleQuestAction implements Serializable {
                     if (!canGetItem(iEntry, c)) {
                         continue;
                     }
-                    final int id = MapleDataTool.getInt(iEntry.getChildByPath("id"), -1);
+                    final int id = TacosWzDataTool.getInt(iEntry.getChildByPath("id"), -1);
                     if (iEntry.getChildByPath("prop") != null) {
-                        if (MapleDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
+                        if (TacosWzDataTool.getInt(iEntry.getChildByPath("prop")) == -1) {
                             if (extSelection != extNum++) {
                                 continue;
                             }
@@ -401,12 +401,12 @@ public class MapleQuestAction implements Serializable {
                             continue;
                         }
                     }
-                    final short count = (short) MapleDataTool.getInt(iEntry.getChildByPath("count"), 1);
+                    final short count = (short) TacosWzDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         MapleInventoryManipulator.removeById(c.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
                         c.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
                     } else { // add items
-                        final int period = MapleDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440;
+                        final int period = TacosWzDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440;
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
                         if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                             final String msg = "You have attained title <" + name + ">";
@@ -420,30 +420,30 @@ public class MapleQuestAction implements Serializable {
                 break;
             }
             case nextQuest: {
-                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), c.getQuest(quest).getNpc(), MapleDataTool.getInt(data)));
+                c.getClient().getSession().write(ResCUserLocal.updateQuestFinish(quest.getId(), c.getQuest(quest).getNpc(), TacosWzDataTool.getInt(data)));
                 break;
             }
             case money: {
-                c.gainMeso(MapleDataTool.getInt(data, 0), true, false, true);
+                c.gainMeso(TacosWzDataTool.getInt(data, 0), true, false, true);
                 break;
             }
             case quest: {
                 for (IMapleData qEntry : data) {
                     c.updateQuest(
-                            new MapleQuestStatus(MapleQuest.getInstance(MapleDataTool.getInt(qEntry.getChildByPath("id"))),
-                                    (byte) MapleDataTool.getInt(qEntry.getChildByPath("state"), 0)));
+                            new MapleQuestStatus(MapleQuest.getInstance(TacosWzDataTool.getInt(qEntry.getChildByPath("id"))),
+                                    (byte) TacosWzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             }
             case skill: {
                 for (IMapleData sEntry : data) {
-                    final int skillid = MapleDataTool.getInt(sEntry.getChildByPath("id"));
-                    int skillLevel = MapleDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
-                    int masterLevel = MapleDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
+                    final int skillid = TacosWzDataTool.getInt(sEntry.getChildByPath("id"));
+                    int skillLevel = TacosWzDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
+                    int masterLevel = TacosWzDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
                     final ISkill skillObject = SkillFactory.getSkill(skillid);
 
                     for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
-                        if (skillObject.isBeginnerSkill() || c.getJob() == MapleDataTool.getInt(applicableJob)) {
+                        if (skillObject.isBeginnerSkill() || c.getJob() == TacosWzDataTool.getInt(applicableJob)) {
                             c.changeSkillLevel(skillObject,
                                     (byte) Math.max(skillLevel, c.getSkillLevel(skillObject)),
                                     (byte) Math.max(masterLevel, c.getMasterLevel(skillObject)));
@@ -454,14 +454,14 @@ public class MapleQuestAction implements Serializable {
                 break;
             }
             case pop: {
-                final int fameGain = MapleDataTool.getInt(data, 0);
+                final int fameGain = TacosWzDataTool.getInt(data, 0);
                 c.addFame(fameGain);
                 c.sendStatChanged();
                 c.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             }
             case buffItemID: {
-                final int tobuff = MapleDataTool.getInt(data, -1);
+                final int tobuff = TacosWzDataTool.getInt(data, -1);
                 if (tobuff == -1) {
                     break;
                 }
@@ -475,11 +475,11 @@ public class MapleQuestAction implements Serializable {
             }
             case sp: {
                 for (IMapleData iEntry : data.getChildren()) {
-                    final int sp_val = MapleDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
+                    final int sp_val = TacosWzDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
                     if (iEntry.getChildByPath("job") != null) {
                         int finalJob = 0;
                         for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
-                            final int job_val = MapleDataTool.getInt(jEntry, 0);
+                            final int job_val = TacosWzDataTool.getInt(jEntry, 0);
                             if (c.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;
                             }

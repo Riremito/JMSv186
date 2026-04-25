@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import odin.provider.IMapleData;
 import tacos.packet.ClientPacket;
 
 /**
@@ -150,6 +151,25 @@ public class DebugLogger {
             return false;
         }
         Log("WZ", log_text);
+        return true;
+    }
+
+    public static boolean XmlDataLog(IMapleData data, String text) {
+        if (!DeveloperMode.DM_LOG_WZ.get()) {
+            return false;
+        }
+        String data_path = "null";
+
+        if (data != null) {
+            data_path = data.getName();
+            IMapleData parent_data = (IMapleData) data.getParent();
+            while (parent_data != null) {
+                data_path = parent_data.getName() + "/" + data_path;
+                parent_data = (IMapleData) parent_data.getParent();
+            }
+        }
+
+        Log("WZDATA", data_path + " : " + text);
         return true;
     }
 

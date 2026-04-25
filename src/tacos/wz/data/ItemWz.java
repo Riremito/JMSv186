@@ -27,12 +27,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import odin.provider.MapleDataTool;
 import odin.server.StructPotentialItem;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
+import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -176,58 +176,58 @@ public class ItemWz extends TacosWz {
             List<StructPotentialItem> items = new LinkedList<>();
             for (IMapleData level : dat.getChildByPath("level")) {
                 StructPotentialItem item = new StructPotentialItem();
-                item.optionType = MapleDataTool.getIntConvert("info/optionType", dat, 0);
-                item.reqLevel = MapleDataTool.getIntConvert("info/reqLevel", dat, 0);
-                item.face = MapleDataTool.getString("face", level, "");
-                item.boss = MapleDataTool.getIntConvert("boss", level, 0) > 0;
+                item.optionType = TacosWzDataTool.getIntConvert("info/optionType", dat, 0);
+                item.reqLevel = TacosWzDataTool.getIntConvert("info/reqLevel", dat, 0);
+                item.face = TacosWzDataTool.getStringPath("face", level, "");
+                item.boss = TacosWzDataTool.getIntConvert("boss", level, 0) > 0;
                 item.potentialID = Integer.parseInt(dat.getName());
-                item.attackType = (short) MapleDataTool.getIntConvert("attackType", level, 0);
-                item.incMHP = (short) MapleDataTool.getIntConvert("incMHP", level, 0);
-                item.incMMP = (short) MapleDataTool.getIntConvert("incMMP", level, 0);
+                item.attackType = (short) TacosWzDataTool.getIntConvert("attackType", level, 0);
+                item.incMHP = (short) TacosWzDataTool.getIntConvert("incMHP", level, 0);
+                item.incMMP = (short) TacosWzDataTool.getIntConvert("incMMP", level, 0);
 
-                item.incSTR = (byte) MapleDataTool.getIntConvert("incSTR", level, 0);
-                item.incDEX = (byte) MapleDataTool.getIntConvert("incDEX", level, 0);
-                item.incINT = (byte) MapleDataTool.getIntConvert("incINT", level, 0);
-                item.incLUK = (byte) MapleDataTool.getIntConvert("incLUK", level, 0);
-                item.incACC = (byte) MapleDataTool.getIntConvert("incACC", level, 0);
-                item.incEVA = (byte) MapleDataTool.getIntConvert("incEVA", level, 0);
-                item.incSpeed = (byte) MapleDataTool.getIntConvert("incSpeed", level, 0);
-                item.incJump = (byte) MapleDataTool.getIntConvert("incJump", level, 0);
-                item.incPAD = (byte) MapleDataTool.getIntConvert("incPAD", level, 0);
-                item.incMAD = (byte) MapleDataTool.getIntConvert("incMAD", level, 0);
-                item.incPDD = (byte) MapleDataTool.getIntConvert("incPDD", level, 0);
-                item.incMDD = (byte) MapleDataTool.getIntConvert("incMDD", level, 0);
-                item.prop = (byte) MapleDataTool.getIntConvert("prop", level, 0);
-                item.time = (byte) MapleDataTool.getIntConvert("time", level, 0);
-                item.incSTRr = (byte) MapleDataTool.getIntConvert("incSTRr", level, 0);
-                item.incDEXr = (byte) MapleDataTool.getIntConvert("incDEXr", level, 0);
-                item.incINTr = (byte) MapleDataTool.getIntConvert("incINTr", level, 0);
-                item.incLUKr = (byte) MapleDataTool.getIntConvert("incLUKr", level, 0);
-                item.incMHPr = (byte) MapleDataTool.getIntConvert("incMHPr", level, 0);
-                item.incMMPr = (byte) MapleDataTool.getIntConvert("incMMPr", level, 0);
-                item.incACCr = (byte) MapleDataTool.getIntConvert("incACCr", level, 0);
-                item.incEVAr = (byte) MapleDataTool.getIntConvert("incEVAr", level, 0);
-                item.incPADr = (byte) MapleDataTool.getIntConvert("incPADr", level, 0);
-                item.incMADr = (byte) MapleDataTool.getIntConvert("incMADr", level, 0);
-                item.incPDDr = (byte) MapleDataTool.getIntConvert("incPDDr", level, 0);
-                item.incMDDr = (byte) MapleDataTool.getIntConvert("incMDDr", level, 0);
-                item.incCr = (byte) MapleDataTool.getIntConvert("incCr", level, 0);
-                item.incDAMr = (byte) MapleDataTool.getIntConvert("incDAMr", level, 0);
-                item.RecoveryHP = (byte) MapleDataTool.getIntConvert("RecoveryHP", level, 0);
-                item.RecoveryMP = (byte) MapleDataTool.getIntConvert("RecoveryMP", level, 0);
-                item.HP = (byte) MapleDataTool.getIntConvert("HP", level, 0);
-                item.MP = (byte) MapleDataTool.getIntConvert("MP", level, 0);
-                item.level = (byte) MapleDataTool.getIntConvert("level", level, 0);
-                item.ignoreTargetDEF = (byte) MapleDataTool.getIntConvert("ignoreTargetDEF", level, 0);
-                item.ignoreDAM = (byte) MapleDataTool.getIntConvert("ignoreDAM", level, 0);
-                item.DAMreflect = (byte) MapleDataTool.getIntConvert("DAMreflect", level, 0);
-                item.mpconReduce = (byte) MapleDataTool.getIntConvert("mpconReduce", level, 0);
-                item.mpRestore = (byte) MapleDataTool.getIntConvert("mpRestore", level, 0);
-                item.incMesoProp = (byte) MapleDataTool.getIntConvert("incMesoProp", level, 0);
-                item.incRewardProp = (byte) MapleDataTool.getIntConvert("incRewardProp", level, 0);
-                item.incAllskill = (byte) MapleDataTool.getIntConvert("incAllskill", level, 0);
-                item.ignoreDAMr = (byte) MapleDataTool.getIntConvert("ignoreDAMr", level, 0);
-                item.RecoveryUP = (byte) MapleDataTool.getIntConvert("RecoveryUP", level, 0);
+                item.incSTR = (byte) TacosWzDataTool.getIntConvert("incSTR", level, 0);
+                item.incDEX = (byte) TacosWzDataTool.getIntConvert("incDEX", level, 0);
+                item.incINT = (byte) TacosWzDataTool.getIntConvert("incINT", level, 0);
+                item.incLUK = (byte) TacosWzDataTool.getIntConvert("incLUK", level, 0);
+                item.incACC = (byte) TacosWzDataTool.getIntConvert("incACC", level, 0);
+                item.incEVA = (byte) TacosWzDataTool.getIntConvert("incEVA", level, 0);
+                item.incSpeed = (byte) TacosWzDataTool.getIntConvert("incSpeed", level, 0);
+                item.incJump = (byte) TacosWzDataTool.getIntConvert("incJump", level, 0);
+                item.incPAD = (byte) TacosWzDataTool.getIntConvert("incPAD", level, 0);
+                item.incMAD = (byte) TacosWzDataTool.getIntConvert("incMAD", level, 0);
+                item.incPDD = (byte) TacosWzDataTool.getIntConvert("incPDD", level, 0);
+                item.incMDD = (byte) TacosWzDataTool.getIntConvert("incMDD", level, 0);
+                item.prop = (byte) TacosWzDataTool.getIntConvert("prop", level, 0);
+                item.time = (byte) TacosWzDataTool.getIntConvert("time", level, 0);
+                item.incSTRr = (byte) TacosWzDataTool.getIntConvert("incSTRr", level, 0);
+                item.incDEXr = (byte) TacosWzDataTool.getIntConvert("incDEXr", level, 0);
+                item.incINTr = (byte) TacosWzDataTool.getIntConvert("incINTr", level, 0);
+                item.incLUKr = (byte) TacosWzDataTool.getIntConvert("incLUKr", level, 0);
+                item.incMHPr = (byte) TacosWzDataTool.getIntConvert("incMHPr", level, 0);
+                item.incMMPr = (byte) TacosWzDataTool.getIntConvert("incMMPr", level, 0);
+                item.incACCr = (byte) TacosWzDataTool.getIntConvert("incACCr", level, 0);
+                item.incEVAr = (byte) TacosWzDataTool.getIntConvert("incEVAr", level, 0);
+                item.incPADr = (byte) TacosWzDataTool.getIntConvert("incPADr", level, 0);
+                item.incMADr = (byte) TacosWzDataTool.getIntConvert("incMADr", level, 0);
+                item.incPDDr = (byte) TacosWzDataTool.getIntConvert("incPDDr", level, 0);
+                item.incMDDr = (byte) TacosWzDataTool.getIntConvert("incMDDr", level, 0);
+                item.incCr = (byte) TacosWzDataTool.getIntConvert("incCr", level, 0);
+                item.incDAMr = (byte) TacosWzDataTool.getIntConvert("incDAMr", level, 0);
+                item.RecoveryHP = (byte) TacosWzDataTool.getIntConvert("RecoveryHP", level, 0);
+                item.RecoveryMP = (byte) TacosWzDataTool.getIntConvert("RecoveryMP", level, 0);
+                item.HP = (byte) TacosWzDataTool.getIntConvert("HP", level, 0);
+                item.MP = (byte) TacosWzDataTool.getIntConvert("MP", level, 0);
+                item.level = (byte) TacosWzDataTool.getIntConvert("level", level, 0);
+                item.ignoreTargetDEF = (byte) TacosWzDataTool.getIntConvert("ignoreTargetDEF", level, 0);
+                item.ignoreDAM = (byte) TacosWzDataTool.getIntConvert("ignoreDAM", level, 0);
+                item.DAMreflect = (byte) TacosWzDataTool.getIntConvert("DAMreflect", level, 0);
+                item.mpconReduce = (byte) TacosWzDataTool.getIntConvert("mpconReduce", level, 0);
+                item.mpRestore = (byte) TacosWzDataTool.getIntConvert("mpRestore", level, 0);
+                item.incMesoProp = (byte) TacosWzDataTool.getIntConvert("incMesoProp", level, 0);
+                item.incRewardProp = (byte) TacosWzDataTool.getIntConvert("incRewardProp", level, 0);
+                item.incAllskill = (byte) TacosWzDataTool.getIntConvert("incAllskill", level, 0);
+                item.ignoreDAMr = (byte) TacosWzDataTool.getIntConvert("ignoreDAMr", level, 0);
+                item.RecoveryUP = (byte) TacosWzDataTool.getIntConvert("RecoveryUP", level, 0);
                 switch (item.potentialID) {
                     case 31001:
                     case 31002:
@@ -330,8 +330,8 @@ public class ItemWz extends TacosWz {
         int prob = 0;
         int inc = 0;
         if (skillData != null) {
-            prob = MapleDataTool.getInt("interact/" + skillId + "/prob", skillData, 0);
-            inc = MapleDataTool.getInt("interact/" + skillId + "/inc", skillData, 0);
+            prob = TacosWzDataTool.getIntPath("interact/" + skillId + "/prob", skillData, 0);
+            inc = TacosWzDataTool.getIntPath("interact/" + skillId + "/inc", skillData, 0);
         }
         PetCommand ret = new PetCommand(petId, skillId, prob, inc);
         map_petCommands.put(new OdinPair<>(petId, skillId), ret);
@@ -348,7 +348,7 @@ public class ItemWz extends TacosWz {
         }
 
         IMapleData hungerData = getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
-        Integer ret = MapleDataTool.getInt(hungerData, 1);
+        Integer ret = TacosWzDataTool.getInt(hungerData, 1);
         map_petHunger.put(petId, ret);
         return ret;
     }

@@ -44,7 +44,6 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import odin.provider.MapleDataTool;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -72,6 +71,7 @@ import tacos.script.TacosScriptReactor;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
+import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -977,7 +977,7 @@ public class DebugCommand {
                     list_NameData_Npc = new ArrayList<>();
                     for (IMapleData wz_data : StringWz.get().getNpc().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = DWI_Validation.isValidNPCID(id);
@@ -1002,7 +1002,7 @@ public class DebugCommand {
                     list_NameData_Mob = new ArrayList<>();
                     for (IMapleData wz_data : StringWz.get().getMob().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = DWI_Validation.isValidMobID(id);
@@ -1028,7 +1028,7 @@ public class DebugCommand {
                     for (IMapleData wz_root : StringWz.get().getEqp().getChildren()) {
                         for (IMapleData wz_data : wz_root.getChildren()) {
                             int id = Integer.parseInt(wz_data.getName());
-                            String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                            String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                             NameData nd = new NameData();
                             nd.id = id;
                             nd.available = DWI_Validation.isValidItemID(id);
@@ -1038,7 +1038,7 @@ public class DebugCommand {
                     }
                     for (IMapleData wz_data : StringWz.get().getConsume().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = DWI_Validation.isValidItemID(id);
@@ -1047,7 +1047,7 @@ public class DebugCommand {
                     }
                     for (IMapleData wz_data : StringWz.get().getIns().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = DWI_Validation.isValidItemID(id);
@@ -1056,7 +1056,7 @@ public class DebugCommand {
                     }
                     for (IMapleData wz_data : StringWz.get().getEtc().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = DWI_Validation.isValidItemID(id);
@@ -1065,7 +1065,7 @@ public class DebugCommand {
                     }
                     for (IMapleData wz_data : StringWz.get().getPet().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = DWI_Validation.isValidItemID(id);
@@ -1074,7 +1074,7 @@ public class DebugCommand {
                     }
                     for (IMapleData wz_data : StringWz.get().getCash().getChildren()) {
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = DWI_Validation.isValidItemID(id);
@@ -1099,8 +1099,8 @@ public class DebugCommand {
                     for (IMapleData wz_root : StringWz.get().getMap().getChildren()) {
                         for (IMapleData wz_data : wz_root.getChildren()) {
                             int id = Integer.parseInt(wz_data.getName());
-                            String mapName = MapleDataTool.getString(wz_data.getChildByPath("mapName"), "");
-                            String streetName = MapleDataTool.getString(wz_data.getChildByPath("streetName"), "");
+                            String mapName = TacosWzDataTool.getString(wz_data.getChildByPath("mapName"), "");
+                            String streetName = TacosWzDataTool.getString(wz_data.getChildByPath("streetName"), "");
                             NameData nd = new NameData();
                             nd.id = id;
                             nd.available = DWI_Validation.isValidMapID(id); // test
@@ -1130,7 +1130,7 @@ public class DebugCommand {
                             continue;
                         }
                         int id = Integer.parseInt(wz_data.getName());
-                        String name = MapleDataTool.getString(wz_data.getChildByPath("name"), "");
+                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
                         NameData nd = new NameData();
                         nd.id = id;
                         nd.available = true; // test
@@ -1182,7 +1182,7 @@ public class DebugCommand {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
             IMapleData md_mob = StringWz.get().getMob().getChildByPath(Integer.toString(mob_id));
-            String mob_name = md_mob != null ? MapleDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
+            String mob_name = md_mob != null ? TacosWzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
             if (!DWI_Validation.isValidMobID(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
                 continue;

@@ -24,8 +24,8 @@ import tacos.wz.ids.DWI_Validation;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
-import odin.provider.MapleDataTool;
 import odin.provider.IMapleData;
+import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -209,7 +209,7 @@ public class StringWz extends TacosWz {
                         break;
                     }
                     for (IMapleData md_drop_item : md_reward.getChildren()) {
-                        int item_id = MapleDataTool.getInt(md_drop_item);
+                        int item_id = TacosWzDataTool.getInt(md_drop_item);
                         if (!DWI_Validation.isValidItemID(item_id)) {
                             DebugLogger.ErrorLog("invalid monsterbook drop : " + item_id);
                             continue;

@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import odin.provider.MapleDataTool;
 import odin.tools.FileoutputUtil;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.script.TacosScriptQuest;
+import tacos.wz.TacosWzDataTool;
 
 public class MapleQuest implements Serializable {
 
@@ -73,9 +73,8 @@ public class MapleQuest implements Serializable {
                     final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
                         for (IMapleData mob : startReq.getChildren()) {
-                            ret.relevantMobs.put(
-                                    MapleDataTool.getInt(mob.getChildByPath("id")),
-                                    MapleDataTool.getInt(mob.getChildByPath("count"), 0));
+                            ret.relevantMobs.put(TacosWzDataTool.getInt(mob.getChildByPath("id")),
+                                    TacosWzDataTool.getInt(mob.getChildByPath("count"), 0));
                         }
                     }
                     ret.startReqs.add(req);
@@ -91,9 +90,8 @@ public class MapleQuest implements Serializable {
                     MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
                         for (IMapleData mob : completeReq.getChildren()) {
-                            ret.relevantMobs.put(
-                                    MapleDataTool.getInt(mob.getChildByPath("id")),
-                                    MapleDataTool.getInt(mob.getChildByPath("count"), 0));
+                            ret.relevantMobs.put(TacosWzDataTool.getInt(mob.getChildByPath("id")),
+                                    TacosWzDataTool.getInt(mob.getChildByPath("count"), 0));
                         }
                     } else if (req.getType().equals(MapleQuestRequirementType.endscript)) {
                         ret.customend = true;
@@ -121,11 +119,11 @@ public class MapleQuest implements Serializable {
 
         final IMapleData questInfo = QuestWz.get().getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
-            ret.name = MapleDataTool.getString("name", questInfo, "");
-            ret.autoStart = MapleDataTool.getInt("autoStart", questInfo, 0) == 1;
-            ret.autoPreComplete = MapleDataTool.getInt("autoPreComplete", questInfo, 0) == 1;
-            ret.viewMedalItem = MapleDataTool.getInt("viewMedalItem", questInfo, 0);
-            ret.selectedSkillID = MapleDataTool.getInt("selectedSkillID", questInfo, 0);
+            ret.name = TacosWzDataTool.getStringPath("name", questInfo, "");
+            ret.autoStart = TacosWzDataTool.getIntPath("autoStart", questInfo, 0) == 1;
+            ret.autoPreComplete = TacosWzDataTool.getIntPath("autoPreComplete", questInfo, 0) == 1;
+            ret.viewMedalItem = TacosWzDataTool.getIntPath("viewMedalItem", questInfo, 0);
+            ret.selectedSkillID = TacosWzDataTool.getIntPath("selectedSkillID", questInfo, 0);
         }
 
         // not in KMS55
@@ -137,7 +135,7 @@ public class MapleQuest implements Serializable {
                     //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
                     for (IMapleData c : d) {
                         for (IMapleData b : c) {
-                            pInfo.add(new OdinPair<String, OdinPair<String, Integer>>(c.getName(), new OdinPair<String, Integer>(b.getName(), MapleDataTool.getInt(b, 0))));
+                            pInfo.add(new OdinPair<String, OdinPair<String, Integer>>(c.getName(), new OdinPair<String, Integer>(b.getName(), TacosWzDataTool.getInt(b, 0))));
                         }
                     }
                     ret.partyQuestInfo.put(d.getName(), pInfo);

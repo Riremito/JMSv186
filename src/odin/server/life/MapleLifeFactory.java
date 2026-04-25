@@ -28,11 +28,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import odin.provider.MapleDataTool;
 import odin.provider.WzXML.MapleDataType;
 import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 import odin.provider.IMapleData;
+import tacos.wz.TacosWzDataTool;
 
 public class MapleLifeFactory {
 
@@ -57,7 +57,7 @@ public class MapleLifeFactory {
         if (NPCLoc.containsKey(npcid)) {
             return NPCLoc.get(npcid);
         }
-        final int map = MapleDataTool.getIntConvert(Integer.toString(npcid) + "/0", EtcWz.get().getNpcLocation(), -1);
+        final int map = TacosWzDataTool.getIntConvert(Integer.toString(npcid) + "/0", EtcWz.get().getNpcLocation(), -1);
         NPCLoc.put(npcid, map);
         return map;
     }
@@ -93,46 +93,46 @@ public class MapleLifeFactory {
             IMapleData monsterInfoData = monsterData.getChildByPath("info");
             stats = new MapleMonsterStats();
 
-            stats.setHp(MapleDataTool.getIntConvert("maxHP", monsterInfoData));
-            int mp = MapleDataTool.getIntConvert("maxMP", monsterInfoData, 0);
+            stats.setHp(TacosWzDataTool.getIntConvert("maxHP", monsterInfoData));
+            int mp = TacosWzDataTool.getIntConvert("maxMP", monsterInfoData, 0);
             stats.setMp(IsBrokenMPMob(mid) ? 30000 : mp);
 
-            stats.setExp(MapleDataTool.getIntConvert("exp", monsterInfoData, 0));
-            stats.setLevel((short) MapleDataTool.getIntConvert("level", monsterInfoData));
-            stats.setRemoveAfter(MapleDataTool.getIntConvert("removeAfter", monsterInfoData, 0));
-            stats.setrareItemDropLevel((byte) MapleDataTool.getIntConvert("rareItemDropLevel", monsterInfoData, 0));
-            stats.setFixedDamage(MapleDataTool.getIntConvert("fixedDamage", monsterInfoData, -1));
-            stats.setOnlyNormalAttack(MapleDataTool.getIntConvert("onlyNormalAttack", monsterInfoData, 0) > 0);
-            stats.setBoss(MapleDataTool.getIntConvert("boss", monsterInfoData, 0) > 0 || mid == 8810018 || mid == 9410066 || (mid >= 8810118 && mid <= 8810122));
-            stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
-            stats.setFfaLoot(MapleDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
-            stats.setUndead(MapleDataTool.getIntConvert("undead", monsterInfoData, 0) > 0);
-            stats.setName(MapleDataTool.getString(mid + "/name", StringWz.get().getMob(), "MISSINGNO"));
-            stats.setBuffToGive(MapleDataTool.getIntConvert("buff", monsterInfoData, -1));
-            stats.setFriendly(MapleDataTool.getIntConvert("damagedByMob", monsterInfoData, 0) > 0);
-            stats.setExplosiveReward(MapleDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
-            stats.setNoDoom(MapleDataTool.getIntConvert("noDoom", monsterInfoData, 0) > 0);
-            stats.setFfaLoot(MapleDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
-            stats.setCP((byte) MapleDataTool.getIntConvert("getCP", monsterInfoData, 0));
-            stats.setPoint(MapleDataTool.getIntConvert("point", monsterInfoData, 0));
-            stats.setDropItemPeriod(MapleDataTool.getIntConvert("dropItemPeriod", monsterInfoData, 0));
-            stats.setPhysicalDefense((short) MapleDataTool.getIntConvert("PDDamage", monsterInfoData, 0));
-            stats.setMagicDefense((short) MapleDataTool.getIntConvert("MDDamage", monsterInfoData, 0));
-            stats.setEva((short) MapleDataTool.getIntConvert("eva", monsterInfoData, 0));
-            final boolean hideHP = MapleDataTool.getIntConvert("HPgaugeHide", monsterInfoData, 0) > 0 || MapleDataTool.getIntConvert("hideHP", monsterInfoData, 0) > 0;
+            stats.setExp(TacosWzDataTool.getIntConvert("exp", monsterInfoData, 0));
+            stats.setLevel((short) TacosWzDataTool.getIntConvert("level", monsterInfoData));
+            stats.setRemoveAfter(TacosWzDataTool.getIntConvert("removeAfter", monsterInfoData, 0));
+            stats.setrareItemDropLevel((byte) TacosWzDataTool.getIntConvert("rareItemDropLevel", monsterInfoData, 0));
+            stats.setFixedDamage(TacosWzDataTool.getIntConvert("fixedDamage", monsterInfoData, -1));
+            stats.setOnlyNormalAttack(TacosWzDataTool.getIntConvert("onlyNormalAttack", monsterInfoData, 0) > 0);
+            stats.setBoss(TacosWzDataTool.getIntConvert("boss", monsterInfoData, 0) > 0 || mid == 8810018 || mid == 9410066 || (mid >= 8810118 && mid <= 8810122));
+            stats.setExplosiveReward(TacosWzDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
+            stats.setFfaLoot(TacosWzDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
+            stats.setUndead(TacosWzDataTool.getIntConvert("undead", monsterInfoData, 0) > 0);
+            stats.setName(TacosWzDataTool.getStringPath(mid + "/name", StringWz.get().getMob(), "MISSINGNO"));
+            stats.setBuffToGive(TacosWzDataTool.getIntConvert("buff", monsterInfoData, -1));
+            stats.setFriendly(TacosWzDataTool.getIntConvert("damagedByMob", monsterInfoData, 0) > 0);
+            stats.setExplosiveReward(TacosWzDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
+            stats.setNoDoom(TacosWzDataTool.getIntConvert("noDoom", monsterInfoData, 0) > 0);
+            stats.setFfaLoot(TacosWzDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
+            stats.setCP((byte) TacosWzDataTool.getIntConvert("getCP", monsterInfoData, 0));
+            stats.setPoint(TacosWzDataTool.getIntConvert("point", monsterInfoData, 0));
+            stats.setDropItemPeriod(TacosWzDataTool.getIntConvert("dropItemPeriod", monsterInfoData, 0));
+            stats.setPhysicalDefense((short) TacosWzDataTool.getIntConvert("PDDamage", monsterInfoData, 0));
+            stats.setMagicDefense((short) TacosWzDataTool.getIntConvert("MDDamage", monsterInfoData, 0));
+            stats.setEva((short) TacosWzDataTool.getIntConvert("eva", monsterInfoData, 0));
+            final boolean hideHP = TacosWzDataTool.getIntConvert("HPgaugeHide", monsterInfoData, 0) > 0 || TacosWzDataTool.getIntConvert("hideHP", monsterInfoData, 0) > 0;
             final IMapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
             if (selfd != null) {
-                stats.setSelfDHP(MapleDataTool.getIntConvert("hp", selfd, 0));
-                stats.setSelfD((byte) MapleDataTool.getIntConvert("action", selfd, -1));
+                stats.setSelfDHP(TacosWzDataTool.getIntConvert("hp", selfd, 0));
+                stats.setSelfD((byte) TacosWzDataTool.getIntConvert("action", selfd, -1));
             } else {
                 stats.setSelfD((byte) -1);
             }
             final IMapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
             if (firstAttackData != null) {
                 if (firstAttackData.getType() == MapleDataType.FLOAT) {
-                    stats.setFirstAttack(Math.round(MapleDataTool.getFloat(firstAttackData)) > 0);
+                    stats.setFirstAttack(Math.round(TacosWzDataTool.getFloat(firstAttackData, 0.0f)) > 0);
                 } else {
-                    stats.setFirstAttack(MapleDataTool.getInt(firstAttackData) > 0);
+                    stats.setFirstAttack(TacosWzDataTool.getInt(firstAttackData) > 0);
                 }
             }
             if (stats.isBoss() || isDmgSponge(mid)) {
@@ -140,24 +140,24 @@ public class MapleLifeFactory {
                     stats.setTagColor(0);
                     stats.setTagBgColor(0);
                 } else {
-                    stats.setTagColor(MapleDataTool.getIntConvert("hpTagColor", monsterInfoData));
-                    stats.setTagBgColor(MapleDataTool.getIntConvert("hpTagBgcolor", monsterInfoData));
+                    stats.setTagColor(TacosWzDataTool.getIntConvert("hpTagColor", monsterInfoData));
+                    stats.setTagBgColor(TacosWzDataTool.getIntConvert("hpTagBgcolor", monsterInfoData));
                 }
             }
 
             final IMapleData banishData = monsterInfoData.getChildByPath("ban");
             if (banishData != null) {
                 stats.setBanishInfo(new BanishInfo(
-                        MapleDataTool.getString("banMsg", banishData),
-                        MapleDataTool.getInt("banMap/0/field", banishData, -1),
-                        MapleDataTool.getString("banMap/0/portal", banishData, "sp")));
+                        TacosWzDataTool.getStringPath("banMsg", banishData, ""),
+                        TacosWzDataTool.getIntPath("banMap/0/field", banishData, -1),
+                        TacosWzDataTool.getStringPath("banMap/0/portal", banishData, "sp")));
             }
 
             final IMapleData reviveInfo = monsterInfoData.getChildByPath("revive");
             if (reviveInfo != null) {
                 List<Integer> revives = new LinkedList<>();
                 for (IMapleData bdata : reviveInfo) {
-                    revives.add(MapleDataTool.getInt(bdata));
+                    revives.add(TacosWzDataTool.getInt(bdata));
                 }
                 stats.setRevives(revives);
             }
@@ -167,16 +167,16 @@ public class MapleLifeFactory {
                 int i = 0;
                 List<OdinPair<Integer, Integer>> skills = new ArrayList<>();
                 while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
-                    skills.add(new OdinPair<>(MapleDataTool.getInt(i + "/skill", monsterSkillData, 0), MapleDataTool.getInt(i + "/level", monsterSkillData, 0)));
+                    skills.add(new OdinPair<>(TacosWzDataTool.getIntPath(i + "/skill", monsterSkillData, 0), TacosWzDataTool.getIntPath(i + "/level", monsterSkillData, 0)));
                     i++;
                 }
                 stats.setSkills(skills);
             }
 
-            decodeElementalString(stats, MapleDataTool.getString("elemAttr", monsterInfoData, ""));
+            decodeElementalString(stats, TacosWzDataTool.getStringPath("elemAttr", monsterInfoData, ""));
 
             // Other data which isn;t in the mob, but might in the linked data
-            final int link = MapleDataTool.getIntConvert("link", monsterInfoData, 0);
+            final int link = TacosWzDataTool.getIntConvert("link", monsterInfoData, 0);
             if (link != 0) { // Store another copy, for faster processing.
                 monsterData = MobWz.get().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
             }
@@ -238,7 +238,7 @@ public class MapleLifeFactory {
     public static MapleNPC getNPC(final int nid) {
         String name = npcNames.get(nid);
         if (name == null) {
-            name = MapleDataTool.getString(nid + "/name", StringWz.get().getNpc(), "MISSINGNO");
+            name = TacosWzDataTool.getStringPath(nid + "/name", StringWz.get().getNpc(), "MISSINGNO");
             npcNames.put(nid, name);
         }
         if (name.contains("Maple TV")) {

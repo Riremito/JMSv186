@@ -20,7 +20,6 @@ package tacos.packet.response.data;
 
 import java.util.ArrayList;
 import odin.provider.IMapleData;
-import odin.provider.MapleDataTool;
 import tacos.config.ContentCustom;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
@@ -28,6 +27,7 @@ import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCommodity;
+import tacos.wz.TacosWzDataTool;
 import tacos.wz.data.EtcWz;
 
 /**
@@ -63,9 +63,9 @@ public class DataCS_COMMODITY {
         }
         // remove all onsale items.
         for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
-            int nItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
-            int nSN = MapleDataTool.getIntConvert("SN", field, 0);
-            int bOnSale = MapleDataTool.getIntConvert("OnSale", field, 0);
+            int nItemId = TacosWzDataTool.getIntConvert("ItemId", field, 0);
+            int nSN = TacosWzDataTool.getIntConvert("SN", field, 0);
+            int bOnSale = TacosWzDataTool.getIntConvert("OnSale", field, 0);
             /*
             if (nItemId / 1000000 == 1) {
                 continue;

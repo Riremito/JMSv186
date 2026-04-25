@@ -2,10 +2,10 @@ package odin.server;
 
 import java.awt.Point;
 
-import odin.provider.MapleDataTool;
 import odin.server.maps.MapleMap;
 import odin.provider.IMapleData;
 import tacos.server.map.TacosPortal;
+import tacos.wz.TacosWzDataTool;
 
 public class PortalFactory {
 
@@ -18,11 +18,11 @@ public class PortalFactory {
     }
 
     private void loadPortal(MapleMap map, TacosPortal myPortal, IMapleData portal) {
-        myPortal.setName(MapleDataTool.getString(portal.getChildByPath("pn")));
-        myPortal.setTarget(MapleDataTool.getString(portal.getChildByPath("tn")));
-        myPortal.setTargetMapId(MapleDataTool.getInt(portal.getChildByPath("tm")));
-        myPortal.setPosition(new Point(MapleDataTool.getInt(portal.getChildByPath("x")), MapleDataTool.getInt(portal.getChildByPath("y"))));
-        String script = MapleDataTool.getString("script", portal, null);
+        myPortal.setName(TacosWzDataTool.getString(portal.getChildByPath("pn")));
+        myPortal.setTarget(TacosWzDataTool.getString(portal.getChildByPath("tn")));
+        myPortal.setTargetMapId(TacosWzDataTool.getInt(portal.getChildByPath("tm")));
+        myPortal.setPosition(new Point(TacosWzDataTool.getInt(portal.getChildByPath("x")), TacosWzDataTool.getInt(portal.getChildByPath("y"))));
+        String script = TacosWzDataTool.getStringPath("script", portal, null);
         if (script != null && script.equals("")) {
             script = null;
         }

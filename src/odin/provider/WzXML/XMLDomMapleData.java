@@ -116,16 +116,16 @@ public class XMLDomMapleData implements IMapleData {
         final MapleDataType type = getType();
         switch (type) {
             case DOUBLE: {
-                return Double.parseDouble(attributes.getNamedItem("value").getNodeValue());
+                return Double.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case FLOAT: {
-                return Float.parseFloat(attributes.getNamedItem("value").getNodeValue());
+                return Float.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case INT: {
-                return Integer.parseInt(attributes.getNamedItem("value").getNodeValue());
+                return Integer.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case SHORT: {
-                return Short.parseShort(attributes.getNamedItem("value").getNodeValue());
+                return Short.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case STRING:
             case UOL: {
