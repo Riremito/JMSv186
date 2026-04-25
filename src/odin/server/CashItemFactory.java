@@ -33,15 +33,15 @@ public class CashItemFactory {
     public void initialize() {
         final List<Integer> itemids = new ArrayList<Integer>();
         for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
-            final int itemId = TacosWzDataTool.getIntConvert("ItemId", field, 0);
-            final int SN = TacosWzDataTool.getIntConvert("SN", field, 0);
+            final int itemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
+            final int SN = TacosWzDataTool.getIntPath("SN", field, 0);
 
             final CashItemInfo stats = new CashItemInfo(itemId,
-                    TacosWzDataTool.getIntConvert("Count", field, 1),
-                    TacosWzDataTool.getIntConvert("Price", field, 0), SN,
-                    TacosWzDataTool.getIntConvert("Period", field, 0),
-                    TacosWzDataTool.getIntConvert("Gender", field, 2),
-                    TacosWzDataTool.getIntConvert("OnSale", field, 0) > 0);
+                    TacosWzDataTool.getIntPath("Count", field, 1),
+                    TacosWzDataTool.getIntPath("Price", field, 0), SN,
+                    TacosWzDataTool.getIntPath("Period", field, 0),
+                    TacosWzDataTool.getIntPath("Gender", field, 2),
+                    TacosWzDataTool.getIntPath("OnSale", field, 0) > 0);
 
             if (SN > 0) {
                 itemStats.put(SN, stats);
@@ -71,21 +71,21 @@ public class CashItemFactory {
 
         // Load
         for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
-            int SN = TacosWzDataTool.getIntConvert("SN", field, 0);
+            int SN = TacosWzDataTool.getIntPath("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
                 continue;
             }
 
-            int ItemId = TacosWzDataTool.getIntConvert("ItemId", field, 0);
+            int ItemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
 
             CashItemInfo stats = new CashItemInfo(ItemId,
-                    TacosWzDataTool.getIntConvert("Count", field, 1),
-                    TacosWzDataTool.getIntConvert("Price", field, 0),
+                    TacosWzDataTool.getIntPath("Count", field, 1),
+                    TacosWzDataTool.getIntPath("Price", field, 0),
                     SN,
-                    TacosWzDataTool.getIntConvert("Period", field, 0),
-                    TacosWzDataTool.getIntConvert("Gender", field, 2),
-                    TacosWzDataTool.getIntConvert("OnSale", field, 0) > 0);
+                    TacosWzDataTool.getIntPath("Period", field, 0),
+                    TacosWzDataTool.getIntPath("Gender", field, 2),
+                    TacosWzDataTool.getIntPath("OnSale", field, 0) > 0);
 
             itemStats.put(SN, stats);
             return stats;
@@ -103,19 +103,19 @@ public class CashItemFactory {
 
         // Load
         for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
-            int ItemId = TacosWzDataTool.getIntConvert("ItemId", field, 0);
+            int ItemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;
             }
 
-            int SN = TacosWzDataTool.getIntConvert("SN", field, 0);
+            int SN = TacosWzDataTool.getIntPath("SN", field, 0);
             CashItemInfo stats = new CashItemInfo(ItemId,
-                    TacosWzDataTool.getIntConvert("Count", field, 1),
-                    TacosWzDataTool.getIntConvert("Price", field, 0),
+                    TacosWzDataTool.getIntPath("Count", field, 1),
+                    TacosWzDataTool.getIntPath("Price", field, 0),
                     SN,
-                    TacosWzDataTool.getIntConvert("Period", field, 0),
-                    TacosWzDataTool.getIntConvert("Gender", field, 2),
-                    TacosWzDataTool.getIntConvert("OnSale", field, 0) > 0);
+                    TacosWzDataTool.getIntPath("Period", field, 0),
+                    TacosWzDataTool.getIntPath("Gender", field, 2),
+                    TacosWzDataTool.getIntPath("OnSale", field, 0) > 0);
 
             itemStats.put(SN, stats);
             return SN;
@@ -134,7 +134,7 @@ public class CashItemFactory {
             return null;
         }
         for (IMapleData d : EtcWz.get().getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
-            packageItems.add(itemStats.get(TacosWzDataTool.getIntConvert(d)));
+            packageItems.add(itemStats.get(TacosWzDataTool.getInt(d, 0)));
         }
         itemPackage.put(itemId, packageItems);
         return packageItems;

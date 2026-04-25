@@ -63,9 +63,9 @@ public class DataCS_COMMODITY {
         }
         // remove all onsale items.
         for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
-            int nItemId = TacosWzDataTool.getIntConvert("ItemId", field, 0);
-            int nSN = TacosWzDataTool.getIntConvert("SN", field, 0);
-            int bOnSale = TacosWzDataTool.getIntConvert("OnSale", field, 0);
+            int nItemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
+            int nSN = TacosWzDataTool.getIntPath("SN", field, 0);
+            int bOnSale = TacosWzDataTool.getIntPath("OnSale", field, 0);
             /*
             if (nItemId / 1000000 == 1) {
                 continue;

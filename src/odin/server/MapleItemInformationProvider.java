@@ -269,7 +269,7 @@ public class MapleItemInformationProvider {
             if (pData == null) {
                 return -1;
             }
-            pEntry = (double) TacosWzDataTool.getIntConvert(pData);
+            pEntry = (double) TacosWzDataTool.getInt(pData, 1);
         }
         if (itemId == 2070019 || itemId == 2330007) {
             pEntry = 1.0;
@@ -285,7 +285,7 @@ public class MapleItemInformationProvider {
         if (itemId / 10000 != 425) {
             return null;
         }
-        final Map<String, Byte> ret = new LinkedHashMap<String, Byte>();
+        final Map<String, Byte> ret = new LinkedHashMap<>();
         final IMapleData item = getItemData(itemId);
         if (item == null) {
             return null;
@@ -381,7 +381,7 @@ public class MapleItemInformationProvider {
             Map<String, Integer> incs = new HashMap<String, Integer>();
             for (IMapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
                 if (data.getName().length() > 3) {
-                    incs.put(data.getName().substring(3), TacosWzDataTool.getIntConvert(data.getName(), dat, 0));
+                    incs.put(data.getName().substring(3), TacosWzDataTool.getIntPath(data.getName(), dat, 0));
                 }
             }
             ret.put(Integer.parseInt(dat.getName()), incs);
@@ -408,9 +408,9 @@ public class MapleItemInformationProvider {
                 if (data.getName().length() == 1) { //the numbers all them are one digit. everything else isnt so we're lucky here..
                     List<Integer> adds = new ArrayList<Integer>();
                     for (IMapleData skil : data.getChildByPath("Skill").getChildren()) {
-                        adds.add(TacosWzDataTool.getIntConvert("id", skil, 0));
+                        adds.add(TacosWzDataTool.getIntPath("id", skil, 0));
                     }
-                    ret.put(Integer.parseInt(data.getName()), adds);
+                    ret.put(Integer.valueOf(data.getName()), adds);
                 }
             }
         }
@@ -422,7 +422,7 @@ public class MapleItemInformationProvider {
         if (equipStatsCache.containsKey(itemId)) {
             return equipStatsCache.get(itemId);
         }
-        final Map<String, Integer> ret = new LinkedHashMap<String, Integer>();
+        final Map<String, Integer> ret = new LinkedHashMap<>();
         final IMapleData item = getItemData(itemId);
         if (item == null) {
             return null;
@@ -433,7 +433,7 @@ public class MapleItemInformationProvider {
         }
         for (final IMapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), TacosWzDataTool.getIntConvert(data));
+                ret.put(data.getName().substring(3), TacosWzDataTool.getInt(data, 0));
             }
         }
         ret.put("tuc", TacosWzDataTool.getIntPath("tuc", info, 0));
@@ -935,13 +935,13 @@ public class MapleItemInformationProvider {
                 return null;
             }
             ret = MapleStatEffect.loadItemEffectFromData(item.getChildByPath("spec"), itemId);
-            itemEffects.put(Integer.valueOf(itemId), ret);
+            itemEffects.put(itemId, ret);
         }
         return ret;
     }
 
     public final List<OdinPair<Integer, Integer>> getSummonMobs(final int itemId) {
-        if (summonMobCache.containsKey(Integer.valueOf(itemId))) {
+        if (summonMobCache.containsKey(itemId)) {
             return summonMobCache.get(itemId);
         }
         if (!GameConstants.isSummonSack(itemId)) {
@@ -951,12 +951,12 @@ public class MapleItemInformationProvider {
         if (data == null) {
             return null;
         }
-        final List<OdinPair<Integer, Integer>> mobPairs = new ArrayList<OdinPair<Integer, Integer>>();
+        final List<OdinPair<Integer, Integer>> mobPairs = new ArrayList<>();
 
         for (final IMapleData child : data.getChildren()) {
-            mobPairs.add(new OdinPair<Integer, Integer>(
-                    TacosWzDataTool.getIntConvert("id", child),
-                    TacosWzDataTool.getIntConvert("prob", child)));
+            mobPairs.add(new OdinPair<>(
+                    TacosWzDataTool.getIntPath("id", child, 0),
+                    TacosWzDataTool.getIntPath("prob", child, 0)));
         }
         summonMobCache.put(itemId, mobPairs);
         return mobPairs;
@@ -970,7 +970,7 @@ public class MapleItemInformationProvider {
             return monsterBookID.get(id);
         }
         final IMapleData data = getItemData(id);
-        final int monsterid = TacosWzDataTool.getIntConvert("info/mob", data, 0);
+        final int monsterid = TacosWzDataTool.getIntPath("info/mob", data, 0);
 
         if (monsterid == 0) { // Hack.
             return 0;
@@ -1040,7 +1040,7 @@ public class MapleItemInformationProvider {
         if (itemId / 10000 != 400) {
             return 0;
         }
-        final short lvl = (short) TacosWzDataTool.getIntConvert("info/lv", getItemData(itemId), 0);
+        final short lvl = (short) TacosWzDataTool.getIntPath("info/lv", getItemData(itemId), 0);
         itemMakeLevel.put(itemId, lvl);
         return lvl;
     }
@@ -1051,12 +1051,12 @@ public class MapleItemInformationProvider {
             return consumeOnPickupCache.get(itemId);
         }
         final IMapleData data = getItemData(itemId);
-        byte consume = (byte) TacosWzDataTool.getIntConvert("spec/consumeOnPickup", data, 0);
+        byte consume = (byte) TacosWzDataTool.getIntPath("spec/consumeOnPickup", data, 0);
         if (consume == 0) {
-            consume = (byte) TacosWzDataTool.getIntConvert("specEx/consumeOnPickup", data, 0);
+            consume = (byte) TacosWzDataTool.getIntPath("specEx/consumeOnPickup", data, 0);
         }
         if (consume == 1) {
-            if (TacosWzDataTool.getIntConvert("spec/party", getItemData(itemId), 0) > 0) {
+            if (TacosWzDataTool.getIntPath("spec/party", getItemData(itemId), 0) > 0) {
                 consume = 2;
             }
         }
@@ -1071,7 +1071,7 @@ public class MapleItemInformationProvider {
         final IMapleData data = getItemData(itemId);
 
         boolean trade = false;
-        if (TacosWzDataTool.getIntConvert("info/tradeBlock", data, 0) == 1 || TacosWzDataTool.getIntConvert("info/quest", data, 0) == 1) {
+        if (TacosWzDataTool.getIntPath("info/tradeBlock", data, 0) == 1 || TacosWzDataTool.getIntPath("info/quest", data, 0) == 1) {
             trade = true;
         }
         dropRestrictionCache.put(itemId, trade);
@@ -1082,7 +1082,7 @@ public class MapleItemInformationProvider {
         if (pickupRestrictionCache.containsKey(itemId)) {
             return pickupRestrictionCache.get(itemId);
         }
-        final boolean bRestricted = TacosWzDataTool.getIntConvert("info/only", getItemData(itemId), 0) == 1;
+        final boolean bRestricted = TacosWzDataTool.getIntPath("info/only", getItemData(itemId), 0) == 1;
 
         pickupRestrictionCache.put(itemId, bRestricted);
         return bRestricted;
@@ -1092,7 +1092,7 @@ public class MapleItemInformationProvider {
         if (accCache.containsKey(itemId)) {
             return accCache.get(itemId);
         }
-        final boolean bRestricted = TacosWzDataTool.getIntConvert("info/accountSharable", getItemData(itemId), 0) == 1;
+        final boolean bRestricted = TacosWzDataTool.getIntPath("info/accountSharable", getItemData(itemId), 0) == 1;
 
         accCache.put(itemId, bRestricted);
         return bRestricted;
@@ -1102,7 +1102,7 @@ public class MapleItemInformationProvider {
         if (stateChangeCache.containsKey(itemId)) {
             return stateChangeCache.get(itemId);
         }
-        final int triggerItem = TacosWzDataTool.getIntConvert("info/stateChangeItem", getItemData(itemId), 0);
+        final int triggerItem = TacosWzDataTool.getIntPath("info/stateChangeItem", getItemData(itemId), 0);
         stateChangeCache.put(itemId, triggerItem);
         return triggerItem;
     }
@@ -1111,14 +1111,14 @@ public class MapleItemInformationProvider {
         if (mesoCache.containsKey(itemId)) {
             return mesoCache.get(itemId);
         }
-        final int triggerItem = TacosWzDataTool.getIntConvert("info/meso", getItemData(itemId), 0);
+        final int triggerItem = TacosWzDataTool.getIntPath("info/meso", getItemData(itemId), 0);
         mesoCache.put(itemId, triggerItem);
         return triggerItem;
     }
 
     // info/damaとか
     public final int getInt(final int itemId, final String text) {
-        final int triggerItem = TacosWzDataTool.getIntConvert(text, getItemData(itemId), 0);
+        final int triggerItem = TacosWzDataTool.getIntPath(text, getItemData(itemId), 0);
         return triggerItem;
     }
 
@@ -1126,7 +1126,7 @@ public class MapleItemInformationProvider {
         if (karmaEnabledCache.containsKey(itemId)) {
             return karmaEnabledCache.get(itemId) == 1;
         }
-        final int iRestricted = TacosWzDataTool.getIntConvert("info/tradeAvailable", getItemData(itemId), 0);
+        final int iRestricted = TacosWzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
 
         karmaEnabledCache.put(itemId, iRestricted);
         return iRestricted == 1;
@@ -1136,7 +1136,7 @@ public class MapleItemInformationProvider {
         if (karmaEnabledCache.containsKey(itemId)) {
             return karmaEnabledCache.get(itemId) == 2;
         }
-        final int iRestricted = TacosWzDataTool.getIntConvert("info/tradeAvailable", getItemData(itemId), 0);
+        final int iRestricted = TacosWzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
 
         karmaEnabledCache.put(itemId, iRestricted);
         return iRestricted == 2;
@@ -1146,7 +1146,7 @@ public class MapleItemInformationProvider {
         if (blockPickupCache.containsKey(itemId)) {
             return blockPickupCache.get(itemId);
         }
-        final boolean iRestricted = TacosWzDataTool.getIntConvert("info/pickUpBlock", getItemData(itemId), 0) == 1;
+        final boolean iRestricted = TacosWzDataTool.getIntPath("info/pickUpBlock", getItemData(itemId), 0) == 1;
 
         blockPickupCache.put(itemId, iRestricted);
         return iRestricted;
@@ -1156,7 +1156,7 @@ public class MapleItemInformationProvider {
         if (logoutExpireCache.containsKey(itemId)) {
             return logoutExpireCache.get(itemId);
         }
-        final boolean iRestricted = TacosWzDataTool.getIntConvert("info/expireOnLogout", getItemData(itemId), 0) == 1;
+        final boolean iRestricted = TacosWzDataTool.getIntPath("info/expireOnLogout", getItemData(itemId), 0) == 1;
 
         logoutExpireCache.put(itemId, iRestricted);
         return iRestricted;
@@ -1166,7 +1166,7 @@ public class MapleItemInformationProvider {
         if (notSaleCache.containsKey(itemId)) {
             return notSaleCache.get(itemId);
         }
-        final boolean bRestricted = TacosWzDataTool.getIntConvert("info/notSale", getItemData(itemId), 0) == 1;
+        final boolean bRestricted = TacosWzDataTool.getIntPath("info/notSale", getItemData(itemId), 0) == 1;
 
         notSaleCache.put(itemId, bRestricted);
         return bRestricted;
@@ -1201,7 +1201,7 @@ public class MapleItemInformationProvider {
 
             all.add(struct);
         }
-        OdinPair<Integer, List<StructRewardItem>> toreturn = new OdinPair<Integer, List<StructRewardItem>>(totalprob, all);
+        OdinPair<Integer, List<StructRewardItem>> toreturn = new OdinPair<>(totalprob, all);
         RewardItem.put(itemid, toreturn);
         return toreturn;
     }
@@ -1221,10 +1221,10 @@ public class MapleItemInformationProvider {
         if (info == null) {
             return null;
         }
-        final Map<String, Integer> ret = new LinkedHashMap<String, Integer>();
+        final Map<String, Integer> ret = new LinkedHashMap<>();
         for (final IMapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), TacosWzDataTool.getIntConvert(data));
+                ret.put(data.getName().substring(3), TacosWzDataTool.getInt(data, 0));
             }
         }
         ret.put("masterLevel", TacosWzDataTool.getIntPath("masterLevel", info, 0));
@@ -1270,7 +1270,7 @@ public class MapleItemInformationProvider {
         if (isQuestItemCache.containsKey(itemId)) {
             return isQuestItemCache.get(itemId);
         }
-        final boolean questItem = TacosWzDataTool.getIntConvert("info/quest", getItemData(itemId), 0) == 1;
+        final boolean questItem = TacosWzDataTool.getIntPath("info/quest", getItemData(itemId), 0) == 1;
         isQuestItemCache.put(itemId, questItem);
         return questItem;
     }
@@ -1290,7 +1290,7 @@ public class MapleItemInformationProvider {
         for (IMapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(TacosWzDataTool.getInt(consume, 0));
         }
-        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<Integer, List<Integer>>(TacosWzDataTool.getIntConvert("questId", itemD, 0), consumeItems);
+        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<Integer, List<Integer>>(TacosWzDataTool.getIntPath("questId", itemD, 0), consumeItems);
         questItems.put(itemId, questItem);
         return questItem;
     }

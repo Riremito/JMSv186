@@ -57,7 +57,7 @@ public class MapleLifeFactory {
         if (NPCLoc.containsKey(npcid)) {
             return NPCLoc.get(npcid);
         }
-        final int map = TacosWzDataTool.getIntConvert(Integer.toString(npcid) + "/0", EtcWz.get().getNpcLocation(), -1);
+        final int map = TacosWzDataTool.getIntPath(Integer.toString(npcid) + "/0", EtcWz.get().getNpcLocation(), -1);
         NPCLoc.put(npcid, map);
         return map;
     }
@@ -93,37 +93,37 @@ public class MapleLifeFactory {
             IMapleData monsterInfoData = monsterData.getChildByPath("info");
             stats = new MapleMonsterStats();
 
-            stats.setHp(TacosWzDataTool.getIntConvert("maxHP", monsterInfoData));
-            int mp = TacosWzDataTool.getIntConvert("maxMP", monsterInfoData, 0);
+            stats.setHp(TacosWzDataTool.getIntPath("maxHP", monsterInfoData, 0));
+            int mp = TacosWzDataTool.getIntPath("maxMP", monsterInfoData, 0);
             stats.setMp(IsBrokenMPMob(mid) ? 30000 : mp);
 
-            stats.setExp(TacosWzDataTool.getIntConvert("exp", monsterInfoData, 0));
-            stats.setLevel((short) TacosWzDataTool.getIntConvert("level", monsterInfoData));
-            stats.setRemoveAfter(TacosWzDataTool.getIntConvert("removeAfter", monsterInfoData, 0));
-            stats.setrareItemDropLevel((byte) TacosWzDataTool.getIntConvert("rareItemDropLevel", monsterInfoData, 0));
-            stats.setFixedDamage(TacosWzDataTool.getIntConvert("fixedDamage", monsterInfoData, -1));
-            stats.setOnlyNormalAttack(TacosWzDataTool.getIntConvert("onlyNormalAttack", monsterInfoData, 0) > 0);
-            stats.setBoss(TacosWzDataTool.getIntConvert("boss", monsterInfoData, 0) > 0 || mid == 8810018 || mid == 9410066 || (mid >= 8810118 && mid <= 8810122));
-            stats.setExplosiveReward(TacosWzDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
-            stats.setFfaLoot(TacosWzDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
-            stats.setUndead(TacosWzDataTool.getIntConvert("undead", monsterInfoData, 0) > 0);
+            stats.setExp(TacosWzDataTool.getIntPath("exp", monsterInfoData, 0));
+            stats.setLevel((short) TacosWzDataTool.getIntPath("level", monsterInfoData, 0));
+            stats.setRemoveAfter(TacosWzDataTool.getIntPath("removeAfter", monsterInfoData, 0));
+            stats.setrareItemDropLevel((byte) TacosWzDataTool.getIntPath("rareItemDropLevel", monsterInfoData, 0));
+            stats.setFixedDamage(TacosWzDataTool.getIntPath("fixedDamage", monsterInfoData, -1));
+            stats.setOnlyNormalAttack(TacosWzDataTool.getIntPath("onlyNormalAttack", monsterInfoData, 0) > 0);
+            stats.setBoss(TacosWzDataTool.getIntPath("boss", monsterInfoData, 0) > 0 || mid == 8810018 || mid == 9410066 || (mid >= 8810118 && mid <= 8810122));
+            stats.setExplosiveReward(TacosWzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
+            stats.setFfaLoot(TacosWzDataTool.getIntPath("publicReward", monsterInfoData, 0) > 0);
+            stats.setUndead(TacosWzDataTool.getIntPath("undead", monsterInfoData, 0) > 0);
             stats.setName(TacosWzDataTool.getStringPath(mid + "/name", StringWz.get().getMob(), "MISSINGNO"));
-            stats.setBuffToGive(TacosWzDataTool.getIntConvert("buff", monsterInfoData, -1));
-            stats.setFriendly(TacosWzDataTool.getIntConvert("damagedByMob", monsterInfoData, 0) > 0);
-            stats.setExplosiveReward(TacosWzDataTool.getIntConvert("explosiveReward", monsterInfoData, 0) > 0);
-            stats.setNoDoom(TacosWzDataTool.getIntConvert("noDoom", monsterInfoData, 0) > 0);
-            stats.setFfaLoot(TacosWzDataTool.getIntConvert("publicReward", monsterInfoData, 0) > 0);
-            stats.setCP((byte) TacosWzDataTool.getIntConvert("getCP", monsterInfoData, 0));
-            stats.setPoint(TacosWzDataTool.getIntConvert("point", monsterInfoData, 0));
-            stats.setDropItemPeriod(TacosWzDataTool.getIntConvert("dropItemPeriod", monsterInfoData, 0));
-            stats.setPhysicalDefense((short) TacosWzDataTool.getIntConvert("PDDamage", monsterInfoData, 0));
-            stats.setMagicDefense((short) TacosWzDataTool.getIntConvert("MDDamage", monsterInfoData, 0));
-            stats.setEva((short) TacosWzDataTool.getIntConvert("eva", monsterInfoData, 0));
-            final boolean hideHP = TacosWzDataTool.getIntConvert("HPgaugeHide", monsterInfoData, 0) > 0 || TacosWzDataTool.getIntConvert("hideHP", monsterInfoData, 0) > 0;
+            stats.setBuffToGive(TacosWzDataTool.getIntPath("buff", monsterInfoData, -1));
+            stats.setFriendly(TacosWzDataTool.getIntPath("damagedByMob", monsterInfoData, 0) > 0);
+            stats.setExplosiveReward(TacosWzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
+            stats.setNoDoom(TacosWzDataTool.getIntPath("noDoom", monsterInfoData, 0) > 0);
+            stats.setFfaLoot(TacosWzDataTool.getIntPath("publicReward", monsterInfoData, 0) > 0);
+            stats.setCP((byte) TacosWzDataTool.getIntPath("getCP", monsterInfoData, 0));
+            stats.setPoint(TacosWzDataTool.getIntPath("point", monsterInfoData, 0));
+            stats.setDropItemPeriod(TacosWzDataTool.getIntPath("dropItemPeriod", monsterInfoData, 0));
+            stats.setPhysicalDefense((short) TacosWzDataTool.getIntPath("PDDamage", monsterInfoData, 0));
+            stats.setMagicDefense((short) TacosWzDataTool.getIntPath("MDDamage", monsterInfoData, 0));
+            stats.setEva((short) TacosWzDataTool.getIntPath("eva", monsterInfoData, 0));
+            final boolean hideHP = TacosWzDataTool.getIntPath("HPgaugeHide", monsterInfoData, 0) > 0 || TacosWzDataTool.getIntPath("hideHP", monsterInfoData, 0) > 0;
             final IMapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
             if (selfd != null) {
-                stats.setSelfDHP(TacosWzDataTool.getIntConvert("hp", selfd, 0));
-                stats.setSelfD((byte) TacosWzDataTool.getIntConvert("action", selfd, -1));
+                stats.setSelfDHP(TacosWzDataTool.getIntPath("hp", selfd, 0));
+                stats.setSelfD((byte) TacosWzDataTool.getIntPath("action", selfd, -1));
             } else {
                 stats.setSelfD((byte) -1);
             }
@@ -140,8 +140,8 @@ public class MapleLifeFactory {
                     stats.setTagColor(0);
                     stats.setTagBgColor(0);
                 } else {
-                    stats.setTagColor(TacosWzDataTool.getIntConvert("hpTagColor", monsterInfoData));
-                    stats.setTagBgColor(TacosWzDataTool.getIntConvert("hpTagBgcolor", monsterInfoData));
+                    stats.setTagColor(TacosWzDataTool.getIntPath("hpTagColor", monsterInfoData, 0));
+                    stats.setTagBgColor(TacosWzDataTool.getIntPath("hpTagBgcolor", monsterInfoData, 0));
                 }
             }
 
@@ -176,7 +176,7 @@ public class MapleLifeFactory {
             decodeElementalString(stats, TacosWzDataTool.getStringPath("elemAttr", monsterInfoData, ""));
 
             // Other data which isn;t in the mob, but might in the linked data
-            final int link = TacosWzDataTool.getIntConvert("link", monsterInfoData, 0);
+            final int link = TacosWzDataTool.getIntPath("link", monsterInfoData, 0);
             if (link != 0) { // Store another copy, for faster processing.
                 monsterData = MobWz.get().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
             }

@@ -63,7 +63,7 @@ public class ReactorWz extends TacosWz {
         IMapleData reactorData = getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
         IMapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
-            infoId = TacosWzDataTool.getIntConvert("info/link", reactorData);
+            infoId = TacosWzDataTool.getIntPath("info/link", reactorData, 0);
             MapleReactorStats mrs_link = map_reactorStats.get(infoId);
             if (mrs_link != null) {
                 map_reactorStats.put(rid, mrs_link);
@@ -87,9 +87,9 @@ public class ReactorWz extends TacosWz {
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
                 IMapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
                 OdinPair<Integer, Integer> reactItem = null;
-                int type = TacosWzDataTool.getIntConvert("type", reactorInfoData);
+                int type = TacosWzDataTool.getIntPath("type", reactorInfoData, 0);
                 if (type == 100) { //reactor waits for item
-                    reactItem = new OdinPair<>(TacosWzDataTool.getIntConvert("0", reactorInfoData), TacosWzDataTool.getIntConvert("1", reactorInfoData, 1));
+                    reactItem = new OdinPair<>(TacosWzDataTool.getIntPath("0", reactorInfoData, 0), TacosWzDataTool.getIntPath("1", reactorInfoData, 1));
                     if (!areaSet) { //only set area of effect for item-triggered reactors once
                         stats.setTL(TacosWzDataTool.getPoint(reactorInfoData.getChildByPath("lt")));
                         stats.setBR(TacosWzDataTool.getPoint(reactorInfoData.getChildByPath("rb")));
@@ -97,7 +97,7 @@ public class ReactorWz extends TacosWz {
                     }
                 }
                 foundState = true;
-                stats.addState(i, type, reactItem, (byte) TacosWzDataTool.getIntConvert("state", reactorInfoData), TacosWzDataTool.getIntConvert("timeOut", reactorInfoData_, -1));
+                stats.addState(i, type, reactItem, (byte) TacosWzDataTool.getIntPath("state", reactorInfoData, 0), TacosWzDataTool.getIntPath("timeOut", reactorInfoData_, -1));
             } else {
                 stats.addState(i, 999, null, (byte) (foundState ? -1 : (i + 1)), 0);
             }

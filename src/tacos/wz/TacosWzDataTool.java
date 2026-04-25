@@ -38,41 +38,6 @@ public class TacosWzDataTool {
         return (String) data.getData();
     }
 
-    public static int getIntConvert(IMapleData data) {
-        if (data.getType() == MapleDataType.STRING) {
-            return Integer.parseInt(getString(data));
-        }
-        return getInt(data);
-
-    }
-
-    public static int getIntConvert(String path, IMapleData data) {
-        IMapleData d = data.getChildByPath(path);
-        if (d.getType() == MapleDataType.STRING) {
-            return Integer.parseInt(getString(d));
-        }
-        return getInt(d);
-
-    }
-
-    public static int getIntConvert(String path, IMapleData data, int def) {
-        if (data == null) {
-            return def;
-        }
-        IMapleData d = data.getChildByPath(path);
-        if (d == null) {
-            return def;
-        }
-        if (d.getType() == MapleDataType.STRING) {
-            try {
-                return Integer.parseInt(getString(d));
-            } catch (NumberFormatException nfe) {
-                return def;
-            }
-        }
-        return getInt(d, def);
-    }
-
     // with path.
     public static int getIntPath(String path, IMapleData data, int def) {
         return getInt(data.getChildByPath(path), def);
@@ -92,7 +57,7 @@ public class TacosWzDataTool {
             return def;
         }
         if (data.getType() != MapleDataType.STRING) {
-            return getIntConvert(path, source, def);
+            return getIntPath(path, source, def);
         }
         // post bb
         return TacosWzExpression.getInt(getString(data), common_level);

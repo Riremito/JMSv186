@@ -329,11 +329,11 @@ public class MapleStatEffect implements Serializable {
         ret.x = TacosWzDataTool.getIntExpression("x", source, 0, common_level);
         ret.y = TacosWzDataTool.getIntExpression("y", source, 0, common_level);
         ret.z = TacosWzDataTool.getIntExpression("z", source, 0, common_level);
-        ret.damage = (short) TacosWzDataTool.getIntConvert("damage", source, 100);
-        ret.attackCount = (byte) TacosWzDataTool.getIntConvert("attackCount", source, 1);
-        ret.bulletCount = (byte) TacosWzDataTool.getIntConvert("bulletCount", source, 1);
-        ret.bulletConsume = TacosWzDataTool.getIntConvert("bulletConsume", source, 0);
-        ret.moneyCon = TacosWzDataTool.getIntConvert("moneyCon", source, 0);
+        ret.damage = (short) TacosWzDataTool.getIntPath("damage", source, 100);
+        ret.attackCount = (byte) TacosWzDataTool.getIntPath("attackCount", source, 1);
+        ret.bulletCount = (byte) TacosWzDataTool.getIntPath("bulletCount", source, 1);
+        ret.bulletConsume = TacosWzDataTool.getIntPath("bulletConsume", source, 0);
+        ret.moneyCon = TacosWzDataTool.getIntPath("moneyCon", source, 0);
 
         ret.itemCon = TacosWzDataTool.getIntPath("itemCon", source, 0);
         ret.itemConNo = TacosWzDataTool.getIntPath("itemConNo", source, 0);

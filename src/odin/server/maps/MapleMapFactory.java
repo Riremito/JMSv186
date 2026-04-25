@@ -95,7 +95,7 @@ public class MapleMapFactory {
 
                 IMapleData link = mapData.getChildByPath("info/link");
                 if (link != null) {
-                    mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntConvert("info/link", mapData)));
+                    mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntPath("info/link", mapData, 0)));
                 }
 
                 float monsterRate = 0;
@@ -293,7 +293,7 @@ public class MapleMapFactory {
         IMapleData mapData = MapWz.get().getData(getMapName(mapid));
         IMapleData link = mapData.getChildByPath("info/link");
         if (link != null) {
-            mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntConvert("info/link", mapData)));
+            mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntPath("info/link", mapData, 0)));
         }
 
         float monsterRate = 0;
@@ -546,10 +546,10 @@ public class MapleMapFactory {
                         }
                         final MapleNodeInfo mni = new MapleNodeInfo(
                                 Integer.parseInt(node.getName()),
-                                TacosWzDataTool.getIntConvert("key", node, 0),
-                                TacosWzDataTool.getIntConvert("x", node, 0),
-                                TacosWzDataTool.getIntConvert("y", node, 0),
-                                TacosWzDataTool.getIntConvert("attr", node, 0), edges);
+                                TacosWzDataTool.getIntPath("key", node, 0),
+                                TacosWzDataTool.getIntPath("x", node, 0),
+                                TacosWzDataTool.getIntPath("y", node, 0),
+                                TacosWzDataTool.getIntPath("attr", node, 0), edges);
                         nodeInfo.addNode(mni);
                     } catch (NumberFormatException e) {
                     } //start, end, edgeInfo = we dont need it
@@ -559,23 +559,23 @@ public class MapleMapFactory {
             for (int i = 1; i <= 7; i++) {
                 if (mapData.getChildByPath(String.valueOf(i)) != null && mapData.getChildByPath(i + "/obj") != null) {
                     for (IMapleData node : mapData.getChildByPath(i + "/obj")) {
-                        int sn_count = TacosWzDataTool.getIntConvert("SN_count", node, 0);
+                        int sn_count = TacosWzDataTool.getIntPath("SN_count", node, 0);
                         String name = TacosWzDataTool.getStringPath("name", node, "");
-                        int speed = TacosWzDataTool.getIntConvert("speed", node, 0);
+                        int speed = TacosWzDataTool.getIntPath("speed", node, 0);
                         if (sn_count <= 0 || speed <= 0 || name.equals("")) {
                             continue;
                         }
                         final List<Integer> SN = new ArrayList<>();
                         for (int x = 0; x < sn_count; x++) {
-                            SN.add(TacosWzDataTool.getIntConvert("SN" + x, node, 0));
+                            SN.add(TacosWzDataTool.getIntPath("SN" + x, node, 0));
                         }
                         final MaplePlatform mni = new MaplePlatform(
-                                name, TacosWzDataTool.getIntConvert("start", node, 2), speed,
-                                TacosWzDataTool.getIntConvert("x1", node, 0),
-                                TacosWzDataTool.getIntConvert("y1", node, 0),
-                                TacosWzDataTool.getIntConvert("x2", node, 0),
-                                TacosWzDataTool.getIntConvert("y2", node, 0),
-                                TacosWzDataTool.getIntConvert("r", node, 0), SN);
+                                name, TacosWzDataTool.getIntPath("start", node, 2), speed,
+                                TacosWzDataTool.getIntPath("x1", node, 0),
+                                TacosWzDataTool.getIntPath("y1", node, 0),
+                                TacosWzDataTool.getIntPath("x2", node, 0),
+                                TacosWzDataTool.getIntPath("y2", node, 0),
+                                TacosWzDataTool.getIntPath("r", node, 0), SN);
                         nodeInfo.addPlatform(mni);
                     }
                 }

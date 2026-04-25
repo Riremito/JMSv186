@@ -228,7 +228,7 @@ public class Skill implements ISkill {
         ret.animationTime = 0;
         if (effect != null) {
             for (final IMapleData effectEntry : effect) {
-                ret.animationTime += TacosWzDataTool.getIntConvert("delay", effectEntry, 0);
+                ret.animationTime += TacosWzDataTool.getIntPath("delay", effectEntry, 0);
             }
         }
         return ret;
