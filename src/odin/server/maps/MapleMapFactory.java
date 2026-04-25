@@ -98,12 +98,9 @@ public class MapleMapFactory {
                     mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntPath("info/link", mapData, 0)));
                 }
 
-                float monsterRate = 0;
+                float monsterRate = 0.0f;
                 if (respawns) {
-                    IMapleData mobRate = mapData.getChildByPath("info/mobRate");
-                    if (mobRate != null) {
-                        monsterRate = ((Float) mobRate.getData());
-                    }
+                    monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
                 }
                 map = new MapleMap(mapid, channel, TacosWzDataTool.getIntPath("info/returnMap", mapData, 0), monsterRate);
 
@@ -111,7 +108,7 @@ public class MapleMapFactory {
                 for (IMapleData portal : mapData.getChildByPath("portal")) {
                     map.addPortal(portalFactory.makePortal(map, TacosWzDataTool.getInt(portal.getChildByPath("pt")), portal));
                 }
-                List<MapleFoothold> allFootholds = new LinkedList<MapleFoothold>();
+                List<MapleFoothold> allFootholds = new LinkedList<>();
                 Point lBound = new Point();
                 Point uBound = new Point();
                 MapleFoothold fh;
@@ -296,12 +293,9 @@ public class MapleMapFactory {
             mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntPath("info/link", mapData, 0)));
         }
 
-        float monsterRate = 0;
+        float monsterRate = 0.0f;
         if (respawns) {
-            IMapleData mobRate = mapData.getChildByPath("info/mobRate");
-            if (mobRate != null) {
-                monsterRate = ((Float) mobRate.getData());
-            }
+            monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
         }
         MapleMap map = new MapleMap(mapid, channel, TacosWzDataTool.getIntPath("info/returnMap", mapData, 0), monsterRate);
 

@@ -20,12 +20,10 @@ package tacos.wz.data;
 
 import tacos.wz.TacosWz;
 import tacos.config.Content;
-import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.provider.WzXML.MapleDataType;
 import odin.server.StructSetItem;
 import odin.server.StructSetItem.SetItem;
 import odin.provider.IMapleData;
@@ -117,10 +115,6 @@ public class EtcWz extends TacosWz {
             itemz.setItemID = Integer.parseInt(dat.getName());
             itemz.completeCount = TacosWzDataTool.getIntPath("completeCount", dat, 0);
             for (IMapleData level : dat.getChildByPath("ItemID")) {
-                if (level.getType() != MapleDataType.INT) {
-                    DebugLogger.ErrorLog("SetItemInfo.img, " + dat.getName() + " error");
-                    continue;
-                }
                 itemz.itemIDs.add(TacosWzDataTool.getInt(level, 0));
             }
             for (IMapleData level : dat.getChildByPath("Effect")) {
@@ -137,7 +131,7 @@ public class EtcWz extends TacosWz {
                 itez.incSpeed = TacosWzDataTool.getIntPath("incSpeed", level, 0);
                 itez.incMHP = TacosWzDataTool.getIntPath("incMHP", level, 0);
                 itez.incMMP = TacosWzDataTool.getIntPath("incMMP", level, 0);
-                itemz.items.put(Integer.parseInt(level.getName()), itez);
+                itemz.items.put(Integer.valueOf(level.getName()), itez);
             }
             map_SetItemInfo.put(itemz.setItemID, itemz);
         }

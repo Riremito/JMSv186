@@ -43,6 +43,10 @@ public class TacosWzDataTool {
         return getInt(data.getChildByPath(path), def);
     }
 
+    public static Float getFloatPath(String path, IMapleData data, float def) {
+        return getFloat(data.getChildByPath(path), def);
+    }
+
     public static String getStringPath(String path, IMapleData data, String def) {
         return getString(data.getChildByPath(path), def);
     }
@@ -82,6 +86,12 @@ public class TacosWzDataTool {
                 return (Short) ret;
             case INT: {
                 return (Integer) ret;
+            }
+            case FLOAT: {
+                return ((Float) ret).intValue();
+            }
+            case DOUBLE: {
+                return ((Double) ret).intValue();
             }
             case STRING: {
                 DebugLogger.XmlDataLog(data, "getInt = string");

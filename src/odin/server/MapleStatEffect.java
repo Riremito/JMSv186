@@ -322,8 +322,8 @@ public class MapleStatEffect implements Serializable {
 
         final IMapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
-            ret.lt = (Point) ltd.getData();
-            ret.rb = (Point) source.getChildByPath("rb").getData();
+            ret.lt = TacosWzDataTool.getPoint(source.getChildByPath("lt"));
+            ret.rb = TacosWzDataTool.getPoint(source.getChildByPath("rb"));
         }
 
         ret.x = TacosWzDataTool.getIntExpression("x", source, 0, common_level);

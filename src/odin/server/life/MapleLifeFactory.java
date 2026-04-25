@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import odin.provider.WzXML.MapleDataType;
 import tacos.odin.OdinPair;
 import odin.tools.StringUtil;
 import odin.provider.IMapleData;
@@ -127,14 +126,7 @@ public class MapleLifeFactory {
             } else {
                 stats.setSelfD((byte) -1);
             }
-            final IMapleData firstAttackData = monsterInfoData.getChildByPath("firstAttack");
-            if (firstAttackData != null) {
-                if (firstAttackData.getType() == MapleDataType.FLOAT) {
-                    stats.setFirstAttack(Math.round(TacosWzDataTool.getFloat(firstAttackData, 0.0f)) > 0);
-                } else {
-                    stats.setFirstAttack(TacosWzDataTool.getInt(firstAttackData) > 0);
-                }
-            }
+            stats.setFirstAttack(TacosWzDataTool.getIntPath("firstAttack", monsterInfoData, 0) > 0);
             if (stats.isBoss() || isDmgSponge(mid)) {
                 if (hideHP || monsterInfoData.getChildByPath("hpTagColor") == null || monsterInfoData.getChildByPath("hpTagBgcolor") == null) {
                     stats.setTagColor(0);

@@ -194,8 +194,8 @@ public class SkillWz extends TacosWz {
         Point lt = null;
         Point rb = null;
         if (ltd != null) {
-            lt = (Point) ltd.getData();
-            rb = (Point) skillData.getChildByPath("rb").getData();
+            lt = TacosWzDataTool.getPoint(skillData.getChildByPath("lt"));
+            rb = TacosWzDataTool.getPoint(skillData.getChildByPath("rb"));
         }
 
         MobSkill ret = new MobSkill(skillId, level);
