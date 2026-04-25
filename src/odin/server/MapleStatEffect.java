@@ -78,9 +78,9 @@ public class MapleStatEffect implements Serializable {
         return loadFromData(source, itemid, false, false, (byte) 1, 0);
     }
 
-    private static final void addBuffStatPairToListIfNotZero(final List<OdinPair<MapleBuffStat, Integer>> list, final MapleBuffStat buffstat, final Integer val) {
-        if (val.intValue() != 0) {
-            list.add(new OdinPair<MapleBuffStat, Integer>(buffstat, val));
+    private static void addBuffStatPairToListIfNotZero(final List<OdinPair<MapleBuffStat, Integer>> list, final MapleBuffStat buffstat, final Integer val) {
+        if (val != 0) {
+            list.add(new OdinPair<>(buffstat, val));
         }
     }
 
@@ -277,7 +277,7 @@ public class MapleStatEffect implements Serializable {
             ret.duration *= 1000; // items have their times stored in ms, of course
             ret.overTime = overTime || ret.isMorph() || ret.isPirateMorph() || ret.isFinalAttack();
         }
-        final ArrayList<OdinPair<MapleBuffStat, Integer>> statups = new ArrayList<OdinPair<MapleBuffStat, Integer>>();
+        final ArrayList<OdinPair<MapleBuffStat, Integer>> statups = new ArrayList<>();
 
         ret.mastery = (byte) TacosWzDataTool.getIntExpression("mastery", source, 0, common_level);
         ret.watk = (short) TacosWzDataTool.getIntExpression("pad", source, 0, common_level);
@@ -302,7 +302,7 @@ public class MapleStatEffect implements Serializable {
         ret.booster = 0;
         ret.illusion = TacosWzDataTool.getIntExpression("illusion", source, 0, common_level);
 
-        List<MapleDisease> cure = new ArrayList<MapleDisease>(5);
+        List<MapleDisease> cure = new ArrayList<>(5);
         if (TacosWzDataTool.getIntPath("poison", source, 0) > 0) {
             cure.add(MapleDisease.POISON);
         }
@@ -329,17 +329,17 @@ public class MapleStatEffect implements Serializable {
         ret.x = TacosWzDataTool.getIntExpression("x", source, 0, common_level);
         ret.y = TacosWzDataTool.getIntExpression("y", source, 0, common_level);
         ret.z = TacosWzDataTool.getIntExpression("z", source, 0, common_level);
-        ret.damage = (short) TacosWzDataTool.getIntPath("damage", source, 100);
-        ret.attackCount = (byte) TacosWzDataTool.getIntPath("attackCount", source, 1);
-        ret.bulletCount = (byte) TacosWzDataTool.getIntPath("bulletCount", source, 1);
-        ret.bulletConsume = TacosWzDataTool.getIntPath("bulletConsume", source, 0);
-        ret.moneyCon = TacosWzDataTool.getIntPath("moneyCon", source, 0);
+        ret.damage = (short) TacosWzDataTool.getIntExpression("damage", source, 0, common_level);
+        ret.attackCount = (byte) TacosWzDataTool.getIntExpression("attackCount", source, 1, common_level);
+        ret.bulletCount = (byte) TacosWzDataTool.getIntExpression("bulletCount", source, 1, common_level);
+        ret.bulletConsume = TacosWzDataTool.getIntExpression("bulletConsume", source, 0, common_level);
+        ret.moneyCon = TacosWzDataTool.getIntExpression("moneyCon", source, 0, common_level);
 
         ret.itemCon = TacosWzDataTool.getIntPath("itemCon", source, 0);
         ret.itemConNo = TacosWzDataTool.getIntPath("itemConNo", source, 0);
         ret.moveTo = TacosWzDataTool.getIntPath("moveTo", source, -1);
 
-        Map<MonsterStatus, Integer> monsterStatus = new EnumMap<MonsterStatus, Integer>(MonsterStatus.class);
+        Map<MonsterStatus, Integer> monsterStatus = new EnumMap<>(MonsterStatus.class);
         if (ret.overTime && ret.getSummonMovementType() == null) {
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WATK, Integer.valueOf(ret.watk));
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.WDEF, Integer.valueOf(ret.wdef));
@@ -351,15 +351,14 @@ public class MapleStatEffect implements Serializable {
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.JUMP, Integer.valueOf(ret.jump));
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MAXHP, (int) ret.mhpR);
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MAXMP, (int) ret.mmpR);
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.EXPRATE, Integer.valueOf(ret.expBuff)); // EXP
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ACASH_RATE, Integer.valueOf(ret.cashup)); // custom
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.DROP_RATE, Integer.valueOf(ret.itemup * 200)); // defaults to 2x
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MESO_RATE, Integer.valueOf(ret.mesoup * 200)); // defaults to 2x
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.BERSERK_FURY, Integer.valueOf(ret.berserk2));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.PYRAMID_PQ, Integer.valueOf(ret.berserk));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.BOOSTER, Integer.valueOf(ret.booster));
-            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ILLUSION, Integer.valueOf(ret.illusion));
-
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.EXPRATE, ret.expBuff); // EXP
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ACASH_RATE, ret.cashup); // custom
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.DROP_RATE, ret.itemup * 200); // defaults to 2x
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.MESO_RATE, ret.mesoup * 200); // defaults to 2x
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.BERSERK_FURY, ret.berserk2);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.PYRAMID_PQ, ret.berserk);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.BOOSTER, ret.booster);
+            addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ILLUSION, ret.illusion);
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ENHANCED_WATK, Integer.valueOf(ret.ewatk));
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ENHANCED_WDEF, Integer.valueOf(ret.ewdef));
             addBuffStatPairToListIfNotZero(statups, MapleBuffStat.ENHANCED_MDEF, Integer.valueOf(ret.emdef));

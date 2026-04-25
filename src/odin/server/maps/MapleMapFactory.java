@@ -248,7 +248,7 @@ public class MapleMapFactory {
                 map.setSoaring(TacosWzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0);
                 map.setPersonalShop(TacosWzDataTool.getInt(mapData.getChildByPath("info/personalShop"), 0) > 0);
                 map.setForceMove(TacosWzDataTool.getInt(mapData.getChildByPath("info/lvForceMove"), 0));
-                map.setHPDec(TacosWzDataTool.getInt(mapData.getChildByPath("info/decHP"), 0));
+                map.setHPDec((int) TacosWzDataTool.getLong(mapData.getChildByPath("info/decHP"), 0L));
                 map.setHPDecInterval(TacosWzDataTool.getInt(mapData.getChildByPath("info/decHPInterval"), 10000));
                 map.setHPDecProtect(TacosWzDataTool.getInt(mapData.getChildByPath("info/protectItem"), 0));
                 map.setForcedReturnMap(TacosWzDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID));
@@ -398,7 +398,7 @@ public class MapleMapFactory {
         map.setTown(TacosWzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0);
         map.setSoaring(TacosWzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0);
         map.setForceMove(TacosWzDataTool.getInt(mapData.getChildByPath("info/lvForceMove"), 0));
-        map.setHPDec(TacosWzDataTool.getInt(mapData.getChildByPath("info/decHP"), 0));
+        map.setHPDec((int) TacosWzDataTool.getLong(mapData.getChildByPath("info/decHP"), 0L));
         map.setHPDecInterval(TacosWzDataTool.getInt(mapData.getChildByPath("info/decHPInterval"), 10000));
         map.setHPDecProtect(TacosWzDataTool.getInt(mapData.getChildByPath("info/protectItem"), 0));
         map.setForcedReturnMap(TacosWzDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID));

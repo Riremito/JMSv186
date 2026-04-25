@@ -84,7 +84,7 @@ public class TacosWzDataTool {
             }
             case STRING: {
                 DebugLogger.XmlDataLog(data, "getInt = string");
-                return (int) Long.parseLong((String) ret);
+                return Integer.parseInt((String) ret);
             }
             default: {
                 DebugLogger.XmlDataLog(data, "getInt = others");
@@ -93,6 +93,23 @@ public class TacosWzDataTool {
         }
 
         return (Integer) ret;
+    }
+
+    // for Map.wz, 749050100.img, info/decHP, pinkbean cake map
+    public static long getLong(IMapleData data, long def) {
+        if (data == null) {
+            DebugLogger.XmlDataLog(null, "getLong");
+            return def;
+        }
+        if (data.getType() != MapleDataType.STRING) {
+            return (long) getInt(data, (int) def);
+        }
+        String ret = (String) data.getData();
+        if (ret == null) {
+            DebugLogger.XmlDataLog(data, "null");
+            return def;
+        }
+        return Long.parseLong(ret);
     }
 
     // for Map.wz, info/recovery
