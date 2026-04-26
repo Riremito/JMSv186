@@ -49,7 +49,7 @@ import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
-import tacos.packet.response.ResCUser_FoxMan;
+import tacos.packet.response.ResCUser_SkillPet;
 import tacos.server.TacosWorld;
 
 /**
@@ -284,11 +284,6 @@ public class ReqCClientSocket {
                         chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
                     }
                 }
-                // fox
-                if (TacosConstants.is_kanna(chr.getJob())) {
-                    // test
-                    chr.SendPacket(ResCUser_FoxMan.FoxManEnterField(chr));
-                }
                 if (Version.LessOrEqual(Region.JMS, 131) || Region.check(Region.BMS)) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 } else {
@@ -349,6 +344,10 @@ public class ReqCClientSocket {
                     if (pet.getSummoned()) {
                         map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
                     }
+                }
+                // haku fox.
+                if (TacosConstants.is_kanna(chr.getJob())) {
+                    map.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(chr, TacosConstants.KANNA_SKILL_PET_ID));
                 }
                 break;
             }

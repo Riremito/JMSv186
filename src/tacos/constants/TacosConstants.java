@@ -41,6 +41,8 @@ public class TacosConstants {
     public static final int MAP_ID_MEISTER_VILLE = 910001000;
     public static final String PORTAL_MEISTER_VILLE = "st00";
 
+    public static final int KANNA_SKILL_PET_ID = 40020109;
+
     public static boolean is_kanna(int job_id) {
         switch (job_id) {
             case 4002:

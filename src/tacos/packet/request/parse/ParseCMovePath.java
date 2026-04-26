@@ -78,6 +78,7 @@ public class ParseCMovePath {
             case CP_DragonMove:
             case CP_SummonedMove:
             case CP_PetMove:
+            case CP_SkillPetMove:
             case CP_FoxManMove: {
                 // JMS147-194
                 return (1 + 2 * 4); // 1 + 8

@@ -37,6 +37,7 @@ import tacos.packet.request.ReqCUser;
 import tacos.packet.request.ReqCUser_Dragon;
 import tacos.packet.request.ReqCUser_FoxMan;
 import tacos.packet.request.ReqCUser_Pet;
+import tacos.packet.request.ReqCUser_SkillPet;
 import tacos.packet.request.Req_MapleTV;
 import tacos.server.TacosServer;
 
@@ -65,6 +66,10 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
             // pet
             if (header.between(ClientPacketHeader.CP_BEGIN_PET, ClientPacketHeader.CP_END_PET)) {
                 return ReqCUser_Pet.OnPetPacket(client, header, cp);
+            }
+            // skill pet (haku)
+            if (header.between(ClientPacketHeader.CP_BEGIN_SKILLPET, ClientPacketHeader.CP_END_SKILLPET)) {
+                return ReqCUser_SkillPet.OnSkillPetPacket(client, header, cp);
             }
             // summon
             if (header.between(ClientPacketHeader.CP_BEGIN_SUMMONED, ClientPacketHeader.CP_END_SUMMONED)) {

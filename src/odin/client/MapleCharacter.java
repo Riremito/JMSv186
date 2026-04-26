@@ -123,6 +123,7 @@ import odin.server.shops.HiredMerchant;
 import odin.tools.ConcurrentEnumMap;
 import odin.tools.FileoutputUtil;
 import tacos.client.TacosCharacter;
+import tacos.constants.TacosConstants;
 import tacos.database.ops.InvTypeDB;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
@@ -140,6 +141,7 @@ import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.packet.response.ResCUser_SkillPet;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
@@ -1780,6 +1782,10 @@ public class MapleCharacter extends TacosCharacter {
             map_to.spawnPlayers(this);
             map_to.spawnMerchant(this); // show merchant
             map_to.spawnDynamicPortal(this); // show dynamic portal;
+            // haku fox.
+            if (TacosConstants.is_kanna(getJob())) {
+                map_to.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(this, TacosConstants.KANNA_SKILL_PET_ID));
+            }
             stats.relocHeal();
         }
 
@@ -2815,23 +2821,26 @@ public class MapleCharacter extends TacosCharacter {
     @Override
     public void sendSpawnData(MapleClient client) {
         if (client.getPlayer().allowedToTarget(this)) {
-            client.getSession().write(ResCUserPool.UserEnterField(this));
-
+            client.SendPacket(ResCUserPool.UserEnterField(this));
+            // haku fox.
+            if (TacosConstants.is_kanna(getJob())) {
+                client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(this, TacosConstants.KANNA_SKILL_PET_ID));
+            }
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {
-                    client.getSession().write(ResCUser_Pet.Activated(this, pet));
+                    client.SendPacket(ResCUser_Pet.Activated(this, pet));
                 }
             }
             if (dragon != null) {
-                client.getSession().write(ResCUser_Dragon.spawnDragon(dragon));
+                client.SendPacket(ResCUser_Dragon.spawnDragon(dragon));
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {
-                    client.getSession().write(ResCSummonedPool.SummonedEnterField(summon, false));
+                    client.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
             }
             if (followid > 0) {
-                client.getSession().write(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
+                client.SendPacket(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
             }
             return;
         }
