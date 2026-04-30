@@ -43,7 +43,7 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
-import tacos.constants.TacosConstants;
+import tacos.client.TacosSkillPet;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
@@ -346,8 +346,10 @@ public class ReqCClientSocket {
                     }
                 }
                 // haku fox.
-                if (TacosConstants.is_kanna(chr.getJob())) {
-                    map.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(chr, TacosConstants.KANNA_SKILL_PET_ID));
+                TacosSkillPet skill_pet = chr.getSkillPet();
+                if (skill_pet != null) {
+                    skill_pet.reset(chr);
+                    map.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(chr, skill_pet));
                 }
                 break;
             }

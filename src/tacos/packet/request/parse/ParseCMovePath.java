@@ -65,6 +65,22 @@ public class ParseCMovePath {
         life.setFH(move_end_foothold_id);
     }
 
+    public int getX() {
+        return move_end.x;
+    }
+
+    public int getY() {
+        return move_end.y;
+    }
+
+    public int getMoveAction() {
+        return this.move_end_action;
+    }
+
+    public int getFootHoldId() {
+        return this.move_end_foothold_id;
+    }
+
     private int getTailDataSize(ClientPacket cp) {
         switch (cp.getHeader()) {
             case CP_UserMove: {

@@ -123,7 +123,6 @@ import odin.server.shops.HiredMerchant;
 import odin.tools.ConcurrentEnumMap;
 import odin.tools.FileoutputUtil;
 import tacos.client.TacosCharacter;
-import tacos.constants.TacosConstants;
 import tacos.database.ops.InvTypeDB;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
@@ -1714,15 +1713,6 @@ public class MapleCharacter extends TacosCharacter {
         this.remainingSp[skillbook] = remainingSp;
     }
 
-    public void setJob(int job) {
-        if (!DWI_Validation.isValidJobID(job)) {
-            DebugLogger.ErrorLog("Invalid job id : " + job);
-            this.job = DWI_Dafault.JOB;
-            return;
-        }
-        this.job = job;
-    }
-
     public void setInvincible(boolean invinc) {
         invincible = invinc;
     }
@@ -1783,8 +1773,9 @@ public class MapleCharacter extends TacosCharacter {
             map_to.spawnMerchant(this); // show merchant
             map_to.spawnDynamicPortal(this); // show dynamic portal;
             // haku fox.
-            if (TacosConstants.is_kanna(getJob())) {
-                map_to.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(this, TacosConstants.KANNA_SKILL_PET_ID));
+            if (skill_pet != null) {
+                skill_pet.reset(this);
+                map_to.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(this, skill_pet));
             }
             stats.relocHeal();
         }
@@ -2823,8 +2814,8 @@ public class MapleCharacter extends TacosCharacter {
         if (client.getPlayer().allowedToTarget(this)) {
             client.SendPacket(ResCUserPool.UserEnterField(this));
             // haku fox.
-            if (TacosConstants.is_kanna(getJob())) {
-                client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(this, TacosConstants.KANNA_SKILL_PET_ID));
+            if (skill_pet != null) {
+                client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(this, skill_pet));
             }
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {

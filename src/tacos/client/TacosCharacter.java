@@ -60,6 +60,8 @@ import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
+import tacos.wz.ids.DWI_Dafault;
+import tacos.wz.ids.DWI_Validation;
 
 /**
  *
@@ -412,6 +414,16 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getJob() {
         return this.job;
+    }
+
+    public void setJob(int job) {
+        if (!DWI_Validation.isValidJobID(job)) {
+            DebugLogger.ErrorLog("Invalid job id : " + job);
+            this.job = DWI_Dafault.JOB;
+            return;
+        }
+        this.job = job;
+        setSkillPet();
     }
 
     public PlayerStats getStat() {
@@ -847,6 +859,24 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             this.storage.load();
         }
         return this.storage;
+    }
+
+    // skill pet
+    protected TacosSkillPet skill_pet = null;
+
+    public TacosSkillPet getSkillPet() {
+        return this.skill_pet;
+    }
+
+    public boolean setSkillPet() {
+        if (this.skill_pet != null) {
+            return false;
+        }
+        if (TacosConstants.is_kanna(getJob())) {
+            this.skill_pet = new TacosSkillPet(this, TacosConstants.KANNA_SKILL_PET_ID);
+            return true;
+        }
+        return false;
     }
 
     // clone

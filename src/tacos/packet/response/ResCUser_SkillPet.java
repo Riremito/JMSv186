@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
+import tacos.client.TacosSkillPet;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -31,11 +32,11 @@ import tacos.packet.request.parse.ParseCMovePath;
 public class ResCUser_SkillPet {
 
     // CSkillPet::OnMove
-    public static MaplePacket SkillPetMove(MapleCharacter chr, ParseCMovePath data) {
+    public static MaplePacket SkillPetMove(MapleCharacter chr, TacosSkillPet skill_pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetMove);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
-        sp.Encode4(chr.getId()); // pet id
+        sp.Encode4(skill_pet.getId()); // pet id
         sp.EncodeBuffer(data.get());
         return sp.get();
     }
@@ -43,24 +44,24 @@ public class ResCUser_SkillPet {
     // CSkillPet::OnAction
     // CSkillPet::OnState
     // CUserLocal::OnSkillPetTrensferField
-    public static MaplePacket SkillPetTransferField(MapleCharacter chr, int skill_pet_id) {
+    public static MaplePacket SkillPetTransferField(MapleCharacter chr, TacosSkillPet skill_pet) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetTransferField);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
-        sp.Encode4(chr.getId()); // pet id
-        sp.EncodeBuffer(CSkillPet__Init(chr, skill_pet_id));
+        sp.Encode4(skill_pet.getId()); // pet id
+        sp.EncodeBuffer(CSkillPet__Init(skill_pet));
         return sp.get();
     }
 
-    public static byte[] CSkillPet__Init(MapleCharacter chr, int skill_pet_id) {
+    public static byte[] CSkillPet__Init(TacosSkillPet skill_pet) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode4(skill_pet_id); // nSkillID (haku)
+        data.Encode4(skill_pet.getSkillId()); // nSkillID (haku)
         data.Encode1(1); // eState (show)
-        data.Encode2(chr.getPosition().x); // m_ptPos.x
-        data.Encode2(chr.getPosition().y); // m_ptPos.y
-        data.Encode1(0); // m_nMoveAction
-        data.Encode2(0); // sFootholdSN
+        data.Encode2(skill_pet.getX()); // m_ptPos.x
+        data.Encode2(skill_pet.getY()); // m_ptPos.y
+        data.Encode1(skill_pet.getMoveAction()); // m_nMoveAction
+        data.Encode2(skill_pet.getFootHoldId()); // sFootholdSN
         return data.get().getBytes();
     }
 }
