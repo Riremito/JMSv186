@@ -357,6 +357,10 @@ public class DebugCommand {
                 chr.DebugMsg("Ac : " + chr.getStance());
                 return true;
             }
+            case "/split": {
+                chr.DebugMsg(chr.getMap().getSplitInfo(chr));
+                return true;
+            }
             case "/hm": {
                 List<Integer> ids = new ArrayList<>();
                 IMapleData md_item_sub_type = ItemWz.get().getItemImg(503);
