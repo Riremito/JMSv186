@@ -28,7 +28,6 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.network.MaplePacket;
 import odin.handling.world.OdinWorld;
-import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ClientPacket;
 
@@ -54,11 +53,6 @@ public class GuildHandler {
             }
         }*/
         return true;
-    }
-
-    private static void respawnPlayer(final MapleCharacter mc) {
-        mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(mc.getId()), false);
-        mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
     }
 
     private static final class Invited {
@@ -125,7 +119,6 @@ public class GuildHandler {
                 c.getSession().write(ResCWvsContext.showGuildInfo(c.getPlayer()));
                 OdinWorld.Guild.setGuildMemberOnline(c.getPlayer().getMGC(), true, c.getChannelId());
                 c.getPlayer().dropMessage(1, "You have successfully created a Guild.");
-                respawnPlayer(c.getPlayer());
                 break;
             case 0x05: // invitation
                 if (c.getPlayer().getGuildId() <= 0 || c.getPlayer().getGuildRank() > 2) { // 1 == guild master, 2 == jr
@@ -177,7 +170,6 @@ public class GuildHandler {
                             }
                         }
                         c.getPlayer().saveGuildStatus();
-                        respawnPlayer(c.getPlayer());
                         break;
                     }
                 }
@@ -239,7 +231,6 @@ public class GuildHandler {
                 OdinWorld.Guild.setGuildEmblem(c.getPlayer().getGuildId(), bg, bgcolor, logo, logocolor);
 
                 c.getPlayer().gainMeso(-15000000, true, false, true);
-                respawnPlayer(c.getPlayer());
                 break;
             case 0x10: // guild notice change
                 final String notice = cp.DecodeStr();

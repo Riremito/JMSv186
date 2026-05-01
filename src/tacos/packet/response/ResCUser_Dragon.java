@@ -34,7 +34,7 @@ public class ResCUser_Dragon {
     public static MaplePacket DragonEnterField(TacosDragon dragon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonEnterField);
 
-        sp.Encode4(dragon.getId()); // m_dwCharacterId
+        sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
         sp.Encode4(dragon.getX()); // m_ptPos.x
         sp.Encode4(dragon.getY()); // m_ptPos.y
         sp.Encode1(dragon.getMoveAction()); // m_nMoveAction
@@ -47,7 +47,7 @@ public class ResCUser_Dragon {
     public static MaplePacket DragonMove(TacosDragon dragon, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonMove);
 
-        sp.Encode4(dragon.getId()); // m_dwCharacterId
+        sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
         sp.EncodeBuffer(data.get());
         return sp.get();
     }
@@ -56,7 +56,7 @@ public class ResCUser_Dragon {
     public static MaplePacket DragonLeaveField(TacosDragon dragon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonLeaveField);
 
-        sp.Encode4(dragon.getId()); // m_dwCharacterId
+        sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
         return sp.get();
     }
 

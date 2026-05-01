@@ -18,8 +18,6 @@
  */
 package tacos.client;
 
-import tacos.packet.ops.OpsMovePathAttr;
-
 /**
  *
  * @author Riremito
@@ -30,7 +28,7 @@ public class TacosDragon extends TacosObject {
 
     public TacosDragon(TacosCharacter chr) {
         this.job_code = chr.getJob();
-        super(chr.getId(), chr.getPosition().x, chr.getPosition().y, OpsMovePathAttr.MPA_NORMAL.get(), chr.getFH());
+        super(chr);
     }
 
     public int getJobCode() {

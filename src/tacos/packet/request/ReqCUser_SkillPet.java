@@ -18,9 +18,9 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosSkillPet;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
@@ -34,7 +34,7 @@ import tacos.packet.response.ResCUser_SkillPet;
 public class ReqCUser_SkillPet {
 
     public static boolean OnSkillPetPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -56,7 +56,7 @@ public class ReqCUser_SkillPet {
                 ParseCMovePath move_path = new ParseCMovePath();
                 if (move_path.Decode(cp)) {
                     skill_pet.update(move_path);
-                    map.broadcastMessage(chr, ResCUser_SkillPet.SkillPetMove(chr, skill_pet, move_path), false);
+                    map.broadcastMessage(chr, ResCUser_SkillPet.SkillPetMove(skill_pet, move_path), false);
                 }
                 return true;
             }

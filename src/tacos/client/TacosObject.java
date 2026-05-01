@@ -27,18 +27,24 @@ import tacos.packet.request.parse.ParseCMovePath;
  */
 public class TacosObject {
 
+    private int owner_id;
     private int id;
     private int x;
     private int y;
     private int move_action;
     private int foothold_id;
 
-    public TacosObject(int id, int x, int y, int move_action, int foothold_id) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.move_action = move_action;
-        this.foothold_id = foothold_id;
+    public TacosObject(TacosCharacter chr) {
+        this.owner_id = chr.getId();
+        this.id = chr.getId();
+        this.x = chr.getPosition().x;
+        this.y = chr.getPosition().y;
+        this.move_action = OpsMovePathAttr.MPA_NORMAL.get();
+        this.foothold_id = chr.getFH();
+    }
+
+    public int getOwnerId() {
+        return this.owner_id;
     }
 
     public int getId() {

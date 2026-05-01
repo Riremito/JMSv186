@@ -30,7 +30,7 @@ public enum OpsMovePathAttr {
     MPA_JUMP,
     MPA_IMPACT,
     MPA_IMMEDIATE,
-    MPA_TELEPORT,
+    MPA_TELEPORT(4),
     MPA_HANGONBACK,
     MPA_ASSAULTER,
     MPA_ASSASSINATION,

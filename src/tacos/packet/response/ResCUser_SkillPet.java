@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosSkillPet;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
@@ -32,10 +31,10 @@ import tacos.packet.request.parse.ParseCMovePath;
 public class ResCUser_SkillPet {
 
     // CSkillPet::OnMove
-    public static MaplePacket SkillPetMove(MapleCharacter chr, TacosSkillPet skill_pet, ParseCMovePath data) {
+    public static MaplePacket SkillPetMove(TacosSkillPet skill_pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetMove);
 
-        sp.Encode4(chr.getId()); // m_dwCharacterID
+        sp.Encode4(skill_pet.getOwnerId()); // m_dwCharacterID
         sp.Encode4(skill_pet.getId()); // pet id
         sp.EncodeBuffer(data.get());
         return sp.get();
@@ -44,10 +43,10 @@ public class ResCUser_SkillPet {
     // CSkillPet::OnAction
     // CSkillPet::OnState
     // CUserLocal::OnSkillPetTrensferField
-    public static MaplePacket SkillPetTransferField(MapleCharacter chr, TacosSkillPet skill_pet) {
+    public static MaplePacket SkillPetTransferField(TacosSkillPet skill_pet) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetTransferField);
 
-        sp.Encode4(chr.getId()); // m_dwCharacterID
+        sp.Encode4(skill_pet.getOwnerId()); // m_dwCharacterID
         sp.Encode4(skill_pet.getId()); // pet id
         sp.EncodeBuffer(CSkillPet__Init(skill_pet));
         return sp.get();

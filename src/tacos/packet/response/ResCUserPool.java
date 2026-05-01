@@ -51,8 +51,8 @@ public class ResCUserPool {
     // CUserPool::OnUserLeaveField
     public static MaplePacket UserLeaveField(int player_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserLeaveField);
+
         sp.Encode4(player_id);
         return sp.get();
     }
-
 }

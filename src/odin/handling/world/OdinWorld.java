@@ -25,7 +25,6 @@ import java.util.Collection;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCUIMessenger;
-import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.TacosWorld;
@@ -579,10 +578,6 @@ public class OdinWorld extends TacosWorld {
                 mc.setGuildRank((byte) rank);
                 mc.setAllianceRank((byte) alliancerank);
                 mc.saveGuildStatus();
-            }
-            if (bDifferentGuild) {
-                mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(cid), false);
-                mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
             }
         }
     }

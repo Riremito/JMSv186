@@ -18,8 +18,6 @@
  */
 package tacos.client;
 
-import tacos.packet.ops.OpsMovePathAttr;
-
 /**
  *
  * @author Riremito
@@ -30,7 +28,7 @@ public class TacosSkillPet extends TacosObject {
 
     public TacosSkillPet(TacosCharacter chr, int skill_id) {
         this.skill_id = skill_id;
-        super(chr.getId(), chr.getPosition().x, chr.getPosition().y, OpsMovePathAttr.MPA_NORMAL.get(), chr.getFH());
+        super(chr);
     }
 
     public int getSkillId() {

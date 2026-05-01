@@ -68,6 +68,8 @@ import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.SummonMovementType;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosDragon;
+import tacos.client.TacosSkillPet;
 import tacos.odin.OdinPair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
@@ -78,7 +80,9 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.ResCUserPool;
+import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_Pet;
+import tacos.packet.response.ResCUser_SkillPet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -654,6 +658,34 @@ public class TacosMap extends TacosMapData {
         }
         if (cancelSummons) {
             chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
+        }
+    }
+
+    public void linkedObjectEnterField(TacosCharacter chr) {
+        // evan dragon
+        TacosDragon dragon = chr.getDragon();
+        if (dragon != null) {
+            dragon.reset(chr);
+            broadcastMessage(ResCUser_Dragon.DragonEnterField(dragon));
+        }
+        // kanna fox
+        TacosSkillPet skill_pet = chr.getSkillPet();
+        if (skill_pet != null) {
+            skill_pet.reset(chr);
+            broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(skill_pet));
+        }
+    }
+
+    public void linkedObjectLeaveField(TacosCharacter chr) {
+        // evan dragon
+        TacosDragon dragon = chr.getDragon();
+        if (dragon != null) {
+            // TODO : leave field.
+        }
+        // kanna fox
+        TacosSkillPet skill_pet = chr.getSkillPet();
+        if (skill_pet != null) {
+            // TODO : leave field.
         }
     }
 

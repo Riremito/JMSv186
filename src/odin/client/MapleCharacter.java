@@ -1184,10 +1184,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule, List<OdinPair<MapleBuffStat, Integer>> statups) {
-        if (effect.isHide()) {
-            this.hidden = true;
-            map.broadcastMessage(this, ResCUserPool.UserLeaveField(getId()), false);
-        } else if (effect.isDragonBlood()) {
+        if (effect.isDragonBlood()) {
             prepareDragonBlood(effect);
         } else if (effect.isBerserk()) {
             checkBerserk();
@@ -1309,20 +1306,6 @@ public class MapleCharacter extends TacosCharacter {
 //	    }
         } else if (effect.isAranCombo()) {
             combo = 0;
-        }
-        // check if we are still logged in o.o
-        if (!overwrite) {
-            cancelPlayerBuffs(buffstats, effect);
-            if (effect.isHide() && client.getChannelServer().getOnlinePlayers().findById(this.getId()) != null) { //Wow this is so fking hacky...
-                this.hidden = false;
-                map.broadcastMessage(this, ResCUserPool.UserEnterField(this), false);
-
-                for (final MaplePet pet : pets) {
-                    if (pet.getSummoned()) {
-                        map.broadcastMessage(this, ResCUser_Pet.Activated(this, pet), false);
-                    }
-                }
-            }
         }
     }
 
@@ -1767,18 +1750,11 @@ public class MapleCharacter extends TacosCharacter {
             updateMap(map_to, portal_to);
             sendSetField(this, false);
             map_to.addPlayer(this);
+            map_to.linkedObjectEnterField(this);
+
             map_to.spawnPlayers(this);
             map_to.spawnMerchant(this); // show merchant
             map_to.spawnDynamicPortal(this); // show dynamic portal;
-            // haku fox.
-            if (skill_pet != null) {
-                skill_pet.reset(this);
-                map_to.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(this, skill_pet));
-            }
-            if (dragon != null) {
-                dragon.reset(this);
-                map_to.broadcastMessage(ResCUser_Dragon.DragonEnterField(dragon));
-            }
             stats.relocHeal();
         }
 
@@ -2801,7 +2777,7 @@ public class MapleCharacter extends TacosCharacter {
             client.SendPacket(ResCUserPool.UserEnterField(this));
             // haku fox.
             if (skill_pet != null) {
-                client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(this, skill_pet));
+                client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(skill_pet));
             }
             if (dragon != null) {
                 client.SendPacket(ResCUser_Dragon.DragonEnterField(dragon));
