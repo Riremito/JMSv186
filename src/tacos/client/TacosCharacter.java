@@ -51,6 +51,7 @@ import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.portal.ArdentmillPortal;
@@ -424,6 +425,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
         this.job = job;
         setSkillPet();
+        setDragon();
     }
 
     public PlayerStats getStat() {
@@ -874,6 +876,29 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
         if (TacosConstants.is_kanna(getJob())) {
             this.skill_pet = new TacosSkillPet(this, TacosConstants.KANNA_SKILL_PET_ID);
+            return true;
+        }
+        return false;
+    }
+
+    protected TacosDragon dragon = null;
+
+    public TacosDragon getDragon() {
+        return this.dragon;
+    }
+
+    public boolean setDragon() {
+        if (this.dragon != null) {
+            if (TacosConstants.is_evan(getJob(), true)) {
+                this.dragon.setJobCode(this);
+                this.map.broadcastMessage(ResCUser_Dragon.DragonEnterField(this.dragon));
+                return true;
+            }
+            this.dragon = null;
+            return false;
+        }
+        if (TacosConstants.is_evan(getJob(), true)) {
+            this.dragon = new TacosDragon(this);
             return true;
         }
         return false;

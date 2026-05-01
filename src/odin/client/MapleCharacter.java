@@ -76,7 +76,6 @@ import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.Res_JMS_CField_Pachinko;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.ResCTownPortalPool;
@@ -117,7 +116,6 @@ import odin.server.Timer.EtcTimer;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MobSkill;
 import odin.server.maps.Event_PyramidSubway;
-import odin.server.maps.MapleDragon;
 import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
 import odin.tools.ConcurrentEnumMap;
@@ -140,6 +138,7 @@ import tacos.debug.IDebugMan;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_SkillPet;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -175,7 +174,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleCarnivalParty carnivalParty;
     private transient PlayerRandomStream CRand;
     private transient MapleShop shop;
-    private transient MapleDragon dragon;
     private transient RockPaperScissors rps;
     private transient MapleTrade trade;
     private byte[] petStore;
@@ -1777,6 +1775,10 @@ public class MapleCharacter extends TacosCharacter {
                 skill_pet.reset(this);
                 map_to.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(this, skill_pet));
             }
+            if (dragon != null) {
+                dragon.reset(this);
+                map_to.broadcastMessage(ResCUser_Dragon.DragonEnterField(dragon));
+            }
             stats.relocHeal();
         }
 
@@ -1904,19 +1906,11 @@ public class MapleCharacter extends TacosCharacter {
             silentPartyUpdate();
             guildUpdate();
             familyUpdate();
-            if (dragon != null) {
-                map.broadcastMessage(ResCUser_Dragon.removeDragon(dragon));
-                map.removeMapObject(dragon);
-                dragon = null;
-            }
             baseSkills();
             if (newJob >= 2200 && newJob <= 2218) { //make new
                 if (getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
                     cancelBuffStats(MapleBuffStat.MONSTER_RIDING);
                 }
-                makeDragon();
-                map.spawnDragon(dragon);
-                map.updateMapObjectVisibility(this, dragon);
             }
 
             // 転職時にDBへ反映する
@@ -1938,14 +1932,6 @@ public class MapleCharacter extends TacosCharacter {
                 }
             }
         }
-    }
-
-    public void makeDragon() {
-        dragon = new MapleDragon(this);
-    }
-
-    public MapleDragon getDragon() {
-        return dragon;
     }
 
     public void gainAp(short ap) {
@@ -2817,13 +2803,13 @@ public class MapleCharacter extends TacosCharacter {
             if (skill_pet != null) {
                 client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(this, skill_pet));
             }
+            if (dragon != null) {
+                client.SendPacket(ResCUser_Dragon.DragonEnterField(dragon));
+            }
             for (final MaplePet pet : pets) {
                 if (pet.getSummoned()) {
                     client.SendPacket(ResCUser_Pet.Activated(this, pet));
                 }
-            }
-            if (dragon != null) {
-                client.SendPacket(ResCUser_Dragon.spawnDragon(dragon));
             }
             if (summons != null) {
                 for (final MapleSummon summon : summons.values()) {
@@ -4079,10 +4065,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void setLinkMid(int lm) {
         this.linkMid = lm;
-    }
-
-    public void setDragon(MapleDragon d) {
-        this.dragon = d;
     }
 
     public final void spawnSavedPets() {

@@ -36,18 +36,18 @@ public class ReqCUser_SkillPet {
     public static boolean OnSkillPetPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
-            return true;
+            return false;
         }
 
         MapleMap map = chr.getMap();
         if (map == null) {
-            return true;
+            return false;
         }
 
         int spet_id = cp.Decode4();
         TacosSkillPet skill_pet = chr.getSkillPet();
         if (skill_pet == null || skill_pet.getId() != spet_id) {
-            return true;
+            return false;
         }
 
         switch (header) {

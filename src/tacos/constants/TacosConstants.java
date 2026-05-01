@@ -43,6 +43,37 @@ public class TacosConstants {
 
     public static final int KANNA_SKILL_PET_ID = 40020109;
 
+    public static boolean is_evan(int job_id, boolean dragon_job) {
+        switch (job_id) {
+            case 2001: // evan 0
+            {
+                if (dragon_job) {
+                    return false;
+                }
+                return true;
+            }
+            case 2200: // evan 1
+            case 2210: // evan 2
+            case 2211: // evan 3
+            case 2212: // evan 4
+            case 2213: // evan 5
+            case 2214: // evan 6
+            case 2215: // evan 7
+            case 2216: // evan 8
+            case 2217: // evan 9
+            case 2218: // evan 10
+            {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+
+    }
+
     public static boolean is_kanna(int job_id) {
         switch (job_id) {
             case 4002:

@@ -43,12 +43,14 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosDragon;
 import tacos.client.TacosSkillPet;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
+import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_SkillPet;
 import tacos.server.TacosWorld;
 
@@ -350,6 +352,11 @@ public class ReqCClientSocket {
                 if (skill_pet != null) {
                     skill_pet.reset(chr);
                     map.broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(chr, skill_pet));
+                }
+                TacosDragon dragon = chr.getDragon();
+                if (dragon != null) {
+                    dragon.reset(chr);
+                    map.broadcastMessage(ResCUser_Dragon.DragonEnterField(dragon));
                 }
                 break;
             }

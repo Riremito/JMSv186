@@ -77,7 +77,7 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
             }
             // dragon
             if (header.between(ClientPacketHeader.CP_BEGIN_DRAGON, ClientPacketHeader.CP_END_DRAGON)) {
-                return ReqCUser_Dragon.OnMove(client, header, cp);
+                return ReqCUser_Dragon.OnDragonPacket(client, header, cp);
             }
             // fox
             if (header.between(ClientPacketHeader.CP_BEGIN_FOXMAN, ClientPacketHeader.CP_END_FOXMAN)) {

@@ -18,13 +18,14 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUser_Dragon;
-import odin.server.maps.MapleDragon;
+import tacos.client.TacosCharacter;
+import tacos.client.TacosClient;
+import tacos.client.TacosDragon;
 import tacos.packet.ClientPacketHeader;
+import tacos.server.map.TacosMap;
 
 /**
  *
@@ -32,25 +33,43 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCUser_Dragon {
 
-    // CDragon::OnMove
-    public static boolean OnMove(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
-        if (chr == null || chr.isHidden()) {
+    // CUser::OnDragonPacket
+    public static boolean OnDragonPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        TacosCharacter chr = client.getPlayer();
+        if (chr == null) {
             return false;
         }
 
-        MapleDragon dragon = chr.getDragon();
+        TacosMap map = chr.getMap();
+        if (map == null) {
+            return false;
+        }
+
+        TacosDragon dragon = chr.getDragon();
         if (dragon == null) {
             return false;
         }
 
+        switch (header) {
+            case CP_DragonMove: {
+                OnMove(map, chr, dragon, cp);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean OnMove(TacosMap map, TacosCharacter chr, TacosDragon dragon, ClientPacket cp) {
         // CMovePath::Decode
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
-            move_path.update(dragon);
+            dragon.update(move_path);
+            map.broadcastMessage(chr, ResCUser_Dragon.DragonMove(dragon, move_path), false);
         }
-
-        chr.getMap().broadcastMessageTo(chr, ResCUser_Dragon.moveDragon(dragon, move_path), chr.getPosition());
         return true;
     }
 

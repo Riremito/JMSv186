@@ -57,7 +57,6 @@ import odin.server.life.Spawns;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleDoor;
-import odin.server.maps.MapleDragon;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
@@ -79,7 +78,6 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.ResCUserPool;
-import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
@@ -605,18 +603,6 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCWvsContext.ForcedStatReset());
             }
         }
-        if (GameConstants.isEvan(chr.getJob()) && chr.getJob() >= 2200 && chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) == null) {
-            if (chr.getDragon() == null) {
-                chr.makeDragon();
-            }
-            chr.getDragon().setFH(0);
-            chr.getDragon().setStance(0);
-            chr.getDragon().setPosition(chr.getPosition());
-            spawnDragon(chr.getDragon());
-            if (!chr.isClone()) {
-                updateMapObjectVisibility(chr, chr.getDragon());
-            }
-        }
         if (getPlatforms().size() > 0) {
             chr.getClient().getSession().write(ResCField.getMovingPlatforms(this));
         }
@@ -668,16 +654,7 @@ public class TacosMap extends TacosMapData {
         }
         if (cancelSummons) {
             chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
-
         }
-        if (chr.getDragon() != null) {
-            removeMapObject(chr.getDragon());
-        }
-    }
-
-    public void spawnDragon(MapleDragon dragon) {
-        addMapObject(dragon);
-        spawnRangedMapObject(dragon, ResCUser_Dragon.spawnDragon(dragon));
     }
 
     public MapleSummon getSummonByOid(int oid) {
