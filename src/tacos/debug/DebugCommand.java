@@ -358,7 +358,7 @@ public class DebugCommand {
                 return true;
             }
             case "/split": {
-                chr.DebugMsg(chr.getMap().getSplitInfo(chr));
+                chr.getMap().getMapSplit().sendInfo(chr);
                 return true;
             }
             case "/hm": {

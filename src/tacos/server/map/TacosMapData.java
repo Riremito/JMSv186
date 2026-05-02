@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
-import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
 
 /**
@@ -49,6 +48,7 @@ public class TacosMapData {
     private boolean town;
     private boolean clock;
     private String mapName, streetName;
+    protected TacosMapSplit map_split = new TacosMapSplit();
 
     public TacosMapData(int mapid, int returnMapId) {
         this.mapid = mapid;
@@ -72,46 +72,11 @@ public class TacosMapData {
 
     public void setFootholds(MapleFootholdTree footholds) {
         this.footholds = footholds;
+        this.map_split.setSplit(this.footholds.getAll());
     }
 
-    public String getSplitInfo(TacosCharacter chr) {
-        int left = 0;
-        int top = 0;
-        int right = 0;
-        int bottom = 0;
-        for (MapleFoothold foothold : this.footholds.getAll()) {
-            int fh_left = Math.min(foothold.getX1(), foothold.getX2());
-            int fh_top = Math.min(foothold.getY1(), foothold.getY2());
-            int fh_right = Math.max(foothold.getX1(), foothold.getX2());
-            int fh_bottom = Math.max(foothold.getY1(), foothold.getY2()) + 10;
-            int fh_width = fh_right - fh_left;
-
-            if (fh_left < (left + 30)) {
-                left = fh_left + 30;
-            }
-            if (fh_top < (top - 300)) {
-                top = fh_top - 300;
-            }
-            if ((right - 30) < fh_right) {
-                right = fh_right - 30;
-            }
-            if (fh_width != 0) {
-                if (bottom < fh_bottom) {
-                    bottom = fh_bottom;
-                }
-            }
-        }
-        int width = right - left;
-        int height = bottom - top;
-        int col = (width + 599) / 600;
-        int row = (height + 449) / 450;
-
-        String s_wall = "wall=" + left + "," + top + "," + right + "," + bottom;
-
-        int sx = (chr.getPosition().x - left) / 600 + 1;
-        int sy = (chr.getPosition().y - top) / 450 + 1;
-
-        return "size=" + width + "x" + height + ", split=" + col + "x" + row + ", @" + sx + "x" + sy;
+    public TacosMapSplit getMapSplit() {
+        return this.map_split;
     }
 
     public Point calcPointBelow(Point initial) {
