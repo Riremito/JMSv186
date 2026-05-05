@@ -271,14 +271,12 @@ public class MapleMapFactory {
 
     public void removeInstanceMap(final int instanceid) {
         if (isInstanceMapLoaded(instanceid)) {
-            getInstanceMap(instanceid).checkStates("");
             instanceMap.remove(instanceid);
         }
     }
 
     public void removeMap(final int instanceid) {
         if (isMapLoaded(instanceid)) {
-            getMap(instanceid).checkStates("");
             maps.remove(instanceid);
         }
     }

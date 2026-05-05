@@ -175,8 +175,5 @@ public class MapleMapItem extends AbstractMapleMapObject {
         pickedUp = true;
         map.broadcastMessage(ResCDropPool.DropLeaveField(this, LeaveType.EXPIRED));
         map.removeMapObject(this);
-        if (randDrop) {
-            map.spawnRandDrop();
-        }
     }
 }

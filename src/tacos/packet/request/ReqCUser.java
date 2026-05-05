@@ -886,7 +886,7 @@ public class ReqCUser {
         chr.sendMigrateCommand(chr.getWorld().getCashShop());
         chr.saveToDB(false, false);
         LazyDatabase.saveData(chr);
-        chr.getMap().removePlayer(chr);
+        chr.getMap().userLeaveField(chr);
         return true;
     }
 
@@ -1182,17 +1182,15 @@ public class ReqCUser {
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
+            map.userMove(chr, move_path);
             move_path.update(chr);
         }
-
-        map.movePlayer(chr, chr.getPosition());
-        map.broadcastMessage(chr, ResCUserRemote.Move(chr, move_path), false);
 
         // クローン : 移動
         if (chr.isCloning()) {
             MapleCharacter chr_clone = chr.getClone();
+            map.userMove(chr_clone, move_path);
             move_path.update(chr_clone);
-            map.movePlayer(chr_clone, chr_clone.getPosition());
             map.broadcastMessageClone(chr_clone, ResCUserRemote.Move(chr_clone, move_path));
         }
 
@@ -2493,7 +2491,7 @@ public class ReqCUser {
         chr.sendMigrateCommand(chr.getWorld().getITC());
         chr.saveToDB(false, false);
         LazyDatabase.saveData(chr);
-        chr.getMap().removePlayer(chr);
+        chr.getMap().userLeaveField(chr);
         return true;
     }
 

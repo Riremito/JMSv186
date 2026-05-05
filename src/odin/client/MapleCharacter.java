@@ -1746,10 +1746,10 @@ public class MapleCharacter extends TacosCharacter {
 
         if (map_id_check) {
             MapleMap map_from = map;
-            map_from.removePlayer(this);
+            map_from.userLeaveField(this);
             updateMap(map_to, portal_to);
             sendSetField(this, false);
-            map_to.addPlayer(this);
+            map_to.userEnterField(this);
             map_to.linkedObjectEnterField(this);
 
             map_to.spawnPlayers(this);
@@ -2767,35 +2767,27 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
-        client.getSession().write(ResCUserPool.UserLeaveField(this.getObjectId()));
-    }
-
-    @Override
     public void sendSpawnData(MapleClient client) {
-        if (client.getPlayer().allowedToTarget(this)) {
-            client.SendPacket(ResCUserPool.UserEnterField(this));
-            // haku fox.
-            if (skill_pet != null) {
-                client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(skill_pet));
+        client.SendPacket(ResCUserPool.UserEnterField(this));
+        // haku fox.
+        if (skill_pet != null) {
+            client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(skill_pet));
+        }
+        if (dragon != null) {
+            client.SendPacket(ResCUser_Dragon.DragonEnterField(dragon));
+        }
+        for (final MaplePet pet : pets) {
+            if (pet.getSummoned()) {
+                client.SendPacket(ResCUser_Pet.Activated(this, pet));
             }
-            if (dragon != null) {
-                client.SendPacket(ResCUser_Dragon.DragonEnterField(dragon));
+        }
+        if (summons != null) {
+            for (final MapleSummon summon : summons.values()) {
+                client.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
             }
-            for (final MaplePet pet : pets) {
-                if (pet.getSummoned()) {
-                    client.SendPacket(ResCUser_Pet.Activated(this, pet));
-                }
-            }
-            if (summons != null) {
-                for (final MapleSummon summon : summons.values()) {
-                    client.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
-                }
-            }
-            if (followid > 0) {
-                client.SendPacket(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
-            }
-            return;
+        }
+        if (followid > 0) {
+            client.SendPacket(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
         }
     }
 
@@ -4115,7 +4107,7 @@ public class MapleCharacter extends TacosCharacter {
         getChannelServer().getOnlinePlayers().remove(this);
         sendMigrateCommand(ch_server);
         saveToDB(false, false);
-        getMap().removePlayer(this);
+        getMap().userLeaveField(this);
         return true;
     }
 
@@ -4123,10 +4115,6 @@ public class MapleCharacter extends TacosCharacter {
         final MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
         inv.addSlot((byte) amount);
         client.getSession().write(ResCWvsContext.getSlotUpdate(type, (byte) inv.getSlotLimit()));
-    }
-
-    public boolean allowedToTarget(MapleCharacter other) {
-        return other != null && (!other.isHidden() || getGMLevel() >= other.getGMLevel());
     }
 
     public int getFollowId() {
@@ -4700,9 +4688,8 @@ public class MapleCharacter extends TacosCharacter {
 
         final MapleCharacter chr_clone = cloneCopy();
         chr_clone.setName(String.format("%08X", Randomizer.nextInt(0x77777777)));
-        map.addPlayer(chr_clone);
-        map.movePlayer(chr_clone, getPosition());
-        clones[0] = new WeakReference<MapleCharacter>(chr_clone);
+        map.userEnterField(chr_clone);
+        clones[0] = new WeakReference<>(chr_clone);
 
         SendPacket(ResWrapper.BroadCastMsgNotice("Clone is spawned."));
 
@@ -4718,7 +4705,7 @@ public class MapleCharacter extends TacosCharacter {
             clone_parent = null;
             return false;
         }
-        map.removePlayer(clones[0].get());
+        map.userLeaveField(clones[0].get());
         clones[0].get().getClient().disconnect(false, false);
         clones[0] = new WeakReference<MapleCharacter>(null);
 
@@ -4825,7 +4812,7 @@ public class MapleCharacter extends TacosCharacter {
             }
             this.changeRemoval(true);
             if (this.getMap() != null) {
-                this.getMap().removePlayer(this);
+                this.getMap().userLeaveField(this);
             }
 
             final IMaplePlayerShop shop = this.getPlayerShop();

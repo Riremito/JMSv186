@@ -120,7 +120,6 @@ public abstract class OdinAbstractPlayerInteraction {
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 client.getSession().write(ResCUserLocal.Teleport((byte) portal)); //until we get packet for far movement, this will do
                 client.getPlayer().checkFollow();
-                client.getPlayer().getMap().movePlayer(client.getPlayer(), portalPos);
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
@@ -144,7 +143,6 @@ public abstract class OdinAbstractPlayerInteraction {
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 client.getPlayer().checkFollow();
                 client.getSession().write(ResCUserLocal.Teleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
-                client.getPlayer().getMap().movePlayer(client.getPlayer(), new Point(client.getPlayer().getMap().getPortal(portal).getPosition()));
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }

@@ -73,6 +73,7 @@ import tacos.client.TacosSkillPet;
 import tacos.odin.OdinPair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
+import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
@@ -80,6 +81,7 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.ResCUserPool;
+import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUser_SkillPet;
@@ -334,54 +336,8 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public void updateMapObject(MapleMapObject mapobject) {
-        for (MapleCharacter player : this.characters) {
-            if (player.isClone()) {
-                continue;
-            }
-            updateMapObjectVisibility(player, mapobject);
-        }
-    }
-
-    public boolean updateMapObjectVisibility(MapleCharacter player, MapleMapObject mapobject) {
-        if (player == null || player.isClone()) {
-            return false;
-        }
-
-        boolean already_visible = player.isMapObjectVisible(mapobject);
-        // hide
-        if (mapobject.getType() != MapleMapObjectType.SUMMON && player.getViewRangeSq() < player.getPosition().distanceSq(mapobject.getPosition())) {
-            if (already_visible) {
-                player.removeVisibleMapObject(mapobject);
-                mapobject.sendDestroyData(player.getClient()); // packet
-            }
-            return true;
-        }
-        // show
-        if (!already_visible) {
-            player.addVisibleMapObject(mapobject);
-            mapobject.sendSpawnData(player.getClient()); // packet
-        }
-
-        return true;
-    }
-
     public void removeMapObject(MapleMapObject obj) {
         this.mapobjects.get(obj.getType()).remove(obj.getObjectId());
-    }
-
-    public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq) {
-        List<MapleMapObject> ret = new ArrayList<>();
-        for (MapleMapObjectType type : MapleMapObjectType.values()) {
-            Iterator<MapleMapObject> itr = this.mapobjects.get(type).values().iterator();
-            while (itr.hasNext()) {
-                MapleMapObject mmo = itr.next();
-                if (from.distanceSq(mmo.getPosition()) <= rangeSq) {
-                    ret.add(mmo);
-                }
-            }
-        }
-        return ret;
     }
 
     public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> MapObject_types) {
@@ -444,10 +400,6 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public int characterSize() {
-        return this.characters.size();
-    }
-
     public int getCharactersSize() {
         int ret = 0;
         final Iterator<MapleCharacter> ltr = characters.iterator();
@@ -461,29 +413,176 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public void movePlayer(MapleCharacter player, Point newPosition) {
-        player.setPosition(newPosition);
-        Collection<MapleMapObject> visibleObjects = player.getVisibleMapObjects();
-        MapleMapObject[] visibleObjectsNow = visibleObjects.toArray(new MapleMapObject[visibleObjects.size()]);
-        for (MapleMapObject mo : visibleObjectsNow) {
-            if (getMapObject(mo.getObjectId(), mo.getType()) == mo) {
-                updateMapObjectVisibility(player, mo);
-            } else {
-                player.removeVisibleMapObject(mo);
-            }
+    public void spawnPlayers(MapleCharacter chr) {
+        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.PLAYER).values()) {
+            ((MapleCharacter) obj).sendSpawnData(chr.getClient());
         }
-        // 表示可能範囲のNPC等を表示
-        for (MapleMapObject mo : getMapObjectsInRange(player.getPosition(), player.getViewRangeSq())) {
-            if (!player.isMapObjectVisible(mo) && mo.getObjectId() != player.getObjectId()) {
-                mo.sendSpawnData(player.getClient());
-                player.addVisibleMapObject(mo);
+    }
+
+    public void SplitSendPacket(int x, int y) {
+        int number = this.map_split.getSplitMap(x, y);
+        int row = number / this.map_split.getCol();
+        int col = number % this.map_split.getCol();
+
+        for (int i = 0; i < this.map_split.getRow(); i++) {
+            if (i < (row - 1) || (row + 1) < i) {
+                continue;
+            }
+            for (int j = 0; j < this.map_split.getCol(); j++) {
+                if (j < (col - 1) || (col + 1) < j) {
+                    continue;
+                }
             }
         }
     }
 
-    public void spawnPlayers(MapleCharacter chr) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.PLAYER).values()) {
-            ((MapleCharacter) obj).sendSpawnData(chr.getClient());
+    public List<Integer> getStateList() {
+        List<Integer> state = new ArrayList<>();
+        for (int i = 0; i < this.map_split.getSplit(); i++) {
+            state.add(0);
+        }
+        return state;
+    }
+
+    public void userEnterField(MapleCharacter chr) {
+        this.characters.add(chr);
+        this.mapobjects.get(MapleMapObjectType.PLAYER).put(chr.getObjectId(), chr); // object id.
+
+        List<Integer> enter_state = getStateList();
+        int enter_x = chr.getPosition().x;
+        int enter_y = chr.getPosition().y;
+        int enter_number = this.map_split.getSplitMap(enter_x, enter_y);
+        int enter_row = enter_number / this.map_split.getCol();
+        int enter_col = enter_number % this.map_split.getCol();
+        for (int row = 0; row < this.map_split.getRow(); row++) {
+            if (row < (enter_row - 1) || (enter_row + 1) < row) {
+                continue;
+            }
+            for (int col = 0; col < this.map_split.getCol(); col++) {
+                if (col < (enter_col - 1) || (enter_col + 1) < col) {
+                    continue;
+                }
+                enter_state.set((row * this.map_split.getCol()) + col, 1);
+            }
+        }
+
+        for (MapleCharacter player : this.characters) {
+            // self
+            if (player.getId() == chr.getId()) {
+                continue;
+            }
+            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
+            if (this.map_split.getSplit() < player_number) {
+                continue;
+            }
+            int player_state = enter_state.get(player_number);
+            if ((player_state & 1) != 0) {
+                player.SendPacket(ResCUserPool.UserEnterField(chr));
+                chr.SendPacket(ResCUserPool.UserEnterField(player));
+            }
+        }
+    }
+
+    public void userLeaveField(MapleCharacter chr) {
+        this.characters.remove(chr);
+        removeMapObject(chr);
+
+        List<Integer> leave_state = getStateList();
+        int leave_x = chr.getPosition().x;
+        int leave_y = chr.getPosition().y;
+        int leave_number = this.map_split.getSplitMap(leave_x, leave_y);
+        int leave_row = leave_number / this.map_split.getCol();
+        int leave_col = leave_number % this.map_split.getCol();
+        for (int row = 0; row < this.map_split.getRow(); row++) {
+            if (row < (leave_row - 1) || (leave_row + 1) < row) {
+                continue;
+            }
+            for (int col = 0; col < this.map_split.getCol(); col++) {
+                if (col < (leave_col - 1) || (leave_col + 1) < col) {
+                    continue;
+                }
+                leave_state.set((row * this.map_split.getCol()) + col, 4);
+            }
+        }
+
+        for (MapleCharacter player : this.characters) {
+            // self
+            if (player.getId() == chr.getId()) {
+                continue;
+            }
+            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
+            if (this.map_split.getSplit() < player_number) {
+                continue;
+            }
+            int player_state = leave_state.get(player_number);
+            if ((player_state & 4) != 0) {
+                player.SendPacket(ResCUserPool.UserLeaveField(chr.getId()));
+            }
+        }
+    }
+
+    public void userMove(MapleCharacter chr, ParseCMovePath move_path) {
+        List<Integer> move_state = getStateList();
+        int prev_x = chr.getPosition().x;
+        int prev_y = chr.getPosition().y;
+        int next_x = move_path.getX();
+        int next_y = move_path.getY();
+
+        int prev_number = this.map_split.getSplitMap(prev_x, prev_y);
+        int prev_row = prev_number / this.map_split.getCol();
+        int prev_col = prev_number % this.map_split.getCol();
+        // move & leave
+        for (int row = 0; row < this.map_split.getRow(); row++) {
+            if (row < (prev_row - 1) || (prev_row + 1) < row) {
+                continue;
+            }
+            for (int col = 0; col < this.map_split.getCol(); col++) {
+                if (col < (prev_col - 1) || (prev_col + 1) < col) {
+                    continue;
+                }
+                move_state.set((row * this.map_split.getCol()) + col, 2 | 4); // 2 = move, 4 = leave
+            }
+        }
+        // enter & move
+        int next_number = this.map_split.getSplitMap(next_x, next_y);
+        int next_row = next_number / this.map_split.getCol();
+        int next_col = next_number % this.map_split.getCol();
+        for (int row = 0; row < this.map_split.getRow(); row++) {
+            if (row < (next_row - 1) || (next_row + 1) < row) {
+                continue;
+            }
+            for (int col = 0; col < this.map_split.getCol(); col++) {
+                if (col < (next_col - 1) || (next_col + 1) < col) {
+                    continue;
+                }
+                if (move_state.get((row * this.map_split.getCol()) + col) != 0) {
+                    move_state.set((row * this.map_split.getCol()) + col, 2); // 2 = move
+                } else {
+                    move_state.set((row * this.map_split.getCol()) + col, 1 | 2); // 1 = enter, 2 = move
+                }
+            }
+        }
+        for (MapleCharacter player : this.characters) {
+            // self
+            if (player.getId() == chr.getId()) {
+                continue;
+            }
+            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
+            if (this.map_split.getSplit() < player_number) {
+                continue;
+            }
+            int player_state = move_state.get(player_number);
+            if ((player_state & 1) != 0) {
+                player.SendPacket(ResCUserPool.UserEnterField(chr));
+                chr.SendPacket(ResCUserPool.UserEnterField(player));
+            }
+            if ((player_state & 2) != 0) {
+                player.SendPacket(ResCUserRemote.Move(chr, move_path));
+            }
+            if ((player_state & 4) != 0) {
+                player.SendPacket(ResCUserPool.UserLeaveField(chr.getId()));
+                chr.SendPacket(ResCUserPool.UserLeaveField(player.getId()));
+            }
         }
     }
 
@@ -511,7 +610,6 @@ public class TacosMap extends TacosMapData {
                     MapScriptMethods.startScript_FirstUser(chr.getClient(), onFirstUserEnter);
                 }
             }
-            sendObjectPlacement(chr);
 
             // 多分不要
             // chr.getClient().getSession().write(UserPacket.spawnPlayerMapobject(chr));
@@ -640,7 +738,6 @@ public class TacosMap extends TacosMapData {
                 updateMonsterController(monster);
             }
             chr.leaveMap();
-            checkStates(chr.getName());
             if (mapid == 109020001) {
                 chr.canTalk(true);
             }
@@ -1220,25 +1317,6 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    // unknown code
-    private void sendObjectPlacement(MapleCharacter chr) {
-        if (chr == null || chr.isClone()) {
-            return;
-        }
-        for (final MapleMapObject o : this.getAllMonsters()) {
-            updateMonsterController((MapleMonster) o);
-        }
-        for (final MapleMapObject o : getMapObjectsInRange(chr.getPosition(), chr.getViewRangeSq(), GameConstants.rangedMapobjectTypes)) {
-            if (o.getType() == MapleMapObjectType.REACTOR) {
-                if (!((MapleReactor) o).isAlive()) {
-                    continue;
-                }
-            }
-            o.sendSpawnData(chr.getClient());
-            chr.addVisibleMapObject(o);
-        }
-    }
-
     public boolean getAndSwitchTeam() {
         return getCharactersSize() % 2 != 0;
     }
@@ -1296,22 +1374,6 @@ public class TacosMap extends TacosMapData {
                 }
                 removeMapObject(item);
             }
-        }
-        spawnRandDrop();
-    }
-
-    public void spawnRandDrop() {
-        // removed random code.
-        return;
-    }
-
-    public void checkStates(final String chr) {
-        final int size = getCharactersSize();
-        if (speedRunStart > 0 && speedRunLeader.equalsIgnoreCase(chr)) {
-            if (size > 0) {
-                broadcastMessage(ResWrapper.BroadCastMsgEvent("The leader is not in the map! Your speedrun has failed"));
-            }
-            endSpeedRun();
         }
     }
 

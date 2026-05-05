@@ -19,10 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.logging.Logger;
-import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
@@ -37,7 +34,6 @@ import odin.server.life.OverrideMonsterStats;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import odin.server.quest.MapleQuest;
@@ -97,11 +93,9 @@ public class AdminCommand {
                 } catch (Exception e) {
                     c.getPlayer().dropMessage(6, "Player " + splitted[i] + " not found.");
                 }
-                if (player.allowedToTarget(victim)) {
-                    victim.getStat().setHp((short) 0);
-                    victim.getStat().setMp((short) 0);
-                    victim.sendStatChanged();
-                }
+                victim.getStat().setHp((short) 0);
+                victim.getStat().setMp((short) 0);
+                victim.sendStatChanged();
             }
             return 1;
         }
@@ -457,57 +451,11 @@ public class AdminCommand {
         }
     }
 
-    public static class KillAll extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMap map = c.getPlayer().getMap();
-            double range = Double.POSITIVE_INFINITY;
-
-            if (splitted.length > 1) {
-                int irange = Integer.parseInt(splitted[1]);
-                if (splitted.length <= 2) {
-                    range = irange * irange;
-                } else {
-                    map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
-                }
-            }
-            MapleMonster mob;
-            for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
-                mob = (MapleMonster) monstermo;
-
-                if (mob.getStats().getHPDisplayType() == 0) {
-                    mob.setHp(0);
-                    map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
-                }
-                map.killMonster(mob, c.getPlayer(), false, false, (byte) 1);
-            }
-            return 1;
-        }
-    }
-
     public static class ResetMobs extends CommandExecute {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
             c.getPlayer().getMap().killAllMonsters(false);
-            return 1;
-        }
-    }
-
-    public static class KillMonster extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMap map = c.getPlayer().getMap();
-            double range = Double.POSITIVE_INFINITY;
-            MapleMonster mob;
-            for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
-                mob = (MapleMonster) monstermo;
-                if (mob.getId() == Integer.parseInt(splitted[1])) {
-                    mob.damage(c.getPlayer(), mob.getHp(), false);
-                }
-            }
             return 1;
         }
     }
@@ -526,62 +474,12 @@ public class AdminCommand {
         }
     }
 
-    public static class KillAllDrops extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMap map = c.getPlayer().getMap();
-            double range = Double.POSITIVE_INFINITY;
-
-            if (splitted.length > 1) {
-                //&& !splitted[0].equals("!killmonster") && !splitted[0].equals("!hitmonster") && !splitted[0].equals("!hitmonsterbyoid") && !splitted[0].equals("!killmonsterbyoid")) {
-                int irange = Integer.parseInt(splitted[1]);
-                if (splitted.length <= 2) {
-                    range = irange * irange;
-                } else {
-                    map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
-                }
-            }
-            MapleMonster mob;
-            for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
-                mob = (MapleMonster) monstermo;
-                map.killMonster(mob, c.getPlayer(), true, false, (byte) 1);
-            }
-            return 1;
-        }
-    }
-
     public static class KillAllNoSpawn extends CommandExecute {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
             MapleMap map = c.getPlayer().getMap();
             map.killAllMonsters(false);
-            return 1;
-        }
-    }
-
-    public static class MonsterDebug extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            MapleMap map = c.getPlayer().getMap();
-            double range = Double.POSITIVE_INFINITY;
-
-            if (splitted.length > 1) {
-                //&& !splitted[0].equals("!killmonster") && !splitted[0].equals("!hitmonster") && !splitted[0].equals("!hitmonsterbyoid") && !splitted[0].equals("!killmonsterbyoid")) {
-                int irange = Integer.parseInt(splitted[1]);
-                if (splitted.length <= 2) {
-                    range = irange * irange;
-                } else {
-                    map = c.getChannelServer().getMapFactory().getMap(Integer.parseInt(splitted[2]));
-                }
-            }
-            MapleMonster mob;
-            for (MapleMapObject monstermo : map.getMapObjectsInRange(c.getPlayer().getPosition(), range, Arrays.asList(MapleMapObjectType.MONSTER))) {
-                mob = (MapleMonster) monstermo;
-                c.getPlayer().dropMessage(6, "Monster " + mob.toString());
-            }
             return 1;
         }
     }

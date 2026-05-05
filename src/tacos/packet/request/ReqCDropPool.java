@@ -150,9 +150,6 @@ public class ReqCDropPool {
         mapitem.setPickedUp(true);
         chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? ResCDropPool.LeaveType.PICK_UP_PET : ResCDropPool.LeaveType.PICK_UP, chr, pet_index), mapitem.getPosition());
         chr.getMap().removeMapObject(mapitem);
-        if (mapitem.isRandDrop()) {
-            chr.getMap().spawnRandDrop();
-        }
     }
 
     public static boolean useDropItem(final MapleClient c, final int id) {

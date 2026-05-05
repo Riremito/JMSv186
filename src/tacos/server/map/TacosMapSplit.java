@@ -36,6 +36,7 @@ public class TacosMapSplit {
     private int map_height = 0;
     private int split_col = 0;
     private int split_row = 0;
+    private int split = 0;
 
     public TacosMapSplit() {
 
@@ -51,7 +52,8 @@ public class TacosMapSplit {
         // set split col and row.
         this.split_col = (this.map_width + 599) / 600;
         this.split_row = (this.map_height + 449) / 450;
-        return this.split_col * this.split_row;
+        this.split = this.split_col * this.split_row;
+        return this.split;
     }
 
     public boolean setWall(List<MapleFoothold> footholds) {
@@ -84,6 +86,18 @@ public class TacosMapSplit {
         int col = (x - this.wall_left) / 600;
         int row = (y - this.wall_top) / 450;
         return (row * this.split_col) + col;
+    }
+
+    public int getSplit() {
+        return this.split;
+    }
+
+    public int getCol() {
+        return this.split_col;
+    }
+
+    public int getRow() {
+        return this.split_row;
     }
 
     public void sendInfo(TacosCharacter chr) {
