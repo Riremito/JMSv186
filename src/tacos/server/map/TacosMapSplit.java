@@ -28,6 +28,8 @@ import tacos.client.TacosCharacter;
  */
 public class TacosMapSplit {
 
+    private static int SPLIT_WIDTH = 600; // 600 default.
+    private static int SPLIT_HEIGHT = 450; // 450 default.
     private int wall_left = 0;
     private int wall_top = 0;
     private int wall_right = 0;
@@ -50,8 +52,8 @@ public class TacosMapSplit {
         this.map_width = this.wall_right - this.wall_left;
         this.map_height = this.wall_bottom - this.wall_top;
         // set split col and row.
-        this.split_col = (this.map_width + 599) / 600;
-        this.split_row = (this.map_height + 449) / 450;
+        this.split_col = (this.map_width + SPLIT_WIDTH - 1) / SPLIT_WIDTH;
+        this.split_row = (this.map_height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT;
         this.split = this.split_col * this.split_row;
         return this.split;
     }
@@ -83,8 +85,8 @@ public class TacosMapSplit {
     }
 
     public int getSplitMap(int x, int y) {
-        int col = (x - this.wall_left) / 600;
-        int row = (y - this.wall_top) / 450;
+        int col = (x - this.wall_left) / SPLIT_WIDTH;
+        int row = (y - this.wall_top) / SPLIT_HEIGHT;
         return (row * this.split_col) + col;
     }
 
