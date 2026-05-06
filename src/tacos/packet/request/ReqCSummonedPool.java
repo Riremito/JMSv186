@@ -197,7 +197,7 @@ public class ReqCSummonedPool {
                 mob.damage(chr, toDamage, true);
                 chr.checkMonsterAggro(mob);
                 if (!mob.isAlive()) {
-                    chr.getClient().SendPacket(ResCMobPool.Kill(mob, 1));
+                    chr.getClient().SendPacket(ResCMobPool.MobLeaveField(mob, 1));
                 }
             }
 
@@ -293,7 +293,7 @@ public class ReqCSummonedPool {
             mob.damage(chr, toDamage, true);
             chr.checkMonsterAggro(mob);
             if (!mob.isAlive()) {
-                chr.getClient().SendPacket(ResCMobPool.Kill(mob, 1));
+                chr.getClient().SendPacket(ResCMobPool.MobLeaveField(mob, 1));
             }
         }
 

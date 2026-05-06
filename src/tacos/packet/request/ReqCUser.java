@@ -624,7 +624,7 @@ public class ReqCUser {
 
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
                 map.addMapObject(dynamic_portal);
-                map.broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
+                map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.sendStatChanged(true);
                 return true;
             }

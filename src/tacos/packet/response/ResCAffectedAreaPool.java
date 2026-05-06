@@ -32,7 +32,7 @@ public class ResCAffectedAreaPool {
 
     // CAffectedAreaPool::OnAffectedAreaCreated
     // CAffectedArea::MakeEnterFieldPacket
-    public static MaplePacket spawnMist(MapleMist mist) {
+    public static MaplePacket AffectedAreaCreated(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaCreated);
 
         sp.Encode4(mist.getObjectId()); // m_dwID
@@ -61,7 +61,7 @@ public class ResCAffectedAreaPool {
 
     // CAffectedAreaPool::OnAffectedAreaRemoved
     // CAffectedArea::MakeLeaveFieldPacket
-    public static MaplePacket removeMist(MapleMist mist) {
+    public static MaplePacket AffectedAreaRemoved(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaRemoved);
 
         sp.Encode4(mist.getObjectId()); // m_dwID

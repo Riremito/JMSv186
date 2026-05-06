@@ -142,7 +142,7 @@ public final class MapleMap extends TacosMap {
         spawnedMonstersOnMap.decrementAndGet();
         removeMapObject(monster);
         int dropOwner = monster.killBy(chr, lastSkill);
-        broadcastMessage(ResCMobPool.Kill(monster, animation));
+        broadcastMessage(ResCMobPool.MobLeaveField(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
             final int buffid = monster.getBuffToGive();
@@ -439,7 +439,7 @@ public final class MapleMap extends TacosMap {
 
     public void spawnMist(MapleMist mist, int duration, boolean fake) {
         addMapObject(mist);
-        spawnRangedMapObject(mist, ResCAffectedAreaPool.spawnMist(mist));
+        spawnRangedMapObject(mist, ResCAffectedAreaPool.AffectedAreaCreated(mist));
 
         final MapTimer tMan = MapTimer.getInstance();
         final ScheduledFuture<?> poisonSchedule;
@@ -481,7 +481,7 @@ public final class MapleMap extends TacosMap {
 
             @Override
             public void run() {
-                broadcastMessage(ResCAffectedAreaPool.removeMist(mist));
+                broadcastMessage(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
                 removeMapObject(mist);
                 if (poisonSchedule != null) {
                     poisonSchedule.cancel(false);

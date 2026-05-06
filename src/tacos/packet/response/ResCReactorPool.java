@@ -29,9 +29,9 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCReactorPool {
 
-    // triggerReactor
-    public static MaplePacket Hit(MapleReactor reactor, int stance) {
+    public static MaplePacket ReactorChangeState(MapleReactor reactor, int stance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorChangeState);
+
         sp.Encode4(reactor.getObjectId());
         sp.Encode1(reactor.getState());
         sp.Encode2(reactor.getPosition().x);
@@ -42,9 +42,9 @@ public class ResCReactorPool {
         return sp.get();
     }
 
-    // spawnReactor
-    public static MaplePacket Spawn(MapleReactor reactor) {
+    public static MaplePacket ReactorEnterField(MapleReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorEnterField);
+
         sp.Encode4(reactor.getObjectId());
         sp.Encode4(reactor.getReactorId());
         sp.Encode1(reactor.getState());
@@ -55,9 +55,9 @@ public class ResCReactorPool {
         return sp.get();
     }
 
-    // destroyReactor
-    public static MaplePacket Destroy(MapleReactor reactor) {
+    public static MaplePacket ReactorLeaveField(MapleReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorLeaveField);
+
         sp.Encode4(reactor.getObjectId());
         sp.Encode1(reactor.getState());
         sp.Encode2(reactor.getPosition().x);

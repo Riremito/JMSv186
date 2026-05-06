@@ -63,10 +63,12 @@ import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import odin.server.maps.MapleMist;
 import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.SummonMovementType;
+import odin.server.shops.HiredMerchant;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosDragon;
 import tacos.client.TacosSkillPet;
@@ -74,12 +76,15 @@ import tacos.odin.OdinPair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
+import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCSummonedPool;
+import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCUser_Dragon;
@@ -413,12 +418,6 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public void spawnPlayers(MapleCharacter chr) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.PLAYER).values()) {
-            ((MapleCharacter) obj).sendSpawnData(chr.getClient());
-        }
-    }
-
     public void SplitSendPacket(int x, int y) {
         int number = this.map_split.getSplitMap(x, y);
         int row = number / this.map_split.getCol();
@@ -480,6 +479,62 @@ public class TacosMap extends TacosMapData {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
             }
+        }
+        // mob
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+            MapleMonster mob = (MapleMonster) mmo;
+            chr.SendPacket(ResCMobPool.MobEnterField(mob, -2, 0, 0));
+            if (mob.getController() == null || mob.getController() == chr) {
+                mob.setController(chr);
+                chr.SendPacket(ResCMobPool.MobChangeController(mob, false, mob.isFirstAttack()));
+                chr.controlMonster(mob, mob.isFirstAttack());
+                mob.setControllerHasAggro(mob.isFirstAttack());
+                mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
+            }
+        }
+        // npc
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
+            MapleNPC npc = (MapleNPC) mmo;
+            chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
+            //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+        }
+        // hired merchant
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+            HiredMerchant employee = (HiredMerchant) mmo;
+            chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
+        }
+        // drop
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
+            MapleMapItem drop = (MapleMapItem) mmo;
+            // quest item.
+            int quest_id = drop.getQuest();
+            if (0 < quest_id) {
+                if (chr.getQuestStatus(quest_id) != 1) {
+                    continue;
+                }
+            }
+            chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+        }
+        // mist
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
+            MapleMist mist = (MapleMist) mmo;
+            chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
+        }
+        // mystic door
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
+            MapleDoor door = (MapleDoor) mmo;
+            chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
+        }
+        // mechanic gate
+        // pinkbean cake event portal
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal instance_portal = (MapleDynamicPortal) mmo;
+            chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
+        }
+        // reactor
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            MapleReactor reactor = (MapleReactor) mmo;
+            chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
         }
     }
 
@@ -888,7 +943,7 @@ public class TacosMap extends TacosMapData {
 
     public void removeMonster(MapleMonster monster) {
         this.spawnedMonstersOnMap.decrementAndGet();
-        broadcastMessage(ResCMobPool.Kill(monster, 0));
+        broadcastMessage(ResCMobPool.MobLeaveField(monster, 0));
         removeMapObject(monster);
     }
 
@@ -896,7 +951,7 @@ public class TacosMap extends TacosMapData {
         this.spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
         monster.spawnRevives();
-        broadcastMessage(ResCMobPool.Kill(monster, 1));
+        broadcastMessage(ResCMobPool.MobLeaveField(monster, 1));
         removeMapObject(monster);
     }
 
@@ -905,7 +960,7 @@ public class TacosMap extends TacosMapData {
             MapleMonster monster = (MapleMonster) monstermo;
             this.spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
-            broadcastMessage(ResCMobPool.Kill(monster, animate ? 1 : 0));
+            broadcastMessage(ResCMobPool.MobLeaveField(monster, animate ? 1 : 0));
             removeMapObject(monster);
         }
     }
@@ -915,7 +970,7 @@ public class TacosMap extends TacosMapData {
             if (((MapleMonster) mmo).getId() == monsId) {
                 this.spawnedMonstersOnMap.decrementAndGet();
                 removeMapObject(mmo);
-                broadcastMessage(ResCMobPool.Kill((MapleMonster) mmo, 1));
+                broadcastMessage(ResCMobPool.MobLeaveField((MapleMonster) mmo, 1));
                 return true;
             }
         }
@@ -938,7 +993,7 @@ public class TacosMap extends TacosMapData {
         checkRemoveAfter(monster);
         monster.setLinkOid(oid);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -3, 0, oid));
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, -3, 0, oid));
         updateMonsterController(monster);
         this.spawnedMonstersOnMap.incrementAndGet();
     }
@@ -946,7 +1001,7 @@ public class TacosMap extends TacosMapData {
     public void spawnMonster(MapleMonster monster, int spawnType) {
         checkRemoveAfter(monster);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, spawnType, 0, 0));
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, spawnType, 0, 0));
         updateMonsterController(monster);
         this.spawnedMonstersOnMap.incrementAndGet();
     }
@@ -954,7 +1009,7 @@ public class TacosMap extends TacosMapData {
     public int spawnMonsterWithEffect(MapleMonster monster, int effect, Point pos) {
         monster.setPosition(pos);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -2, effect, 0));
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, -2, effect, 0));
         updateMonsterController(monster);
         this.spawnedMonstersOnMap.incrementAndGet();
         return monster.getObjectId();
@@ -963,7 +1018,7 @@ public class TacosMap extends TacosMapData {
     public void spawnFakeMonster(MapleMonster monster) {
         monster.setFake(true);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.Spawn(monster, -4, 0, 0));
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, -4, 0, 0));
         updateMonsterController(monster);
         this.spawnedMonstersOnMap.incrementAndGet();
     }
@@ -1025,16 +1080,6 @@ public class TacosMap extends TacosMapData {
             if (npc.isCustom() && npc.getId() == npcid) {
                 broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
                 itr.remove();
-            }
-        }
-    }
-
-    public void resetNPCs() {
-        List<MapleNPC> npcs = getAllNPCs();
-        for (MapleNPC npc : npcs) {
-            if (npc.isCustom()) {
-                broadcastMessage(ResCNpcPool.NpcEnterField(npc, false));
-                removeMapObject(npc);
             }
         }
     }
@@ -1160,7 +1205,7 @@ public class TacosMap extends TacosMapData {
 
     public void spawnDynamicPortal(MapleDynamicPortal dynamic_portal) {
         addMapObject(dynamic_portal);
-        spawnRangedMapObject(dynamic_portal, Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
+        spawnRangedMapObject(dynamic_portal, Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
     }
 
     public List<MapleReactor> getAllReactors() {
@@ -1240,7 +1285,7 @@ public class TacosMap extends TacosMapData {
 
     public void spawnReactor(MapleReactor reactor) {
         addMapObject(reactor);
-        spawnRangedMapObject(reactor, ResCReactorPool.Spawn(reactor));
+        spawnRangedMapObject(reactor, ResCReactorPool.ReactorEnterField(reactor));
     }
 
     public void respawnReactor(MapleReactor reactor) {
@@ -1251,7 +1296,7 @@ public class TacosMap extends TacosMapData {
 
     public void destroyReactor(int oid) {
         MapleReactor reactor = getReactorByOid(oid);
-        broadcastMessage(ResCReactorPool.Destroy(reactor));
+        broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
         reactor.setAlive(false);
         removeMapObject(reactor);
         reactor.setTimerActive(false);
@@ -1271,7 +1316,7 @@ public class TacosMap extends TacosMapData {
         List<MapleReactor> toSpawn = new ArrayList<>();
         for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             final MapleReactor reactor = (MapleReactor) obj;
-            broadcastMessage(ResCReactorPool.Destroy(reactor));
+            broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
             reactor.setAlive(false);
             reactor.setTimerActive(false);
             toSpawn.add(reactor);
@@ -1495,7 +1540,6 @@ public class TacosMap extends TacosMapData {
         killAllMonsters(false);
         reloadReactors();
         removeDrops();
-        resetNPCs();
         resetSpawns();
         endSpeedRun();
         cancelSquadSchedule();

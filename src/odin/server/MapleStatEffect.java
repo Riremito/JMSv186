@@ -1068,7 +1068,7 @@ public class MapleStatEffect implements Serializable {
                     //applyto.silentPartyUpdate();
                 }
 
-                applyto.SendPacket(ResCTownPortalPool.spawnDoor(door, false));
+                applyto.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
 
             } else {
                 applyto.dropMessage(5, "You may not spawn a door because all doors in the town are taken.");

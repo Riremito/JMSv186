@@ -624,7 +624,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (!isAlive()) {
             return;
         }
-        client.SendPacket(ResCMobPool.Spawn(this, (lastNode >= 0 ? -2 : -1), fake ? 0xfc : (lastNode >= 0 ? 12 : 0), 0));
+        client.SendPacket(ResCMobPool.MobEnterField(this, (lastNode >= 0 ? -2 : -1), fake ? 0xfc : (lastNode >= 0 ? 12 : 0), 0));
         if (reflectpack != null) {
             client.getSession().write(reflectpack);
         }
@@ -643,7 +643,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     @Override
     public final void sendDestroyData(final MapleClient client) {
         if (lastNode == -1) {
-            client.SendPacket(ResCMobPool.Kill(this, 0));
+            client.SendPacket(ResCMobPool.MobLeaveField(this, 0));
         }
         if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
             resetShammos(client);

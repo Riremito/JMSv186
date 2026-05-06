@@ -178,7 +178,7 @@ public class ReqCUser_Pet {
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
 
-        map.broadcastMessage(chr, ResCUser_Pet.petChat(chr, chr.getPetIndex(pet), nType, nAction, pet_message), false);
+        map.broadcastMessage(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), false);
         return true;
     }
 
@@ -213,7 +213,7 @@ public class ReqCUser_Pet {
                 chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
-        chr.getMap().broadcastMessage(chr, ResCUser_Pet.commandResponse(chr.getId(), command, petIndex, success, false), true);
+        chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetActionCommand(chr.getId(), command, petIndex, success, false), true);
     }
 
     public static boolean OnPetDropPickUpRequest(MapleCharacter chr, MaplePet pet, ClientPacket cp) {

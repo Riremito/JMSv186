@@ -138,17 +138,17 @@ public class MapleMist extends AbstractMapleMapObject {
     }
 
     public MaplePacket fakeSpawnData(int level) {
-        return ResCAffectedAreaPool.spawnMist(this);
+        return ResCAffectedAreaPool.AffectedAreaCreated(this);
     }
 
     @Override
     public void sendSpawnData(final MapleClient c) {
-        c.SendPacket(ResCAffectedAreaPool.spawnMist(this));
+        c.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(this));
     }
 
     @Override
     public void sendDestroyData(final MapleClient c) {
-        c.SendPacket(ResCAffectedAreaPool.removeMist(this));
+        c.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(this));
     }
 
     public boolean makeChanceResult() {

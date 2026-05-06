@@ -150,7 +150,7 @@ public class MapleDoor extends AbstractMapleMapObject {
                 //client.SendPacket(MysticDoorResponse.resetPartyMysticDoorInfo());
             }
         }
-        client.SendPacket(ResCTownPortalPool.removeDoor(this));
+        client.SendPacket(ResCTownPortalPool.TownPortalRemoved(this));
     }
 
     public final MapleCharacter getOwner() {

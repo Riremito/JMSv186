@@ -29,8 +29,9 @@ import tacos.packet.ServerPacketHeader;
  */
 public class Res_JMS_CInstancePortalPool {
 
-    public static MaplePacket CreatePinkBeanEventPortal(MapleDynamicPortal dynamic_portal) {
+    public static MaplePacket InstancePortalCreated(MapleDynamicPortal dynamic_portal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_InstancePortalCreated);
+
         sp.Encode1(1);
         sp.Encode4(dynamic_portal.getItemID()); // item id
         sp.Encode4(dynamic_portal.getObjectId()); // object id

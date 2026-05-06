@@ -1719,10 +1719,10 @@ public class MapleCharacter extends TacosCharacter {
 
     public void enterTownPortal(MapleDoor door) {
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door));
-        SendPacket(ResCTownPortalPool.removeDoor(door));
+        SendPacket(ResCTownPortalPool.TownPortalRemoved(door));
         changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), door.getTownPortal());
-        SendPacket(ResCTownPortalPool.removeDoor(door.getLink()));
-        SendPacket(ResCTownPortalPool.spawnDoor(door.getLink(), false));
+        SendPacket(ResCTownPortalPool.TownPortalRemoved(door.getLink()));
+        SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
         SendPacket(ResCTownPortalPool.setMysticDoorInfo(door.getLink()));
     }
 
@@ -1751,8 +1751,6 @@ public class MapleCharacter extends TacosCharacter {
             sendSetField(this, false);
             map_to.userEnterField(this);
             map_to.linkedObjectEnterField(this);
-
-            map_to.spawnPlayers(this);
             map_to.spawnMerchant(this); // show merchant
             map_to.spawnDynamicPortal(this); // show dynamic portal;
             stats.relocHeal();
@@ -2424,7 +2422,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         monster.setController(this);
         controlled.add(monster);
-        client.SendPacket(ResCMobPool.Control(monster, false, aggro));
+        client.SendPacket(ResCMobPool.MobChangeController(monster, false, aggro));
     }
 
     public void stopControllingMonster(MapleMonster monster) {
@@ -4005,22 +4003,6 @@ public class MapleCharacter extends TacosCharacter {
             }
         }
         sendStatChanged(true);
-    }
-
-    public void addMoveMob(int mobid) {
-        if (movedMobs.containsKey(mobid)) {
-            movedMobs.put(mobid, movedMobs.get(mobid) + 1);
-            if (movedMobs.get(mobid) > 30) { //trying to move not null monster = broadcast dead
-                for (MapleCharacter chr : getMap().getCharacters()) { //also broadcast to others
-                    if (chr.getMoveMobs().containsKey(mobid)) { //they also tried to move this mob
-                        chr.getClient().SendPacket(ResCMobPool.Kill(mobid, 1));
-                        chr.getMoveMobs().remove(mobid);
-                    }
-                }
-            }
-        } else {
-            movedMobs.put(mobid, 1);
-        }
     }
 
     public Map<Integer, Integer> getMoveMobs() {

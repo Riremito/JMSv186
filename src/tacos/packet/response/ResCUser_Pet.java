@@ -80,7 +80,7 @@ public class ResCUser_Pet {
     }
 
     // showPet
-    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
+    public static MaplePacket PetActivated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
         ServerPacket sp = new ServerPacket((transfer_field || Version.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
         sp.Encode4(chr.getId());
 
@@ -123,15 +123,15 @@ public class ResCUser_Pet {
     }
 
     public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
-        return Activated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
+        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
     }
 
     public static MaplePacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
-        return Activated(chr, pet, false, msg, false);
+        return PetActivated(chr, pet, false, msg, false);
     }
 
     public static MaplePacket TransferField(MapleCharacter chr, MaplePet pet) {
-        return Activated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
+        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
     public static final MaplePacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
@@ -149,8 +149,9 @@ public class ResCUser_Pet {
         return sp.get();
     }
 
-    public static final MaplePacket petChat(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
+    public static MaplePacket PetAction(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetAction);
+
         sp.Encode4(chr.getId());
         sp.Encode4(pet_index);
         sp.Encode1(nType);
@@ -173,20 +174,18 @@ public class ResCUser_Pet {
         return sp.get();
     }
 
-    public static MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {
+    public static MaplePacket PetActionCommand(int cid, byte command, int slot, boolean success, boolean food) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActionCommand);
 
         sp.Encode4(cid);
         sp.Encode4(slot);
         sp.Encode1(command == 1 ? 1 : 0);
         sp.Encode1(command);
-
         if (command == 1) {
             sp.Encode1(0);
         } else {
             sp.Encode2(success ? 1 : 0);
         }
-
         return sp.get();
     }
 

@@ -76,7 +76,7 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
 
     // do not use spawn data
     public final void sendSpawnPacket(final MapleClient client) {
-        client.SendPacket(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(this));
+        client.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(this));
     }
 
     @Override

@@ -518,15 +518,6 @@ public class AdminCommand {
         }
     }
 
-    public static class RemoveNPCs extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().getMap().resetNPCs();
-            return 1;
-        }
-    }
-
     public static class LookNPC extends CommandExecute {
 
         @Override

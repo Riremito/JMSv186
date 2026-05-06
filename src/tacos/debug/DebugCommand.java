@@ -759,7 +759,7 @@ public class DebugCommand {
                 Point player_xy = chr.getPosition();
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
                 chr.getMap().addMapObject(dynamic_portal);
-                chr.getMap().broadcastMessage(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(dynamic_portal));
+                chr.getMap().broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);
                 return true;
             }
