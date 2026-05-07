@@ -26,14 +26,14 @@ import tacos.config.Version;
  * @author Riremito
  */
 public enum OpsEntrustedShop implements IPacketOps {
-    EntrustedShopReq_CheckOpenPossible,
+    EntrustedShopReq_CheckOpenPossible(0),
     EntrustedShopReq_Create,
     EntrustedShopReq_Save,
     EntrustedShopReq_CloseProcess,
     EntrustedShopReq_FindShopByEmployerName,
     EntrustedShopReq_CheckIfClosed,
     EntrustedShopReq_GetPos,
-    EntrustedShopRes_OpenPossible,
+    EntrustedShopRes_OpenPossible(7),
     EntrustedShopRes_OpenImpossible_Using,
     EntrustedShopRes_OpenImpossible_Stored,
     EntrustedShopRes_OpenImpossible_AnotherCharacter,

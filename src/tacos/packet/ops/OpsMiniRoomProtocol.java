@@ -221,6 +221,32 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             MGP_MatchCard.set(66);
             return;
         }
+        if (Version.LessOrEqual(Region.GMS, 83)) {
+            PSP_PutItem.set(22);
+            PSP_BuyItem.set(23);
+            PSP_BuyResult.set(24);
+            PSP_Refresh.set(25);
+            PSP_AddSoldItem.set(26);
+            PSP_MoveItemToInventory.set(27);
+            PSP_Ban.set(28);
+            PSP_KickedTimeOver.set(29);
+            PSP_DeliverBlackList.set(30);
+            PSP_AddBlackList.set(31);
+            PSP_DeleteBlackList.set(32);
+            ESP_PutItem.set(33);
+            ESP_BuyItem.set(34);
+            ESP_BuyResult.set(35);
+            ESP_Refresh.set(36);
+            ESP_AddSoldItem.set(37);
+            ESP_MoveItemToInventory.set(38);
+            ESP_GoOut.set(39);
+            ESP_ArrangeItem.set(40);
+            ESP_WithdrawAll.set(41);
+            ESP_WithdrawAllResult.set(42);
+            ESP_WithdrawMoney.set(43);
+            ESP_WithdrawMoneyResult.set(44);
+            return;
+        }
     }
 
 }
