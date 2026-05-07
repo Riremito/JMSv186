@@ -345,21 +345,6 @@ public class TacosMap extends TacosMapData {
         this.mapobjects.get(obj.getType()).remove(obj.getObjectId());
     }
 
-    public List<MapleMapObject> getMapObjectsInRange(Point from, double rangeSq, List<MapleMapObjectType> MapObject_types) {
-        List<MapleMapObject> ret = new ArrayList<>();
-        for (MapleMapObjectType type : MapObject_types) {
-            Iterator<MapleMapObject> ltr = this.mapobjects.get(type).values().iterator();
-            MapleMapObject obj;
-            while (ltr.hasNext()) {
-                obj = ltr.next();
-                if (from.distanceSq(obj.getPosition()) <= rangeSq) {
-                    ret.add(obj);
-                }
-            }
-        }
-        return ret;
-    }
-
     public List<MapleMapObject> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> MapObject_types) {
         List<MapleMapObject> ret = new ArrayList<>();
         for (MapleMapObjectType type : MapObject_types) {
@@ -483,25 +468,46 @@ public class TacosMap extends TacosMapData {
         // mob
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
             MapleMonster mob = (MapleMonster) mmo;
-            chr.SendPacket(ResCMobPool.MobEnterField(mob, -2, 0, 0));
-            if (mob.getController() == null || mob.getController() == chr) {
-                mob.setController(chr);
-                chr.SendPacket(ResCMobPool.MobChangeController(mob, false, mob.isFirstAttack()));
-                chr.controlMonster(mob, mob.isFirstAttack());
-                mob.setControllerHasAggro(mob.isFirstAttack());
-                mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
+            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCMobPool.MobEnterField(mob, -1, 0, 0));
+                if (mob.getController() == null || mob.getController() == chr) {
+                    mob.setController(chr);
+                    chr.SendPacket(ResCMobPool.MobChangeController(mob, false, mob.isFirstAttack()));
+                    chr.controlMonster(mob, mob.isFirstAttack());
+                    mob.setControllerHasAggro(mob.isFirstAttack());
+                    mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
+                }
             }
         }
         // npc
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
             MapleNPC npc = (MapleNPC) mmo;
-            chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
-            //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+            int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
+                //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+            }
         }
         // hired merchant
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
             HiredMerchant employee = (HiredMerchant) mmo;
-            chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
+            int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
+            }
         }
         // drop
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
@@ -513,28 +519,63 @@ public class TacosMap extends TacosMapData {
                     continue;
                 }
             }
-            chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+            int number = this.map_split.getSplitMap(drop.getPosition().x, drop.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+            }
         }
         // mist
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
             MapleMist mist = (MapleMist) mmo;
-            chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
+            int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
+            }
         }
         // mystic door
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
             MapleDoor door = (MapleDoor) mmo;
-            chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
+            int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
+            }
         }
         // mechanic gate
         // pinkbean cake event portal
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
             MapleDynamicPortal instance_portal = (MapleDynamicPortal) mmo;
-            chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
+            int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
+            }
         }
         // reactor
         for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             MapleReactor reactor = (MapleReactor) mmo;
-            chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
+            int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = enter_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
+            }
         }
     }
 
@@ -637,6 +678,142 @@ public class TacosMap extends TacosMapData {
             if ((player_state & 4) != 0) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr.getId()));
                 chr.SendPacket(ResCUserPool.UserLeaveField(player.getId()));
+            }
+        }
+        // mob
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+            MapleMonster mob = (MapleMonster) mmo;
+            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCMobPool.MobEnterField(mob, -1, 0, 0));
+                if (mob.getController() == null || mob.getController() == chr) {
+                    mob.setController(chr);
+                    chr.SendPacket(ResCMobPool.MobChangeController(mob, false, mob.isFirstAttack()));
+                    chr.controlMonster(mob, mob.isFirstAttack());
+                    mob.setControllerHasAggro(mob.isFirstAttack());
+                    mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
+                }
+            }
+            if ((state & 4) != 0) {
+                chr.SendPacket(ResCMobPool.MobLeaveField(mob, 0));
+            }
+        }
+        // npc
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
+            MapleNPC npc = (MapleNPC) mmo;
+            int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
+                //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+            }
+            if ((state & 4) != 0) {
+                chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
+            }
+        }
+        // hired merchant
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+            HiredMerchant employee = (HiredMerchant) mmo;
+            int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
+            }
+            if ((state & 4) != 0) {
+                chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(employee));
+            }
+        }
+        // drop
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
+            MapleMapItem drop = (MapleMapItem) mmo;
+            // quest item.
+            int quest_id = drop.getQuest();
+            if (0 < quest_id) {
+                if (chr.getQuestStatus(quest_id) != 1) {
+                    continue;
+                }
+            }
+            int number = this.map_split.getSplitMap(drop.getPosition().x, drop.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+            }
+            if ((state & 4) != 0) {
+                chr.SendPacket(ResCDropPool.DropLeaveField(drop, ResCDropPool.LeaveType.NO_ANIMATION));
+            }
+        }
+        // mist
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
+            MapleMist mist = (MapleMist) mmo;
+            int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
+            }
+            if ((state & 4) != 0) {
+                chr.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
+            }
+        }
+        // mystic door
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
+            MapleDoor door = (MapleDoor) mmo;
+            int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
+            }
+            if ((state & 4) != 0) {
+                chr.SendPacket(ResCTownPortalPool.TownPortalRemoved(door));
+            }
+        }
+        // mechanic gate
+        // pinkbean cake event portal
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+            MapleDynamicPortal instance_portal = (MapleDynamicPortal) mmo;
+            int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
+            }
+            if ((state & 4) != 0) {
+            }
+        }
+        // reactor
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            MapleReactor reactor = (MapleReactor) mmo;
+            int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = move_state.get(number);
+            if ((state & 1) != 0) {
+                chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
+            }
+            if ((state & 4) != 0) {
+                chr.SendPacket(ResCReactorPool.ReactorLeaveField(reactor));
             }
         }
     }
