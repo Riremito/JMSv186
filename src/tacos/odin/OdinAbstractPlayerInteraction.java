@@ -459,7 +459,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void changeMusic(final String songName) {
-        getPlayer().getMap().broadcastMessage(ResWrapper.musicChange(songName));
+        getPlayer().getMap().setChangeBGM(songName);
     }
 
     // npc/9201006.js

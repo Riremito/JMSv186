@@ -120,8 +120,6 @@ public class TacosMap extends TacosMapData {
     protected boolean everlast = false;
     protected MapleNodes nodes;
     protected Map<String, Integer> environment = new LinkedHashMap<>();
-    protected long speedRunStart = 0;
-    protected String speedRunLeader = "";
     protected boolean squadTimer = false;
     protected String squad = "";
     protected ScheduledFuture<?> squadSchedule;
@@ -217,21 +215,6 @@ public class TacosMap extends TacosMapData {
 
     public Map<String, Integer> getEnvironment() {
         return this.environment;
-    }
-
-    // horntail test.
-    public void startSpeedRun() {
-        this.speedRunStart = System.currentTimeMillis();
-    }
-
-    public void startSpeedRun(String leader) {
-        this.speedRunStart = System.currentTimeMillis();
-        this.speedRunLeader = leader;
-    }
-
-    public void endSpeedRun() {
-        this.speedRunStart = 0;
-        this.speedRunLeader = "";
     }
 
     public final MapleSquad getSquadBegin() {
@@ -403,6 +386,25 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
+    private String fe_change_bgm = "";
+
+    public void setChangeBGM(String wz_path) {
+        this.fe_change_bgm = wz_path;
+        if (!getChangeBGM().equals("")) {
+            broadcastMessage(ResWrapper.musicChange(getChangeBGM()));
+        }
+    }
+
+    public String getChangeBGM() {
+        return this.fe_change_bgm;
+    }
+
+    public void sendChangeBGM(TacosCharacter chr) {
+        if (!getChangeBGM().equals("")) {
+            chr.SendPacket(ResWrapper.musicChange(getChangeBGM()));
+        }
+    }
+
     public void SplitSendPacket(int x, int y) {
         int number = this.map_split.getSplitMap(x, y);
         int row = number / this.map_split.getCol();
@@ -432,6 +434,10 @@ public class TacosMap extends TacosMapData {
         this.characters.add(chr);
         this.mapobjects.get(MapleMapObjectType.PLAYER).put(chr.getObjectId(), chr); // object id.
 
+        // no split.
+        sendChangeBGM(chr);
+
+        // split.
         List<Integer> enter_state = getStateList();
         int enter_x = chr.getPosition().x;
         int enter_y = chr.getPosition().y;
@@ -831,10 +837,6 @@ public class TacosMap extends TacosMapData {
         }
         if (!chr.isHidden()) {
             broadcastMessage(chr, ResCUserPool.UserEnterField(chr), false);
-            if (chr.isGM() && speedRunStart > 0) {
-                endSpeedRun();
-                broadcastMessage(ResWrapper.BroadCastMsgEvent("The speed run has ended."));
-            }
         }
         if (!chr.isClone()) {
             if (!onFirstUserEnter.equals("")) {
@@ -910,21 +912,6 @@ public class TacosMap extends TacosMapData {
                     doShrine(false);
                     squadTimer = true;
                 }
-            }
-            if (getNumMonsters() > 0 && (mapid == 280030001 || mapid == 240060201 || mapid == 280030000 || mapid == 240060200 || mapid == 220080001 || mapid == 541020800 || mapid == 541010100)) {
-                String music = "Bgm09/TimeAttack";
-                switch (mapid) {
-                    case 240060200:
-                    case 240060201:
-                        music = "Bgm14/HonTale";
-                        break;
-                    case 280030000:
-                    case 280030001:
-                        music = "Bgm06/FinalFight";
-                        break;
-                }
-                chr.getClient().getSession().write(ResWrapper.musicChange(music));
-                //maybe timer too for zak/ht
             }
             if (mapid == 914000000) {
                 chr.setForcedStatAran();
@@ -1714,11 +1701,11 @@ public class TacosMap extends TacosMapData {
     }
 
     public void resetFully(boolean respawn) {
+        setChangeBGM("");
         killAllMonsters(false);
         reloadReactors();
         removeDrops();
         resetSpawns();
-        endSpeedRun();
         cancelSquadSchedule();
         resetPortals();
         environment.clear();

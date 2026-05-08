@@ -63,6 +63,9 @@ import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.provider.IMapleData;
 import tacos.client.TacosForcedStat;
+import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptPortal;
@@ -482,6 +485,26 @@ public class DebugCommand {
                     return true;
                 }
                 chr.DebugMsg("[BossTest] " + boss_name);
+                return true;
+            }
+            case "/killmob": {
+                int count = 300;
+                if (2 <= splitted.length) {
+                    count = parseInt(splitted[1]);
+                }
+                MapleMap map = chr.getMap();
+                for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
+                    if (count <= 0) {
+                        break;
+                    }
+                    MapleMonster mob = (MapleMonster) mmo;
+                    if (mob.getStats().getHPDisplayType() == 0) {
+                        mob.setHp(0);
+                        map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
+                    }
+                    map.killMonster(mob, chr, true, false, (byte) 1);
+                    count--;
+                }
                 return true;
             }
             // ステータス関連

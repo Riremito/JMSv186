@@ -52,7 +52,6 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.Spawns;
 import odin.server.life.SpawnPoint;
-import odin.tools.StringUtil;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.MapleSquad;
@@ -169,114 +168,63 @@ public final class MapleMap extends TacosMap {
             }
         }
         final int mobid = monster.getId();
-        SpeedRunType type = SpeedRunType.NULL;
         final MapleSquad sqd = getSquadByMap();
         if (mobid == 8810018) { // Horntail
             chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！"));
             if (mapid == 240060200) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Horntail;
-                }
                 if (sqd != null) {
                     doShrine(true);
                 }
             }
         } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
             chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!"));
-            if (speedRunStart > 0) {
-                type = SpeedRunType.ChaosHT;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
-        } else if (mobid == 8500002) {
-            if (mapid == 220080001) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Papulatus;
-                }
-            }
         } else if (mobid == 9400266 && mapid == 802000111) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Nameless_Magic_Monster;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
         } else if (mobid == 9400265 && mapid == 802000211) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Vergamot;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
         } else if (mobid == 9400270 && mapid == 802000411) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Dunas;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
         } else if (mobid == 9400273 && mapid == 802000611) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Nibergen;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
         } else if (mobid == 9400294 && mapid == 802000711) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Dunas_2;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
         } else if (mobid == 9400296 && mapid == 802000803) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Core_Blaze;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
         } else if (mobid == 9400289 && mapid == 802000821) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Aufhaven;
-            }
             if (sqd != null) {
                 doShrine(true);
             }
         } else if ((mobid == 9420549 || mobid == 9420544) && mapid == 551030200) {
-            if (speedRunStart > 0) {
-                if (mobid == 9420549) {
-                    type = SpeedRunType.Scarlion;
-                } else {
-                    type = SpeedRunType.Targa;
-                }
-            }
             //INSERT HERE: 2095_tokyo
         } else if (mobid == 8820001) {
             chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！"));
             if (mapid == 270050100) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Pink_Bean;
-                }
                 if (sqd != null) {
                     doShrine(true);
                 }
             }
         } else if (mobid == 8800002) {
             if (mapid == 280030000) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Zakum;
-                }
                 if (sqd != null) {
                     doShrine(true);
                 }
             }
         } else if (mobid == 8800102 && mapid == 280030001) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Chaos_Zakum;
-            }
-
             if (sqd != null) {
                 doShrine(true);
             }
@@ -321,16 +269,6 @@ public final class MapleMap extends TacosMap {
                     }
                 }
             }
-        }
-        if (type != SpeedRunType.NULL) {
-            if (speedRunStart > 0 && speedRunLeader.length() > 0) {
-                long endTime = System.currentTimeMillis();
-                String time = StringUtil.getReadableMillis(speedRunStart, endTime);
-                broadcastMessage(ResWrapper.BroadCastMsgEvent(speedRunLeader + "'s squad has taken " + time + " to defeat " + type + "!"));
-                getRankAndAdd(speedRunLeader, time, type, (endTime - speedRunStart), (sqd == null ? null : sqd.getMembers()));
-                endSpeedRun();
-            }
-
         }
         if (mobid == 8820008) { //wipe out statues and respawn
             for (final MapleMapObject mmo : getAllMonsters()) {
