@@ -50,7 +50,6 @@ import odin.server.life.Spawns;
 import odin.server.life.SpawnPoint;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
-import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
@@ -162,68 +161,11 @@ public final class MapleMap extends TacosMap {
                 charactersLock.readLock().unlock();
             }
         }
-        final int mobid = monster.getId();
-        final MapleSquad sqd = getSquadByMap();
-        if (mobid == 8810018) { // Horntail
-            chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！"));
-            if (mapid == 240060200) {
-                if (sqd != null) {
-                    doShrine(true);
-                }
-            }
-        } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
-            chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!"));
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400266 && mapid == 802000111) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400265 && mapid == 802000211) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400270 && mapid == 802000411) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400273 && mapid == 802000611) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400294 && mapid == 802000711) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400296 && mapid == 802000803) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400289 && mapid == 802000821) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if ((mobid == 9420549 || mobid == 9420544) && mapid == 551030200) {
-            //INSERT HERE: 2095_tokyo
-        } else if (mobid == 8820001) {
-            chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！"));
-            if (mapid == 270050100) {
-                if (sqd != null) {
-                    doShrine(true);
-                }
-            }
-        } else if (mobid == 8800002) {
-            if (mapid == 280030000) {
-                if (sqd != null) {
-                    doShrine(true);
-                }
-            }
-        } else if (mobid == 8800102 && mapid == 280030001) {
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid >= 8800003 && mobid <= 8800010) {
+
+        sendExpedition(chr, monster);
+
+        int mobid = monster.getId();
+        if (mobid >= 8800003 && mobid <= 8800010) {
             boolean makeZakReal = true;
             final Collection<MapleMonster> monsters = getAllMonsters();
 

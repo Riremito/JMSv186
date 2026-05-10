@@ -467,28 +467,69 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public boolean sendExpedition(MapleCharacter chr) {
-        MapleSquad squad_begin = getSquadBegin();
-        if (squad_begin != null) {
-            if (0 < squad_begin.getTimeLeft()) {
-                if (squad_begin.getStatus() == 1) {
-                    chr.SendPacket(ResCField.Clock((int) (squad_begin.getTimeLeft() / 1000)));
+    public boolean sendExpedition(MapleCharacter chr, MapleMonster monster) {
+        int boss_id = 0;
+        if (monster != null) {
+            boss_id = monster.getId();
+        }
+        TacosWorld world = chr.getWorld();
+        int exit_timer = 5 * 60;
+
+        switch (mapid) {
+            case TacosConstants.MAP_ID_ZAKUM: {
+                if (boss_id == TacosConstants.MOB_ID_ZAKUM) {
+                    broadcastMessage(ResCField.ZakumTimer(true, 5));
+                    broadcastMessage(ResCField.Clock(exit_timer));
+                    return true;
                 }
+                broadcastMessage(ResCField.ZakumTimer(false, 5));
+                return true;
+            }
+            case TacosConstants.MAP_ID_HORNTAIL: {
+                if (boss_id == TacosConstants.MOB_ID_HORNTAIL) {
+                    // 大変な挑戦の終わりにホンテールを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS164)
+                    // 大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS302)
+                    world.broadcastPacket(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！"));
+                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastMessage(ResCField.HontaleTimer(true, 5));
+                    return true;
+                }
+                broadcastMessage(ResCField.HontaleTimer(false, 5));
+                return true;
+            }
+            case TacosConstants.MAP_ID_PINKBEAN: {
+                if (boss_id == TacosConstants.MOB_ID_PINKBEAN) {
+                    // 不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！ (JMS164-302)
+                    world.broadcastPacket(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！"));
+                    broadcastMessage(ResCField.Clock(exit_timer));
+                    return true;
+                }
+                return true;
+            }
+            case TacosConstants.MAP_ID_CHAOS_ZAKUM: {
+                if (boss_id == TacosConstants.MOB_ID_CHAOS_ZAKUM) {
+                    broadcastMessage(ResCField.ChaosZakumTimer(true, 5));
+                    broadcastMessage(ResCField.Clock(exit_timer));
+                    return true;
+                }
+                broadcastMessage(ResCField.ChaosZakumTimer(false, 5));
+                return true;
+            }
+            case TacosConstants.MAP_ID_CHAOS_HORNTAIL: {
+                if (boss_id == TacosConstants.MOB_ID_CHAOS_HORNTAIL) {
+                    world.broadcastPacket(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！"));
+                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastMessage(ResCField.HontaleTimer(true, 5));
+                    return true;
+                }
+                broadcastMessage(ResCField.HontaleTimer(false, 5));
+                return true;
+            }
+            default: {
+                break;
             }
         }
-        MapleSquad sqd = getSquadByMap();
-        if (sqd == null) {
-            return false;
-        }
-        if (TacosConstants.is_park_or_roppongi(mapid)) {
-            // no boss_balrog/2095/coreblaze/auf. but coreblaze/auf does AFTER
-            return false;
-        }
-        if (!squadTimer && chr.getName().equals(sqd.getLeaderName())) {
-            doShrine(false);
-            squadTimer = true;
-        }
-        return true;
+        return false;
     }
 
     public boolean sendMapEffect(MapleCharacter chr) {
@@ -515,11 +556,12 @@ public class TacosMap extends TacosMapData {
         updateParty(chr);
         sendMapEffect(chr);
         if (0 < timeLimit) {
+            chr.DebugMsg("timeLimit = " + timeLimit);
             if (getForcedReturnMap() != null) {
                 chr.startMapTimeLimitTask(timeLimit, getForcedReturnMap());
             }
         }
-        sendExpedition(chr);
+        sendExpedition(chr, null);
 
         // split.
         List<Integer> enter_state = getStateList();
@@ -1470,38 +1512,6 @@ public class TacosMap extends TacosMapData {
                 if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
                     chr.SendPacket(packet);
                 }
-            }
-        }
-    }
-
-    public void doShrine(final boolean spawned) { //false = entering map, true = defeated
-        if (squadSchedule != null) {
-            cancelSquadSchedule();
-        }
-        final int mode = (mapid == 280030000 ? 1 : (mapid == 280030001 ? 2 : (mapid == 240060200 || mapid == 240060201 ? 3 : 0)));
-        //chaos_horntail message for horntail too because it looks nicer
-        final MapleSquad sqd = getSquadByMap();
-        final OdinEventManager em = getEMByMap();
-        if (sqd != null && em != null && getCharactersSize() > 0) {
-            switch (mode) {
-                case 1:
-                    //zakum
-                    broadcastMessage(ResCField.ZakumTimer(spawned, 5));
-                    break;
-                case 2:
-                    //chaoszakum
-                    broadcastMessage(ResCField.ChaosZakumTimer(spawned, 5));
-                    break;
-                case 3:
-                    //ht/chaosht
-                    broadcastMessage(ResCField.HontaleTimer(spawned, 5));
-                    break;
-                default:
-                    broadcastMessage(ResCField.HontailTimer(spawned, 5));
-                    break;
-            }
-            if (mode == 1 || spawned) { //both of these together dont go well
-                broadcastMessage(ResCField.Clock(300)); //5 min
             }
         }
     }

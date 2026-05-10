@@ -107,6 +107,17 @@ public class TacosConstants {
         return false;
     }
 
+    public static final int MAP_ID_ZAKUM = 280030000;
+    public static final int MAP_ID_HORNTAIL = 240060200;
+    public static final int MAP_ID_PINKBEAN = 270050100;
+    public static final int MAP_ID_CHAOS_ZAKUM = 280030001;
+    public static final int MAP_ID_CHAOS_HORNTAIL = 240060201;
+    public static final int MOB_ID_ZAKUM = 8800002;
+    public static final int MOB_ID_HORNTAIL = 8810018;
+    public static final int MOB_ID_PINKBEAN = 8820001;
+    public static final int MOB_ID_CHAOS_ZAKUM = 8800102;
+    public static final int MOB_ID_CHAOS_HORNTAIL = 8810122;
+
     public static boolean is_park_or_roppongi(int map_id) {
         // 802000300, 802000800
         if ((map_id / 100) == 8020003 || (map_id / 100) == 8020008) {

@@ -56,18 +56,27 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket MobSummonItemUseResult(boolean result) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
+    // CField::OnFieldSpecificData
+    public static MaplePacket FieldSpecificData(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
+        int map_id = chr.getMapId();
 
-        sp.Encode1(result ? 1 : 0);
-        return sp.get();
-    }
+        // no data.
+        // CField_ShowaBath::DecodeFieldSpecificData
+        // CField_Tutorial::DecodeFieldSpecificData
+        if (TacosConstants.is_bath(map_id)) {
+            return sp.get();
+        }
 
-    public static MaplePacket PlayJukeBox(int item_id, String name) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayJukeBox);
-
-        sp.Encode4(item_id);
-        sp.EncodeStr(name);
+        // 1 byte extra data.
+        // CField_Coconut::DecodeFieldSpecificData
+        if (TacosConstants.is_coconut(map_id)) {
+            sp.Encode1(chr.getCoconutTeam());
+            return sp.get();
+        }
+        // CField_Battlefield::DecodeFieldSpecificData
+        // CField_MonsterCarnival::DecodeFieldSpecificData
+        // CField_MonsterCarnivalRevive::DecodeFieldSpecificData
         return sp.get();
     }
 
@@ -80,8 +89,70 @@ public class ResCField {
         return sp.get();
     }
 
-    // environmentChange, musicChange, showEffect, playSound
-    // ShowBossHP, trembleEffect
+    public static MaplePacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
+
+        sp.Encode1(req_res.get() | loc_whis.get());
+        switch (req_res) {
+            case WP_Result: {
+                if (loc_whis == Ops_Whisper.WP_Whisper) {
+                    sp.EncodeStr(name_to);
+                    sp.Encode1((chr_to != null) ? 1 : 0); // found or not found
+                    break;
+                }
+                if (loc_whis == Ops_Whisper.WP_Location) {
+                    sp.EncodeStr(name_to);
+                    // not found
+                    if (chr_to == null) {
+                        sp.Encode1(OpsLocationResult.LR_None.get());
+                        sp.Encode4(0);
+                        break;
+                    }
+                    // cs & itc
+                    if (chr_to.getServerType() == TacosServerType.ITC_SERVER || chr_to.getServerType() == TacosServerType.CASHSHOP_SERVER) {
+                        sp.Encode1(OpsLocationResult.LR_ShopSvr.get());
+                        sp.Encode4(0);
+                        break;
+                    }
+                    // same channel
+                    if (chr_to.getChannelId() == chr_from.getChannelId()) {
+                        sp.Encode1(OpsLocationResult.LR_GameSvr.get());
+                        sp.Encode4(chr_to.getPosMap());
+                        break;
+                    }
+                    // different channel
+                    sp.Encode1(OpsLocationResult.LR_OtherChannel.get());
+                    sp.Encode4(chr_to.getClient().getChannelId());
+                    break;
+                }
+                break;
+            }
+            case WP_Receive: {
+                if (loc_whis == Ops_Whisper.WP_Whisper) {
+                    sp.EncodeStr(chr_from.getName()); // sender name
+                    sp.Encode1(chr_from.getChannelId() - 1); // sender channel
+                    sp.Encode1(0); // admin?
+                    sp.EncodeStr(message); // sender message
+                    break;
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        // 9  (0x09) = 0x01 | 0x08
+        // 72 (0x48) = 0x08 | 0x40
+        return sp.get();
+    }
+
+    public static MaplePacket MobSummonItemUseResult(boolean result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
+
+        sp.Encode1(result ? 1 : 0);
+        return sp.get();
+    }
+
     public static MaplePacket FieldEffect(ArgFieldEffect st) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldEffect);
         sp.Encode1(st.flag.get());
@@ -144,74 +215,11 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket Quiz(int questionSet, int questionId, boolean askQuestion) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
+    public static MaplePacket FieldObstacleOnOff(String env, int mode) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
 
-        sp.Encode1(askQuestion ? 1 : 0);
-        sp.Encode1(questionSet);
-        sp.Encode2(questionId);
-        return sp.get();
-    }
-
-    public static MaplePacket HontaleTimer(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket ChaosZakumTimer(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket DestroyClock() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
-
-        return sp.get();
-    }
-
-    public static MaplePacket HontailTimer(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket ZakumTimer(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    // CField::OnFieldSpecificData
-    public static MaplePacket FieldSpecificData(TacosCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
-        int map_id = chr.getMapId();
-
-        // no data.
-        // CField_ShowaBath::DecodeFieldSpecificData
-        // CField_Tutorial::DecodeFieldSpecificData
-        if (TacosConstants.is_bath(map_id)) {
-            return sp.get();
-        }
-
-        // 1 byte extra data.
-        // CField_Coconut::DecodeFieldSpecificData
-        if (TacosConstants.is_coconut(map_id)) {
-            sp.Encode1(chr.getCoconutTeam());
-            return sp.get();
-        }
-        // CField_Battlefield::DecodeFieldSpecificData
-        // CField_MonsterCarnival::DecodeFieldSpecificData
-        // CField_MonsterCarnivalRevive::DecodeFieldSpecificData
+        sp.EncodeStr(env);
+        sp.Encode4(mode);
         return sp.get();
     }
 
@@ -226,11 +234,47 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket FieldObstacleOnOff(String env, int mode) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
+    // CField::OnBlowWeather
+    public static MaplePacket BlowWeather(String msg, int itemid, boolean active) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BlowWeather);
 
-        sp.EncodeStr(env);
-        sp.Encode4(mode);
+        sp.Encode4(active ? itemid : 0);
+        if (active && itemid != 0) {
+            sp.EncodeStr(msg);
+        }
+
+        return sp.get();
+    }
+
+    public static MaplePacket PlayJukeBox(int item_id, String name) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayJukeBox);
+
+        sp.Encode4(item_id);
+        sp.EncodeStr(name);
+        return sp.get();
+    }
+
+    public static MaplePacket AdminResult(int value) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
+
+        sp.Encode1(value);
+        sp.EncodeZeroBytes(17);
+        return sp.get();
+    }
+
+    public static MaplePacket Quiz(int questionSet, int questionId, boolean askQuestion) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
+
+        sp.Encode1(askQuestion ? 1 : 0);
+        sp.Encode1(questionSet);
+        sp.Encode2(questionId);
+        return sp.get();
+    }
+
+    public static MaplePacket Desc() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
+
+        sp.Encode1(0);
         return sp.get();
     }
 
@@ -252,71 +296,8 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
-
-        sp.Encode1(req_res.get() | loc_whis.get());
-        switch (req_res) {
-            case WP_Result: {
-                if (loc_whis == Ops_Whisper.WP_Whisper) {
-                    sp.EncodeStr(name_to);
-                    sp.Encode1((chr_to != null) ? 1 : 0); // found or not found
-                    break;
-                }
-                if (loc_whis == Ops_Whisper.WP_Location) {
-                    sp.EncodeStr(name_to);
-                    // not found
-                    if (chr_to == null) {
-                        sp.Encode1(OpsLocationResult.LR_None.get());
-                        sp.Encode4(0);
-                        break;
-                    }
-                    // cs & itc
-                    if (chr_to.getServerType() == TacosServerType.ITC_SERVER || chr_to.getServerType() == TacosServerType.CASHSHOP_SERVER) {
-                        sp.Encode1(OpsLocationResult.LR_ShopSvr.get());
-                        sp.Encode4(0);
-                        break;
-                    }
-                    // same channel
-                    if (chr_to.getChannelId() == chr_from.getChannelId()) {
-                        sp.Encode1(OpsLocationResult.LR_GameSvr.get());
-                        sp.Encode4(chr_to.getPosMap());
-                        break;
-                    }
-                    // different channel
-                    sp.Encode1(OpsLocationResult.LR_OtherChannel.get());
-                    sp.Encode4(chr_to.getClient().getChannelId());
-                    break;
-                }
-                break;
-            }
-            case WP_Receive: {
-                if (loc_whis == Ops_Whisper.WP_Whisper) {
-                    sp.EncodeStr(chr_from.getName()); // sender name
-                    sp.Encode1(chr_from.getChannelId() - 1); // sender channel
-                    sp.Encode1(0); // admin?
-                    sp.EncodeStr(message); // sender message
-                    break;
-                }
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-        // 9  (0x09) = 0x01 | 0x08
-        // 72 (0x48) = 0x08 | 0x40
-        return sp.get();
-    }
-
-    // CField::OnBlowWeather
-    public static MaplePacket BlowWeather(String msg, int itemid, boolean active) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BlowWeather);
-
-        sp.Encode4(active ? itemid : 0);
-        if (active && itemid != 0) {
-            sp.EncodeStr(msg);
-        }
+    public static MaplePacket DestroyClock() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
 
         return sp.get();
     }
@@ -344,19 +325,35 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket Desc() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
+    public static MaplePacket HontaleTimer(boolean spawned, int time_minute) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
 
-        sp.Encode1(0);
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode1(time_minute); // minute
         return sp.get();
     }
 
-    public static MaplePacket AdminResult(int value) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
+    public static MaplePacket ChaosZakumTimer(boolean spawned, int time_second) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
 
-        sp.Encode1(value);
-        sp.EncodeZeroBytes(17);
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time_second);
         return sp.get();
     }
 
+    public static MaplePacket HontailTimer(boolean spawned, int time_second) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time_second);
+        return sp.get();
+    }
+
+    public static MaplePacket ZakumTimer(boolean spawned, int time_second) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time_second);
+        return sp.get();
+    }
 }
