@@ -437,18 +437,15 @@ public class TacosMap extends TacosMapData {
         }
         // station clock.
         if (hasClock()) {
+            // 101000300
             Calendar cal = Calendar.getInstance();
             chr.SendPacket((ResCField.Clock(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
         }
         if (TacosConstants.is_coconut(mapid)) {
-            chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
-            // CField_Coconut::DecodeFieldSpecificData
-            chr.SendPacket(ResCField.FieldSpecificData(chr.getCoconutTeam()));
-            return true;
+            chr.setCoconutTeam(getCharactersSize() % 2);
         }
-        if (TacosConstants.is_bath(mapid)) {
-            // CField_ShowaBath::DecodeFieldSpecificData
-            chr.SendPacket(ResCField.FieldSpecificData());
+        if (TacosConstants.is_coconut(mapid) || TacosConstants.is_bath(mapid)) {
+            chr.SendPacket(ResCField.FieldSpecificData(chr));
             return true;
         }
         if (TacosConstants.is_aran_tutorial(mapid)) {
@@ -1475,10 +1472,6 @@ public class TacosMap extends TacosMapData {
                 }
             }
         }
-    }
-
-    public boolean getAndSwitchTeam() {
-        return getCharactersSize() % 2 != 0;
     }
 
     public void doShrine(final boolean spawned) { //false = entering map, true = defeated

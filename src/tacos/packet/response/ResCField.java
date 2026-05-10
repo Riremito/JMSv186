@@ -30,6 +30,8 @@ import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import odin.server.maps.MapleNodes;
+import tacos.client.TacosCharacter;
+import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
 import tacos.server.TacosServerType;
 import tacos.server.map.TacosMap;
@@ -189,22 +191,27 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket FieldSpecificData() {
+    // CField::OnFieldSpecificData
+    public static MaplePacket FieldSpecificData(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
+        int map_id = chr.getMapId();
 
+        // no data.
         // CField_ShowaBath::DecodeFieldSpecificData
         // CField_Tutorial::DecodeFieldSpecificData
-        return sp.get();
-    }
+        if (TacosConstants.is_bath(map_id)) {
+            return sp.get();
+        }
 
-    public static MaplePacket FieldSpecificData(int team) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
-
+        // 1 byte extra data.
         // CField_Coconut::DecodeFieldSpecificData
+        if (TacosConstants.is_coconut(map_id)) {
+            sp.Encode1(chr.getCoconutTeam());
+            return sp.get();
+        }
         // CField_Battlefield::DecodeFieldSpecificData
         // CField_MonsterCarnival::DecodeFieldSpecificData
         // CField_MonsterCarnivalRevive::DecodeFieldSpecificData
-        sp.Encode1(team);
         return sp.get();
     }
 

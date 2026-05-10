@@ -904,6 +904,17 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return false;
     }
 
+    // coconut
+    private int coconutteam = 0;
+
+    public int getCoconutTeam() {
+        return this.coconutteam;
+    }
+
+    public void setCoconutTeam(int coconutteam) {
+        this.coconutteam = coconutteam;
+    }
+
     // clone
     protected boolean clone = false;
     protected boolean cloning = false;

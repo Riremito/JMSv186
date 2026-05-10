@@ -153,7 +153,7 @@ public class MapleCharacter extends TacosCharacter {
     private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
     private int bookCover, dojo,
             fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
-            linkMid = 0, coconutteam = 0, followid = 0, battleshipHP = 0;
+            linkMid = 0, followid = 0, battleshipHP = 0;
     private Point old = new Point(0, 0);
     private boolean smega, hidden, hasSummon = false;
     private int[] wishlist, rocks, savedLocations, regrocks;
@@ -3929,14 +3929,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public byte getFairyExp() {
         return fairyExp;
-    }
-
-    public int getCoconutTeam() {
-        return coconutteam;
-    }
-
-    public void setCoconutTeam(int team) {
-        coconutteam = team;
     }
 
     public void spawnPet(short slot) {
