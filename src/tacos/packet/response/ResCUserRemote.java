@@ -273,7 +273,7 @@ public class ResCUserRemote {
     // CUserRemote::OnSetTemporaryStat
     // CUserRemote::OnResetTemporaryStat
     // CUserRemote::OnReceiveHP
-    public static MaplePacket updatePartyMemberHP(int cid, int curhp, int maxhp) {
+    public static MaplePacket UserHP(int cid, int curhp, int maxhp) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHP);
 
         sp.Encode4(cid);

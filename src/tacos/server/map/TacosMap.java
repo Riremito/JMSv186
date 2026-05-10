@@ -35,26 +35,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.PartyOperation;
 import tacos.odin.OdinEventManager;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
-import odin.server.MapleStatEffect;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.Spawns;
-import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleDynamicPortal;
@@ -67,11 +63,11 @@ import odin.server.maps.MapleMist;
 import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
-import odin.server.maps.SummonMovementType;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosDragon;
 import tacos.client.TacosSkillPet;
+import tacos.constants.TacosConstants;
 import tacos.odin.OdinPair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
@@ -88,7 +84,6 @@ import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCUser_Dragon;
-import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUser_SkillPet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
@@ -430,12 +425,104 @@ public class TacosMap extends TacosMapData {
         return state;
     }
 
+    public boolean sendInitialization(MapleCharacter chr) {
+        // user enter script.
+        if (!onFirstUserEnter.equals("")) {
+            if (getCharactersSize() == 1) {
+                MapScriptMethods.startScript_FirstUser(chr.getClient(), onFirstUserEnter);
+            }
+        }
+        if (!onUserEnter.equals("")) {
+            MapScriptMethods.startScript_User(chr.getClient(), onUserEnter);
+        }
+        // station clock.
+        if (hasClock()) {
+            Calendar cal = Calendar.getInstance();
+            chr.SendPacket((ResCField.Clock(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
+        }
+        if (TacosConstants.is_coconut(mapid)) {
+            chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
+            // CField_Coconut::DecodeFieldSpecificData
+            chr.SendPacket(ResCField.FieldSpecificData(chr.getCoconutTeam()));
+            return true;
+        }
+        if (TacosConstants.is_bath(mapid)) {
+            // CField_ShowaBath::DecodeFieldSpecificData
+            chr.SendPacket(ResCField.FieldSpecificData());
+            return true;
+        }
+        if (TacosConstants.is_aran_tutorial(mapid)) {
+            chr.setForcedStatAran();
+            chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
+            return true;
+        }
+        return false;
+    }
+
+    public boolean updateParty(MapleCharacter chr) {
+        if (chr.getParty() == null) {
+            return false;
+        }
+        chr.silentPartyUpdate();
+        chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
+        chr.updatePartyMemberHP();
+        chr.receivePartyMemberHP();
+        return true;
+    }
+
+    public boolean sendExpedition(MapleCharacter chr) {
+        MapleSquad squad_begin = getSquadBegin();
+        if (squad_begin != null) {
+            if (0 < squad_begin.getTimeLeft()) {
+                if (squad_begin.getStatus() == 1) {
+                    chr.SendPacket(ResCField.Clock((int) (squad_begin.getTimeLeft() / 1000)));
+                }
+            }
+        }
+        MapleSquad sqd = getSquadByMap();
+        if (sqd == null) {
+            return false;
+        }
+        if (TacosConstants.is_park_or_roppongi(mapid)) {
+            // no boss_balrog/2095/coreblaze/auf. but coreblaze/auf does AFTER
+            return false;
+        }
+        if (!squadTimer && chr.getName().equals(sqd.getLeaderName())) {
+            doShrine(false);
+            squadTimer = true;
+        }
+        return true;
+    }
+
+    public boolean sendMapEffect(MapleCharacter chr) {
+        if (mapEffect == null) {
+            return false;
+        }
+        mapEffect.sendStartData(chr);
+        return true;
+    }
+
     public void userEnterField(MapleCharacter chr) {
         this.characters.add(chr);
         this.mapobjects.get(MapleMapObjectType.PLAYER).put(chr.getObjectId(), chr); // object id.
 
         // no split.
         sendChangeBGM(chr);
+        if (!getPlatforms().isEmpty()) {
+            chr.SendPacket(ResCField.FootHoldInfo(this));
+        }
+        if (!environment.isEmpty()) {
+            chr.SendPacket(ResCField.FieldObstacleOnOffStatus(this));
+        }
+        sendInitialization(chr);
+        updateParty(chr);
+        sendMapEffect(chr);
+        if (0 < timeLimit) {
+            if (getForcedReturnMap() != null) {
+                chr.startMapTimeLimitTask(timeLimit, getForcedReturnMap());
+            }
+        }
+        sendExpedition(chr);
 
         // split.
         List<Integer> enter_state = getStateList();
@@ -619,6 +706,23 @@ public class TacosMap extends TacosMapData {
             int player_state = leave_state.get(player_number);
             if ((player_state & 4) != 0) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr.getId()));
+            }
+        }
+        // mob
+        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+            MapleMonster mob = (MapleMonster) mmo;
+            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
+            if (this.map_split.getSplit() < number) {
+                continue;
+            }
+            int state = leave_state.get(number);
+            if ((state & 4) != 0) {
+                if (mob.getController() == chr) {
+                    mob.setController(null);
+                    mob.setControllerHasAggro(false);
+                    mob.setControllerKnowsAboutAggro(false);
+                    updateMonsterController(mob);
+                }
             }
         }
     }
@@ -821,159 +925,6 @@ public class TacosMap extends TacosMapData {
             if ((state & 4) != 0) {
                 chr.SendPacket(ResCReactorPool.ReactorLeaveField(reactor));
             }
-        }
-    }
-
-    public final void addPlayer(final MapleCharacter chr) {
-        mutex.lock();
-        try {
-            characters.add(chr);
-            mapobjects.get(MapleMapObjectType.PLAYER).put(chr.getObjectId(), chr);
-        } finally {
-            mutex.unlock();
-        }
-        if (mapid == 109080000 || mapid == 109080001 || mapid == 109080002 || mapid == 109080003) {
-            chr.setCoconutTeam(getAndSwitchTeam() ? 0 : 1);
-        }
-        if (!chr.isHidden()) {
-            broadcastMessage(chr, ResCUserPool.UserEnterField(chr), false);
-        }
-        if (!chr.isClone()) {
-            if (!onFirstUserEnter.equals("")) {
-                if (getCharactersSize() == 1) {
-                    MapScriptMethods.startScript_FirstUser(chr.getClient(), onFirstUserEnter);
-                }
-            }
-
-            // 多分不要
-            // chr.getClient().getSession().write(UserPacket.spawnPlayerMapobject(chr));
-            if (!onUserEnter.equals("")) {
-                MapScriptMethods.startScript_User(chr.getClient(), onUserEnter);
-            }
-            switch (mapid) {
-                case 109080000: // coconut shit
-                case 109080001:
-                case 109080002:
-                case 109080003:
-                    chr.getClient().getSession().write(ResCField.showEquipEffect(chr.getCoconutTeam()));
-                    break;
-                case 809000101:
-                case 809000201:
-                    chr.getClient().getSession().write(ResCField.showEquipEffect());
-                    break;
-            }
-        }
-        for (final MaplePet pet : chr.getPets()) {
-            if (pet.getSummoned()) {
-                broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
-            }
-        }
-        if (chr.getParty() != null && !chr.isClone()) {
-            chr.silentPartyUpdate();
-            chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), chr.getParty(), PartyOperation.SILENT_UPDATE, null));
-            chr.updatePartyMemberHP();
-            chr.receivePartyMemberHP();
-        }
-        final MapleStatEffect stat = chr.getStatForBuff(MapleBuffStat.SUMMON);
-        if (stat != null && !chr.isClone()) {
-            final MapleSummon summon = chr.getSummons().get(stat.getSourceId());
-            summon.setPosition(chr.getPosition());
-            try {
-                summon.setFh(getFootholds().findBelow(chr.getPosition()).getId());
-            } catch (NullPointerException e) {
-                summon.setFh(0); //lol, it can be fixed by movement
-            }
-            chr.addVisibleMapObject(summon);
-            this.spawnSummon(summon);
-        }
-        if (mapEffect != null) {
-            mapEffect.sendStartData(chr.getClient());
-        }
-        if (timeLimit > 0 && getForcedReturnMap() != null && !chr.isClone()) {
-            chr.startMapTimeLimitTask(timeLimit, getForcedReturnMap());
-        }
-        if (chr.getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
-            if (FieldLimitType.Mount.check(fieldLimit)) {
-                chr.cancelBuffStats(MapleBuffStat.MONSTER_RIDING);
-            }
-        }
-        if (!chr.isClone()) {
-            if (hasClock()) {
-                final Calendar cal = Calendar.getInstance();
-                chr.getClient().getSession().write((ResCField.getClockTime(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
-            }
-            if (getSquadBegin() != null && getSquadBegin().getTimeLeft() > 0 && getSquadBegin().getStatus() == 1) {
-                chr.getClient().getSession().write(ResCField.getClock((int) (getSquadBegin().getTimeLeft() / 1000)));
-            }
-            if (mapid / 1000 != 105100 && mapid / 100 != 8020003 && mapid / 100 != 8020008) { //no boss_balrog/2095/coreblaze/auf. but coreblaze/auf does AFTER
-                final MapleSquad sqd = getSquadByMap(); //for all squads
-                if (!squadTimer && sqd != null && chr.getName().equals(sqd.getLeaderName()) && !chr.isClone()) {
-                    //leader? display
-                    doShrine(false);
-                    squadTimer = true;
-                }
-            }
-            if (mapid == 914000000) {
-                chr.setForcedStatAran();
-                chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
-            } else if (mapid == 105100300 && chr.getLevel() >= 91) {
-                chr.setForcedStatBalorg();
-                chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
-            } else if (mapid == 140090000 || mapid == 105100301 || mapid == 105100401 || mapid == 105100100) {
-                chr.getForcedStat().reset();
-                chr.SendPacket(ResCWvsContext.ForcedStatReset());
-            }
-        }
-        if (getPlatforms().size() > 0) {
-            chr.getClient().getSession().write(ResCField.getMovingPlatforms(this));
-        }
-        if (environment.size() > 0) {
-            chr.getClient().getSession().write(ResCField.getUpdateEnvironment(this));
-        }
-        if (isTown()) {
-            chr.cancelEffectFromBuffStat(MapleBuffStat.RAINING_MINES);
-        }
-    }
-
-    public final void removePlayer(final MapleCharacter chr) {
-        //log.warn("[dc] [level2] Player {} leaves map {}", new Object[] { chr.getName(), mapid });
-        if (everlast) {
-            returnEverLastItem(chr);
-        }
-        mutex.lock();
-        try {
-            characters.remove(chr);
-        } finally {
-            mutex.unlock();
-        }
-        removeMapObject(chr);
-        chr.checkFollow();
-        broadcastMessage(ResCUserPool.UserLeaveField(chr.getId()));
-        if (!chr.isClone()) {
-            for (final MapleMonster monster : chr.getControlledMonsters()) {
-                monster.setController(null);
-                monster.setControllerHasAggro(false);
-                monster.setControllerKnowsAboutAggro(false);
-                updateMonsterController(monster);
-            }
-            chr.leaveMap();
-            if (mapid == 109020001) {
-                chr.canTalk(true);
-            }
-        }
-        chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
-        chr.cancelEffectFromBuffStat(MapleBuffStat.REAPER);
-        boolean cancelSummons = false;
-        for (final MapleSummon summon : chr.getSummons().values()) {
-            if (summon.getMovementType() == SummonMovementType.STATIONARY || summon.getMovementType() == SummonMovementType.CIRCLE_STATIONARY || summon.getMovementType() == SummonMovementType.WALK_STATIONARY) {
-                cancelSummons = true;
-            } else {
-                summon.setChangedMap(true);
-                removeMapObject(summon);
-            }
-        }
-        if (cancelSummons) {
-            chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
         }
     }
 
@@ -1539,31 +1490,25 @@ public class TacosMap extends TacosMapData {
         final MapleSquad sqd = getSquadByMap();
         final OdinEventManager em = getEMByMap();
         if (sqd != null && em != null && getCharactersSize() > 0) {
-            final String leaderName = sqd.getLeaderName();
-            final Runnable run;
-            MapleMap returnMapa = getForcedReturnMap();
-            if (returnMapa == null || returnMapa.getId() == mapid) {
-                returnMapa = getReturnMap();
-            }
-            if (mode == 1) { //zakum
-                broadcastMessage(ResCField.showZakumShrine(spawned, 5));
-            } else if (mode == 2) { //chaoszakum
-                broadcastMessage(ResCField.showChaosZakumShrine(spawned, 5));
-            } else if (mode == 3) { //ht/chaosht
-                broadcastMessage(ResCField.showChaosHorntailShrine(spawned, 5));
-            } else {
-                broadcastMessage(ResCField.showHorntailShrine(spawned, 5));
+            switch (mode) {
+                case 1:
+                    //zakum
+                    broadcastMessage(ResCField.ZakumTimer(spawned, 5));
+                    break;
+                case 2:
+                    //chaoszakum
+                    broadcastMessage(ResCField.ChaosZakumTimer(spawned, 5));
+                    break;
+                case 3:
+                    //ht/chaosht
+                    broadcastMessage(ResCField.HontaleTimer(spawned, 5));
+                    break;
+                default:
+                    broadcastMessage(ResCField.HontailTimer(spawned, 5));
+                    break;
             }
             if (mode == 1 || spawned) { //both of these together dont go well
-                broadcastMessage(ResCField.getClock(300)); //5 min
-            }
-            final MapleMap returnMapz = returnMapa;
-            if (!spawned) { //no monsters yet; inforce timer to spawn it quickly
-                final List<MapleMonster> monsterz = getAllMonsters();
-                final List<Integer> monsteridz = new ArrayList<Integer>();
-                for (MapleMapObject m : monsterz) {
-                    monsteridz.add(m.getObjectId());
-                }
+                broadcastMessage(ResCField.Clock(300)); //5 min
             }
         }
     }

@@ -114,7 +114,7 @@ public class OdinWorld extends TacosWorld {
                     } else {
                         chr.setParty(party);
                     }
-                    chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                    chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), party, operation, target));
                 }
             }
             switch (operation) {
@@ -122,7 +122,7 @@ public class OdinWorld extends TacosWorld {
                 case EXPEL: {
                     MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target.getName(), false);
                     if (chr != null) {
-                        chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                        chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), party, operation, target));
                         chr.setParty(null);
                     }
                     break;

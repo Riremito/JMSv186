@@ -23,7 +23,6 @@ package odin.server.maps;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import odin.client.inventory.IItem;
@@ -33,10 +32,7 @@ import odin.client.MapleClient;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.wz.data.ReactorWz;
-import tacos.database.DatabaseConnection;
 import tacos.network.MaplePacket;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.EnterType;
@@ -55,7 +51,6 @@ import odin.server.life.SpawnPoint;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.MapleSquad;
-import odin.server.SpeedRunner;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
@@ -339,7 +334,7 @@ public final class MapleMap extends TacosMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(ResCField.stopClock());
+            broadcastMessage(ResCField.DestroyClock());
         }
     }
 
@@ -364,7 +359,7 @@ public final class MapleMap extends TacosMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(ResCField.stopClock());
+            broadcastMessage(ResCField.DestroyClock());
         }
     }
 
@@ -605,43 +600,6 @@ public final class MapleMap extends TacosMap {
             return "st01";
         } else {
             return "st00";
-        }
-    }
-
-    public void getRankAndAdd(String leader, String time, SpeedRunType type, long timz, Collection<String> squad) {
-        try {
-            //Pair<String, Map<Integer, String>>
-            StringBuilder rett = new StringBuilder();
-            if (squad != null) {
-                for (String chr : squad) {
-                    rett.append(chr);
-                    rett.append(",");
-                }
-            }
-            String z = rett.toString();
-            if (squad != null) {
-                z = z.substring(0, z.length() - 1);
-            }
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO speedruns(`type`, `leader`, `timestring`, `time`, `members`) VALUES (?,?,?,?,?)");
-            ps.setString(1, type.name());
-            ps.setString(2, leader);
-            ps.setString(3, time);
-            ps.setLong(4, timz);
-            ps.setString(5, z);
-            ps.executeUpdate();
-            ps.close();
-
-            if (SpeedRunner.getInstance().getSpeedRunData(type) == null) { //great, we just add it
-                SpeedRunner.getInstance().addSpeedRunData(type, SpeedRunner.getInstance().addSpeedRunData(new StringBuilder("#rThese are the speedrun times for " + type + ".#k\r\n\r\n"), new HashMap<Integer, String>(), z, leader, 1, time));
-            } else {
-                //i wish we had a way to get the rank
-                //TODO revamp
-                SpeedRunner.getInstance().removeSpeedRunData(type);
-                SpeedRunner.getInstance().loadSpeedRunData(type);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

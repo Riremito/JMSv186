@@ -1095,7 +1095,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void startMapTimeLimitTask(int time, final MapleMap to) {
-        client.getSession().write(ResCField.getClock(time));
+        client.getSession().write(ResCField.Clock(time));
 
         time *= 1000;
         mapTimeLimitTask = MapTimer.getInstance().register(new Runnable() {
@@ -2046,7 +2046,7 @@ public class MapleCharacter extends TacosCharacter {
                 if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
                     final MapleCharacter other = client.getChannelServer().getOnlinePlayers().findByName(partychar.getName());
                     if (other != null) {
-                        other.getClient().getSession().write(ResCUserRemote.updatePartyMemberHP(getId(), stats.getHp(), stats.getCurrentMaxHp()));
+                        other.SendPacket(ResCUserRemote.UserHP(getId(), stats.getHp(), stats.getCurrentMaxHp()));
                     }
                 }
             }
@@ -2062,7 +2062,7 @@ public class MapleCharacter extends TacosCharacter {
             if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
                 MapleCharacter other = client.getChannelServer().getOnlinePlayers().findByName(partychar.getName());
                 if (other != null) {
-                    client.getSession().write(ResCUserRemote.updatePartyMemberHP(other.getId(), other.getStat().getHp(), other.getStat().getCurrentMaxHp()));
+                    SendPacket(ResCUserRemote.UserHP(other.getId(), other.getStat().getHp(), other.getStat().getCurrentMaxHp()));
                 }
             }
         }

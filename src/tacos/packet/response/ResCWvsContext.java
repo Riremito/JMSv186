@@ -925,7 +925,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket updateParty(int forChannel, MapleParty party, PartyOperation op, MaplePartyCharacter target) {
+    public static MaplePacket PartyResult(int forChannel, MapleParty party, PartyOperation op, MaplePartyCharacter target) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         switch (op) {

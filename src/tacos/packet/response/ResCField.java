@@ -142,7 +142,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
+    public static MaplePacket Quiz(int questionSet, int questionId, boolean askQuestion) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
 
         sp.Encode1(askQuestion ? 1 : 0);
@@ -151,7 +151,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket showChaosHorntailShrine(boolean spawned, int time) {
+    public static MaplePacket HontaleTimer(boolean spawned, int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
 
         sp.Encode1(spawned ? 1 : 0);
@@ -159,7 +159,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket showChaosZakumShrine(boolean spawned, int time) {
+    public static MaplePacket ChaosZakumTimer(boolean spawned, int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
 
         sp.Encode1(spawned ? 1 : 0);
@@ -167,13 +167,13 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket stopClock() {
+    public static MaplePacket DestroyClock() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
 
         return sp.get();
     }
 
-    public static MaplePacket showHorntailShrine(boolean spawned, int time) {
+    public static MaplePacket HontailTimer(boolean spawned, int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
 
         sp.Encode1(spawned ? 1 : 0);
@@ -181,7 +181,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket showZakumShrine(boolean spawned, int time) {
+    public static MaplePacket ZakumTimer(boolean spawned, int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
 
         sp.Encode1(spawned ? 1 : 0);
@@ -189,20 +189,26 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket showEquipEffect() {
+    public static MaplePacket FieldSpecificData() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
 
+        // CField_ShowaBath::DecodeFieldSpecificData
+        // CField_Tutorial::DecodeFieldSpecificData
         return sp.get();
     }
 
-    public static MaplePacket showEquipEffect(int team) {
+    public static MaplePacket FieldSpecificData(int team) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
 
-        sp.Encode2(team);
+        // CField_Coconut::DecodeFieldSpecificData
+        // CField_Battlefield::DecodeFieldSpecificData
+        // CField_MonsterCarnival::DecodeFieldSpecificData
+        // CField_MonsterCarnivalRevive::DecodeFieldSpecificData
+        sp.Encode1(team);
         return sp.get();
     }
 
-    public static final MaplePacket getUpdateEnvironment(TacosMap map) {
+    public static final MaplePacket FieldObstacleOnOffStatus(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOffStatus);
 
         sp.Encode4(map.getEnvironment().size());
@@ -213,7 +219,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket environmentMove(String env, int mode) {
+    public static MaplePacket FieldObstacleOnOff(String env, int mode) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
 
         sp.EncodeStr(env);
@@ -221,7 +227,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket getClockTime(int hour, int min, int sec) {
+    public static MaplePacket Clock(int hour, int min, int sec) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(1); // station clock
@@ -231,7 +237,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket getClock(int time) {
+    public static MaplePacket Clock(int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(2); // timer
@@ -308,7 +314,7 @@ public class ResCField {
         return sp.get();
     }
 
-    public static final MaplePacket getMovingPlatforms(TacosMap map) {
+    public static final MaplePacket FootHoldInfo(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FootHoldInfo);
 
         sp.Encode4(map.getPlatforms().size());
@@ -331,14 +337,14 @@ public class ResCField {
         return sp.get();
     }
 
-    public static MaplePacket showEventInstructions() {
+    public static MaplePacket Desc() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
 
         sp.Encode1(0);
         return sp.get();
     }
 
-    public static MaplePacket GameMaster_Func(int value) {
+    public static MaplePacket AdminResult(int value) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
 
         sp.Encode1(value);

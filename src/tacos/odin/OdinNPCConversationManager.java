@@ -681,7 +681,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (ret) {
             final MapleMap map = client.getPlayer().getMap();
 
-            map.broadcastMessage(ResCField.getClock(minutes * 60));
+            map.broadcastMessage(ResCField.Clock(minutes * 60));
             map.broadcastMessage(ResWrapper.BroadCastMsgNotice(client.getPlayer().getName() + startText));
         } else {
             squad.clear();

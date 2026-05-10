@@ -90,4 +90,35 @@ public class TacosConstants {
 
         return false;
     }
+
+    public static boolean is_coconut(int map_id) {
+        // 109080000
+        if ((map_id / 10000) == 10908) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean is_bath(int map_id) {
+        // 809000101, 809000201
+        if ((map_id / 10000) == 80900) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean is_park_or_roppongi(int map_id) {
+        // 802000300, 802000800
+        if ((map_id / 100) == 8020003 || (map_id / 100) == 8020008) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean is_aran_tutorial(int map_id) {
+        if (map_id == 914000000) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -626,7 +626,7 @@ public class AdminCommand {
 
         @Override
         public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().getMap().broadcastMessage(ResCField.getClock(CommandProcessorUtil.getOptionalIntArg(splitted, 1, 60)));
+            c.getPlayer().getMap().broadcastMessage(ResCField.Clock(CommandProcessorUtil.getOptionalIntArg(splitted, 1, 60)));
             return 1;
         }
     }

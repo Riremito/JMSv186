@@ -48,7 +48,7 @@ public class MapleSquad {
 
     public void clear() {
         if (removal != null) {
-            getBeginMap().broadcastMessage(ResCField.stopClock());
+            getBeginMap().broadcastMessage(ResCField.DestroyClock());
             removal.cancel(false);
             removal = null;
         }
