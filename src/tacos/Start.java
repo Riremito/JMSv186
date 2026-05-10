@@ -34,7 +34,6 @@ import tacos.debug.DebugLogger;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.server.MTSStorage;
 import odin.server.RandomRewards;
-import odin.server.SpeedRunner;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
@@ -151,12 +150,6 @@ public class Start {
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
         MTSStorage.load();
-
-        try {
-            SpeedRunner.getInstance().loadSpeedRuns();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         DQ_Characters.updateRanking();
 

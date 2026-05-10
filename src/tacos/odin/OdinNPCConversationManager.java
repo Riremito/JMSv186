@@ -57,7 +57,6 @@ import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.MapleCarnivalChallenge;
-import java.util.HashMap;
 import odin.handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import tacos.packet.ops.OpsFieldEffect;
@@ -73,8 +72,6 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleShop;
 import odin.server.MapleShopItem;
 import odin.server.MapleStatEffect;
-import odin.server.SpeedRunner;
-import odin.server.maps.SpeedRunType;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
 import tacos.client.TacosStorage;
@@ -1034,19 +1031,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public OdinPair<String, Map<Integer, String>> getSpeedRun(String typ) {
-        final SpeedRunType type = SpeedRunType.valueOf(typ);
-        if (SpeedRunner.getInstance().getSpeedRunData(type) != null) {
-            return SpeedRunner.getInstance().getSpeedRunData(type);
-        }
-        return new OdinPair<String, Map<Integer, String>>("", new HashMap<Integer, String>());
+        return null;
     }
 
     public boolean getSR(OdinPair<String, Map<Integer, String>> ma, int sel) {
-        if (ma.getRight().get(sel) == null || ma.getRight().get(sel).length() <= 0) {
-            dispose();
-            return false;
-        }
-        sendOk(ma.getRight().get(sel));
+        sendOk("removed.");
         return true;
     }
 
