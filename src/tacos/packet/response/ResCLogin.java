@@ -456,7 +456,7 @@ public class ResCLogin {
                                 sp.Encode8(0); // m_dtChatUnblockDate
                                 sp.Encode8(0); // m_dtRegisterDate
                                 sp.Encode4(0);
-                                if (Version.GreaterOrEqual(Region.GMS, 83)) {
+                                if (Version.GreaterOrEqual(Region.GMS, 82)) {
                                     sp.Encode1(1);
                                     sp.Encode1(0);
                                 }
@@ -899,6 +899,8 @@ public class ResCLogin {
 
         if (Version.GreaterOrEqual(Region.GMS, 83)) {
             sp.Encode1(2); // m_bLoginOpt
+        }
+        if (Version.GreaterOrEqual(Region.GMS, 82)) {
             sp.Encode4(charslots); // m_nSlotCount
             return sp.get();
         }
