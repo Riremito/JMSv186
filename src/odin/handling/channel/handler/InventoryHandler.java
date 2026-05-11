@@ -685,12 +685,6 @@ public class InventoryHandler {
                 } //well i dont really care other than this o.o
                 int skill1 = cp.Decode4();
                 int skill2 = cp.Decode4();
-                for (int i : GameConstants.blockedSkills) {
-                    if (skill1 == i) {
-                        c.getPlayer().dropMessage(1, "You may not add this skill.");
-                        return;
-                    }
-                }
 
                 ISkill skillSPTo = SkillFactory.getSkill(skill1);
                 ISkill skillSPFrom = SkillFactory.getSkill(skill2);

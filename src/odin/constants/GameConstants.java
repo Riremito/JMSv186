@@ -23,40 +23,14 @@ package odin.constants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleWeaponType;
 import odin.client.status.MonsterStatus;
-import java.util.List;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import odin.server.Randomizer;
-import odin.server.maps.MapleMapObjectType;
 import tacos.config.Region;
 import tacos.config.Version;
 
 public class GameConstants {
 
-    public static final List<MapleMapObjectType> rangedMapobjectTypes = Collections.unmodifiableList(Arrays.asList(
-            MapleMapObjectType.ITEM,
-            MapleMapObjectType.MONSTER,
-            MapleMapObjectType.DOOR,
-            MapleMapObjectType.REACTOR,
-            MapleMapObjectType.DRAGON,
-            MapleMapObjectType.SUMMON,
-            MapleMapObjectType.NPC,
-            MapleMapObjectType.MIST));
     private static final int[] mountexp = {0, 6, 25, 50, 105, 134, 196, 254, 263, 315, 367, 430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247,
         2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550};
-    public static final int[] itemBlock = {2340000, 2049100, 4001129, 2040037, 2040006, 2040007, 2040303, 2040403, 2040506, 2040507, 2040603, 2040709, 2040710, 2040711, 2040806, 2040903, 2041024, 2041025, 2043003, 2043103, 2043203, 2043303, 2043703, 2043803, 2044003, 2044103, 2044203, 2044303, 2044403, 2044503, 2044603, 2044908, 2044815, 2044019, 2044703};
-    public static final int[] cashBlock = {5062000, 5650000, 5431000, 5431001, 5432000, 5450000, 5550000, 5550001, 5640000, 5530013, 5150039, 5150046, 5150054, 1812006, 5650000, 5222000, 5221001, 5220014, 5220015, 5420007, 5451000,
-        5210000, 5210001, 5210002, 5210003, 5210004, 5210005, 5210006, 5210007, 5210008, 5210009, 5210010, 5210011, 5211000, 5211001, 5211002, 5211003, 5211004, 5211005, 5211006, 5211007, 5211008, 5211009, 5211010, 5211011, 5211012, 5211013, 5211014, 5211015, 5211016, 5211017, 5211018,
-        5211019, 5211020, 5211021, 5211022, 5211023, 5211024, 5211025, 5211026, 5211027, 5211028, 5211029, 5211030, 5211031, 5211032, 5211033, 5211034, 5211035, 5211036, 5211037, 5211038, 5211039, 5211040, 5211041, 5211042, 5211043,
-        5211044, 5211045, 5211046, 5211047, 5211048, 5211049, 5211050, 5211051, 5211052, 5211053, 5211054, 5211055, 5211056, 5211057, 5211058, 5211059, 5211060, 5211061,//2x exp
-        5360000, 5360001, 5360002, 5360003, 5360004, 5360005, 5360006, 5360007, 5360008, 5360009, 5360010, 5360011, 5360012, 5360013, 5360014, 5360017, 5360050, 5211050, 5360042, 5360052, 5360053, 5360050, //2x drop
-        1112810, 1112811, 5530013, 4001431, 4001432, 4032605,
-        5270000, 5270001, 5270002, 5270003, 5270004, 5270005, 5270006, //2x meso
-        9102328, 9102329, 9102330, 9102331, 9102332, 9102333}; //miracle cube and stuff
-
-    public static final int[] blockedSkills = {4341003};
-    public static final String[] RESERVED = {"Rental"};
 
     public static int getMountExpNeededForLevel(final int level) {
         return mountexp[level - 1];
@@ -241,21 +215,6 @@ public class GameConstants {
         return 2100000; // Default, in case GM
     }
 
-    public static int getJobShortValue(int job) {
-        if (job >= 1000) {
-            job -= (job / 1000) * 1000;
-        }
-        job /= 100;
-        if (job == 4) { // For some reason dagger/ claw is 8.. IDK
-            job *= 2;
-        } else if (job == 3) {
-            job += 1;
-        } else if (job == 5) {
-            job += 11; // 16
-        }
-        return job;
-    }
-
     public static boolean isPyramidSkill(final int skill) {
         switch (skill) {
             case 1020:
@@ -308,14 +267,6 @@ public class GameConstants {
 
     public static boolean isPet(final int itemId) {
         return itemId / 10000 == 500;
-    }
-
-    public static boolean isArrowForCrossBow(final int itemId) {
-        return itemId >= 2061000 && itemId < 2062000;
-    }
-
-    public static boolean isArrowForBow(final int itemId) {
-        return itemId >= 2060000 && itemId < 2061000;
     }
 
     public static boolean isMagicWeapon(final int itemId) {
@@ -377,12 +328,6 @@ public class GameConstants {
         return MapleWeaponType.NOT_A_WEAPON;
     }
 
-    public static boolean isShield(final int itemId) {
-        int cat = itemId / 10000;
-        cat = cat % 100;
-        return cat == 9;
-    }
-
     public static boolean isEquip(final int itemId) {
         return itemId / 1000000 == 1;
     }
@@ -439,18 +384,6 @@ public class GameConstants {
             default:
                 return false;
         }
-    }
-
-    public static boolean isTownScroll(final int id) {
-        return id >= 2030000 && id < 2040000;
-    }
-
-    public static boolean isUpgradeScroll(final int id) {
-        return id >= 2040000 && id < 2050000;
-    }
-
-    public static boolean isGun(final int id) {
-        return id >= 1492000 && id < 1500000;
     }
 
     public static boolean isUse(final int id) {
@@ -541,192 +474,6 @@ public class GameConstants {
             return (int) Math.round(0.004 * meso);
         }
         return 0;
-    }
-
-    public static short getSummonAttackDelay(final int id) {
-        switch (id) {
-            case 15001004: // Lightning
-            case 14001005: // Darkness
-            case 13001004: // Storm
-            case 12001004: // Flame
-            case 11001004: // Soul
-            case 3221005: // Freezer
-            case 3211005: // Golden Eagle
-            case 3121006: // Phoenix
-            case 3111005: // Silver Hawk
-            case 2321003: // Bahamut
-            case 2311006: // Summon Dragon
-            case 2221005: // Infrit
-            case 2121005: // Elquines
-                return 3030;
-            case 5211001: // Octopus
-            case 5211002: // Gaviota
-            case 5220002: // Support Octopus
-                return 1530;
-            case 3211002: // Puppet
-            case 3111002: // Puppet
-            case 1321007: // Beholder
-            case 4341006:
-            case 35121009:
-            case 35121010:
-            case 35111011:
-            case 35111002:
-                return 0;
-        }
-        return 0;
-    }
-
-    public static short getAttackDelay(final int id) {
-        switch (id) { // Assume it's faster(2)
-            case 4321001: //tornado spin
-                return 40; //reason being you can spam with final assaulter
-            case 3121004: // Storm of Arrow
-            case 33121009:
-            case 13111002: // Storm of Arrow
-            case 5221004: // Rapidfire
-            case 4221001: //Assassinate?
-            case 5201006: // Recoil shot/ Back stab shot
-                return 120;
-            case 13101005: // Storm Break
-                return 360;
-            case 5001003: // Double Fire
-            case 2301002: // Heal
-                return 390;
-            case 5001001: // Straight/ Flash Fist
-            case 15001001: // Straight/ Flash Fist
-            case 1321003: // Rush
-            case 1221007: // Rush
-            case 1121006: // Rush
-                return 450;
-            case 5211004: // Flamethrower
-            case 5211005: // Ice Splitter
-            case 4201005: // Savage blow
-                return 480;
-            case 0: // Normal Attack, TODO delay for each weapon type
-            case 5111002: // Energy Blast
-            case 15101005: // Energy Blast
-            case 1001004: // Power Strike
-            case 11001002: // Power Strike
-            case 1001005: // Slash Blast
-            case 11001003: // Slash Blast
-            case 1311005: // Sacrifice
-                return 570;
-            case 2101004: // Fire Arrow
-            case 12101002: // Fire Arrow
-            case 2101005: // Poison Breath
-            case 2121003: // Fire Demon
-            case 2221003: // Ice Demon
-            case 2121006: // Paralyze
-            case 3111006: // Strafe
-            case 311004: // Arrow Rain
-            case 13111000: // Arrow Rain
-            case 3111003: // Inferno
-            case 3101005: // Arrow Bomb
-            case 4001344: // Lucky Seven
-            case 14001004: // Lucky seven
-            case 4121007: // Triple Throw
-            case 14111005: // Triple Throw
-            case 4111004: // Shadow Meso
-            case 4101005: // Drain
-            case 4211004: // Band of Thieves
-            case 4201004: // Steal
-            case 4001334: // Double Stab
-            case 5221007: // Battleship Cannon
-            case 1211002: // Charged blow
-            case 1311003: // Dragon Fury : Spear
-            case 1311004: // Dragon Fury : Pole Arm
-            case 3211006: // Strafe
-            case 3211004: // Arrow Eruption
-            case 3211003: // Blizzard Arrow
-            case 3201005: // Iron Arrow
-            case 3221001: // Piercing
-            case 4111005: // Avenger
-            case 14111002: // Avenger
-            case 5201001: // Invisible shot
-            case 5101004: // Corkscrew Blow
-            case 15101003: // Corkscrew Blow
-            case 1121008: // Brandish
-            case 11111004: // Brandish
-            case 1221009: // Blast
-                return 600;
-            case 5201004: // Blank Shot/ Fake shot
-            case 5211000: // Burst Fire/ Triple Fire
-            case 5001002: // Sommersault Kick
-            case 15001002: // Sommersault Kick
-            case 4221007: // Boomerang Stab
-            case 1311001: // Spear Crusher, 16~30 pts = 810
-            case 1311002: // PA Crusher, 16~30 pts = 810
-            case 2221006: // Chain Lightning
-                return 660;
-            case 4121008: // Ninja Storm
-            case 5211006: // Homing Beacon
-            case 5221008: // Battleship Torpedo
-            case 5101002: // Backspin Blow
-            case 2001005: // Magic Claw
-            case 12001003: // Magic Claw
-            case 2001004: // Energy Bolt
-            case 2301005: // Holy Arrow
-            case 2121001: // Big Bang
-            case 2221001: // Big Bang
-            case 2321001: // Big Bang
-            case 2321007: // Angel's Ray
-            case 2201005: // Thunderbolt
-            case 2201004: // Cold Beam
-            case 4211006: // Meso Explosion
-            case 5121005: // Snatch
-            case 12111006: // Fire Strike
-            case 11101004: // Soul Blade
-                return 750;
-            case 15111007: // Shark Wave
-            case 2111006: // Elemental Composition
-            case 2211006: // Elemental Composition
-                return 810;
-            case 13111006: // Wind Piercing
-            case 4211002: // Assaulter
-            case 5101003: // Double Uppercut
-            case 2111002: // Explosion
-                return 900;
-            case 5121003: // Energy Orb
-            case 2311004: // Shining Ray
-            case 2211002: // Ice Strike
-                return 930;
-            case 13111007: // Wind Shot
-                return 960;
-            case 14101006: // Vampire
-            case 4121003: // Showdown
-            case 4221003: // Showdown
-                return 1020;
-            case 12101006: // Fire Pillar
-                return 1050;
-            case 5121001: // Dragon Strike
-                return 1060;
-            case 2211003: // Thunder Spear
-            case 1311006: // Dragon Roar
-                return 1140;
-            case 11111006: // Soul Driver
-                return 1230;
-            case 12111005: // Flame Gear
-                return 1260;
-            case 2111003: // Poison Mist
-                return 1320;
-            case 5111006: // Shockwave
-            case 15111003: // Shockwave
-                return 1500;
-            case 5121007: // Barrage
-            case 15111004: // Barrage
-                return 1830;
-            case 5221003: // Ariel Strike
-            case 5121004: // Demolition
-                return 2160;
-            case 2321008: // Genesis
-                return 2700;
-            case 2121007: // Meteor Shower
-            case 10001011: // Meteo Shower
-            case 2221007: // Blizzard
-                return 3060;
-        }
-        // TODO delay for final attack, weapon type, swing,stab etc
-        return 330; // Default usually
     }
 
     public static byte gachaponRareItem(final int id) {
@@ -1023,31 +770,6 @@ public class GameConstants {
         4031629, 1 // Pot
     };
 
-    public static boolean isDragonItem(int itemId) {
-        switch (itemId) {
-            case 1372032:
-            case 1312031:
-            case 1412026:
-            case 1302059:
-            case 1442045:
-            case 1402036:
-            case 1432038:
-            case 1422028:
-            case 1472051:
-            case 1472052:
-            case 1332049:
-            case 1332050:
-            case 1322052:
-            case 1452044:
-            case 1462039:
-            case 1382036:
-            case 1342010:
-                return true;
-            default:
-                return false;
-        }
-    }
-
     public static boolean isReverseItem(int itemId) {
         switch (itemId) {
             case 1002790:
@@ -1151,10 +873,6 @@ public class GameConstants {
         }
     }
 
-    public static boolean isRing(int itemId) {
-        return itemId >= 1112000 && itemId < 1113000;
-    }// 112xxxx - pendants, 113xxxx - belts
-
     //if only there was a way to find in wz files -.-
     public static boolean isEffectRing(int itemid) {
         return isFriendshipRing(itemid) || isCrushRing(itemid);
@@ -1200,8 +918,6 @@ public class GameConstants {
         }
         return 0;
     }
-    public static int[] blockedMaps = {109050000, 280030000, 240060200, 280090000, 280030001, 240060201, 950101100, 950101010};
-    //If you can think of more maps that could be exploitable via npc,block nao pliz!
 
     public static int getExpForLevel(int i, int itemId) {
         if (isReverseItem(itemId)) {
@@ -1320,115 +1036,6 @@ public class GameConstants {
         }
         return 0;
     }
-    public final static int[] normalDrops = {
-        4001009, //real
-        4001010,
-        4001011,
-        4001012,
-        4001013,
-        4001014, //real
-        4001021,
-        4001038, //fake
-        4001039,
-        4001040,
-        4001041,
-        4001042,
-        4001043, //fake
-        4001038, //fake
-        4001039,
-        4001040,
-        4001041,
-        4001042,
-        4001043, //fake
-        4001038, //fake
-        4001039,
-        4001040,
-        4001041,
-        4001042,
-        4001043, //fake
-        4000164, //start
-        2000000,
-        2000003,
-        2000004,
-        2000005,
-        4000019,
-        4000000,
-        4000016,
-        4000006,
-        2100121,
-        4000029,
-        4000064,
-        5110000,
-        4000306,
-        4032181,
-        4006001,
-        4006000,
-        2050004,
-        3994102,
-        3994103,
-        3994104,
-        3994105,
-        2430007, //end
-        4000164, //start
-        2000000,
-        2000003,
-        2000004,
-        2000005,
-        4000019,
-        4000000,
-        4000016,
-        4000006,
-        2100121,
-        4000029,
-        4000064,
-        5110000,
-        4000306,
-        4032181,
-        4006001,
-        4006000,
-        2050004,
-        3994102,
-        3994103,
-        3994104,
-        3994105,
-        2430007, //end
-        4000164, //start
-        2000000,
-        2000003,
-        2000004,
-        2000005,
-        4000019,
-        4000000,
-        4000016,
-        4000006,
-        2100121,
-        4000029,
-        4000064,
-        5110000,
-        4000306,
-        4032181,
-        4006001,
-        4006000,
-        2050004,
-        3994102,
-        3994103,
-        3994104,
-        3994105,
-        2430007}; //end
-    public final static int[] rareDrops = {
-        2022179,
-        2049100,
-        2049301,
-        2049401,
-        2022326,
-        2022193,
-        2049000,
-        2049001,
-        2049002};
-    public final static int[] superDrops = {
-        2040804,
-        2049400,
-        2049100};
 
     public static int getSkillBook(final int job) {
         if (job >= 2210 && job <= 2218) {
@@ -1812,50 +1419,6 @@ public class GameConstants {
         return (itemId >= 1010000 && itemId < 1040000) || (itemId >= 1122000 && itemId < 1153000) || (itemId >= 1112000 && itemId < 1113000);
     }
 
-    public static boolean potentialIDFits(final int potentialID, final int newstate, final int i) {
-        //first line is always the best
-        //but, sometimes it is possible to get second/third line as well
-        //may seem like big chance, but it's not as it grabs random potential ID anyway
-        if (newstate == 7) {
-            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 30000 : potentialID >= 20000 && potentialID < 30000);
-        } else if (newstate == 6) {
-            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 20000 && potentialID < 30000 : potentialID >= 10000 && potentialID < 20000);
-        } else if (newstate == 5) {
-            return (i == 0 || Randomizer.nextInt(10) == 0 ? potentialID >= 10000 && potentialID < 20000 : potentialID < 10000);
-        } else {
-            return false;
-        }
-    }
-
-    public static boolean optionTypeFits(final int optionType, final int itemId) {
-        switch (optionType) {
-            case 10: //weapon
-                return isWeapon(itemId);
-            case 11: //any armor
-                return !isWeapon(itemId);
-            case 20: //shield??????????
-                return itemId / 10000 == 109; //just a gues
-            case 21: //pet equip?????????
-                return itemId / 10000 == 180; //???LOL
-            case 40: //face accessory
-                return isAccessory(itemId);
-            case 51: //hat
-                return itemId / 10000 == 100;
-            case 52: //cape
-                return itemId / 10000 == 110;
-            case 53: //top/bottom/overall
-                return itemId / 10000 == 104 || itemId / 10000 == 105 || itemId / 10000 == 106;
-            case 54: //glove
-                return itemId / 10000 == 108;
-            case 55: //shoe
-                return itemId / 10000 == 107;
-            case 90:
-                return false; //half this stuff doesnt even work
-            default:
-                return true;
-        }
-    }
-
     public static final boolean isMountItemAvailable(final int mountid, final int jobid) {
         if (jobid != 900 && mountid / 10000 == 190) {
             if (isKOC(jobid)) {
@@ -1910,26 +1473,8 @@ public class GameConstants {
         return 0;
     }
 
-    public static int getExpRate_Below10(final int job) {
-        if (GameConstants.isEvan(job)) {
-            return 1;
-        } else if (GameConstants.isAran(job) || GameConstants.isKOC(job)) {
-            return 5;
-        }
-        return 10;
-    }
-
     public static int getExpRate_Quest(final int level) {
         return (level >= 30 ? (level >= 70 ? (level >= 120 ? 4 : 3) : 2) : 1);
-    }
-
-    public static String getCashBlockedMsg(final int id) {
-        switch (id) {
-            case 5062000:
-                //cube
-                return "This item may only be purchased at the PlayerNPC in FM.";
-        }
-        return "This item is blocked from the Cash Shop.";
     }
 
     public static boolean isCustomReactItem(final int rid, final int iid, final int original) {

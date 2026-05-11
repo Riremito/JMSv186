@@ -144,14 +144,6 @@ public class AdminCommand {
             final int itemId = Integer.parseInt(splitted[1]);
             final short quantity = (short) CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1);
 
-            if (!c.getPlayer().isAdmin()) {
-                for (int i : GameConstants.itemBlock) {
-                    if (itemId == i) {
-                        c.getPlayer().dropMessage(5, "Sorry but this item is blocked for your GM level.");
-                        return 0;
-                    }
-                }
-            }
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             if (GameConstants.isPet(itemId)) {
                 c.getPlayer().dropMessage(5, "Please purchase a pet from the cash shop instead.");

@@ -44,7 +44,6 @@ import odin.client.MapleClient;
 import odin.client.SkillFactory;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
-import odin.constants.ServerConstants;
 import tacos.network.MaplePacket;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
@@ -370,7 +369,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 exp /= 2;
             }
             exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
-            exp = (int) Math.min(Integer.MAX_VALUE, exp * (attacker.getLevel() < 10 ? GameConstants.getExpRate_Below10(attacker.getJob()) : attacker.getChannelServer().getExpRate()));
+            exp *= attacker.getChannelServer().getExpRate();
             //do this last just incase someone has a 2x exp card and its set to max value
             int Class_Bonus_EXP = 0;
             if (Class_Bonus_EXP_PERCENT > 0) {
@@ -1240,7 +1239,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             MapleParty party;
             double averagePartyLevel, expWeight, levelMod, innerBaseExp, expFraction;
             List<MapleCharacter> expApplicable;
-            final Map<MapleCharacter, ExpMap> expMap = new HashMap<MapleCharacter, ExpMap>(6);
+            final Map<MapleCharacter, ExpMap> expMap = new HashMap<>(6);
             byte Class_Bonus_EXP;
             byte Premium_Bonus_EXP;
             byte added_partyinc = 0;
@@ -1251,7 +1250,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
                 Class_Bonus_EXP = 0;
                 Premium_Bonus_EXP = 0;
-                expApplicable = new ArrayList<MapleCharacter>();
+                expApplicable = new ArrayList<>();
                 for (final MaplePartyCharacter partychar : party.getMembers()) {
                     if (attacker.getKey().getLevel() - partychar.getLevel() <= 5 || stats.getLevel() - partychar.getLevel() <= 5) {
                         pchr = map.getCharacterById(partychar.getId());
@@ -1259,10 +1258,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                             if (pchr.isAlive() && pchr.getMap() == map) {
                                 expApplicable.add(pchr);
                                 averagePartyLevel += pchr.getLevel();
-
-                                if (Class_Bonus_EXP == 0) {
-                                    Class_Bonus_EXP = ServerConstants.Class_Bonus_EXP(pchr.getJob());
-                                }
                                 if (pchr.getStat().equippedWelcomeBackRing && Premium_Bonus_EXP == 0) {
                                     Premium_Bonus_EXP = 80;
                                 }

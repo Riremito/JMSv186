@@ -22,29 +22,6 @@ package odin.constants;
 
 public class ServerConstants {
 
-    /*
-     * Specifics which job gives an additional EXP to party
-     * returns the percentage of EXP to increase
-     */
-    public static final byte Class_Bonus_EXP(final int job) {
-        switch (job) {
-            case 3000: //whenever these arrive, they'll give bonus
-            case 3200:
-            case 3210:
-            case 3211:
-            case 3212:
-            case 3300:
-            case 3310:
-            case 3311:
-            case 3312:
-            case 3500:
-            case 3510:
-            case 3511:
-            case 3512:
-                return 10;
-        }
-        return 0;
-    }
     public static final int MIN_MTS = 110;
     public static final int MTS_BASE = 0; //+1000 to everything in MSEA but cash is costly here
     public static final int MTS_TAX = 10; //+% to everything

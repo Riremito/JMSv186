@@ -1975,13 +1975,7 @@ public class ReqCUser {
                 return false;
             }
         }
-        for (int i : GameConstants.blockedSkills) {
-            if (skill.getId() == i) {
-                chr.dropMessage(1, "You may not add this skill.");
-                DebugLogger.ErrorLog("Use SP 3 = " + skill_id);
-                return false;
-            }
-        }
+
         if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && skill.canBeLearnedBy(chr.getJob())) {
             if (!isBeginnerSkill) {
                 final int skillbook = GameConstants.getSkillBookForSkill(skill_id);
