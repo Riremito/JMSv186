@@ -203,7 +203,7 @@ public class PlayerHandler {
                     bouncedamage = Math.min(bouncedamage, attacker.getMobMaxHp() / 10);
                     attacker.damage(chr, bouncedamage, true);
                     damage -= bouncedamage;
-                    chr.getMap().broadcastMessageTo(chr, ResCMobPool.Damage(attacker, bouncedamage), chr.getPosition());
+                    chr.getMap().broadcastMessageTo(chr, ResCMobPool.MobDamaged(attacker, bouncedamage), chr.getPosition());
                     is_pg = true;
                 }
             }
@@ -456,7 +456,6 @@ public class PlayerHandler {
             DebugLogger.ErrorLog("closeRangeAttack : 2");
             return;
         }
-        attack = DamageParse.Modify_AttackCrit(attack, chr, 1);
         final boolean mirror = chr.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) != null;
         double maxdamage = chr.getStat().getCurrentMaxBaseDamage();
         int attackCount = (chr.getJob() >= 430 && chr.getJob() <= 434 ? 2 : 1), skillLevel = 0;
@@ -574,7 +573,6 @@ public class PlayerHandler {
 
     public static final void rangedAttack(MapleClient c, AttackInfo attack) {
         MapleCharacter chr = c.getPlayer();
-        attack = DamageParse.Modify_AttackCrit(attack, chr, 2);
 
         int bulletCount = 1, skillLevel = 0;
         MapleStatEffect effect = null;
@@ -704,8 +702,6 @@ public class PlayerHandler {
 
     public static final void MagicDamage(MapleClient c, AttackInfo attack) {
         MapleCharacter chr = c.getPlayer();
-
-        attack = DamageParse.Modify_AttackCrit(attack, chr, 3);
 
         final ISkill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
         final int skillLevel = chr.getSkillLevel(skill);

@@ -18,9 +18,7 @@
  */
 package tacos.packet.request;
 
-import tacos.packet.request.sub.ReqSub_FriendRequest;
 import odin.client.ISkill;
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.PlayerStats;
@@ -32,7 +30,6 @@ import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import odin.client.messages.CommandProcessor;
-import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
@@ -40,18 +37,10 @@ import odin.constants.GameConstants;
 import odin.constants.ServerConstants;
 import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
-import tacos.debug.DebugMan;
-import tacos.debug.DebugShop;
 import odin.handling.channel.handler.AttackInfo;
-import odin.handling.channel.handler.HiredMerchantHandler;
-import odin.handling.channel.handler.InventoryHandler;
-import odin.handling.channel.handler.ItemMakerHandler;
-import odin.handling.channel.handler.NPCHandler;
 import odin.handling.channel.handler.PlayerHandler;
-import odin.handling.channel.handler.PlayersHandler;
 import odin.handling.world.MapleParty;
 import odin.handling.world.OdinWorld;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -59,17 +48,19 @@ import odin.handling.channel.handler.AllianceHandler;
 import odin.handling.channel.handler.BBSHandler;
 import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
+import odin.handling.channel.handler.InventoryHandler;
+import odin.handling.channel.handler.ItemMakerHandler;
+import odin.handling.channel.handler.NPCHandler;
 import odin.handling.channel.handler.PartyHandler;
+import odin.handling.channel.handler.PlayersHandler;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.ops.OpsShopScanner;
-import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.request.sub.ReqSub_Admin;
 import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
@@ -79,9 +70,7 @@ import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -94,13 +83,20 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
-import odin.tools.AttackPair;
 import tacos.database.LazyDatabase;
+import tacos.debug.DebugMan;
+import tacos.debug.DebugShop;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsTransferChannel;
+import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.request.parse.ParseCUser_Attack;
+import tacos.packet.request.sub.ReqSub_Admin;
+import tacos.packet.request.sub.ReqSub_FriendRequest;
+import tacos.packet.response.Res_JMS_CInstancePortalPool;
+import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosWorld;
 
@@ -127,12 +123,10 @@ public class ReqCUser {
         if (chr == null) {
             return true;
         }
-
         MapleMap map = chr.getMap();
         if (map == null) {
             return true;
         }
-
         switch (header) {
             case CP_UserTransferFieldRequest: {
                 if (!OnUserTransferFieldRequest(cp, chr)) {
@@ -165,22 +159,22 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMeleeAttack: {
-                AttackInfo attack = OnAttack(cp, header, chr);
+                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
                 PlayerHandler.closeRangeAttack(c, attack, false);
                 return true;
             }
             case CP_UserShootAttack: {
-                AttackInfo attack = OnAttack(cp, header, chr);
+                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
                 PlayerHandler.rangedAttack(c, attack);
                 return true;
             }
             case CP_UserMagicAttack: {
-                AttackInfo attack = OnAttack(cp, header, chr);
+                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
                 PlayerHandler.MagicDamage(c, attack);
                 return true;
             }
             case CP_UserBodyAttack: {
-                AttackInfo attack = OnAttack(cp, header, chr);
+                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
                 PlayerHandler.closeRangeAttack(c, attack, true);
                 return true;
             }
@@ -246,16 +240,15 @@ public class ReqCUser {
             case CP_UserEntrustedShopRequest: {
                 byte es_req = cp.Decode1();
                 long cash_item_uid = cp.Decode8();
-
                 OnUserEntrustedShopRequest(map, chr, es_req, cash_item_uid);
                 return true;
             }
             case CP_UserStoreBankRequest: {
                 return true;
             }
-            case CP_UserEffectLocal: { // merchant?
+            case CP_UserEffectLocal: {
+                // merchant?
                 byte unk = cp.Decode1();
-                HiredMerchantHandler.MerchantItemStore(c, unk, null); // not tested
                 return true;
             }
             case CP_UserParcelRequest: {
@@ -277,14 +270,12 @@ public class ReqCUser {
             case CP_UserGatherItemRequest: {
                 int timestamp = cp.Decode4();
                 byte slot_type = cp.Decode1();
-
                 OnUserGatherItemRequest(chr, slot_type);
                 return true;
             }
             case CP_UserSortItemRequest: {
                 int timestamp = cp.Decode4();
                 byte slot_type = cp.Decode1();
-
                 OnUserSortItemRequest(chr, slot_type);
                 return true;
             }
@@ -294,7 +285,6 @@ public class ReqCUser {
                 short slot_from = cp.Decode2();
                 short slot_to = cp.Decode2();
                 short quantity = cp.Decode2();
-
                 OnUserChangeSlotPositionRequest(chr, slot_type, slot_from, slot_to, quantity);
                 return true;
             }
@@ -327,7 +317,6 @@ public class ReqCUser {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
-
                 OnUserTamingMobFoodItemUseRequest(map, chr, item_slot, item_id);
                 return true;
             }
@@ -351,7 +340,6 @@ public class ReqCUser {
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
                 int mob_oid = cp.Decode4();
-
                 OnUserBridleItemUseRequest(map, chr, item_slot, item_id, mob_oid);
                 return true;
             }
@@ -359,7 +347,6 @@ public class ReqCUser {
                 int time_stamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
-
                 OnUserSkillLearnItemUseRequest(map, chr, item_slot, item_id);
                 //chr.saveToDB(false, false);
                 return true;
@@ -368,7 +355,6 @@ public class ReqCUser {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4(); // 2500000
-
                 // not coded.
                 chr.sendStatChanged(true);
                 return true;
@@ -377,7 +363,6 @@ public class ReqCUser {
                 int timestamp = cp.Decode4(); // 2114843894
                 int item_slot = cp.Decode4();
                 int song_time = cp.Decode4(); // 2560000
-
                 // not coded.
                 chr.sendStatChanged(true);
                 return true;
@@ -394,7 +379,6 @@ public class ReqCUser {
                 int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
-
                 OnUserPortalScrollUseRequest(chr, item_slot, item_id);
                 return true;
             }
@@ -404,7 +388,6 @@ public class ReqCUser {
                 int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short item_slot = cp.Decode2();
                 short equip_slot = cp.Decode2();
-
                 OnUserUpgradeItemUseRequest(map, chr, item_slot, equip_slot, 0);
                 return true;
             }
@@ -519,7 +502,6 @@ public class ReqCUser {
                 NPCHandler.repair(cp, c);
                 return true;
             }
-
             case CP_UserFollowCharacterRequest: {
                 PlayersHandler.FollowRequest(cp, c);
                 return true;
@@ -590,7 +572,6 @@ public class ReqCUser {
                 PlayersHandler.RingAction(cp, c);
                 return true;
             }
-
             case CP_AllianceRequest: {
                 AllianceHandler.HandleAlliance(cp, c, false);
                 return true;
@@ -621,7 +602,6 @@ public class ReqCUser {
                 int item_id = cp.Decode4(); // 2420004
                 short x = cp.Decode2();
                 short y = cp.Decode2();
-
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
                 map.addMapObject(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
@@ -638,23 +618,19 @@ public class ReqCUser {
                 int timestamp = cp.Decode4();
                 short nPOS = cp.Decode2();
                 int nItemID = cp.Decode4();
-
                 OnUserExpUpItemUseRequest(chr, nPOS, nItemID);
                 return true;
             }
             case CP_UserTempExpUseRequest: {
                 int timestamp = cp.Decode4();
-
                 OnUserTempExpUseRequest(chr);
                 return true;
             }
-
             case CP_JMS_JUKEBOX: {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4(); // 2150001
                 int song_time = cp.Decode4(); // 113788
-
                 map.startJukebox(chr.getName(), item_id);
                 chr.sendStatChanged(true);
                 return true;
@@ -696,7 +672,6 @@ public class ReqCUser {
                 break;
             }
         }
-
         return false;
     }
 
@@ -888,262 +863,6 @@ public class ReqCUser {
         LazyDatabase.saveData(chr);
         chr.getMap().userLeaveField(chr);
         return true;
-    }
-
-    // BMS CUser::OnAttack
-    public static final AttackInfo OnAttack(ClientPacket cp, ClientPacketHeader header, MapleCharacter chr) {
-        final AttackInfo attack = new AttackInfo();
-
-        // attack type
-        attack.AttackHeader = header;
-        // attacker data
-        attack.CharacterId = chr.getId();
-        attack.m_nLevel = chr.getLevel();
-        attack.nSkillID = 0;
-        attack.SkillLevel = 0;
-        attack.nMastery = chr.getStat().passive_mastery();
-        attack.nBulletItemID = 0;
-        attack.X = chr.getPosition().x;
-        attack.Y = chr.getPosition().y;
-
-        attack.FieldKey = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
-
-        // DR_Check
-        if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
-            // ?
-        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
-            cp.Decode4(); // pDrInfo.dr0
-            cp.Decode4(); // pDrInfo.dr1
-        }
-
-        attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
-
-        // DR_Check
-        if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
-            // ?
-        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
-            cp.Decode4(); // pDrInfo.dr2
-            cp.Decode4(); // pDrInfo.dr3
-        }
-
-        attack.nSkillID = cp.Decode4();
-        attack.skill = attack.nSkillID; // old
-
-        if (0 < attack.nSkillID) {
-            // skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
-            attack.SkillLevel = chr.getSkillLevel(attack.nSkillID);
-        }
-
-        // v95 1 byte cd->nCombatOrders
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
-            cp.Decode1();
-        }
-        if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
-            // none
-        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
-            cp.Decode4(); // get_rand of DR_Check
-            cp.Decode4(); // Crc32 of DR_Check
-            // v95 4 bytes SKILLLEVELDATA::GetCrc
-            if (Version.GreaterOrEqual(Region.GMS, 95)) {
-                cp.Decode4();
-                cp.Decode4();
-                if (attack.AttackHeader == ClientPacketHeader.CP_UserMagicAttack) {
-                    cp.Decode4();
-                    cp.Decode4();
-                    cp.Decode4();
-                    cp.Decode4();
-                    cp.Decode4();
-                    cp.Decode4();
-                }
-            }
-        }
-
-        if (Version.PostBB() && !Version.GreaterOrEqual(Region.GMS, 95)) {
-            cp.Decode1();
-        }
-
-        if (Version.LessOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.GMS, 95)) {
-            // ?
-        } else if (ServerConfig.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
-            cp.Decode4(); // Crc
-        }
-
-        attack.tKeyDown = 0;
-        if (attack.is_keydown_skill()) {
-            attack.tKeyDown = cp.Decode4();
-        }
-
-        if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 95)) {
-            if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
-                cp.Decode1();
-            }
-        }
-
-        attack.BuffKey = cp.Decode1();
-
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 165) || Version.Equal(Region.BMS, 24)) {
-            attack.AttackActionKey = cp.Decode1();
-        } else {
-            attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
-        }
-
-        if (Version.PostBB()) {
-            if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.JMS, 187)) {
-                // none
-            } else {
-                cp.Decode4(); // JMS188
-            }
-        }
-
-        // v95 4 bytes crc
-        attack.nAttackActionType = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
-        attack.nAttackSpeed = cp.Decode1();
-        attack.tAttackTime = Version.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode4();
-
-        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
-            cp.Decode4(); // dwID
-        }
-
-        if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
-            attack.ProperBulletPosition = cp.Decode2();
-            attack.pnCashItemPos = cp.Decode2();
-            attack.nShootRange0a = cp.Decode1(); // nShootRange0a, GetShootRange0 func, is AOE or not, TT/ Avenger = 41, Showdown = 0
-
-            if (0 < attack.nShootRange0a && !attack.IsShadowMeso() && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null) {
-                IItem BulletItem;
-                if (0 < attack.pnCashItemPos) {
-                    BulletItem = chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos);
-                } else {
-                    BulletItem = chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition);
-                }
-                if (BulletItem != null) {
-                    attack.nBulletItemID = BulletItem.getItemId();
-                }
-            }
-        }
-
-        int damage;
-        List<OdinPair<Integer, Boolean>> allDamageNumbers = null;
-        attack.allDamage = new ArrayList<>();
-
-        if (attack.IsMesoExplosion()) { // Meso Explosion
-            return parseMesoExplosion(cp, attack);
-        }
-
-        for (int i = 0; i < attack.GetMobCount(); i++) {
-            int nTargetID = cp.Decode4();
-
-            // v131 to v186 OK
-            cp.Decode1(); // v366->nHitAction
-            cp.Decode1(); // v366->nForeAction & 0x7F | (v156 << 7)
-            cp.Decode1(); // v366->nFrameIdx
-            cp.Decode1(); // CalcDamageStatIndex & 0x7F | v158
-            cp.Decode2(); // Mob Something
-            cp.Decode2(); // Mob Something
-            cp.Decode2(); // Mob Something
-            cp.Decode2(); // Mob Something
-            cp.Decode2(); // v366->tDelay
-
-            allDamageNumbers = new ArrayList<>();
-
-            for (int j = 0; j < attack.GetDamagePerMob(); j++) {
-                damage = cp.Decode4(); // 366->aDamage[i]
-
-                allDamageNumbers.add(new OdinPair<>(Integer.valueOf(damage), false));
-            }
-
-            if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.THMS, 87)) {
-                // nothing
-            } else if (ServerConfig.JMS164orLater()) {
-                cp.Decode4(); // CMob::GetCrc(v366->pMob)
-            }
-
-            attack.allDamage.add(new AttackPair(Integer.valueOf(nTargetID), allDamageNumbers));
-        }
-
-        if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS180orLater()) {
-            if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
-                cp.Decode2();
-                cp.Decode2();
-            }
-        }
-        // is_wildhunter_job
-        // byte 2, m_ptBodyRelMove.y
-
-        attack.position = new Point();
-        attack.position.x = cp.Decode2();
-        attack.position.y = cp.Decode2();
-
-        if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-            if (allDamageNumbers != null) {
-                DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
-            }
-        }
-
-        return attack;
-    }
-
-    public static final AttackInfo parseMesoExplosion(ClientPacket cp, final AttackInfo ret) {
-        //System.out.println(lea.toString(true));
-        byte bullets;
-        int damage;
-        if (ret.GetDamagePerMob() == 0) {
-            cp.Decode4();
-            bullets = cp.Decode1();
-            for (int j = 0; j < bullets; j++) {
-                damage = cp.Decode4();
-
-                if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
-                }
-                ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
-                cp.Decode1();
-            }
-            cp.Decode2(); // 8F 02
-            return ret;
-        }
-
-        int oid;
-        List<OdinPair<Integer, Boolean>> allDamageNumbers;
-
-        for (int i = 0; i < ret.GetMobCount(); i++) {
-            oid = cp.Decode4();
-            // ?
-            cp.Decode4();
-            cp.Decode4();
-            cp.Decode4();
-            bullets = cp.Decode1();
-            allDamageNumbers = new ArrayList<OdinPair<Integer, Boolean>>();
-            for (int j = 0; j < bullets; j++) {
-                damage = cp.Decode4();
-
-                if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
-                }
-                allDamageNumbers.add(new OdinPair<Integer, Boolean>(Integer.valueOf(damage), false)); //m.e. never crits
-            }
-
-            if (ServerConfig.JMS186orLater()) {
-                cp.Decode4(); // CRC of monster [Wz Editing]
-            }
-
-            ret.allDamage.add(new AttackPair(Integer.valueOf(oid), allDamageNumbers));
-        }
-        cp.Decode4();
-        bullets = cp.Decode1();
-
-        for (int j = 0; j < bullets; j++) {
-            damage = cp.Decode4();
-
-            if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
-            }
-            ret.allDamage.add(new AttackPair(Integer.valueOf(damage), null));
-            cp.Decode2();
-        }
-
-        cp.Decode2(); // 8F 02/ 63 02
-        return ret;
     }
 
     public static boolean OnUserMove(ClientPacket cp, MapleMap map, MapleCharacter chr) {
@@ -2260,23 +1979,23 @@ public class ReqCUser {
             switch (item_id) {
                 case 2270004: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
                         map.killMonster(mob, chr, true, false, (byte) 0);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                         MapleInventoryManipulator.addById(chr.getClient(), 4001169, (short) 1);
                     } else {
-                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 0));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 0));
                         chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
                     }
                     break;
                 }
                 case 2270002: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
                         map.killMonster(mob, chr, true, false, (byte) 0);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
-                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 0));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 0));
                         chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
                     }
                     break;
@@ -2286,7 +2005,7 @@ public class ReqCUser {
                     if (mob.getId() != 9300101) {
                         break;
                     }
-                    map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                    map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
                     map.killMonster(mob, chr, true, false, (byte) 0);
                     MapleInventoryManipulator.addById(chr.getClient(), 1902000, (short) 1, null);
                     MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
@@ -2298,11 +2017,11 @@ public class ReqCUser {
                         break;
                     }
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 1));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
                         map.killMonster(mob, chr, true, false, (byte) 0);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
-                        map.broadcastMessage(ResCMobPool.catchMonster(mob.getId(), item_id, (byte) 0));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 0));
                         chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
                     }
                     break;
@@ -2555,5 +2274,4 @@ public class ReqCUser {
 
         return false;
     }
-
 }

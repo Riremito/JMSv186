@@ -392,8 +392,8 @@ public final class MapleMap extends TacosMap {
         if (itemId > 0) {
             startMapEffect(msg, itemId, false);
         }
-        broadcastMessage(ResCMobPool.talkMonster(objectid, itemId, msg)); //5120035
-        broadcastMessage(ResCMobPool.removeTalkMonster(objectid));
+        broadcastMessage(ResCMobPool.MobEscortStopSay(objectid, itemId, msg)); //5120035
+        broadcastMessage(ResCMobPool.MobEscortReturnBefore(objectid));
     }
 
     public final void startMapEffect(final String msg, final int itemId) {

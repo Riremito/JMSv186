@@ -39,6 +39,7 @@ import tacos.packet.request.ReqCUser_FoxMan;
 import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.request.ReqCUser_SkillPet;
 import tacos.packet.request.Req_MapleTV;
+import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.server.TacosServer;
 
 /**

@@ -264,7 +264,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                         for (final AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
                             if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
                                 if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
-                                    cattacker.getAttacker().getClient().SendPacket(ResCMobPool.ShowHP(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
+                                    cattacker.getAttacker().getClient().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                                 }
                             }
                         }
@@ -295,10 +295,10 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                             map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, this)), this.getPosition());
                             break;
                         case 1:
-                            map.broadcastMessage(from, ResCMobPool.damageFriendlyMob(this, damage, true), false);
+                            map.broadcastMessage(from, ResCMobPool.MobDamaged(this, damage, true), false);
                             break;
                         case 2:
-                            map.broadcastMessage(ResCMobPool.ShowHP(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
+                            map.broadcastMessage(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                             from.mulung_EnergyModify(true);
                             break;
                         case 3:
@@ -306,7 +306,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                                 for (final AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
                                     if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
                                         if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
-                                            cattacker.getAttacker().getClient().SendPacket(ResCMobPool.ShowHP(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
+                                            cattacker.getAttacker().getClient().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                                         }
                                     }
                                 }
@@ -342,7 +342,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             setMp(TotalMP);
         }
         if (broadcast) {
-            map.broadcastMessage(ResCMobPool.Heal(this, hp));
+            map.broadcastMessage(ResCMobPool.MobDamaged(this, hp));
         } else if (sponge.get() != null) { // else if, since only sponge doesn't broadcast
             sponge.get().hp += hp;
         }
@@ -406,7 +406,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
         final MapleCharacter controll = controller.get();
         if (controll != null) { // this can/should only happen when a hidden gm attacks the monster
-            controll.getClient().SendPacket(ResCMobPool.StopControl(this));
+            controll.getClient().SendPacket(ResCMobPool.MobChangeController(this));
             controll.stopControllingMonster(this);
         }
 
@@ -572,7 +572,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return;
         } else if (controllers != null) {
             controllers.stopControllingMonster(this);
-            controllers.getClient().SendPacket(ResCMobPool.StopControl(this));
+            controllers.getClient().SendPacket(ResCMobPool.MobChangeController(this));
         }
         newController.controlMonster(this, immediateAggro);
         setController(newController);
@@ -628,7 +628,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             client.getSession().write(reflectpack);
         }
         if (lastNode >= 0) {
-            client.getSession().write(ResCMobPool.getNodeProperties(this, map));
+            client.getSession().write(ResCMobPool.MobRequestResultEscortInfo(this, map));
             if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
                 if (lastNodeController != -1) { //new controller, please re update. sendSpawn only comes when you get too far then come back anyway
                     resetShammos(client);
@@ -856,9 +856,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
 
         stati.put(stat, status);
-        map.broadcastMessage(ResCMobPool.applyMonsterStatus(getObjectId(), status), getPosition());
+        map.broadcastMessage(ResCMobPool.MobStatSet(getObjectId(), status), getPosition());
         if (getController() != null && !getController().isMapObjectVisible(this)) {
-            getController().getClient().getSession().write(ResCMobPool.applyMonsterStatus(getObjectId(), status));
+            getController().getClient().getSession().write(ResCMobPool.MobStatSet(getObjectId(), status));
         }
         int aniTime = 0;
         if (skilz != null) {
@@ -901,16 +901,16 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             stati.put(z.getKey(), effectz);
         }
         if (reflection.size() > 0) {
-            this.reflectpack = ResCMobPool.applyMonsterStatus(getObjectId(), effect, reflection, skill);
+            this.reflectpack = ResCMobPool.MobStatSet(getObjectId(), effect, reflection, skill);
             map.broadcastMessage(reflectpack, getPosition());
             if (getController() != null && !getController().isMapObjectVisible(this)) {
                 getController().getClient().getSession().write(this.reflectpack);
             }
         } else {
             for (Entry<MonsterStatus, Integer> z : effect.entrySet()) {
-                map.broadcastMessage(ResCMobPool.applyMonsterStatus(getObjectId(), z.getKey(), z.getValue(), skill), getPosition());
+                map.broadcastMessage(ResCMobPool.MobStatSet(getObjectId(), z.getKey(), z.getValue(), skill), getPosition());
                 if (getController() != null && !getController().isMapObjectVisible(this)) {
-                    getController().getClient().getSession().write(ResCMobPool.applyMonsterStatus(getObjectId(), z.getKey(), z.getValue(), skill));
+                    getController().getClient().getSession().write(ResCMobPool.MobStatSet(getObjectId(), z.getKey(), z.getValue(), skill));
                 }
             }
         }
@@ -1021,7 +1021,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (hp > 1 && damage > 0) {
                 damage(chr, damage, false);
                 if (shadowWeb) {
-                    map.broadcastMessage(ResCMobPool.Damage(getObjectId(), damage), getPosition());
+                    map.broadcastMessage(ResCMobPool.MobDamaged(getObjectId(), damage), getPosition());
                 }
             }
         }
@@ -1399,9 +1399,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             return;
         }
         mse.cancelPoisonSchedule();
-        map.broadcastMessage(ResCMobPool.cancelMonsterStatus(getObjectId(), stat), getPosition());
+        map.broadcastMessage(ResCMobPool.MobStatReset(getObjectId(), stat), getPosition());
         if (getController() != null && !getController().isMapObjectVisible(MapleMonster.this)) {
-            getController().getClient().SendPacket(ResCMobPool.cancelMonsterStatus(getObjectId(), stat));
+            getController().getClient().SendPacket(ResCMobPool.MobStatReset(getObjectId(), stat));
         }
         stati.remove(stat);
         setVenomMulti((byte) 0);

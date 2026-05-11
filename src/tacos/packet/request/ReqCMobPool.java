@@ -196,7 +196,7 @@ public class ReqCMobPool {
             }
         }
 
-        chr.getClient().SendPacket(ResCMobPool.moveMonsterResponse(monster, moveid, realskill, level));
+        chr.getClient().SendPacket(ResCMobPool.MobCtrlAck(monster, moveid, realskill, level));
     }
 
 }

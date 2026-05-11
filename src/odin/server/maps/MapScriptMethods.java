@@ -393,7 +393,7 @@ public class MapScriptMethods {
                     final MapleMonster shammos = MapleLifeFactory.getMonster(9300275);
                     c.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(c.getPlayer().getMap().getPortal(0).getPosition()), 12);
                     shammos.switchController(c.getPlayer(), false);
-                    c.getSession().write(ResCMobPool.getNodeProperties(shammos, c.getPlayer().getMap()));
+                    c.getSession().write(ResCMobPool.MobRequestResultEscortInfo(shammos, c.getPlayer().getMap()));
 
                 }
                 break;

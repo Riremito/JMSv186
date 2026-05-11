@@ -21,9 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-
 import odin.client.ISkill;
 import odin.constants.GameConstants;
 import odin.client.inventory.IItem;
@@ -56,9 +53,6 @@ public class DamageParse {
     private final static int[] charges = {1211005, 1211006};
 
     public static void applyAttack(final AttackInfo attack, final ISkill theSkill, final MapleCharacter player, int attackCount, final double maxDamagePerMonster, final MapleStatEffect effect, final AttackType attack_type) {
-        if (!player.isAlive()) {
-            return;
-        }
         if (attack.skill != 0) {
             if (effect == null) {
                 player.updateStat();
@@ -163,7 +157,7 @@ public class DamageParse {
         }
 
         byte overallAttackCount; // Tracking of Shadow Partner additional damage.
-        double maxDamagePerHit = 0;
+        double maxDamagePerHit = 999999;
         MapleMonster monster;
         MapleMonsterStats monsterstats;
         boolean Tempest;
@@ -177,14 +171,6 @@ public class DamageParse {
                 monsterstats = monster.getStats();
                 fixeddmg = monsterstats.getFixedDamage();
                 Tempest = monster.getStatusSourceID(MonsterStatus.FREEZE) == 21120006;
-
-                if (!Tempest && !player.isGM()) {
-                    if (!monster.isBuffed(MonsterStatus.DAMAGE_IMMUNITY) && !monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY) && !monster.isBuffed(MonsterStatus.WEAPON_DAMAGE_REFLECT)) {
-                        maxDamagePerHit = CalculateMaxWeaponDamagePerHit(player, monster, attack, theSkill, effect, maxDamagePerMonster, CriticalDamage);
-                    } else {
-                        maxDamagePerHit = 1;
-                    }
-                }
                 overallAttackCount = 0; // Tracking of Shadow Partner additional damage.
                 Integer eachd;
                 for (OdinPair<Integer, Boolean> eachde : oned.attack) {
@@ -434,7 +420,7 @@ public class DamageParse {
                             }
                         }
                     }
-                    if (effect != null && effect.getMonsterStati().size() > 0) {
+                    if (effect != null && !effect.getMonsterStati().isEmpty()) {
                         if (effect.makeChanceResult()) {
                             for (Map.Entry<MonsterStatus, Integer> z : effect.getMonsterStati().entrySet()) {
                                 monster.applyStatus(player, new MonsterStatusEffect(z.getKey(), z.getValue(), theSkill.getId(), null, false), effect.isPoison(), effect.getDuration(), false);
@@ -454,33 +440,6 @@ public class DamageParse {
     }
 
     public static final void applyAttackMagic(final AttackInfo attack, final ISkill theSkill, final MapleCharacter player, final MapleStatEffect effect) {
-
-        if (attack.GetDamagePerMob() > 0 && attack.GetMobCount() > 0) {
-            if (!player.getStat().checkEquipDurabilitys(player, -1)) { //i guess this is how it works ?
-                player.dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
-                DebugLogger.ErrorLog("applyAttackMagic : 1");
-                return;
-            } //lol
-        }
-        if (GameConstants.isMulungSkill(attack.skill)) {
-            if (player.getMapId() / 10000 != 92502) {
-                DebugLogger.ErrorLog("applyAttackMagic : 2");
-                return;
-            } else {
-                player.mulung_EnergyModify(false);
-            }
-        }
-        if (GameConstants.isPyramidSkill(attack.skill)) {
-            if (player.getMapId() / 1000000 != 926) {
-                DebugLogger.ErrorLog("applyAttackMagic : 3");
-                return;
-            } else {
-                if (player.getPyramidSubway() == null || !player.getPyramidSubway().onSkillUse(player)) {
-                    DebugLogger.ErrorLog("applyAttackMagic : 4");
-                    return;
-                }
-            }
-        }
         final PlayerStats stats = player.getStat();
 //	double minDamagePerHit;
         double maxDamagePerHit;
@@ -499,7 +458,7 @@ public class DamageParse {
 
         final Element element = player.getBuffedValue(MapleBuffStat.ELEMENT_RESET) != null ? Element.NEUTRAL : theSkill.getElement();
 
-        double MaxDamagePerHit = 0;
+        double MaxDamagePerHit = 999999;
         int totDamageToOneMonster, totDamage = 0, fixeddmg;
         byte overallAttackCount;
         boolean Tempest;
@@ -518,13 +477,6 @@ public class DamageParse {
                 totDamageToOneMonster = 0;
                 monsterstats = monster.getStats();
                 fixeddmg = monsterstats.getFixedDamage();
-                if (!Tempest && !player.isGM()) {
-                    if (!monster.isBuffed(MonsterStatus.DAMAGE_IMMUNITY) && !monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY) && !monster.isBuffed(MonsterStatus.MAGIC_DAMAGE_REFLECT)) {
-                        MaxDamagePerHit = CalculateMaxMagicDamagePerHit(player, theSkill, monster, monsterstats, stats, element, CriticalDamage, maxDamagePerHit);
-                    } else {
-                        MaxDamagePerHit = 1;
-                    }
-                }
                 overallAttackCount = 0;
                 Integer eachd;
                 for (OdinPair<Integer, Boolean> eachde : oned.attack) {
@@ -600,87 +552,8 @@ public class DamageParse {
 
     }
 
-    private static final double CalculateMaxMagicDamagePerHit(final MapleCharacter chr, final ISkill skill, final MapleMonster monster, final MapleMonsterStats mobstats, final PlayerStats stats, final Element elem, final Integer sharpEye, final double maxDamagePerMonster) {
-        final int dLevel = Math.max(mobstats.getLevel() - chr.getLevel(), 0);
-        final int Accuracy = (int) (Math.floor((stats.getTotalInt() / 10.0)) + Math.floor((stats.getTotalLuk() / 10.0)));
-        final int MinAccuracy = mobstats.getEva() * (dLevel * 2 + 51) / 120;
-        // FullAccuracy = Avoid * (dLevel * 2 + 51) / 50
-
-        if (MinAccuracy > Accuracy && skill.getId() != 1000 && skill.getId() != 10001000 && skill.getId() != 20001000 && skill.getId() != 20011000 && skill.getId() != 30001000 && !GameConstants.isPyramidSkill(skill.getId())) { // miss :P or HACK :O
-            return 0;
-        }
-        double elemMaxDamagePerMob;
-
-        switch (monster.getEffectiveness(elem)) {
-            case IMMUNE:
-                elemMaxDamagePerMob = 1;
-                break;
-            case NORMAL:
-                elemMaxDamagePerMob = ElementalStaffAttackBonus(elem, maxDamagePerMonster, stats);
-                break;
-            case WEAK:
-                elemMaxDamagePerMob = ElementalStaffAttackBonus(elem, maxDamagePerMonster * 1.5, stats);
-                break;
-            case STRONG:
-                elemMaxDamagePerMob = ElementalStaffAttackBonus(elem, maxDamagePerMonster * 0.5, stats);
-                break;
-            default:
-                throw new RuntimeException("Unknown enum constant");
-        }
-        // Calculate monster magic def
-        // Min damage = (MIN before defense) - MDEF*.6
-        // Max damage = (MAX before defense) - MDEF*.5
-        elemMaxDamagePerMob -= mobstats.getMagicDefense() * 0.5;
-        // Calculate Sharp eye bonus
-        elemMaxDamagePerMob += ((double) elemMaxDamagePerMob / 100) * sharpEye;
-//	if (skill.isChargeSkill()) {
-//	    elemMaxDamagePerMob = (float) ((90 * ((System.currentTimeMillis() - chr.getKeyDownSkill_Time()) / 1000) + 10) * elemMaxDamagePerMob * 0.01);
-//	}
-//      if (skill.isChargeSkill() && chr.getKeyDownSkill_Time() == 0) {
-//          return 1;
-//      }
-        elemMaxDamagePerMob += (elemMaxDamagePerMob * (mobstats.isBoss() ? stats.bossdam_r : stats.dam_r)) / 100;
-        switch (skill.getId()) {
-            case 1000:
-            case 10001000:
-            case 20001000:
-            case 20011000:
-            case 30001000:
-                elemMaxDamagePerMob = 40;
-                break;
-            case 1020:
-            case 10001020:
-            case 20001020:
-            case 20011020:
-            case 30001020:
-                elemMaxDamagePerMob = 1;
-                break;
-        }
-        if (elemMaxDamagePerMob > 199999) {
-            elemMaxDamagePerMob = 199999;
-        } else if (elemMaxDamagePerMob < 0) {
-            elemMaxDamagePerMob = 1;
-        }
-        return elemMaxDamagePerMob;
-    }
-
-    private static final double ElementalStaffAttackBonus(final Element elem, double elemMaxDamagePerMob, final PlayerStats stats) {
-        switch (elem) {
-            case FIRE:
-                return (elemMaxDamagePerMob / 100) * stats.element_fire;
-            case ICE:
-                return (elemMaxDamagePerMob / 100) * stats.element_ice;
-            case LIGHTING:
-                return (elemMaxDamagePerMob / 100) * stats.element_light;
-            case POISON:
-                return (elemMaxDamagePerMob / 100) * stats.element_psn;
-            default:
-                return (elemMaxDamagePerMob / 100) * stats.def;
-        }
-    }
-
     private static void handlePickPocket(final MapleCharacter player, final MapleMonster mob, AttackPair oned) {
-        final int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET).intValue();
+        final int maxmeso = player.getBuffedValue(MapleBuffStat.PICKPOCKET);
         final ISkill skill = SkillFactory.getSkill(4211003);
         final MapleStatEffect s = skill.getEffect(player.getSkillLevel(skill));
 
@@ -698,207 +571,4 @@ public class DamageParse {
             }
         }
     }
-
-    private static double CalculateMaxWeaponDamagePerHit(final MapleCharacter player, final MapleMonster monster, final AttackInfo attack, final ISkill theSkill, final MapleStatEffect attackEffect, double maximumDamageToMonster, final Integer CriticalDamagePercent) {
-        if (player.getMapId() / 1000000 == 914) { //aran
-            return 199999;
-        }
-        List<Element> elements = new ArrayList<Element>();
-        boolean defined = false;
-        if (theSkill != null) {
-            elements.add(theSkill.getElement());
-
-            switch (theSkill.getId()) {
-                case 3001004:
-                case 33101001:
-                    defined = true; //can go past 199999
-                    break;
-                case 1000:
-                case 10001000:
-                case 20001000:
-                case 20011000:
-                case 30001000:
-                    maximumDamageToMonster = 40;
-                    defined = true;
-                    break;
-                case 1020:
-                case 10001020:
-                case 20001020:
-                case 20011020:
-                case 30001020:
-                    maximumDamageToMonster = 1;
-                    defined = true;
-                    break;
-                case 4331003: //Owl Spirit
-                    maximumDamageToMonster = (monster.getStats().isBoss() ? 199999 : monster.getHp());
-                    defined = true;
-                    break;
-                case 3221007: // Sniping
-                    maximumDamageToMonster = (monster.getStats().isBoss() ? 199999 : monster.getMobMaxHp());
-                    defined = true;
-                    break;
-                case 1221011://Heavens Hammer
-                    maximumDamageToMonster = (monster.getStats().isBoss() ? 199999 : monster.getHp() - 1);
-                    defined = true;
-                    break;
-                case 4211006: // Meso Explosion
-                    maximumDamageToMonster = 750000;
-                    defined = true;
-                    break;
-                case 1009: // Bamboo Trust
-                case 10001009:
-                case 20001009:
-                case 20011009:
-                case 30001009:
-                    defined = true;
-                    maximumDamageToMonster = (monster.getStats().isBoss() ? monster.getMobMaxHp() / 30 * 100 : monster.getMobMaxHp());
-                    break;
-                case 3211006: //Sniper Strafe
-                    if (monster.getStatusSourceID(MonsterStatus.FREEZE) == 3211003) { //blizzard in effect
-                        defined = true;
-                        maximumDamageToMonster = monster.getHp();
-                    }
-                    break;
-            }
-        }
-        if (player.getBuffedValue(MapleBuffStat.WK_CHARGE) != null) {
-            int chargeSkillId = player.getBuffSource(MapleBuffStat.WK_CHARGE);
-
-            switch (chargeSkillId) {
-                case 1211003:
-                case 1211004:
-                    elements.add(Element.FIRE);
-                    break;
-                case 1211005:
-                case 1211006:
-                case 21111005:
-                    elements.add(Element.ICE);
-                    break;
-                case 1211007:
-                case 1211008:
-                case 15101006:
-                    elements.add(Element.LIGHTING);
-                    break;
-                case 1221003:
-                case 1221004:
-                case 11111007:
-                    elements.add(Element.HOLY);
-                    break;
-                case 12101005:
-                    elements.clear(); //neutral
-                    break;
-            }
-        }
-        if (player.getBuffedValue(MapleBuffStat.LIGHTNING_CHARGE) != null) {
-            elements.add(Element.LIGHTING);
-        }
-        double elementalMaxDamagePerMonster = maximumDamageToMonster;
-        if (elements.size() > 0) {
-            double elementalEffect;
-
-            switch (attack.skill) {
-                case 3211003:
-                case 3111003: // inferno and blizzard
-                    elementalEffect = attackEffect.getX() / 200.0;
-                    break;
-                default:
-                    elementalEffect = 0.5;
-                    break;
-            }
-            for (Element element : elements) {
-                switch (monster.getEffectiveness(element)) {
-                    case IMMUNE:
-                        elementalMaxDamagePerMonster = 1;
-                        break;
-                    case WEAK:
-                        elementalMaxDamagePerMonster *= (1.0 + elementalEffect);
-                        break;
-                    case STRONG:
-                        elementalMaxDamagePerMonster *= (1.0 - elementalEffect);
-                        break;
-                    default:
-                        break; //normal nothing
-                }
-            }
-        }
-        // Calculate mob def
-        final short moblevel = monster.getStats().getLevel();
-        final short d = moblevel > player.getLevel() ? (short) (moblevel - player.getLevel()) : 0;
-        elementalMaxDamagePerMonster = elementalMaxDamagePerMonster * (1 - 0.01 * d) - monster.getStats().getPhysicalDefense() * 0.5;
-
-        // Calculate passive bonuses + Sharp Eye
-        elementalMaxDamagePerMonster += ((double) elementalMaxDamagePerMonster / 100.0) * CriticalDamagePercent;
-
-//	if (theSkill.isChargeSkill()) {
-//	    elementalMaxDamagePerMonster = (double) (90 * (System.currentTimeMillis() - player.getKeyDownSkill_Time()) / 2000 + 10) * elementalMaxDamagePerMonster * 0.01;
-//	}
-        if (theSkill != null && theSkill.isChargeSkill() && player.getKeyDownSkill_Time() == 0) {
-            return 0;
-        }
-        final MapleStatEffect homing = player.getStatForBuff(MapleBuffStat.HOMING_BEACON);
-        if (homing != null && player.getLinkMid() == monster.getObjectId() && homing.getSourceId() == 5220011) { //bullseye
-            elementalMaxDamagePerMonster += (elementalMaxDamagePerMonster * homing.getX());
-        }
-        final PlayerStats stat = player.getStat();
-        elementalMaxDamagePerMonster += (elementalMaxDamagePerMonster * (monster.getStats().isBoss() ? stat.bossdam_r : stat.dam_r)) / 100.0;
-
-        if (elementalMaxDamagePerMonster > 199999) {
-            if (!defined) {
-                elementalMaxDamagePerMonster = 199999;
-            }
-        } else if (elementalMaxDamagePerMonster < 0) {
-            elementalMaxDamagePerMonster = 1;
-        }
-        return elementalMaxDamagePerMonster;
-    }
-
-    public static final AttackInfo DivideAttack(final AttackInfo attack, final int rate) {
-        attack.real = false;
-        if (rate <= 1) {
-            return attack; //lol
-        }
-        for (AttackPair p : attack.allDamage) {
-            if (p.attack != null) {
-                for (OdinPair<Integer, Boolean> eachd : p.attack) {
-                    eachd = new OdinPair<>(eachd.getLeft() / rate, eachd.getRight());
-                }
-            }
-        }
-        return attack;
-    }
-
-    public static final AttackInfo Modify_AttackCrit(final AttackInfo attack, final MapleCharacter chr, final int type) {
-        final int CriticalRate = chr.getStat().passive_sharpeye_rate();
-        final boolean shadow = (type == 2 && chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) || (type == 1 && chr.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) != null);
-        if (attack.skill != 4211006 && attack.skill != 3211003 && attack.skill != 4111004 && (CriticalRate > 0 || attack.skill == 4221001 || attack.skill == 3221007)) { //blizz + shadow meso + m.e no crits
-            for (AttackPair p : attack.allDamage) {
-                if (p.attack != null) {
-                    int hit = 0;
-                    final int mid_att = p.attack.size() / 2;
-                    final List<OdinPair<Integer, Boolean>> eachd_copy = new ArrayList<>(p.attack);
-                    for (OdinPair<Integer, Boolean> eachd : p.attack) {
-                        hit++;
-                        boolean right = eachd.getRight();
-                        if (!eachd.getRight()) {
-                            if (attack.skill == 4221001) { //assassinate never crit first 3, always crit last
-                                right = (hit == 4 && Randomizer.nextInt(100) < 90);
-                            } else if (attack.skill == 3221007 || eachd.getLeft() > 199999) { //snipe always crit
-                                right = true;
-                            } else if (shadow && hit > mid_att) { //shadowpartner copies second half to first half
-                                right = eachd_copy.get(hit - 1 - mid_att).getRight();
-                            } else {
-                                //rough calculation
-                                //eachd.right = (Randomizer.nextInt(100)/*chr.CRand().CRand32__Random_ForMonster() % 100*/) < CriticalRate;
-                                //eachd.right = (chr.CRand().CRand32__Random_ForMonster() % 100) < CriticalRate;
-                                //eachd.right = (double)((((chr.CRand().CRand32__Random_ForMonster() % 7) * 4) % 10000000) * 0.0000100000010000001) < (double)CriticalRate;
-                            }
-                            eachd_copy.set(hit - 1, new OdinPair<>(eachd.getLeft(), right));
-                        }
-                    }
-                }
-            }
-        }
-        return attack;
-    }
-
 }
