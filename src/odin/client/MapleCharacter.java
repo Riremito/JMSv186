@@ -1006,7 +1006,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean isActiveBuffedValue(int skillid) {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
+        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
         for (MapleBuffStatValueHolder mbsvh : allBuffs) {
             if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillid) {
                 return true;
@@ -1017,7 +1017,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public Integer getBuffedValue(MapleBuffStat effect) {
         final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        return mbsvh == null ? null : Integer.valueOf(mbsvh.value);
+        return mbsvh == null ? null : mbsvh.value;
     }
 
     public final Integer getBuffedSkill_X(final MapleBuffStat effect) {
@@ -3215,17 +3215,17 @@ public class MapleCharacter extends TacosCharacter {
             startTime = Math.min(startTime, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
         }
 
-        coolDowns.put(Integer.valueOf(skillId), new MapleCoolDownValueHolder(skillId, startTime, length));
+        coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length));
     }
 
     public void removeCooldown(int skillId) {
-        if (coolDowns.containsKey(Integer.valueOf(skillId))) {
-            coolDowns.remove(Integer.valueOf(skillId));
+        if (coolDowns.containsKey(skillId)) {
+            coolDowns.remove(skillId);
         }
     }
 
     public boolean skillisCooling(int skillId) {
-        return coolDowns.containsKey(Integer.valueOf(skillId));
+        return coolDowns.containsKey(skillId);
     }
 
     public void giveCoolDowns(final int skillid, long starttime, long length) {

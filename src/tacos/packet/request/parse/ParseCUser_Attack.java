@@ -155,12 +155,8 @@ public class ParseCUser_Attack {
             }
         }
         int damage;
-        List<OdinPair<Integer, Boolean>> allDamageNumbers = null;
+        List<OdinPair<Integer, Boolean>> allDamageNumbers = new ArrayList<>();
         attack.allDamage = new ArrayList<>();
-        if (attack.IsMesoExplosion()) {
-            // Meso Explosion
-            return parseMesoExplosion(cp, attack);
-        }
         for (int i = 0; i < attack.GetMobCount(); i++) {
             int nTargetID = cp.Decode4();
             // v131 to v186 OK
@@ -172,11 +168,19 @@ public class ParseCUser_Attack {
             cp.Decode2(); // Mob Something
             cp.Decode2(); // Mob Something
             cp.Decode2(); // Mob Something
-            cp.Decode2(); // v366->tDelay
-            allDamageNumbers = new ArrayList<>();
-            for (int j = 0; j < attack.GetDamagePerMob(); j++) {
-                damage = cp.Decode4(); // 366->aDamage[i]
-                allDamageNumbers.add(new OdinPair<>(damage, false));
+            if (!attack.IsMesoExplosion()) {
+                cp.Decode2(); // v366->tDelay
+                for (int j = 0; j < attack.GetDamagePerMob(); j++) {
+                    damage = cp.Decode4(); // 366->aDamage[i]
+                    allDamageNumbers.add(new OdinPair<>(damage, false));
+                }
+            } else {
+                // meso explosion.
+                byte hits = cp.Decode1();
+                for (int j = 0; j < hits; j++) {
+                    damage = cp.Decode4();
+                    allDamageNumbers.add(new OdinPair<>(damage, false));
+                }
             }
             if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.THMS, 87)) {
                 // nothing
@@ -197,64 +201,18 @@ public class ParseCUser_Attack {
         attack.position.x = cp.Decode2();
         attack.position.y = cp.Decode2();
         if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-            if (allDamageNumbers != null) {
-                DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
+            DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
+        }
+        if (attack.IsMesoExplosion()) {
+            attack.allMeso = new ArrayList<>();
+            byte bullets = cp.Decode1();
+            for (int i = 0; i < bullets; i++) {
+                int drop_id = cp.Decode4();
+                short drop_used = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode2() : cp.Decode1(); // 0 = no damage?
+                attack.allMeso.add(drop_id);
             }
+            short tTotFrameDelay = cp.Decode2();
         }
         return attack;
-    }
-
-    public static final AttackInfo parseMesoExplosion(ClientPacket cp, final AttackInfo ret) {
-        //System.out.println(lea.toString(true));
-        byte bullets;
-        int damage;
-        if (ret.GetDamagePerMob() == 0) {
-            cp.Decode4();
-            bullets = cp.Decode1();
-            for (int j = 0; j < bullets; j++) {
-                damage = cp.Decode4();
-                if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
-                }
-                ret.allDamage.add(new AttackPair(damage, null));
-                cp.Decode1();
-            }
-            cp.Decode2(); // 8F 02
-            return ret;
-        }
-        int oid;
-        List<OdinPair<Integer, Boolean>> allDamageNumbers;
-        for (int i = 0; i < ret.GetMobCount(); i++) {
-            oid = cp.Decode4();
-            // ?
-            cp.Decode4();
-            cp.Decode4();
-            cp.Decode4();
-            bullets = cp.Decode1();
-            allDamageNumbers = new ArrayList<>();
-            for (int j = 0; j < bullets; j++) {
-                damage = cp.Decode4();
-                if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                    DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
-                }
-                allDamageNumbers.add(new OdinPair<>(damage, false)); //m.e. never crits
-            }
-            if (ServerConfig.JMS186orLater()) {
-                cp.Decode4(); // CRC of monster [Wz Editing]
-            }
-            ret.allDamage.add(new AttackPair(oid, allDamageNumbers));
-        }
-        cp.Decode4();
-        bullets = cp.Decode1();
-        for (int j = 0; j < bullets; j++) {
-            damage = cp.Decode4();
-            if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                DebugLogger.DebugLog(cp.getHeader().name() + ": damage = " + damage);
-            }
-            ret.allDamage.add(new AttackPair(damage, null));
-            cp.Decode2();
-        }
-        cp.Decode2(); // 8F 02/ 63 02
-        return ret;
     }
 }

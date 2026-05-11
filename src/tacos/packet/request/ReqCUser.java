@@ -18,6 +18,7 @@
  */
 package tacos.packet.request;
 
+import java.awt.Point;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
@@ -73,6 +74,7 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
+import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -80,21 +82,26 @@ import odin.server.life.MapleNPC;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
+import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
+import odin.tools.AttackPair;
+import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
 import tacos.debug.DebugMan;
 import tacos.debug.DebugShop;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
+import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.packet.request.sub.ReqSub_Admin;
 import tacos.packet.request.sub.ReqSub_FriendRequest;
+import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.script.TacosScriptNPC;
@@ -106,7 +113,7 @@ import tacos.server.TacosWorld;
  */
 public class ReqCUser {
 
-    public static boolean OnPacket_Login(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_Login(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -118,8 +125,8 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -141,7 +148,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToCashShopRequest: {
-                if (!OnUserMigrateToCashShopRequest(c, chr)) {
+                if (!OnUserMigrateToCashShopRequest(client, chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_SHOPSVR_DISCONNECTED));
                 }
                 return true;
@@ -159,27 +166,23 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMeleeAttack: {
-                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
-                PlayerHandler.closeRangeAttack(c, attack, false);
+                OnUserAttack(header, cp, chr);
                 return true;
             }
             case CP_UserShootAttack: {
-                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
-                PlayerHandler.rangedAttack(c, attack);
+                OnUserAttack(header, cp, chr);
                 return true;
             }
             case CP_UserMagicAttack: {
-                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
-                PlayerHandler.MagicDamage(c, attack);
+                OnUserAttack(header, cp, chr);
                 return true;
             }
             case CP_UserBodyAttack: {
-                AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
-                PlayerHandler.closeRangeAttack(c, attack, true);
+                OnUserAttack(header, cp, chr);
                 return true;
             }
             case CP_UserHit: {
-                PlayerHandler.TakeDamage(cp, c, chr);
+                PlayerHandler.TakeDamage(cp, client, chr);
                 return true;
             }
             case CP_UserChat: {
@@ -199,17 +202,17 @@ public class ReqCUser {
             case CP_UserActivateEffectItem: {
                 int item_id = cp.Decode4();
                 // pc
-                PlayerHandler.UseItemEffect(item_id, c, chr);
+                PlayerHandler.UseItemEffect(item_id, client, chr);
                 return true;
             }
             case CP_UserMonsterBookSetCover: {
                 int unk = cp.Decode4();
-                PlayerHandler.ChangeMonsterBookCover(unk, c, chr);
+                PlayerHandler.ChangeMonsterBookCover(unk, client, chr);
                 return true;
             }
             case CP_UserSelectNpc: {
                 int npc_oid = cp.Decode4();
-                NPCHandler.NPCTalk(c, chr, npc_oid);
+                NPCHandler.NPCTalk(client, chr, npc_oid);
                 return true;
             }
             case CP_UserRemoteShopOpenRequest: {
@@ -222,7 +225,7 @@ public class ReqCUser {
                     DebugMan.OnScriptMessageAnswerHook(chr, cp);
                     return true;
                 }
-                ReqCScriptMan.OnScriptMessageAnswer(cp, c);
+                ReqCScriptMan.OnScriptMessageAnswer(cp, client);
                 return true;
             }
             case CP_UserShopRequest: {
@@ -230,11 +233,11 @@ public class ReqCUser {
                     DebugShop.OnUserShopRequestHook(chr, cp);
                     return true;
                 }
-                ReqCShopDlg.OnPacket(cp, c);
+                ReqCShopDlg.OnPacket(cp, client);
                 return true;
             }
             case CP_UserTrunkRequest: {
-                ReqCTrunkDlg.OnPacket(cp, c);
+                ReqCTrunkDlg.OnPacket(cp, client);
                 return true;
             }
             case CP_UserEntrustedShopRequest: {
@@ -252,7 +255,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserParcelRequest: {
-                return ReqCParcelDlg.Accept(c, cp);
+                return ReqCParcelDlg.Accept(client, cp);
             }
             case CP_ShopScannerRequest: {
                 OnShopScannerRequest(chr, cp);
@@ -261,7 +264,7 @@ public class ReqCUser {
             case CP_ShopLinkRequest: {
                 int shop_id = cp.Decode4();
                 int map_id = cp.Decode4();
-                InventoryHandler.OwlWarp(c, shop_id, map_id);
+                InventoryHandler.OwlWarp(client, shop_id, map_id);
                 return true;
             }
             case CP_AdminShopRequest: {
@@ -321,7 +324,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
-                InventoryHandler.UseScriptedNPCItem(cp, c, chr);
+                InventoryHandler.UseScriptedNPCItem(cp, client, chr);
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
@@ -435,7 +438,7 @@ public class ReqCUser {
             case CP_UserGivePopularityRequest: {
                 int target_id = cp.Decode4();
                 byte mode = cp.Decode1();
-                PlayersHandler.GiveFame(c, chr, target_id, mode);
+                PlayersHandler.GiveFame(client, chr, target_id, mode);
                 return true;
             }
             case CP_UserCharacterInfoRequest: {
@@ -466,7 +469,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserQuestRequest: {
-                NPCHandler.QuestAction(cp, c);
+                NPCHandler.QuestAction(cp, client);
                 return true;
             }
             case CP_UserCalcDamageStatSetRequest: {
@@ -476,7 +479,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMacroSysDataModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
+                return ReqCFuncKeyMappedMan.OnPacket(header, cp, client);
             }
             case CP_UserItemMakeRequest: {
                 ItemMakerHandler.OnItemMakeRequest(cp, chr);
@@ -495,19 +498,19 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserRepairDurabilityAll: {
-                NPCHandler.repairAll(c);
+                NPCHandler.repairAll(client);
                 return true;
             }
             case CP_UserRepairDurability: {
-                NPCHandler.repair(cp, c);
+                NPCHandler.repair(cp, client);
                 return true;
             }
             case CP_UserFollowCharacterRequest: {
-                PlayersHandler.FollowRequest(cp, c);
+                PlayersHandler.FollowRequest(cp, client);
                 return true;
             }
             case CP_UserFollowCharacterWithdraw: {
-                PlayersHandler.FollowReply(cp, c);
+                PlayersHandler.FollowReply(cp, client);
                 return true;
             }
             case CP_GroupMessage: {
@@ -520,25 +523,25 @@ public class ReqCUser {
                 return true;
             }
             case CP_Messenger: {
-                return ReqCUIMessenger.OnPacket(c, header, cp);
+                return ReqCUIMessenger.OnPacket(client, header, cp);
             }
             case CP_MiniRoom: {
                 return ReqCMiniRoomBaseDlg.OnMiniRoom(map, chr, cp);
             }
             case CP_PartyRequest: {
-                PartyHandler.PartyOperation(cp, c);
+                PartyHandler.PartyOperation(cp, client);
                 return true;
             }
             case CP_PartyResult: {
-                PartyHandler.DenyPartyRequest(cp, c);
+                PartyHandler.DenyPartyRequest(cp, client);
                 return true;
             }
             case CP_GuildRequest: {
-                GuildHandler.Guild(cp, c);
+                GuildHandler.Guild(cp, client);
                 return true;
             }
             case CP_GuildResult: {
-                GuildHandler.DenyGuildRequest(cp, c);
+                GuildHandler.DenyGuildRequest(cp, client);
                 return true;
             }
             case CP_Admin: {
@@ -559,29 +562,29 @@ public class ReqCUser {
                 return true;
             }
             case CP_EnterTownPortalRequest: {
-                ReqCTownPortalPool.TryEnterTownPortal(cp, c);
+                ReqCTownPortalPool.TryEnterTownPortal(cp, client);
                 return true;
             }
             case CP_FuncKeyMappedModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
+                return ReqCFuncKeyMappedMan.OnPacket(header, cp, client);
             }
             case CP_RPSGame: {
-                return ReqCRPSGameDlg.OnPacket(c, header, cp);
+                return ReqCRPSGameDlg.OnPacket(client, header, cp);
             }
             case CP_MarriageRequest: {
-                PlayersHandler.RingAction(cp, c);
+                PlayersHandler.RingAction(cp, client);
                 return true;
             }
             case CP_AllianceRequest: {
-                AllianceHandler.HandleAlliance(cp, c, false);
+                AllianceHandler.HandleAlliance(cp, client, false);
                 return true;
             }
             case CP_AllianceResult: {
-                AllianceHandler.HandleAlliance(cp, c, true);
+                AllianceHandler.HandleAlliance(cp, client, true);
                 return true;
             }
             case CP_GuildBBS: {
-                BBSHandler.BBSOperation(cp, c);
+                BBSHandler.BBSOperation(cp, client);
                 return true;
             }
             case CP_JMS_InstancePortalEnter: {
@@ -609,7 +612,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMigrateToITCRequest: {
-                if (!OnUserMigrateToITCRequest(c, chr)) {
+                if (!OnUserMigrateToITCRequest(client, chr)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_ITCSVR_DISCONNECTED));
                 }
                 return true;
@@ -640,7 +643,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_RequestIncCombo: {
-                PlayerHandler.AranCombo(c, chr);
+                PlayerHandler.AranCombo(client, chr);
                 return true;
             }
             case CP_JMS_Poll_Answer: {
@@ -650,7 +653,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_QuickslotKeyMappedModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(header, cp, c);
+                return ReqCFuncKeyMappedMan.OnPacket(header, cp, client);
             }
             case CP_UpdateScreenSetting: // 解像度変更
             {
@@ -665,7 +668,7 @@ public class ReqCUser {
             }
             case CP_JMS_FarmEnter:
             case CP_JMS_FarmLeave: {
-                Req_Farm.OnPacket(header, cp, c);
+                Req_Farm.OnPacket(header, cp, client);
                 return true;
             }
             default: {
@@ -675,7 +678,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket_ITC(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_ITC(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -684,7 +687,7 @@ public class ReqCUser {
                 break;
             }
         }
-        MapleCharacter chr = c.getPlayer();
+        MapleCharacter chr = client.getPlayer();
 
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online.");
@@ -704,7 +707,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket_CS(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_CS(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -713,7 +716,7 @@ public class ReqCUser {
                 break;
             }
         }
-        MapleCharacter chr = c.getPlayer();
+        MapleCharacter chr = client.getPlayer();
 
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online.");
@@ -728,7 +731,7 @@ public class ReqCUser {
             // アバターランダムボックスのオープン処理
             case CP_CashGachaponOpenRequest: {
                 long box_SN = cp.Decode8();
-                ReqCCashShop.OnGachaponOpen(c, box_SN);
+                ReqCCashShop.OnGachaponOpen(client, box_SN);
                 return true;
             }
             default: {
@@ -971,6 +974,98 @@ public class ReqCUser {
         chr.setChair(item_id);
         chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), item_id), false);
         chr.updateInv();
+        return true;
+    }
+
+    public static boolean OnUserAttack(ClientPacketHeader header, ClientPacket cp, MapleCharacter chr) {
+        AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
+        MapleMap map = chr.getMap();
+        boolean is_skill_attack = attack.skill != 0;
+        if (is_skill_attack) {
+            ISkill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
+            int skillLevel = chr.getSkillLevel(skill);
+            MapleStatEffect skill_effect = attack.getAttackEffect(chr, skillLevel, skill);
+            if (skill_effect == null) {
+                DebugLogger.ErrorLog("attack : err 1.");
+                return false;
+            }
+            if (0 < skill_effect.getCooldown()) {
+                if (!chr.skillisCooling(attack.skill)) {
+                    DebugLogger.ErrorLog("attack : err 2.");
+                    return false;
+                }
+                chr.addCooldown(attack.skill, System.currentTimeMillis(), skill_effect.getCooldown() * 1000);
+                chr.SendPacket(ResCUserLocal.SkillCooltimeSet(attack.skill, skill_effect.getCooldown())); // cool time.
+            }
+            if (attack.skill != OpsSkill.CLERIC_HEAL.get()) {
+                skill_effect.applyTo(chr);
+            }
+        }
+        if (!ContentState.CS_LOCK_LOSING_THRWOING.get()) {
+            // consume star code.
+        }
+        ISkill eaterSkill = SkillFactory.getSkill(GameConstants.getMPEaterForJob(chr.getJob()));
+        int eaterLevel = chr.getSkillLevel(eaterSkill);
+        boolean is_meso_explosion = attack.skill == OpsSkill.THIEFMASTER_MESO_EXPLOSION.get();
+        boolean is_pick_pocket = false;
+        ISkill skill_pick_pocket = null;
+        MapleStatEffect skill_effect_pick_pocket = null;
+        if (is_pick_pocket) {
+            skill_pick_pocket = SkillFactory.getSkill(OpsSkill.THIEFMASTER_PICKPOCKET.get());
+            skill_effect_pick_pocket = skill_pick_pocket.getEffect(30); // level.
+        }
+        boolean is_steal = attack.skill == OpsSkill.THIEF_STEAL.get();
+        for (AttackPair oned : attack.allDamage) {
+            MapleMonster monster = map.getMonsterByOid(oned.objectid);
+            if (monster == null) {
+                DebugLogger.ErrorLog("attack : err 3.");
+                continue;
+            }
+            int total_damage = 0;
+            for (OdinPair<Integer, Boolean> eachde : oned.attack) {
+                total_damage += eachde.getLeft();
+                // pick pocket.
+                if (is_pick_pocket && skill_effect_pick_pocket != null && !is_meso_explosion) {
+                    if (skill_effect_pick_pocket.makeChanceResult()) {
+                        int maxmeso = skill_effect_pick_pocket.getX();
+                        map.spawnMesoDrop(Math.min((int) Math.max(((double) eachde.getLeft() / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, chr, true, (byte) 0);
+                    }
+                }
+            }
+            if (total_damage < 0) {
+                DebugLogger.ErrorLog("attack : err 4.");
+                continue;
+            }
+            monster.damage(chr, total_damage, true, attack.skill);
+            chr.checkMonsterAggro(monster);
+            if (eaterSkill != null && 0 < eaterLevel) {
+                eaterSkill.getEffect(eaterLevel).applyPassive(chr, monster);
+            }
+            if (is_steal) {
+                monster.handleSteal(chr);
+            }
+        }
+        // meso explosion.
+        if (is_meso_explosion) {
+            for (int drop_id : attack.allMeso) {
+                MapleMapItem mmi = (MapleMapItem) map.getMapObject(drop_id, MapleMapObjectType.ITEM);
+                if (mmi == null || mmi.getMeso() <= 0) {
+                    DebugLogger.ErrorLog("attack : err meso explosion.");
+                    continue;
+                }
+                map.removeMapObject(mmi);
+                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.LeaveType.MESO_EXPLOSION));
+            }
+        }
+        // for remote users.
+        map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        // clone test.
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            AttackInfo attack_clone = attack;
+            attack_clone.CharacterId = chr_clone.getId();
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserAttack(attack_clone));
+        }
         return true;
     }
 

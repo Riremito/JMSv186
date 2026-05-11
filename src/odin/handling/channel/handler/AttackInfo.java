@@ -33,11 +33,13 @@ import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsSkill;
 
 public class AttackInfo {
 
     public int skill;
     public List<AttackPair> allDamage;
+    public List<Integer> allMeso;
     public Point position;
     public boolean real = true;
 
@@ -94,7 +96,7 @@ public class AttackInfo {
     }
 
     public boolean IsMesoExplosion() {
-        return nSkillID == 4211006;
+        return nSkillID == OpsSkill.THIEFMASTER_MESO_EXPLOSION.get();
     }
 
     public boolean IsShadowMeso() {
