@@ -153,7 +153,7 @@ public class MapleCharacter extends TacosCharacter {
     private int mulung_energy, availableCP, totalCP, hpApUsed;
     private int bookCover, dojo,
             fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
-            linkMid = 0, followid = 0, battleshipHP = 0;
+            linkMid = 0, battleshipHP = 0;
     private Point old = new Point(0, 0);
     private boolean smega, hidden, hasSummon = false;
     private int[] wishlist, rocks, savedLocations, regrocks;
@@ -179,7 +179,7 @@ public class MapleCharacter extends TacosCharacter {
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
     private MapleParty party;
-    private boolean invincible = false, canTalk = true, followinitiator = false, followon = false;
+    private boolean invincible = false, canTalk = true;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient ScheduledFuture<?> beholderHealingSchedule, beholderBuffSchedule, BerserkSchedule,
             dragonBloodSchedule, fairySchedule, mapTimeLimitTask, fishing;
@@ -1991,7 +1991,6 @@ public class MapleCharacter extends TacosCharacter {
         cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
         cancelEffectFromBuffStat(MapleBuffStat.REAPER);
         cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
-        checkFollow();
         if (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000) {
             int charms = getItemQuantity(5130000, false);
             if (charms > 0) {
@@ -2779,9 +2778,6 @@ public class MapleCharacter extends TacosCharacter {
             for (final MapleSummon summon : summons.values()) {
                 client.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
             }
-        }
-        if (followid > 0) {
-            client.SendPacket(ResCUser.UserFollowCharacter(followinitiator ? id : followid, followinitiator ? followid : id, null));
         }
     }
 
@@ -4069,48 +4065,6 @@ public class MapleCharacter extends TacosCharacter {
         final MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
         inv.addSlot((byte) amount);
         client.getSession().write(ResCWvsContext.InventoryGrow(type, (byte) inv.getSlotLimit()));
-    }
-
-    public int getFollowId() {
-        return followid;
-    }
-
-    public void setFollowId(int fi) {
-        this.followid = fi;
-        if (fi == 0) {
-            this.followinitiator = false;
-            this.followon = false;
-        }
-    }
-
-    public void setFollowInitiator(boolean fi) {
-        this.followinitiator = fi;
-    }
-
-    public void setFollowOn(boolean fi) {
-        this.followon = fi;
-    }
-
-    public boolean isFollowOn() {
-        return followon;
-    }
-
-    public boolean isFollowInitiator() {
-        return followinitiator;
-    }
-
-    public void checkFollow() {
-        if (followon) {
-            map.broadcastMessage(ResCUser.UserFollowCharacter(id, 0, null));
-            map.broadcastMessage(ResCUser.UserFollowCharacter(followid, 0, null));
-            MapleCharacter tt = map.getCharacterById(followid);
-            client.getSession().write(ResCUserLocal.UserChatMsg("Follow canceled."));
-            if (tt != null) {
-                tt.setFollowId(0);
-                tt.getClient().getSession().write(ResCUserLocal.UserChatMsg("Follow canceled."));
-            }
-            setFollowId(0);
-        }
     }
 
     public boolean isStaff() {

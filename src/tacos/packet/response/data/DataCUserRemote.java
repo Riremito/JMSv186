@@ -79,7 +79,7 @@ public class DataCUserRemote {
         }
         List<OdinPair<Integer, Boolean>> buffvalue = new ArrayList<>();
         if (ServerConfig.JMS164orLater()) {
-            long fbuffmask = 16646144L;
+            long fbuffmask = 0L;
             if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
                 fbuffmask |= MapleBuffStat.SOARING.getValue();
             }
@@ -124,7 +124,7 @@ public class DataCUserRemote {
         data.Encode8(buffmask);
         if (ServerConfig.JMS164orLater()) {
             // buffmask
-            if (Version.PostBB()) {
+            if (Version.GreaterOrEqual(Region.JMS, 187)) {
                 data.Encode4(0);
             }
             for (OdinPair<Integer, Boolean> i : buffvalue) {
@@ -208,26 +208,32 @@ public class DataCUserRemote {
         data.Encode2(chr.getPosition().y);
         data.Encode1(chr.getStance());
         data.Encode2(0); // FH
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            data.Encode1(0);// bShowAdminEffect
+        }
         data.Encode1(0); // pet size
         data.Encode4(chr.getMount().getLevel()); // mount lvl
         data.Encode4(chr.getMount().getExp()); // exp
         data.Encode4(chr.getMount().getFatigue()); // tiredness
         // MiniRoomBalloon (ゲーム) 1 byte flag + data
-        data.EncodeBuffer(Structure.AnnounceBox(chr));
+        data.EncodeBuffer(Structure.AnnounceBox(chr)); // m_nMiniRoomType
         // ADBoardBalloon (黒板) 1 byte flag + data
         {
-            data.Encode1(chr.getADBoard() != null && chr.getADBoard().length() > 0 ? 1 : 0);
+            data.Encode1(chr.getADBoard() != null && chr.getADBoard().length() > 0 ? 1 : 0); // m_bADBoardRemote
             if (chr.getADBoard() != null && chr.getADBoard().length() > 0) {
                 data.EncodeStr(chr.getADBoard());
             }
         }
-        data.Encode1(0); //count4 -> buf0x10 4
-        data.Encode1(0); //count4 -> buf0x10 4
+        data.Encode1(0); // CoupleRecord, count4 -> buf0x10 4
+        data.Encode1(0); // FriendRecord, count4 -> buf0x10 4
         // MarriageRecord 1 byte flag + data
         {
-            data.Encode1(0);
+            data.Encode1(0); // MarriageRecord
         }
         data.Encode1(chr.getEffectMask()); // Effect
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            data.Encode1(0); // NewYearCardRecord
+        }
         data.Encode4(0); // not in KMST, in GMS v95: m_nPhase
         // 特殊マップ専用
         // MonsterCarnival

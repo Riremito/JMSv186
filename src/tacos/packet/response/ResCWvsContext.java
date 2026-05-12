@@ -1978,7 +1978,7 @@ public class ResCWvsContext {
     public static MaplePacket SetPassenserRequest(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPassenserRequest);
 
-        sp.Encode4(chr.getId());
+        sp.Encode4(chr.getId()); // nPassenserID
         return sp.get();
     }
 

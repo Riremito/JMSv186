@@ -506,8 +506,8 @@ public class ReqCUser {
                 OnUserFollowCharacterRequest(chr, cp);
                 return true;
             }
-            case CP_UserFollowCharacterWithdraw: {
-                OnUserFollowCharacterWithdraw(chr, cp);
+            case CP_SetPassenserResult: {
+                OnSetPassenserResult(chr, cp);
                 return true;
             }
             case CP_GroupMessage: {
@@ -2298,66 +2298,41 @@ public class ReqCUser {
         byte bKeyInput = cp.Decode1();
 
         MapleMap map = chr.getMap();
+
+        if (bKeyInput != 0) {
+            map.broadcastMessage(ResCUser.UserFollowCharacter(chr.getId(), 0, null));
+            return true;
+        }
+
         MapleCharacter driver = map.getCharacterById(dwDriverID);
-        if (0 < bAutoReq) {
-            //1 when changing map
-            driver = map.getCharacterById(chr.getFollowId());
-            if (driver != null && driver.getFollowId() == chr.getId()) {
-                driver.setFollowOn(true);
-                chr.setFollowOn(true);
-            } else {
-                chr.checkFollow();
-            }
-            return true;
+        if (driver == null) {
+            return false;
         }
-        if (0 < bKeyInput) { //cancelling follow
-            driver = map.getCharacterById(chr.getFollowId());
-            if (driver != null && driver.getFollowId() == chr.getId() && chr.isFollowOn()) {
-                chr.checkFollow();
-            }
-            return true;
+        if (bAutoReq != 0) {
+            return false;
         }
-        if (driver != null && driver.getPosition().distanceSq(chr.getPosition()) < 10000 && driver.getFollowId() == 0 && chr.getFollowId() == 0 && driver.getId() != chr.getId()) {
-            driver.setFollowId(chr.getId());
-            driver.setFollowOn(false);
-            driver.setFollowInitiator(false);
-            chr.setFollowOn(false);
-            chr.setFollowInitiator(false);
-            driver.SendPacket(ResCWvsContext.SetPassenserRequest(chr));
-        }
+        driver.SendPacket(ResCWvsContext.SetPassenserRequest(chr));
         return true;
     }
 
-    public static boolean OnUserFollowCharacterWithdraw(MapleCharacter chr, ClientPacket cp) {
+    // CWvsContext::SendFollowRequestApply
+    public static boolean OnSetPassenserResult(MapleCharacter chr, ClientPacket cp) {
         MapleMap map = chr.getMap();
-        int driver_id = cp.Decode4();
-        byte accepted = cp.Decode1();
-
-        if (chr.getFollowId() > 0 && chr.getFollowId() == driver_id) {
-            MapleCharacter driver = map.getCharacterById(chr.getFollowId());
-            if (driver != null && driver.getPosition().distanceSq(chr.getPosition()) < 10000 && driver.getFollowId() == 0 && driver.getId() != chr.getId()) { //estimate, should less
-                if (0 < accepted) {
-                    driver.setFollowId(chr.getId());
-                    driver.setFollowOn(true);
-                    driver.setFollowInitiator(true);
-                    chr.setFollowOn(true);
-                    chr.setFollowInitiator(false);
-                    map.broadcastMessage(ResCUser.UserFollowCharacter(driver.getId(), chr.getId(), null));
-                } else {
-                    chr.setFollowId(0);
-                    driver.setFollowId(0);
-                    driver.SendPacket(ResCUserLocal.UserFollowCharacterFailed(5));
-                }
-            } else {
-                if (driver != null) {
-                    driver.setFollowId(0);
-                    chr.setFollowId(0);
-                }
-                chr.SendPacket(ResWrapper.BroadCastMsgAlert("You are too far away."));
-            }
-        } else {
-            chr.setFollowId(0);
+        int error = 0;
+        int m_dwFollowRequesterID = cp.Decode4();
+        byte bApply = cp.Decode1();
+        if (bApply == 0) {
+            error = cp.Decode4(); // always 5.
         }
+        MapleCharacter passenser = map.getCharacterById(m_dwFollowRequesterID);
+        if (passenser == null) {
+            return false;
+        }
+        if (bApply == 0) {
+            passenser.SendPacket(ResCUserLocal.UserFollowCharacterFailed(error));
+            return false;
+        }
+        map.broadcastMessage(ResCUser.UserFollowCharacter(passenser.getId(), chr.getId(), null));
         return true;
     }
 

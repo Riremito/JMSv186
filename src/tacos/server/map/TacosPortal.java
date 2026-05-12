@@ -119,8 +119,6 @@ public class TacosPortal {
             return false;
         }
 
-        chr.checkFollow(); // not checked.
-
         // script portal
         if (this.scriptName != null) {
             return TacosScriptPortal.getInstance().enter(this, client);
