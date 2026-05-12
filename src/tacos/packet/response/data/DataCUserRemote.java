@@ -77,7 +77,7 @@ public class DataCUserRemote {
             data.Encode2(0);
             data.Encode1(0);
         }
-        List<OdinPair<Integer, Boolean>> buffvalue = new ArrayList<OdinPair<Integer, Boolean>>();
+        List<OdinPair<Integer, Boolean>> buffvalue = new ArrayList<>();
         if (ServerConfig.JMS164orLater()) {
             long fbuffmask = 16646144L;
             if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
@@ -103,7 +103,7 @@ public class DataCUserRemote {
         }
         if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
             buffmask |= MapleBuffStat.COMBO.getValue();
-            buffvalue.add(new OdinPair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.COMBO).intValue()), false));
+            buffvalue.add(new OdinPair<>(chr.getBuffedValue(MapleBuffStat.COMBO), false));
         }
         if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
             buffmask |= MapleBuffStat.SHADOWPARTNER.getValue();
@@ -119,12 +119,12 @@ public class DataCUserRemote {
         }
         if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
             buffmask |= MapleBuffStat.MORPH.getValue();
-            buffvalue.add(new OdinPair<Integer, Boolean>(Integer.valueOf(chr.getBuffedValue(MapleBuffStat.MORPH).intValue()), true));
+            buffvalue.add(new OdinPair<>(chr.getBuffedValue(MapleBuffStat.MORPH), true));
         }
         data.Encode8(buffmask);
         if (ServerConfig.JMS164orLater()) {
             // buffmask
-            if (ServerConfig.JMS194orLater()) {
+            if (Version.PostBB()) {
                 data.Encode4(0);
             }
             for (OdinPair<Integer, Boolean> i : buffvalue) {

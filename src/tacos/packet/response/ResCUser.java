@@ -144,7 +144,7 @@ public class ResCUser {
     // CUser::OnHitByUser
     // CUser::OnTeslaTriangle
     // CUser::OnFollowCharacter
-    public static MaplePacket followEffect(int initiator, int replier, Point toMap) {
+    public static MaplePacket UserFollowCharacter(int initiator, int replier, Point toMap) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacter);
 
         sp.Encode4(initiator);

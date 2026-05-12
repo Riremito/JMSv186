@@ -665,10 +665,10 @@ public class MapleGuild implements java.io.Serializable {
                     gainGP((mgc.getLevel() - old_level) * mgc.getLevel() / 10, false); //level 199->200 = 20 gp
                 }
                 if (old_level != mgc.getLevel()) {
-                    this.broadcast(ResCWvsContext.sendLevelup(false, mgc.getLevel(), mgc.getName()), mgc.getId());
+                    this.broadcast(ResCWvsContext.NotifyLevelUp(false, mgc.getLevel(), mgc.getName()), mgc.getId());
                 }
                 if (old_job != mgc.getJobId()) {
-                    this.broadcast(ResCWvsContext.sendJobup(false, mgc.getJobId(), mgc.getName()), mgc.getId());
+                    this.broadcast(ResCWvsContext.NotifyJobChange(false, mgc.getJobId(), mgc.getName()), mgc.getId());
                 }
                 broadcast(ResCWvsContext.guildMemberLevelJobUpdate(mgc));
                 if (allianceid > 0) {

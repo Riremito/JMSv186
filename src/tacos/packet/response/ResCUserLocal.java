@@ -37,8 +37,9 @@ import tacos.packet.response.data.DataCUser;
  */
 public class ResCUserLocal {
 
-    public static MaplePacket SitResult(int id) {
+    public static MaplePacket UserSitResult(int id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSitResult);
+
         boolean is_cancel = (id == -1);
         sp.Encode1(is_cancel ? 0 : 1);
         if (!is_cancel) {
@@ -47,21 +48,23 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket Emotion(MapleCharacter chr, int expression) {
+    public static MaplePacket UserEmotionLocal(MapleCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotionLocal);
 
         sp.EncodeBuffer(DataCUser.Emotion(expression));
         return sp.get();
     }
 
-    public static MaplePacket EffectLocal(ArgUserEffect arg) {
+    public static MaplePacket UserEffectLocal(ArgUserEffect arg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
+
         sp.EncodeBuffer(EffectData(arg));
         return sp.get();
     }
 
     public static byte[] EffectData(ArgUserEffect arg) {
         ServerPacket data = new ServerPacket();
+
         data.Encode1(arg.ops.get());
 
         switch (arg.ops) {
@@ -171,8 +174,9 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static final MaplePacket Teleport(byte portal) {
+    public static final MaplePacket UserTeleport(byte portal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTeleport);
+
         sp.Encode1(0); // set last teleported time by client side
         sp.Encode1(portal);
         return sp.get();
@@ -202,8 +206,9 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket updateQuestFinish(int quest, int npc, int nextquest) {
+    public static MaplePacket UserQuestResult(int quest, int npc, int nextquest) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
+
         sp.Encode1(OpsQuest.QuestRes_Act_Success.get());
         sp.Encode2(quest);
         sp.Encode4(npc);
@@ -211,8 +216,9 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket updateQuestInfo(MapleCharacter c, int quest, int npc, OpsQuest oq) {
+    public static MaplePacket UserQuestResult(MapleCharacter c, int quest, int npc, OpsQuest oq) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
+
         sp.Encode1(oq.get());
         sp.Encode2(quest);
         sp.Encode4(npc);
@@ -222,12 +228,13 @@ public class ResCUserLocal {
 
     public static MaplePacket NotifyHPDecByField(int nDamage) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyHPDecByField);
+
         sp.Encode4(nDamage);
         return sp.get();
     }
 
     // CUserLocal::OnBalloonMsg
-    public static MaplePacket BalloonMsg(String hint, int width, int height) {
+    public static MaplePacket UserBalloonMsg(String hint, int width, int height) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserBalloonMsg);
 
         if (width < 1) {
@@ -248,7 +255,7 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static final MaplePacket sendRepairWindow(int npc) {
+    public static final MaplePacket UserOpenUIWithOption(int npc) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenUIWithOption);
 
         sp.Encode4(34); //sending 0x21 here opens evan skill window o.o
@@ -256,7 +263,7 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket IntroLock(boolean enable) {
+    public static MaplePacket SetDirectionMode(boolean enable) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetDirectionMode);
 
         sp.Encode1(enable ? 1 : 0);
@@ -264,21 +271,21 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket IntroDisableUI(boolean enable) {
+    public static MaplePacket SetStandAloneMode(boolean enable) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetStandAloneMode);
 
         sp.Encode1(enable ? 1 : 0);
         return sp.get();
     }
 
-    public static MaplePacket summonHelper(boolean summon) {
+    public static MaplePacket UserHireTutor(boolean summon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHireTutor);
 
         sp.Encode1(summon ? 1 : 0);
         return sp.get();
     }
 
-    public static MaplePacket summonMessage(int type) {
+    public static MaplePacket UserTutorMsg(int type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTutorMsg);
 
         sp.Encode1(1);
@@ -287,7 +294,7 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket summonMessage(String message) {
+    public static MaplePacket UserTutorMsg(String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTutorMsg);
 
         sp.Encode1(0);
@@ -318,7 +325,7 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket getPollReply(String message) {
+    public static MaplePacket UserNoticeMsg(String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserNoticeMsg);
 
         sp.EncodeStr(message);
@@ -326,7 +333,7 @@ public class ResCUserLocal {
     }
 
     // チャット欄へのテキスト表示
-    public static final MaplePacket getFollowMessage(final String msg) {
+    public static final MaplePacket UserChatMsg(final String msg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChatMsg);
 
         /*
@@ -365,7 +372,7 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket moveFollow(Point otherStart, Point myStart, Point otherEnd/*, List<LifeMovementFragment> moves*/) {
+    public static MaplePacket UserPassiveMove(Point otherStart, Point myStart, Point otherEnd/*, List<LifeMovementFragment> moves*/) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserPassiveMove);
 
         sp.Encode2(otherStart.x);
@@ -385,7 +392,7 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket getFollowMsg(int opcode) {
+    public static MaplePacket UserFollowCharacterFailed(int error) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacterFailed);
 
         /*
@@ -398,7 +405,7 @@ public class ResCUserLocal {
         0x06    離れているようです。
         0x07    以降0x00と同じ
          */
-        sp.Encode8(opcode); //5 = canceled request.
+        sp.Encode8(error); //5 = canceled request.
         return sp.get();
     }
 

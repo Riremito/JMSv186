@@ -25,75 +25,11 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
-import tacos.packet.response.ResCUser;
-import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacket;
 
 public class PlayersHandler {
-
-    public static void FollowRequest(ClientPacket cp, final MapleClient c) {
-        MapleCharacter tt = c.getPlayer().getMap().getCharacterById(cp.Decode4());
-        if (cp.Decode1() > 0) {
-            //1 when changing map
-            tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
-            if (tt != null && tt.getFollowId() == c.getPlayer().getId()) {
-                tt.setFollowOn(true);
-                c.getPlayer().setFollowOn(true);
-            } else {
-                c.getPlayer().checkFollow();
-            }
-            return;
-        }
-        if (cp.Decode1() > 0) { //cancelling follow
-            tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
-            if (tt != null && tt.getFollowId() == c.getPlayer().getId() && c.getPlayer().isFollowOn()) {
-                c.getPlayer().checkFollow();
-            }
-            return;
-        }
-        if (tt != null && tt.getPosition().distanceSq(c.getPlayer().getPosition()) < 10000 && tt.getFollowId() == 0 && c.getPlayer().getFollowId() == 0 && tt.getId() != c.getPlayer().getId()) { //estimate, should less
-            tt.setFollowId(c.getPlayer().getId());
-            tt.setFollowOn(false);
-            tt.setFollowInitiator(false);
-            c.getPlayer().setFollowOn(false);
-            c.getPlayer().setFollowInitiator(false);
-            tt.getClient().getSession().write(ResCWvsContext.followRequest(c.getPlayer().getId()));
-        } else {
-            c.getSession().write(ResWrapper.BroadCastMsgAlert("You are too far away."));
-        }
-    }
-
-    public static void FollowReply(ClientPacket cp, final MapleClient c) {
-        if (c.getPlayer().getFollowId() > 0 && c.getPlayer().getFollowId() == cp.Decode4()) {
-            MapleCharacter tt = c.getPlayer().getMap().getCharacterById(c.getPlayer().getFollowId());
-            if (tt != null && tt.getPosition().distanceSq(c.getPlayer().getPosition()) < 10000 && tt.getFollowId() == 0 && tt.getId() != c.getPlayer().getId()) { //estimate, should less
-                boolean accepted = cp.Decode1() > 0;
-                if (accepted) {
-                    tt.setFollowId(c.getPlayer().getId());
-                    tt.setFollowOn(true);
-                    tt.setFollowInitiator(true);
-                    c.getPlayer().setFollowOn(true);
-                    c.getPlayer().setFollowInitiator(false);
-                    c.getPlayer().getMap().broadcastMessage(ResCUser.followEffect(tt.getId(), c.getPlayer().getId(), null));
-                } else {
-                    c.getPlayer().setFollowId(0);
-                    tt.setFollowId(0);
-                    tt.getClient().getSession().write(ResCUserLocal.getFollowMsg(5));
-                }
-            } else {
-                if (tt != null) {
-                    tt.setFollowId(0);
-                    c.getPlayer().setFollowId(0);
-                }
-                c.getSession().write(ResWrapper.BroadCastMsgAlert("You are too far away."));
-            }
-        } else {
-            c.getPlayer().setFollowId(0);
-        }
-    }
 
     public static void RingAction(ClientPacket cp, final MapleClient c) {
         MapleCharacter chr = c.getPlayer();
@@ -125,7 +61,7 @@ public class PlayersHandler {
                 return;
             }
             c.getPlayer().setMarriageItemId(itemid);
-            player.getClient().getSession().write(ResCWvsContext.sendEngagementRequest(c.getPlayer().getName(), c.getPlayer().getId()));
+            player.getClient().getSession().write(ResCWvsContext.MarriageRequest(c.getPlayer().getName(), c.getPlayer().getId()));
             //1112300 + (itemid - 2240004)
         } else if (mode == 1) {
             c.getPlayer().setMarriageItemId(0);

@@ -512,8 +512,8 @@ public class MapScriptMethods {
             case mirrorCave:
             case babyPigMap:
             case evanleaveD: {
-                c.getSession().write(ResCUserLocal.IntroDisableUI(false));
-                c.getSession().write(ResCUserLocal.IntroLock(false));
+                c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
+                c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
@@ -562,8 +562,8 @@ public class MapScriptMethods {
                         data = "Effect/Direction4.img/promotion/Scene3";
                         break;
                     case 900090004:
-                        c.getSession().write(ResCUserLocal.IntroDisableUI(false));
-                        c.getSession().write(ResCUserLocal.IntroLock(false));
+                        c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
+                        c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
                         final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(900010000);
                         c.getPlayer().changeMap(mapto, mapto.getPortal(0));
@@ -572,16 +572,16 @@ public class MapScriptMethods {
                 showIntro(c, data);
                 break;
             case TD_MC_title: {
-                c.getSession().write(ResCUserLocal.IntroDisableUI(false));
-                c.getSession().write(ResCUserLocal.IntroLock(false));
+                c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
+                c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
                 break;
             }
             case explorationPoint: {
                 if (c.getPlayer().getMapId() == 104000000) {
-                    c.getSession().write(ResCUserLocal.IntroDisableUI(false));
-                    c.getSession().write(ResCUserLocal.IntroLock(false));
+                    c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
+                    c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                     chr.updateStat();
                     c.getSession().write(ResWrapper.MapNameDisplay(c.getPlayer().getMapId()));
                 }
@@ -641,8 +641,8 @@ public class MapScriptMethods {
             }
             case go10000:
             case go1020000:
-                c.getSession().write(ResCUserLocal.IntroDisableUI(false));
-                c.getSession().write(ResCUserLocal.IntroLock(false));
+                c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
+                c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
             case go20000:
             case go30000:
@@ -721,8 +721,8 @@ public class MapScriptMethods {
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
                 c.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
                 c.getSession().write(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
-                c.getSession().write(ResCUserLocal.IntroDisableUI(false));
-                c.getSession().write(ResCUserLocal.IntroLock(false));
+                c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
+                c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
@@ -737,8 +737,8 @@ public class MapScriptMethods {
                 if (c.getPlayer().getQuestStatus(21101) == 2 && c.getPlayer().getInfoQuest(21019).equals("miss=o;arr=o;helper=clear")) {
                     c.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;ck=1;helper=clear");
                 }
-                c.getSession().write(ResCUserLocal.IntroDisableUI(false));
-                c.getSession().write(ResCUserLocal.IntroLock(false));
+                c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
+                c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                 break;
             }
             case check_count: {
@@ -810,8 +810,8 @@ public class MapScriptMethods {
     }
 
     private static void showIntro(final MapleClient c, final String data) {
-        c.getSession().write(ResCUserLocal.IntroDisableUI(true));
-        c.getSession().write(ResCUserLocal.IntroLock(true));
+        c.getSession().write(ResCUserLocal.SetStandAloneMode(true));
+        c.getSession().write(ResCUserLocal.SetDirectionMode(true));
         c.getSession().write(ResCUserLocal.ShowWZEffect(data));
     }
 

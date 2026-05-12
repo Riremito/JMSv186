@@ -1967,7 +1967,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static final MaplePacket getSlotUpdate(byte invType, byte newSlots) {
+    public static MaplePacket InventoryGrow(byte invType, byte newSlots) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryGrow);
 
         sp.Encode1(invType);
@@ -1975,10 +1975,10 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket followRequest(int chrid) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPassenserRequest);
+    public static MaplePacket SetPassenserRequest(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPassenserRequest);
 
-        sp.Encode4(chrid);
+        sp.Encode4(chr.getId());
         return sp.get();
     }
 
@@ -1988,7 +1988,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket sendLevelup(boolean family, int level, String name) {
+    public static MaplePacket NotifyLevelUp(boolean family, int level, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyLevelUp);
 
         sp.Encode1(family ? 1 : 2);
@@ -1997,7 +1997,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket sendJobup(boolean family, int jobid, String name) {
+    public static MaplePacket NotifyJobChange(boolean family, int jobid, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyJobChange);
 
         sp.Encode1(family ? 1 : 0);
@@ -2006,7 +2006,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket sendMarriage(boolean family, String name) {
+    public static MaplePacket NotifyWedding(boolean family, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyWedding);
 
         sp.Encode1(family ? 1 : 0);
@@ -2078,7 +2078,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket sendEngagementRequest(String name, int cid) {
+    public static MaplePacket MarriageRequest(String name, int cid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageRequest);
 
         sp.Encode1(0); //mode, 0 = engage, 1 = cancel, 2 = answer.. etc
@@ -2087,7 +2087,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket getPeanutResult(int itemId, short quantity, int itemId2, short quantity2) {
+    public static MaplePacket IncubatorResult(int itemId, short quantity, int itemId2, short quantity2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_IncubatorResult);
 
         sp.Encode4(itemId);
@@ -2106,14 +2106,14 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket getShowQuestCompletion(int id) {
+    public static MaplePacket QuestClear(int id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_QuestClear);
 
         sp.Encode2(id);
         return sp.get();
     }
 
-    public static MaplePacket getAvatarMega(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
+    public static MaplePacket AvatarMegaphoneUpdateMessage(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneUpdateMessage);
 
         sp.Encode4(itemId);
@@ -2125,7 +2125,7 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket fairyPendantMessage(int type, int percent) {
+    public static MaplePacket BonusExpRateChanged(int type, int percent) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BonusExpRateChanged);
 
         sp.Encode2(21); // 0x15
@@ -2162,9 +2162,10 @@ public class ResCWvsContext {
     }
 
     // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
-    public static MaplePacket ReloadMiniMap() {
+    public static MaplePacket MiniMapOnOff() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniMapOnOff);
-        sp.Encode1((byte) 0);
+
+        sp.Encode1(0);
         return sp.get();
     }
 
@@ -2187,5 +2188,4 @@ public class ResCWvsContext {
         sp.Encode4(chr.getMaplePoint());
         return sp.get();
     }
-
 }

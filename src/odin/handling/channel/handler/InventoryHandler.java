@@ -782,7 +782,7 @@ public class InventoryHandler {
                     break;
                 }
                 final boolean ear = cp.Decode1() != 0;
-                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.getAvatarMega(c.getPlayer(), c.getChannelId(), itemId, text, ear));
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.AvatarMegaphoneUpdateMessage(c.getPlayer(), c.getChannelId(), itemId, text, ear));
                 used = true;
                 break;
             }
@@ -843,7 +843,7 @@ public class InventoryHandler {
         while (z_2 == z || chances[z_2] < Randomizer.nextInt(1000)) {
             z_2 = Randomizer.nextInt(ids.length);
         }
-        c.getSession().write(ResCWvsContext.getPeanutResult(ids[z], (short) 1, ids[z_2], (short) 1));
+        c.getSession().write(ResCWvsContext.IncubatorResult(ids[z], (short) 1, ids[z_2], (short) 1));
         return MapleInventoryManipulator.addById(c, ids[z], (short) 1) && MapleInventoryManipulator.addById(c, ids[z_2], (short) 1);
 
     }

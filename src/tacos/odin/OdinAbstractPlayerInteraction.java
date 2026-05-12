@@ -118,7 +118,7 @@ public abstract class OdinAbstractPlayerInteraction {
         if (portal != 0 && map == client.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.getSession().write(ResCUserLocal.Teleport((byte) portal)); //until we get packet for far movement, this will do
+                client.getSession().write(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
                 client.getPlayer().checkFollow();
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
@@ -142,7 +142,7 @@ public abstract class OdinAbstractPlayerInteraction {
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 client.getPlayer().checkFollow();
-                client.getSession().write(ResCUserLocal.Teleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
+                client.getSession().write(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
@@ -796,12 +796,12 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void dojo_getUp() {
         client.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
         client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
-        client.SendPacket(ResCUserLocal.Teleport((byte) 6));
+        client.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
     }
 
     // Oribs PQ, 920010700
     public void instantwarp(int map_id, int porta_id) {
-        client.SendPacket(ResCUserLocal.Teleport((byte) porta_id));
+        client.SendPacket(ResCUserLocal.UserTeleport((byte) porta_id));
     }
 
     public final boolean dojoAgent_NextMap(final boolean dojo, final boolean fromresting) {
@@ -843,23 +843,23 @@ public abstract class OdinAbstractPlayerInteraction {
         if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.summonMessage(msg));
+        client.getSession().write(ResCUserLocal.UserTutorMsg(msg));
     }
 
     public final void summonMsg(final int type) {
         if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.summonMessage(type));
+        client.getSession().write(ResCUserLocal.UserTutorMsg(type));
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
-        client.SendPacket(ResCUserLocal.BalloonMsg(msg, width, height));
+        client.SendPacket(ResCUserLocal.UserBalloonMsg(msg, width, height));
     }
 
     public final void playerSummonHint(final boolean summon) {
         client.getPlayer().setHasSummon(summon);
-        client.getSession().write(ResCUserLocal.summonHelper(summon));
+        client.getSession().write(ResCUserLocal.UserHireTutor(summon));
     }
 
     public final String getInfoQuest(final int id) {
@@ -903,8 +903,8 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {
-        client.getSession().write(ResCUserLocal.IntroDisableUI(enabled));
-        client.getSession().write(ResCUserLocal.IntroLock(enabled));
+        client.getSession().write(ResCUserLocal.SetStandAloneMode(enabled));
+        client.getSession().write(ResCUserLocal.SetDirectionMode(enabled));
     }
 
     public MapleInventoryType getInvType(int i) {

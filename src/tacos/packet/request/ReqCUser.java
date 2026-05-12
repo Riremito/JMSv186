@@ -503,11 +503,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserFollowCharacterRequest: {
-                PlayersHandler.FollowRequest(cp, client);
+                OnUserFollowCharacterRequest(chr, cp);
                 return true;
             }
             case CP_UserFollowCharacterWithdraw: {
-                PlayersHandler.FollowReply(cp, client);
+                OnUserFollowCharacterWithdraw(chr, cp);
                 return true;
             }
             case CP_GroupMessage: {
@@ -939,7 +939,7 @@ public class ReqCUser {
         }
 
         chr.setChair(is_cancel ? 0 : map_chair_id);
-        chr.SendPacket(ResCUserLocal.SitResult(map_chair_id));
+        chr.SendPacket(ResCUserLocal.UserSitResult(map_chair_id));
         return true;
     }
 
@@ -2288,6 +2288,76 @@ public class ReqCUser {
 
         map.broadcastMessage(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
         chr.updateInv();
+        return true;
+    }
+
+    // CWvsContext::SendFollowCharacterRequest
+    public static boolean OnUserFollowCharacterRequest(MapleCharacter chr, ClientPacket cp) {
+        int dwDriverID = cp.Decode4();
+        byte bAutoReq = cp.Decode1();
+        byte bKeyInput = cp.Decode1();
+
+        MapleMap map = chr.getMap();
+        MapleCharacter driver = map.getCharacterById(dwDriverID);
+        if (0 < bAutoReq) {
+            //1 when changing map
+            driver = map.getCharacterById(chr.getFollowId());
+            if (driver != null && driver.getFollowId() == chr.getId()) {
+                driver.setFollowOn(true);
+                chr.setFollowOn(true);
+            } else {
+                chr.checkFollow();
+            }
+            return true;
+        }
+        if (0 < bKeyInput) { //cancelling follow
+            driver = map.getCharacterById(chr.getFollowId());
+            if (driver != null && driver.getFollowId() == chr.getId() && chr.isFollowOn()) {
+                chr.checkFollow();
+            }
+            return true;
+        }
+        if (driver != null && driver.getPosition().distanceSq(chr.getPosition()) < 10000 && driver.getFollowId() == 0 && chr.getFollowId() == 0 && driver.getId() != chr.getId()) {
+            driver.setFollowId(chr.getId());
+            driver.setFollowOn(false);
+            driver.setFollowInitiator(false);
+            chr.setFollowOn(false);
+            chr.setFollowInitiator(false);
+            driver.SendPacket(ResCWvsContext.SetPassenserRequest(chr));
+        }
+        return true;
+    }
+
+    public static boolean OnUserFollowCharacterWithdraw(MapleCharacter chr, ClientPacket cp) {
+        MapleMap map = chr.getMap();
+        int driver_id = cp.Decode4();
+        byte accepted = cp.Decode1();
+
+        if (chr.getFollowId() > 0 && chr.getFollowId() == driver_id) {
+            MapleCharacter driver = map.getCharacterById(chr.getFollowId());
+            if (driver != null && driver.getPosition().distanceSq(chr.getPosition()) < 10000 && driver.getFollowId() == 0 && driver.getId() != chr.getId()) { //estimate, should less
+                if (0 < accepted) {
+                    driver.setFollowId(chr.getId());
+                    driver.setFollowOn(true);
+                    driver.setFollowInitiator(true);
+                    chr.setFollowOn(true);
+                    chr.setFollowInitiator(false);
+                    map.broadcastMessage(ResCUser.UserFollowCharacter(driver.getId(), chr.getId(), null));
+                } else {
+                    chr.setFollowId(0);
+                    driver.setFollowId(0);
+                    driver.SendPacket(ResCUserLocal.UserFollowCharacterFailed(5));
+                }
+            } else {
+                if (driver != null) {
+                    driver.setFollowId(0);
+                    chr.setFollowId(0);
+                }
+                chr.SendPacket(ResWrapper.BroadCastMsgAlert("You are too far away."));
+            }
+        } else {
+            chr.setFollowId(0);
+        }
         return true;
     }
 

@@ -990,7 +990,7 @@ public class MapleCharacter extends TacosCharacter {
         if (!(quest.isCustom())) {
             client.SendPacket(ResWrapper.updateQuest(quest));
             if (quest.getStatus() == 1 && !update) {
-                client.getSession().write(ResCUserLocal.updateQuestInfo(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
+                client.getSession().write(ResCUserLocal.UserQuestResult(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
             }
         }
     }
@@ -2455,7 +2455,7 @@ public class MapleCharacter extends TacosCharacter {
             if (q.mobKilled(id, skillID)) {
                 client.SendPacket(ResWrapper.updateQuestMobKills(q));
                 if (q.getQuest().canComplete(this, null)) {
-                    client.getSession().write(ResCWvsContext.getShowQuestCompletion(q.getQuest().getId()));
+                    client.getSession().write(ResCWvsContext.QuestClear(q.getQuest().getId()));
                 }
             }
         }
@@ -2781,7 +2781,7 @@ public class MapleCharacter extends TacosCharacter {
             }
         }
         if (followid > 0) {
-            client.SendPacket(ResCUser.followEffect(followinitiator ? id : followid, followinitiator ? followid : id, null));
+            client.SendPacket(ResCUser.UserFollowCharacter(followinitiator ? id : followid, followinitiator ? followid : id, null));
         }
     }
 
@@ -4068,7 +4068,7 @@ public class MapleCharacter extends TacosCharacter {
     public void expandInventory(byte type, int amount) {
         final MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
         inv.addSlot((byte) amount);
-        client.getSession().write(ResCWvsContext.getSlotUpdate(type, (byte) inv.getSlotLimit()));
+        client.getSession().write(ResCWvsContext.InventoryGrow(type, (byte) inv.getSlotLimit()));
     }
 
     public int getFollowId() {
@@ -4101,13 +4101,13 @@ public class MapleCharacter extends TacosCharacter {
 
     public void checkFollow() {
         if (followon) {
-            map.broadcastMessage(ResCUser.followEffect(id, 0, null));
-            map.broadcastMessage(ResCUser.followEffect(followid, 0, null));
+            map.broadcastMessage(ResCUser.UserFollowCharacter(id, 0, null));
+            map.broadcastMessage(ResCUser.UserFollowCharacter(followid, 0, null));
             MapleCharacter tt = map.getCharacterById(followid);
-            client.getSession().write(ResCUserLocal.getFollowMessage("Follow canceled."));
+            client.getSession().write(ResCUserLocal.UserChatMsg("Follow canceled."));
             if (tt != null) {
                 tt.setFollowId(0);
-                tt.getClient().getSession().write(ResCUserLocal.getFollowMessage("Follow canceled."));
+                tt.getClient().getSession().write(ResCUserLocal.UserChatMsg("Follow canceled."));
             }
             setFollowId(0);
         }

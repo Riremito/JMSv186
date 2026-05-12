@@ -248,13 +248,13 @@ public class AdminCommand {
                     return 0;
                 }
                 victim.setChair(0);
-                victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
+                victim.getClient().getSession().write(ResCUserLocal.UserSitResult(-1));
                 victim.getMap().broadcastMessage(victim, ResCUserRemote.UserSetActivePortableChair(c.getPlayer().getId(), 0), false);
                 victim.giveDebuff(dis, SkillWz.get().getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
             } else {
                 for (MapleCharacter victim : c.getPlayer().getMap().getCharacters()) {
                     victim.setChair(0);
-                    victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
+                    victim.getClient().getSession().write(ResCUserLocal.UserSitResult(-1));
                     victim.getMap().broadcastMessage(victim, ResCUserRemote.UserSetActivePortableChair(c.getPlayer().getId(), 0), false);
                     victim.giveDebuff(dis, SkillWz.get().getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
                 }

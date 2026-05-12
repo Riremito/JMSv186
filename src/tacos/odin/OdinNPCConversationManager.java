@@ -938,7 +938,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void sendRepairWindow() {
-        client.getSession().write(ResCUserLocal.sendRepairWindow(npc));
+        client.getSession().write(ResCUserLocal.UserOpenUIWithOption(npc));
     }
 
     public final int getDojoPoints() {
@@ -1280,16 +1280,16 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                     sendNPCText(getPlayer().getName() + " and " + chr.getName() + ", I wish you two all the best on your AsteriaSEA journey together!", 9201002);
                     getMap().startExtendedMapEffect("You may now kiss the bride, " + getPlayer().getName() + "!", 5120006);
                     if (chr.getGuildId() > 0) {
-                        OdinWorld.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.sendMarriage(false, chr.getName()));
+                        OdinWorld.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.NotifyWedding(false, chr.getName()));
                     }
                     if (chr.getFamilyId() > 0) {
-                        OdinWorld.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), chr.getId());
+                        OdinWorld.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), chr.getId());
                     }
                     if (getPlayer().getGuildId() > 0) {
-                        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.sendMarriage(false, getPlayer().getName()));
+                        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.NotifyWedding(false, getPlayer().getName()));
                     }
                     if (getPlayer().getFamilyId() > 0) {
-                        OdinWorld.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), getPlayer().getId());
+                        OdinWorld.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), getPlayer().getId());
                     }
                 }
             }
