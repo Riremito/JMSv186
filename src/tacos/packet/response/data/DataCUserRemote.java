@@ -18,9 +18,7 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
@@ -29,14 +27,10 @@ import tacos.config.Version;
 import odin.constants.GameConstants;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
-import java.util.ArrayList;
-import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.struct.Structure;
-import odin.server.Randomizer;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
-import tacos.odin.OdinPair;
 
 /**
  *
@@ -77,117 +71,16 @@ public class DataCUserRemote {
             data.Encode2(0);
             data.Encode1(0);
         }
-        List<OdinPair<Integer, Boolean>> buffvalue = new ArrayList<>();
         if (ServerConfig.JMS164orLater()) {
-            long fbuffmask = 0L;
-            if (chr.getBuffedValue(MapleBuffStat.SOARING) != null) {
-                fbuffmask |= MapleBuffStat.SOARING.getValue();
-            }
-            if (chr.getBuffedValue(MapleBuffStat.MIRROR_IMAGE) != null) {
-                fbuffmask |= MapleBuffStat.MIRROR_IMAGE.getValue();
-            }
-            if (chr.getBuffedValue(MapleBuffStat.DARK_AURA) != null) {
-                fbuffmask |= MapleBuffStat.DARK_AURA.getValue();
-            }
-            if (chr.getBuffedValue(MapleBuffStat.BLUE_AURA) != null) {
-                fbuffmask |= MapleBuffStat.BLUE_AURA.getValue();
-            }
-            if (chr.getBuffedValue(MapleBuffStat.YELLOW_AURA) != null) {
-                fbuffmask |= MapleBuffStat.YELLOW_AURA.getValue();
-            }
-            data.Encode8(fbuffmask);
+            data.Encode8(0); // buff mask.
         }
-        long buffmask = 0;
-        if (chr.getBuffedValue(MapleBuffStat.DARKSIGHT) != null && !chr.isHidden()) {
-            buffmask |= MapleBuffStat.DARKSIGHT.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.COMBO) != null) {
-            buffmask |= MapleBuffStat.COMBO.getValue();
-            buffvalue.add(new OdinPair<>(chr.getBuffedValue(MapleBuffStat.COMBO), false));
-        }
-        if (chr.getBuffedValue(MapleBuffStat.SHADOWPARTNER) != null) {
-            buffmask |= MapleBuffStat.SHADOWPARTNER.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.SOULARROW) != null) {
-            buffmask |= MapleBuffStat.SOULARROW.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.DIVINE_BODY) != null) {
-            buffmask |= MapleBuffStat.DIVINE_BODY.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.BERSERK_FURY) != null) {
-            buffmask |= MapleBuffStat.BERSERK_FURY.getValue();
-        }
-        if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
-            buffmask |= MapleBuffStat.MORPH.getValue();
-            buffvalue.add(new OdinPair<>(chr.getBuffedValue(MapleBuffStat.MORPH), true));
-        }
-        data.Encode8(buffmask);
+        data.Encode8(0); // buff mask.
         if (ServerConfig.JMS164orLater()) {
-            // buffmask
             if (Version.GreaterOrEqual(Region.JMS, 187)) {
-                data.Encode4(0);
+                data.Encode4(0); // buff mask.
             }
-            for (OdinPair<Integer, Boolean> i : buffvalue) {
-                if (i.getRight()) {
-                    data.Encode2(i.getLeft().shortValue());
-                } else {
-                    data.Encode1(i.getLeft().byteValue());
-                }
-            }
-            final int CHAR_MAGIC_SPAWN = Randomizer.nextInt();
-            //CHAR_MAGIC_SPAWN is really just tickCount
-            //this is here as it explains the 7 "dummy" buffstats which are placed into every character
-            //these 7 buffstats are placed because they have irregular packet structure.
-            //they ALL have writeShort(0); first, then a long as their variables, then server tick count
-            //0x80000, 0x100000, 0x200000, 0x400000, 0x800000, 0x1000000, 0x2000000
             data.Encode1(0); //start of energy charge
             data.Encode1(0);
-            if (Version.PreBB()) {
-                data.Encode4(0);
-                data.Encode4(0);
-                data.Encode1(1);
-                data.Encode4(CHAR_MAGIC_SPAWN);
-                data.Encode2(0); //start of dash_speed
-                data.Encode8(0);
-                data.Encode1(1);
-                data.Encode4(CHAR_MAGIC_SPAWN);
-                data.Encode2(0); //start of dash_jump
-                data.Encode8(0);
-                data.Encode1(1);
-                data.Encode4(CHAR_MAGIC_SPAWN);
-                data.Encode2(0); //start of Monster Riding
-                int buffSrc = chr.getBuffSource(MapleBuffStat.MONSTER_RIDING);
-                if (buffSrc > 0) {
-                    final IItem c_mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118 /*-122*/);
-                    final IItem mount = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18 /*-22*/);
-                    if (GameConstants.getMountItem(buffSrc) == 0 && c_mount != null) {
-                        data.Encode4(c_mount.getItemId());
-                    } else if (GameConstants.getMountItem(buffSrc) == 0 && mount != null) {
-                        data.Encode4(mount.getItemId());
-                    } else {
-                        data.Encode4(GameConstants.getMountItem(buffSrc));
-                    }
-                    data.Encode4(buffSrc);
-                } else {
-                    data.Encode8(0);
-                }
-                data.Encode1(1);
-                data.Encode4(CHAR_MAGIC_SPAWN);
-                data.Encode8(0); //speed infusion behaves differently here
-                data.Encode1(1);
-                data.Encode4(CHAR_MAGIC_SPAWN);
-                data.Encode4(1);
-                data.Encode8(0); //homing beacon
-                data.Encode1(0);
-                data.Encode2(0);
-                data.Encode1(1);
-                data.Encode4(CHAR_MAGIC_SPAWN);
-                data.Encode4(0); //and finally, something ive no idea
-                data.Encode8(0);
-                data.Encode1(1);
-                data.Encode4(CHAR_MAGIC_SPAWN);
-                data.Encode2(0);
-            }
             data.Encode2(chr.getJob());
         }
         data.EncodeBuffer(DataAvatarLook.Encode(chr));
