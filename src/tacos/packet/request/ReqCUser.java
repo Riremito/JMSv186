@@ -94,6 +94,8 @@ import tacos.debug.DebugShop;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
+import tacos.packet.ops.OpsGivePopularity;
+import tacos.packet.ops.OpsMemo;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
@@ -195,8 +197,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserEmotion: {
-                int emotion_id = cp.Decode4();
-                PlayerHandler.ChangeEmotion(emotion_id, chr);
+                OnUserEmotion(chr, cp);
                 return true;
             }
             case CP_UserActivateEffectItem: {
@@ -206,8 +207,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMonsterBookSetCover: {
-                int unk = cp.Decode4();
-                PlayerHandler.ChangeMonsterBookCover(unk, client, chr);
+                OnUserMonsterBookSetCover(chr, cp);
                 return true;
             }
             case CP_UserSelectNpc: {
@@ -297,7 +297,8 @@ public class ReqCUser {
             }
             case CP_UserStatChangeItemCancelRequest: {
                 int item_id = cp.Decode4();
-                PlayerHandler.CancelItemEffect(item_id, chr);
+
+                chr.cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(-item_id), false, -1);
                 return true;
             }
             case CP_UserMobSummonItemUseRequest: {
@@ -402,43 +403,39 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserAbilityUpRequest: {
-                OnAbilityUpRequest(cp, chr);
+                OnUserAbilityUpRequest(chr, cp);
                 return true;
             }
             case CP_UserAbilityMassUpRequest: {
-                OnAbilityMassUpRequest(cp, chr);
+                OnUserAbilityMassUpRequest(chr, cp);
                 return true;
             }
             case CP_UserChangeStatRequest: {
-                OnChangeStatRequest(cp, chr);
+                OnUserChangeStatRequest(chr, cp);
                 return true;
             }
             case CP_UserSkillUpRequest: {
-                OnSkillUpRequest(cp, chr);
+                OnUserSkillUpRequest(chr, cp);
                 return true;
             }
             case CP_UserSkillUseRequest: {
-                OnSkillUseRequest(cp, chr);
+                OnUserSkillUseRequest(chr, cp);
                 return true;
             }
             case CP_UserSkillCancelRequest: {
-                OnSkillCancelRequest(cp, chr);
+                OnUserSkillCancelRequest(chr, cp);
                 return true;
             }
             case CP_UserSkillPrepareRequest: {
-                OnSkillPrepareRequest(cp, chr);
+                OnUserSkillPrepareRequest(chr, cp);
                 return true;
             }
             case CP_UserDropMoneyRequest: {
-                int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
-                int mesos = cp.Decode4();
-                PlayerHandler.DropMeso(mesos, chr);
+                OnUserDropMoneyRequest(chr, cp);
                 return true;
             }
             case CP_UserGivePopularityRequest: {
-                int target_id = cp.Decode4();
-                byte mode = cp.Decode1();
-                PlayersHandler.GiveFame(client, chr, target_id, mode);
+                OnUserGivePopularityRequest(chr, cp);
                 return true;
             }
             case CP_UserCharacterInfoRequest: {
@@ -558,7 +555,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_MemoRequest: {
-                PlayersHandler.Note(cp, chr);
+                OnMemoRequest(chr, cp);
                 return true;
             }
             case CP_EnterTownPortalRequest: {
@@ -643,7 +640,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_RequestIncCombo: {
-                PlayerHandler.AranCombo(client, chr);
+                chr.sendIncCombo();
                 return true;
             }
             case CP_JMS_Poll_Answer: {
@@ -913,7 +910,7 @@ public class ReqCUser {
             MapleCharacter chr_clone = chr.getClone();
             map.userMove(chr_clone, move_path);
             move_path.update(chr_clone);
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.Move(chr_clone, move_path));
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserMove(chr_clone, move_path));
         }
 
         // NPC move test.
@@ -938,7 +935,7 @@ public class ReqCUser {
             if (chr.getChair() == 3011000) {
                 chr.cancelFishingTask();
             }
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), 0), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActivePortableChair(chr.getId(), 0), false);
         }
 
         chr.setChair(is_cancel ? 0 : map_chair_id);
@@ -972,7 +969,7 @@ public class ReqCUser {
         }
 
         chr.setChair(item_id);
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActivePortableChair(chr.getId(), item_id), false);
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActivePortableChair(chr.getId(), item_id), false);
         chr.updateInv();
         return true;
     }
@@ -1083,8 +1080,77 @@ public class ReqCUser {
         return true;
     }
 
+    public static boolean OnUserEmotion(MapleCharacter chr, ClientPacket cp) {
+        int emotion_id = cp.Decode4();
+        if (7 < emotion_id) {
+            int item_id = 5160000 + emotion_id - 8;
+            MapleInventoryType type = GameConstants.getInventoryType(item_id);
+            if (chr.getInventory(type).findById(item_id) == null) {
+                return false;
+            }
+        }
+        if (emotion_id <= 0) {
+            return false;
+        }
+        MapleMap map = chr.getMap();
+        map.broadcastMessage(chr, ResCUserRemote.UserEmotion(chr, emotion_id), false);
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserEmotion(chr_clone, emotion_id));
+        }
+        return true;
+    }
+
+    public static boolean OnUserMonsterBookSetCover(MapleCharacter chr, ClientPacket cp) {
+        int nMonsterBookCoverID = cp.Decode4();
+
+        chr.setMonsterBookCover(nMonsterBookCoverID);
+        chr.SendPacket(ResCWvsContext.MonsterBookSetCover(chr));
+        return true;
+    }
+
+    public static boolean OnUserGivePopularityRequest(MapleCharacter chr, ClientPacket cp) {
+        int target_id = cp.Decode4();
+        byte mode = cp.Decode1();
+        boolean is_up = mode != 0;
+
+        if (chr.getLevel() < 15) {
+            chr.SendPacket(ResCWvsContext.GivePopularityResult(OpsGivePopularity.GivePopularityRes_LevelLow, null, is_up, null));
+            return false;
+        }
+        if (chr.getId() == target_id) {
+            chr.SendPacket(ResCWvsContext.GivePopularityResult(OpsGivePopularity.GivePopularityRes_InvalidCharacterID, null, is_up, null));
+            return false;
+        }
+
+        int famechange = mode == 0 ? -1 : 1;
+        MapleCharacter target = (MapleCharacter) chr.getMap().getMapObject(target_id, MapleMapObjectType.PLAYER);
+        switch (chr.canGiveFame(target)) {
+            case OK:
+                if (Math.abs(target.getFame() + famechange) <= 30000) {
+                    target.addFame(famechange);
+                    target.sendStatChanged();
+                }
+                chr.hasGivenFame(target);
+                chr.SendPacket(ResCWvsContext.GivePopularityResult(OpsGivePopularity.GivePopularityRes_Success, chr, is_up, target));
+                target.SendPacket(ResCWvsContext.GivePopularityResult(OpsGivePopularity.GivePopularityRes_Notify, chr, is_up, target));
+                break;
+            case NOT_TODAY:
+                chr.SendPacket(ResCWvsContext.GivePopularityResult(OpsGivePopularity.GivePopularityRes_AlreadyDoneToday, null, is_up, null));
+                break;
+            case NOT_THIS_MONTH:
+                chr.SendPacket(ResCWvsContext.GivePopularityResult(OpsGivePopularity.GivePopularityRes_AlreadyDoneTarget, null, is_up, null));
+                break;
+            default: {
+                chr.SendPacket(ResCWvsContext.GivePopularityResult(OpsGivePopularity.GivePopularityRes_UnknownError, null, is_up, null));
+                break;
+            }
+        }
+
+        return true;
+    }
+
     // CUser::OnCharacterInfoRequest
-    // CharInfoRequest
     public static final boolean OnCharacterInfoRequest(ClientPacket cp, MapleCharacter chr, MapleMap map) {
         // CCheatInspector::InspectExclRequestTime
         final int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
@@ -1159,6 +1225,7 @@ public class ReqCUser {
         short slot = cp.Decode2();
         int item_id = cp.Decode4();
         byte cmd = cp.Decode1();
+
         MapleMap target_map = null;
         OpsMapTransfer ops_res = OpsMapTransfer.MapTransferRes_Unknown;
         // shared with cash item teleport rock, CWvsContext::RunMapTransferItem
@@ -1426,7 +1493,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnAbilityUpRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserAbilityUpRequest(MapleCharacter chr, ClientPacket cp) {
 
         int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         long flag = 0;
@@ -1592,7 +1659,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnAbilityMassUpRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserAbilityMassUpRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp = cp.Decode4();
         int count = cp.Decode4(); // ループ数
 
@@ -1661,7 +1728,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnChangeStatRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserChangeStatRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp_1 = 0;
 
         if (ServerConfig.JMS180orLater()) {
@@ -1706,7 +1773,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnSkillUpRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserSkillUpRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
 
@@ -1808,7 +1875,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnSkillUseRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserSkillUseRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
         byte skill_level = cp.Decode1();
@@ -1820,13 +1887,13 @@ public class ReqCUser {
     }
 
     // CancelBuffHandler
-    public static boolean OnSkillCancelRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserSkillCancelRequest(MapleCharacter chr, ClientPacket cp) {
         int skill_id = cp.Decode4();
         ISkill skill = SkillFactory.getSkill(skill_id);
 
         if (skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(0);
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.SkillCancel(chr, skill_id), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, skill_id), false);
         } else {
             chr.cancelEffect(skill.getEffect(1), false, -1);
         }
@@ -1834,13 +1901,13 @@ public class ReqCUser {
         // クローン : 暴風停止
         if (chr.isCloning()) {
             MapleCharacter chr_clone = chr.getClone();
-            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.SkillCancel(chr_clone, skill_id));
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserSkillCancel(chr_clone, skill_id));
         }
 
         return true;
     }
 
-    public static boolean OnSkillPrepareRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserSkillPrepareRequest(MapleCharacter chr, ClientPacket cp) {
         int skill_id = cp.Decode4();
         byte skill_level = cp.Decode1();
         short action = 0;
@@ -1851,6 +1918,20 @@ public class ReqCUser {
         }
         byte m_nPrepareSkillActionSpeed = cp.Decode1();
         PlayerHandler.SkillEffect(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed);
+        return true;
+    }
+
+    public static boolean OnUserDropMoneyRequest(MapleCharacter chr, ClientPacket cp) {
+        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int mesos = cp.Decode4();
+
+        if (!chr.isAlive() || (mesos < 10 || 50000 < mesos) || chr.getMeso() < mesos) {
+            chr.updateStat();
+            return false;
+        }
+
+        chr.gainMeso(-mesos, false, true);
+        chr.getMap().spawnMesoDrop(mesos, chr.getPosition(), chr, chr, true, (byte) 0);
         return true;
     }
 
@@ -1877,15 +1958,48 @@ public class ReqCUser {
     public static boolean OnUserMapTransferRequest(MapleCharacter chr, ClientPacket cp) {
         byte cmd = cp.Decode1();
         byte rock_type = cp.Decode1();
-        OpsMapTransfer ops_req = OpsMapTransfer.find(cmd);
-        int target_map_id = 999999999;
+        boolean is_vip = rock_type == 1;
 
-        if (ops_req == OpsMapTransfer.MapTransferReq_DeleteList) {
-            target_map_id = cp.Decode4();
+        OpsMapTransfer ops_req = OpsMapTransfer.find(cmd);
+        switch (ops_req) {
+            case MapTransferReq_DeleteList: {
+                int target_map_id = cp.Decode4();
+                if (rock_type == 0) {
+                    chr.deleteFromRegRocks(target_map_id);
+                    chr.SendPacket(ResCWvsContext.MapTransferResult(chr, OpsMapTransfer.MapTransferRes_DeleteList, is_vip));
+                    return true;
+                }
+                if (rock_type == 1) {
+                    chr.deleteFromRocks(target_map_id);
+                    chr.SendPacket(ResCWvsContext.MapTransferResult(chr, OpsMapTransfer.MapTransferRes_DeleteList, is_vip));
+                    return true;
+                }
+                break;
+            }
+            case MapTransferReq_RegisterList: {
+                if (FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
+                    chr.SendPacket(ResCWvsContext.MapTransferResult(chr, OpsMapTransfer.MapTransferRes_NotAllowed, is_vip));
+                    return true;
+                }
+                if (rock_type == 0) {
+                    chr.addRegRockMap();
+                    chr.SendPacket(ResCWvsContext.MapTransferResult(chr, OpsMapTransfer.MapTransferRes_RegisterList, is_vip));
+                    return true;
+                }
+                if (rock_type == 1) {
+                    chr.addRockMap();
+                    chr.SendPacket(ResCWvsContext.MapTransferResult(chr, OpsMapTransfer.MapTransferRes_RegisterList, is_vip));
+                    return true;
+                }
+                break;
+            }
+            default: {
+                break;
+            }
         }
 
-        OpsMapTransfer ops_res = PlayerHandler.TrockAddMap(chr, ops_req, rock_type, target_map_id);
-        chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, rock_type != 0));
+        DebugLogger.ErrorLog("OnUserMapTransferRequest : not coded " + ops_req + ", rock_type = " + rock_type);
+        chr.SendPacket(ResCWvsContext.MapTransferResult(chr, OpsMapTransfer.MapTransferRes_Unknown, is_vip));
         return true;
     }
 
@@ -2280,6 +2394,46 @@ public class ReqCUser {
 
         DebugLogger.ErrorLog("OnWhisper : not coded " + operation);
         return false;
+    }
+
+    public static boolean OnMemoRequest(MapleCharacter chr, ClientPacket cp) {
+        byte type = cp.Decode1();
+
+        switch (OpsMemo.find(type)) {
+            case MemoReq_Send: {
+                String name = cp.DecodeStr();
+                String msg = cp.DecodeStr();
+                boolean fame = cp.Decode1() > 0;
+                int unk = cp.Decode4();
+                IItem itemz = chr.getCashInventory().findByCashId(cp.Decode8());
+                if (itemz == null || !itemz.getGiftFrom().equalsIgnoreCase(name) || !chr.getCashInventory().canSendNote(itemz.getUniqueId())) {
+                    return false;
+                }
+                try {
+                    chr.sendNote(name, msg, fame ? 1 : 0);
+                    chr.getCashInventory().sendedNote(itemz.getUniqueId());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+            case MemoReq_Delete: {
+                byte num = cp.Decode1();
+                short unk = cp.Decode2();
+
+                for (int i = 0; i < num; i++) {
+                    final int id = cp.Decode4();
+                    chr.deleteNote(id, cp.Decode1() > 0 ? 1 : 0);
+                }
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnMemoRequest : not coded " + type);
+        return true;
     }
 
     public static boolean OnUserMigrateToITCRequest(MapleClient c, MapleCharacter chr) {

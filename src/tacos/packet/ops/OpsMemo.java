@@ -22,21 +22,25 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsGoldHammer implements IPacketOps {
+public enum OpsMemo implements IPacketOps {
 
-    GoldHammerRes_Success(0),
-    GoldHammerRes_Fail(1),
-    GoldHammerRes_Done(2),
-    GoldHammerRes_Err(3),
+    MemoReq_Send(0),
+    MemoReq_Delete(1),
+    MemoReq_Load(2),
+    MemoRes_Load(3),
+    MemoRes_Send_Succeed(4),
+    MemoRes_Send_Warning(5),
+    MemoRes_Send_ConfirmOnline(6),
+    MemoNotify_Receive(7),
     UNKNOWN;
 
     private int value;
 
-    OpsGoldHammer(int val) {
+    OpsMemo(int val) {
         this.value = val;
     }
 
-    OpsGoldHammer() {
+    OpsMemo() {
         this.value = -1;
     }
 
@@ -50,4 +54,12 @@ public enum OpsGoldHammer implements IPacketOps {
         this.value = val;
     }
 
+    public static OpsMemo find(int val) {
+        for (final OpsMemo ops : values()) {
+            if (ops.get() == val) {
+                return ops;
+            }
+        }
+        return UNKNOWN;
+    }
 }

@@ -22,21 +22,24 @@ package tacos.packet.ops;
  *
  * @author Riremito
  */
-public enum OpsGoldHammer implements IPacketOps {
+public enum OpsGivePopularity implements IPacketOps {
 
-    GoldHammerRes_Success(0),
-    GoldHammerRes_Fail(1),
-    GoldHammerRes_Done(2),
-    GoldHammerRes_Err(3),
+    GivePopularityRes_Success(0),
+    GivePopularityRes_UnknownError(-1),
+    GivePopularityRes_InvalidCharacterID(1),
+    GivePopularityRes_LevelLow(2),
+    GivePopularityRes_AlreadyDoneToday(3),
+    GivePopularityRes_AlreadyDoneTarget(4),
+    GivePopularityRes_Notify(5),
     UNKNOWN;
 
     private int value;
 
-    OpsGoldHammer(int val) {
+    OpsGivePopularity(int val) {
         this.value = val;
     }
 
-    OpsGoldHammer() {
+    OpsGivePopularity() {
         this.value = -1;
     }
 
@@ -49,5 +52,4 @@ public enum OpsGoldHammer implements IPacketOps {
     public void set(int val) {
         this.value = val;
     }
-
 }

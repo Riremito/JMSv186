@@ -763,7 +763,7 @@ public class DebugCommand {
             case "/wh": {
                 for (MapleCharacter victim : c.getChannelServer().getOnlinePlayers().get()) {
                     if (victim != chr) {
-                        victim.changeMap(chr.getMap(), chr.getMap().findClosestSpawnpoint(chr.getPosition()));
+                        victim.changeMapWithCoordinate(chr.getMap().getId(), chr.getPosition().x, chr.getPosition().y);
                     }
                 }
                 return true;

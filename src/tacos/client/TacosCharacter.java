@@ -18,6 +18,7 @@
  */
 package tacos.client;
 
+import java.awt.Point;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.MonsterBook;
 import odin.client.PlayerStats;
+import odin.client.SkillFactory;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -48,8 +50,12 @@ import tacos.database.LazyData;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsMovePathAttr;
+import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsTransferField;
 import tacos.packet.response.ResCClientSocket;
+import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCStage;
+import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCWvsContext;
@@ -337,6 +343,32 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         map_to = getChannelServer().getMapFactory().getMap(map_id_to);
         changeMap(map_to, map_to.getPortal(0));
         return true;
+    }
+
+    public boolean changeMap(int map_id) {
+        MapleMap map_to = getChannelServer().getMapFactory().getMap(map_id);
+        if (map_to != null) {
+            TacosPortal portal_to = map_to.getPortal(0);
+            if (portal_to != null) {
+                changeMap(map_to, portal_to);
+                return true;
+            }
+        }
+        SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+        return false;
+    }
+
+    public boolean changeMapWithCoordinate(int map_id, int x, int y) {
+        MapleMap map_to = getChannelServer().getMapFactory().getMap(map_id);
+        if (map_to != null) {
+            TacosPortal portal_to = map_to.findClosestSpawnpoint(new Point(x, y));
+            if (portal_to != null) {
+                changeMap(map_to, portal_to);
+                return true;
+            }
+        }
+        SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+        return false;
     }
 
     public void changeMap(MapleMap to, TacosPortal pto) {
@@ -699,7 +731,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void equipChanged() {
-        this.map.broadcastMessage(this, ResCUserRemote.AvatarModified(this, 1), false);
+        this.map.broadcastMessage(this, ResCUserRemote.UserAvatarModified(this, 1), false);
 
         this.stats.recalcLocalStats();
         if (getMessenger() != null) {
@@ -708,7 +740,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
         if (isCloning()) {
             cloneUpdate();
-            this.map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1));
+            this.map.broadcastMessageClone(getClone(), ResCUserRemote.UserAvatarModified(getClone(), 1));
         }
     }
 
@@ -913,6 +945,33 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setCoconutTeam(int coconutteam) {
         this.coconutteam = coconutteam;
+    }
+
+    // aran
+    private int m_nCombo = 0;
+    private long m_tLastSetCombo = 0;
+
+    public boolean sendIncCombo() {
+        long time = System.currentTimeMillis();
+        if (this.m_tLastSetCombo == 0 || (this.m_tLastSetCombo + 3500) < time) {
+            this.m_nCombo = 0;
+        }
+        this.m_tLastSetCombo = System.currentTimeMillis();
+        this.m_nCombo++;
+
+        SendPacket(ResCUserLocal.IncCombo(this));
+
+        int combo_level = this.m_nCombo / 10;
+        if (this.m_nCombo % 10 == 0 && 1 <= combo_level && combo_level <= 10) {
+            if (combo_level <= ((MapleCharacter) this).getSkillLevel(OpsSkill.ARAN_COMBO_ABILITY.get())) {
+                SkillFactory.getSkill(OpsSkill.ARAN_COMBO_ABILITY.get()).getEffect(combo_level).applyComboBuff((MapleCharacter) this, this.m_nCombo);
+            }
+        }
+        return true;
+    }
+
+    public int getCombo() {
+        return this.m_nCombo;
     }
 
     // clone

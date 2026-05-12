@@ -73,6 +73,7 @@ import odin.server.MapleStatEffect;
 import tacos.odin.OdinPair;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataForcedStat;
 
@@ -757,6 +758,7 @@ public class ResCWvsContext {
 
     public static MaplePacket MapTransferResult(MapleCharacter chr, OpsMapTransfer ops_res, boolean vip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapTransferResult);
+
         sp.Encode1(ops_res.get());
         sp.Encode1(vip ? 1 : 0);
 
@@ -1041,14 +1043,16 @@ public class ResCWvsContext {
         return data.get().getBytes();
     }
 
-    public static MaplePacket changeCover(int cardid) {
+    public static MaplePacket MonsterBookSetCover(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCover);
-        sp.Encode4(cardid);
+
+        sp.Encode4(chr.getMonsterBookCover());
         return sp.get();
     }
 
-    public static MaplePacket addCard(boolean full, int cardid, int level) {
+    public static MaplePacket MonsterBookSetCard(boolean full, int cardid, int level) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCard);
+
         sp.Encode1(full ? 0 : 1);
         if (!full) {
             sp.Encode4(cardid);
@@ -2010,37 +2014,27 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket giveFameResponse(int mode, String charname, int newfame) {
+    public static MaplePacket GivePopularityResult(OpsGivePopularity ops, TacosCharacter chr, boolean is_up, TacosCharacter target) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
 
-        sp.Encode1(0);
-        sp.EncodeStr(charname);
-        sp.Encode1(mode);
-        sp.Encode2(newfame);
-        sp.Encode2(0);
-        return sp.get();
-    }
+        sp.Encode1(ops.get());
+        switch (ops) {
+            case GivePopularityRes_Success: {
+                sp.EncodeStr(target.getName());
+                sp.Encode1(is_up ? 1 : 0);
+                sp.Encode4(target.getFame());
+                break;
+            }
+            case GivePopularityRes_Notify: {
+                sp.EncodeStr(chr.getName());
+                sp.Encode1(is_up ? 1 : 0);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
 
-    public static MaplePacket giveFameErrorResponse(int status) {
-        /*	* 0: ok, use giveFameResponse<br>
-         * 1: the username is incorrectly entered<br>
-         * 2: users under level 15 are unable to toggle with fame.<br>
-         * 3: can't raise or drop fame anymore today.<br>
-         * 4: can't raise or drop fame for this character for this month anymore.<br>
-         * 5: received fame, use receiveFame()<br>
-         * 6: level of fame neither has been raised nor dropped due to an unexpected error*/
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
-
-        sp.Encode1(status);
-        return sp.get();
-    }
-
-    public static MaplePacket receiveFame(int mode, String charnameFrom) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
-
-        sp.Encode1(5);
-        sp.EncodeStr(charnameFrom);
-        sp.Encode1(mode);
         return sp.get();
     }
 

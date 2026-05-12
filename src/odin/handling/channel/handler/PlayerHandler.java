@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.awt.Point;
-
 import odin.client.inventory.IItem;
 import odin.client.ISkill;
 import odin.client.SkillFactory;
@@ -36,78 +35,18 @@ import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.wz.data.MobWz;
 import tacos.wz.data.SkillWz;
-import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
-import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
 import odin.server.life.MobSkill;
-import odin.server.maps.MapleMap;
 import odin.server.maps.FieldLimitType;
 
 public class PlayerHandler {
-
-    private static boolean isFinisher(final int skillid) {
-        switch (skillid) {
-            case 1111003:
-            case 1111004:
-            case 1111005:
-            case 1111006:
-            case 11111002:
-            case 11111003:
-                return true;
-        }
-        return false;
-    }
-
-    public static void ChangeMonsterBookCover(final int bookid, final MapleClient c, final MapleCharacter chr) {
-        if (bookid == 0 || GameConstants.isMonsterCard(bookid)) {
-            chr.setMonsterBookCover(bookid);
-            chr.getMonsterBook().updateCard(c, bookid);
-        }
-    }
-
-    public static OpsMapTransfer TrockAddMap(MapleCharacter chr, OpsMapTransfer ops_req, byte rock_type, int target_map_id) {
-        switch (ops_req) {
-            case MapTransferReq_DeleteList: {
-                if (rock_type == 0) {
-                    chr.deleteFromRegRocks(target_map_id);
-                    return OpsMapTransfer.MapTransferRes_DeleteList;
-                }
-                if (rock_type == 1) {
-                    chr.deleteFromRocks(target_map_id);
-                    return OpsMapTransfer.MapTransferRes_DeleteList;
-                }
-                return OpsMapTransfer.MapTransferRes_Unknown;
-            }
-            case MapTransferReq_RegisterList: {
-                if (FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
-                    return OpsMapTransfer.MapTransferRes_NotAllowed;
-                }
-                if (rock_type == 0) {
-                    chr.addRegRockMap();
-                    return OpsMapTransfer.MapTransferRes_RegisterList;
-                }
-                if (rock_type == 1) {
-                    chr.addRockMap();
-                    return OpsMapTransfer.MapTransferRes_RegisterList;
-                }
-                return OpsMapTransfer.MapTransferRes_Unknown;
-            }
-            default: {
-                DebugLogger.ErrorLog("TrockAddMap : not coded " + ops_req);
-                break;
-            }
-        }
-
-        return OpsMapTransfer.MapTransferRes_Unknown;
-    }
 
     public static final void TakeDamage(ClientPacket cp, final MapleClient c, final MapleCharacter chr) {
         //System.out.println(slea.toString());
@@ -308,43 +247,6 @@ public class PlayerHandler {
         }
     }
 
-    public static final void AranCombo(final MapleClient c, final MapleCharacter chr) {
-        if (chr != null && chr.getJob() >= 2000 && chr.getJob() <= 2112) {
-            int combo = chr.getCombo();
-            final long curr = System.currentTimeMillis();
-
-            if (combo > 0 && (curr - chr.getLastCombo()) > 7000) {
-                // Official MS timing is 3.5 seconds, so 7 seconds should be safe.
-                //chr.getCheatTracker().registerOffense(CheatingOffense.ARAN_COMBO_HACK);
-                combo = 0;
-            }
-            if (combo < 30000) {
-                combo++;
-            }
-            chr.setLastCombo(curr);
-            chr.setCombo(combo);
-
-            c.getSession().write(ResCUserLocal.testCombo(combo));
-
-            switch (combo) { // Hackish method xD
-                case 10:
-                case 20:
-                case 30:
-                case 40:
-                case 50:
-                case 60:
-                case 70:
-                case 80:
-                case 90:
-                case 100:
-                    if (chr.getSkillLevel(21000000) >= (combo / 10)) {
-                        SkillFactory.getSkill(21000000).getEffect(combo / 10).applyComboBuff(chr, combo);
-                    }
-                    break;
-            }
-        }
-    }
-
     public static final void UseItemEffect(final int itemId, final MapleClient c, final MapleCharacter chr) {
         final IItem toUse = chr.getInventory(MapleInventoryType.CASH).findById(itemId);
         if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
@@ -354,12 +256,7 @@ public class PlayerHandler {
         if (itemId != 5510000) {
             chr.setItemEffect(itemId);
         }
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.SetActiveEffectItem(chr, itemId), false);
-    }
-
-    public static final void CancelItemEffect(final int id, final MapleCharacter chr) {
-        chr.cancelEffect(
-                MapleItemInformationProvider.getInstance().getItemEffect(-id), false, -1);
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActiveEffectItem(chr, itemId), false);
     }
 
     public static final void SkillEffect(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
@@ -372,13 +269,13 @@ public class PlayerHandler {
 
         if (skilllevel_serv > 0 && skilllevel_serv == skill_level && skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(System.currentTimeMillis());
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.SkillPrepare(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed), false);
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSkillPrepare(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed), false);
         }
 
         // クローン : 暴風とか
         if (chr.isCloning()) {
             MapleCharacter chr_clone = chr.getClone();
-            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.SkillPrepare(chr_clone, skill_id, skill_level, action, m_nPrepareSkillActionSpeed));
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserSkillPrepare(chr_clone, skill_id, skill_level, action, m_nPrepareSkillActionSpeed));
         }
     }
 
@@ -443,40 +340,4 @@ public class PlayerHandler {
                 break;
         }
     }
-
-    public static final void DropMeso(final int meso, final MapleCharacter chr) {
-        if (!chr.isAlive() || (meso < 10 || meso > 50000) || (meso > chr.getMeso())) {
-            chr.updateStat();
-            return;
-        }
-        chr.gainMeso(-meso, false, true);
-        chr.getMap().spawnMesoDrop(meso, chr.getPosition(), chr, chr, true, (byte) 0);
-    }
-
-    public static final void ChangeEmotion(final int emote, final MapleCharacter chr) {
-        if (emote > 7) {
-            final int emoteid = 5159992 + emote;
-            final MapleInventoryType type = GameConstants.getInventoryType(emoteid);
-            if (chr.getInventory(type).findById(emoteid) == null) {
-                //chr.getCheatTracker().registerOffense(CheatingOffense.USING_UNAVAILABLE_ITEM, Integer.toString(emoteid));
-                return;
-            }
-        }
-        if (emote > 0 && chr != null && chr.getMap() != null) { //O_o
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.Emotion(chr, emote), false);
-
-            // クローン : 表情
-            if (chr.isCloning()) {
-                MapleCharacter chr_clone = chr.getClone();
-                chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.Emotion(chr_clone, emote));
-            }
-        }
-    }
-
-    public static void ChangeMap(MapleClient client, int map_id) {
-        MapleCharacter player = client.getPlayer();
-        MapleMap to = player.getChannelServer().getMapFactory().getMap(map_id);
-        player.changeMap(to, to.getPortal(0));
-    }
-
 }

@@ -47,8 +47,9 @@ import tacos.packet.ServerPacketHeader;
 public class ResCUserRemote {
 
     // CUserRemote::OnMove
-    public static MaplePacket Move(MapleCharacter chr, ParseCMovePath data) {
+    public static MaplePacket UserMove(MapleCharacter chr, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMove);
+
         sp.Encode4(chr.getId());
         sp.EncodeBuffer(data.get());
         return sp.get();
@@ -142,7 +143,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillPrepare
-    public static MaplePacket SkillPrepare(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
+    public static MaplePacket UserSkillPrepare(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillPrepare);
 
         sp.Encode4(chr.getId());
@@ -160,8 +161,9 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillCancel
-    public static MaplePacket SkillCancel(MapleCharacter chr, int skillId) {
+    public static MaplePacket UserSkillCancel(MapleCharacter chr, int skillId) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillCancel);
+
         sp.Encode4(chr.getId());
         sp.Encode4(skillId);
         return sp.get();
@@ -209,7 +211,7 @@ public class ResCUserRemote {
     }
 
     // CUser::OnEmotion
-    public static MaplePacket Emotion(MapleCharacter chr, int expression) {
+    public static MaplePacket UserEmotion(MapleCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotion);
 
         sp.Encode4(chr.getId()); // remote
@@ -218,7 +220,7 @@ public class ResCUserRemote {
     }
 
     // CUser::SetActiveEffectItem
-    public static MaplePacket SetActiveEffectItem(MapleCharacter chr, int itemid) {
+    public static MaplePacket UserSetActiveEffectItem(MapleCharacter chr, int itemid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActiveEffectItem);
 
         sp.Encode4(chr.getId());
@@ -227,8 +229,9 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSetActivePortableChair
-    public static MaplePacket SetActivePortableChair(int characterid, int itemid) {
+    public static MaplePacket UserSetActivePortableChair(int characterid, int itemid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActivePortableChair);
+
         sp.Encode4(characterid);
         sp.Encode4(itemid);
 
@@ -240,7 +243,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnAvatarModified
-    public static MaplePacket AvatarModified(TacosCharacter chr, int flag) {
+    public static MaplePacket UserAvatarModified(TacosCharacter chr, int flag) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserAvatarModified);
 
         sp.Encode4(chr.getId());
@@ -263,7 +266,7 @@ public class ResCUserRemote {
     }
 
     // CUser::OnEffect
-    public static MaplePacket EffectRemote(ArgUserEffect arg) {
+    public static MaplePacket UserEffectRemote(ArgUserEffect arg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
         sp.Encode4(arg.chr.getId());
         sp.EncodeBuffer(ResCUserLocal.EffectData(arg));

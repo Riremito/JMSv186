@@ -249,13 +249,13 @@ public class AdminCommand {
                 }
                 victim.setChair(0);
                 victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
-                victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
+                victim.getMap().broadcastMessage(victim, ResCUserRemote.UserSetActivePortableChair(c.getPlayer().getId(), 0), false);
                 victim.giveDebuff(dis, SkillWz.get().getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 3, 1)));
             } else {
                 for (MapleCharacter victim : c.getPlayer().getMap().getCharacters()) {
                     victim.setChair(0);
                     victim.getClient().getSession().write(ResCUserLocal.SitResult(-1));
-                    victim.getMap().broadcastMessage(victim, ResCUserRemote.SetActivePortableChair(c.getPlayer().getId(), 0), false);
+                    victim.getMap().broadcastMessage(victim, ResCUserRemote.UserSetActivePortableChair(c.getPlayer().getId(), 0), false);
                     victim.giveDebuff(dis, SkillWz.get().getMobSkillData(type, CommandProcessorUtil.getOptionalIntArg(splitted, 2, 1)));
                 }
             }
@@ -344,17 +344,6 @@ public class AdminCommand {
         @Override
         public int execute(MapleClient c, String[] splitted) {
             MapleQuest.getInstance(Integer.parseInt(splitted[2])).forceComplete(c.getChannelServer().getOnlinePlayers().findByName(splitted[1]), Integer.parseInt(splitted[3]));
-            return 1;
-        }
-    }
-
-    public static class NearestPortal extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            TacosPortal portal = c.getPlayer().getMap().findClosestSpawnpoint(c.getPlayer().getPosition());
-            c.getPlayer().dropMessage(6, portal.getName() + " id: " + portal.getId() + " script: " + portal.getScriptName());
-
             return 1;
         }
     }

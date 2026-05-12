@@ -30,7 +30,6 @@ import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
-import odin.handling.channel.handler.PlayerHandler;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -96,9 +95,9 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 item_use.run();
                 if (action == 0) {
-                    PlayerHandler.ChangeMap(chr.getClient(), map_id);
+                    chr.changeMap(map_id);
                 } else {
-                    chr.changeMap(target_chr.getMap(), target_chr.getMap().findClosestSpawnpoint(target_chr.getPosition()));
+                    chr.changeMapWithCoordinate(map_id, chr.getPosition().x, chr.getPosition().y);
                 }
                 return true;
             }

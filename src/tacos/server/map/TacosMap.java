@@ -822,7 +822,7 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
             }
             if ((player_state & 2) != 0) {
-                player.SendPacket(ResCUserRemote.Move(chr, move_path));
+                player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
             }
             if ((player_state & 4) != 0) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr.getId()));

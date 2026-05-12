@@ -148,9 +148,9 @@ import tacos.server.map.TacosPortal;
 public class MapleCharacter extends TacosCharacter {
 
     private String chalktext, BlessOfFairy_Origin;
-    private long lastCombo, lastfametime, keydown_skill;
+    private long lastfametime, keydown_skill;
     private byte dojoRecord, fairyExp = 10;
-    private int mulung_energy, combo, availableCP, totalCP, hpApUsed;
+    private int mulung_energy, availableCP, totalCP, hpApUsed;
     private int bookCover, dojo,
             fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
             linkMid = 0, followid = 0, battleshipHP = 0;
@@ -237,9 +237,7 @@ public class MapleCharacter extends TacosCharacter {
     // channel
     @SuppressWarnings("unchecked")
     public void init_step2() {
-        lastCombo = 0;
         mulung_energy = 0;
-        combo = 0;
         keydown_skill = 0;
         smega = true;
         petStore = new byte[3];
@@ -1304,8 +1302,6 @@ public class MapleCharacter extends TacosCharacter {
 //	    if (effect.getSourceId() != 5221006) {
 //		getMount().cancelSchedule();
 //	    }
-        } else if (effect.isAranCombo()) {
-            combo = 0;
         }
     }
 
@@ -2918,7 +2914,7 @@ public class MapleCharacter extends TacosCharacter {
     public FameStatus canGiveFame(MapleCharacter from) {
         if (lastfametime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
             return FameStatus.NOT_TODAY;
-        } else if (from == null || lastmonthfameids == null || lastmonthfameids.contains(Integer.valueOf(from.getId()))) {
+        } else if (from == null || lastmonthfameids == null || lastmonthfameids.contains(from.getId())) {
             return FameStatus.NOT_THIS_MONTH;
         }
         return FameStatus.OK;
@@ -2926,7 +2922,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void hasGivenFame(MapleCharacter to) {
         lastfametime = System.currentTimeMillis();
-        lastmonthfameids.add(Integer.valueOf(to.getId()));
+        lastmonthfameids.add(to.getId());
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("INSERT INTO famelog (characterid, characterid_to) VALUES (?, ?)");
@@ -3407,22 +3403,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void writePoint(String type, String inc) {
         client.getSession().write(ResWrapper.sendGhostPoint(type, inc));
-    }
-
-    public final int getCombo() {
-        return combo;
-    }
-
-    public void setCombo(final int combo) {
-        this.combo = combo;
-    }
-
-    public final long getLastCombo() {
-        return lastCombo;
-    }
-
-    public void setLastCombo(final long combo) {
-        this.lastCombo = combo;
     }
 
     public final long getKeyDownSkill_Time() {

@@ -23,6 +23,7 @@ import tacos.config.DeveloperMode;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.awt.Point;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.arg.ArgUserEffect;
@@ -297,10 +298,10 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket testCombo(int value) {
+    public static MaplePacket IncCombo(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_IncCombo);
 
-        sp.Encode4(value);
+        sp.Encode4(chr.getCombo());
         return sp.get();
     }
 

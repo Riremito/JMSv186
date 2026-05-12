@@ -152,10 +152,6 @@ public class MonsterBook {
         return data.get().getBytes();
     }
 
-    public void updateCard(MapleClient c, int cardid) {
-        c.getSession().write(ResCWvsContext.changeCover(cardid));
-    }
-
     public int getLevel(int cardid) {
         if (cards.containsKey(cardid)) {
             return cards.get(cardid);
@@ -170,14 +166,14 @@ public class MonsterBook {
         if (cards.containsKey(cardid)) {
             final int levels = cards.get(cardid);
             if (levels >= 5) {
-                c.getSession().write(ResCWvsContext.addCard(true, cardid, levels));
+                c.getSession().write(ResCWvsContext.MonsterBookSetCard(true, cardid, levels));
             } else {
                 if (GameConstants.isSpecialCard(cardid)) {
                     SpecialCard += 1;
                 } else {
                     NormalCard += 1;
                 }
-                c.getSession().write(ResCWvsContext.addCard(false, cardid, 5));
+                c.getSession().write(ResCWvsContext.MonsterBookSetCard(false, cardid, 5));
                 c.SendPacket(ResWrapper.showGainCard(cardid));
                 c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
                 cards.put(cardid, 5);
@@ -192,7 +188,7 @@ public class MonsterBook {
         }
         // New card
         cards.put(cardid, 5);
-        c.getSession().write(ResCWvsContext.addCard(false, cardid, 5));
+        c.getSession().write(ResCWvsContext.MonsterBookSetCard(false, cardid, 5));
         c.SendPacket(ResWrapper.showGainCard(cardid));
         c.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
         calculateLevel();
