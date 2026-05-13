@@ -384,34 +384,45 @@ public class Structure {
         List<MapleRing> cRing = aRing.getLeft();
 
         data.Encode2(cRing.size());
+        // GW_CoupleRecord::Decode, 33 bytes.
         for (MapleRing ring : cRing) {
-            // 33 bytes
-            data.Encode4(ring.getPartnerChrId());
-            data.EncodeBuffer(ring.getPartnerName(), 13);
-            data.Encode8(ring.getRingId());
-            data.Encode8(ring.getPartnerRingId());
+            data.Encode4(ring.getPartnerChrId()); // dwPairCharacterID
+            data.EncodeBuffer(ring.getPartnerName(), 13); // sPairCharacterName
+            data.Encode8(ring.getRingId()); // liSN
+            data.Encode8(ring.getPartnerRingId()); // liPairSN
         }
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
             // nothing
         } else {
+            // GW_FriendRecord::Decode, 37 bytes.
             List<MapleRing> fRing = aRing.getRight();
             data.Encode2(fRing.size());
             for (MapleRing ring : fRing) {
-                // 37 bytes
-                data.Encode4(ring.getPartnerChrId());
-                data.EncodeBuffer(ring.getPartnerName(), 13);
-                data.Encode8(ring.getRingId());
-                data.Encode8(ring.getPartnerRingId());
-                data.Encode4(ring.getItemId());
+                data.Encode4(ring.getPartnerChrId()); // dwPairCharacterID
+                data.EncodeBuffer(ring.getPartnerName(), 13); // sPairCharacterName
+                data.Encode8(ring.getRingId()); // liSN
+                data.Encode8(ring.getPartnerRingId()); // liPairSN
+                data.Encode4(ring.getItemId()); // dwFriendItemID
             }
         }
 
         if (Version.LessOrEqual(Region.KMS, 41)) {
             // nothing
         } else {
-            data.Encode2(0);
-            // if not 0, 48 bytes
+            int married = 0;
+            data.Encode2(married);
+            // GW_MarriageRecord::Decode, 48 bytes.
+            for (int i = 0; i < married; i++) {
+                data.Encode4(0); // dwMarriageNo
+                data.Encode4(0); // dwGroomID
+                data.Encode4(0); // dwBrideID
+                data.Encode2(0); // usStatus
+                data.Encode4(0); // nGroomItemID
+                data.Encode4(0); // nBrideItemID
+                data.EncodeBuffer("", 13); // sGroomName
+                data.EncodeBuffer("", 13); // sBrideName
+            }
         }
 
         return data.get().getBytes();

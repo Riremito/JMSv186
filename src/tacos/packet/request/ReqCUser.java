@@ -53,7 +53,6 @@ import odin.handling.channel.handler.InventoryHandler;
 import odin.handling.channel.handler.ItemMakerHandler;
 import odin.handling.channel.handler.NPCHandler;
 import odin.handling.channel.handler.PartyHandler;
-import odin.handling.channel.handler.PlayersHandler;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
@@ -95,6 +94,7 @@ import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsGivePopularity;
+import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsMemo;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferChannel;
@@ -569,7 +569,7 @@ public class ReqCUser {
                 return ReqCRPSGameDlg.OnPacket(client, header, cp);
             }
             case CP_MarriageRequest: {
-                PlayersHandler.RingAction(cp, client);
+                OnMarriageRequest(chr, cp);
                 return true;
             }
             case CP_AllianceRequest: {
@@ -2479,6 +2479,103 @@ public class ReqCUser {
 
         DebugLogger.ErrorLog("OnMemoRequest : not coded " + type);
         return true;
+    }
+
+    // CWvsContext::SendSendInvitaionRequest
+    // CWvsContext::SendInvitationQuery
+    public static boolean OnMarriageRequest(MapleCharacter chr, ClientPacket cp) {
+        MapleClient client = chr.getClient();
+        byte mode = cp.Decode1();
+
+        switch (OpsMarriage.find(mode)) {
+            case MarriageReq_Propose: // CWvsContext::SendEngagementRequest
+            {
+                String name = cp.DecodeStr();
+                int item_id = cp.Decode4();
+                int ring_id = 1112300 + (item_id - 2240004);
+                MapleCharacter player = chr.getChannelServer().getOnlinePlayers().findByName(name);
+
+                if (0 < chr.getMarriageId()) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_RequesterAlreadyEngaged, 0, null, null));
+                    return true;
+                }
+                if (player == null) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_WrongName, 0, null, null));
+                    return true;
+                }
+                if (player.getMapId() != chr.getMapId()) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_NotSameMap, 0, null, null));
+                    return true;
+                }
+                if (!chr.haveItem(item_id, 1)) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_BrokeUp, 0, null, null));
+                    return true;
+                }
+                if (0 < player.getMarriageId() || 0 < player.getMarriageItemId()) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetAlreadyEngaged, 0, null, null));
+                    return true;
+                }
+                if (!MapleInventoryManipulator.checkSpace(client, ring_id, 1, "")) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_RequesterNoEmptySlot, 0, null, null));
+                    return true;
+                }
+                if (!MapleInventoryManipulator.checkSpace(player.getClient(), ring_id, 1, "")) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetNoEmptySlot, 0, null, null));
+                    return true;
+                }
+
+                chr.setMarriageItemId(item_id);
+                player.SendPacket(ResCWvsContext.MarriageRequest(chr.getName(), chr.getId()));
+                return true;
+            }
+            case MarriageReq_CancelPropose: {
+                chr.setMarriageItemId(0);
+                // send cancel to player.
+                return true;
+            }
+            case MarriageReq_Accept: {
+                boolean accepted = cp.Decode1() != 0;
+                String name = cp.DecodeStr();
+                int character_id = cp.Decode4();
+                MapleCharacter player = chr.getChannelServer().getOnlinePlayers().findByName(name);
+                if (chr.getMarriageId() > 0 || player == null || player.getId() != character_id || player.getMarriageItemId() <= 0 || !player.haveItem(player.getMarriageItemId(), 1) || player.getMarriageId() > 0) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_RequesterCanceled, 0, null, null));
+                    return true;
+                }
+                if (!accepted) {
+                    player.setMarriageItemId(0);
+                    player.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetRefused, 0, null, null));
+                    return true;
+                }
+                int ring_id = 1112300 + (player.getMarriageItemId() - 2240004);
+                if (!MapleInventoryManipulator.checkSpace(client, ring_id, 1, "") || !MapleInventoryManipulator.checkSpace(player.getClient(), ring_id, 1, "")) {
+                    chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetNoEmptySlot, 0, null, null));
+                    return true;
+                }
+                MapleInventoryManipulator.addById(client, ring_id, (short) 1);
+                MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.USE, player.getMarriageItemId(), 1, false, false);
+                MapleInventoryManipulator.addById(player.getClient(), ring_id, (short) 1);
+                player.setMarriageId(chr.getId());
+                chr.setMarriageId(player.getId());
+                player.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_ReservationDone, ring_id, player, chr));
+                return true;
+            }
+            case MarriageReq_BreakUp: {
+                int item_id = cp.Decode4();
+                MapleInventoryType type = GameConstants.getInventoryType(item_id);
+                IItem item = chr.getInventory(type).findById(item_id);
+                if (item != null && type == MapleInventoryType.ETC && item_id / 10000 == 421) {
+                    MapleInventoryManipulator.drop(client, type, item.getPosition(), item.getQuantity());
+                }
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnMarriageRequest not coded, " + mode);
+        return false;
     }
 
     public static boolean OnUserMigrateToITCRequest(MapleClient c, MapleCharacter chr) {

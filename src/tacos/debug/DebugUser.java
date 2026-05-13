@@ -158,7 +158,7 @@ public class DebugUser {
             AddItem(chr, 2190000);      // マクロ探知機
             AddItem(chr, 2210000);      // メイプルキノコの像
             AddItem(chr, 2230000);      // 
-            AddItem(chr, 2240000);      // 指輪
+            AddItem(chr, 2240004);      // 指輪
             AddItem(chr, 2241000);      // 
             AddItem(chr, 2242004);      // 
             AddItem(chr, 2260000);      // 

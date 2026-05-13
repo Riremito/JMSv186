@@ -74,6 +74,7 @@ import tacos.odin.OdinPair;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsGivePopularity;
+import tacos.packet.ops.OpsMarriage;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataForcedStat;
 
@@ -2038,43 +2039,45 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket sendEngagement(final byte msg, final int item, final MapleCharacter male, final MapleCharacter female) {
-        // 0B = Engagement has been concluded.
-        // 0D = The engagement is cancelled.
-        // 0E = The divorce is concluded.
-        // 10 = The marriage reservation has been successsfully made.
-        // 12 = Wrong character name
-        // 13 = The party in not in the same map.
-        // 14 = Your inventory is full. Please empty your E.T.C window.
-        // 15 = The person's inventory is full.
-        // 16 = The person cannot be of the same gender.
-        // 17 = You are already engaged.
-        // 18 = The person is already engaged.
-        // 19 = You are already married.
-        // 1A = The person is already married.
-        // 1B = You are not allowed to propose.
-        // 1C = The person is not allowed to be proposed to.
-        // 1D = Unfortunately, the one who proposed to you has cancelled his proprosal.
-        // 1E = The person had declined the proposal with thanks.
-        // 1F = The reservation has been cancelled. Try again later.
-        // 20 = You cannot cancel the wedding after reservation.
-        // 22 = The invitation card is ineffective.
+    public static MaplePacket MarriageResult(OpsMarriage ops, int item_id, MapleCharacter male, MapleCharacter female) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageResult);
 
-        sp.Encode1(msg); // 1103 custom quest
-        switch (msg) {
-            case 11: {
-                sp.Encode4(0); // ringid or uniqueid
-                sp.Encode4(male.getId());
-                sp.Encode4(female.getId());
-                sp.Encode2(1); //always
-                sp.Encode4(item);
-                sp.Encode4(item); // wtf?repeat?
-                sp.EncodeBuffer(male.getName(), 13);
-                sp.EncodeBuffer(female.getName(), 13);
+        sp.Encode1(ops.get()); // 1103 custom quest
+        switch (ops) {
+            case MarriageRes_Engaged:
+            case MarriageRes_Married: {
+                // GW_MarriageRecord::Decode, 48 bytes.
+                {
+                    sp.Encode4(0); // dwMarriageNo
+                    sp.Encode4(male.getId()); // dwGroomID
+                    sp.Encode4(female.getId()); // dwBrideID
+                    sp.Encode2(1); // usStatus
+                    sp.Encode4(item_id); // nGroomItemID
+                    sp.Encode4(item_id); // nBrideItemID
+                    sp.EncodeBuffer(male.getName(), 13); // sGroomName
+                    sp.EncodeBuffer(female.getName(), 13); // sBrideName
+                }
+                break;
+            }
+            case MarriageRes_ShowInvitation: {
+                sp.EncodeStr("");
+                sp.EncodeStr("");
+                sp.Encode2(0);
+                break;
+            }
+            case MarriageRes_Unknown: {
+                boolean is_msg = false;
+                sp.Encode1(is_msg ? 1 : 0);
+                if (is_msg) {
+                    sp.EncodeStr("");
+                }
+                break;
+            }
+            default: {
                 break;
             }
         }
+
         return sp.get();
     }
 

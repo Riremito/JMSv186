@@ -454,10 +454,10 @@ public class ReqCLogin {
         return false;
     }
 
-    public void OnCheckDuplicatedID(MapleClient c, String character_name) {
+    public void OnCheckDuplicatedID(MapleClient client, String character_name) {
         boolean isOK = checkCharacterName(character_name);
 
-        c.SendPacket(ResCLogin.CheckDuplicatedIDResult(character_name, isOK));
+        client.SendPacket(ResCLogin.CheckDuplicatedIDResult(character_name, isOK));
     }
 
     public boolean OnSelectWorld(MapleClient client, ClientPacket cp) {
@@ -499,11 +499,11 @@ public class ReqCLogin {
         return true;
     }
 
-    public boolean OnDeleteCharacter(MapleClient c, ClientPacket cp) {
-        // BB後
-        if (Version.PostBB() && !Region.IsKMS()) {
+    public boolean OnDeleteCharacter(MapleClient client, ClientPacket cp) {
+        // JMS188+
+        if (Version.GreaterOrEqual(Region.JMS, 188)) {
             String MapleID = cp.DecodeStr();
-            if (!MapleID.equals(c.getMapleId())) {
+            if (!MapleID.equals(client.getMapleId())) {
                 // state = 0以外にすると切断されます
             }
         }
@@ -523,14 +523,14 @@ public class ReqCLogin {
             String key = cp.DecodeStr(); // 32 bytes hex or PIC
         }
 
-        final int character_id = cp.Decode4();
-        if (!c.checkCharacterId(character_id)) {
-            c.loginFailed("OnDeleteCharacter");
+        int character_id = cp.Decode4();
+        if (!client.checkCharacterId(character_id)) {
+            client.loginFailed("OnDeleteCharacter");
             return false;
         }
 
-        boolean success = DQ_Characters.deleteCharacter(c, character_id);
-        c.SendPacket(ResCLogin.DeleteCharacterResult(character_id, success));
+        boolean success = DQ_Characters.deleteCharacter(client, character_id);
+        client.SendPacket(ResCLogin.DeleteCharacterResult(character_id, success));
         return success;
     }
 
@@ -565,9 +565,9 @@ public class ReqCLogin {
     }
 
     // TODO : move to other class.
-    public final boolean checkLogin(MapleClient c, String maple_id, String password) {
-        if (5 <= c.loginAttempt()) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, LoginResult.SYSTEM_ERROR));
+    public final boolean checkLogin(MapleClient client, String maple_id, String password) {
+        if (5 <= client.loginAttempt()) {
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, LoginResult.SYSTEM_ERROR));
             return false;
         }
         boolean endwith_ = false;
@@ -584,26 +584,26 @@ public class ReqCLogin {
                 DebugLogger.InfoLog("[GM MODE] \"" + maple_id + "\"");
             }
         }
-        c.setMapleId(maple_id);
-        int loginok = DQ_Accounts.login(c, maple_id, password);
+        client.setMapleId(maple_id);
+        int loginok = DQ_Accounts.login(client, maple_id, password);
         if (loginok == 5) {
             if (DQ_Accounts.autoRegister(maple_id, password)) {
-                loginok = DQ_Accounts.login(c, maple_id, password);
+                loginok = DQ_Accounts.login(client, maple_id, password);
             }
         }
         // アカウントの性別変更
         if (endwith_) {
-            c.setGender((byte) 1);
+            client.setGender((byte) 1);
         }
         // GM test
         if (startwith_GM) {
-            c.setGameMaster(true);
+            client.setGameMaster(true);
         }
         if (loginok != 0) {
-            c.SendPacket(ResCLogin.CheckPasswordResult(c, loginok));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, loginok));
         } else {
-            c.resetLoginAttempt();
-            registerClient(c);
+            client.resetLoginAttempt();
+            registerClient(client);
             return true;
         }
         return false;
