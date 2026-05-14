@@ -34,6 +34,7 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import odin.server.MapleStatEffect;
+import odin.server.life.MapleMonster;
 import odin.tools.AttackPair;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
@@ -161,52 +162,67 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillCancel
-    public static MaplePacket UserSkillCancel(MapleCharacter chr, int skillId) {
+    public static MaplePacket UserSkillCancel(MapleCharacter chr, int nSkillID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillCancel);
 
         sp.Encode4(chr.getId());
-        sp.Encode4(skillId);
+        sp.Encode4(nSkillID);
         return sp.get();
     }
 
+    public class UserHitData {
+
+        byte nAttackIdx = 0;
+        int nDamage = 0; // real damage.
+        MapleMonster monster_attacker = null;
+        int nLeft = 0;
+        int nReflect = 0;
+        int bPowerGuard = 0;
+        int nHitAction = 0;
+        int hit_x = 0;
+        int hit_y = 0;
+        int bGuard = 0;
+        int nDelta = 0; // damage number to show.
+    }
+
     // CUserRemote::OnHit
-    public static MaplePacket Hit(MapleCharacter chr, int attack_index, int mob_id, int damage, byte left, int reflect, boolean is_pg, int mob_object_id, int fake_skill_id) {
+    public static MaplePacket UserHit(MapleCharacter chr, int nAttackIdx, MapleMonster monster, int nDamage, int nLeft, int nReflect, boolean is_pg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHit);
 
         sp.Encode4(chr.getId());
-        sp.Encode1(attack_index); // nAttackIdx
-        sp.Encode4(damage); // nDamage
+        sp.Encode1(nAttackIdx); // nAttackIdx
+        sp.Encode4(nDamage); // nDamage, internal damage
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0); // critical
         }
 
-        // -1
-        if (-1 <= attack_index) {
-            sp.Encode4(mob_id);
-            sp.Encode1(left); // bLeft
+        if (monster != null) {
+            sp.Encode4(monster.getId());
+            sp.Encode1(nLeft); // bLeft
 
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode4(0);
                 sp.Encode4(0);
             }
 
-            sp.Encode1(reflect);
-            if (reflect != 0) {
+            sp.Encode1(nReflect);
+            if (nReflect != 0) {
                 sp.Encode1(is_pg ? 1 : 0);
-                sp.Encode4(mob_object_id);
-                sp.Encode1(6); // データ無視の可能性あり
-                sp.Encode2(0); // データ無視の可能性あり, X
-                sp.Encode2(0); // データ無視の可能性あり, Y
+                sp.Encode4(monster.getObjectId());
+                sp.Encode1(6); // nHitAction
+                sp.Encode2(0); // ptHit.x
+                sp.Encode2(0); // ptHit.y
             }
 
-            sp.Encode1(0); // stance flag, skill id = 33110000
+            sp.Encode1(0); // bGuard
         }
-        // -2
-        sp.Encode4(damage); // for 4120002
-        if (damage == -1) {
-            sp.Encode4(fake_skill_id); // skill_id == 4120002
+
+        sp.Encode4(nDamage); // nDelta
+        if (nDamage < 0) {
+            sp.Encode4(chr.getFakeSkill().get());
         }
+
         return sp.get();
     }
 

@@ -295,7 +295,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                             map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, this)), this.getPosition());
                             break;
                         case 1:
-                            map.broadcastMessage(from, ResCMobPool.MobDamaged(this, damage, true), false);
+                            map.broadcastMessage(from, ResCMobPool.MobDamaged(this, (int) damage, 1), false);
                             break;
                         case 2:
                             map.broadcastMessage(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
@@ -327,9 +327,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         startDropItemSchedule();
     }
 
-    public final void heal(int hp, int mp, final boolean broadcast) {
-        final long TotalHP = getHp() + hp;
-        final int TotalMP = getMp() + mp;
+    public void heal(int hp, int mp, final boolean broadcast) {
+        long TotalHP = getHp() + hp;
+        int TotalMP = getMp() + mp;
 
         if (TotalHP >= getMobMaxHp()) {
             setHp(getMobMaxHp());
@@ -342,7 +342,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             setMp(TotalMP);
         }
         if (broadcast) {
-            map.broadcastMessage(ResCMobPool.MobDamaged(this, hp));
+            map.broadcastMessage(ResCMobPool.MobDamaged(this, -hp, 0));
         } else if (sponge.get() != null) { // else if, since only sponge doesn't broadcast
             sponge.get().hp += hp;
         }
@@ -1021,10 +1021,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             if (hp > 1 && damage > 0) {
                 damage(chr, damage, false);
                 if (shadowWeb) {
-                    map.broadcastMessage(ResCMobPool.MobDamaged(getObjectId(), damage), getPosition());
+                    map.broadcastMessage(ResCMobPool.MobDamaged(getParent(), (int) damage, 0), getPosition());
                 }
             }
         }
+    }
+
+    public MapleMonster getParent() {
+        return this;
     }
 
     private static class AttackingMapleCharacter {

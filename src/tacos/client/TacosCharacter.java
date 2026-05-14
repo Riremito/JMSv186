@@ -21,13 +21,17 @@ package tacos.client;
 import java.awt.Point;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
+import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.MonsterBook;
 import odin.client.PlayerStats;
+import odin.client.SkillEntry;
 import odin.client.SkillFactory;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
@@ -606,6 +610,29 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setSubcategory(int subcategory) {
         this.subcategory = subcategory;
+    }
+
+    protected Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
+
+    public int getSkillLevel(OpsSkill ops) {
+        ISkill skill = SkillFactory.getSkill(ops.get());
+        if (skill == null) {
+            return 0;
+        }
+        SkillEntry ret = this.skills.get(skill);
+
+        int skill_level = Math.min(skill.getMaxLevel(), ret.skillevel + (skill.isBeginnerSkill() ? 0 : stats.incAllskill));
+        return skill_level;
+    }
+
+    public OpsSkill getFakeSkill() {
+        if (0 < getSkillLevel(OpsSkill.NIGHTLORD_FAKE)) {
+            return OpsSkill.NIGHTLORD_FAKE;
+        }
+        if (0 < getSkillLevel(OpsSkill.SHADOWER_FAKE)) {
+            return OpsSkill.SHADOWER_FAKE;
+        }
+        return OpsSkill.UNKNOWN;
     }
 
     protected MapleMount mount = null;

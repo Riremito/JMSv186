@@ -184,7 +184,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserHit: {
-                PlayerHandler.TakeDamage(cp, client, chr);
+                PlayerHandler.OnUserHit(chr, cp);
                 return true;
             }
             case CP_UserChat: {
