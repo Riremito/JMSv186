@@ -45,32 +45,32 @@ import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsSkill;
+import tacos.packet.response.ResCUserRemote.UserHitData;
 
 public class PlayerHandler {
 
     public static boolean OnUserHit(MapleCharacter chr, ClientPacket cp) {
+
         MapleMap map = chr.getMap();
+        UserHitData uhd = new UserHitData();
+
+        uhd.dwCharacterID = chr.getId();
 
         int unk1 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode4() : 0;
         int time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
-        byte nAttackIdx = cp.Decode1();
+        uhd.nAttackIdx = cp.Decode1();
         byte nMagicElemAttr = Version.LessOrEqual(Region.KMS, 43) ? 0 : cp.Decode1();
-        int nDamage = cp.Decode4();
+        uhd.nDamage = cp.Decode4();
         byte unk3 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
         byte unk4 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
 
         boolean is_mob_attack = false;
-        int dwTemplateID = 0;
-        int m_dwMobID = 0;
-        byte nLeft = 0;
-        byte nReflect = 0;
-        byte nPowerGuard = 0;
-
         int mpattack = 0;
         boolean is_pg = false;
         boolean isDeadlyAttack = false;
         PlayerStats stats = chr.getStat();
-        OpsAttackIndex ops = OpsAttackIndex.find(nAttackIdx);
+        OpsAttackIndex ops = OpsAttackIndex.find(uhd.nAttackIdx);
+        int m_dwMobID = 0;
 
         switch (ops) {
             case AttackIndex_Counter:
@@ -81,9 +81,9 @@ public class PlayerHandler {
                 break;
             }
             default: {
-                if (nAttackIdx < 0) {
+                if (uhd.nAttackIdx < 0) {
                     // not coded.
-                    chr.DebugMsg("OnUserHit : not coded, nAttackIdx =" + nAttackIdx + ", nDamage = " + nDamage);
+                    chr.DebugMsg("OnUserHit : not coded, nAttackIdx =" + uhd.nAttackIdx + ", nDamage = " + uhd.nDamage);
                     return true;
                 }
                 // mob attack.
@@ -92,19 +92,19 @@ public class PlayerHandler {
             case AttackIndex_Mob_Magic: {
                 // mob attack.
                 is_mob_attack = true;
-                dwTemplateID = cp.Decode4(); // mob wz id.
+                uhd.dwTemplateID = cp.Decode4(); // mob wz id.
                 m_dwMobID = cp.Decode4(); // mob object id.
-                nLeft = cp.Decode1();
-                nReflect = cp.Decode1();
+                uhd.nLeft = cp.Decode1();
+                uhd.nReflect = cp.Decode1();
                 byte unk7 = cp.Decode1();
                 //
-                if (nReflect != 0 || unk7 == 2) {
+                if (uhd.nReflect != 0 || unk7 == 2) {
                     // 1-4-1-2-2-2-2
-                    nPowerGuard = cp.Decode1();
-                    int unk6_2 = cp.Decode4(); // mob object id.
-                    byte unk6_3 = cp.Decode1();
-                    short hit_x = cp.Decode2();
-                    short hit_y = cp.Decode2();
+                    uhd.bPowerGuard = cp.Decode1();
+                    uhd.m_dwMobID = cp.Decode4(); // mob object id.
+                    uhd.nHitAction = cp.Decode1();
+                    uhd.ptHit_x = cp.Decode2();
+                    uhd.ptHit_y = cp.Decode2();
                     short chr_x = cp.Decode2();
                     short chr_y = cp.Decode2();
                 }
@@ -114,61 +114,63 @@ public class PlayerHandler {
 
         short unk8 = Version.GreaterOrEqual(Region.JMS, 187) ? cp.Decode1() : 0;
 
-        chr.DebugMsg("OnUserHit : nAttackIdx =" + nAttackIdx + ", nDamage = " + nDamage);
+        chr.DebugMsg("OnUserHit : nAttackIdx =" + uhd.nAttackIdx + ", nDamage = " + uhd.nDamage);
 
+        uhd.nDelta = uhd.nDamage;
         if (!is_mob_attack) {
-            if (nDamage < 0) {
+            if (uhd.nDamage < 0) {
                 // hack.
                 return true;
             }
-            map.broadcastMessage(chr, ResCUserRemote.UserHit(chr, nAttackIdx, null, nDamage, nLeft, nReflect, is_pg), false);
-            chr.getStat().setHp(chr.getStat().getHp() - nDamage);
+            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            chr.getStat().setHp(chr.getStat().getHp() - uhd.nDamage);
             chr.sendStatChanged();
             return true;
         }
 
         MapleMonster monster = map.getMonsterByOid(m_dwMobID);
-        if (monster == null || monster.getId() != dwTemplateID) {
+        if (monster == null || monster.getId() != uhd.dwTemplateID) {
             return true;
         }
         // fake skill.
-        if (nDamage == -1) {
+        if (uhd.nDamage == -1) {
             OpsSkill fake_skill = chr.getFakeSkill();
             if (fake_skill == OpsSkill.UNKNOWN) {
                 // hack.
                 return true;
             }
-            map.broadcastMessage(chr, ResCUserRemote.UserHit(chr, nAttackIdx, monster, nDamage, nLeft, nReflect, is_pg), false);
+            uhd.nSkillID = fake_skill.get();
+            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
             return true;
         }
-        if (nDamage < 0) {
+        if (uhd.nDamage < 0) {
             return true;
         }
 
-        if (nReflect != 0) {
-            if (nPowerGuard != 0) {
+        if (uhd.nReflect != 0) {
+            if (uhd.bPowerGuard != 0) {
                 Integer rate = chr.getBuffedValue(MapleBuffStat.POWERGUARD);
                 if (rate == null) {
                     return true;
                 }
-                int reflect_damage = (int) (nDamage / 100.0 * rate);
-                int real_damage = nDamage - reflect_damage;
+                int reflect_damage = (int) (uhd.nDamage / 100.0 * rate);
+                uhd.nDelta = uhd.nDamage - reflect_damage;
                 monster.damage(chr, reflect_damage, true);
-                chr.getStat().setHp(chr.getStat().getHp() - real_damage);
-                map.broadcastMessage(chr, ResCUserRemote.UserHit(chr, nAttackIdx, monster, nDamage, nLeft, nReflect, true), false);
+                chr.getStat().setHp(chr.getStat().getHp() - uhd.nDelta);
+                map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
                 chr.sendStatChanged();
-                chr.DebugMsg("PowerGuard : " + nDamage + " -> " + real_damage + ", " + reflect_damage);
+                chr.DebugMsg("PowerGuard : " + uhd.nDamage + " -> " + uhd.nDelta + ", " + reflect_damage);
                 return true;
             }
         }
 
-        MobAttackInfo attackInfo = MobWz.get().getMobAttackInfo(monster, nAttackIdx);
+        MobAttackInfo attackInfo = MobWz.get().getMobAttackInfo(monster, uhd.nAttackIdx);
         if (attackInfo != null) {
             isDeadlyAttack = attackInfo.isDeadlyAttack();
             mpattack = isDeadlyAttack ? (stats.getMp() - 1) : attackInfo.getMpBurn();
             MobSkill mob_skill = SkillWz.get().getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
             if (mob_skill != null) {
-                if (nDamage != 0) {
+                if (uhd.nDamage != 0) {
                     mob_skill.applyEffect(chr, monster, false);
                 }
             }
@@ -178,8 +180,8 @@ public class PlayerHandler {
         if (chr.getBuffedValue(MapleBuffStat.MORPH) != null) {
             chr.cancelMorphs();
         }
-        if (0 < nReflect) {
-            MobSkill skill = SkillWz.get().getMobSkillData(0, nReflect);
+        if (0 < uhd.nReflect) {
+            MobSkill skill = SkillWz.get().getMobSkillData(0, uhd.nReflect);
             if (skill != null) {
                 skill.applyEffect(chr, monster, false);
             }
@@ -188,38 +190,38 @@ public class PlayerHandler {
             case 112: {
                 ISkill skill = SkillFactory.getSkill(1120004);
                 if (chr.getSkillLevel(skill) > 0) {
-                    nDamage = (int) ((skill.getEffect(chr.getSkillLevel(skill)).getX() / 1000.0) * nDamage);
+                    uhd.nDelta = (int) ((skill.getEffect(chr.getSkillLevel(skill)).getX() / 1000.0) * uhd.nDamage);
                 }
                 break;
             }
             case 122: {
                 ISkill skill = SkillFactory.getSkill(1220005);
                 if (chr.getSkillLevel(skill) > 0) {
-                    nDamage = (int) ((skill.getEffect(chr.getSkillLevel(skill)).getX() / 1000.0) * nDamage);
+                    uhd.nDelta = (int) ((skill.getEffect(chr.getSkillLevel(skill)).getX() / 1000.0) * uhd.nDamage);
                 }
                 break;
             }
             case 132: {
                 ISkill skill = SkillFactory.getSkill(1320005);
                 if (chr.getSkillLevel(skill) > 0) {
-                    nDamage = (int) ((skill.getEffect(chr.getSkillLevel(skill)).getX() / 1000.0) * nDamage);
+                    uhd.nDelta = (int) ((skill.getEffect(chr.getSkillLevel(skill)).getX() / 1000.0) * uhd.nDamage);
                 }
                 break;
             }
         }
         MapleStatEffect magicShield = chr.getStatForBuff(MapleBuffStat.MAGIC_SHIELD);
         if (magicShield != null) {
-            nDamage -= (int) ((magicShield.getX() / 100.0) * nDamage);
+            uhd.nDelta -= (int) ((magicShield.getX() / 100.0) * uhd.nDamage);
         }
         MapleStatEffect blueAura = chr.getStatForBuff(MapleBuffStat.BLUE_AURA);
         if (blueAura != null) {
-            nDamage -= (int) ((blueAura.getY() / 100.0) * nDamage);
+            uhd.nDelta -= (int) ((blueAura.getY() / 100.0) * uhd.nDamage);
         }
         if (chr.getBuffedValue(MapleBuffStat.SATELLITESAFE_PROC) != null && chr.getBuffedValue(MapleBuffStat.SATELLITESAFE_ABSORB) != null) {
             double buff = chr.getBuffedValue(MapleBuffStat.SATELLITESAFE_PROC).doubleValue();
             double buffz = chr.getBuffedValue(MapleBuffStat.SATELLITESAFE_ABSORB).doubleValue();
-            if ((int) ((buff / 100.0) * chr.getStat().getMaxHp()) <= nDamage) {
-                nDamage -= (int) ((buffz / 100.0) * nDamage);
+            if ((int) ((buff / 100.0) * chr.getStat().getMaxHp()) <= uhd.nDamage) {
+                uhd.nDelta = uhd.nDamage - (int) ((buffz / 100.0) * uhd.nDamage);
                 chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
                 chr.cancelEffectFromBuffStat(MapleBuffStat.REAPER);
             }
@@ -238,21 +240,21 @@ public class PlayerHandler {
                 }
                 chr.addMPHP(-hploss, -mploss);
             } else {
-                mploss = (int) (nDamage * (chr.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0)) + mpattack;
-                hploss = nDamage - mploss;
+                mploss = (int) (uhd.nDamage * (chr.getBuffedValue(MapleBuffStat.MAGIC_GUARD).doubleValue() / 100.0)) + mpattack;
+                hploss = uhd.nDamage - mploss;
                 if (chr.getBuffedValue(MapleBuffStat.INFINITY) != null) {
                     mploss = 0;
                 } else if (mploss > stats.getMp()) {
                     mploss = stats.getMp();
-                    hploss = nDamage - mploss + mpattack;
+                    hploss = uhd.nDamage - mploss + mpattack;
                 }
                 chr.addMPHP(-hploss, -mploss);
             }
 
         } else if (chr.getBuffedValue(MapleBuffStat.MESOGUARD) != null) {
-            nDamage = (nDamage % 2 == 0) ? nDamage / 2 : (nDamage / 2 + 1);
+            uhd.nDelta = (uhd.nDamage % 2 == 0) ? uhd.nDamage / 2 : (uhd.nDamage / 2 + 1);
 
-            int mesoloss = (int) (nDamage * (chr.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0));
+            int mesoloss = (int) (uhd.nDamage * (chr.getBuffedValue(MapleBuffStat.MESOGUARD).doubleValue() / 100.0));
             if (chr.getMeso() < mesoloss) {
                 chr.gainMeso(-chr.getMeso(), false);
                 chr.cancelBuffStats(MapleBuffStat.MESOGUARD);
@@ -262,22 +264,23 @@ public class PlayerHandler {
             if (isDeadlyAttack && stats.getMp() > 1) {
                 mpattack = stats.getMp() - 1;
             }
-            chr.addMPHP(-nDamage, -mpattack);
+            chr.addMPHP(-uhd.nDelta, -mpattack);
         } else {
             if (isDeadlyAttack) {
                 chr.addMPHP(stats.getHp() > 1 ? -(stats.getHp() - 1) : 0, stats.getMp() > 1 ? -(stats.getMp() - 1) : 0);
             } else {
-                chr.addMPHP(-nDamage, -mpattack);
+                chr.addMPHP(-uhd.nDamage, -mpattack);
             }
         }
-        chr.handleBattleshipHP(-nDamage);
+        chr.handleBattleshipHP(-uhd.nDamage);
 
         chr.sendStatChanged();
-        map.broadcastMessage(chr, ResCUserRemote.UserHit(chr, nAttackIdx, monster, nDamage, nLeft, nReflect, is_pg), false);
+        map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
 
         if (chr.isCloning()) {
             MapleCharacter chr_clone = chr.getClone();
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserHit(chr_clone, nAttackIdx, monster, nDamage, nLeft, nReflect, is_pg));
+            uhd.dwCharacterID = chr_clone.getId();
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserHit(uhd));
         }
         return true;
     }

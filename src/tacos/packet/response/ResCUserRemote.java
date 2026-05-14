@@ -34,7 +34,6 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import odin.server.MapleStatEffect;
-import odin.server.life.MapleMonster;
 import odin.tools.AttackPair;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
@@ -170,57 +169,60 @@ public class ResCUserRemote {
         return sp.get();
     }
 
-    public class UserHitData {
+    public static class UserHitData {
 
-        byte nAttackIdx = 0;
-        int nDamage = 0; // real damage.
-        MapleMonster monster_attacker = null;
-        int nLeft = 0;
-        int nReflect = 0;
-        int bPowerGuard = 0;
-        int nHitAction = 0;
-        int hit_x = 0;
-        int hit_y = 0;
-        int bGuard = 0;
-        int nDelta = 0; // damage number to show.
+        public int dwCharacterID = 0; // remote user id.
+        public int nAttackIdx = 0;
+        public int nDamage = 0; // real damage.
+        public int dwTemplateID = 0; // attacker mob id.
+        public int nLeft = 0;
+        public int nReflect = 0;
+        public int bPowerGuard = 0;
+        public int m_dwMobID = 0; // damaged mob object id.
+        public int nHitAction = 0;
+        public int ptHit_x = 0;
+        public int ptHit_y = 0;
+        public int bGuard = 0;
+        public int nDelta = 0; // damage number to show.
+        public int nSkillID = 0; // fake skill id.
     }
 
     // CUserRemote::OnHit
-    public static MaplePacket UserHit(MapleCharacter chr, int nAttackIdx, MapleMonster monster, int nDamage, int nLeft, int nReflect, boolean is_pg) {
+    public static MaplePacket UserHit(UserHitData uhd) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHit);
 
-        sp.Encode4(chr.getId());
-        sp.Encode1(nAttackIdx); // nAttackIdx
-        sp.Encode4(nDamage); // nDamage, internal damage
+        sp.Encode4(uhd.dwCharacterID);
+        sp.Encode1(uhd.nAttackIdx);
+        sp.Encode4(uhd.nDamage); // internal damage
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0); // critical
         }
 
-        if (monster != null) {
-            sp.Encode4(monster.getId());
-            sp.Encode1(nLeft); // bLeft
+        if (uhd.dwTemplateID != 0) {
+            sp.Encode4(uhd.dwTemplateID); // dwTemplateID
+            sp.Encode1(uhd.nLeft); // bLeft
 
             if (Version.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode4(0);
                 sp.Encode4(0);
             }
 
-            sp.Encode1(nReflect);
-            if (nReflect != 0) {
-                sp.Encode1(is_pg ? 1 : 0);
-                sp.Encode4(monster.getObjectId());
-                sp.Encode1(6); // nHitAction
-                sp.Encode2(0); // ptHit.x
-                sp.Encode2(0); // ptHit.y
+            sp.Encode1(uhd.nReflect);
+            if (uhd.nReflect != 0) {
+                sp.Encode1(uhd.bPowerGuard);
+                sp.Encode4(uhd.m_dwMobID);
+                sp.Encode1(uhd.nHitAction);
+                sp.Encode2(uhd.ptHit_x);
+                sp.Encode2(uhd.ptHit_y);
             }
 
-            sp.Encode1(0); // bGuard
+            sp.Encode1(uhd.bGuard); // bGuard
         }
 
-        sp.Encode4(nDamage); // nDelta
-        if (nDamage < 0) {
-            sp.Encode4(chr.getFakeSkill().get());
+        sp.Encode4(uhd.nDelta); // nDelta
+        if (uhd.nDelta < 0) {
+            sp.Encode4(uhd.nSkillID); // fake skill id.
         }
 
         return sp.get();
