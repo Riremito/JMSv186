@@ -252,7 +252,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnChangeSkillRecordResult
-    public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
+    public static MaplePacket ChangeSkillRecordResult(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
         if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
@@ -269,6 +269,14 @@ public class ResCWvsContext {
             sp.Encode8(SharedDate.getMagicalExpirationDate());
         }
         sp.Encode1(4);
+        return sp.get();
+    }
+
+    // CWvsContext::OnSkillUseResult
+    public static MaplePacket SkillUseResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillUseResult);
+
+        sp.Encode1(0); // unused.
         return sp.get();
     }
 

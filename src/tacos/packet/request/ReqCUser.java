@@ -39,7 +39,6 @@ import odin.constants.ServerConstants;
 import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.handler.AttackInfo;
-import odin.handling.channel.handler.PlayerHandler;
 import odin.handling.world.MapleParty;
 import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
@@ -2114,49 +2113,150 @@ public class ReqCUser {
         return false;
     }
 
+    // CUserLocal::SendSkillUseRequest
     public static boolean OnUserSkillUseRequest(MapleCharacter chr, ClientPacket cp) {
-        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
-        int skill_id = cp.Decode4();
-        byte skill_level = cp.Decode1();
+        MapleMap map = chr.getMap();
+        int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int nSkillID = cp.Decode4();
+        byte nSLV = cp.Decode1();
+        OpsSkill ops_skill = OpsSkill.find(nSkillID);
 
-        //Debug.DebugLog("OnSkillUseRequest :  " + skill_id);
-        chr.updateTick(time_stamp);
-        PlayerHandler.SpecialMove(chr, cp, skill_id, skill_level, null);
-        return true;
+        chr.DebugMsg("OnUserSkillUseRequest : nSkillID = " + nSkillID + ", " + ops_skill);
+
+        chr.SendPacket(ResCWvsContext.SkillUseResult()); // unlock.
+
+        ISkill skill = SkillFactory.getSkill(nSkillID);
+        if (skill == null) {
+            return false;
+        }
+        MapleStatEffect effect = skill.getEffect(chr.getSkillLevel(GameConstants.getLinkedAranSkill(nSkillID)));
+        if (effect == null) {
+            return false;
+        }
+        if (0 < effect.getCooldown()) {
+            if (chr.skillisCooling(nSkillID)) {
+                chr.sendStatChanged(true);
+                return true;
+            }
+            if (ops_skill != OpsSkill.CAPTAIN_BATTLESHIP) {
+                chr.SendPacket(ResCUserLocal.SkillCooltimeSet(nSkillID, effect.getCooldown()));
+                chr.addCooldown(nSkillID, System.currentTimeMillis(), effect.getCooldown() * 1000);
+            }
+        }
+
+        switch (ops_skill) {
+            case HERO_MONSTER_MAGNET:
+            case DARKKNIGHT_MONSTER_MAGNET: {
+                List<Integer> monster_ids = new ArrayList<>();
+                List<Byte> magnets = new ArrayList<>();
+                int nMobCount = cp.Decode4();
+                if (nMobCount < 0) {
+                    return false;
+                }
+                for (int i = 0; i < nMobCount; i++) {
+                    int dwMobID = cp.Decode4();
+                    byte bSuccess = cp.Decode1(); // 01
+
+                    monster_ids.add(dwMobID);
+                    magnets.add(bSuccess);
+                }
+                if (Version.PostBB()) {
+                    short unk = cp.Decode2();
+                }
+                byte tDelay = cp.Decode1(); // Left
+
+                for (int i = 0; i < nMobCount; i++) {
+                    MapleMonster monster = map.getMonsterByOid(monster_ids.get(i));
+                    if (monster == null) {
+                        continue;
+                    }
+                    map.broadcastMessage(chr, ResCMobPool.MobCatchEffect(monster, magnets.get(i)), false);
+                }
+                // magnet effect for remote?
+                //map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(chr.getId(), nSkillID, 1, slea.readByte()), chr.getPosition());
+                return true;
+            }
+            case PRIEST_MYSTIC_DOOR:
+            case NOVICE_MYSTIC_DOOR:
+            case NOBLESSE_MYSTIC_DOOR:
+            case LEGEND_MYSTIC_DOOR:
+            case EVANJR_MYSTIC_DOOR:
+            case CITIZEN_MYSTIC_DOOR: {
+                if (FieldLimitType.MysticDoor.check(map.getFieldLimit())) {
+                    return false;
+                }
+                if (effect.isMagicDoor()) {
+                    return false;
+                }
+                effect.applyTo(chr, chr.getPosition());
+                return true;
+            }
+            case NOVICE_MONSTER_RIDING:
+            case NOBLESSE_MONSTER_RIDING:
+            case LEGEND_MONSTER_RIDING:
+            case EVANJR_MONSTER_RIDING:
+            case CITIZEN_MONSTER_RIDING: {
+                break;
+            }
+            default: {
+                effect.applyTo(chr, chr.getPosition());
+                break;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnUserSkillUseRequest : not coded, " + nSkillID + ", " + ops_skill);
+        return false;
     }
 
     // CancelBuffHandler
     public static boolean OnUserSkillCancelRequest(MapleCharacter chr, ClientPacket cp) {
+        MapleMap map = chr.getMap();
         int skill_id = cp.Decode4();
-        ISkill skill = SkillFactory.getSkill(skill_id);
 
+        ISkill skill = SkillFactory.getSkill(skill_id);
         if (skill.isChargeSkill()) {
             chr.setKeyDownSkill_Time(0);
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, skill_id), false);
         } else {
             chr.cancelEffect(skill.getEffect(1), false, -1);
         }
 
+        map.broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, skill_id), false);
+
         // クローン : 暴風停止
         if (chr.isCloning()) {
             MapleCharacter chr_clone = chr.getClone();
-            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserSkillCancel(chr_clone, skill_id));
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserSkillCancel(chr_clone, skill_id));
         }
-
         return true;
     }
 
+    // CUserLocal::DoActiveSkill_Prepare
     public static boolean OnUserSkillPrepareRequest(MapleCharacter chr, ClientPacket cp) {
-        int skill_id = cp.Decode4();
-        byte skill_level = cp.Decode1();
-        short action = 0;
-        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+        int nSkillID = cp.Decode4();
+        byte nSLV = cp.Decode1();
+        short action = 0; // m_nOneTimeAction & 0x7FFF | (m_nMoveAction << 15)
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186)) {
             action = cp.Decode2();
         } else {
             action = cp.Decode1();
         }
-        byte m_nPrepareSkillActionSpeed = cp.Decode1();
-        PlayerHandler.SkillEffect(chr, skill_id, skill_level, action, m_nPrepareSkillActionSpeed);
+        byte attack_speed_degree = cp.Decode1();
+
+        ISkill skill = SkillFactory.getSkill(nSkillID);
+        if (chr == null) {
+            return false;
+        }
+        int skilllevel_serv = chr.getSkillLevel(skill);
+
+        if (skilllevel_serv > 0 && skilllevel_serv == nSLV && skill.isChargeSkill()) {
+            chr.setKeyDownSkill_Time(System.currentTimeMillis());
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSkillPrepare(chr, nSkillID, nSLV, action, attack_speed_degree), false);
+        }
+
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserSkillPrepare(chr_clone, nSkillID, nSLV, action, attack_speed_degree));
+        }
         return true;
     }
 

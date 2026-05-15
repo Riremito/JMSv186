@@ -1417,21 +1417,7 @@ public class MapleStatEffect implements Serializable {
                 applyto.handleOrbconsume();
                 break;
             default:
-                if (isMorph() || isPirateMorph()) {
-                    final List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.MORPH, Integer.valueOf(getMorph(applyto))));
-                    applyto.getMap().broadcastMessage(applyto, ResCUserRemote.giveForeignBuff(applyto.getId(), stat, this), false);
-                } else if (isMonsterRiding()) {
-                    final int mountid = parseMountInfo(applyto, sourceid);
-                    if (mountid != 0) {
-                        final List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.MONSTER_RIDING, 0));
-                        applyto.getClient().getSession().write(ResCWvsContext.cancelBuff(null, null));
-                        applyto.getClient().getSession().write(ResCWvsContext.giveMount(mountid, sourceid, stat));
-                        applyto.getMap().broadcastMessage(applyto, ResCUserRemote.showMonsterRiding(applyto.getId(), stat, mountid, sourceid), false);
-                    } else {
-                        return;
-                    }
-                    normal = false;
-                } else if (isSoaring()) {
+                if (isSoaring()) {
                     localstatups = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.SOARING, 1));
                     applyto.getMap().broadcastMessage(applyto, ResCUserRemote.giveForeignBuff(applyto.getId(), localstatups, this), false);
                     applyto.getClient().getSession().write(ResCWvsContext.giveBuff(sourceid, localDuration, localstatups, this));
@@ -1448,9 +1434,6 @@ public class MapleStatEffect implements Serializable {
                 }
                 break;
         }
-        if (!isMonsterRiding_()) {
-            applyto.cancelEffect(this, true, -1, localstatups);
-        }
         // Broadcast effect to self
         if (normal && statups.size() > 0) {
             applyto.getClient().getSession().write(ResCWvsContext.giveBuff((skill ? sourceid : -sourceid), localDuration, statups, this));
@@ -1462,7 +1445,7 @@ public class MapleStatEffect implements Serializable {
         applyto.registerEffect(this, starttime, schedule, localstatups);
     }
 
-    public static final int parseMountInfo(final MapleCharacter player, final int skillid) {
+    public static int parseMountInfo(MapleCharacter player, int skillid) {
         switch (skillid) {
             case 1004: // Monster riding
             case 10001004:

@@ -286,6 +286,7 @@ public class ResCUserRemote {
     // CUser::OnEffect
     public static MaplePacket UserEffectRemote(ArgUserEffect arg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
+
         sp.Encode4(arg.chr.getId());
         sp.EncodeBuffer(ResCUserLocal.EffectData(arg));
         return sp.get();
@@ -309,21 +310,6 @@ public class ResCUserRemote {
         sp.Encode4(cid);
         sp.Encode8(first ? mask : 0);
         sp.Encode8(first ? 0 : mask);
-        return sp.get();
-    }
-
-    public static MaplePacket showMonsterRiding(int cid, List<OdinPair<MapleBuffStat, Integer>> statups, int itemId, int skillId) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
-
-        sp.Encode4(cid);
-        sp.EncodeBuffer(writeLongMask(statups));
-        sp.Encode2(0);
-        sp.Encode4(itemId);
-        sp.Encode4(skillId);
-        sp.Encode4(0);
-        sp.Encode2(0);
-        sp.Encode1(0);
-        sp.Encode1(0);
         return sp.get();
     }
 
@@ -473,8 +459,8 @@ public class ResCUserRemote {
         return sp.get();
     }
 
-    public static final MaplePacket showPetLevelUp(final MapleCharacter chr, final int index) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
+    public static MaplePacket showPetLevelUp(MapleCharacter chr, int index) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());
         sp.Encode1(4);
@@ -497,8 +483,8 @@ public class ResCUserRemote {
     }
 
     //its likely that durability items use this
-    public static final MaplePacket showHpHealed(final int cid, final int amount) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
+    public static MaplePacket showHpHealed(int cid, final int amount) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(cid);
         sp.Encode1(10); //Type
@@ -506,8 +492,8 @@ public class ResCUserRemote {
         return sp.get();
     }
 
-    public static final MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
+    public static MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());
         sp.Encode1(17);

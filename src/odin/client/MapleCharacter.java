@@ -1940,7 +1940,7 @@ public class MapleCharacter extends TacosCharacter {
             DebugLogger.ErrorLog("changeSkillLevel : error = " + skill.getId());
             return;
         }
-        client.getSession().write(ResCWvsContext.updateSkill(skill.getId(), newLevel, newMasterlevel, expiration));
+        client.getSession().write(ResCWvsContext.ChangeSkillRecordResult(skill.getId(), newLevel, newMasterlevel, expiration));
         if (newLevel == 0 && newMasterlevel == 0) {
             if (skills.containsKey(skill)) {
                 skills.remove(skill);
@@ -1962,7 +1962,7 @@ public class MapleCharacter extends TacosCharacter {
         if (skill == null) {
             return;
         }
-        client.getSession().write(ResCWvsContext.updateSkill(skill.getId(), newLevel, newMasterlevel, -1L));
+        client.getSession().write(ResCWvsContext.ChangeSkillRecordResult(skill.getId(), newLevel, newMasterlevel, -1L));
         if (newLevel == 0 && newMasterlevel == 0) {
             if (skills.containsKey(skill)) {
                 skills.remove(skill);
@@ -2282,7 +2282,7 @@ public class MapleCharacter extends TacosCharacter {
             pendingExpiration = null;
             if (pendingSkills != null) {
                 for (Integer z : pendingSkills) {
-                    client.getSession().write(ResCWvsContext.updateSkill(z, 0, 0, -1));
+                    client.getSession().write(ResCWvsContext.ChangeSkillRecordResult(z, 0, 0, -1));
                     client.getSession().write(ResWrapper.BroadCastMsgEvent("[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use."));
                 }
             } //not real msg

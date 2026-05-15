@@ -354,12 +354,12 @@ public class ResCMobPool {
         return monster.getNodePacket();
     }
 
-    // Monster Magnet
-    public static MaplePacket MobCatchEffect(int mobid, byte success) {
+    // CMob::OnCatchEffect
+    public static MaplePacket MobCatchEffect(MapleMonster monster, byte bSuccess) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobCatchEffect);
 
-        sp.Encode4(mobid);
-        sp.Encode1(success);
+        sp.Encode4(monster.getObjectId());
+        sp.Encode1(bSuccess);
         return sp.get();
     }
 
