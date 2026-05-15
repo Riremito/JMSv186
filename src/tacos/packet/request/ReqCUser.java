@@ -45,6 +45,7 @@ import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import odin.client.MapleBuffStat;
 import odin.handling.channel.handler.AllianceHandler;
 import odin.handling.channel.handler.BBSHandler;
 import odin.handling.channel.handler.FamilyHandler;
@@ -78,6 +79,8 @@ import odin.server.Randomizer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
+import odin.server.life.MobAttackInfo;
+import odin.server.life.MobSkill;
 import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
@@ -92,6 +95,7 @@ import tacos.debug.DebugMan;
 import tacos.debug.DebugShop;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
@@ -108,6 +112,8 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosWorld;
+import tacos.wz.data.MobWz;
+import tacos.wz.data.SkillWz;
 
 /**
  *
@@ -184,7 +190,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserHit: {
-                PlayerHandler.OnUserHit(chr, cp);
+                OnUserHit(chr, cp);
                 return true;
             }
             case CP_UserChat: {
@@ -1062,6 +1068,210 @@ public class ReqCUser {
             AttackInfo attack_clone = attack;
             attack_clone.CharacterId = chr_clone.getId();
             map.broadcastMessageClone(chr_clone, ResCUserRemote.UserAttack(attack_clone));
+        }
+        return true;
+    }
+
+    public static boolean OnUserHit(MapleCharacter chr, ClientPacket cp) {
+
+        MapleMap map = chr.getMap();
+        ResCUserRemote.UserHitData uhd = new ResCUserRemote.UserHitData();
+
+        uhd.dwCharacterID = chr.getId();
+
+        int unk1 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode4() : 0;
+        int time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        uhd.nAttackIdx = cp.Decode1();
+        byte nMagicElemAttr = Version.LessOrEqual(Region.KMS, 43) ? 0 : cp.Decode1();
+        uhd.nDamage = cp.Decode4();
+        byte unk3 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
+        byte unk4 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
+
+        boolean is_mob_attack = false;
+        int mpattack = 0;
+        boolean is_pg = false;
+        boolean isDeadlyAttack = false;
+        PlayerStats stats = chr.getStat();
+        OpsAttackIndex ops = OpsAttackIndex.find(uhd.nAttackIdx);
+        int m_dwMobID = 0;
+
+        switch (ops) {
+            case AttackIndex_Counter:
+            case AttackIndex_Obstacle:
+            case AttackIndex_Stat: {
+                // no mob.
+                short dwObstacleData = cp.Decode2();
+                break;
+            }
+            default: {
+                if (uhd.nAttackIdx < 0) {
+                    // not coded.
+                    chr.DebugMsg("OnUserHit : not coded, nAttackIdx =" + uhd.nAttackIdx + ", nDamage = " + uhd.nDamage);
+                    return true;
+                }
+                // mob attack.
+            }
+            case AttackIndex_Mob_Physical:
+            case AttackIndex_Mob_Magic: {
+                // mob attack.
+                is_mob_attack = true;
+                uhd.dwTemplateID = cp.Decode4(); // mob wz id.
+                m_dwMobID = cp.Decode4(); // mob object id.
+                uhd.nLeft = cp.Decode1();
+                uhd.nReflect = cp.Decode1();
+                byte unk7 = cp.Decode1();
+                //
+                if (uhd.nReflect != 0 || unk7 == 2) {
+                    // 1-4-1-2-2-2-2
+                    uhd.bPowerGuard = cp.Decode1();
+                    uhd.m_dwMobID = cp.Decode4(); // mob object id.
+                    uhd.nHitAction = cp.Decode1();
+                    uhd.ptHit_x = cp.Decode2();
+                    uhd.ptHit_y = cp.Decode2();
+                    short chr_x = cp.Decode2();
+                    short chr_y = cp.Decode2();
+                }
+                break;
+            }
+        }
+
+        short unk8 = Version.GreaterOrEqual(Region.JMS, 187) ? cp.Decode1() : 0;
+
+        uhd.nDelta = uhd.nDamage;
+        if (!is_mob_attack) {
+            if (uhd.nDamage < 0) {
+                // hack.
+                return true;
+            }
+            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            chr.getStat().setHp(chr.getStat().getHp() - uhd.nDamage);
+            chr.sendStatChanged();
+            return true;
+        }
+
+        MapleMonster monster = map.getMonsterByOid(m_dwMobID);
+        if (monster == null || monster.getId() != uhd.dwTemplateID) {
+            return true;
+        }
+        // fake skill.
+        if (uhd.nDamage == -1) {
+            OpsSkill fake_skill = chr.getFakeSkill();
+            if (fake_skill == OpsSkill.UNKNOWN) {
+                // hack.
+                return true;
+            }
+            uhd.nSkillID = fake_skill.get();
+            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            return true;
+        }
+        if (uhd.nDamage < 0) {
+            return true;
+        }
+        // MISS
+        if (uhd.nDamage == 0) {
+            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            return true;
+        }
+        MobAttackInfo attackInfo = MobWz.get().getMobAttackInfo(monster, uhd.nAttackIdx);
+        if (attackInfo != null) {
+            // deadlyAttack, 1:1
+            if (attackInfo.isDeadlyAttack()) {
+                uhd.nDelta = chr.getStat().getHp() - 1;
+                if (uhd.nDelta == 0) {
+                    uhd.nDelta = 1;
+                }
+                map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+                chr.getStat().setHp(1);
+                chr.getStat().setMp(1);
+                chr.sendStatChanged();
+                chr.DebugMsg("deadlyAttack : " + uhd.nDamage + " -> " + uhd.nDelta);
+                return true;
+            }
+            // mpBurn
+            int mp_burn = (short) attackInfo.getMpBurn(); // 9400113, BodyGuard B meme.
+            if (mp_burn != 0) {
+                map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+                int nMP = chr.getStat().getMp() - mp_burn;
+                if (chr.getStat().getMaxMp() < nMP) {
+                    nMP = chr.getStat().getMaxMp();
+                }
+                if (nMP < 0) {
+                    nMP = 0;
+                }
+                chr.getStat().setMp(nMP);
+                chr.sendStatChanged();
+                chr.DebugMsg("mpBurn : " + uhd.nDamage + " -> " + uhd.nDelta + ", MP = " + mp_burn);
+                return true;
+            }
+            // mob skill.
+            MobSkill mob_skill = SkillWz.get().getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
+            if (mob_skill != null) {
+                if (uhd.nDamage != 0) {
+                    mob_skill.applyEffect(chr, monster, false);
+                }
+            }
+            monster.setMp(monster.getMp() - attackInfo.getMpCon());
+        }
+        if (0 < uhd.nReflect) {
+            MobSkill skill = SkillWz.get().getMobSkillData(0, uhd.nReflect);
+            if (skill != null) {
+                skill.applyEffect(chr, monster, false);
+            }
+        }
+        if (uhd.nReflect != 0) {
+            if (uhd.bPowerGuard != 0) {
+                Integer rate = chr.getBuffedValue(MapleBuffStat.POWERGUARD);
+                if (rate == null) {
+                    return true;
+                }
+                int reflect_damage = (int) (uhd.nDamage / 100.0 * rate);
+                uhd.nDelta = uhd.nDamage - reflect_damage;
+                monster.damage(chr, reflect_damage, true);
+                chr.getStat().setHp(chr.getStat().getHp() - uhd.nDelta);
+                map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+                chr.sendStatChanged();
+                chr.DebugMsg("PowerGuard : " + uhd.nDamage + " -> " + uhd.nDelta + ", " + reflect_damage);
+                return true;
+            }
+        }
+        Integer magic_guard_rate = chr.getBuffedValue(MapleBuffStat.MAGIC_GUARD);
+        if (magic_guard_rate != null) {
+            int mp_damage = (int) (uhd.nDamage / 100.0 * magic_guard_rate);
+            if (chr.getStat().getMp() < mp_damage) {
+                mp_damage = chr.getStat().getMp();
+            }
+            int hp_damage = uhd.nDamage - mp_damage;
+            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            chr.getStat().setHp(chr.getStat().getHp() - hp_damage);
+            chr.getStat().setMp(chr.getStat().getMp() - mp_damage);
+            chr.sendStatChanged();
+            chr.DebugMsg("MagicGuard : " + uhd.nDamage + " -> " + hp_damage + ", " + mp_damage);
+            return true;
+        }
+        Integer meso_guard_rate = chr.getBuffedValue(MapleBuffStat.MESOGUARD);
+        if (meso_guard_rate != null) {
+            int meso_damage = (int) (uhd.nDamage / 100.0 * meso_guard_rate);
+            if (chr.getMeso() < meso_damage) {
+                meso_damage = chr.getMeso();
+            }
+            int hp_damage = uhd.nDamage - meso_damage;
+            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            chr.getStat().setHp(chr.getStat().getHp() - hp_damage);
+            chr.setMeso(chr.getMeso() - meso_damage);
+            chr.sendStatChanged();
+            chr.DebugMsg("MesoGuard : " + uhd.nDamage + " -> " + hp_damage + ", " + meso_damage);
+            return true;
+        }
+
+        chr.DebugMsg("OnUserHit : nAttackIdx =" + uhd.nAttackIdx + ", nDamage = " + uhd.nDamage);
+        map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+        chr.getStat().setHp(chr.getStat().getHp() - uhd.nDamage);
+        chr.sendStatChanged();
+
+        if (chr.isCloning()) {
+            MapleCharacter chr_clone = chr.getClone();
+            uhd.dwCharacterID = chr_clone.getId();
+            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserHit(uhd));
         }
         return true;
     }
