@@ -207,9 +207,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserActivateEffectItem: {
-                int item_id = cp.Decode4();
-                // pc
-                PlayerHandler.UseItemEffect(item_id, client, chr);
+                OnUserActivateEffectItem(chr, cp);
                 return true;
             }
             case CP_UserMonsterBookSetCover: {
@@ -1308,6 +1306,37 @@ public class ReqCUser {
             MapleCharacter chr_clone = chr.getClone();
             map.broadcastMessageClone(chr_clone, ResCUserRemote.UserEmotion(chr_clone, emotion_id));
         }
+        return true;
+    }
+
+    // CWvsContext::SendActiveEffectItemChange
+    public static boolean OnUserActivateEffectItem(MapleCharacter chr, ClientPacket cp) {
+        int nEffectItemID = cp.Decode4();
+        int type = nEffectItemID / 10000;
+
+        if (nEffectItemID != 0) {
+            switch (type) {
+                case 429: {
+                    // is_non_cash_effect_item
+                    if (chr.getInventory(MapleInventoryType.ETC).findById(nEffectItemID) == null) {
+                        return false;
+                    }
+                    break;
+                }
+                case 501: {
+                    if (chr.getInventory(MapleInventoryType.CASH).findById(nEffectItemID) == null) {
+                        return false;
+                    }
+                    break;
+                }
+                default: {
+                    return false;
+                }
+            }
+        }
+
+        chr.setActiveEffectItem(nEffectItemID);
+        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActiveEffectItem(chr), false);
         return true;
     }
 

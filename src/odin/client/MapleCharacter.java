@@ -152,7 +152,7 @@ public class MapleCharacter extends TacosCharacter {
     private byte dojoRecord, fairyExp = 10;
     private int mulung_energy, availableCP, totalCP, hpApUsed;
     private int bookCover, dojo,
-            fallcounter = 0, maplePoint, nexonPoint, chair, itemEffect, points, vpoints,
+            fallcounter = 0, maplePoint, nexonPoint, chair, points, vpoints,
             linkMid = 0, battleshipHP = 0;
     private Point old = new Point(0, 0);
     private boolean smega, hidden, hasSummon = false;
@@ -2984,17 +2984,9 @@ public class MapleCharacter extends TacosCharacter {
         return chair;
     }
 
-    public int getItemEffect() {
-        return itemEffect;
-    }
-
     public void setChair(int chair) {
         this.chair = chair;
         stats.relocHeal();
-    }
-
-    public void setItemEffect(int itemEffect) {
-        this.itemEffect = itemEffect;
     }
 
     public int getFamilyId() {
@@ -4544,7 +4536,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.map = map;
         ret.setStance(getStance());
         ret.chair = chair;
-        ret.itemEffect = itemEffect;
+        ret.nEffectItemID = nEffectItemID;
         ret.guildid = guildid;
         ret.currentrep = currentrep;
         ret.totalrep = totalrep;

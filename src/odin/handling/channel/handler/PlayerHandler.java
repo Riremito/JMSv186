@@ -21,13 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.awt.Point;
-import odin.client.inventory.IItem;
 import odin.client.ISkill;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleBuffStat;
-import odin.client.MapleClient;
 import odin.client.MapleCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCUserLocal;
@@ -36,18 +34,6 @@ import odin.server.MapleStatEffect;
 import odin.server.maps.FieldLimitType;
 
 public class PlayerHandler {
-
-    public static void UseItemEffect(final int itemId, final MapleClient c, final MapleCharacter chr) {
-        final IItem toUse = chr.getInventory(MapleInventoryType.CASH).findById(itemId);
-        if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
-            chr.updateInv();
-            return;
-        }
-        if (itemId != 5510000) {
-            chr.setItemEffect(itemId);
-        }
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActiveEffectItem(chr, itemId), false);
-    }
 
     public static void SkillEffect(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
 

@@ -1001,6 +1001,17 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.m_nCombo;
     }
 
+    // effect item.
+    protected int nEffectItemID = 0;
+
+    public int getActiveEffectItem() {
+        return this.nEffectItemID;
+    }
+
+    public void setActiveEffectItem(int nEffectItemID) {
+        this.nEffectItemID = nEffectItemID;
+    }
+
     // clone
     protected boolean clone = false;
     protected boolean cloning = false;

@@ -95,7 +95,7 @@ public class DataCUserRemote {
             }
             data.Encode4(0);
         }
-        data.Encode4(chr.getItemEffect());
+        data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
         data.Encode2(chr.getPosition().x);
         data.Encode2(chr.getPosition().y);
@@ -158,7 +158,7 @@ public class DataCUserRemote {
         data.Encode2(0);
         data.EncodeBuffer(DataAvatarLook.Encode(chr));
         data.Encode4(0); // m_dwDriverID
-        data.Encode4(chr.getItemEffect());
+        data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
         data.Encode2(chr.getPosition().x);
         data.Encode2(chr.getPosition().y);
@@ -260,7 +260,7 @@ public class DataCUserRemote {
         data.Encode4(0);
         data.Encode4(0);
         data.Encode4(0);
-        data.Encode4(chr.getItemEffect());
+        data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
         data.Encode2(chr.getPosition().x);
         data.Encode2(chr.getPosition().y);

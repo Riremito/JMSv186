@@ -238,11 +238,11 @@ public class ResCUserRemote {
     }
 
     // CUser::SetActiveEffectItem
-    public static MaplePacket UserSetActiveEffectItem(MapleCharacter chr, int itemid) {
+    public static MaplePacket UserSetActiveEffectItem(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActiveEffectItem);
 
         sp.Encode4(chr.getId());
-        sp.Encode4(itemid);
+        sp.Encode4(chr.getActiveEffectItem());
         return sp.get();
     }
 
