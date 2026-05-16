@@ -33,13 +33,13 @@ import tacos.packet.request.ReqCReactorPool;
 import tacos.packet.request.ReqCSummonedPool;
 import tacos.packet.request.ReqCUIGoldHammer;
 import tacos.packet.request.ReqCUIItemUpgrade;
+import tacos.packet.request.ReqCUIRaise;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.request.ReqCUser_Dragon;
 import tacos.packet.request.ReqCUser_FoxMan;
 import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.request.ReqCUser_SkillPet;
 import tacos.packet.request.Req_MapleTV;
-import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.server.TacosServer;
 
 /**
@@ -129,8 +129,7 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
             return ReqCField.OnPacket(client, header, cp);
         }
         if (header.between(ClientPacketHeader.CP_BEGIN_RAISE, ClientPacketHeader.CP_END_RAISE)) {
-            // 布製の人形などETCアイテムからUIを開くタイプの処理
-            return true;
+            return ReqCUIRaise.OnPacket(client, header, cp);
         }
         if (header.between(ClientPacketHeader.CP_BEGIN_ITEMUPGRADE, ClientPacketHeader.CP_END_ITEMUPGRADE)) {
             if (!ReqCUIGoldHammer.OnPacket(client, header, cp)) {

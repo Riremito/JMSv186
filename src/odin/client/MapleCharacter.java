@@ -952,7 +952,7 @@ public class MapleCharacter extends TacosCharacter {
         return getQuest(MapleQuest.getInstance(quest)).getStatus();
     }
 
-    public final MapleQuestStatus getQuest(final MapleQuest quest) {
+    public MapleQuestStatus getQuest(final MapleQuest quest) {
         if (!quests.containsKey(quest)) {
             return new MapleQuestStatus(quest, (byte) 0);
         }
@@ -967,7 +967,7 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public final MapleQuestStatus getQuestNAdd(final MapleQuest quest) {
+    public final MapleQuestStatus getQuestNAdd(MapleQuest quest) {
         if (!quests.containsKey(quest)) {
             final MapleQuestStatus status = new MapleQuestStatus(quest, (byte) 0);
             quests.put(quest, status);
@@ -976,7 +976,7 @@ public class MapleCharacter extends TacosCharacter {
         return quests.get(quest);
     }
 
-    public final MapleQuestStatus getQuestNoAdd(final MapleQuest quest) {
+    public final MapleQuestStatus getQuestNoAdd(MapleQuest quest) {
         return quests.get(quest);
     }
 

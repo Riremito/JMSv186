@@ -27,9 +27,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleClient;
 import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
-import odin.client.MapleQuestStatus;
 import odin.client.RockPaperScissors;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import tacos.packet.ClientPacket;
@@ -38,23 +36,21 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCRPSGameDlg;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import odin.server.MapleInventoryManipulator;
 import odin.server.life.MapleNPC;
 import odin.server.quest.MapleQuest;
 import tacos.odin.OdinNPCConversationManager;
 import odin.server.MapleItemInformationProvider;
-import tacos.odin.OdinPair;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 
 public class NPCHandler {
 
-    public static final void NPCTalk(MapleClient c, final MapleCharacter chr, int npc_oid) {
+    public static void NPCTalk(MapleClient client, MapleCharacter chr, int npc_oid) {
         if (chr == null || chr.getMap() == null) {
             return;
         }
-        final MapleNPC npc = chr.getMap().getNPCByOid(npc_oid);
+        MapleNPC npc = chr.getMap().getNPCByOid(npc_oid);
 
         if (npc == null) {
             return;
@@ -66,14 +62,14 @@ public class NPCHandler {
 
         if (npc.hasShop()) {
             chr.setConversation(1);
-            npc.sendShop(c);
+            npc.sendShop(client);
         } else {
-            TacosScriptNPC.getInstance().start(c, npc.getId());
+            TacosScriptNPC.getInstance().start(client, npc.getId());
         }
     }
 
-    public static final void QuestAction(ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static void QuestAction(ClientPacket cp, MapleClient client) {
+        MapleCharacter chr = client.getPlayer();
 
         byte action = cp.Decode1();
         int quest = cp.Decode2();
@@ -83,21 +79,21 @@ public class NPCHandler {
             quest += 65536; //probably not the best fix, but whatever
         }
 
-        final MapleQuest q = MapleQuest.getInstance(quest);
+        MapleQuest q = MapleQuest.getInstance(quest);
         switch (action) {
             case 0: { // Restore lost item
                 chr.updateTick(cp.Decode4());
-                final int itemid = cp.Decode4();
+                int itemid = cp.Decode4();
                 MapleQuest.getInstance(quest).RestoreLostItem(chr, itemid);
                 break;
             }
             case 1: { // Start Quest
-                final int npc = cp.Decode4();
+                int npc = cp.Decode4();
                 q.start(chr, npc);
                 break;
             }
             case 2: { // Complete Quest
-                final int npc = cp.Decode4();
+                int npc = cp.Decode4();
                 int selection = cp.Decode4();
                 // ?_?
                 if (selection != -1) {
@@ -124,15 +120,15 @@ public class NPCHandler {
                 break;
             }
             case 4: { // Scripted Start Quest
-                final int npc = cp.Decode4();
+                int npc = cp.Decode4();
                 short pos_x = cp.Decode2();
                 short pos_y = cp.Decode2();
-                TacosScriptQuest.getInstance().startQuest(c, npc, quest);
+                TacosScriptQuest.getInstance().startQuest(client, npc, quest);
                 break;
             }
             case 5: { // Scripted End Quest
-                final int npc = cp.Decode4();
-                TacosScriptQuest.getInstance().endQuest(c, npc, quest, false);
+                int npc = cp.Decode4();
+                TacosScriptQuest.getInstance().endQuest(client, npc, quest, false);
                 chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
                 chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
                 break;
@@ -142,14 +138,15 @@ public class NPCHandler {
         chr.DebugMsg("Quest ID = " + quest + ", Action = " + action);
     }
 
-    public static final void NPCMoreTalk(MapleClient c, OpsScriptMan smt, int action, int selection, String text) {
-        OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(c);
+    public static void NPCMoreTalk(MapleClient client, OpsScriptMan smt, int action, int selection, String text) {
+        MapleCharacter chr = client.getPlayer();
+        OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(client);
         if (cm == null) {
-            cm = TacosScriptQuest.getInstance().getCM(c);
+            cm = TacosScriptQuest.getInstance().getCM(client);
         }
         byte lastMsg = (byte) smt.get();
 
-        if (cm == null || c.getPlayer().getConversation() == 0 || cm.getLastMsg() != lastMsg) {
+        if (cm == null || chr.getConversation() == 0 || cm.getLastMsg() != lastMsg) {
             return;
         }
 
@@ -163,11 +160,11 @@ public class NPCHandler {
             if (action != 0) {
                 cm.setGetText(text);
                 if (cm.getType() == 0) {
-                    TacosScriptQuest.getInstance().startQuest(c, action, lastMsg, -1);
+                    TacosScriptQuest.getInstance().startQuest(client, action, lastMsg, -1);
                 } else if (cm.getType() == 1) {
-                    TacosScriptQuest.getInstance().endQuest(c, action, lastMsg, -1);
+                    TacosScriptQuest.getInstance().endQuest(client, action, lastMsg, -1);
                 } else {
-                    TacosScriptNPC.getInstance().action(c, action, lastMsg, -1);
+                    TacosScriptNPC.getInstance().action(client, action, lastMsg, -1);
                 }
             } else {
                 cm.dispose();
@@ -182,11 +179,11 @@ public class NPCHandler {
 
         if (selection >= -1 && action != -1) {
             if (cm.getType() == 0) {
-                TacosScriptQuest.getInstance().startQuest(c, action, lastMsg, selection);
+                TacosScriptQuest.getInstance().startQuest(client, action, lastMsg, selection);
             } else if (cm.getType() == 1) {
-                TacosScriptQuest.getInstance().endQuest(c, action, lastMsg, selection);
+                TacosScriptQuest.getInstance().endQuest(client, action, lastMsg, selection);
             } else {
-                TacosScriptNPC.getInstance().action(c, action, lastMsg, selection);
+                TacosScriptNPC.getInstance().action(client, action, lastMsg, selection);
             }
             return;
         }
@@ -195,19 +192,20 @@ public class NPCHandler {
         return;
     }
 
-    public static final void repairAll(final MapleClient c) {
-        if (c.getPlayer().getMapId() != 240000000) {
+    public static void repairAll(MapleClient client) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getMapId() != 240000000) {
             return;
         }
         Equip eq;
         double rPercentage;
         int price = 0;
         Map<String, Integer> eqStats;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final Map<Equip, Integer> eqs = new LinkedHashMap<>();
-        final MapleInventoryType[] types = {MapleInventoryType.EQUIP, MapleInventoryType.EQUIPPED};
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        Map<Equip, Integer> eqs = new LinkedHashMap<>();
+        MapleInventoryType[] types = {MapleInventoryType.EQUIP, MapleInventoryType.EQUIPPED};
         for (MapleInventoryType type : types) {
-            for (IItem item : c.getPlayer().getInventory(type)) {
+            for (IItem item : chr.getInventory(type)) {
                 if (item instanceof Equip) { //redundant
                     eq = (Equip) item;
                     if (eq.getDurability() >= 0) {
@@ -221,126 +219,89 @@ public class NPCHandler {
                 }
             }
         }
-        if (eqs.size() <= 0 || c.getPlayer().getMeso() < price) {
+        if (eqs.size() <= 0 || chr.getMeso() < price) {
             return;
         }
-        c.getPlayer().gainMeso(-price, true);
+        chr.gainMeso(-price, true);
         Equip ez;
         for (Entry<Equip, Integer> eqqz : eqs.entrySet()) {
             ez = eqqz.getKey();
             ez.setDurability(eqqz.getValue());
-            c.SendPacket(ResWrapper.addInventorySlot(ez.getPosition() < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP, ez.copy()));
+            client.SendPacket(ResWrapper.addInventorySlot(ez.getPosition() < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP, ez.copy()));
         }
     }
 
-    public static final void repair(ClientPacket cp, final MapleClient c) {
-        if (c.getPlayer().getMapId() != 240000000/* || slea.available() < 4*/) { //leafre for now
+    public static void repair(ClientPacket cp, MapleClient client) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getMapId() != 240000000/* || slea.available() < 4*/) { //leafre for now
             return;
         }
-        final int position = cp.Decode4(); //who knows why this is a int
-        final MapleInventoryType type = position < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
-        final IItem item = c.getPlayer().getInventory(type).getItem((byte) position);
+        int position = cp.Decode4(); //who knows why this is a int
+        MapleInventoryType type = position < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
+        IItem item = chr.getInventory(type).getItem((byte) position);
         if (item == null) {
             return;
         }
-        final Equip eq = (Equip) item;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final Map<String, Integer> eqStats = ii.getEquipStats(item.getItemId());
+        Equip eq = (Equip) item;
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        Map<String, Integer> eqStats = ii.getEquipStats(item.getItemId());
         if (eq.getDurability() < 0 || eqStats.get("durability") <= 0 || eq.getDurability() >= eqStats.get("durability")) {
             return;
         }
-        final double rPercentage = (100.0 - Math.ceil((eq.getDurability() * 1000.0) / (eqStats.get("durability") * 10.0)));
+        double rPercentage = (100.0 - Math.ceil((eq.getDurability() * 1000.0) / (eqStats.get("durability") * 10.0)));
         //drpq level 105 weapons - ~420k per %; 2k per durability point
         //explorer level 30 weapons - ~10 mesos per %
-        final int price = (int) Math.ceil(rPercentage * ii.getPrice(eq.getItemId()) / (ii.getReqLevel(eq.getItemId()) < 70 ? 100.0 : 1.0)); // / 100 for level 30?
+        int price = (int) Math.ceil(rPercentage * ii.getPrice(eq.getItemId()) / (ii.getReqLevel(eq.getItemId()) < 70 ? 100.0 : 1.0)); // / 100 for level 30?
         //TODO: need more data on calculating off client
-        if (c.getPlayer().getMeso() < price) {
+        if (chr.getMeso() < price) {
             return;
         }
-        c.getPlayer().gainMeso(-price, false);
+        chr.gainMeso(-price, false);
         eq.setDurability(eqStats.get("durability"));
-        c.SendPacket(ResWrapper.addInventorySlot(type, eq.copy()));
+        client.SendPacket(ResWrapper.addInventorySlot(type, eq.copy()));
     }
 
-    public static void UpdateQuest(MapleCharacter chr, ClientPacket cp) {
-        short quest_id = cp.Decode2();
-        final MapleQuest quest = MapleQuest.getInstance(quest_id);
-        if (quest != null) {
-            chr.updateQuest(chr.getQuest(quest), true);
-        }
-    }
-
-    public static void UseItemQuest(MapleCharacter chr, ClientPacket cp) {
-        short slot = cp.Decode2();
-        int itemId = cp.Decode4();
-        IItem item = chr.getInventory(MapleInventoryType.ETC).getItem(slot);
-        short qid = cp.Decode2();
-        short unk = cp.Decode2();
-
-        final MapleQuest quest = MapleQuest.getInstance(qid);
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        OdinPair<Integer, List<Integer>> questItemInfo = null;
-        boolean found = false;
-        for (IItem i : chr.getInventory(MapleInventoryType.ETC)) {
-            if (i.getItemId() / 10000 == 422) {
-                questItemInfo = ii.questItemInfo(i.getItemId());
-                if (questItemInfo != null && questItemInfo.getLeft() == qid && questItemInfo.getRight().contains(itemId)) {
-                    found = true;
-                    break; //i believe it's any order
-                }
-            }
-        }
-        if (quest != null && found && item != null && item.getQuantity() > 0 && item.getItemId() == itemId) {
-            final int newData = cp.Decode4();
-            final MapleQuestStatus stats = chr.getQuestNoAdd(quest);
-            if (stats != null && stats.getStatus() == 1) {
-                stats.setCustomData(String.valueOf(newData));
-                chr.updateQuest(stats, true);
-                MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.ETC, slot, (short) 1, false);
-            }
-        }
-    }
-
-    public static final void RPSGame(ClientPacket cp, final MapleClient c) {
-        if (/*slea.available() == 0 || */!c.getPlayer().getMap().containsNPC(9000019)) {
-            if (c.getPlayer().getRPS() != null) {
-                c.getPlayer().getRPS().dispose(c);
+    public static void RPSGame(ClientPacket cp, MapleClient client) {
+        MapleCharacter chr = client.getPlayer();
+        if (!chr.getMap().containsNPC(9000019)) {
+            if (chr.getRPS() != null) {
+                chr.getRPS().dispose(client);
             }
             return;
         }
-        final byte mode = cp.Decode1();
+        byte mode = cp.Decode1();
         switch (mode) {
             case 0: //start game
             case 5: //retry
-                if (c.getPlayer().getRPS() != null) {
-                    c.getPlayer().getRPS().reward(c);
+                if (chr.getRPS() != null) {
+                    chr.getRPS().reward(client);
                 }
-                if (c.getPlayer().getMeso() >= 1000) {
-                    c.getPlayer().setRPS(new RockPaperScissors(c, mode));
+                if (chr.getMeso() >= 1000) {
+                    chr.setRPS(new RockPaperScissors(client, mode));
                 } else {
-                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x08, -1, -1, -1));
+                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x08, -1, -1, -1));
                 }
                 break;
             case 1: //answer
-                if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().answer(c, cp.Decode1())) {
-                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
+                if (chr.getRPS() == null || !chr.getRPS().answer(client, cp.Decode1())) {
+                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 2: //time over
-                if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().timeOut(c)) {
-                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
+                if (chr.getRPS() == null || !chr.getRPS().timeOut(client)) {
+                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 3: //continue
-                if (c.getPlayer().getRPS() == null || !c.getPlayer().getRPS().nextRound(c)) {
-                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
+                if (chr.getRPS() == null || !chr.getRPS().nextRound(client)) {
+                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
             case 4: //leave
-                if (c.getPlayer().getRPS() != null) {
-                    c.getPlayer().getRPS().dispose(c);
+                if (chr.getRPS() != null) {
+                    chr.getRPS().dispose(client);
                 } else {
-                    c.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
+                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
                 }
                 break;
         }

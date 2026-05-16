@@ -60,7 +60,7 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
     protected final Map<Integer, OdinPair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<Integer, OdinPair<Integer, List<StructRewardItem>>>();
-    protected final Map<Integer, OdinPair<Integer, List<Integer>>> questItems = new HashMap<Integer, OdinPair<Integer, List<Integer>>>();
+    protected final Map<Integer, OdinPair<Integer, List<Integer>>> questItems = new HashMap<>();
 
     public final StructSetItem getSetItem(int setItemId) {
         return EtcWz.get().getSetItemInfoList().get(setItemId);
@@ -1275,7 +1275,7 @@ public class MapleItemInformationProvider {
         return questItem;
     }
 
-    public final OdinPair<Integer, List<Integer>> questItemInfo(final int itemId) {
+    public OdinPair<Integer, List<Integer>> questItemInfo(int itemId) {
         if (questItems.containsKey(itemId)) {
             return questItems.get(itemId);
         }
@@ -1290,7 +1290,7 @@ public class MapleItemInformationProvider {
         for (IMapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(TacosWzDataTool.getInt(consume, 0));
         }
-        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<Integer, List<Integer>>(TacosWzDataTool.getIntPath("questId", itemD, 0), consumeItems);
+        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<>(TacosWzDataTool.getIntPath("questId", itemD, 0), consumeItems);
         questItems.put(itemId, questItem);
         return questItem;
     }

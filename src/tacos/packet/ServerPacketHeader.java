@@ -23,7 +23,6 @@ package tacos.packet;
  * @author Riremito
  */
 public enum ServerPacketHeader implements IPacketHeader {
-    // CClientSocket::ProcessPacket, CLogin::OnPacket
     LP_BEGIN_SOCKET,
     LP_CheckPasswordResult,
     LP_GuestIDLoginResult,
@@ -47,7 +46,7 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_AuthenMessage,
     LP_SecurityPacket,
     LP_JMS_GuardInspectProcess,
-    LP_JMS_CheckGameGuardUpdatedResult, // JMS131, KMST330
+    LP_JMS_CheckGameGuardUpdatedResult,
     LP_JMS_SafetyPasswordResult,
     LP_EnableSPWResult,
     LP_DeleteCharacterOTPRequest,
@@ -58,7 +57,6 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_CheckExtraCharInfoResult,
     LP_CheckSPWResult,
     LP_END_SOCKET,
-    // CWvsContext::OnPacket
     LP_BEGIN_CHARACTERDATA,
     LP_InventoryOperation,
     LP_InventoryGrow,
@@ -124,8 +122,8 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_JMS_WorldTransferResult,
     LP_JMS_PlayTimeCountDown,
     LP_ImitatedNPCResult,
-    LP_ImitatedNPCData, // -> CNpcPool::OnPacket
-    LP_LimitedNPCDisableInfo, // -> CNpcPool::OnPacket
+    LP_ImitatedNPCData,
+    LP_LimitedNPCDisableInfo,
     LP_MonsterBookSetCard,
     LP_MonsterBookSetCover,
     LP_HourChanged,
@@ -183,19 +181,16 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_CMS_CharacterCash,
     LP_MacroSysDataInit,
     LP_END_CHARACTERDATA,
-    // CStage::OnPacket
     LP_BEGIN_STAGE,
     LP_SetField,
     LP_SetITC,
     LP_SetCashShop,
     LP_END_STAGE,
-    // CMapLoadable::OnPacket
     LP_BEGIN_MAP,
     LP_SetBackgroundEffect,
     LP_SetMapObjectVisible,
     LP_ClearBackgroundEffect,
     LP_END_MAP,
-    // CField::OnPacket
     LP_BEGIN_FIELD,
     LP_TransferFieldReqIgnored,
     LP_TransferChannelReqIgnored,
@@ -221,7 +216,7 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_Warn,
     LP_SetObjectState,
     LP_DestroyClock,
-    LP_ShowArenaResult, // -> CField_AriantArena::OnPacket
+    LP_ShowArenaResult,
     LP_StalkResult,
     LP_MassacreIncGauge,
     LP_MassacreResult,
@@ -229,11 +224,9 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_FootHoldInfo,
     LP_RequestFootHoldInfo,
     LP_FieldKillCount,
-    // CUserPool::OnPacket
     LP_BEGIN_USERPOOL,
     LP_UserEnterField,
     LP_UserLeaveField,
-    // CUserPool::OnUserCommonPacket
     LP_BEGIN_USERCOMMON,
     LP_UserChat,
     LP_UserChatNLCPQ,
@@ -253,7 +246,6 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_SetPortalUsable,
     LP_JMS_Fishing_Caught,
     LP_ShowPamsSongResult,
-    // CUser::OnPetPacket
     LP_BEGIN_PET,
     LP_PetActivated,
     LP_PetEvol,
@@ -264,7 +256,6 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_PetLoadExceptionList,
     LP_PetActionCommand,
     LP_END_PET,
-    // CUser::OnDragonPacket
     LP_BEGIN_DRAGON,
     LP_DragonEnterField,
     LP_DragonMove,
@@ -294,7 +285,6 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_SkillPetTransferField,
     LP_END_SKILLPET,
     LP_END_USERCOMMON,
-    // CUserPool::OnUserRemotePacket
     LP_BEGIN_USERREMOTE,
     LP_UserMove,
     LP_UserMeleeAttack,
@@ -318,7 +308,6 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_UserGuildMarkChanged,
     LP_UserThrowGrenade,
     LP_END_USERREMOTE,
-    // CUserPool::OnUserLocalPacket
     LP_BEGIN_USERLOCAL,
     LP_UserSitResult,
     LP_UserEmotionLocal,
@@ -371,7 +360,6 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_SkillCooltimeSet,
     LP_END_USERLOCAL,
     LP_END_USERPOOL,
-    // CSummonedPool::OnPacket
     LP_BEGIN_SUMMONED,
     LP_SummonedEnterField,
     LP_SummonedLeaveField,
@@ -380,12 +368,10 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_SummonedSkill,
     LP_SummonedHit,
     LP_END_SUMMONED,
-    // CMobPool::OnPacket
     LP_BEGIN_MOBPOOL,
     LP_MobEnterField,
     LP_MobLeaveField,
     LP_MobChangeController,
-    // CMobPool::OnMobPacket
     LP_BEGIN_MOB,
     LP_MobMove,
     LP_MobCtrlAck,
@@ -396,8 +382,8 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_MobAffected,
     LP_MobDamaged,
     LP_MobSpecialEffectBySkill,
-    LP_MobHPChange, // reserved
-    LP_MobCrcKeyChanged, // -> CMobPool::OnPacket
+    LP_MobHPChange,
+    LP_MobCrcKeyChanged,
     LP_MobHPIndicator,
     LP_JMS_Mob_Magnet,
     LP_MobCatchEffect,
@@ -414,81 +400,65 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_MobAttackedByMob,
     LP_END_MOB,
     LP_END_MOBPOOL,
-    // CNpcPool::OnPacket
     LP_BEGIN_NPCPOOL,
     LP_NpcEnterField,
     LP_NpcLeaveField,
     LP_NpcChangeController,
-    // CNpcPool::OnNpcPacket
     LP_BEGIN_NPC,
     LP_NpcMove,
     LP_NpcUpdateLimitedInfo,
     LP_NpcSpecialAction,
     LP_END_NPC,
-    // CNpcPool::OnNpcTemplatePacket
     LP_BEGIN_NPCTEMPLATE,
     LP_NpcSetScript,
     LP_END_NPCTEMPLATE,
     LP_END_NPCPOOL,
-    // CEmployeePool::OnPacket
     LP_BEGIN_EMPLOYEEPOOL,
     LP_EmployeeEnterField,
     LP_EmployeeLeaveField,
     LP_EmployeeMiniRoomBalloon,
     LP_END_EMPLOYEEPOOL,
-    // CDropPool::OnPacket
     LP_BEGIN_DROPPOOL,
     LP_DropEnterField,
     LP_DropReleaseAllFreeze,
     LP_DropLeaveField,
     LP_END_DROPPOOL,
-    // CMessageBoxPool::OnPacket
     LP_BEGIN_MESSAGEBOXPOOL,
     LP_CreateMessgaeBoxFailed,
     LP_MessageBoxEnterField,
     LP_MessageBoxLeaveField,
     LP_END_MESSAGEBOXPOOL,
-    // CAffectedAreaPool::OnPacket
     LP_BEGIN_AFFECTEDAREAPOOL,
     LP_AffectedAreaCreated,
     LP_AffectedAreaRemoved,
     LP_END_AFFECTEDAREAPOOL,
-    // CTownPortalPool::OnPacket
     LP_BEGIN_TOWNPORTALPOOL,
     LP_TownPortalCreated,
     LP_TownPortalRemoved,
     LP_END_TOWNPORTALPOOL,
-    // COpenGatePool::OnPacket
     LP_BEGIN_OPENGATEPOOL,
     LP_OpenGateCreated,
     LP_OpenGateRemoved,
     LP_END_OPENGATEPOOL,
-    // CInstancePortalPool
     LP_BEGIN_JMS_INSTANCEPOTALPOOL,
-    LP_JMS_InstancePortalCreated, // ItemID 2420004
+    LP_JMS_InstancePortalCreated,
     LP_JMS_InstancePortalRemoved,
     LP_END_JMS_INSTANCEPOTALPOOL,
-    // CReactorPool::OnPacket
     LP_BEGIN_REACTORPOOL,
     LP_ReactorChangeState,
     LP_ReactorMove,
     LP_ReactorEnterField,
     LP_ReactorLeaveField,
     LP_END_REACTORPOOL,
-    // CField_
     LP_BEGIN_ETCFIELDOBJ,
-    // CField_SnowBall::OnPacket
     LP_SnowBallState,
     LP_SnowBallHit,
     LP_SnowBallMsg,
     LP_SnowBallTouch,
-    // CField_Coconut::OnPacket
     LP_CoconutHit,
     LP_CoconutScore,
-    // CField_GuildBoss::OnPacket
     LP_HealerMove,
     LP_PulleyStateChange,
-    // CField_MonsterCarnival::OnPacket
     LP_MCarnivalEnter,
     LP_MCarnivalPersonalCP,
     LP_MCarnivalTeamCP,
@@ -497,46 +467,35 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_MCarnivalDeath,
     LP_MCarnivalMemberOut,
     LP_MCarnivalGameResult,
-    // CField_AriantArena::OnPacket
     LP_ArenaScore,
-    // CField_Battlefield::OnPacket
-    LP_BattlefieldEnter, // ?
+    LP_BattlefieldEnter,
     LP_BattlefieldScore,
     LP_BattlefieldTeamChanged,
-    // CField_Witchtower::OnPacket
     LP_WitchtowerScore,
-    // CField::OnPacket
     LP_HontaleTimer,
     LP_ChaosZakumTimer,
     LP_HontailTimer,
     LP_ZakumTimer,
     LP_END_ETCFIELDOBJ,
-    // CScriptMan::OnPacket
     LP_BEGIN_SCRIPT,
     LP_ScriptMessage,
     LP_END_SCRIPT,
-    // CShopDlg::OnPacket
     LP_BEGIN_SHOP,
     LP_OpenShopDlg,
     LP_ShopResult,
     LP_END_SHOP,
-    // CAdminShopDlg::OnPacket
     LP_BEGIN_ADMINSHOP,
     LP_AdminShopResult,
     LP_AdminShopCommodity,
     LP_END_ADMINSHOP,
-    // CTrunkDlg::OnPacket
     LP_TrunkResult,
-    // CStoreBankDlg::OnPacket
     LP_BEGIN_STOREBANK,
     LP_StoreBankGetAllResult,
     LP_StoreBankResult,
     LP_END_STOREBANK,
-    // CField::OnPacket
     LP_RPSGame,
     LP_Messenger,
     LP_MiniRoom,
-    // CField_Tournament::OnPacket
     LP_BEGIN_TOURNAMENT,
     LP_Tournament,
     LP_TournamentMatchTable,
@@ -544,22 +503,18 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_TournamentNoticeUEW,
     LP_TournamentAvatarInfo,
     LP_END_TOURNAMENT,
-    // CField_Wedding::OnPacket
     LP_BEGIN_WEDDING,
     LP_WeddingProgress,
     LP_WeddingCremonyEnd,
     LP_END_WEDDING,
-    // CField_Pachinko
     LP_BEGIN_JMS_PACHINKO,
     LP_JMS_PachinkoMessage,
     LP_JMS_PachinkoOpen,
     LP_JMS_PachinkoPlay,
     LP_JMS_PachinkoUpdate,
     LP_END_JMS_PACHINKO,
-    // CParcelDlg::OnPacket
     LP_Parcel,
     LP_END_FIELD,
-    // CCashShop::OnPacket
     LP_BEGIN_CASHSHOP,
     LP_CashShopChargeParamResult,
     LP_JMS_POINTSHOP_PRESENT_DIALOG,
@@ -583,7 +538,6 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_CashShopNoticeFreeCashItem,
     LP_CashShopMemberShopResult,
     LP_END_CASHSHOP,
-    // CFuncKeyMappedMan::OnPacket
     LP_BEGIN_FUNCKEYMAPPED,
     LP_FuncKeyMappedInit,
     LP_PetConsumeItemInit,
@@ -593,57 +547,49 @@ public enum ServerPacketHeader implements IPacketHeader {
     LP_CheckSSN2OnCreateNewCharacterResult,
     LP_CheckSPWOnCreateNewCharacterResult,
     LP_FirstSSNOnCreateNewCharacterResult,
-    // CMapleTVMan::OnPacket
     LP_BEGIN_MAPLETV,
     LP_MapleTVUpdateMessage,
     LP_MapleTVClearMessage,
     LP_MapleTVSendMessageResult,
     LP_BroadSetFlashChangeEvent,
     LP_END_MAPLETV,
-    // CITC::OnPacket
     LP_BEGIN_ITC,
     LP_ITCChargeParamResult,
     LP_ITCQueryCashResult,
     LP_ITCNormalItemResult,
     LP_END_ITC,
-    // CUICharacterSaleDlg::OnPacket
     LP_BEGIN_CHARACTERSALE,
     LP_CheckDuplicatedIDResultInCS,
     LP_CreateNewCharacterResultInCS,
     LP_CreateNewCharacterFailInCS,
     LP_CharacterSale,
     LP_END_CHARACTERSALE,
-    // CUIGoldHammer::OnPacket
     LP_BEGIN_GOLDHAMMER,
     LP_GoldHammere_s,
     LP_GoldHammerResult,
     LP_GoldHammere_e,
     LP_END_GOLDHAMMER,
-    // CBattleRecordMan::OnPacket
     LP_BEGIN_BATTLERECORD,
     LP_BattleRecord_s,
     LP_BattleRecordDotDamageInfo,
     LP_BattleRecordRequestResult,
     LP_BattleRecord_e,
     LP_END_BATTLERECORD,
-    // CUIItemUpgrade::OnPacket
     LP_BEGIN_ITEMUPGRADE,
     LP_ItemUpgrade_s,
     LP_ItemUpgradeResult,
     LP_ItemUpgradeFail,
     LP_ItemUpgrade_e,
     LP_END_ITEMUPGRADE,
-    // CUIVega::OnPacket
     LP_BEGIN_VEGA,
     LP_Vega_s,
     LP_VegaResult,
     LP_VegaFail,
     LP_Vega_e,
     LP_END_VEGA,
-    // CField::OnPacket
-    LP_LogoutGift, // CWvsContext::OnLogoutGift
+    LP_LogoutGift,
     LP_NO,
-    // 独自仕様
+    // custom packets.
     LP_CUSTOM_,
     LP_CUSTOM_WZ_HASH,
     LP_CUSTOM_CLIENT_PATCH,
@@ -652,11 +598,7 @@ public enum ServerPacketHeader implements IPacketHeader {
 
     private int value;
 
-    private ServerPacketHeader(int value) {
-        this.value = value;
-    }
-
-    private ServerPacketHeader() {
+    ServerPacketHeader() {
         this.value = -1;
     }
 
@@ -669,5 +611,4 @@ public enum ServerPacketHeader implements IPacketHeader {
     public void set(int value) {
         this.value = value;
     }
-
 }

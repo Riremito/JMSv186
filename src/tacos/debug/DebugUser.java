@@ -220,6 +220,8 @@ public class DebugUser {
             AddItem(chr, 4006001, 100); // 召喚の石
             AddItem(chr, 4080000);      // 五目並べセット
             AddItem(chr, 4080100);      // 神経衰弱セット
+            AddItem(chr, 4220021);
+            AddItem(chr, 4031838, 100);
         }
         // ポイントアイテム
         {
