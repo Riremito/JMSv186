@@ -49,6 +49,7 @@ public class PacketOps {
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
         OpsITC.init();
+        OpsUI.init();
     }
 
 }

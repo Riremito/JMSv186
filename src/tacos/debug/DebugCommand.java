@@ -64,6 +64,7 @@ import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.provider.IMapleData;
 import tacos.client.TacosForcedStat;
 import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
@@ -278,6 +279,10 @@ public class DebugCommand {
                     return false;
                 }
                 chr.DebugMsg("[RemoteNPCTalk2] " + npc_id);
+                return true;
+            }
+            case "/repair": {
+                chr.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, 1012003));
                 return true;
             }
             case "/dm": {

@@ -76,6 +76,7 @@ import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
 import tacos.client.TacosStorage;
 import tacos.packet.ops.OpsTrunk;
+import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCTrunkDlg;
 import tacos.script.TacosScriptNPC;
@@ -938,7 +939,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void sendRepairWindow() {
-        client.getSession().write(ResCUserLocal.UserOpenUIWithOption(npc));
+        client.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, npc));
     }
 
     public final int getDojoPoints() {

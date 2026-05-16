@@ -111,6 +111,7 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosWorld;
+import tacos.shared.TacosShared;
 import tacos.wz.data.MobWz;
 import tacos.wz.data.SkillWz;
 
@@ -498,11 +499,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserRepairDurabilityAll: {
-                NPCHandler.repairAll(client);
+                OnUserRepairDurabilityAll(chr, cp);
                 return true;
             }
             case CP_UserRepairDurability: {
-                NPCHandler.repair(cp, client);
+                OnUserRepairDurability(chr, cp);
                 return true;
             }
             case CP_UserFollowCharacterRequest: {
@@ -2627,6 +2628,79 @@ public class ReqCUser {
 
         map.broadcastMessage(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
         chr.updateInv();
+        return true;
+    }
+
+    public static boolean OnUserRepairDurabilityAll(MapleCharacter chr, ClientPacket cp) {
+        int npc_id = Region.IsJMS() ? cp.Decode4() : 0;
+
+        List<Equip> equips = new ArrayList<>();
+        List<Equip> equippeds = new ArrayList<>();
+        int total_price = 0;
+        for (IItem item : chr.getInventory(MapleInventoryType.EQUIPPED)) {
+            Equip equip = (Equip) item;
+            if (0 <= equip.getDurability()) {
+                int price = TacosShared.getRepairPrice(equip);
+                int durability_max = TacosShared.getDurabilityMax(equip);
+                if (0 < price && 0 <= durability_max) {
+                    total_price += price;
+                    equippeds.add(equip);
+                }
+            }
+        }
+        for (IItem item : chr.getInventory(MapleInventoryType.EQUIP)) {
+            Equip equip = (Equip) item;
+            if (0 <= equip.getDurability()) {
+                int price = TacosShared.getRepairPrice(equip);
+                int durability_max = TacosShared.getDurabilityMax(equip);
+                if (0 < price && 0 <= durability_max) {
+                    total_price += price;
+                    equips.add(equip);
+                }
+            }
+        }
+        chr.DebugMsg("OnUserRepairDurabilityAll : total_price = " + total_price);
+
+        if (chr.getMeso() < total_price) {
+            return false;
+        }
+
+        chr.gainMeso(-total_price, false);
+
+        for (Equip equip : equippeds) {
+            equip.setDurability(TacosShared.getDurabilityMax(equip));
+            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, equip));
+        }
+        for (Equip equip : equips) {
+            equip.setDurability(TacosShared.getDurabilityMax(equip));
+            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
+        }
+
+        return true;
+    }
+
+    public static boolean OnUserRepairDurability(MapleCharacter chr, ClientPacket cp) {
+        int nPOS = cp.Decode4();
+        int npc_id = Region.IsJMS() ? cp.Decode4() : 0;
+
+        MapleInventoryType type = nPOS < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
+        Equip equip = (Equip) chr.getInventory(type).getItem((short) nPOS);
+        if (equip == null) {
+            return false;
+        }
+
+        int price = TacosShared.getRepairPrice(equip);
+        int durability_max = TacosShared.getDurabilityMax(equip);
+
+        chr.DebugMsg("OnUserRepairDurability : price = " + price);
+
+        if (chr.getMeso() < price || durability_max < 0) {
+            return false;
+        }
+
+        chr.gainMeso(-price, false);
+        equip.setDurability(durability_max);
+        chr.SendPacket(ResWrapper.addInventorySlot(type, equip));
         return true;
     }
 

@@ -418,7 +418,7 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final Map<String, Integer> getEquipStats(final int itemId) {
+    public final Map<String, Integer> getEquipStats(int itemId) {
         if (equipStatsCache.containsKey(itemId)) {
             return equipStatsCache.get(itemId);
         }
@@ -746,7 +746,7 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
-    public final IItem getEquipById(final int equipId) {
+    public final IItem getEquipById(int equipId) {
         return getEquipById(equipId, -1);
     }
 
@@ -795,8 +795,7 @@ public class MapleItemInformationProvider {
                 } else if (key.equals("Craft")) {
                     nEquip.setHands(stat.getValue().shortValue());
                 } else if (key.equals("durability")) {
-                    nEquip.setDurability(stat.getValue().intValue());
-//                } else if (key.equals("afterImage")) {
+                    nEquip.setDurability(stat.getValue());
                 }
             }
         }

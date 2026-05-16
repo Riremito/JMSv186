@@ -378,10 +378,10 @@ public class Equip extends Item implements IEquip, Serializable {
 
     @Override
     public int getDurability() {
-        return durability;
+        return this.durability;
     }
 
-    public void setDurability(final int dur) {
+    public void setDurability(int dur) {
         this.durability = dur;
     }
 

@@ -19,6 +19,7 @@
 package tacos.debug;
 
 import odin.client.MapleCharacter;
+import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -50,7 +51,14 @@ public class DebugUser {
         switch (itemid / 1000000) {
             case 1: {
                 MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
-                equip.addItem(ii.getEquipById(itemid));
+                // 耐久装備テスト
+                Equip item = (Equip) ii.getEquipById(itemid);
+                int dur = item.getDurability();
+                if (0 < dur) {
+                    dur /= 2;
+                    item.setDurability(dur);
+                }
+                equip.addItem(item);
                 break;
             }
             case 2: {
@@ -92,6 +100,8 @@ public class DebugUser {
         {
             AddItem(chr, 1902000); // うり坊
             AddItem(chr, 1912000); // 鞍
+            AddItem(chr, 1472112); // 耐久装備
+            AddItem(chr, 1452101); // 耐久装備
             AddItem(chr, 1302064); // メイプルグローリーソード
             AddItem(chr, 1402039); // メイプルソールロヘン
             AddItem(chr, 1312032); // メイプルスチールアックス

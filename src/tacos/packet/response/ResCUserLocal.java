@@ -28,6 +28,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.ops.OpsQuest;
+import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.data.DataCUser;
 
@@ -255,11 +256,11 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static final MaplePacket UserOpenUIWithOption(int npc) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenUIWithOption);
+    public static MaplePacket UserOpenUIWithOption(OpsUI ops, int npc_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserOpenUIWithOption);
 
-        sp.Encode4(34); //sending 0x21 here opens evan skill window o.o
-        sp.Encode4(npc);
+        sp.Encode4(ops.get());
+        sp.Encode4(npc_id);
         return sp.get();
     }
 

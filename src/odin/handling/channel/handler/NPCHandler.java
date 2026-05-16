@@ -20,16 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import java.util.LinkedHashMap;
-import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
-import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleClient;
 import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
 import odin.client.RockPaperScissors;
-import java.util.Map;
-import java.util.Map.Entry;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
@@ -39,8 +33,6 @@ import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.life.MapleNPC;
 import odin.server.quest.MapleQuest;
 import tacos.odin.OdinNPCConversationManager;
-import odin.server.MapleItemInformationProvider;
-import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 
@@ -190,75 +182,6 @@ public class NPCHandler {
 
         cm.dispose();
         return;
-    }
-
-    public static void repairAll(MapleClient client) {
-        MapleCharacter chr = client.getPlayer();
-        if (chr.getMapId() != 240000000) {
-            return;
-        }
-        Equip eq;
-        double rPercentage;
-        int price = 0;
-        Map<String, Integer> eqStats;
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Map<Equip, Integer> eqs = new LinkedHashMap<>();
-        MapleInventoryType[] types = {MapleInventoryType.EQUIP, MapleInventoryType.EQUIPPED};
-        for (MapleInventoryType type : types) {
-            for (IItem item : chr.getInventory(type)) {
-                if (item instanceof Equip) { //redundant
-                    eq = (Equip) item;
-                    if (eq.getDurability() >= 0) {
-                        eqStats = ii.getEquipStats(eq.getItemId());
-                        if (eqStats.get("durability") > 0 && eq.getDurability() < eqStats.get("durability")) {
-                            rPercentage = (100.0 - Math.ceil((eq.getDurability() * 1000.0) / (eqStats.get("durability") * 10.0)));
-                            eqs.put(eq, eqStats.get("durability"));
-                            price += (int) Math.ceil(rPercentage * ii.getPrice(eq.getItemId()) / (ii.getReqLevel(eq.getItemId()) < 70 ? 100.0 : 1.0));
-                        }
-                    }
-                }
-            }
-        }
-        if (eqs.size() <= 0 || chr.getMeso() < price) {
-            return;
-        }
-        chr.gainMeso(-price, true);
-        Equip ez;
-        for (Entry<Equip, Integer> eqqz : eqs.entrySet()) {
-            ez = eqqz.getKey();
-            ez.setDurability(eqqz.getValue());
-            client.SendPacket(ResWrapper.addInventorySlot(ez.getPosition() < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP, ez.copy()));
-        }
-    }
-
-    public static void repair(ClientPacket cp, MapleClient client) {
-        MapleCharacter chr = client.getPlayer();
-        if (chr.getMapId() != 240000000/* || slea.available() < 4*/) { //leafre for now
-            return;
-        }
-        int position = cp.Decode4(); //who knows why this is a int
-        MapleInventoryType type = position < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
-        IItem item = chr.getInventory(type).getItem((byte) position);
-        if (item == null) {
-            return;
-        }
-        Equip eq = (Equip) item;
-        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        Map<String, Integer> eqStats = ii.getEquipStats(item.getItemId());
-        if (eq.getDurability() < 0 || eqStats.get("durability") <= 0 || eq.getDurability() >= eqStats.get("durability")) {
-            return;
-        }
-        double rPercentage = (100.0 - Math.ceil((eq.getDurability() * 1000.0) / (eqStats.get("durability") * 10.0)));
-        //drpq level 105 weapons - ~420k per %; 2k per durability point
-        //explorer level 30 weapons - ~10 mesos per %
-        int price = (int) Math.ceil(rPercentage * ii.getPrice(eq.getItemId()) / (ii.getReqLevel(eq.getItemId()) < 70 ? 100.0 : 1.0)); // / 100 for level 30?
-        //TODO: need more data on calculating off client
-        if (chr.getMeso() < price) {
-            return;
-        }
-        chr.gainMeso(-price, false);
-        eq.setDurability(eqStats.get("durability"));
-        client.SendPacket(ResWrapper.addInventorySlot(type, eq.copy()));
     }
 
     public static void RPSGame(ClientPacket cp, MapleClient client) {
