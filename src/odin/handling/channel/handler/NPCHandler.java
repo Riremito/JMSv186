@@ -23,42 +23,17 @@ package odin.handling.channel.handler;
 import odin.client.MapleClient;
 import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
-import odin.client.RockPaperScissors;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.ResCRPSGameDlg;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import odin.server.life.MapleNPC;
 import odin.server.quest.MapleQuest;
 import tacos.odin.OdinNPCConversationManager;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 
 public class NPCHandler {
-
-    public static void NPCTalk(MapleClient client, MapleCharacter chr, int npc_oid) {
-        if (chr == null || chr.getMap() == null) {
-            return;
-        }
-        MapleNPC npc = chr.getMap().getNPCByOid(npc_oid);
-
-        if (npc == null) {
-            return;
-        }
-        if (chr.getConversation() != 0) {
-            chr.DebugMsg("NPCTalk = err " + chr.getConversation());
-            return;
-        }
-
-        if (npc.hasShop()) {
-            chr.setConversation(1);
-            npc.sendShop(client);
-        } else {
-            TacosScriptNPC.getInstance().start(client, npc.getId());
-        }
-    }
 
     public static void QuestAction(ClientPacket cp, MapleClient client) {
         MapleCharacter chr = client.getPlayer();
@@ -182,51 +157,5 @@ public class NPCHandler {
 
         cm.dispose();
         return;
-    }
-
-    public static void RPSGame(ClientPacket cp, MapleClient client) {
-        MapleCharacter chr = client.getPlayer();
-        if (!chr.getMap().containsNPC(9000019)) {
-            if (chr.getRPS() != null) {
-                chr.getRPS().dispose(client);
-            }
-            return;
-        }
-        byte mode = cp.Decode1();
-        switch (mode) {
-            case 0: //start game
-            case 5: //retry
-                if (chr.getRPS() != null) {
-                    chr.getRPS().reward(client);
-                }
-                if (chr.getMeso() >= 1000) {
-                    chr.setRPS(new RockPaperScissors(client, mode));
-                } else {
-                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x08, -1, -1, -1));
-                }
-                break;
-            case 1: //answer
-                if (chr.getRPS() == null || !chr.getRPS().answer(client, cp.Decode1())) {
-                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
-                }
-                break;
-            case 2: //time over
-                if (chr.getRPS() == null || !chr.getRPS().timeOut(client)) {
-                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
-                }
-                break;
-            case 3: //continue
-                if (chr.getRPS() == null || !chr.getRPS().nextRound(client)) {
-                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
-                }
-                break;
-            case 4: //leave
-                if (chr.getRPS() != null) {
-                    chr.getRPS().dispose(client);
-                } else {
-                    client.SendPacket(ResCRPSGameDlg.getRPSMode((byte) 0x0D, -1, -1, -1));
-                }
-                break;
-        }
     }
 }

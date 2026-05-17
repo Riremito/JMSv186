@@ -173,7 +173,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleCarnivalParty carnivalParty;
     private transient PlayerRandomStream CRand;
     private transient MapleShop shop;
-    private transient RockPaperScissors rps;
     private transient MapleTrade trade;
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
@@ -4018,14 +4017,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public int itemQuantity(final int itemid) {
         return getInventory(GameConstants.getInventoryType(itemid)).countById(itemid);
-    }
-
-    public void setRPS(RockPaperScissors rps) {
-        this.rps = rps;
-    }
-
-    public RockPaperScissors getRPS() {
-        return rps;
     }
 
     public long getNextConsume() {

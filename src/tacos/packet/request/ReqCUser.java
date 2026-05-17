@@ -215,8 +215,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserSelectNpc: {
-                int npc_oid = cp.Decode4();
-                NPCHandler.NPCTalk(client, chr, npc_oid);
+                OnUserSelectNpc(chr, cp);
                 return true;
             }
             case CP_UserRemoteShopOpenRequest: {
@@ -229,7 +228,7 @@ public class ReqCUser {
                     DebugMan.OnScriptMessageAnswerHook(chr, cp);
                     return true;
                 }
-                ReqCScriptMan.OnScriptMessageAnswer(cp, client);
+                ReqCScriptMan.OnScriptMessageAnswer(chr, cp);
                 return true;
             }
             case CP_UserShopRequest: {
@@ -1346,6 +1345,35 @@ public class ReqCUser {
         chr.setMonsterBookCover(nMonsterBookCoverID);
         chr.SendPacket(ResCWvsContext.MonsterBookSetCover(chr));
         return true;
+    }
+
+    public static boolean OnUserSelectNpc(MapleCharacter chr, ClientPacket cp) {
+        int m_dwNpcId = cp.Decode4();
+        short x = cp.Decode2();
+        short y = cp.Decode2();
+
+        MapleClient client = chr.getClient();
+        MapleMap map = chr.getMap();
+        MapleNPC npc = map.getNPCByOid(m_dwNpcId);
+
+        if (npc == null) {
+            DebugLogger.ErrorLog("OnUserSelectNpc : npc");
+            return false;
+        }
+        if (chr.getConversation() != 0) {
+            chr.DebugMsg("OnUserSelectNpc : getConversation = " + chr.getConversation());
+            return false;
+        }
+
+        if (npc.hasShop()) {
+            chr.DebugMsg("OnUserSelectNpc : " + npc.getId() + ", shop");
+            chr.setConversation(1);
+            npc.sendShop(client);
+            return true;
+        }
+
+        chr.DebugMsg("OnUserSelectNpc : " + npc.getId());
+        return TacosScriptNPC.getInstance().start(client, npc.getId());
     }
 
     public static boolean OnUserGivePopularityRequest(MapleCharacter chr, ClientPacket cp) {

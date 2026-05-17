@@ -31,8 +31,8 @@ import tacos.packet.ops.OpsScriptMan;
  */
 public class ReqCScriptMan {
 
-    public static boolean OnScriptMessageAnswer(ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnScriptMessageAnswer(MapleCharacter chr, ClientPacket cp) {
+        MapleClient client = chr.getClient();
 
         byte cm_type = cp.Decode1();
         byte action = cp.Decode1();
@@ -41,11 +41,11 @@ public class ReqCScriptMan {
 
         switch (type) {
             case SM_SAY: {
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
+                NPCHandler.NPCMoreTalk(client, type, action, -1, null);
                 return true;
             }
             case SM_ASKYESNO: {
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
+                NPCHandler.NPCMoreTalk(client, type, action, -1, null);
                 return true;
             }
             case SM_SAYIMAGE: {
@@ -53,7 +53,7 @@ public class ReqCScriptMan {
             }
             case SM_ASKTEXT: {
                 String text = cp.DecodeStr();
-                NPCHandler.NPCMoreTalk(c, type, action, -1, text);
+                NPCHandler.NPCMoreTalk(client, type, action, -1, text);
                 return true;
             }
             case SM_ASKNUMBER: {
@@ -62,11 +62,11 @@ public class ReqCScriptMan {
             case SM_ASKMENU: {
                 if (action != 0) {
                     int m_nSelect = cp.Decode4();
-                    NPCHandler.NPCMoreTalk(c, type, action, m_nSelect, null);
+                    NPCHandler.NPCMoreTalk(client, type, action, m_nSelect, null);
                     return true;
                 }
 
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
+                NPCHandler.NPCMoreTalk(client, type, action, -1, null);
                 return true;
             }
             case SM_ASKQUIZ: {
@@ -78,11 +78,11 @@ public class ReqCScriptMan {
             case SM_ASKAVATAR: {
                 if (action != 0) {
                     byte m_nAvatarIndex = cp.Decode1();
-                    NPCHandler.NPCMoreTalk(c, type, action, m_nAvatarIndex, null);
+                    NPCHandler.NPCMoreTalk(client, type, action, m_nAvatarIndex, null);
                     return true;
                 }
 
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
+                NPCHandler.NPCMoreTalk(client, type, action, -1, null);
                 return true;
             }
             case SM_ASKMEMBERSHOPAVATAR: {
@@ -95,7 +95,7 @@ public class ReqCScriptMan {
                 break;
             }
             case SM_ASKACCEPT: {
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
+                NPCHandler.NPCMoreTalk(client, type, action, -1, null);
                 return true;
             }
             case SM_ASKBOXTEXT: {
@@ -104,11 +104,11 @@ public class ReqCScriptMan {
             case SM_ASKSLIDEMENU: {
                 if (action != 0) {
                     int SelectResult = cp.Decode4();
-                    NPCHandler.NPCMoreTalk(c, type, action, SelectResult, null);
+                    NPCHandler.NPCMoreTalk(client, type, action, SelectResult, null);
                     return true;
                 }
 
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
+                NPCHandler.NPCMoreTalk(client, type, action, -1, null);
                 return true;
             }
             default: {
@@ -117,7 +117,6 @@ public class ReqCScriptMan {
         }
 
         DebugLogger.ErrorLog("OnScriptMessageAnswer not coded.");
-        //NPCHandler.NPCMoreTalk(c, cp); // test
         return false;
     }
 }

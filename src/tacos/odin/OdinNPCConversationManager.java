@@ -75,6 +75,7 @@ import odin.server.MapleStatEffect;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
 import tacos.client.TacosStorage;
+import tacos.packet.ops.OpsRPS;
 import tacos.packet.ops.OpsTrunk;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCScriptMan;
@@ -1242,8 +1243,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         return MapleInventoryManipulator.drop(client, inv, (short) slot, (short) quantity, true);
     }
 
-    public final void sendRPS() {
-        client.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 8, -1, -1, -1));
+    public void sendRPS() {
+        client.SendPacket(ResCRPSGameDlg.RPSGame(OpsRPS.RPSRes_Open, 0, 0, this.npc));
     }
 
     public final void setQuestRecord(Object ch, final int questid, final String data) {

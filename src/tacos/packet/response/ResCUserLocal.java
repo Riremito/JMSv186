@@ -158,7 +158,7 @@ public class ResCUserLocal {
     }
 
     public static final MaplePacket showOwnPetLevelUp(final int index) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(4);
         sp.Encode1(0);

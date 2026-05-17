@@ -1012,6 +1012,17 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.nEffectItemID = nEffectItemID;
     }
 
+    // RPS game.
+    private int m_nCntStraightVictories = 0;
+
+    public int getCntStraightVictories() {
+        return this.m_nCntStraightVictories;
+    }
+
+    public void setCntStraightVictories(int m_nCntStraightVictories) {
+        this.m_nCntStraightVictories = m_nCntStraightVictories;
+    }
+
     // clone
     protected boolean clone = false;
     protected boolean cloning = false;

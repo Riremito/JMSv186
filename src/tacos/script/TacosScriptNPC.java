@@ -44,12 +44,12 @@ public class TacosScriptNPC extends TacosScript {
 
     }
 
-    public boolean start(MapleClient c, int npc_script_id) {
-        return start(c, npc_script_id, npc_script_id);
+    public boolean start(MapleClient client, int npc_script_id) {
+        return start(client, npc_script_id, npc_script_id);
     }
 
-    public boolean start(MapleClient c, int npc_script_id, int npc_icon_id) {
-        DebugMsg(c, TacosScriptType.NPC, npc_script_id);
+    public boolean start(MapleClient client, int npc_script_id, int npc_icon_id) {
+        DebugMsg(client, TacosScriptType.NPC, npc_script_id);
 
         String npc_script_path = TacosScriptType.NPC.get() + npc_script_id;
         clearScripts();
@@ -59,15 +59,15 @@ public class TacosScriptNPC extends TacosScript {
             return false;
         }
 
-        OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc_icon_id, -1, (byte) -1, (Invocable) engine, npc_script_id);
+        OdinNPCConversationManager cm = new OdinNPCConversationManager(client, npc_icon_id, -1, (byte) -1, (Invocable) engine, npc_script_id);
         engine.put("cm", cm);
-        cms.put(c, cm);
+        cms.put(client, cm);
 
         // TODO : remove
         IScriptNPC_with_start script_ws = ((Invocable) engine).getInterface(IScriptNPC_with_start.class);
         if (script_ws != null) {
             DebugLogger.DebugLog("IScriptNPC_with_start is detected.");
-            c.getPlayer().setConversation(1);
+            client.getPlayer().setConversation(1);
             script_ws.start();
             return true;
         }
@@ -78,23 +78,23 @@ public class TacosScriptNPC extends TacosScript {
             return false;
         }
 
-        c.getPlayer().setConversation(1);
+        client.getPlayer().setConversation(1);
         script.action(1, 0, 0);
         return true;
     }
 
-    public boolean action(MapleClient c, int mode, int type, int selection) {
+    public boolean action(MapleClient client, int mode, int type, int selection) {
         if (mode == -1) {
             DebugLogger.ErrorLog("npc_script : action 1");
             return false;
         }
-        OdinNPCConversationManager cm = cms.get(c);
+        OdinNPCConversationManager cm = cms.get(client);
         if (cm == null || -1 < cm.getLastMsg()) {
             DebugLogger.ErrorLog("npc_script : action 2");
             return false;
         }
         if (cm.pendingDisposal) {
-            dispose(c);
+            dispose(client);
             return false;
         }
         IScriptNPC script = ((Invocable) cm.getIv()).getInterface(IScriptNPC.class);
@@ -102,15 +102,14 @@ public class TacosScriptNPC extends TacosScript {
         return true;
     }
 
-    public boolean dispose(MapleClient c) {
-        OdinNPCConversationManager npccm = cms.get(c);
+    public boolean dispose(MapleClient client) {
+        OdinNPCConversationManager npccm = cms.get(client);
         if (npccm == null) {
-            c.getPlayer().setConversation(0);
+            client.getPlayer().setConversation(0);
             return false;
         }
-        cms.remove(c);
-        c.getPlayer().setConversation(0);
+        cms.remove(client);
+        client.getPlayer().setConversation(0);
         return true;
     }
-
 }
