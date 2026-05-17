@@ -102,6 +102,8 @@ public class DebugUser {
             AddItem(chr, 1912000); // 鞍
             AddItem(chr, 1472112); // 耐久装備
             AddItem(chr, 1452101); // 耐久装備
+            AddItem(chr, 1032077); // 耐久装備
+            AddItem(chr, 1032078); // 耐久装備
             AddItem(chr, 1302064); // メイプルグローリーソード
             AddItem(chr, 1402039); // メイプルソールロヘン
             AddItem(chr, 1312032); // メイプルスチールアックス
