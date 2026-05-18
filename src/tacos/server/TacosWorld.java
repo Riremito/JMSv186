@@ -279,14 +279,14 @@ public class TacosWorld {
     public boolean handleCooldowns(MapleCharacter player, int numTimes) {
         long now = System.currentTimeMillis();
         for (MapleCoolDownValueHolder m : player.getCooldowns()) {
-            if (m.startTime + m.length < now) {
-                int skil = m.skillId;
+            if (m.end_time <= now) {
+                int skil = m.skill_id;
                 player.removeCooldown(skil);
                 player.SendPacket(ResCUserLocal.SkillCooltimeSet(skil, 0));
             }
         }
         for (MapleDiseaseValueHolder m : player.getAllDiseases()) {
-            if (m.startTime + m.length < now) {
+            if (m.startTime + m.length <= now) {
                 player.dispelDebuff(m.disease);
             }
         }

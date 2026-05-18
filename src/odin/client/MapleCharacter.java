@@ -166,7 +166,6 @@ public class MapleCharacter extends TacosCharacter {
     private Map<Integer, String> questinfo;
     private transient Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentEnumMap<MapleBuffStat, MapleBuffStatValueHolder>(MapleBuffStat.class);
     private transient Map<Integer, MapleSummon> summons;
-    private transient Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<Integer, MapleCoolDownValueHolder>();
     private transient Map<MapleDisease, MapleDiseaseValueHolder> diseases = new ConcurrentEnumMap<MapleDisease, MapleDiseaseValueHolder>(MapleDisease.class);
     private CashShop cs;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
@@ -789,19 +788,6 @@ public class MapleCharacter extends TacosCharacter {
                 }
             }
             ps.close();
-
-            List<MapleCoolDownValueHolder> cd = getCooldowns();
-            if (dc && cd.size() > 0) {
-                ps = con.prepareStatement("INSERT INTO skills_cooldowns (charid, SkillID, StartTime, length) VALUES (?, ?, ?, ?)");
-                ps.setInt(1, getId());
-                for (final MapleCoolDownValueHolder cooling : cd) {
-                    ps.setInt(2, cooling.skillId);
-                    ps.setLong(3, cooling.startTime);
-                    ps.setLong(4, cooling.length);
-                    ps.execute();
-                }
-                ps.close();
-            }
 
             deleteWhereCharacterId(con, "DELETE FROM savedlocations WHERE characterid = ?");
             ps = con.prepareStatement("INSERT INTO savedlocations (characterid, `locationtype`, `map`) VALUES (?, ?, ?)");
@@ -1463,7 +1449,7 @@ public class MapleCharacter extends TacosCharacter {
                 battleshipHP = 0;
                 final MapleStatEffect effect = getStatForBuff(MapleBuffStat.MONSTER_RIDING);
                 client.getSession().write(ResCUserLocal.SkillCooltimeSet(5221006, effect.getCooldown()));
-                addCooldown(5221006, System.currentTimeMillis(), effect.getCooldown() * 1000);
+                addCooldown(5221006, effect.getCooldown());
                 dispelSkill(5221006);
             }
         }
@@ -3192,60 +3178,6 @@ public class MapleCharacter extends TacosCharacter {
         OK, NOT_TODAY, NOT_THIS_MONTH
     }
 
-    public void addCooldown(int skillId, long startTime, long length) {
-        if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
-            startTime = Math.min(startTime, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
-        }
-
-        coolDowns.put(skillId, new MapleCoolDownValueHolder(skillId, startTime, length));
-    }
-
-    public void removeCooldown(int skillId) {
-        if (coolDowns.containsKey(skillId)) {
-            coolDowns.remove(skillId);
-        }
-    }
-
-    public boolean skillisCooling(int skillId) {
-        return coolDowns.containsKey(skillId);
-    }
-
-    public void giveCoolDowns(final int skillid, long starttime, long length) {
-        addCooldown(skillid, starttime, length);
-    }
-
-    public void giveCoolDowns(final List<MapleCoolDownValueHolder> cooldowns) {
-        int time;
-        if (cooldowns != null) {
-            for (MapleCoolDownValueHolder cooldown : cooldowns) {
-                coolDowns.put(cooldown.skillId, cooldown);
-            }
-        } else {
-            try {
-                Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT SkillID,StartTime,length FROM skills_cooldowns WHERE charid = ?");
-                ps.setInt(1, getId());
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    if (rs.getLong("length") + rs.getLong("StartTime") - System.currentTimeMillis() <= 0) {
-                        continue;
-                    }
-                    giveCoolDowns(rs.getInt("SkillID"), rs.getLong("StartTime"), rs.getLong("length"));
-                }
-                ps.close();
-                rs.close();
-                deleteWhereCharacterId(con, "DELETE FROM skills_cooldowns WHERE charid = ?");
-
-            } catch (SQLException e) {
-                System.err.println("Error while retriving cooldown from SQL storage");
-            }
-        }
-    }
-
-    public List<MapleCoolDownValueHolder> getCooldowns() {
-        return new ArrayList<MapleCoolDownValueHolder>(coolDowns.values());
-    }
-
     public final List<MapleDiseaseValueHolder> getAllDiseases() {
         return new ArrayList<MapleDiseaseValueHolder>(diseases.values());
     }
@@ -4794,4 +4726,30 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
+    // cool down
+    private Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>();
+
+    public List<MapleCoolDownValueHolder> getCooldowns() {
+        return new ArrayList<>(coolDowns.values());
+    }
+
+    public void addCooldown(int skill_id, int time) {
+        int cool_time = time;
+        if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
+            cool_time = Math.min(time, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
+        }
+        long start_time = System.currentTimeMillis();
+        long end_time = start_time + (cool_time * 1000);
+        coolDowns.put(skill_id, new MapleCoolDownValueHolder(skill_id, start_time, end_time));
+    }
+
+    public void removeCooldown(int skill_id) {
+        if (coolDowns.containsKey(skill_id)) {
+            coolDowns.remove(skill_id);
+        }
+    }
+
+    public boolean skillisCooling(int skill_id) {
+        return coolDowns.containsKey(skill_id);
+    }
 }

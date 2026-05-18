@@ -1007,11 +1007,10 @@ public class ReqCUser {
                 return false;
             }
             if (0 < skill_effect.getCooldown()) {
-                if (!chr.skillisCooling(attack.skill)) {
-                    DebugLogger.ErrorLog("attack : err 2.");
+                if (chr.skillisCooling(attack.skill)) {
                     return false;
                 }
-                chr.addCooldown(attack.skill, System.currentTimeMillis(), skill_effect.getCooldown() * 1000);
+                chr.addCooldown(attack.skill, skill_effect.getCooldown());
                 chr.SendPacket(ResCUserLocal.SkillCooltimeSet(attack.skill, skill_effect.getCooldown())); // cool time.
             }
             if (attack.skill != OpsSkill.CLERIC_HEAL.get()) {
@@ -2186,7 +2185,7 @@ public class ReqCUser {
             }
             if (ops_skill != OpsSkill.CAPTAIN_BATTLESHIP) {
                 chr.SendPacket(ResCUserLocal.SkillCooltimeSet(nSkillID, effect.getCooldown()));
-                chr.addCooldown(nSkillID, System.currentTimeMillis(), effect.getCooldown() * 1000);
+                chr.addCooldown(nSkillID, effect.getCooldown());
             }
         }
 

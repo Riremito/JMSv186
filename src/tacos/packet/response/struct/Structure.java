@@ -308,17 +308,22 @@ public class Structure {
         return data.get().getBytes();
     }
 
-    public static final byte[] addCoolDownInfo(final MapleCharacter chr) {
+    public static byte[] addCoolDownInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
+        List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
 
         data.Encode2(cd.size());
-        for (final MapleCoolDownValueHolder cooling : cd) {
-            data.Encode4(cooling.skillId);
+        for (MapleCoolDownValueHolder cooling : cd) {
+            data.Encode4(cooling.skill_id);
+            long cool_time = cooling.end_time - System.currentTimeMillis();
+            if (cool_time < 0) {
+                cool_time = 0;
+            }
+            cool_time /= 1000;
             if (Version.GreaterOrEqual(Region.JMS, 302) | Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-                data.Encode4((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
+                data.Encode4((int) cool_time);
             } else {
-                data.Encode2((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
+                data.Encode2((short) cool_time);
             }
         }
         return data.get().getBytes();

@@ -22,14 +22,13 @@ package odin.client;
 
 public class MapleCoolDownValueHolder {
 
-    public int skillId;
-    public long startTime;
-    public long length;
+    public int skill_id;
+    public long start_time;
+    public long end_time;
 
-    public MapleCoolDownValueHolder(int skillId, long startTime, long length) {
-        super();
-        this.skillId = skillId;
-        this.startTime = startTime;
-        this.length = length;
+    public MapleCoolDownValueHolder(int skill_id, long start_time, long end_time) {
+        this.skill_id = skill_id;
+        this.start_time = start_time;
+        this.end_time = end_time;
     }
 }

@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import tacos.config.DeveloperMode;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import tacos.client.TacosCharacter;
@@ -418,16 +417,12 @@ public class ResCUserLocal {
 
         sp.Encode4(skill_id);
 
-        if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
-            cool_time = Math.min(cool_time, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
-        }
-
         if (Version.PostBB()) {
             sp.Encode4(cool_time);
         } else {
             sp.Encode2(cool_time);
         }
+
         return sp.get();
     }
-
 }
