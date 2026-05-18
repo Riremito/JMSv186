@@ -1,7 +1,6 @@
 package odin.server.quest;
 
 import odin.constants.GameConstants;
-import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,10 +21,9 @@ import odin.provider.IMapleData;
 import tacos.script.TacosScriptQuest;
 import tacos.wz.TacosWzDataTool;
 
-public class MapleQuest implements Serializable {
+public class MapleQuest {
 
-    private static final long serialVersionUID = 9179541993413738569L;
-    private static Map<Integer, MapleQuest> quests = new LinkedHashMap<Integer, MapleQuest>();
+    private static Map<Integer, MapleQuest> quests = new LinkedHashMap<>();
     protected int id;
     protected List<MapleQuestRequirement> startReqs;
     protected List<MapleQuestRequirement> completeReqs;
@@ -131,11 +129,11 @@ public class MapleQuest implements Serializable {
             final IMapleData pquestInfo = QuestWz.get().getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
                 for (IMapleData d : pquestInfo.getChildByPath("rank")) {
-                    List<OdinPair<String, OdinPair<String, Integer>>> pInfo = new ArrayList<OdinPair<String, OdinPair<String, Integer>>>();
+                    List<OdinPair<String, OdinPair<String, Integer>>> pInfo = new ArrayList<>();
                     //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
                     for (IMapleData c : d) {
                         for (IMapleData b : c) {
-                            pInfo.add(new OdinPair<String, OdinPair<String, Integer>>(c.getName(), new OdinPair<String, Integer>(b.getName(), TacosWzDataTool.getInt(b, 0))));
+                            pInfo.add(new OdinPair<>(c.getName(), new OdinPair<>(b.getName(), TacosWzDataTool.getInt(b, 0))));
                         }
                     }
                     ret.partyQuestInfo.put(d.getName(), pInfo);
@@ -162,88 +160,88 @@ public class MapleQuest implements Serializable {
         quests.clear();
     }
 
-    public static MapleQuest getInstance(int id) {
-        MapleQuest ret = quests.get(id);
+    public static MapleQuest getInstance(int quest_id) {
+        MapleQuest ret = quests.get(quest_id);
         if (ret == null) {
-            ret = new MapleQuest(id);
+            ret = new MapleQuest(quest_id);
             try {
-                if (GameConstants.isCustomQuest(id) || !loadQuest(ret, id)) {
-                    ret = new MapleCustomQuest(id);
+                if (GameConstants.isCustomQuest(quest_id) || !loadQuest(ret, quest_id)) {
+                    ret = new MapleCustomQuest(quest_id);
                 }
-                quests.put(id, ret);
+                quests.put(quest_id, ret);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
-                FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Caused by questID " + id);
-                System.out.println("Caused by questID " + id);
-                return new MapleCustomQuest(id);
+                FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Caused by questID " + quest_id);
+                System.out.println("Caused by questID " + quest_id);
+                return new MapleCustomQuest(quest_id);
             }
         }
         return ret;
     }
 
-    public boolean canStart(MapleCharacter c, Integer npcid) {
-        if (c.getQuest(this).getStatus() != 0 && !(c.getQuest(this).getStatus() == 2 && repeatable)) {
+    public boolean canStart(MapleCharacter chr, Integer npcid) {
+        if (chr.getQuest(this).getStatus() != 0 && !(chr.getQuest(this).getStatus() == 2 && repeatable)) {
             return false;
         }
         for (MapleQuestRequirement r : startReqs) {
-            if (!r.check(c, npcid)) {
+            if (!r.check(chr, npcid)) {
                 return false;
             }
         }
         return true;
     }
 
-    public boolean canComplete(MapleCharacter c, Integer npcid) {
-        if (c.getQuest(this).getStatus() != 1) {
+    public boolean canComplete(MapleCharacter chr, Integer npcid) {
+        if (chr.getQuest(this).getStatus() != 1) {
             return false;
         }
         for (MapleQuestRequirement r : completeReqs) {
-            if (!r.check(c, npcid)) {
+            if (!r.check(chr, npcid)) {
                 return false;
             }
         }
         return true;
     }
 
-    public final void RestoreLostItem(final MapleCharacter c, final int itemid) {
-        for (final MapleQuestAction a : startActs) {
-            if (a.RestoreLostItem(c, itemid)) {
+    public void RestoreLostItem(MapleCharacter chr, int item_id) {
+        for (MapleQuestAction a : startActs) {
+            if (a.RestoreLostItem(chr, item_id)) {
                 break;
             }
         }
     }
 
-    public void start(MapleCharacter c, int npc) {
-        if ((autoStart || checkNPCOnMap(c, npc)) && canStart(c, npc)) {
+    public void start(MapleCharacter chr, int npc_id) {
+        if ((autoStart || checkNPCOnMap(chr, npc_id)) && canStart(chr, npc_id)) {
             for (MapleQuestAction a : startActs) {
-                if (!a.checkEnd(c, null)) { //just in case
+                if (!a.checkEnd(chr, null)) { //just in case
                     return;
                 }
             }
             for (MapleQuestAction a : startActs) {
-                a.runStart(c, null);
+                a.runStart(chr, null);
             }
             if (!customend) {
-                forceStart(c, npc, null);
+                forceStart(chr, npc_id, null);
             } else {
-                TacosScriptQuest.getInstance().endQuest(c.getClient(), npc, getId(), true);
+                TacosScriptQuest.getInstance().endQuest(chr.getClient(), npc_id, getId(), true);
             }
         }
     }
 
-    public void complete(MapleCharacter c, int npc) {
-        complete(c, npc, null);
+    public void complete(MapleCharacter chr, int npc_id) {
+        complete(chr, npc_id, null);
     }
 
-    public void complete(MapleCharacter chr, int npc, Integer selection) {
-        if ((autoPreComplete || checkNPCOnMap(chr, npc)) && canComplete(chr, npc)) {
+    public void complete(MapleCharacter chr, int npc_id, Integer selection) {
+        if ((autoPreComplete || checkNPCOnMap(chr, npc_id)) && canComplete(chr, npc_id)) {
             for (MapleQuestAction a : completeActs) {
                 if (!a.checkEnd(chr, selection)) {
                     return;
                 }
             }
-            forceComplete(chr, npc);
+            forceComplete(chr, npc_id);
             for (MapleQuestAction a : completeActs) {
                 a.runEnd(chr, selection);
             }
@@ -253,15 +251,15 @@ public class MapleQuest implements Serializable {
         }
     }
 
-    public void forfeit(MapleCharacter c) {
-        if (c.getQuest(this).getStatus() != (byte) 1) {
+    public void forfeit(MapleCharacter chr) {
+        if (chr.getQuest(this).getStatus() != (byte) 1) {
             return;
         }
-        final MapleQuestStatus oldStatus = c.getQuest(this);
+        final MapleQuestStatus oldStatus = chr.getQuest(this);
         final MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 0);
         newStatus.setForfeited(oldStatus.getForfeited() + 1);
         newStatus.setCompletionTime(oldStatus.getCompletionTime());
-        c.updateQuest(newStatus);
+        chr.updateQuest(newStatus);
     }
 
     public void forceStart(MapleCharacter c, int npc, String customData) {

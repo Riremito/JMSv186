@@ -1012,6 +1012,26 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.nEffectItemID = nEffectItemID;
     }
 
+    // follow system.
+    private int m_dwDriverID = 0;
+    private int m_dwPassenserID = 0; // typo?
+
+    public int getDriver() {
+        return this.m_dwDriverID;
+    }
+
+    public void setDriver(int m_dwDriverID) {
+        this.m_dwDriverID = m_dwDriverID;
+    }
+
+    public int getPassenger() {
+        return this.m_dwPassenserID;
+    }
+
+    public void setPassenger(int m_dwPassenserID) {
+        this.m_dwPassenserID = m_dwPassenserID;
+    }
+
     // RPS game.
     private int m_nCntStraightVictories = 0;
 

@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import tacos.config.DeveloperMode;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
-import java.awt.Point;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -30,6 +29,7 @@ import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataCUser;
 
 /**
@@ -87,8 +87,9 @@ public class ResCUserLocal {
                     data.Encode4(arg.item_id);
                     data.Encode4(arg.item_quantity);
                 } else {
-                    data.EncodeStr("");
-                    data.Encode4(0);
+                    // this part has never used, wz data does not exist.
+                    data.EncodeStr(""); // unk
+                    data.Encode4(0); // Effect/Quest.img/num
                 }
                 break;
             }
@@ -373,23 +374,10 @@ public class ResCUserLocal {
         return sp.get();
     }
 
-    public static MaplePacket UserPassiveMove(Point otherStart, Point myStart, Point otherEnd/*, List<LifeMovementFragment> moves*/) {
+    public static MaplePacket UserPassiveMove(ParseCMovePath move_path) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserPassiveMove);
 
-        sp.Encode2(otherStart.x);
-        sp.Encode2(otherStart.y);
-        sp.Encode2(myStart.x);
-        sp.Encode2(myStart.y);
-        //TestHelper.serializeMovementList(mplew, moves);
-        sp.Encode1(17); //what? could relate to movePlayer
-        for (int i = 0; i < 8; i++) {
-            sp.Encode1(136); //?? sometimes 44
-        }
-        sp.Encode1(8); //?
-        sp.Encode2(otherEnd.x);
-        sp.Encode2(otherEnd.y);
-        sp.Encode2(otherStart.x);
-        sp.Encode2(otherStart.y);
+        sp.EncodeBuffer(move_path.get());
         return sp.get();
     }
 

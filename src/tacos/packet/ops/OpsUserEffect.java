@@ -188,6 +188,7 @@ public enum OpsUserEffect {
             // 9 : 経験値お守り
             UserEffect_PlayPortalSE.set(10);
             UserEffect_JobChanged.set(11);
+            UserEffect_QuestComplete.set(12);
             return;
         }
         if (Version.GreaterOrEqual(Region.JMS, 186)) {

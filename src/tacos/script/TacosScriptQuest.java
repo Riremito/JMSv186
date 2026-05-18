@@ -45,8 +45,8 @@ public class TacosScriptQuest extends TacosScript {
 
     }
 
-    public boolean startQuest(MapleClient c, int npc_id, int quest_script_id) {
-        DebugMsg(c, TacosScriptType.QUEST, quest_script_id);
+    public boolean startQuest(MapleClient client, int npc_id, int quest_script_id) {
+        DebugMsg(client, TacosScriptType.QUEST, quest_script_id);
 
         String quest_script_path = TacosScriptType.QUEST.get() + quest_script_id;
         clearScripts();
@@ -56,8 +56,8 @@ public class TacosScriptQuest extends TacosScript {
             return false;
         }
 
-        OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc_id, quest_script_id, (byte) 0, (Invocable) engine);
-        cms.put(c, cm);
+        OdinNPCConversationManager cm = new OdinNPCConversationManager(client, npc_id, quest_script_id, (byte) 0, (Invocable) engine);
+        cms.put(client, cm);
         engine.put("qm", cm);
 
         IScriptQuest script = ((Invocable) engine).getInterface(IScriptQuest.class);
@@ -65,18 +65,18 @@ public class TacosScriptQuest extends TacosScript {
             return false;
         }
 
-        c.getPlayer().setConversation(1);
-        return startQuest(c, 1, 0, 0);
+        client.getPlayer().setConversation(1);
+        return startQuest(client, 1, 0, 0);
     }
 
-    public boolean startQuest(MapleClient c, int mode, int type, int selection) {
-        OdinNPCConversationManager cm = cms.get(c);
+    public boolean startQuest(MapleClient client, int mode, int type, int selection) {
+        OdinNPCConversationManager cm = cms.get(client);
 
         if (cm == null || -1 < cm.getLastMsg()) {
             return false;
         }
         if (cm.pendingDisposal) {
-            dispose(c);
+            dispose(client);
             return false;
         }
 
@@ -85,36 +85,36 @@ public class TacosScriptQuest extends TacosScript {
         return true;
     }
 
-    public boolean endQuest(MapleClient c, int npc, int quest_script_id, boolean customEnd) {
-        if (!customEnd && !MapleQuest.getInstance(quest_script_id).canComplete(c.getPlayer(), null)) {
+    public boolean endQuest(MapleClient client, int npc_id, int quest_script_id, boolean customEnd) {
+        if (!customEnd && !MapleQuest.getInstance(quest_script_id).canComplete(client.getPlayer(), null)) {
             return false;
         }
 
         String quest_script_path = TacosScriptType.QUEST.get() + quest_script_id;
         clearScripts();
         ScriptEngine engine = getScript(quest_script_path);
-        OdinNPCConversationManager cm = new OdinNPCConversationManager(c, npc, quest_script_id, (byte) 1, (Invocable) engine);
-        cms.put(c, cm);
+        OdinNPCConversationManager cm = new OdinNPCConversationManager(client, npc_id, quest_script_id, (byte) 1, (Invocable) engine);
+        cms.put(client, cm);
         engine.put("qm", cm);
         IScriptQuest script = ((Invocable) engine).getInterface(IScriptQuest.class);
-        c.getPlayer().setConversation(1);
+        client.getPlayer().setConversation(1);
 
         if (script == null) {
             DebugLogger.ErrorLog("quest_script : endQuest not found, " + quest_script_id);
             return false;
         }
 
-        return endQuest(c, 1, 0, 0);
+        return endQuest(client, 1, 0, 0);
     }
 
-    public boolean endQuest(MapleClient c, int mode, int type, int selection) {
-        OdinNPCConversationManager cm = cms.get(c);
+    public boolean endQuest(MapleClient client, int mode, int type, int selection) {
+        OdinNPCConversationManager cm = cms.get(client);
 
         if (cm == null || -1 < cm.getLastMsg()) {
             return false;
         }
         if (cm.pendingDisposal) {
-            dispose(c);
+            dispose(client);
             return false;
         }
 
@@ -123,14 +123,14 @@ public class TacosScriptQuest extends TacosScript {
         return true;
     }
 
-    public boolean dispose(MapleClient c) {
-        OdinNPCConversationManager npccm = cms.get(c);
+    public boolean dispose(MapleClient client) {
+        OdinNPCConversationManager npccm = cms.get(client);
         if (npccm == null) {
-            c.getPlayer().setConversation(0);
+            client.getPlayer().setConversation(0);
             return false;
         }
-        cms.remove(c);
-        c.getPlayer().setConversation(0);
+        cms.remove(client);
+        client.getPlayer().setConversation(0);
         return true;
     }
 

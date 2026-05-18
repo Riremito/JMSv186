@@ -24,7 +24,6 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
-import java.awt.Point;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.struct.Structure;
@@ -144,17 +143,18 @@ public class ResCUser {
     // CUser::OnHitByUser
     // CUser::OnTeslaTriangle
     // CUser::OnFollowCharacter
-    public static MaplePacket UserFollowCharacter(int initiator, int replier, Point toMap) {
+    public static MaplePacket UserFollowCharacter(MapleCharacter chr, boolean bTransferField) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacter);
 
-        sp.Encode4(initiator);
-        sp.Encode4(replier);
-        if (replier == 0) {
-            //cancel
-            sp.Encode1(toMap == null ? 0 : 1); //1 -> x (int) y (int) to change map
-            if (toMap != null) {
-                sp.Encode4(toMap.x);
-                sp.Encode4(toMap.y);
+        sp.Encode4(chr.getId()); // dwCharacterID (m_dwPassenserID)
+        sp.Encode4(chr.getDriver()); // dwDriverID (m_dwDriverID)
+
+        if (chr.getDriver() == 0) {
+            sp.Encode1(bTransferField ? 1 : 0); // bTransferField
+
+            if (bTransferField) {
+                sp.Encode4(chr.getPosition().x); // ptSetPos.x
+                sp.Encode4(chr.getPosition().y); // ptSetPos.y
             }
         }
 

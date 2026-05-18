@@ -51,7 +51,6 @@ import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.InventoryHandler;
 import odin.handling.channel.handler.ItemMakerHandler;
-import odin.handling.channel.handler.NPCHandler;
 import odin.handling.channel.handler.PartyHandler;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
@@ -86,6 +85,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
 import tacos.config.ContentState;
@@ -99,6 +99,7 @@ import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsMemo;
+import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
@@ -109,7 +110,9 @@ import tacos.packet.request.sub.ReqSub_FriendRequest;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.WrapCUserLocal;
+import tacos.packet.response.wrapper.WrapCUserRemote;
 import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
 import tacos.shared.TacosShared;
 import tacos.wz.data.MobWz;
@@ -469,7 +472,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserQuestRequest: {
-                NPCHandler.QuestAction(cp, client);
+                OnUserQuestRequest(chr, cp);
                 return true;
             }
             case CP_UserCalcDamageStatSetRequest: {
@@ -906,6 +909,20 @@ public class ReqCUser {
         if (move_path.Decode(cp)) {
             map.userMove(chr, move_path);
             move_path.update(chr);
+        }
+
+        // follow.
+        if (chr.getPassenger() != 0) {
+            MapleCharacter passenger = map.getCharacterById(chr.getPassenger());
+            if (passenger != null) {
+                map.userMove(passenger, move_path); // test
+                move_path.update(passenger); // for when passenger cancels follow.
+                passenger.SendPacket(ResCUserLocal.UserPassiveMove(move_path));
+                // to keep correct passenger coordinate for remote users requires calculation of actual passenger move path.
+                //map.broadcastMessage(ResCUser.UserFollowCharacter(passenger, false));
+            } else {
+                chr.setPassenger(0);
+            }
         }
 
         // クローン : 移動
@@ -2371,6 +2388,72 @@ public class ReqCUser {
         return true;
     }
 
+    // CQuest::StartQuest
+    public static boolean OnUserQuestRequest(MapleCharacter chr, ClientPacket cp) {
+        MapleClient client = chr.getClient();
+        MapleMap map = chr.getMap();
+
+        byte action = cp.Decode1();
+        short m_usQuestID = cp.Decode2();
+
+        int uQuestID = Short.toUnsignedInt(m_usQuestID);
+        MapleQuest quest = MapleQuest.getInstance(uQuestID);
+
+        switch (OpsQuest.find(action)) {
+            case QuestReq_LostItem: {
+                int time = cp.Decode4();
+                int item_id = cp.Decode4();
+
+                quest.RestoreLostItem(chr, item_id);
+                return true;
+            }
+            case QuestReq_AcceptQuest: {
+                int m_dwNpcTemplateID = cp.Decode4();
+
+                quest.start(chr, m_dwNpcTemplateID);
+                return true;
+            }
+            case QuestReq_CompleteQuest: {
+                int m_dwNpcTemplateID = cp.Decode4();
+                int selection = cp.Decode4();
+
+                if (selection != -1) {
+                    quest.complete(chr, m_dwNpcTemplateID, selection);
+                } else {
+                    quest.complete(chr, m_dwNpcTemplateID);
+                }
+
+                return true;
+            }
+            case QuestReq_ResignQuest: {
+                quest.forfeit(chr);
+                return true;
+            }
+            case QuestReq_OpeningScript: {
+                int m_dwNpcTemplateID = cp.Decode4();
+                short pos_x = cp.Decode2();
+                short pos_y = cp.Decode2();
+
+                TacosScriptQuest.getInstance().startQuest(client, m_dwNpcTemplateID, uQuestID);
+                return true;
+            }
+            case QuestReq_CompleteScript: {
+                int m_dwNpcTemplateID = cp.Decode4();
+
+                TacosScriptQuest.getInstance().endQuest(client, m_dwNpcTemplateID, uQuestID, false);
+                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
+                map.broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnUserQuestRequest : action = " + action);
+        return false;
+    }
+
     public static boolean OnUserGatherItemRequest(MapleCharacter chr, byte slot_type) {
         MapleInventoryType mit = MapleInventoryType.getByType(slot_type);
 
@@ -2741,7 +2824,12 @@ public class ReqCUser {
         MapleMap map = chr.getMap();
 
         if (bKeyInput != 0) {
-            map.broadcastMessage(ResCUser.UserFollowCharacter(chr.getId(), 0, null));
+            MapleCharacter driver = map.getCharacterById(chr.getDriver());
+            if (driver != null) {
+                driver.setPassenger(0);
+            }
+            chr.setDriver(0);
+            map.broadcastMessage(ResCUser.UserFollowCharacter(chr, true));
             return true;
         }
 
@@ -2749,9 +2837,11 @@ public class ReqCUser {
         if (driver == null) {
             return false;
         }
+
         if (bAutoReq != 0) {
             return false;
         }
+
         driver.SendPacket(ResCWvsContext.SetPassenserRequest(chr));
         return true;
     }
@@ -2760,20 +2850,27 @@ public class ReqCUser {
     public static boolean OnSetPassenserResult(MapleCharacter chr, ClientPacket cp) {
         MapleMap map = chr.getMap();
         int error = 0;
+
         int m_dwFollowRequesterID = cp.Decode4();
         byte bApply = cp.Decode1();
+
         if (bApply == 0) {
             error = cp.Decode4(); // always 5.
         }
-        MapleCharacter passenser = map.getCharacterById(m_dwFollowRequesterID);
-        if (passenser == null) {
+
+        MapleCharacter passenger = map.getCharacterById(m_dwFollowRequesterID);
+        if (passenger == null) {
             return false;
         }
+
         if (bApply == 0) {
-            passenser.SendPacket(ResCUserLocal.UserFollowCharacterFailed(error));
+            passenger.SendPacket(ResCUserLocal.UserFollowCharacterFailed(error));
             return false;
         }
-        map.broadcastMessage(ResCUser.UserFollowCharacter(passenser.getId(), chr.getId(), null));
+
+        passenger.setDriver(chr.getId());
+        chr.setPassenger(passenger.getId());
+        map.broadcastMessage(ResCUser.UserFollowCharacter(passenger, false));
         return true;
     }
 
