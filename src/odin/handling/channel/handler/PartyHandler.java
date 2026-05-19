@@ -144,7 +144,6 @@ public class PartyHandler {
                 return true;
             }
             case PartyReq_InviteParty: {
-                // TODO store pending invitations and check against them
                 MapleCharacter invited = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (invited != null) {
                     if (invited.getParty() == null && party != null) {

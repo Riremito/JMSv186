@@ -2609,7 +2609,7 @@ public class ReqCUser {
                     levelup = true;
                 }
             }
-            map.broadcastMessage(ResCWvsContext.updateMount(chr, levelup));
+            map.broadcastMessage(ResCWvsContext.SetTamingMobInfo(chr, levelup));
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         }
         chr.updateInv();

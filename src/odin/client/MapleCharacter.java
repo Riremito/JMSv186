@@ -3552,7 +3552,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void dropMessage(int type, String message) {
         if (type == -1) {
-            client.getSession().write(ResCWvsContext.getTopMsg(message));
+            client.getSession().write(ResCWvsContext.ScriptProgressMessage(message));
         } else if (type == -2) {
             client.getSession().write(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
         } else {

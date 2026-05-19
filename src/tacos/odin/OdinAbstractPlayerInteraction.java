@@ -897,7 +897,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void EarnTitleMsg(final String data) {
-        client.getSession().write(ResCWvsContext.getTopMsg(data));
+        client.getSession().write(ResCWvsContext.ScriptProgressMessage(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {

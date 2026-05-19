@@ -135,7 +135,7 @@ public class MapleMount {
         if (fatigue > 100 && owner.get() != null) {
             ((MapleCharacter) owner.get()).dispelSkill(1004);
         }
-        owner.get().getMap().broadcastMessage(ResCWvsContext.updateMount(owner.get(), false));
+        owner.get().getMap().broadcastMessage(ResCWvsContext.SetTamingMobInfo(owner.get(), false));
     }
 
     public void increaseExp() {
