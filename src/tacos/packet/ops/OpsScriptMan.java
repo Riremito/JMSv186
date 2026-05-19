@@ -26,8 +26,7 @@ import tacos.config.Version;
  *
  * @author Riremito
  */
-public enum OpsScriptMan {
-    // JMS v186
+public enum OpsScriptMan implements IPacketOps {
     SM_SAY(0),
     SM_SAYIMAGE(1),
     SM_ASKYESNO(2),
@@ -37,41 +36,51 @@ public enum OpsScriptMan {
     SM_ASKQUIZ(6),
     SM_ASKSPEEDQUIZ(7),
     SM_ASKAVATAR(8),
-    SM_ASKPET(9),
-    SM_ASKPETALL(10),
-    SM_ASKACCEPT(12),
-    SM_ASKBOXTEXT(13),
-    SM_ASKSLIDEMENU(14),
-    SM_SCRIPT(-1),
-    SM_ASKCENTER(-1),
-    SM_ASKMEMBERSHOPAVATAR(-1),
-    UNKNOWN(-1);
+    SM_ASKMEMBERSHOPAVATAR(9),
+    SM_ASKPET(10),
+    SM_ASKPETALL(11),
+    SM_SCRIPT(12),
+    SM_ASKACCEPT(13),
+    SM_ASKBOXTEXT(14),
+    SM_ASKSLIDEMENU(15),
+    SM_ASKCENTER(16),
+    UNKNOWN;
 
-    int value;
+    private int value;
 
-    OpsScriptMan(int skill_id) {
-        this.value = skill_id;
+    OpsScriptMan(int val) {
+        this.value = val;
     }
 
     OpsScriptMan() {
-        value = -1;
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int skill_id) {
-        this.value = skill_id;
+    @Override
+    public void set(int val) {
+        this.value = val;
     }
 
-    public static OpsScriptMan find(int skill_id) {
-        for (final OpsScriptMan o : OpsScriptMan.values()) {
-            if (o.get() == skill_id) {
-                return o;
+    public static OpsScriptMan find(int val) {
+        for (OpsScriptMan ops : values()) {
+            if (ops.get() == val) {
+                if (val != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
         return UNKNOWN;
+    }
+
+    public static void clear() {
+        for (OpsScriptMan ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
     }
 
     public static void init() {
@@ -82,8 +91,13 @@ public enum OpsScriptMan {
             SM_ASKSLIDEMENU.set(16);
             return;
         }
-
-        if (Version.Equal(Region.GMS, 95)) {
+        // GMS95
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            return;
+        }
+        clear();
+        // JMS180-194.
+        if (Version.PostBB() || ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 84)) {
             SM_SAY.set(0);
             SM_SAYIMAGE.set(1);
             SM_ASKYESNO.set(2);
@@ -93,19 +107,14 @@ public enum OpsScriptMan {
             SM_ASKQUIZ.set(6);
             SM_ASKSPEEDQUIZ.set(7);
             SM_ASKAVATAR.set(8);
-            SM_ASKMEMBERSHOPAVATAR.set(9);
-            SM_ASKPET.set(10);
-            SM_ASKPETALL.set(11);
-            SM_SCRIPT.set(12);
-            SM_ASKACCEPT.set(13);
-            SM_ASKBOXTEXT.set(14);
-            SM_ASKSLIDEMENU.set(15);
-            SM_ASKCENTER.set(16);
-        }
-        if (Version.PostBB()) {
+            SM_ASKPET.set(9);
+            SM_ASKPETALL.set(10);
+            SM_SCRIPT.set(11);
+            SM_ASKACCEPT.set(12);
+            SM_ASKBOXTEXT.set(13);
+            SM_ASKSLIDEMENU.set(14);
             return;
         }
-
         if (Version.Equal(Region.BMS, 24)) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
@@ -119,12 +128,9 @@ public enum OpsScriptMan {
             SM_ASKPETALL.set(10);
             SM_ASKACCEPT.set(13);
             SM_ASKBOXTEXT.set(14);
-            SM_SAYIMAGE.set(-1);
-            SM_ASKSLIDEMENU.set(-1);
             return;
         }
-
-        if (Version.LessOrEqual(Region.KMS, 84)) {
+        if (Version.GreaterOrEqual(Region.KMS, 84)) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
             SM_ASKTEXT.set(2);
@@ -138,12 +144,9 @@ public enum OpsScriptMan {
             // reserved
             SM_ASKACCEPT.set(11);
             SM_ASKBOXTEXT.set(12);
-            SM_SAYIMAGE.set(-1);
-            SM_ASKSLIDEMENU.set(-1);
-        }
-        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 84)) {
             return;
         }
+        // JMS146-165.
         if (ServerConfig.JMS146orLater()) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
@@ -159,27 +162,21 @@ public enum OpsScriptMan {
             SM_ASKACCEPT.set(12);
             SM_ASKBOXTEXT.set(13);
             // 14, CScriptMan::OnSay, 1
-            SM_SAYIMAGE.set(-1);
-            SM_ASKSLIDEMENU.set(-1);
             return;
         }
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            SM_SAY.set(0);
-            SM_ASKYESNO.set(1);
-            SM_ASKTEXT.set(2);
-            SM_ASKNUMBER.set(3);
-            SM_ASKMENU.set(4);
-            SM_ASKQUIZ.set(5);
-            SM_ASKAVATAR.set(6);
-            SM_ASKPET.set(7);
-            SM_ASKPETALL.set(8);
-            // 10, CScriptMan::OnAskYesNo, 0
-            SM_ASKACCEPT.set(11);
-            SM_ASKBOXTEXT.set(13);
-            SM_SAYIMAGE.set(-1);
-            SM_ASKSPEEDQUIZ.set(-1);
-            SM_ASKSLIDEMENU.set(-1);
-            return;
-        }
+        // JMS131.
+        SM_SAY.set(0);
+        SM_ASKYESNO.set(1);
+        SM_ASKTEXT.set(2);
+        SM_ASKNUMBER.set(3);
+        SM_ASKMENU.set(4);
+        SM_ASKQUIZ.set(5);
+        SM_ASKAVATAR.set(6);
+        SM_ASKPET.set(7);
+        SM_ASKPETALL.set(8);
+        // 10, CScriptMan::OnAskYesNo, 0
+        SM_ASKACCEPT.set(11);
+        SM_ASKBOXTEXT.set(13);
+        return;
     }
 }

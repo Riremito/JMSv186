@@ -29,7 +29,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCTownPortalPool {
 
-    public static final MaplePacket TownPortalCreated(MapleDoor door, boolean isTown) {
+    public static MaplePacket TownPortalCreated(MapleDoor door, boolean isTown) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalCreated);
 
         sp.Encode1(isTown ? 1 : 0);
@@ -72,6 +72,7 @@ public class ResCTownPortalPool {
     // partyPortal
     public static MaplePacket partyPortal(MapleDoor door) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
+
         sp.Encode1(40);
         sp.Encode1(door.getTownPortal().getMysticDoorId()); // number
         sp.Encode4(door.getMapId());

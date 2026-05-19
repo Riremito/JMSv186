@@ -90,7 +90,6 @@ import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
 import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
-import tacos.debug.DebugMan;
 import tacos.debug.DebugShop;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
@@ -227,10 +226,6 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptMessageAnswer: {
-                if (chr.getDebugMan() != null) {
-                    DebugMan.OnScriptMessageAnswerHook(chr, cp);
-                    return true;
-                }
                 ReqCScriptMan.OnScriptMessageAnswer(chr, cp);
                 return true;
             }
@@ -521,7 +516,6 @@ public class ReqCUser {
                 return true;
             }
             case CP_Whisper: {
-                // 内緒話, 探す
                 OnWhisper(chr, cp);
                 return true;
             }
@@ -532,11 +526,11 @@ public class ReqCUser {
                 return ReqCMiniRoomBaseDlg.OnMiniRoom(map, chr, cp);
             }
             case CP_PartyRequest: {
-                PartyHandler.PartyOperation(cp, client);
+                PartyHandler.OnPartyRequest(chr, cp);
                 return true;
             }
             case CP_PartyResult: {
-                PartyHandler.DenyPartyRequest(cp, client);
+                PartyHandler.OnPartyResult(chr, cp);
                 return true;
             }
             case CP_GuildRequest: {

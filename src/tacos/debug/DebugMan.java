@@ -20,7 +20,6 @@ package tacos.debug;
 
 import odin.client.MapleCharacter;
 import java.util.ArrayList;
-import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCScriptMan;
 
@@ -32,30 +31,11 @@ public class DebugMan {
 
     protected static final int DEFAULT_NPC_ID = 1012003;
 
-    public static boolean OnScriptMessageAnswerHook(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnScriptMessageAnswer(MapleCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
         IDebugMan dm = chr.getDebugMan();
-
-        int cm_type = cp.Decode1();
-        int action = cp.Decode1();
-
-        OpsScriptMan type = OpsScriptMan.find(cm_type);
-
         ((DebugMan) dm).updateStatus(action);
 
-        int m_nSelect = -1;
-        // JMS is always 1, CMS104 is not 1.
-        if (action != 0) {
-            if (type == OpsScriptMan.SM_ASKMENU) {
-                m_nSelect = cp.Decode4();
-            }
-            if (type == OpsScriptMan.SM_ASKAVATAR) {
-                m_nSelect = (int) cp.Decode1();
-            }
-        }
-
-        chr.DebugMsg("DebugMan : anwser (" + type + ", " + action + ", " + m_nSelect + ")");
-
-        switch (type) {
+        switch (ops) {
             case SM_SAY:
             case SM_ASKMENU:
             case SM_ASKAVATAR: {
@@ -67,7 +47,7 @@ public class DebugMan {
                 }
                 // end
                 dm.end(chr);
-                return false;
+                return true;
             }
             default: {
                 break;
@@ -75,7 +55,7 @@ public class DebugMan {
         }
 
         dm.end(chr);
-        DebugLogger.ErrorLog("OnScriptMessageAnswerHook not coded = " + cm_type + ", " + action);
+        DebugLogger.ErrorLog("IDebugMan : not coded, nMsgType = " + nMsgType);
         return false;
     }
 
