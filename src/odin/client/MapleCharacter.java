@@ -2944,7 +2944,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public List<MapleDoor> getDoors() {
-        return new ArrayList<MapleDoor>(doors);
+        return new ArrayList<>(doors);
     }
 
     public void setSmega() {

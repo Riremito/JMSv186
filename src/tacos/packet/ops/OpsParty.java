@@ -18,6 +18,7 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Region;
 import tacos.config.Version;
 
 /**
@@ -156,53 +157,44 @@ public enum OpsParty implements IPacketOps {
             return;
         }
         clear();
-        PartyReq_LoadParty.set(0);
-        PartyReq_CreateNewParty.set(1);
-        PartyReq_WithdrawParty.set(2);
-        PartyReq_JoinParty.set(3);
-        PartyReq_InviteParty.set(4);
-        PartyReq_KickParty.set(5);
-        PartyReq_ChangePartyBoss.set(6);
-        PartyRes_LoadParty_Done.set(7);
-        PartyRes_CreateNewParty_Done.set(8);
-        PartyRes_CreateNewParty_AlreayJoined.set(9);
-        PartyRes_CreateNewParty_Beginner.set(10);
-        PartyRes_CreateNewParty_Unknown.set(11);
-        PartyRes_WithdrawParty_Done.set(12);
-        PartyRes_WithdrawParty_NotJoined.set(13);
-        PartyRes_WithdrawParty_Unknown.set(14);
-        PartyRes_JoinParty_Done.set(15);
-        PartyRes_JoinParty_Done2.set(16);
-        PartyRes_JoinParty_AlreadyJoined.set(17);
-        PartyRes_JoinParty_AlreadyFull.set(18);
-        PartyRes_JoinParty_OverDesiredSize.set(19);
-        PartyRes_JoinParty_UnknownUser.set(20);
-        PartyRes_JoinParty_Unknown.set(21);
-        PartyRes_InviteParty_Sent.set(22);
-        PartyRes_InviteParty_BlockedUser.set(23);
-        PartyRes_InviteParty_AlreadyInvited.set(24);
-        PartyRes_InviteParty_AlreadyInvitedByInviter.set(25);
-        PartyRes_InviteParty_Rejected.set(26);
-        PartyRes_InviteParty_Accepted.set(27);
-        PartyRes_KickParty_Done.set(28);
-        PartyRes_KickParty_FieldLimit.set(29);
-        PartyRes_KickParty_Unknown.set(30);
-        PartyRes_ChangePartyBoss_Done.set(31);
-        PartyRes_ChangePartyBoss_NotSameField.set(32);
-        PartyRes_ChangePartyBoss_NoMemberInSameField.set(33);
-        PartyRes_ChangePartyBoss_NotSameChannel.set(34);
-        PartyRes_ChangePartyBoss_Unknown.set(35);
-        PartyRes_AdminCannotCreate.set(36);
-        PartyRes_AdminCannotInvite.set(37);
-        PartyRes_UserMigration.set(38);
-        PartyRes_ChangeLevelOrJob.set(39);
-        PartyRes_SuccessToSelectPQReward.set(40);
-        PartyRes_FailToSelectPQReward.set(41);
-        PartyRes_ReceivePQReward.set(42);
-        PartyRes_FailToRequestPQReward.set(43);
-        PartyRes_CanNotInThisField.set(44);
-        PartyRes_ServerMsg.set(45);
-        PartyInfo_TownPortalChanged.set(46);
-        PartyInfo_OpenGate.set(47);
+        if (Version.GreaterOrEqual(Region.JMS, 147)) {
+            PartyReq_LoadParty.set(0);
+            PartyReq_CreateNewParty.set(1);
+            PartyReq_WithdrawParty.set(2);
+            PartyReq_JoinParty.set(3);
+            PartyReq_InviteParty.set(4);
+            PartyReq_KickParty.set(5);
+            PartyReq_ChangePartyBoss.set(6);
+            PartyRes_LoadParty_Done.set(7);
+            PartyRes_CreateNewParty_Done.set(8);
+            PartyRes_CreateNewParty_AlreayJoined.set(9);
+            PartyRes_CreateNewParty_Beginner.set(10);
+            PartyRes_CreateNewParty_Unknown.set(11);
+            PartyRes_WithdrawParty_Done.set(12);
+            PartyRes_WithdrawParty_NotJoined.set(13);
+            PartyRes_WithdrawParty_Unknown.set(14);
+            PartyRes_JoinParty_Done.set(15);
+            PartyRes_JoinParty_AlreadyJoined.set(16);
+            PartyRes_JoinParty_AlreadyFull.set(17);
+            PartyRes_JoinParty_OverDesiredSize.set(18);
+            PartyRes_JoinParty_UnknownUser.set(19);
+            PartyRes_InviteParty_Sent.set(20);
+            PartyRes_InviteParty_BlockedUser.set(21);
+            PartyRes_InviteParty_AlreadyInvited.set(22);
+            PartyRes_InviteParty_Rejected.set(23);
+            PartyRes_InviteParty_Accepted.set(24);
+            PartyRes_KickParty_Done.set(25);
+            PartyRes_ChangePartyBoss_Done.set(26);
+            PartyRes_ChangePartyBoss_NotSameField.set(27);
+            PartyRes_ChangePartyBoss_NoMemberInSameField.set(28);
+            PartyRes_ChangePartyBoss_NotSameChannel.set(29);
+            PartyRes_ChangePartyBoss_Unknown.set(30);
+            PartyRes_AdminCannotCreate.set(31);
+            PartyRes_AdminCannotInvite.set(32);
+            PartyRes_UserMigration.set(33);
+            PartyRes_ChangeLevelOrJob.set(34);
+            PartyInfo_TownPortalChanged.set(35);
+            return;
+        }
     }
 }

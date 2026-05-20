@@ -76,8 +76,10 @@ import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
+import tacos.packet.ops.OpsParty;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataForcedStat;
+import tacos.server.map.TacosPortal;
 
 /**
  *
@@ -158,7 +160,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnStatChanged
-    public static final MaplePacket StatChanged(TacosCharacter chr, boolean unlock, int statmask) {
+    public static MaplePacket StatChanged(TacosCharacter chr, boolean unlock, int statmask) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
@@ -187,7 +189,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnTemporaryStatSet
-    public static final MaplePacket TemporaryStatSet(MapleStatEffect effect) {
+    public static MaplePacket TemporaryStatSet(MapleStatEffect effect) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
         sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
@@ -255,7 +257,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnForcedStatReset
-    public static final MaplePacket ForcedStatReset() {
+    public static MaplePacket ForcedStatReset() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatReset);
         return sp.get();
     }
@@ -320,7 +322,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMessage
-    public static final MaplePacket Message(ArgMessage ma) {
+    public static MaplePacket Message(ArgMessage ma) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Message);
         sp.Encode1(ma.mt.get());
         switch (ma.mt) {
@@ -809,20 +811,222 @@ public class ResCWvsContext {
         return sp.get();
     }
 
+    public static MaplePacket PartyResult(OpsParty ops) {
+        return PartyResult(ops, null);
+    }
+
     // CWvsContext::OnPartyResult
-    public static MaplePacket partyStatusMessage(int message) {
+    public static MaplePacket PartyResult(OpsParty ops, MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
-        sp.Encode1(message);
+        MapleParty party = chr.getParty();
+        int forChannel = chr.getChannelId();
+        sp.Encode1(ops.get());
+
+        switch (ops) {
+            case PartyReq_InviteParty: {
+                sp.Encode4(party.getId());
+                sp.EncodeStr(chr.getName());
+                sp.Encode4(chr.getLevel());
+                if (Version.GreaterOrEqual(Region.JMS, 186)) {
+                    sp.Encode4(chr.getJob());
+                }
+                sp.Encode1(0); // auto join.
+                break;
+            }
+            case PartyRes_LoadParty_Done: {
+                sp.Encode4(party.getId());
+                sp.EncodeBuffer(addPartyStatus(forChannel, party, true));
+                break;
+            }
+            case PartyRes_CreateNewParty_Done: {
+                sp.Encode4(party.getId());
+                sp.Encode4(999999999);
+                sp.Encode4(999999999);
+                sp.Encode8(0);
+                break;
+            }
+            case PartyRes_CreateNewParty_AlreayJoined: {
+                break;
+            }
+            case PartyRes_CreateNewParty_Beginner: {
+                break;
+            }
+            case PartyRes_CreateNewParty_Unknown: {
+                break;
+            }
+            case PartyRes_WithdrawParty_Done: {
+                break;
+            }
+            case PartyRes_WithdrawParty_NotJoined: {
+                break;
+            }
+            case PartyRes_WithdrawParty_Unknown: {
+                break;
+            }
+            case PartyRes_JoinParty_Done: {
+                break;
+            }
+            case PartyRes_JoinParty_Done2: {
+                break;
+            }
+            case PartyRes_JoinParty_AlreadyJoined: {
+                break;
+            }
+            case PartyRes_JoinParty_AlreadyFull: {
+                break;
+            }
+            case PartyRes_JoinParty_OverDesiredSize: {
+                break;
+            }
+            case PartyRes_JoinParty_UnknownUser: {
+                break;
+            }
+            case PartyRes_JoinParty_Unknown: {
+                break;
+            }
+            case PartyRes_InviteParty_Sent: {
+                sp.EncodeStr(chr.getName());
+                break;
+            }
+            case PartyRes_InviteParty_BlockedUser: {
+                sp.EncodeStr(chr.getName());
+                break;
+            }
+            case PartyRes_InviteParty_AlreadyInvited: {
+                break;
+            }
+            case PartyRes_InviteParty_AlreadyInvitedByInviter: {
+                break;
+            }
+            case PartyRes_InviteParty_Rejected: {
+                break;
+            }
+            case PartyRes_InviteParty_Accepted: {
+                break;
+            }
+            case PartyRes_KickParty_Done: {
+                break;
+            }
+            case PartyRes_KickParty_FieldLimit: {
+                break;
+            }
+            case PartyRes_KickParty_Unknown: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_Done: {
+                sp.Encode4(chr.getId());
+                sp.Encode1(1); // dc or not.
+                break;
+            }
+            case PartyRes_ChangePartyBoss_NotSameField: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_NoMemberInSameField: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_NotSameChannel: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_Unknown: {
+                break;
+            }
+            case PartyRes_AdminCannotCreate: {
+                break;
+            }
+            case PartyRes_AdminCannotInvite: {
+                break;
+            }
+            case PartyRes_UserMigration: {
+                break;
+            }
+            case PartyRes_ChangeLevelOrJob: {
+                break;
+            }
+            case PartyRes_SuccessToSelectPQReward: {
+                break;
+            }
+            case PartyRes_FailToSelectPQReward: {
+                break;
+            }
+            case PartyRes_ReceivePQReward: {
+                break;
+            }
+            case PartyRes_FailToRequestPQReward: {
+                break;
+            }
+            case PartyRes_CanNotInThisField: {
+                break;
+            }
+            case PartyRes_ServerMsg: {
+                break;
+            }
+            case PartyInfo_TownPortalChanged: {
+                List<MapleDoor> doors = chr.getDoors();
+                MapleDoor door = doors.isEmpty() ? null : doors.get(0);
+                TacosPortal door_portal = (door != null) ? door.getTownPortal() : null;
+
+                sp.Encode1(door_portal != null ? door_portal.getMysticDoorId() : 0); // number
+                sp.Encode4((door != null) ? door.getMapId() : 0);
+                sp.Encode4((door != null) ? door.getLink().getMapId() : 0);
+                sp.Encode4((door != null) ? door.getSkillId() : 0);
+                sp.Encode2((door != null) ? door.getLink().getPosition().x : 0);
+                sp.Encode2((door != null) ? door.getLink().getPosition().y : 0);
+                break;
+            }
+            case PartyInfo_OpenGate: {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
         return sp.get();
     }
 
-    public static MaplePacket partyStatusMessage(int message, String charname) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
+    // PARTYDATA::Decode
+    private static byte[] addPartyStatus(int forchannel, MapleParty party, boolean leaving) {
+        ServerPacket data = new ServerPacket();
 
-        sp.Encode1(message); // 23: 'Char' have denied request to the party.
-        sp.EncodeStr(charname);
-        return sp.get();
+        List<MaplePartyCharacter> partymembers = new ArrayList<>(party.getMembers());
+        while (partymembers.size() < 6) {
+            partymembers.add(new MaplePartyCharacter());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getId());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.EncodeBuffer(partychar.getName(), 13);
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getJobId());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getLevel());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.isOnline() ? partychar.getChannel() - 1 : -2);
+        }
+        data.Encode4(party.getLeader().getId());
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getChannel() == forchannel ? partychar.getMapid() : 0);
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            if (partychar.getChannel() == forchannel && !leaving) {
+                data.Encode4(partychar.getDoorTown());
+                data.Encode4(partychar.getDoorTarget());
+                data.Encode4(partychar.getDoorSkill());
+                data.Encode4(partychar.getDoorPosition().x);
+                data.Encode4(partychar.getDoorPosition().y);
+            } else {
+                data.Encode4(leaving ? 999999999 : 0);
+                data.Encode8(leaving ? 999999999 : 0);
+                data.Encode8(leaving ? -1 : 0);
+            }
+        }
+
+        return data.get().getBytes();
     }
 
     public static MaplePacket PartyResult(int forChannel, MapleParty party, PartyOperation op, MaplePartyCharacter target) {
@@ -864,43 +1068,6 @@ public class ResCWvsContext {
                 break;
             //1D = expel function not available in this map.
         }
-        return sp.get();
-    }
-
-    public static MaplePacket partyInvite(MapleCharacter from) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        sp.Encode1(4);
-        sp.Encode4(from.getParty().getId());
-        sp.EncodeStr(from.getName());
-        sp.Encode4(from.getLevel());
-        sp.Encode4(from.getJob());
-        sp.Encode1(0);
-        return sp.get();
-    }
-
-    public static MaplePacket partyCreated(int partyid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        sp.Encode1(8);
-        sp.Encode4(partyid);
-        sp.Encode4(999999999);
-        sp.Encode4(999999999);
-        sp.Encode8(0);
-        return sp.get();
-    }
-
-    // partyPortal
-    public static MaplePacket partyPortal(MapleDoor door) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        sp.Encode1(40);
-        sp.Encode1(door.getTownPortal().getMysticDoorId()); // number
-        sp.Encode4(door.getMapId());
-        sp.Encode4(door.getLink().getMapId());
-        sp.Encode4(door.getSkillId());
-        sp.Encode2((short) door.getLink().getPosition().x);
-        sp.Encode2((short) door.getLink().getPosition().y);
         return sp.get();
     }
 
@@ -1253,7 +1420,7 @@ public class ResCWvsContext {
     // CWvsContext::OnSessionValue
     // CWvsContext::OnPartyValue
     // CWvsContext::OnFieldSetVariable
-    public static final MaplePacket sendString(final int type, String object, final String amount) {
+    public static MaplePacket sendString(final int type, String object, final String amount) {
         ServerPacketHeader header = ServerPacketHeader.UNKNOWN;
 
         switch (type) {
@@ -1409,7 +1576,7 @@ public class ResCWvsContext {
         sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
         sp.Encode2(0);
         for (OdinPair<MapleBuffStat, Integer> stat : statups) {
-            sp.Encode4(stat.getRight().intValue());
+            sp.Encode4(stat.getRight());
             sp.Encode8(skillid);
             sp.EncodeZeroBytes(infusion ? 6 : 1);
             sp.Encode2(duration);
@@ -1466,57 +1633,6 @@ public class ResCWvsContext {
         sp.Encode4(mobid);
         sp.Encode2(0);
         return sp.get();
-    }
-
-    private static byte[] addPartyStatus(int forchannel, MapleParty party, boolean leaving) {
-        ServerPacket data = new ServerPacket();
-
-        List<MaplePartyCharacter> partymembers = new ArrayList<>(party.getMembers());
-        while (partymembers.size() < 6) {
-            partymembers.add(new MaplePartyCharacter());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.Encode4(partychar.getId());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.EncodeBuffer(partychar.getName(), 13);
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.Encode4(partychar.getJobId());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.Encode4(partychar.getLevel());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.isOnline()) {
-                data.Encode4(partychar.getChannel() - 1);
-            } else {
-                data.Encode4(-2);
-            }
-        }
-        data.Encode4(party.getLeader().getId());
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.getChannel() == forchannel) {
-                data.Encode4(partychar.getMapid());
-            } else {
-                data.Encode4(0);
-            }
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.getChannel() == forchannel && !leaving) {
-                data.Encode4(partychar.getDoorTown());
-                data.Encode4(partychar.getDoorTarget());
-                data.Encode4(partychar.getDoorSkill());
-                data.Encode4(partychar.getDoorPosition().x);
-                data.Encode4(partychar.getDoorPosition().y);
-            } else {
-                data.Encode4(leaving ? 999999999 : 0);
-                data.Encode8(leaving ? 999999999 : 0);
-                data.Encode8(leaving ? -1 : 0);
-            }
-        }
-
-        return data.get().getBytes();
     }
 
     public static MaplePacket guildNotice(int gid, String notice) {

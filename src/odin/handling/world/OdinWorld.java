@@ -45,7 +45,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Party {
 
-        private static Map<Integer, MapleParty> parties = new HashMap<Integer, MapleParty>();
+        private static Map<Integer, MapleParty> parties = new HashMap<>();
         private static final AtomicInteger runningPartyId = new AtomicInteger();
 
         static {
@@ -148,7 +148,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Messenger {
 
-        private static Map<Integer, MapleMessenger> messengers = new HashMap<Integer, MapleMessenger>();
+        private static Map<Integer, MapleMessenger> messengers = new HashMap<>();
         private static final AtomicInteger runningMessengerId = new AtomicInteger();
 
         static {
@@ -290,7 +290,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Guild {
 
-        private static final Map<Integer, MapleGuild> guilds = new LinkedHashMap<Integer, MapleGuild>();
+        private static final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
         private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
         static {
@@ -607,7 +607,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Alliance {
 
-        private static final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<Integer, MapleGuildAlliance>();
+        private static final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<>();
         private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
         static {
@@ -860,7 +860,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Family {
 
-        private static final Map<Integer, MapleFamily> families = new LinkedHashMap<Integer, MapleFamily>();
+        private static final Map<Integer, MapleFamily> families = new LinkedHashMap<>();
         private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
         static {

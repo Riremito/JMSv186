@@ -22,14 +22,11 @@ package odin.handling.world;
 
 import java.awt.Point;
 import java.util.List;
-import java.io.Serializable;
-
 import odin.client.MapleCharacter;
 import odin.server.maps.MapleDoor;
 
-public class MaplePartyCharacter implements Serializable {
+public class MaplePartyCharacter {
 
-    private static final long serialVersionUID = 6215463252132450750L;
     private String name;
     private int id;
     private int level;
@@ -115,35 +112,5 @@ public class MaplePartyCharacter implements Serializable {
 
     public Point getDoorPosition() {
         return doorPosition;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final MaplePartyCharacter other = (MaplePartyCharacter) obj;
-        if (name == null) {
-            if (other.name != null) {
-                return false;
-            }
-        } else if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
     }
 }

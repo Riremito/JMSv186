@@ -51,7 +51,8 @@ import odin.handling.channel.handler.FamilyHandler;
 import odin.handling.channel.handler.GuildHandler;
 import odin.handling.channel.handler.InventoryHandler;
 import odin.handling.channel.handler.ItemMakerHandler;
-import odin.handling.channel.handler.PartyHandler;
+import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.PartyOperation;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsChatGroup;
@@ -98,6 +99,7 @@ import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsMemo;
+import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferChannel;
@@ -526,11 +528,11 @@ public class ReqCUser {
                 return ReqCMiniRoomBaseDlg.OnMiniRoom(map, chr, cp);
             }
             case CP_PartyRequest: {
-                PartyHandler.OnPartyRequest(chr, cp);
+                OnPartyRequest(chr, cp);
                 return true;
             }
             case CP_PartyResult: {
-                PartyHandler.OnPartyResult(chr, cp);
+                OnPartyResult(chr, cp);
                 return true;
             }
             case CP_GuildRequest: {
@@ -2969,6 +2971,185 @@ public class ReqCUser {
         }
 
         DebugLogger.ErrorLog("OnWhisper : not coded " + operation);
+        return false;
+    }
+
+    public static boolean OnPartyRequest(MapleCharacter chr, ClientPacket cp) {
+        int type = cp.Decode1();
+        MapleParty party = chr.getParty();
+        MaplePartyCharacter partyplayer = new MaplePartyCharacter(chr);
+
+        OpsParty ops = OpsParty.find(type);
+        boolean is_leader = false;
+
+        if (party != null) {
+            if (party.getLeader().getId() == chr.getId()) {
+                is_leader = true;
+            }
+        }
+
+        switch (ops) {
+            case PartyReq_CreateNewParty: {
+                if (party != null) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_CreateNewParty_AlreayJoined));
+                    return false;
+                }
+
+                party = OdinWorld.Party.createParty(partyplayer);
+                chr.setParty(party);
+                chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_CreateNewParty_Done, chr));
+                return true;
+            }
+            case PartyReq_WithdrawParty: {
+                if (party == null) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_WithdrawParty_Unknown));
+                    return false;
+                }
+
+                chr.setParty(null);
+
+                if (is_leader) {
+                    OdinWorld.Party.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
+                    return true;
+                }
+
+                OdinWorld.Party.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
+                return true;
+            }
+            case PartyReq_JoinParty: {
+                int party_id = cp.Decode4();
+                if (party != null) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_AlreadyJoined));
+                    return false;
+                }
+
+                party = OdinWorld.Party.getParty(party_id);
+                if (party == null) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_Unknown));
+                    return false;
+                }
+
+                if (6 <= party.getMembers().size()) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_AlreadyFull));
+                    return false;
+                }
+
+                OdinWorld.Party.updateParty(party.getId(), PartyOperation.JOIN, partyplayer);
+                chr.receivePartyMemberHP();
+                chr.updatePartyMemberHP();
+                return true;
+            }
+            case PartyReq_InviteParty: {
+                String character_name = cp.DecodeStr();
+
+                if (party == null || 6 <= party.getMembers().size()) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_AlreadyFull));
+                    return false;
+                }
+
+                MapleCharacter invited = chr.getWorld().findOnlinePlayer(character_name, false);
+                if (invited == null) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_UnknownUser));
+                    return false;
+                }
+                if (invited.getLevel() < 10) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_CreateNewParty_Beginner));
+                    return false;
+                }
+                if (invited.getParty() != null) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_AlreadyJoined));
+                    return false;
+                }
+
+                chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_InviteParty_Sent, invited));
+                invited.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyReq_InviteParty, chr));
+                return true;
+            }
+            case PartyReq_KickParty: {
+                int character_id = cp.Decode4();
+
+                if (party == null || !is_leader) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_KickParty_Unknown));
+                    return false;
+                }
+
+                MaplePartyCharacter member = party.getMemberById(character_id);
+                OdinWorld.Party.updateParty(party.getId(), PartyOperation.EXPEL, member);
+                return true;
+            }
+            case PartyReq_ChangePartyBoss: {
+                int character_id = cp.Decode4();
+
+                if (party == null || !is_leader) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_ChangePartyBoss_Unknown));
+                    return false;
+                }
+
+                MaplePartyCharacter member = party.getMemberById(character_id);
+                OdinWorld.Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, member);
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnPartyRequest : not coded, type = " + type);
+        return false;
+    }
+
+    public static boolean OnPartyResult(MapleCharacter chr, ClientPacket cp) {
+        int type = cp.Decode1();
+        int party_id = cp.Decode4();
+
+        if (chr.getParty() != null) {
+            chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_AlreadyJoined));
+            return false;
+        }
+
+        MapleParty party = OdinWorld.Party.getParty(party_id);
+        if (party == null) {
+            chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_Unknown));
+            return false;
+        }
+
+        switch (OpsParty.find(type)) {
+            case PartyRes_InviteParty_Sent: {
+                return true;
+            }
+            case PartyRes_InviteParty_BlockedUser: {
+                MapleCharacter leader = chr.getWorld().findOnlinePlayerById(party.getLeader().getId());
+                if (leader != null) {
+                    leader.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_InviteParty_BlockedUser, chr));
+                }
+                return true;
+            }
+            case PartyRes_InviteParty_AlreadyInvited: {
+                return true;
+            }
+            case PartyRes_InviteParty_AlreadyInvitedByInviter: {
+                return true;
+            }
+            case PartyRes_InviteParty_Rejected: {
+                return true;
+            }
+            case PartyRes_InviteParty_Accepted: {
+                if (6 <= party.getMembers().size()) {
+                    chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_AlreadyFull));
+                    return true;
+                }
+
+                OdinWorld.Party.updateParty(party_id, PartyOperation.JOIN, new MaplePartyCharacter(chr));
+                chr.receivePartyMemberHP();
+                chr.updatePartyMemberHP();
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnPartyResult : not coded, type = " + type);
         return false;
     }
 
