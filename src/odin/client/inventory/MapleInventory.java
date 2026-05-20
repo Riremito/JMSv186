@@ -40,12 +40,12 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
      * Creates a new instance of MapleInventory
      */
     public MapleInventory(MapleInventoryType type) {
-        this.inventory = new LinkedHashMap<Short, IItem>();
+        this.inventory = new LinkedHashMap<>();
         this.type = type;
     }
 
     public void resetForClone() {
-        this.inventory = new LinkedHashMap<Short, IItem>();
+        this.inventory = new LinkedHashMap<>();
     }
 
     public void addSlot(byte slot) {

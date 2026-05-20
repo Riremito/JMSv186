@@ -46,9 +46,7 @@ public class PetMob implements IPetEx {
 
     @Override
     public boolean spawn(int id) {
-        if (this.monster == null) {
-            remove();
-        }
+        remove();
 
         if (!DWI_Validation.isValidMobID(id)) {
             return false;

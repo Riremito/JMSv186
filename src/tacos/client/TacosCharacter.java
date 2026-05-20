@@ -19,7 +19,6 @@
 package tacos.client;
 
 import java.awt.Point;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -72,6 +71,7 @@ import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
+import tacos.unofficial.PetCharacter;
 import tacos.unofficial.PetMob;
 import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
@@ -767,11 +767,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         if (getMessenger() != null) {
             OdinWorld.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannelId());
         }
-
-        if (isCloning()) {
-            cloneUpdate();
-            this.map.broadcastMessageClone(getClone(), ResCUserRemote.UserAvatarModified(getClone(), 1));
-        }
     }
 
     protected MapleMessenger messenger;
@@ -1047,8 +1042,13 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     // unofficial.
+    private PetCharacter pet_player = new PetCharacter(this);
     private PetMob pet_mob = new PetMob(this);
     private PetNPC pet_npc = new PetNPC(this);
+
+    public PetCharacter getPetCharacter() {
+        return this.pet_player;
+    }
 
     public PetMob getPetMob() {
         return this.pet_mob;
@@ -1059,46 +1059,9 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void movePetEx(ParseCMovePath move_path) {
+        this.pet_player.move(move_path);
         this.pet_mob.move(move_path);
         this.pet_npc.move(move_path);
-    }
-
-    // clone
-    protected boolean clone = false;
-    protected boolean cloning = false;
-    protected transient WeakReference<MapleCharacter>[] clones;
-    protected MapleCharacter clone_parent = null;
-
-    public boolean isClone() {
-        return this.clone;
-    }
-
-    public void setClone(boolean c) {
-        this.clone = c;
-    }
-
-    public boolean isCloning() {
-        return this.cloning;
-    }
-
-    public WeakReference<MapleCharacter>[] getClones() {
-        return this.clones;
-    }
-
-    public MapleCharacter getClone() {
-        return this.clones[0].get();
-    }
-
-    public boolean cloneUpdate() {
-        if (this.clone) {
-            return false;
-        }
-
-        this.clones[0].get().getInventory(MapleInventoryType.EQUIPPED).resetForClone();
-        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
-            this.clones[0].get().getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
-        }
-        return true;
     }
 
     // old code.

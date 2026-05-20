@@ -263,28 +263,6 @@ public class AdminCommand {
         }
     }
 
-    // クローン
-    public static class Clone extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            if (!c.getPlayer().cloneSpawn()) {
-                c.getPlayer().cloneRemove();
-                c.getPlayer().cloneSpawn();
-            }
-            return 1;
-        }
-    }
-
-    public static class RemoveClone extends CommandExecute {
-
-        @Override
-        public int execute(MapleClient c, String[] splitted) {
-            c.getPlayer().cloneRemove();
-            return 1;
-        }
-    }
-
     public static class ReactorTest extends CommandExecute {
 
         @Override

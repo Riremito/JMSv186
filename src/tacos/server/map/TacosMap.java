@@ -291,9 +291,6 @@ public class TacosMap extends TacosMapData {
 
     public void spawnRangedMapObject(MapleMapObject mapobject, MaplePacket packet) {
         for (MapleCharacter player : this.characters) {
-            if (player.isClone()) {
-                continue;
-            }
             if (player.getViewRangeSq() < player.getPosition().distanceSq(mapobject.getPosition())) {
                 continue;
             }
@@ -369,16 +366,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public int getCharactersSize() {
-        int ret = 0;
-        final Iterator<MapleCharacter> ltr = characters.iterator();
-        MapleCharacter chr;
-        while (ltr.hasNext()) {
-            chr = ltr.next();
-            if (!chr.isClone()) {
-                ret++;
-            }
-        }
-        return ret;
+        return this.characters.size();
     }
 
     private String fe_change_bgm = "";
@@ -744,7 +732,7 @@ public class TacosMap extends TacosMapData {
             }
             int player_state = leave_state.get(player_number);
             if ((player_state & 4) != 0) {
-                player.SendPacket(ResCUserPool.UserLeaveField(chr.getId()));
+                player.SendPacket(ResCUserPool.UserLeaveField(chr));
             }
         }
         // mob
@@ -825,8 +813,8 @@ public class TacosMap extends TacosMapData {
                 player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
             }
             if ((player_state & 4) != 0) {
-                player.SendPacket(ResCUserPool.UserLeaveField(chr.getId()));
-                chr.SendPacket(ResCUserPool.UserLeaveField(player.getId()));
+                player.SendPacket(ResCUserPool.UserLeaveField(chr));
+                chr.SendPacket(ResCUserPool.UserLeaveField(player));
             }
         }
         // mob
@@ -1077,7 +1065,7 @@ public class TacosMap extends TacosMapData {
         MapleCharacter chr;
         while (ltr.hasNext()) {
             chr = ltr.next();
-            if (!chr.isHidden() && !chr.isClone() && (chr.getControlledSize() < mincontrolled || mincontrolled == -1)) {
+            if ((chr.getControlledSize() < mincontrolled || mincontrolled == -1)) {
                 mincontrolled = chr.getControlledSize();
                 newController = chr;
             }

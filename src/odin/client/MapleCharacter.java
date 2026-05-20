@@ -68,7 +68,6 @@ import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
-import java.lang.ref.WeakReference;
 import java.util.EnumMap;
 import java.util.HashMap;
 import tacos.packet.ops.OpsBodyPart;
@@ -244,8 +243,6 @@ public class MapleCharacter extends TacosCharacter {
         wishlist = new int[10];
         rocks = new int[10];
         regrocks = new int[5];
-        clones = new WeakReference[1];
-        clones[0] = new WeakReference<>(null);
         inst = new AtomicInteger();
         inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
         doors = new ArrayList<>();
@@ -609,9 +606,6 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void saveToDB(boolean dc, boolean fromcs) {
-        if (clone) {
-            return;
-        }
         DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
         if (storage != null) {
             storage.update();
@@ -2396,23 +2390,17 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void controlMonster(MapleMonster monster, boolean aggro) {
-        if (clone) {
-            return;
-        }
         monster.setController(this);
         controlled.add(monster);
         client.SendPacket(ResCMobPool.MobChangeController(monster, false, aggro));
     }
 
     public void stopControllingMonster(MapleMonster monster) {
-        if (clone) {
-            return;
-        }
         controlled.remove(monster);
     }
 
     public void checkMonsterAggro(MapleMonster monster) {
-        if (clone || monster == null) {
+        if (monster == null) {
             return;
         }
         if (monster.getController() == this) {
@@ -2722,16 +2710,10 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void addVisibleMapObject(MapleMapObject mo) {
-        if (clone) {
-            return;
-        }
         visibleMapObjects.add(mo);
     }
 
     public void removeVisibleMapObject(MapleMapObject mo) {
-        if (clone) {
-            return;
-        }
         visibleMapObjects.remove(mo);
     }
 
@@ -4487,54 +4469,11 @@ public class MapleCharacter extends TacosCharacter {
         ret.client.setMapleId(client.getMapleId());
         ret.nexonPoint = nexonPoint;
         ret.maplePoint = maplePoint;
-        ret.clone = true;
         while (map.getCharacterById(ret.id) != null || client.getChannelServer().getOnlinePlayers().findById(ret.id) != null) {
             ret.id++;
         }
         ret.client.setPlayer(ret);
         return ret;
-    }
-
-    public boolean cloneSpawn() {
-        if (clone) {
-            cloning = false;
-            clone_parent = null;
-            return false;
-        }
-
-        if (clones[0].get() != null) {
-            SendPacket(ResWrapper.BroadCastMsgNotice("Clone is already spawned."));
-            cloning = false;
-            return false;
-        }
-
-        final MapleCharacter chr_clone = cloneCopy();
-        chr_clone.setName(String.format("%08X", Randomizer.nextInt(0x77777777)));
-        map.userEnterField(chr_clone);
-        clones[0] = new WeakReference<>(chr_clone);
-
-        SendPacket(ResWrapper.BroadCastMsgNotice("Clone is spawned."));
-
-        cloning = true;
-        clone_parent = this;
-        return true;
-    }
-
-    public boolean cloneRemove() {
-        if (clones[0].get() == null) {
-            SendPacket(ResWrapper.BroadCastMsgNotice("Clone is not removed, because there is no clone."));
-            cloning = false;
-            clone_parent = null;
-            return false;
-        }
-        map.userLeaveField(clones[0].get());
-        clones[0].get().getClient().disconnect(false, false);
-        clones[0] = new WeakReference<MapleCharacter>(null);
-
-        SendPacket(ResWrapper.BroadCastMsgNotice("Clone is removed."));
-        cloning = false;
-        clone_parent = null;
-        return true;
     }
 
     private IDebugMan debugMan = null;
@@ -4649,7 +4588,7 @@ public class MapleCharacter extends TacosCharacter {
             TacosChannel srv_ch = getChannelServer();
 
             try {
-                if (srv_ch == null || clone || srv_ch.isShutdown()) {
+                if (srv_ch == null || srv_ch.isShutdown()) {
                     return false;
                 }
                 if (messengerid > 0) {

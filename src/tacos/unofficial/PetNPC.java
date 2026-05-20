@@ -46,9 +46,7 @@ public class PetNPC implements IPetEx {
 
     @Override
     public boolean spawn(int id) {
-        if (this.npc == null) {
-            remove();
-        }
+        remove();
 
         if (!DWI_Validation.isValidNPCID(id)) {
             return false;

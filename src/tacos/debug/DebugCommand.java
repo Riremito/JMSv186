@@ -788,6 +788,17 @@ public class DebugCommand {
                 chr.SendPacket(ResCUserLocal.PollQuestion(questions, answers));
                 return true;
             }
+            case "/petcharacter":
+            case "/petchr":
+            case "/clone": {
+                if (chr.getPetCharacter().remove()) {
+                    chr.DebugMsg("PetCharacter : remove.");
+                    return true;
+                }
+                chr.getPetCharacter().spawn(chr.getId());
+                chr.DebugMsg("PetCharacter : sapwn.");
+                return true;
+            }
             case "/petmob": {
                 if (splitted.length < 2) {
                     chr.getPetMob().remove();

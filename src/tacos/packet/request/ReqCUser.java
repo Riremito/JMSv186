@@ -919,14 +919,6 @@ public class ReqCUser {
             }
         }
 
-        // クローン : 移動
-        if (chr.isCloning()) {
-            MapleCharacter chr_clone = chr.getClone();
-            map.userMove(chr_clone, move_path);
-            move_path.update(chr_clone);
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserMove(chr_clone, move_path));
-        }
-
         // unofficial.
         chr.movePetEx(move_path);
         return true;
@@ -1062,13 +1054,6 @@ public class ReqCUser {
         }
         // for remote users.
         map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
-        // clone test.
-        if (chr.isCloning()) {
-            MapleCharacter chr_clone = chr.getClone();
-            AttackInfo attack_clone = attack;
-            attack_clone.CharacterId = chr_clone.getId();
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserAttack(attack_clone));
-        }
         return true;
     }
 
@@ -1267,12 +1252,6 @@ public class ReqCUser {
         map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
         chr.getStat().setHp(chr.getStat().getHp() - uhd.nDamage);
         chr.sendStatChanged();
-
-        if (chr.isCloning()) {
-            MapleCharacter chr_clone = chr.getClone();
-            uhd.dwCharacterID = chr_clone.getId();
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserHit(uhd));
-        }
         return true;
     }
 
@@ -1304,10 +1283,6 @@ public class ReqCUser {
         }
         MapleMap map = chr.getMap();
         map.broadcastMessage(chr, ResCUserRemote.UserEmotion(chr, emotion_id), false);
-        if (chr.isCloning()) {
-            MapleCharacter chr_clone = chr.getClone();
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserEmotion(chr_clone, emotion_id));
-        }
         return true;
     }
 
@@ -2253,12 +2228,6 @@ public class ReqCUser {
         }
 
         map.broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, skill_id), false);
-
-        // クローン : 暴風停止
-        if (chr.isCloning()) {
-            MapleCharacter chr_clone = chr.getClone();
-            map.broadcastMessageClone(chr_clone, ResCUserRemote.UserSkillCancel(chr_clone, skill_id));
-        }
         return true;
     }
 
@@ -2285,10 +2254,6 @@ public class ReqCUser {
             chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSkillPrepare(chr, nSkillID, nSLV, action, attack_speed_degree), false);
         }
 
-        if (chr.isCloning()) {
-            MapleCharacter chr_clone = chr.getClone();
-            chr.getMap().broadcastMessageClone(chr_clone, ResCUserRemote.UserSkillPrepare(chr_clone, nSkillID, nSLV, action, attack_speed_degree));
-        }
         return true;
     }
 
