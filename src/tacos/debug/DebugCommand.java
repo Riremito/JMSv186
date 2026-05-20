@@ -449,24 +449,6 @@ public class DebugCommand {
                 pnpc.sendSpawnData(chr.getClient());
                 return true;
             }
-            case "/npccon": {
-                for (MapleMapObject mmo : chr.getMap().getMapObjects(MapleMapObjectType.NPC)) {
-                    MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
-                    chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
-                    chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
-                }
-                return true;
-            }
-            case "/accompany": {
-                chr.setAccompany();
-                chr.DebugMsg("Accompany : " + chr.getAccompany());
-                return true;
-            }
-            case "/npcpet": {
-                chr.setNPCPet();
-                chr.DebugMsg("NPCPet : " + chr.getNPCPet());
-                return true;
-            }
             case "/search": {
                 if (splitted.length < 3) {
                     return false;
@@ -804,6 +786,36 @@ public class DebugCommand {
 
                 // client strings won't be cleared, buggy...
                 chr.SendPacket(ResCUserLocal.PollQuestion(questions, answers));
+                return true;
+            }
+            case "/petmob": {
+                if (splitted.length < 2) {
+                    chr.getPetMob().remove();
+                    chr.DebugMsg("PetMob : remove.");
+                    return true;
+                }
+                int mob_id = parseInt(splitted[1]);
+                chr.getPetMob().spawn(mob_id);
+                chr.DebugMsg("PetMob : sapwn.");
+                return true;
+            }
+            case "/petnpc": {
+                if (splitted.length < 2) {
+                    chr.getPetNPC().remove();
+                    chr.DebugMsg("PetNPC : remove.");
+                    return true;
+                }
+                int mob_id = parseInt(splitted[1]);
+                chr.getPetNPC().spawn(mob_id);
+                chr.DebugMsg("PetNPC : sapwn.");
+                return true;
+            }
+            case "/npccon": {
+                for (MapleMapObject mmo : chr.getMap().getMapObjects(MapleMapObjectType.NPC)) {
+                    MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
+                    chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+                    chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
+                }
                 return true;
             }
             case "/xxxx": {

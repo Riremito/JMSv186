@@ -4598,25 +4598,6 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
-    private boolean isAccompany = false;
-    private boolean isNPCPet = false;
-
-    public void setAccompany() {
-        this.isAccompany = !this.isAccompany;
-    }
-
-    public boolean getAccompany() {
-        return this.isAccompany;
-    }
-
-    public void setNPCPet() {
-        this.isNPCPet = !this.isNPCPet;
-    }
-
-    public boolean getNPCPet() {
-        return this.isNPCPet;
-    }
-
     public final void removalTask() {
         try {
             this.cancelAllBuffs_();

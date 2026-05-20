@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -43,10 +42,8 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import tacos.packet.ClientPacketHeader;
 
@@ -161,15 +158,6 @@ public class ReqCUser_Pet {
         }
 
         map.broadcastMessage(chr, ResCUser_Pet.PetMove(chr, pet, move_path), false);
-
-        // NPC Pet test.
-        if (chr.getNPCPet()) {
-            for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
-                MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
-                move_path.update(npc);
-                map.broadcastMessageDelayed(chr, ResCNpcPool.NpcMove(npc, -1, -1, move_path));
-            }
-        }
         return true;
     }
 

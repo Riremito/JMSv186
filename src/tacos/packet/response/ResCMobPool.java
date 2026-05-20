@@ -163,10 +163,10 @@ public class ResCMobPool {
         return sp.get();
     }
 
-    public static MaplePacket MobMove(boolean bNextAttackPossible, int bLeft, int mob_skill, int oid, ParseCMovePath data) {
+    public static MaplePacket MobMove(MapleMonster monster, boolean bNextAttackPossible, int bLeft, int mob_skill, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobMove);
 
-        sp.Encode4(oid); // mob object id
+        sp.Encode4(monster.getObjectId()); // mob object id
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             // none
@@ -179,6 +179,7 @@ public class ResCMobPool {
         sp.Encode1(bNextAttackPossible ? 1 : 0); // bNextAttackPossible
         sp.Encode1(bLeft); // bLeft
         sp.Encode4(mob_skill);
+
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
             sp.Encode1(0);
@@ -187,6 +188,7 @@ public class ResCMobPool {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
+
         sp.EncodeBuffer(data.get());
         return sp.get();
     }

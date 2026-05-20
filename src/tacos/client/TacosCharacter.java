@@ -56,6 +56,7 @@ import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferField;
+import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCStage;
@@ -71,6 +72,8 @@ import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
+import tacos.unofficial.PetMob;
+import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.wz.ids.DWI_Validation;
 
@@ -1041,6 +1044,23 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setCntStraightVictories(int m_nCntStraightVictories) {
         this.m_nCntStraightVictories = m_nCntStraightVictories;
+    }
+
+    // unofficial.
+    private PetMob pet_mob = new PetMob(this);
+    private PetNPC pet_npc = new PetNPC(this);
+
+    public PetMob getPetMob() {
+        return this.pet_mob;
+    }
+
+    public PetNPC getPetNPC() {
+        return this.pet_npc;
+    }
+
+    public void movePetEx(ParseCMovePath move_path) {
+        this.pet_mob.move(move_path);
+        this.pet_npc.move(move_path);
     }
 
     // clone

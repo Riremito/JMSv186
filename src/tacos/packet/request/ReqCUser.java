@@ -64,7 +64,6 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
-import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUIVega;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
@@ -84,7 +83,6 @@ import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
@@ -929,15 +927,8 @@ public class ReqCUser {
             map.broadcastMessageClone(chr_clone, ResCUserRemote.UserMove(chr_clone, move_path));
         }
 
-        // NPC move test.
-        if (chr.getAccompany()) {
-            for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
-                MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
-                move_path.update(npc);
-                map.broadcastMessageDelayed(chr, ResCNpcPool.NpcMove(npc, -1, -1, move_path));
-            }
-        }
-
+        // unofficial.
+        chr.movePetEx(move_path);
         return true;
     }
 
