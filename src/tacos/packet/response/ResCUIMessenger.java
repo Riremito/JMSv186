@@ -18,11 +18,13 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsMessenger;
 import tacos.packet.response.data.DataAvatarLook;
+import tacos.server.TacosMessenger;
 
 /**
  *
@@ -30,70 +32,78 @@ import tacos.packet.response.data.DataAvatarLook;
  */
 public class ResCUIMessenger {
 
-    public static MaplePacket removeMessengerPlayer(int position) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
-
-        sp.Encode1(2);
-        sp.Encode1(position);
-        return sp.get();
+    public static MaplePacket Messenger(OpsMessenger ops, TacosMessenger messenger, TacosCharacter player_from) {
+        return Messenger(ops, messenger, player_from, null, null, false);
     }
 
-    public static MaplePacket messengerInvite(String from, int messengerid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
-
-        sp.Encode1(3);
-        sp.EncodeStr(from);
-        sp.Encode1(0);
-        sp.Encode4(messengerid);
-        sp.Encode1(0);
-        return sp.get();
+    public static MaplePacket Messenger(OpsMessenger ops, TacosMessenger messenger, TacosCharacter player_from, TacosCharacter player_to) {
+        return Messenger(ops, messenger, player_from, player_to, null, false);
     }
 
-    public static MaplePacket updateMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
-
-        sp.Encode1(7);
-        sp.Encode1(position);
-        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-        sp.EncodeStr(from);
-        sp.Encode2(channel);
-        return sp.get();
+    public static MaplePacket Messenger(OpsMessenger ops, TacosMessenger messenger, TacosCharacter player_from, TacosCharacter player_to, String text) {
+        return Messenger(ops, messenger, player_from, player_to, text, false);
     }
 
-    public static MaplePacket addMessengerPlayer(String from, MapleCharacter chr, int position, int channel) {
+    // CUIMessenger::OnPacket
+    public static MaplePacket Messenger(OpsMessenger ops, TacosMessenger messenger, TacosCharacter player_from, TacosCharacter player_to, String text, boolean blocked) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
-        sp.Encode1(0);
-        sp.Encode1(position);
-        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-        sp.EncodeStr(from);
-        sp.Encode2(channel);
+        sp.Encode1(ops.get());
+
+        switch (ops) {
+            case MSMP_Enter: {
+                sp.Encode1(messenger.getIndex(player_from)); // nIdx
+                sp.EncodeBuffer(DataAvatarLook.Encode(player_from));
+                sp.EncodeStr(player_from.getName()); //sID
+                sp.Encode1(player_from.getChannelId() - 1); // nChannelID
+                sp.Encode1(0); // bNew
+                break;
+            }
+            case MSMP_SelfEnterResult: {
+                sp.Encode1(messenger.getIndex(player_from)); // nIdx
+                break;
+            }
+            case MSMP_Leave: {
+                sp.Encode1(messenger.getIndex(player_from)); // nIdx
+                break;
+            }
+            case MSMP_Invite: {
+                sp.EncodeStr(player_from.getName()); // sCharacterName
+                sp.Encode1(player_from.getChannelId() - 1); // m_nChannelID
+                sp.Encode4(messenger.getId()); // m_dwSN
+                sp.Encode1(0);
+                break;
+            }
+            case MSMP_InviteResult: {
+                sp.EncodeStr((player_to != null) ? player_to.getName() : text); // text
+                sp.Encode1((player_to != null) ? 1 : 0); // found or not.
+                break;
+            }
+            case MSMP_Blocked: {
+                sp.EncodeStr(text); // text
+                sp.Encode1(blocked ? 1 : 0); // auto block or manual block.
+                break;
+            }
+            case MSMP_Chat: {
+                sp.EncodeStr(text); // text
+                break;
+            }
+            case MSMP_Avatar: {
+                sp.Encode1(messenger.getIndex(player_from)); // nIdx
+                sp.EncodeBuffer(DataAvatarLook.Encode(player_from));
+                break;
+            }
+            case MSMP_Migrated: {
+                for (int i = 0; i < 3; i++) {
+                    sp.Encode1(0); // 0 = clear, 1 = do nothing, others = enter player
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
         return sp.get();
     }
-
-    public static MaplePacket messengerNote(String text, int mode, int mode2) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
-
-        sp.Encode1(mode);
-        sp.EncodeStr(text);
-        sp.Encode1(mode2);
-        return sp.get();
-    }
-
-    public static MaplePacket messengerChat(String text) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
-
-        sp.Encode1(6);
-        sp.EncodeStr(text);
-        return sp.get();
-    }
-
-    public static MaplePacket joinMessenger(int position) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
-
-        sp.Encode1(1);
-        sp.Encode1(position);
-        return sp.get();
-    }
-
 }

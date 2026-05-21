@@ -57,7 +57,6 @@ import tacos.shared.SharedExpTable;
 import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
-import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
@@ -4202,9 +4201,6 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void changeRemoval() {
-        if (getMessenger() != null) {
-            OdinWorld.Messenger.silentLeaveMessenger(getMessenger().getId(), new MapleMessengerCharacter(this));
-        }
         changeRemoval(false);
     }
 
@@ -4568,7 +4564,6 @@ public class MapleCharacter extends TacosCharacter {
                     }
                 }
             }
-            this.setMessenger(null);
         } catch (final Throwable e) {
             DebugLogger.ErrorLog("removalTask");
         }
@@ -4576,10 +4571,9 @@ public class MapleCharacter extends TacosCharacter {
 
     public final boolean disconnect(final boolean RemoveInChannelServer, final boolean fromCS) {
         final String namez = this.getName();
-        final int idz = this.getId(), messengerid = this.getMessenger() == null ? 0 : this.getMessenger().getId(), gid = this.getGuildId(), fid = this.getFamilyId();
+        final int idz = this.getId(), gid = this.getGuildId(), fid = this.getFamilyId();
         final BuddyList bl = this.getBuddylist();
         final MaplePartyCharacter chrp = new MaplePartyCharacter(this);
-        final MapleMessengerCharacter chrm = new MapleMessengerCharacter(this);
         final MapleGuildCharacter chrg = this.getMGC();
         final MapleFamilyCharacter chrf = this.getMFC();
 
@@ -4590,9 +4584,6 @@ public class MapleCharacter extends TacosCharacter {
             try {
                 if (srv_ch == null || srv_ch.isShutdown()) {
                     return false;
-                }
-                if (messengerid > 0) {
-                    OdinWorld.Messenger.leaveMessenger(messengerid, chrm);
                 }
                 if (party != null) {
                     chrp.setOnline(false);
@@ -4636,7 +4627,6 @@ public class MapleCharacter extends TacosCharacter {
                 if (gid > 0) {
                     OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);
                 }
-                this.setMessenger(null);
             } catch (final Exception e) {
                 e.printStackTrace();
                 FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);

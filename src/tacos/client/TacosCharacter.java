@@ -38,8 +38,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
-import odin.handling.world.MapleMessenger;
-import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
@@ -762,17 +760,8 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void equipChanged() {
         this.map.broadcastMessage(this, ResCUserRemote.UserAvatarModified(this, 1), false);
-
+        getWorld().avatarMessenger(this);
         this.stats.recalcLocalStats();
-        if (getMessenger() != null) {
-            OdinWorld.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannelId());
-        }
-    }
-
-    protected MapleMessenger messenger;
-
-    public MapleMessenger getMessenger() {
-        return this.messenger;
     }
 
     protected int accountid;
@@ -805,10 +794,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean isAdmin() {
         return gmLevel >= 5;
-    }
-
-    public void setMessenger(MapleMessenger messenger) {
-        this.messenger = messenger;
     }
 
     // debug

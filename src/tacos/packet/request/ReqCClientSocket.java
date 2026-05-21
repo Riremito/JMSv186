@@ -29,7 +29,6 @@ import tacos.config.Version;
 import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
 import tacos.network.MaplePacket;
-import odin.handling.world.MapleMessengerCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
 import odin.handling.world.OdinWorld;
@@ -261,11 +260,6 @@ public class ReqCClientSocket {
                 // family
                 if (0 < chr.getFamilyId()) {
                     OdinWorld.Family.setFamilyMemberOnline(chr.getMFC(), true, client.getChannelId());
-                }
-                // idk - 1
-                if (chr.getMessenger() != null) {
-                    OdinWorld.Messenger.silentJoinMessenger(chr.getMessenger().getId(), new MapleMessengerCharacter(client.getPlayer()));
-                    OdinWorld.Messenger.updateMessenger(chr.getMessenger().getId(), client.getPlayer().getName(), client.getChannelId());
                 }
 
                 chr.sendSetField(true);

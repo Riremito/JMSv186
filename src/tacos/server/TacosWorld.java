@@ -26,6 +26,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.server.Timer;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.response.ResCUserLocal;
@@ -321,4 +322,60 @@ public class TacosWorld {
         return true;
     }
 
+    // messenger.
+    private ArrayList<TacosMessenger> messengers = new ArrayList<>();
+
+    public TacosMessenger findMessenger(int messenger_id) {
+        for (TacosMessenger messenger : this.messengers) {
+            if (messenger.getId() == messenger_id) {
+                return messenger;
+            }
+        }
+
+        return null;
+    }
+
+    public TacosMessenger getMessenger(TacosCharacter player) {
+        for (TacosMessenger messenger : this.messengers) {
+            if (messenger.check(player)) {
+                return messenger;
+            }
+        }
+
+        return null;
+    }
+
+    public boolean leaveMessenger(TacosCharacter player) {
+        TacosMessenger messenger = getMessenger(player);
+        if (messenger == null) {
+            return false;
+        }
+
+        messenger.leave(player);
+        if (messenger.getPlayers().isEmpty()) {
+            this.messengers.remove(messenger);
+        }
+
+        return true;
+    }
+
+    public boolean avatarMessenger(TacosCharacter player) {
+        TacosMessenger messenger = getMessenger(player);
+        if (messenger == null) {
+            return false;
+        }
+
+        return messenger.avatar(player);
+    }
+
+    public TacosMessenger createMessenger(TacosCharacter player) {
+        TacosMessenger messenger = getMessenger(player);
+        if (messenger != null) {
+            return null;
+        }
+
+        messenger = new TacosMessenger();
+        messengers.add(messenger);
+        return messenger;
+    }
 }

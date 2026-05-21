@@ -24,7 +24,6 @@ import odin.handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
-import tacos.packet.response.ResCUIMessenger;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.TacosWorld;
@@ -39,7 +38,6 @@ public class OdinWorld extends TacosWorld {
         OdinWorld.Guild.lock.toString();
         OdinWorld.Alliance.lock.toString();
         OdinWorld.Family.lock.toString();
-        OdinWorld.Messenger.getMessenger(0);
         OdinWorld.Party.getParty(0);
     }
 
@@ -143,148 +141,6 @@ public class OdinWorld extends TacosWorld {
 
         public static MapleParty disbandParty(int partyid) {
             return parties.remove(partyid);
-        }
-    }
-
-    public static class Messenger {
-
-        private static Map<Integer, MapleMessenger> messengers = new HashMap<>();
-        private static final AtomicInteger runningMessengerId = new AtomicInteger();
-
-        static {
-            runningMessengerId.set(1);
-        }
-
-        public static MapleMessenger createMessenger(MapleMessengerCharacter chrfor) {
-            int messengerid = runningMessengerId.getAndIncrement();
-            MapleMessenger messenger = new MapleMessenger(messengerid, chrfor);
-            messengers.put(messenger.getId(), messenger);
-            return messenger;
-        }
-
-        public static void declineChat(String target, String namefrom) {
-            MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target, false);
-            if (chr != null) {
-                MapleMessenger messenger = chr.getMessenger();
-                if (messenger != null) {
-                    chr.getClient().getSession().write(ResCUIMessenger.messengerNote(namefrom, 5, 0));
-                }
-            }
-        }
-
-        public static MapleMessenger getMessenger(int messengerid) {
-            return messengers.get(messengerid);
-        }
-
-        public static void leaveMessenger(int messengerid, MapleMessengerCharacter target) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            int position = messenger.getPositionByName(target.getName());
-            messenger.removeMember(target);
-
-            for (MapleMessengerCharacter mmc : messenger.getMembers()) {
-                if (mmc != null) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(mmc.getName());
-                    if (chr != null) {
-                        chr.getClient().getSession().write(ResCUIMessenger.removeMessengerPlayer(position));
-                    }
-                }
-            }
-        }
-
-        public static void silentLeaveMessenger(int messengerid, MapleMessengerCharacter target) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            messenger.silentRemoveMember(target);
-        }
-
-        public static void silentJoinMessenger(int messengerid, MapleMessengerCharacter target) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            messenger.silentAddMember(target);
-        }
-
-        public static void updateMessenger(int messengerid, String namefrom, int fromchannel) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            int position = messenger.getPositionByName(namefrom);
-
-            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
-                if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                    if (chr != null) {
-                        MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(namefrom, false);
-                        chr.SendPacket(ResCUIMessenger.updateMessengerPlayer(namefrom, from, position, fromchannel - 1));
-                    }
-                }
-            }
-        }
-
-        public static void joinMessenger(int messengerid, MapleMessengerCharacter target, String from, int fromchannel) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            messenger.addMember(target);
-            int position = messenger.getPositionByName(target.getName());
-            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
-                if (messengerchar != null) {
-                    int mposition = messenger.getPositionByName(messengerchar.getName());
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                    if (chr != null) {
-                        if (!messengerchar.getName().equals(from)) {
-                            MapleCharacter fromCh = TacosWorld.find(0).findOnlinePlayer(from);
-                            chr.SendPacket(ResCUIMessenger.addMessengerPlayer(from, fromCh, position, fromchannel - 1));
-                            fromCh.SendPacket(ResCUIMessenger.addMessengerPlayer(chr.getName(), chr, mposition, messengerchar.getChannel() - 1));
-                        } else {
-                            chr.SendPacket(ResCUIMessenger.joinMessenger(mposition));
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void messengerChat(int messengerid, String chattext, String namefrom) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-
-            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
-                if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                    if (chr != null) {
-                        chr.SendPacket(ResCUIMessenger.messengerChat(chattext));
-                    }
-                } //Whisp Monitor Code
-                else if (messengerchar != null) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                }
-                //
-            }
-        }
-
-        public static void messengerInvite(String sender, int messengerid, String target, int fromchannel, boolean gm) {
-            if (TacosWorld.find(0).findOnlinePlayer(target, false) != null) {
-                MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(sender, false);
-                MapleCharacter targeter = TacosWorld.find(0).findOnlinePlayer(target, false);
-                if (targeter != null && targeter.getMessenger() == null) {
-                    if (!targeter.isGM() || gm) {
-                        targeter.SendPacket(ResCUIMessenger.messengerInvite(sender, messengerid));
-                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 1));
-                    } else {
-                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 0));
-                    }
-                } else {
-                    from.SendPacket(ResCUIMessenger.messengerChat(sender + " : " + target + " is already using Maple Messenger"));
-                }
-            }
-
         }
     }
 

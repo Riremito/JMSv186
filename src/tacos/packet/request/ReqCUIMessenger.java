@@ -19,14 +19,12 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
-import odin.handling.world.MapleMessenger;
-import odin.handling.world.MapleMessengerCharacter;
-import odin.handling.world.OdinWorld;
+import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
-import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.response.ResCUIMessenger;
+import tacos.packet.ops.OpsMessenger;
+import tacos.server.TacosMessenger;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -34,20 +32,11 @@ import tacos.packet.response.ResCUIMessenger;
  */
 public class ReqCUIMessenger {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
-        if (chr == null) {
-            return true;
-        }
-
-        MapleMap map = chr.getMap();
-        if (map == null) {
-            return true;
-        }
+    public static boolean OnPacket(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
 
         switch (header) {
             case CP_Messenger: {
-                OnMessenger(cp, c);
+                OnMessenger(chr, cp);
                 return true;
             }
             default: {
@@ -58,85 +47,80 @@ public class ReqCUIMessenger {
         return false;
     }
 
-    public static void OnMessenger(ClientPacket cp, MapleClient client) {
-        String input;
-        MapleMessenger messenger = client.getPlayer().getMessenger();
+    public static boolean OnMessenger(MapleCharacter chr, ClientPacket cp) {
+        TacosWorld world = chr.getWorld();
+        TacosMessenger messenger = world.getMessenger(chr);
 
-        switch (cp.Decode1()) {
-            case 0x00: // open
+        byte type = cp.Decode1();
+
+        switch (OpsMessenger.find(type)) {
+            case MSMP_Enter: {
+                if (messenger != null) {
+                    return false;
+                }
+
+                int messenger_id = cp.Decode4();
+                if (messenger_id == 0) {
+                    messenger = world.createMessenger(chr);
+                    return messenger.enter(chr);
+                }
+
+                messenger = world.findMessenger(messenger_id);
                 if (messenger == null) {
-                    int messengerid = cp.Decode4();
-                    if (messengerid == 0) { // create
-                        client.getPlayer().setMessenger(OdinWorld.Messenger.createMessenger(new MapleMessengerCharacter(client.getPlayer())));
-                    } else { // join
-                        messenger = OdinWorld.Messenger.getMessenger(messengerid);
-                        if (messenger != null) {
-                            final int position = messenger.getLowestPosition();
-                            if (position > -1 && position < 4) {
-                                client.getPlayer().setMessenger(messenger);
-                                OdinWorld.Messenger.joinMessenger(messenger.getId(), new MapleMessengerCharacter(client.getPlayer()), client.getPlayer().getName(), client.getChannelId());
-                            }
-                        }
-                    }
+                    return false;
                 }
-                break;
-            case 0x02: // exit
-                if (messenger != null) {
-                    final MapleMessengerCharacter messengerplayer = new MapleMessengerCharacter(client.getPlayer());
-                    OdinWorld.Messenger.leaveMessenger(messenger.getId(), messengerplayer);
-                    client.getPlayer().setMessenger(null);
-                }
-                break;
-            case 0x03: // invite
 
-                if (messenger != null) {
-                    final int position = messenger.getLowestPosition();
-                    if (position <= -1 || position >= 4) {
-                        return;
-                    }
-                    input = cp.DecodeStr();
-                    final MapleCharacter target = client.getChannelServer().getOnlinePlayers().findByName(input);
+                return messenger.enter(chr);
+            }
+            case MSMP_Leave: {
+                if (messenger == null) {
+                    return false;
+                }
 
-                    if (target != null) {
-                        if (target.getMessenger() == null) {
-                            if (!target.isGM() || client.getPlayer().isGM()) {
-                                client.getSession().write(ResCUIMessenger.messengerNote(input, 4, 1));
-                                target.getClient().getSession().write(ResCUIMessenger.messengerInvite(client.getPlayer().getName(), messenger.getId()));
-                            } else {
-                                client.getSession().write(ResCUIMessenger.messengerNote(input, 4, 0));
-                            }
-                        } else {
-                            client.getSession().write(ResCUIMessenger.messengerChat(client.getPlayer().getName() + " : " + target.getName() + " is already using Maple Messenger."));
-                        }
-                    } else {
-                        if (client.getWorld().findOnlinePlayer(input, false) != null) {
-                            OdinWorld.Messenger.messengerInvite(client.getPlayer().getName(), messenger.getId(), input, client.getChannelId(), client.getPlayer().isGM());
-                        } else {
-                            client.getSession().write(ResCUIMessenger.messengerNote(input, 4, 0));
-                        }
-                    }
+                return world.leaveMessenger(chr);
+            }
+            case MSMP_Invite: {
+                if (messenger == null) {
+                    return false;
                 }
-                break;
-            case 0x05: // decline
-                final String targeted = cp.DecodeStr();
-                final MapleCharacter target = client.getChannelServer().getOnlinePlayers().findByName(targeted);
-                if (target != null) { // This channel
-                    if (target.getMessenger() != null) {
-                        target.getClient().getSession().write(ResCUIMessenger.messengerNote(client.getPlayer().getName(), 5, 0));
-                    }
-                } else { // Other channel
-                    if (!client.getPlayer().isGM()) {
-                        OdinWorld.Messenger.declineChat(targeted, client.getPlayer().getName());
-                    }
-                }
-                break;
-            case 0x06: // message
-                if (messenger != null) {
-                    OdinWorld.Messenger.messengerChat(messenger.getId(), cp.DecodeStr(), client.getPlayer().getName());
 
+                String player_name = cp.DecodeStr();
+                return messenger.invite(chr, player_name);
+            }
+            case MSMP_Blocked: {
+                if (messenger != null) {
+                    return false;
                 }
+                String player_name = cp.DecodeStr();
+                String own_name = cp.DecodeStr(); // may be not required.
+                boolean blocked = (cp.Decode1() != 0); // auto block or not.
+
+                MapleCharacter player = world.findOnlinePlayer(player_name, false);
+                if (player == null) {
+                    return false;
+                }
+
+                messenger = world.getMessenger(player);
+                if (messenger == null) {
+                    return false;
+                }
+
+                return messenger.blocked(own_name, blocked);
+            }
+            case MSMP_Chat: {
+                if (messenger == null) {
+                    return false;
+                }
+
+                String msg = cp.DecodeStr(); // message includes name lol.
+                return messenger.chat(chr, msg);
+            }
+            default: {
                 break;
+            }
         }
-    }
 
+        DebugLogger.ErrorLog("OnMessenger : not coded, type = " + type);
+        return false;
+    }
 }

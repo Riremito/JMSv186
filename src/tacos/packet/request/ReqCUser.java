@@ -520,7 +520,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_Messenger: {
-                return ReqCUIMessenger.OnPacket(client, header, cp);
+                return ReqCUIMessenger.OnPacket(chr, header, cp);
             }
             case CP_MiniRoom: {
                 return ReqCMiniRoomBaseDlg.OnMiniRoom(map, chr, cp);
