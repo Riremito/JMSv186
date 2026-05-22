@@ -70,7 +70,6 @@ public class DWI_Validation {
 
     // Reactor.wz
     public static boolean isValidReactorID(int id) {
-        return DWI_LoadXML.reactorids.contains(id);
+        return DWI_LoadXML.getReactor().isValidID(id);
     }
-
 }

@@ -903,7 +903,7 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
-    public final Equip randomizeStats(final Equip equip) {
+    public final Equip randomizeStats(Equip equip) {
         if (ContentCustom.CC_EQUIP_STAT_RANDOMIZER.get()) {
             return RireSabaStats(equip);
         }

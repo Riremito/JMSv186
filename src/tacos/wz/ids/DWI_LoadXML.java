@@ -45,6 +45,7 @@ public class DWI_LoadXML {
     private static final DWI_List ids_item = new DWI_List(ids -> DWI_LoadXML.LoadItemXMLs(ids));
     private static final DWI_List ids_npc = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/NPC" : "NPC.wz", "0*(\\d+)\\.img", ids));
     private static final DWI_List ids_mob = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Mob" : "Mob.wz", "0*(\\d+)\\.img", ids));
+    private static final DWI_List ids_reactor = new DWI_List(ids -> DWI_LoadXML.LoadXMLs(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz", "0*(\\d+)\\.img", ids));
 
     public static DWI_List getSkin() {
         return ids_skin;
@@ -78,7 +79,9 @@ public class DWI_LoadXML {
         return ids_mob;
     }
 
-    public static final ArrayList<Integer> reactorids = new ArrayList<Integer>();
+    public static DWI_List getReactor() {
+        return ids_reactor;
+    }
 
     public static int LoadSkinXMLs(String path, String regex, ArrayList<Integer> list) {
         IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();

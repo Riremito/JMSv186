@@ -38,6 +38,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import odin.client.inventory.Item;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCNpcPool;
@@ -62,6 +63,8 @@ import odin.server.shops.HiredMerchant;
 import tacos.database.query.DQ_Accounts;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.provider.IMapleData;
+import odin.server.maps.MapleReactor;
+import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsUI;
@@ -76,6 +79,7 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.data.ReactorWz;
 
 /**
  *
@@ -113,10 +117,14 @@ public class DebugCommand {
         return ret;
     }
 
-    public static boolean checkCommand(MapleClient c, String message) {
-        MapleCharacter chr = c.getPlayer();
-
+    public static boolean checkCommand(MapleClient client, String message) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
+            return false;
+        }
+
+        MapleMap map = chr.getMap();
+        if (map == null) {
             return false;
         }
 
@@ -251,7 +259,7 @@ public class DebugCommand {
             }
             case "/test":
             case "/help": {
-                remoteNPCTalk(c, 9010021, 1012003);
+                remoteNPCTalk(client, 9010021, 1012003);
                 return true;
             }
             case "/npctalk": {
@@ -260,7 +268,7 @@ public class DebugCommand {
                 }
                 int npc_id = parseInt(splitted[1]);
 
-                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id)) {
+                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id)) {
                     chr.DebugMsg("[RemoteNPCTalk] Invalid NPCID.");
                     return false;
                 }
@@ -274,7 +282,7 @@ public class DebugCommand {
                 }
                 int npc_id = parseInt(splitted[1]);
                 // set Chief Stan
-                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(c, npc_id, 1012003)) {
+                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id, 1012003)) {
                     chr.DebugMsg("[RemoteNPCTalk2] Invalid NPCID.");
                     return false;
                 }
@@ -442,11 +450,82 @@ public class DebugCommand {
                 chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
                 return true;
             }
+            // npc.
+            case "/npc": {
+                if (splitted.length < 2) {
+                    return true;
+                }
+                int npc_id = Integer.parseInt(splitted[1]);
+                if (!DWI_Validation.isValidNPCID(npc_id)) {
+                    chr.DebugMsg("npc : invalid id.");
+                    return true;
+                }
+                MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
+                npc.setPosition(chr.getPosition());
+                npc.setCy(chr.getPosition().y);
+                npc.setRx0(chr.getPosition().x - 50);
+                npc.setRx1(chr.getPosition().x + 50);
+                npc.setF(chr.getStance());
+                npc.setFh(chr.getFH());
+                npc.setCustom(true);
+                chr.getMap().addMapObject(npc);
+                map.broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
+                chr.DebugMsg("npc : " + npc_id);
+                return true;
+            }
             case "/pnpc": {
-                PlayerNPC pnpc = new PlayerNPC(chr, 9901000, chr.getMap());
-                pnpc.update(chr);
+                PlayerNPC pnpc = new PlayerNPC(9901000, chr);
+                pnpc.setPosition(chr.getPosition());
+                pnpc.setCy(chr.getPosition().y);
+                pnpc.setRx0(chr.getPosition().x - 50);
+                pnpc.setRx1(chr.getPosition().x + 50);
+                pnpc.setF(chr.getStance());
+                pnpc.setFh(chr.getFH());
                 chr.getMap().addMapObject(pnpc);
                 pnpc.sendSpawnData(chr.getClient());
+                return true;
+            }
+            // reactor.
+            case "/reactor": {
+                if (splitted.length < 2) {
+                    return true;
+                }
+
+                int reactor_id = Integer.parseInt(splitted[1]);
+                if (!DWI_Validation.isValidReactorID(reactor_id)) {
+                    chr.DebugMsg("reactor : invalid id.");
+                    return true;
+                }
+
+                MapleReactorStats reactorSt = ReactorWz.get().getReactor(reactor_id);
+                if (reactorSt == null) {
+                    chr.DebugMsg("reactor : reactorSt = null.");
+                    return true;
+                }
+
+                MapleReactor reactor = new MapleReactor(reactorSt, reactor_id);
+                reactor.setDelay(-1);
+
+                Point pos = new Point(chr.getPosition());
+                int foothold_id = chr.getFH();
+                if (foothold_id == 0) {
+                    chr.DebugMsg("reactor : foothold_id = 0.");
+                    return true;
+                }
+
+                MapleFoothold fh = map.getFootholds().findFootHold(foothold_id);
+                if (fh == null) {
+                    chr.DebugMsg("reactor : fh = null.");
+                    return true;
+                }
+                if (reactorSt.getBR() != null && reactorSt.getTL() != null) {
+                    pos.y = fh.getY1() + ((reactorSt.getBR().y - reactorSt.getTL().y) / 2);
+                }
+                reactor.setPosition(pos);
+                // spawn & hit
+                map.spawnReactor(reactor);
+                TacosScriptReactor.getInstance().act(client, reactor);
+                chr.DebugMsg("reactor : " + reactor_id);
                 return true;
             }
             case "/search": {
@@ -461,17 +540,90 @@ public class DebugCommand {
                 checkMapData(chr);
                 return true;
             }
+            // client
+            case "/dc":
+            case "/disconnect": {
+                MapleCharacter target = chr;
+                if (2 <= splitted.length) {
+                    target = chr.getWorld().findOnlinePlayer(splitted[1]);
+                    if (target == null) {
+                        chr.DebugMsg("dc : not found.");
+                        return true;
+                    }
+                }
+                chr.DebugMsg("dc : " + target.getName());
+                target.getClient().getSession().close();
+                return true;
+            }
+            // item
+            case "/drop": {
+                if (splitted.length < 2) {
+                    return true;
+                }
+                int item_id = Integer.parseInt(splitted[1]);
+
+                if (!DWI_Validation.isValidItemID(item_id)) {
+                    return true;
+                }
+                int item_quantity = 1;
+                boolean is_equip = item_id / 1000000 == 1;
+                boolean is_pet = item_id / 10000 == 500;
+                if ((!is_equip || !is_pet) && 3 <= splitted.length) {
+                    item_quantity = Integer.parseInt(splitted[2]);
+                }
+                if (item_quantity < 0) {
+                    item_quantity = 1;
+                }
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                IItem item = is_equip ? ii.getEquipById(item_id) : new Item(item_id, (byte) 0, (short) item_quantity, (byte) 0);
+                if (is_equip) {
+                    item = ii.randomizeStats((Equip) item);
+                }
+
+                map.spawnItemDrop(chr, chr, item, chr.getPosition(), true, true);
+                chr.DebugMsg("drop : " + item_id);
+                return true;
+            }
             // ボス関連
             case "/bosstest": {
                 if (splitted.length < 2) {
                     return false;
                 }
                 String boss_name = splitted[1];
-                if (!bossTest(c, boss_name)) {
+                if (!bossTest(client, boss_name)) {
                     chr.DebugMsg("[BossTest] Invalid Boss name.");
                     return true;
                 }
                 chr.DebugMsg("[BossTest] " + boss_name);
+                return true;
+            }
+            // Mob
+            case "/mob":
+            case "/spawn": {
+                int mob_id = 130101;
+                int count = 1;
+                if (2 <= splitted.length) {
+                    mob_id = parseInt(splitted[1]);
+                }
+
+                if (3 <= splitted.length) {
+                    count = parseInt(splitted[2]);
+                    if (count < 0) {
+                        count = 1;
+                    }
+                    if (15 < count) {
+                        count = 15;
+                    }
+                }
+
+                if (!DWI_Validation.isValidMobID(mob_id)) {
+                    chr.DebugMsg("Mob : Invalid id.");
+                    return false;
+                }
+
+                MapleMonster mosnter = MapleLifeFactory.getMonster(mob_id);
+                chr.getMap().spawnMonsterOnGroundBelow(mosnter, chr.getPosition());
+                chr.DebugMsg("Mob : " + mob_id);
                 return true;
             }
             case "/killmob": {
@@ -479,7 +631,6 @@ public class DebugCommand {
                 if (2 <= splitted.length) {
                     count = parseInt(splitted[1]);
                 }
-                MapleMap map = chr.getMap();
                 for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
                     if (count <= 0) {
                         break;
@@ -537,7 +688,8 @@ public class DebugCommand {
                 chr.DebugMsg("Skill = " + skillid);
                 return true;
             }
-            case "/allskill": {
+            case "/allskill":
+            case "/job": {
                 if (2 <= splitted.length) {
                     chr.setJob(parseInt(splitted[1]));
                 }
@@ -545,11 +697,11 @@ public class DebugCommand {
                 return true;
             }
             case "/allskill0": {
-                DebugJob.AllSkill(c.getPlayer(), true);
+                DebugJob.AllSkill(client.getPlayer(), true);
                 return true;
             }
             case "/allstat": {
-                DebugJob.AllStat(c.getPlayer());
+                DebugJob.AllStat(client.getPlayer());
                 return true;
             }
             case "/resetstat": {
@@ -691,7 +843,7 @@ public class DebugCommand {
             }
             case "/jc":
             case "/転職": {
-                remoteNPCTalk(c, 9330104, 1012003);
+                remoteNPCTalk(client, 9330104, 1012003);
                 return true;
             }
             // ランダム関連
@@ -711,7 +863,7 @@ public class DebugCommand {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 int itemid = DWI_LoadXML.getItem().getRandom();
                 IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
-                chr.getMap().spawnItemDrop(c.getPlayer(), c.getPlayer(), toDrop, c.getPlayer().getPosition(), true, true);
+                chr.getMap().spawnItemDrop(client.getPlayer(), client.getPlayer(), toDrop, client.getPlayer().getPosition(), true, true);
                 String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
                 if (item_name == null) {
                     item_name = "<null>";
@@ -733,7 +885,7 @@ public class DebugCommand {
                     int mobid = DWI_LoadXML.getMob().getRandom();
                     DebugLogger.InfoLog("RandomSpawn: " + mobid);
                     MapleMonster mob = MapleLifeFactory.getMonster(mobid);
-                    chr.getMap().spawnMonsterOnGroundBelow(mob, c.getPlayer().getPosition());
+                    chr.getMap().spawnMonsterOnGroundBelow(mob, client.getPlayer().getPosition());
                     chr.DebugMsg("[RandomSpawn] " + mob.getId() + " - " + mob.getStats().getName());
                 }
 
@@ -741,14 +893,14 @@ public class DebugCommand {
             }
             case "/randommap": {
                 int mapid = DWI_LoadXML.getMap().getRandom();
-                MapleMap map = chr.getChannelServer().getMapFactory().getMap(mapid);
-                chr.changeMap(map, map.getPortal(0));
-                chr.DebugMsg("[RandomMap] " + map.getId() + " - " + map.getStreetName() + "_" + map.getMapName()); // MapName code is buggy.
+                MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(mapid);
+                chr.changeMap(map_to, map_to.getPortal(0));
+                chr.DebugMsg("[RandomMap] " + map_to.getId() + " - " + map_to.getStreetName() + "_" + map_to.getMapName()); // MapName code is buggy.
                 return true;
             }
             // カスタムコマンド
             case "/wh": {
-                for (MapleCharacter victim : c.getChannelServer().getOnlinePlayers().get()) {
+                for (MapleCharacter victim : client.getChannelServer().getOnlinePlayers().get()) {
                     if (victim != chr) {
                         victim.changeMapWithCoordinate(chr.getMap().getId(), chr.getPosition().x, chr.getPosition().y);
                     }
