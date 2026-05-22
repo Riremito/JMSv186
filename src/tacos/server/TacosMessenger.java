@@ -21,6 +21,7 @@ package tacos.server;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import tacos.network.MaplePacket;
+import tacos.packet.builder.MessengerData;
 import tacos.packet.ops.OpsMessenger;
 import tacos.packet.response.ResCUIMessenger;
 
@@ -110,20 +111,39 @@ public class TacosMessenger {
             return false;
         }
 
-        player.SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_SelfEnterResult, this, player));
+        MessengerData pd_self = MessengerData.builder()
+                .player_index(this.getIndex(player))
+                .build();
+
+        player.SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_SelfEnterResult, pd_self));
         for (TacosCharacter player_in : getPlayers()) {
             if (player_in == player) {
                 continue;
             }
-            player.SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Enter, this, player_in));
+
+            MessengerData pd_enter = MessengerData.builder()
+                    .player_index(this.getIndex(player_in))
+                    .player(player_in)
+                    .is_new(false)
+                    .build();
+
+            player.SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Enter, pd_enter));
         }
 
-        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Enter, this, player), player);
+        MessengerData pd_enter = MessengerData.builder()
+                .player_index(this.getIndex(player))
+                .player(player)
+                .is_new(true)
+                .build();
+        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Enter, pd_enter), player);
         return true;
     }
 
     public boolean leave(TacosCharacter player) {
-        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Leave, this, player), null);
+        MessengerData pd = MessengerData.builder()
+                .player_index(this.getIndex(player))
+                .build();
+        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Leave, pd), null);
 
         if (!remove(player)) {
             return false;
@@ -132,37 +152,62 @@ public class TacosMessenger {
         return true;
     }
 
-    public boolean invite(TacosCharacter player, String name) {
+    public boolean invite(TacosCharacter player, String invitee_name) {
         TacosWorld world = player.getWorld();
-        TacosCharacter invited = world.findOnlinePlayer(name, false);
+        TacosCharacter invitee = world.findOnlinePlayer(invitee_name, false);
 
-        if (invited == null) {
-            SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_InviteResult, this, player, invited, name), null);
-            return true;
-        }
-        if (world.getMessenger(invited) != null) {
-            // already in other messenger.
-            SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_InviteResult, this, player, null, name), null);
-            return true;
+        if (invitee != null) {
+            if (world.getMessenger(invitee) != null) {
+                invitee = null;
+            }
         }
 
-        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_InviteResult, this, player, invited, name), null);
-        invited.SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Invite, this, player, invited, null));
+        MessengerData pd_result = MessengerData.builder()
+                .invitee_name(invitee_name)
+                .is_found((invitee != null))
+                .build();
+        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_InviteResult, pd_result), null);
+
+        if (invitee == null) {
+            return false;
+        }
+
+        MessengerData pd_invite = MessengerData.builder()
+                .inviter_name(player.getName())
+                .inviter_channel_id(player.getChannelId() - 1)
+                .messenger_id(this.id)
+                .build();
+
+        invitee.SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Invite, pd_invite));
         return true;
     }
 
     public boolean blocked(String name, boolean blocked) {
-        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Blocked, this, null, null, name, blocked), null);
+        MessengerData pd = MessengerData.builder()
+                .invitee_name(name)
+                .is_auto_blocked(blocked)
+                .build();
+
+        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Blocked, pd), null);
         return true;
     }
 
-    public boolean chat(TacosCharacter player, String msg) {
-        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Chat, this, player, null, msg), player);
+    public boolean chat(TacosCharacter player, String message) {
+        MessengerData pd = MessengerData.builder()
+                .message(message)
+                .build();
+
+        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Chat, pd), player);
         return true;
     }
 
     public boolean avatar(TacosCharacter player) {
-        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Avatar, this, player), player);
+        MessengerData pd = MessengerData.builder()
+                .player_index(this.getIndex(player))
+                .player(player)
+                .build();
+
+        SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Avatar, pd), player);
         return true;
     }
     // TODO : leave when player gets disconnected, channel info update.
