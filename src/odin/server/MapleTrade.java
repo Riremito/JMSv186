@@ -8,8 +8,6 @@ import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.messages.CommandProcessor;
-import odin.constants.ServerConstants.CommandType;
 import java.lang.ref.WeakReference;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -110,12 +108,10 @@ public class MapleTrade {
         }
     }
 
-    public final void chat(final String message) {
-        if (!CommandProcessor.processCommand(wrchr.get().getClient(), message, CommandType.TRADE)) {
-            wrchr.get().dropMessage(-2, wrchr.get().getName() + " : " + message);
-            if (partner != null) {
-                partner.getChr().getClient().getSession().write(ResCMiniRoomBaseDlg.shopChat(wrchr.get().getName() + " : " + message, 1));
-            }
+    public void chat(String message) {
+        wrchr.get().dropMessage(-2, wrchr.get().getName() + " : " + message);
+        if (partner != null) {
+            partner.getChr().getClient().getSession().write(ResCMiniRoomBaseDlg.shopChat(wrchr.get().getName() + " : " + message, 1));
         }
     }
 

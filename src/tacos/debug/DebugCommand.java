@@ -38,6 +38,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import odin.client.MapleDisease;
 import odin.client.inventory.Item;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCEmployeePool;
@@ -67,6 +68,7 @@ import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
 import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
@@ -374,7 +376,7 @@ public class DebugCommand {
                 return true;
             }
             case "/split": {
-                chr.getMap().getMapSplit().sendInfo(chr);
+                map.getMapSplit().sendInfo(chr);
                 return true;
             }
             case "/hm": {
@@ -394,7 +396,7 @@ public class DebugCommand {
                 List<HiredMerchant> hms = new ArrayList<>();
                 Random rand = new Random();
                 int count = 0;
-                for (MapleFoothold mfh : chr.getMap().getFootholds().getAll()) {
+                for (MapleFoothold mfh : map.getFootholds().getAll()) {
                     if (30 < count) {
                         break;
                     }
@@ -439,7 +441,7 @@ public class DebugCommand {
                     HiredMerchant hm = new HiredMerchant(chr, item_id, "DebugHiredMarchant");
                     hm.setTest(chr.getId() + id_inc, fh_id, ids.get(rand.nextInt(ids.size())), 7777 + id_inc);
                     hm.setPosition(new Point(fh_x, fh_y));
-                    chr.getMap().addMapObject(hm);
+                    map.addMapObject(hm);
                     chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(hm));
                     chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
                     hms.add(hm);
@@ -468,7 +470,7 @@ public class DebugCommand {
                 npc.setF(chr.getStance());
                 npc.setFh(chr.getFH());
                 npc.setCustom(true);
-                chr.getMap().addMapObject(npc);
+                map.addMapObject(npc);
                 map.broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
                 chr.DebugMsg("npc : " + npc_id);
                 return true;
@@ -481,7 +483,7 @@ public class DebugCommand {
                 pnpc.setRx1(chr.getPosition().x + 50);
                 pnpc.setF(chr.getStance());
                 pnpc.setFh(chr.getFH());
-                chr.getMap().addMapObject(pnpc);
+                map.addMapObject(pnpc);
                 pnpc.sendSpawnData(chr.getClient());
                 return true;
             }
@@ -622,7 +624,7 @@ public class DebugCommand {
                 }
 
                 MapleMonster mosnter = MapleLifeFactory.getMonster(mob_id);
-                chr.getMap().spawnMonsterOnGroundBelow(mosnter, chr.getPosition());
+                map.spawnMonsterOnGroundBelow(mosnter, chr.getPosition());
                 chr.DebugMsg("Mob : " + mob_id);
                 return true;
             }
@@ -643,6 +645,28 @@ public class DebugCommand {
                     map.killMonster(mob, chr, true, false, (byte) 1);
                     count--;
                 }
+                return true;
+            }
+            // mob skill.
+            case "/mobskill":
+            case "/disease": {
+                if (splitted.length < 2) {
+                    return true;
+                }
+                int mob_skill_id = Integer.parseInt(splitted[1]);
+                int mob_skill_level = 1;
+                if (OpsMobSkill.find(mob_skill_id) == OpsMobSkill.UNKNOWN) {
+                    chr.DebugMsg("mobdkill : invalid or not supported id.");
+                    return true;
+                }
+                MapleDisease dis = MapleDisease.getBySkill(mob_skill_id);
+                if (dis == null) {
+                    chr.DebugMsg("mobdkill : not found.");
+                    return true;
+                }
+
+                chr.giveDebuff(dis, SkillWz.get().getMobSkillData(mob_skill_id, mob_skill_level));
+                chr.DebugMsg("mobdkill : " + mob_skill_id);
                 return true;
             }
             // ステータス関連
@@ -697,11 +721,11 @@ public class DebugCommand {
                 return true;
             }
             case "/allskill0": {
-                DebugJob.AllSkill(client.getPlayer(), true);
+                DebugJob.AllSkill(chr, true);
                 return true;
             }
             case "/allstat": {
-                DebugJob.AllStat(client.getPlayer());
+                DebugJob.AllStat(chr);
                 return true;
             }
             case "/resetstat": {
@@ -822,7 +846,7 @@ public class DebugCommand {
             }
             case "/fm":
             case "/フリマ": {
-                chr.saveLocation(SavedLocationType.FREE_MARKET, chr.getMap().getReturnMap().getId());
+                chr.saveLocation(SavedLocationType.FREE_MARKET, map.getReturnMap().getId());
                 changeMap(chr, 910000000);
                 return true;
             }
@@ -863,7 +887,7 @@ public class DebugCommand {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 int itemid = DWI_LoadXML.getItem().getRandom();
                 IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
-                chr.getMap().spawnItemDrop(client.getPlayer(), client.getPlayer(), toDrop, client.getPlayer().getPosition(), true, true);
+                map.spawnItemDrop(chr, chr, toDrop, chr.getPosition(), true, true);
                 String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
                 if (item_name == null) {
                     item_name = "<null>";
@@ -885,7 +909,7 @@ public class DebugCommand {
                     int mobid = DWI_LoadXML.getMob().getRandom();
                     DebugLogger.InfoLog("RandomSpawn: " + mobid);
                     MapleMonster mob = MapleLifeFactory.getMonster(mobid);
-                    chr.getMap().spawnMonsterOnGroundBelow(mob, client.getPlayer().getPosition());
+                    map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
                     chr.DebugMsg("[RandomSpawn] " + mob.getId() + " - " + mob.getStats().getName());
                 }
 
@@ -902,7 +926,7 @@ public class DebugCommand {
             case "/wh": {
                 for (MapleCharacter victim : client.getChannelServer().getOnlinePlayers().get()) {
                     if (victim != chr) {
-                        victim.changeMapWithCoordinate(chr.getMap().getId(), chr.getPosition().x, chr.getPosition().y);
+                        victim.changeMapWithCoordinate(map.getId(), chr.getPosition().x, chr.getPosition().y);
                     }
                 }
                 return true;
@@ -920,8 +944,8 @@ public class DebugCommand {
 
                 Point player_xy = chr.getPosition();
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
-                chr.getMap().addMapObject(dynamic_portal);
-                chr.getMap().broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
+                map.addMapObject(dynamic_portal);
+                map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);
                 return true;
             }
@@ -974,8 +998,8 @@ public class DebugCommand {
                 return true;
             }
             case "/npccon": {
-                for (MapleMapObject mmo : chr.getMap().getMapObjects(MapleMapObjectType.NPC)) {
-                    MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
+                for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
+                    MapleNPC npc = map.getNPCByOid(mmo.getObjectId());
                     chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
                     chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
                 }
@@ -1003,20 +1027,20 @@ public class DebugCommand {
     }
 
     // bypass npc data checks
-    public static boolean remoteNPCTalk(MapleClient c, int npc_id) {
-        return remoteNPCTalk(c, npc_id, npc_id);
+    public static boolean remoteNPCTalk(MapleClient client, int npc_id) {
+        return remoteNPCTalk(client, npc_id, npc_id);
     }
 
-    public static boolean remoteNPCTalk(MapleClient c, int npc_script_id, int npc_id) {
+    public static boolean remoteNPCTalk(MapleClient client, int npc_script_id, int npc_id) {
         MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
         if (npc == null || npc.getName().equals("MISSINGNO")) {
             return false;
         }
-        TacosScriptNPC.getInstance().start(c, npc_script_id, npc_id);
+        TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
         return true;
     }
 
-    public static boolean bossTest(MapleClient c, String boss_name) {
+    public static boolean bossTest(MapleClient client, String boss_name) {
         int def_npc_id = 1012003; // Chief Stan
         int npc_id = 1012003;
 
@@ -1114,9 +1138,9 @@ public class DebugCommand {
         }
 
         if (DWI_Validation.isValidNPCID(npc_id)) {
-            remoteNPCTalk(c, npc_id);
+            remoteNPCTalk(client, npc_id);
         } else {
-            remoteNPCTalk(c, npc_id, def_npc_id);
+            remoteNPCTalk(client, npc_id, def_npc_id);
         }
 
         return true;

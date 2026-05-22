@@ -30,12 +30,10 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
-import odin.client.messages.CommandProcessor;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import odin.constants.ServerConstants;
 import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.handler.AttackInfo;
@@ -89,6 +87,7 @@ import odin.server.shops.HiredMerchant;
 import odin.tools.AttackPair;
 import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
+import tacos.debug.DebugCommand;
 import tacos.debug.DebugShop;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
@@ -1261,7 +1260,7 @@ public class ReqCUser {
         boolean bOnlyBalloon = (ServerConfig.JMS147orLater() || Region.IsBMS()) ? (cp.Decode1() != 0) : false; // skill macro
 
         // command
-        if (CommandProcessor.processCommand(chr.getClient(), message, ServerConstants.CommandType.NORMAL)) {
+        if (DebugCommand.checkCommand(chr.getClient(), message)) {
             return true;
         }
 
