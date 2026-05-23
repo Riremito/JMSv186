@@ -1260,7 +1260,7 @@ public class ReqCUser {
         boolean bOnlyBalloon = (ServerConfig.JMS147orLater() || Region.IsBMS()) ? (cp.Decode1() != 0) : false; // skill macro
 
         // command
-        if (DebugCommand.checkCommand(chr.getClient(), message)) {
+        if (DebugCommand.checkCommand(chr, message)) {
             return true;
         }
 

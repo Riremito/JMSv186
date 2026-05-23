@@ -89,56 +89,16 @@ import tacos.wz.data.ReactorWz;
  */
 public class DebugCommand {
 
-    public static boolean checkCommandPrefix(String message) {
-        if (message.length() <= 2) {
-            return false;
-        }
-
-        switch (message.charAt(0)) {
-            case '!':
-            case '@':
-            case '/': // クライアント編集かGMフラグが必要
-            {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        return false;
-    }
-
-    public static int parseInt(String str) {
-        int ret = 0;
-        try {
-            ret = Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            // do nothing
-        }
-        return ret;
-    }
-
-    public static boolean checkCommand(MapleClient client, String message) {
-        MapleCharacter chr = client.getPlayer();
-        if (chr == null) {
-            return false;
-        }
-
+    public static boolean checkCommand(MapleCharacter chr, String message) {
+        MapleClient client = chr.getClient();
         MapleMap map = chr.getMap();
-        if (map == null) {
+
+        DebugCommander dcmd = new DebugCommander(message);
+        if (!dcmd.checkPrefix()) {
             return false;
         }
 
-        if (!checkCommandPrefix(message)) {
-            return false;
-        }
-
-        String text = '/' + message.substring(1);
-        String[] splitted = text.split(" ");
-        splitted[0] = splitted[0].toLowerCase(); // 小文字
-
-        switch (splitted[0]) {
+        switch (dcmd.get(0)) {
             // デバッグ関連
             case "/testmsg": {
                 chr.DebugMsg("BLUE.");
@@ -151,7 +111,6 @@ public class DebugCommand {
                 return true;
             }
             case "/reload": {
-                // PacketHeader設定再読み込み
                 Property_Packet.reload();
                 DebugLogger.InfoLog("Packet Header values are reloaded.");
                 chr.DebugMsg("Packet Header values are reloaded.");
@@ -223,12 +182,12 @@ public class DebugCommand {
             }
             case "/msg": {
                 TacosChannel srv_channel = chr.getChannelServer();
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     srv_channel.setServerMessage("");
                     srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
                     return true;
                 }
-                srv_channel.setServerMessage(splitted[1]);
+                srv_channel.setServerMessage(dcmd.get(1));
                 srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
                 return true;
             }
@@ -240,11 +199,12 @@ public class DebugCommand {
                 return true;
             }
             case "/resetpassword": {
-                if (splitted.length < 3) {
+                if (!dcmd.check(3)) {
                     return true;
                 }
-                DQ_Accounts.resetPassword(splitted[1], splitted[2]);
-                chr.DebugMsg("Password Reset = " + splitted[1]);
+
+                DQ_Accounts.resetPassword(dcmd.get(1), dcmd.get(2));
+                chr.DebugMsg("Password Reset = " + dcmd.get(1));
                 return true;
             }
             case "/ea":
@@ -265,28 +225,28 @@ public class DebugCommand {
                 return true;
             }
             case "/npctalk": {
-                if (splitted.length < 2) {
-                    return false;
+                if (!dcmd.check(2)) {
+                    return true;
                 }
-                int npc_id = parseInt(splitted[1]);
+                int npc_id = dcmd.getInt(1);
 
                 if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id)) {
                     chr.DebugMsg("[RemoteNPCTalk] Invalid NPCID.");
-                    return false;
+                    return true;
                 }
 
                 chr.DebugMsg("[RemoteNPCTalk] " + npc_id);
                 return true;
             }
             case "/npctalk2": {
-                if (splitted.length < 2) {
-                    return false;
+                if (!dcmd.check(2)) {
+                    return true;
                 }
-                int npc_id = parseInt(splitted[1]);
+                int npc_id = dcmd.getInt(1);
                 // set Chief Stan
                 if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id, 1012003)) {
                     chr.DebugMsg("[RemoteNPCTalk2] Invalid NPCID.");
-                    return false;
+                    return true;
                 }
                 chr.DebugMsg("[RemoteNPCTalk2] " + npc_id);
                 return true;
@@ -296,17 +256,17 @@ public class DebugCommand {
                 return true;
             }
             case "/dm": {
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     DebugManTest dm_test = new DebugManTest();
                     dm_test.start(chr);
                     return true;
                 }
-                if (splitted[1].equals("nm")) {
+                if (dcmd.get(1).equals("nm")) {
                     DebugMan_NM dm = new DebugMan_NM();
                     dm.start(chr);
                     return true;
                 }
-                if (splitted[1].equals("cc")) {
+                if (dcmd.get(1).equals("cc")) {
                     DebugMan_CC dm = new DebugMan_CC();
                     dm.start(chr);
                     return true;
@@ -316,14 +276,14 @@ public class DebugCommand {
             case "/ds": {
                 DebugShop ds = new DebugShop();
 
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     ds.setRandomItems(100);
                     ds.setRechargeAll();
                     ds.start(chr);
                     return true;
                 }
 
-                int item_sub_type = parseInt(splitted[1]);
+                int item_sub_type = dcmd.getInt(1);
                 if (item_sub_type == 207 || item_sub_type == 233) {
                     ds.setRechargeAll();
                 }
@@ -334,7 +294,7 @@ public class DebugCommand {
             case "/ds2": {
                 DebugShop ds = new DebugShop();
 
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     return true;
                 }
                 // to make list. TODO : fix
@@ -343,11 +303,11 @@ public class DebugCommand {
                 }
 
                 String search_string = "";
-                for (int i = 1; i < splitted.length; i++) {
+                for (int i = 1; i < dcmd.getLength(); i++) {
                     if (!search_string.isEmpty()) {
                         search_string += " ";
                     }
-                    search_string += splitted[i];
+                    search_string += dcmd.get(i);
                 }
 
                 int shop_item_count = 0;
@@ -390,7 +350,7 @@ public class DebugCommand {
                 }
 
                 if (chr.getFH() <= 0) {
-                    return false;
+                    return true;
                 }
 
                 List<HiredMerchant> hms = new ArrayList<>();
@@ -454,10 +414,10 @@ public class DebugCommand {
             }
             // npc.
             case "/npc": {
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     return true;
                 }
-                int npc_id = Integer.parseInt(splitted[1]);
+                int npc_id = dcmd.getInt(1);
                 if (!DWI_Validation.isValidNPCID(npc_id)) {
                     chr.DebugMsg("npc : invalid id.");
                     return true;
@@ -489,11 +449,11 @@ public class DebugCommand {
             }
             // reactor.
             case "/reactor": {
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     return true;
                 }
 
-                int reactor_id = Integer.parseInt(splitted[1]);
+                int reactor_id = dcmd.getInt(1);
                 if (!DWI_Validation.isValidReactorID(reactor_id)) {
                     chr.DebugMsg("reactor : invalid id.");
                     return true;
@@ -531,10 +491,11 @@ public class DebugCommand {
                 return true;
             }
             case "/search": {
-                if (splitted.length < 3) {
-                    return false;
+                if (!dcmd.check(3)) {
+                    return true;
                 }
-                searchString(chr, splitted[1].toLowerCase(), splitted[2]);
+
+                searchString(chr, dcmd.get(1).toLowerCase(), dcmd.get(2));
                 return true;
             }
             case "/checkmapdata":
@@ -546,8 +507,8 @@ public class DebugCommand {
             case "/dc":
             case "/disconnect": {
                 MapleCharacter target = chr;
-                if (2 <= splitted.length) {
-                    target = chr.getWorld().findOnlinePlayer(splitted[1]);
+                if (!dcmd.check(2)) {
+                    target = chr.getWorld().findOnlinePlayer(dcmd.get(1));
                     if (target == null) {
                         chr.DebugMsg("dc : not found.");
                         return true;
@@ -559,10 +520,10 @@ public class DebugCommand {
             }
             // item
             case "/drop": {
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     return true;
                 }
-                int item_id = Integer.parseInt(splitted[1]);
+                int item_id = dcmd.getInt(1);
 
                 if (!DWI_Validation.isValidItemID(item_id)) {
                     return true;
@@ -570,8 +531,8 @@ public class DebugCommand {
                 int item_quantity = 1;
                 boolean is_equip = item_id / 1000000 == 1;
                 boolean is_pet = item_id / 10000 == 500;
-                if ((!is_equip || !is_pet) && 3 <= splitted.length) {
-                    item_quantity = Integer.parseInt(splitted[2]);
+                if ((!is_equip || !is_pet) && dcmd.check(3)) {
+                    item_quantity = dcmd.getInt(2);
                 }
                 if (item_quantity < 0) {
                     item_quantity = 1;
@@ -588,10 +549,11 @@ public class DebugCommand {
             }
             // ボス関連
             case "/bosstest": {
-                if (splitted.length < 2) {
-                    return false;
+                if (!dcmd.check(2)) {
+                    return true;
                 }
-                String boss_name = splitted[1];
+
+                String boss_name = dcmd.get(1);
                 if (!bossTest(client, boss_name)) {
                     chr.DebugMsg("[BossTest] Invalid Boss name.");
                     return true;
@@ -604,12 +566,12 @@ public class DebugCommand {
             case "/spawn": {
                 int mob_id = 130101;
                 int count = 1;
-                if (2 <= splitted.length) {
-                    mob_id = parseInt(splitted[1]);
+                if (dcmd.check(2)) {
+                    mob_id = dcmd.getInt(1);
                 }
 
-                if (3 <= splitted.length) {
-                    count = parseInt(splitted[2]);
+                if (dcmd.check(3)) {
+                    count = dcmd.getInt(2);
                     if (count < 0) {
                         count = 1;
                     }
@@ -620,7 +582,7 @@ public class DebugCommand {
 
                 if (!DWI_Validation.isValidMobID(mob_id)) {
                     chr.DebugMsg("Mob : Invalid id.");
-                    return false;
+                    return true;
                 }
 
                 MapleMonster mosnter = MapleLifeFactory.getMonster(mob_id);
@@ -630,8 +592,8 @@ public class DebugCommand {
             }
             case "/killmob": {
                 int count = 300;
-                if (2 <= splitted.length) {
-                    count = parseInt(splitted[1]);
+                if (dcmd.check(2)) {
+                    count = dcmd.getInt(1);
                 }
                 for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
                     if (count <= 0) {
@@ -650,10 +612,11 @@ public class DebugCommand {
             // mob skill.
             case "/mobskill":
             case "/disease": {
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     return true;
                 }
-                int mob_skill_id = Integer.parseInt(splitted[1]);
+
+                int mob_skill_id = dcmd.getInt(1);
                 int mob_skill_level = 1;
                 if (OpsMobSkill.find(mob_skill_id) == OpsMobSkill.UNKNOWN) {
                     chr.DebugMsg("mobdkill : invalid or not supported id.");
@@ -674,9 +637,9 @@ public class DebugCommand {
                 int new_hp = chr.getStat().getMaxHp();
                 int new_mp = chr.getStat().getMaxMp();
 
-                if (3 <= splitted.length) {
-                    int ratio_hp = parseInt(splitted[1]);
-                    int ratio_mp = parseInt(splitted[2]);
+                if (dcmd.check(3)) {
+                    int ratio_hp = dcmd.getInt(1);
+                    int ratio_mp = dcmd.getInt(2);
                     if (ratio_hp <= 0 || ratio_mp <= 0) {
                         ratio_hp = 100;
                         ratio_mp = 100;
@@ -684,8 +647,8 @@ public class DebugCommand {
                     }
                     new_hp = (int) (new_hp * (ratio_hp / 100.0));
                     new_mp = (int) (new_mp * (ratio_mp / 100.0));
-                } else if (2 <= splitted.length) {
-                    int ratio = parseInt(splitted[1]);
+                } else if (dcmd.check(2)) {
+                    int ratio = dcmd.getInt(1);
                     if (ratio <= 0) {
                         ratio = 100;
                         chr.DebugMsg("Please, enter values between 1 - 100.");
@@ -714,8 +677,8 @@ public class DebugCommand {
             }
             case "/allskill":
             case "/job": {
-                if (2 <= splitted.length) {
-                    chr.setJob(parseInt(splitted[1]));
+                if (dcmd.check(2)) {
+                    chr.setJob(dcmd.getInt(1));
                 }
                 DebugJob.AllSkill(chr);
                 return true;
@@ -733,13 +696,13 @@ public class DebugCommand {
                 return true;
             }
             case "/defstat": {
-                if (splitted.length < 2) {
-                    return false;
+                if (!dcmd.check(2)) {
+                    return true;
                 }
-                int job_id = parseInt(splitted[1]);
+                int job_id = dcmd.getInt(1);
                 int level = 0;
-                if (splitted.length >= 3) {
-                    level = parseInt(splitted[2]);
+                if (dcmd.check(3)) {
+                    level = dcmd.getInt(2);
                 }
                 DebugJob.DefStat(chr, job_id, level);
                 return true;
@@ -747,11 +710,11 @@ public class DebugCommand {
             case "/levelup": {
                 int next_level = chr.getLevel() + 1;
                 if (next_level <= 0 || 200 < next_level) {
-                    return false;
+                    return true;
                 }
                 if (GameConstants.isKOC(chr.getJob())) {
                     if (120 < next_level) {
-                        return false;
+                        return true;
                     }
                 }
                 chr.gainExp(SharedExpTable.getExpNeededForLevel(chr.getLevel()), true, true, true);
@@ -759,16 +722,16 @@ public class DebugCommand {
             }
             case "/level":
             case "/levelset": {
-                if (splitted.length < 2) {
-                    return false;
+                if (!dcmd.check(2)) {
+                    return true;
                 }
-                int new_level = parseInt(splitted[1]);
+                int new_level = dcmd.getInt(1);
                 if (new_level <= 0 || 200 < new_level) {
-                    return false;
+                    return true;
                 }
                 if (GameConstants.isKOC(chr.getJob())) {
                     if (120 < new_level) {
-                        return false;
+                        return true;
                     }
                 }
 
@@ -793,15 +756,15 @@ public class DebugCommand {
             case "/fs": {
                 TacosForcedStat fs = chr.getForcedStat();
                 int index = 1;
-                fs.setSTR((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setDEX((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setINT((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setLUK((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setPAD((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setACC((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setEVA((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setSpeed((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
-                fs.setJump((index <= splitted.length - 1) ? Integer.parseInt(splitted[index++]) : 0);
+                fs.setSTR(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setDEX(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setINT(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setLUK(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setPAD(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setACC(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setEVA(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setSpeed(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setJump(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
                 chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
                 chr.DebugMsg("[ForcedStat] : STR DEX INT LUK PAD ACC EVA Speed Jump");
                 return true;
@@ -810,13 +773,13 @@ public class DebugCommand {
             case "/map2":
             case "/mapt":
             case "/warp": {
-                if (splitted.length < 2) {
-                    return false;
+                if (!dcmd.check(2)) {
+                    return true;
                 }
-                int map_id = parseInt(splitted[1]);
+                int map_id = dcmd.getInt(1);
 
                 if (map_id <= 0) {
-                    return false;
+                    return true;
                 }
 
                 changeMap(chr, map_id);
@@ -827,7 +790,7 @@ public class DebugCommand {
                 int map_id = DWI_Random.getMapByIndex(index - 1);
 
                 if (map_id <= 0) {
-                    return false;
+                    return true;
                 }
 
                 changeMap(chr, map_id);
@@ -838,7 +801,7 @@ public class DebugCommand {
                 int map_id = DWI_Random.getMapByIndex(index + 1);
 
                 if (map_id <= 0) {
-                    return false;
+                    return true;
                 }
 
                 changeMap(chr, map_id);
@@ -897,8 +860,8 @@ public class DebugCommand {
             }
             case "/randomspawn": {
                 int mob_count = 1;
-                if (splitted.length >= 2) {
-                    mob_count = parseInt(splitted[1]);
+                if (dcmd.check(2)) {
+                    mob_count = dcmd.getInt(1);
                 }
 
                 if (10 < mob_count) {
@@ -924,7 +887,7 @@ public class DebugCommand {
             }
             // カスタムコマンド
             case "/wh": {
-                for (MapleCharacter victim : client.getChannelServer().getOnlinePlayers().get()) {
+                for (MapleCharacter victim : chr.getChannelServer().getOnlinePlayers().get()) {
                     if (victim != chr) {
                         victim.changeMapWithCoordinate(map.getId(), chr.getPosition().x, chr.getPosition().y);
                     }
@@ -932,14 +895,14 @@ public class DebugCommand {
                 return true;
             }
             case "/addportal": {
-                if (splitted.length < 2) {
-                    return false;
+                if (!dcmd.check(2)) {
+                    return true;
                 }
-                int map_id_to = parseInt(splitted[1]);
+                int map_id_to = dcmd.getInt(1);
 
                 if (map_id_to == 0 || !DWI_Validation.isValidMapID(map_id_to)) {
                     chr.DebugMsg("[AddPortal] Invalid MapID.");
-                    return false;
+                    return true;
                 }
 
                 Point player_xy = chr.getPosition();
@@ -976,23 +939,25 @@ public class DebugCommand {
                 return true;
             }
             case "/petmob": {
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     chr.getPetMob().remove();
                     chr.DebugMsg("PetMob : remove.");
                     return true;
                 }
-                int mob_id = parseInt(splitted[1]);
+
+                int mob_id = dcmd.getInt(1);
                 chr.getPetMob().spawn(mob_id);
                 chr.DebugMsg("PetMob : sapwn.");
                 return true;
             }
             case "/petnpc": {
-                if (splitted.length < 2) {
+                if (!dcmd.check(2)) {
                     chr.getPetNPC().remove();
                     chr.DebugMsg("PetNPC : remove.");
                     return true;
                 }
-                int mob_id = parseInt(splitted[1]);
+
+                int mob_id = dcmd.getInt(1);
                 chr.getPetNPC().spawn(mob_id);
                 chr.DebugMsg("PetNPC : sapwn.");
                 return true;
@@ -1426,5 +1391,4 @@ public class DebugCommand {
 
         return true;
     }
-
 }
