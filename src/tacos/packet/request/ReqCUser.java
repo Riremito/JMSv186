@@ -1259,9 +1259,11 @@ public class ReqCUser {
         String message = cp.DecodeStr();
         boolean bOnlyBalloon = (ServerConfig.JMS147orLater() || Region.IsBMS()) ? (cp.Decode1() != 0) : false; // skill macro
 
-        // command
-        if (DebugCommand.checkCommand(chr, message)) {
-            return true;
+        if (!bOnlyBalloon) {
+            // command.
+            if (DebugCommand.checkCommand(chr, message)) {
+                return true;
+            }
         }
 
         map.broadcastMessage(ResCUser.UserChat(chr, message, bOnlyBalloon), chr.getPosition());

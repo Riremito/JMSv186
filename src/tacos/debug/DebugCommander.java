@@ -54,12 +54,15 @@ public class DebugCommander {
         return this.splitted.length;
     }
 
+    /*
+        引数の数を確認
+     */
     public boolean check(int index) {
         if (this.splitted == null) {
             return false;
         }
 
-        return this.splitted.length >= index;
+        return (index + 1) <= this.splitted.length;
     }
 
     public String get(int index) {

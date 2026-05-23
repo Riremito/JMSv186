@@ -90,13 +90,19 @@ import tacos.wz.data.ReactorWz;
 public class DebugCommand {
 
     public static boolean checkCommand(MapleCharacter chr, String message) {
-        MapleClient client = chr.getClient();
-        MapleMap map = chr.getMap();
-
         DebugCommander dcmd = new DebugCommander(message);
         if (!dcmd.checkPrefix()) {
+            // show shat message.
             return false;
         }
+
+        executeCommand(dcmd, chr);
+        return true;
+    }
+
+    public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
+        MapleClient client = chr.getClient();
+        MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
             // デバッグ関連
@@ -182,7 +188,7 @@ public class DebugCommand {
             }
             case "/msg": {
                 TacosChannel srv_channel = chr.getChannelServer();
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     srv_channel.setServerMessage("");
                     srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
                     return true;
@@ -199,7 +205,7 @@ public class DebugCommand {
                 return true;
             }
             case "/resetpassword": {
-                if (!dcmd.check(3)) {
+                if (!dcmd.check(2)) {
                     return true;
                 }
 
@@ -225,7 +231,7 @@ public class DebugCommand {
                 return true;
             }
             case "/npctalk": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
@@ -239,7 +245,7 @@ public class DebugCommand {
                 return true;
             }
             case "/npctalk2": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
@@ -256,7 +262,7 @@ public class DebugCommand {
                 return true;
             }
             case "/dm": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     DebugManTest dm_test = new DebugManTest();
                     dm_test.start(chr);
                     return true;
@@ -276,7 +282,7 @@ public class DebugCommand {
             case "/ds": {
                 DebugShop ds = new DebugShop();
 
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     ds.setRandomItems(100);
                     ds.setRechargeAll();
                     ds.start(chr);
@@ -294,7 +300,7 @@ public class DebugCommand {
             case "/ds2": {
                 DebugShop ds = new DebugShop();
 
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 // to make list. TODO : fix
@@ -414,7 +420,7 @@ public class DebugCommand {
             }
             // npc.
             case "/npc": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
@@ -449,7 +455,7 @@ public class DebugCommand {
             }
             // reactor.
             case "/reactor": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
 
@@ -491,7 +497,7 @@ public class DebugCommand {
                 return true;
             }
             case "/search": {
-                if (!dcmd.check(3)) {
+                if (!dcmd.check(2)) {
                     return true;
                 }
 
@@ -507,7 +513,7 @@ public class DebugCommand {
             case "/dc":
             case "/disconnect": {
                 MapleCharacter target = chr;
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     target = chr.getWorld().findOnlinePlayer(dcmd.get(1));
                     if (target == null) {
                         chr.DebugMsg("dc : not found.");
@@ -520,7 +526,7 @@ public class DebugCommand {
             }
             // item
             case "/drop": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int item_id = dcmd.getInt(1);
@@ -531,7 +537,7 @@ public class DebugCommand {
                 int item_quantity = 1;
                 boolean is_equip = item_id / 1000000 == 1;
                 boolean is_pet = item_id / 10000 == 500;
-                if ((!is_equip || !is_pet) && dcmd.check(3)) {
+                if ((!is_equip || !is_pet) && dcmd.check(2)) {
                     item_quantity = dcmd.getInt(2);
                 }
                 if (item_quantity < 0) {
@@ -549,7 +555,7 @@ public class DebugCommand {
             }
             // ボス関連
             case "/bosstest": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
 
@@ -566,11 +572,11 @@ public class DebugCommand {
             case "/spawn": {
                 int mob_id = 130101;
                 int count = 1;
-                if (dcmd.check(2)) {
+                if (dcmd.check(1)) {
                     mob_id = dcmd.getInt(1);
                 }
 
-                if (dcmd.check(3)) {
+                if (dcmd.check(2)) {
                     count = dcmd.getInt(2);
                     if (count < 0) {
                         count = 1;
@@ -592,7 +598,7 @@ public class DebugCommand {
             }
             case "/killmob": {
                 int count = 300;
-                if (dcmd.check(2)) {
+                if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
                 }
                 for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
@@ -612,7 +618,7 @@ public class DebugCommand {
             // mob skill.
             case "/mobskill":
             case "/disease": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
 
@@ -637,7 +643,7 @@ public class DebugCommand {
                 int new_hp = chr.getStat().getMaxHp();
                 int new_mp = chr.getStat().getMaxMp();
 
-                if (dcmd.check(3)) {
+                if (dcmd.check(2)) {
                     int ratio_hp = dcmd.getInt(1);
                     int ratio_mp = dcmd.getInt(2);
                     if (ratio_hp <= 0 || ratio_mp <= 0) {
@@ -647,7 +653,7 @@ public class DebugCommand {
                     }
                     new_hp = (int) (new_hp * (ratio_hp / 100.0));
                     new_mp = (int) (new_mp * (ratio_mp / 100.0));
-                } else if (dcmd.check(2)) {
+                } else if (dcmd.check(1)) {
                     int ratio = dcmd.getInt(1);
                     if (ratio <= 0) {
                         ratio = 100;
@@ -677,7 +683,7 @@ public class DebugCommand {
             }
             case "/allskill":
             case "/job": {
-                if (dcmd.check(2)) {
+                if (dcmd.check(1)) {
                     chr.setJob(dcmd.getInt(1));
                 }
                 DebugJob.AllSkill(chr);
@@ -696,12 +702,12 @@ public class DebugCommand {
                 return true;
             }
             case "/defstat": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int job_id = dcmd.getInt(1);
                 int level = 0;
-                if (dcmd.check(3)) {
+                if (dcmd.check(2)) {
                     level = dcmd.getInt(2);
                 }
                 DebugJob.DefStat(chr, job_id, level);
@@ -722,7 +728,7 @@ public class DebugCommand {
             }
             case "/level":
             case "/levelset": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int new_level = dcmd.getInt(1);
@@ -756,15 +762,15 @@ public class DebugCommand {
             case "/fs": {
                 TacosForcedStat fs = chr.getForcedStat();
                 int index = 1;
-                fs.setSTR(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setDEX(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setINT(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setLUK(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setPAD(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setACC(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setEVA(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setSpeed(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
-                fs.setJump(dcmd.check(index + 1) ? dcmd.getInt(index++) : 0);
+                fs.setSTR(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setDEX(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setINT(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setLUK(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setPAD(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setACC(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setEVA(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setSpeed(dcmd.check(index) ? dcmd.getInt(index++) : 0);
+                fs.setJump(dcmd.check(index) ? dcmd.getInt(index++) : 0);
                 chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
                 chr.DebugMsg("[ForcedStat] : STR DEX INT LUK PAD ACC EVA Speed Jump");
                 return true;
@@ -773,7 +779,7 @@ public class DebugCommand {
             case "/map2":
             case "/mapt":
             case "/warp": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int map_id = dcmd.getInt(1);
@@ -860,7 +866,7 @@ public class DebugCommand {
             }
             case "/randomspawn": {
                 int mob_count = 1;
-                if (dcmd.check(2)) {
+                if (dcmd.check(1)) {
                     mob_count = dcmd.getInt(1);
                 }
 
@@ -895,7 +901,7 @@ public class DebugCommand {
                 return true;
             }
             case "/addportal": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     return true;
                 }
                 int map_id_to = dcmd.getInt(1);
@@ -939,7 +945,7 @@ public class DebugCommand {
                 return true;
             }
             case "/petmob": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     chr.getPetMob().remove();
                     chr.DebugMsg("PetMob : remove.");
                     return true;
@@ -951,7 +957,7 @@ public class DebugCommand {
                 return true;
             }
             case "/petnpc": {
-                if (!dcmd.check(2)) {
+                if (!dcmd.check(1)) {
                     chr.getPetNPC().remove();
                     chr.DebugMsg("PetNPC : remove.");
                     return true;
