@@ -25,8 +25,8 @@ package tacos.debug;
 public class DebugCommander {
 
     private static final String DEBUG_COMMAND_PREFIX = "/@!";
-    String message = null;
-    String[] splitted = null;
+    private String message = null;
+    private String[] splitted = null;
 
     public DebugCommander(String message) {
         this.message = message;

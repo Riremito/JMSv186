@@ -28,7 +28,6 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
 import tacos.shared.SharedExpTable;
-import tacos.wz.data.ItemWz;
 import tacos.wz.data.SkillWz;
 import tacos.wz.data.StringWz;
 import tacos.wz.ids.DWI_Random;
@@ -37,15 +36,11 @@ import tacos.wz.ids.DWI_LoadXML;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import odin.client.MapleDisease;
 import odin.client.inventory.Item;
 import tacos.packet.request.ReqCUser;
-import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
-import tacos.packet.response.Res_JMS_CInstancePortalPool;
-import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -54,22 +49,18 @@ import odin.server.life.MapleNPC;
 import odin.server.life.MonsterDropEntry;
 import odin.server.life.PlayerNPC;
 import odin.server.life.Spawns;
-import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
-import odin.server.shops.HiredMerchant;
 import tacos.database.query.DQ_Accounts;
-import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.provider.IMapleData;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobSkill;
-import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
@@ -96,7 +87,18 @@ public class DebugCommand {
             return false;
         }
 
-        executeCommand(dcmd, chr);
+        if (executeCommand(dcmd, chr)) {
+            return true;
+        }
+
+        if (TestCommand.executeCommand(dcmd, chr)) {
+            return true;
+        }
+
+        if (CustomCommand.executeCommand(dcmd, chr)) {
+            return true;
+        }
+
         return true;
     }
 
@@ -105,38 +107,42 @@ public class DebugCommand {
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
-            // デバッグ関連
-            case "/testmsg": {
-                chr.DebugMsg("BLUE.");
-                chr.DebugMsg2("PINK.");
-                chr.DebugMsg3("YELLOW.");
-                return true;
-            }
-            case "/threadid": {
-                chr.DebugMsg("thread id = " + DebugLogger.getThreadId());
-                return true;
-            }
             case "/reload": {
                 Property_Packet.reload();
-                DebugLogger.InfoLog("Packet Header values are reloaded.");
-                chr.DebugMsg("Packet Header values are reloaded.");
                 TacosScriptPortal.getInstance().clearScripts();
                 TacosScriptNPC.getInstance().clearScripts();
                 TacosScriptQuest.getInstance().clearScripts();
                 TacosScriptReactor.getInstance().clearScripts();
-                DebugLogger.InfoLog("script cache is cleared.");
-                chr.DebugMsg("script cache is cleared.");
+                DebugLogger.InfoLog("reload : done.");
                 chr.sendStatChanged(true);
+                chr.DebugMsg("reload : done.");
                 return true;
             }
-            case "/debugmode": {
-                chr.SetDebugger();
-                chr.DebugMsg("DebugMode = " + chr.GetDebugger());
+            case "/shutdown": {
+                // CTRL + C & Y
+                if (chr.getName().equals("リレミト") || chr.getName().equals("Riremito")) {
+                    System.exit(0);
+                }
                 return true;
             }
-            case "/infomode": {
-                chr.SetInformation();
-                chr.DebugMsg("InfoMode = " + chr.GetInformation());
+            case "/resetpassword": {
+                if (!dcmd.check(2)) {
+                    return true;
+                }
+
+                DQ_Accounts.resetPassword(dcmd.get(1), dcmd.get(2));
+                chr.DebugMsg("reset password : " + dcmd.get(1));
+                return true;
+            }
+            case "/save": {
+                chr.saveToDB(false, false);
+                chr.DebugMsg("save : done.");
+                return true;
+            }
+            case "/ea":
+            case "/stuck":
+            case "/unlock": {
+                chr.sendStatChanged(true);
                 return true;
             }
             case "/players": {
@@ -186,50 +192,6 @@ public class DebugCommand {
                 }
                 return true;
             }
-            case "/msg": {
-                TacosChannel srv_channel = chr.getChannelServer();
-                if (!dcmd.check(1)) {
-                    srv_channel.setServerMessage("");
-                    srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
-                    return true;
-                }
-                srv_channel.setServerMessage(dcmd.get(1));
-                srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
-                return true;
-            }
-            case "/shutdown": {
-                // CTRL + C & Y
-                if (chr.getName().equals("リレミト") || chr.getName().equals("Riremito")) {
-                    System.exit(0);
-                }
-                return true;
-            }
-            case "/resetpassword": {
-                if (!dcmd.check(2)) {
-                    return true;
-                }
-
-                DQ_Accounts.resetPassword(dcmd.get(1), dcmd.get(2));
-                chr.DebugMsg("Password Reset = " + dcmd.get(1));
-                return true;
-            }
-            case "/ea":
-            case "/stuck":
-            case "/unlock": {
-                // フリーズ解除
-                chr.sendStatChanged(true);
-                return true;
-            }
-            case "/save": {
-                chr.saveToDB(false, false);
-                chr.DebugMsg("Character data is saved to database.");
-                return true;
-            }
-            case "/test":
-            case "/help": {
-                remoteNPCTalk(client, 9010021, 1012003);
-                return true;
-            }
             case "/npctalk": {
                 if (!dcmd.check(1)) {
                     return true;
@@ -237,11 +199,11 @@ public class DebugCommand {
                 int npc_id = dcmd.getInt(1);
 
                 if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id)) {
-                    chr.DebugMsg("[RemoteNPCTalk] Invalid NPCID.");
+                    chr.DebugMsg("npctalk : invalid id.");
                     return true;
                 }
 
-                chr.DebugMsg("[RemoteNPCTalk] " + npc_id);
+                chr.DebugMsg("npctalk : " + npc_id);
                 return true;
             }
             case "/npctalk2": {
@@ -251,14 +213,10 @@ public class DebugCommand {
                 int npc_id = dcmd.getInt(1);
                 // set Chief Stan
                 if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id, 1012003)) {
-                    chr.DebugMsg("[RemoteNPCTalk2] Invalid NPCID.");
+                    chr.DebugMsg("npctalk2 : invalid id.");
                     return true;
                 }
-                chr.DebugMsg("[RemoteNPCTalk2] " + npc_id);
-                return true;
-            }
-            case "/repair": {
-                chr.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, 1012003));
+                chr.DebugMsg("npctalk2 : " + npc_id);
                 return true;
             }
             case "/dm": {
@@ -329,93 +287,9 @@ public class DebugCommand {
                         }
                     }
                 }
+
                 chr.DebugMsg("search results = " + shop_item_count);
-
                 ds.start(chr);
-                return true;
-            }
-            case "/check": {
-                chr.DebugMsg("X  : " + chr.getPosition().x);
-                chr.DebugMsg("Y  : " + chr.getPosition().y);
-                chr.DebugMsg("FH : " + chr.getFH());
-                chr.DebugMsg("Ac : " + chr.getStance());
-                return true;
-            }
-            case "/split": {
-                map.getMapSplit().sendInfo(chr);
-                return true;
-            }
-            case "/hm": {
-                List<Integer> ids = new ArrayList<>();
-                IMapleData md_item_sub_type = ItemWz.get().getItemImg(503);
-                if (md_item_sub_type != null) {
-                    for (IMapleData md_item : md_item_sub_type.getChildren()) {
-                        int item_id = Integer.parseInt(md_item.getName());
-                        ids.add(item_id);
-                    }
-                }
-
-                if (chr.getFH() <= 0) {
-                    return true;
-                }
-
-                List<HiredMerchant> hms = new ArrayList<>();
-                Random rand = new Random();
-                int count = 0;
-                for (MapleFoothold mfh : map.getFootholds().getAll()) {
-                    if (30 < count) {
-                        break;
-                    }
-                    if (mfh.getId() < chr.getFH() - 15) {
-                        continue;
-                    }
-                    count++;
-                    int id_inc = 0;
-                    int fh_id = 0;
-                    int fh_x = 0;
-                    int fh_y = 0;
-                    if (mfh.getId() == chr.getFH()) {
-                        fh_id = chr.getFH();
-                        fh_x = chr.getPosition().x;
-                        fh_y = chr.getPosition().y;
-                    } else {
-                        fh_id = mfh.getId();
-                        fh_x = mfh.getX1();
-                        fh_y = mfh.getY1();
-                        id_inc = fh_id;
-
-                        int fh_width = mfh.getX2() - mfh.getX1();
-
-                        if (fh_width == 0) {
-                            continue;
-                        }
-
-                        fh_x = mfh.getX1() + fh_width / 2;
-                        boolean bOK = true;
-                        for (HiredMerchant hm : hms) {
-                            int distance = (int) Math.sqrt((hm.getPosition().x - fh_x) * (hm.getPosition().x - fh_x) + (hm.getPosition().y - fh_y) * (hm.getPosition().y - fh_y));
-                            if (distance <= 100) {
-                                bOK = false;
-                                break;
-                            }
-                        }
-                        if (!bOK) {
-                            continue;
-                        }
-                    }
-                    int item_id = ids.get(rand.nextInt(ids.size()));
-                    HiredMerchant hm = new HiredMerchant(chr, item_id, "DebugHiredMarchant");
-                    hm.setTest(chr.getId() + id_inc, fh_id, ids.get(rand.nextInt(ids.size())), 7777 + id_inc);
-                    hm.setPosition(new Point(fh_x, fh_y));
-                    map.addMapObject(hm);
-                    chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(hm));
-                    chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
-                    hms.add(hm);
-                }
-                return true;
-            }
-            case "/mg": {
-                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
                 return true;
             }
             // npc.
@@ -561,10 +435,11 @@ public class DebugCommand {
 
                 String boss_name = dcmd.get(1);
                 if (!bossTest(client, boss_name)) {
-                    chr.DebugMsg("[BossTest] Invalid Boss name.");
+                    chr.DebugMsg("bosstest : invalid Boss name.");
                     return true;
                 }
-                chr.DebugMsg("[BossTest] " + boss_name);
+
+                chr.DebugMsg("bosstest : " + boss_name);
                 return true;
             }
             // Mob
@@ -587,13 +462,16 @@ public class DebugCommand {
                 }
 
                 if (!DWI_Validation.isValidMobID(mob_id)) {
-                    chr.DebugMsg("Mob : Invalid id.");
+                    chr.DebugMsg("mob : invalid id.");
                     return true;
                 }
 
-                MapleMonster mosnter = MapleLifeFactory.getMonster(mob_id);
-                map.spawnMonsterOnGroundBelow(mosnter, chr.getPosition());
-                chr.DebugMsg("Mob : " + mob_id);
+                for (int i = 0; i < count; i++) {
+                    MapleMonster mosnter = MapleLifeFactory.getMonster(mob_id);
+                    map.spawnMonsterOnGroundBelow(mosnter, chr.getPosition());
+                }
+
+                chr.DebugMsg("mob : " + mob_id);
                 return true;
             }
             case "/killmob": {
@@ -613,6 +491,8 @@ public class DebugCommand {
                     map.killMonster(mob, chr, true, false, (byte) 1);
                     count--;
                 }
+
+                chr.DebugMsg("killmob : done.");
                 return true;
             }
             // mob skill.
@@ -669,16 +549,17 @@ public class DebugCommand {
                 chr.getStat().setMp(new_mp);
                 chr.sendStatChanged(true);
 
-                chr.DebugMsg("HP : " + chr.getStat().getHp() + " / " + chr.getStat().getMaxHp());
-                chr.DebugMsg("MP : " + chr.getStat().getMp() + " / " + chr.getStat().getMaxMp());
+                chr.DebugMsg("heal : HP = " + chr.getStat().getHp() + " / " + chr.getStat().getMaxHp());
+                chr.DebugMsg("heal : MP = " + chr.getStat().getMp() + " / " + chr.getStat().getMaxMp());
                 return true;
             }
             case "/autosp": {
-                int skillid = chr.getLastSkillUp();
-                if (skillid != 0) {
-                    while (ReqCUser.OnSkillUpRequestInternal(chr, skillid));
+                int skill_id = chr.getLastSkillUp();
+                if (skill_id != 0) {
+                    while (ReqCUser.OnSkillUpRequestInternal(chr, skill_id));
                 }
-                chr.DebugMsg("Skill = " + skillid);
+
+                chr.DebugMsg("autosp : " + skill_id);
                 return true;
             }
             case "/allskill":
@@ -686,31 +567,39 @@ public class DebugCommand {
                 if (dcmd.check(1)) {
                     chr.setJob(dcmd.getInt(1));
                 }
+
                 DebugJob.AllSkill(chr);
+                chr.DebugMsg("allskill : done.");
                 return true;
             }
             case "/allskill0": {
                 DebugJob.AllSkill(chr, true);
+                chr.DebugMsg("allskill0 : done.");
                 return true;
             }
             case "/allstat": {
                 DebugJob.AllStat(chr);
+                chr.DebugMsg("allstat : done.");
                 return true;
             }
             case "/resetstat": {
                 DebugJob.ResetStat(chr);
+                chr.DebugMsg("resetstat : done.");
                 return true;
             }
             case "/defstat": {
                 if (!dcmd.check(1)) {
                     return true;
                 }
+
                 int job_id = dcmd.getInt(1);
                 int level = 0;
                 if (dcmd.check(2)) {
                     level = dcmd.getInt(2);
                 }
+
                 DebugJob.DefStat(chr, job_id, level);
+                chr.DebugMsg("defstat : done.");
                 return true;
             }
             case "/levelup": {
@@ -723,7 +612,9 @@ public class DebugCommand {
                         return true;
                     }
                 }
+
                 chr.gainExp(SharedExpTable.getExpNeededForLevel(chr.getLevel()), true, true, true);
+                chr.DebugMsg("levelup : done.");
                 return true;
             }
             case "/level":
@@ -749,14 +640,18 @@ public class DebugCommand {
                 for (int i = chr.getLevel(); i < new_level; i++) {
                     chr.gainExp(SharedExpTable.getExpNeededForLevel(i), true, true, true);
                 }
+
+                chr.DebugMsg("level : done.");
                 return true;
             }
             case "/bs": {
                 getBasicSkill(chr);
+                chr.DebugMsg("beginner skill : done.");
                 return true;
             }
             case "/rbs": {
                 resetBasicSkill(chr);
+                chr.DebugMsg("reset beginner skill : done.");
                 return true;
             }
             case "/fs": {
@@ -772,7 +667,7 @@ public class DebugCommand {
                 fs.setSpeed(dcmd.check(index) ? dcmd.getInt(index++) : 0);
                 fs.setJump(dcmd.check(index) ? dcmd.getInt(index++) : 0);
                 chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
-                chr.DebugMsg("[ForcedStat] : STR DEX INT LUK PAD ACC EVA Speed Jump");
+                chr.DebugMsg("forced stat set : STR DEX INT LUK PAD ACC EVA Speed Jump");
                 return true;
             }
             // Map移動関連
@@ -841,15 +736,16 @@ public class DebugCommand {
             }
             // ランダム関連
             case "/randombeauty": {
-                int skinid = DWI_LoadXML.getSkin().getRandom();
-                int faceid = DWI_LoadXML.getFace().getRandom();
-                int hairid = DWI_LoadXML.getHair().getRandom();
+                int skin_id = DWI_LoadXML.getSkin().getRandom();
+                int face_id = DWI_LoadXML.getFace().getRandom();
+                int hair_id = DWI_LoadXML.getHair().getRandom();
 
-                chr.setSkinColor((byte) (skinid % 100));
-                chr.setFace(faceid);
-                chr.setHair(hairid);
+                chr.setSkinColor((byte) (skin_id % 100));
+                chr.setFace(face_id);
+                chr.setHair(hair_id);
                 chr.sendStatChanged(false);
-                chr.DebugMsg("[RandomBeauty] SkinID = " + skinid + ", FaceID = " + faceid + ", HairID = " + hairid);
+                chr.DebugMsg("random beauty : SkinID = " + skin_id + ", FaceID = " + face_id + ", HairID = " + hair_id);
+                DebugLogger.InfoLog("random beauty : SkinID = " + skin_id + ", FaceID = " + face_id + ", HairID = " + hair_id);
                 return true;
             }
             case "/randomdrop": {
@@ -858,10 +754,13 @@ public class DebugCommand {
                 IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
                 map.spawnItemDrop(chr, chr, toDrop, chr.getPosition(), true, true);
                 String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
+
                 if (item_name == null) {
                     item_name = "<null>";
                 }
-                chr.DebugMsgItem("[RandomDrop] " + toDrop.getItemId() + " - " + item_name, toDrop.getItemId());
+
+                chr.DebugMsgItem("random drop : " + toDrop.getItemId() + " - " + item_name, toDrop.getItemId());
+                DebugLogger.InfoLog("random drop : " + toDrop.getItemId() + " - " + item_name);
                 return true;
             }
             case "/randomspawn": {
@@ -876,10 +775,11 @@ public class DebugCommand {
 
                 for (int i = 0; i < mob_count; i++) {
                     int mobid = DWI_LoadXML.getMob().getRandom();
-                    DebugLogger.InfoLog("RandomSpawn: " + mobid);
+                    DebugLogger.InfoLog("random spawn: " + mobid);
                     MapleMonster mob = MapleLifeFactory.getMonster(mobid);
                     map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
-                    chr.DebugMsg("[RandomSpawn] " + mob.getId() + " - " + mob.getStats().getName());
+                    chr.DebugMsg("random spawn : " + mob.getId() + " - " + mob.getStats().getName());
+                    DebugLogger.InfoLog("random spawn : " + mob.getId() + " - " + mob.getStats().getName());
                 }
 
                 return true;
@@ -888,95 +788,8 @@ public class DebugCommand {
                 int mapid = DWI_LoadXML.getMap().getRandom();
                 MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(mapid);
                 chr.changeMap(map_to, map_to.getPortal(0));
-                chr.DebugMsg("[RandomMap] " + map_to.getId() + " - " + map_to.getStreetName() + "_" + map_to.getMapName()); // MapName code is buggy.
-                return true;
-            }
-            // カスタムコマンド
-            case "/wh": {
-                for (MapleCharacter victim : chr.getChannelServer().getOnlinePlayers().get()) {
-                    if (victim != chr) {
-                        victim.changeMapWithCoordinate(map.getId(), chr.getPosition().x, chr.getPosition().y);
-                    }
-                }
-                return true;
-            }
-            case "/addportal": {
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-                int map_id_to = dcmd.getInt(1);
-
-                if (map_id_to == 0 || !DWI_Validation.isValidMapID(map_id_to)) {
-                    chr.DebugMsg("[AddPortal] Invalid MapID.");
-                    return true;
-                }
-
-                Point player_xy = chr.getPosition();
-                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
-                map.addMapObject(dynamic_portal);
-                map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
-                chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);
-                return true;
-            }
-            case "/slot": {
-                ResWrapper.MiroSlot(chr);
-                return true;
-            }
-            case "/poll": {
-                String questions[] = {"Question1", "Question2"};
-                String answers[][] = {
-                    {"123", "aiueo", "asdf"},
-                    {"456", "qwert"}
-                };
-
-                // client strings won't be cleared, buggy...
-                chr.SendPacket(ResCUserLocal.PollQuestion(questions, answers));
-                return true;
-            }
-            case "/petcharacter":
-            case "/petchr":
-            case "/clone": {
-                if (chr.getPetCharacter().remove()) {
-                    chr.DebugMsg("PetCharacter : remove.");
-                    return true;
-                }
-                chr.getPetCharacter().spawn(chr.getId());
-                chr.DebugMsg("PetCharacter : sapwn.");
-                return true;
-            }
-            case "/petmob": {
-                if (!dcmd.check(1)) {
-                    chr.getPetMob().remove();
-                    chr.DebugMsg("PetMob : remove.");
-                    return true;
-                }
-
-                int mob_id = dcmd.getInt(1);
-                chr.getPetMob().spawn(mob_id);
-                chr.DebugMsg("PetMob : sapwn.");
-                return true;
-            }
-            case "/petnpc": {
-                if (!dcmd.check(1)) {
-                    chr.getPetNPC().remove();
-                    chr.DebugMsg("PetNPC : remove.");
-                    return true;
-                }
-
-                int mob_id = dcmd.getInt(1);
-                chr.getPetNPC().spawn(mob_id);
-                chr.DebugMsg("PetNPC : sapwn.");
-                return true;
-            }
-            case "/npccon": {
-                for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
-                    MapleNPC npc = map.getNPCByOid(mmo.getObjectId());
-                    chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
-                    chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
-                }
-                return true;
-            }
-            case "/xxxx": {
+                chr.DebugMsg("random : map " + map_to.getId() + " - " + map_to.getStreetName() + "_" + map_to.getMapName()); // MapName code is buggy.
+                DebugLogger.InfoLog("random : map " + map_to.getId() + " - " + map_to.getStreetName() + "_" + map_to.getMapName());
                 return true;
             }
             default: {
