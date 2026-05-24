@@ -22,6 +22,8 @@ import java.awt.Point;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import odin.provider.IMapleData;
 import odin.server.maps.MapleFoothold;
@@ -37,10 +39,7 @@ public class TacosMapData {
 
     protected int map_id;
     protected int returnMapId;
-    private MapleFootholdTree footholds = null;
-    private Map<Integer, TacosPortal> portals = new HashMap<>();
     private String mapName, streetName;
-    protected TacosMapSplit map_split = new TacosMapSplit();
 
     public TacosMapData(int mapid, int returnMapId) {
         this.map_id = mapid;
@@ -58,13 +57,140 @@ public class TacosMapData {
         return this.returnMapId;
     }
 
-    public MapleFootholdTree getFootholds() {
-        return this.footholds;
+    public Point calcDropPos(Point initial, Point fallback) {
+        Point ret = calcPointBelow(new Point(initial.x, initial.y - 50));
+        if (ret == null) {
+            return fallback;
+        }
+        return ret;
     }
 
-    public void setFootholds(MapleFootholdTree footholds) {
-        this.footholds = footholds;
+    public String getMapName() {
+        return this.mapName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
+    }
+
+    public String getStreetName() {
+        return this.streetName;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+    // portal node.
+    private Map<Integer, TacosPortal> portals = new HashMap<>();
+
+    public boolean loadPortals(IMapleData mapData) {
+        int nextDoorPortal = 0x80;
+        for (IMapleData portal_data : mapData.getChildByPath("portal")) {
+            TacosPortal portal = new TacosPortal(TacosWzDataTool.getInt(portal_data.getChildByPath("pt")));
+
+            portal.setName(TacosWzDataTool.getString(portal_data.getChildByPath("pn")));
+            portal.setTarget(TacosWzDataTool.getString(portal_data.getChildByPath("tn")));
+            portal.setTargetMapId(TacosWzDataTool.getInt(portal_data.getChildByPath("tm")));
+            portal.setPosition(new Point(TacosWzDataTool.getInt(portal_data.getChildByPath("x")), TacosWzDataTool.getInt(portal_data.getChildByPath("y"))));
+            String script = TacosWzDataTool.getStringPath("script", portal_data, "");
+            portal.setScriptName(script.equals("") ? null : script);
+
+            if (portal.getType() == TacosPortal.DOOR_PORTAL) {
+                portal.setId(nextDoorPortal);
+                nextDoorPortal++;
+            } else {
+                portal.setId(this.portals.size());
+            }
+
+            this.portals.put(portal.getId(), portal);
+        }
+
+        return true;
+    }
+
+    public TacosPortal getPortal(String portalname) {
+        for (TacosPortal port : this.portals.values()) {
+            if (port.getName().equals(portalname)) {
+                return port;
+            }
+        }
+        return null;
+    }
+
+    public TacosPortal getPortal(int portal_id) {
+        return this.portals.get(portal_id);
+    }
+
+    public Collection<TacosPortal> getPortals() {
+        return Collections.unmodifiableCollection(this.portals.values());
+    }
+
+    public void resetPortals() {
+        for (TacosPortal portal : this.portals.values()) {
+            portal.setPortalState(true);
+        }
+    }
+
+    public TacosPortal findClosestSpawnpoint(Point from) {
+        TacosPortal closest = null;
+        double distance, shortestDistance = Double.POSITIVE_INFINITY;
+        for (TacosPortal portal : this.portals.values()) {
+            distance = portal.getPosition().distanceSq(from);
+            if (portal.getType() >= 0 && portal.getType() <= 2 && distance < shortestDistance && portal.getTargetMapId() == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
+                closest = portal;
+                shortestDistance = distance;
+            }
+        }
+        return closest;
+    }
+
+    // foothold node.
+    private MapleFootholdTree footholds;
+    protected TacosMapSplit map_split = new TacosMapSplit();
+
+    public boolean loadFootHolds(IMapleData mapData) {
+        List<MapleFoothold> allFootholds = new LinkedList<>();
+        Point lBound = new Point();
+        Point uBound = new Point();
+
+        for (IMapleData footRoot : mapData.getChildByPath("foothold")) {
+            for (IMapleData footCat : footRoot) {
+                for (IMapleData footHold : footCat) {
+                    Point p1 = new Point(TacosWzDataTool.getInt(footHold.getChildByPath("x1")), TacosWzDataTool.getInt(footHold.getChildByPath("y1")));
+                    Point p2 = new Point(TacosWzDataTool.getInt(footHold.getChildByPath("x2")), TacosWzDataTool.getInt(footHold.getChildByPath("y2")));
+                    MapleFoothold fh = new MapleFoothold(p1, p2, Integer.parseInt(footHold.getName()));
+                    fh.setPrev((short) TacosWzDataTool.getInt(footHold.getChildByPath("prev")));
+                    fh.setNext((short) TacosWzDataTool.getInt(footHold.getChildByPath("next")));
+
+                    if (fh.getX1() < lBound.x) {
+                        lBound.x = fh.getX1();
+                    }
+                    if (fh.getX2() > uBound.x) {
+                        uBound.x = fh.getX2();
+                    }
+                    if (fh.getY1() < lBound.y) {
+                        lBound.y = fh.getY1();
+                    }
+                    if (fh.getY2() > uBound.y) {
+                        uBound.y = fh.getY2();
+                    }
+                    allFootholds.add(fh);
+                }
+            }
+        }
+
+        MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
+        for (MapleFoothold foothold : allFootholds) {
+            fTree.insert(foothold);
+        }
+
+        this.footholds = fTree;
         this.map_split.setSplit(this.footholds.getAll());
+        return true;
+    }
+
+    public MapleFootholdTree getFootholds() {
+        return this.footholds;
     }
 
     public TacosMapSplit getMapSplit() {
@@ -89,71 +215,7 @@ public class TacosMapData {
         return new Point(initial.x, dropY);
     }
 
-    public Point calcDropPos(Point initial, Point fallback) {
-        Point ret = calcPointBelow(new Point(initial.x, initial.y - 50));
-        if (ret == null) {
-            return fallback;
-        }
-        return ret;
-    }
-
-    public TacosPortal getPortal(String portalname) {
-        for (TacosPortal port : this.portals.values()) {
-            if (port.getName().equals(portalname)) {
-                return port;
-            }
-        }
-        return null;
-    }
-
-    public TacosPortal getPortal(int portalid) {
-        return this.portals.get(portalid);
-    }
-
-    public Collection<TacosPortal> getPortals() {
-        return Collections.unmodifiableCollection(portals.values());
-    }
-
-    public void addPortal(TacosPortal myPortal) {
-        this.portals.put(myPortal.getId(), myPortal);
-    }
-
-    public void resetPortals() {
-        for (TacosPortal port : this.portals.values()) {
-            port.setPortalState(true);
-        }
-    }
-
-    public TacosPortal findClosestSpawnpoint(Point from) {
-        TacosPortal closest = null;
-        double distance, shortestDistance = Double.POSITIVE_INFINITY;
-        for (TacosPortal portal : this.portals.values()) {
-            distance = portal.getPosition().distanceSq(from);
-            if (portal.getType() >= 0 && portal.getType() <= 2 && distance < shortestDistance && portal.getTargetMapId() == 999999999) {
-                closest = portal;
-                shortestDistance = distance;
-            }
-        }
-        return closest;
-    }
-
-    public String getMapName() {
-        return this.mapName;
-    }
-
-    public void setMapName(String mapName) {
-        this.mapName = mapName;
-    }
-
-    public String getStreetName() {
-        return this.streetName;
-    }
-
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
-    }
-
-    // load map data from wz.
+    // info node.
     private boolean clock;
     private boolean everlast;
     private boolean town;

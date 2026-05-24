@@ -29,11 +29,9 @@ import tacos.debug.DebugLogger;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
-import odin.server.PortalFactory;
 import odin.server.life.AbstractLoadedMapleLife;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -78,45 +76,10 @@ public class MapleMapFactory {
         float monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
         map = new MapleMap(map_id, channel, TacosWzDataTool.getIntPath("info/returnMap", mapData, 0), monsterRate);
 
-        PortalFactory portalFactory = new PortalFactory();
-        for (IMapleData portal : mapData.getChildByPath("portal")) {
-            map.addPortal(portalFactory.makePortal(map, TacosWzDataTool.getInt(portal.getChildByPath("pt")), portal));
-        }
-        List<MapleFoothold> allFootholds = new LinkedList<>();
-        Point lBound = new Point();
-        Point uBound = new Point();
-        MapleFoothold fh;
-
-        for (IMapleData footRoot : mapData.getChildByPath("foothold")) {
-            for (IMapleData footCat : footRoot) {
-                for (IMapleData footHold : footCat) {
-                    fh = new MapleFoothold(new Point(
-                            TacosWzDataTool.getInt(footHold.getChildByPath("x1")), TacosWzDataTool.getInt(footHold.getChildByPath("y1"))), new Point(
-                            TacosWzDataTool.getInt(footHold.getChildByPath("x2")), TacosWzDataTool.getInt(footHold.getChildByPath("y2"))), Integer.parseInt(footHold.getName()));
-                    fh.setPrev((short) TacosWzDataTool.getInt(footHold.getChildByPath("prev")));
-                    fh.setNext((short) TacosWzDataTool.getInt(footHold.getChildByPath("next")));
-
-                    if (fh.getX1() < lBound.x) {
-                        lBound.x = fh.getX1();
-                    }
-                    if (fh.getX2() > uBound.x) {
-                        uBound.x = fh.getX2();
-                    }
-                    if (fh.getY1() < lBound.y) {
-                        lBound.y = fh.getY1();
-                    }
-                    if (fh.getY2() > uBound.y) {
-                        uBound.y = fh.getY2();
-                    }
-                    allFootholds.add(fh);
-                }
-            }
-        }
-        MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
-        for (MapleFoothold foothold : allFootholds) {
-            fTree.insert(foothold);
-        }
-        map.setFootholds(fTree);
+        // load portal.
+        map.loadPortals(mapData);
+        // load fh.
+        map.loadFootHolds(mapData);
 
         int bossid = -1;
         String msg = null;
@@ -176,7 +139,7 @@ public class MapleMapFactory {
             map.setMapName("");
             map.setStreetName("");
         }
-        // load.
+        // load info.
         map.loadMapData(mapData);
         maps.put(omapid, map);
         return map;
