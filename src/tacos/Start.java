@@ -143,8 +143,6 @@ public class Start {
         TacosCashShop.init();
         // itc server
         TacosITC.init();
-        // map updates
-        TacosWorld.find(0).registerRespawn(); // TODO : fix
 
         RandomRewards.getInstance();
         MapleGuildRanking.getInstance().getRank();

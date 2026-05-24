@@ -87,10 +87,6 @@ public class ReqCDropPool {
             return false;
         }
         MapleMapItem mapitem = (MapleMapItem) object;
-        if (mapitem.isPickedUp()) {
-            DebugLogger.ErrorLog("PickUp : isPickedUp");
-            return false;
-        }
         if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
             DebugLogger.ErrorLog("PickUp : getOwner");
             return false;
@@ -147,7 +143,6 @@ public class ReqCDropPool {
     }
 
     public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem, boolean is_pet, int pet_index) {
-        mapitem.setPickedUp(true);
         chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? ResCDropPool.LeaveType.PICK_UP_PET : ResCDropPool.LeaveType.PICK_UP, chr, pet_index), mapitem.getPosition());
         chr.getMap().removeMapObject(mapitem);
     }

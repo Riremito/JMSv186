@@ -31,7 +31,6 @@ import tacos.debug.DebugLogger;
 import odin.handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUser_Pet;
@@ -241,12 +240,7 @@ public class ReqCUser_Pet {
     }
 
     public static void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {
-        final Lock lock = mapitem.getLock();
-        MapleClient c = chr.getClient();
-        if (mapitem.isPickedUp()) {
-            chr.updateInv();
-            return;
-        }
+        MapleClient client = chr.getClient();
         if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
@@ -280,10 +274,10 @@ public class ReqCUser_Pet {
         } else {
             if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItemId()) || mapitem.getItemId() / 10000 == 291) {
                 chr.updateInv();
-            } else if (ReqCDropPool.useDropItem(c, mapitem.getItemId())) {
+            } else if (ReqCDropPool.useDropItem(client, mapitem.getItemId())) {
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
-            } else if (MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-                MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
+            } else if (MapleInventoryManipulator.checkSpace(client, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             }
         }

@@ -155,11 +155,6 @@ public class TacosMap extends TacosMapData {
         this.isSpawns = fm;
     }
 
-    public boolean canSpawn() {
-        // 即沸き
-        return this.lastSpawnTime == 0 || (this.lastSpawnTime > 0 && this.isSpawns && this.lastSpawnTime + this.createMobInterval < System.currentTimeMillis());
-    }
-
     public List<Spawns> getMonsterSpawn() {
         return this.monsterSpawn;
     }
@@ -1508,9 +1503,6 @@ public class TacosMap extends TacosMapData {
         for (final MapleMapObject o : getAllItems()) {
             final MapleMapItem item = ((MapleMapItem) o);
             if (item.getOwner() == chr.getId()) {
-                item.setPickedUp(true);
-
-                DebugLogger.DebugLog("PICKUP REVER");
                 broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.LeaveType.PICK_UP, chr, 0), item.getPosition());
                 if (item.getMeso() > 0) {
                     chr.gainMeso(item.getMeso(), false);
@@ -1710,7 +1702,7 @@ public class TacosMap extends TacosMapData {
     public void respawn(boolean force) {
         lastSpawnTime = System.currentTimeMillis();
         if (force) { //cpq quick hack
-            final int numShouldSpawn = monsterSpawn.size() - spawnedMonstersOnMap.get();
+            int numShouldSpawn = monsterSpawn.size() - spawnedMonstersOnMap.get();
 
             if (numShouldSpawn > 0) {
                 int spawned = 0;
@@ -1724,11 +1716,11 @@ public class TacosMap extends TacosMapData {
                 }
             }
         } else {
-            final int numShouldSpawn = maxRegularSpawn - spawnedMonstersOnMap.get();
+            int numShouldSpawn = maxRegularSpawn - spawnedMonstersOnMap.get();
             if (numShouldSpawn > 0) {
                 int spawned = 0;
 
-                final List<Spawns> randomSpawn = new ArrayList<Spawns>(monsterSpawn);
+                List<Spawns> randomSpawn = new ArrayList<>(monsterSpawn);
                 Collections.shuffle(randomSpawn);
 
                 for (Spawns spawnPoint : randomSpawn) {
@@ -1758,28 +1750,30 @@ public class TacosMap extends TacosMapData {
         return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(forcedReturnMap);
     }
 
-    public boolean updateMapItem() {
-        for (MapleMapItem item : getAllItems()) {
-            if (item.shouldExpire()) {
-                item.expire(this);
-                continue;
-            }
-            if (item.shouldFFA()) {
-                item.setDropType((byte) 2);
-            }
-        }
-        return true;
+    public long getCreateMobInterval() {
+        return this.createMobInterval;
     }
 
     public boolean updateSpawn() {
-        if (!canSpawn()) {
-            return false;
-        }
-        if (this.characters.isEmpty()) {
-            return false;
-        }
         respawn(false);
         return true;
     }
 
+    // update.
+    private long time = 0;
+
+    public boolean updateTime(long time, long interval) {
+        if (this.time == 0) {
+            this.time = time;
+            return false;
+        }
+
+        long delta = time - this.time;
+        if (interval <= delta) {
+            this.time = time;
+            return true;
+        }
+
+        return false;
+    }
 }

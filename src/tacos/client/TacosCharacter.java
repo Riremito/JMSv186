@@ -1026,6 +1026,24 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.m_nCntStraightVictories = m_nCntStraightVictories;
     }
 
+    // update.
+    private long time = 0;
+
+    public boolean updateTime(long time, long interval) {
+        if (this.time == 0) {
+            this.time = time;
+            return false;
+        }
+
+        long delta = time - this.time;
+        if (interval <= delta) {
+            this.time = time;
+            return true;
+        }
+
+        return false;
+    }
+
     // unofficial.
     private PetCharacter pet_player = new PetCharacter(this);
     private PetMob pet_mob = new PetMob(this);

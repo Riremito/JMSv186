@@ -481,10 +481,6 @@ public final class MapleMap extends TacosMap {
         @Override
         public void run() {
             if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId(), mapitem.getType())) {
-                if (mapitem.isPickedUp()) {
-                    reactor.setTimerActive(false);
-                    return;
-                }
                 mapitem.expire(MapleMap.this);
                 reactor.hitReactor(c);
                 reactor.setTimerActive(false);

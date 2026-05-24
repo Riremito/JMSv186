@@ -20,18 +20,9 @@ package tacos.server;
 
 import java.util.ArrayList;
 import odin.client.MapleCharacter;
-import odin.client.MapleCoolDownValueHolder;
-import odin.client.MapleDiseaseValueHolder;
-import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
-import odin.server.Timer;
-import odin.server.maps.MapleMap;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
-import tacos.packet.response.ResCUserLocal;
-import tacos.packet.response.wrapper.ResWrapper;
-import tacos.wz.data.ItemWz;
 
 /**
  *
@@ -245,81 +236,6 @@ public class TacosWorld {
             }
         }
         return false;
-    }
-
-    // map updates
-    public void registerRespawn() {
-        Runnable respawn = new Runnable() {
-            private int numTimes = 0;
-
-            @Override
-            public void run() {
-                numTimes++;
-                for (TacosChannel channel : getChannels()) {
-                    for (MapleMap map : channel.getMapFactory().getAllMaps()) {
-                        map.updateMapItem();
-                        map.updateSpawn();
-                        for (MapleCharacter player : map.getCharacters()) {
-                            handleCooldowns(player, numTimes);
-                        }
-                    }
-                    for (MapleMap map : channel.getMapFactory().getAllInstanceMaps()) {
-                        map.updateMapItem();
-                        map.updateSpawn();
-                        for (MapleCharacter player : map.getCharacters()) {
-                            handleCooldowns(player, numTimes);
-                        }
-                    }
-                }
-            }
-        };
-
-        Timer.WorldTimer.getInstance().register(respawn, 3000);
-    }
-
-    public boolean handleCooldowns(MapleCharacter player, int numTimes) {
-        long now = System.currentTimeMillis();
-        for (MapleCoolDownValueHolder m : player.getCooldowns()) {
-            if (m.end_time <= now) {
-                int skil = m.skill_id;
-                player.removeCooldown(skil);
-                player.SendPacket(ResCUserLocal.SkillCooltimeSet(skil, 0));
-            }
-        }
-        for (MapleDiseaseValueHolder m : player.getAllDiseases()) {
-            if (m.startTime + m.length <= now) {
-                player.dispelDebuff(m.disease);
-            }
-        }
-
-        // ?_?
-        if (numTimes % 20 != 0) {
-            return true;
-        }
-
-        // pet
-        for (MaplePet pet : player.getPets()) {
-            if (!pet.getSummoned()) {
-                continue;
-            }
-            if (pet.getPetItemId() == 5000054 && 0 < pet.getSecondsLeft()) {
-                pet.setSecondsLeft(pet.getSecondsLeft() - 1);
-                if (pet.getSecondsLeft() <= 0) {
-                    player.unequipPet(pet, true, true);
-                    continue;
-                }
-            }
-            int newFullness = pet.getFullness() - ItemWz.get().getHunger(pet.getPetItemId());
-            if (newFullness <= 5) {
-                pet.setFullness(15);
-                player.unequipPet(pet, true, true);
-                continue;
-            }
-            pet.setFullness(newFullness);
-            player.SendPacket(ResWrapper.updatePet(pet, player.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
-        }
-
-        return true;
     }
 
     // messenger.
