@@ -40,8 +40,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import odin.server.PortalFactory;
@@ -59,243 +57,35 @@ import tacos.wz.TacosWzDataTool;
 
 public class MapleMapFactory {
 
-    private final Map<Integer, MapleMap> maps = new HashMap<>();
-    private final Map<Integer, MapleMap> instanceMap = new HashMap<>();
-    private static final Map<Integer, MapleNodes> mapInfos = new HashMap<Integer, MapleNodes>();
-    private final ReentrantLock lock = new ReentrantLock(true);
+    private Map<Integer, MapleMap> maps = new HashMap<>();
+    private static Map<Integer, MapleNodes> mapInfos = new HashMap<>();
     private int channel;
 
-    public final MapleMap getMap(final int mapid) {
-        return getMap(mapid, true, true, true);
-    }
-
-    public final MapleMap getMap(int mapid, final boolean respawns, final boolean npcs, final boolean reactors) {
+    public MapleMap getMap(int mapid) {
         Integer omapid = mapid;
         MapleMap map = maps.get(omapid);
-        if (map == null) {
-            lock.lock();
-            try {
-                map = maps.get(omapid);
-                if (map != null) {
-                    return map;
-                }
-
-                IMapleData mapData;
-                try {
-                    mapData = MapWz.get().getData(getMapName(mapid));
-                } catch (Exception e) {
-                    // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
-                    DebugLogger.ErrorLog("Invalid MapID = " + mapid);
-                    mapid = DeveloperMode.DM_ERROR_MAP_ID.getInt();
-                    omapid = mapid;
-                    mapData = MapWz.get().getData(getMapName(mapid));
-                }
-                //MapleData mapData = source.getData(getMapName(mapid));
-                //MapleData mapData = source.getData(getMapName(mapid));
-
-                IMapleData link = mapData.getChildByPath("info/link");
-                if (link != null) {
-                    mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntPath("info/link", mapData, 0)));
-                }
-
-                float monsterRate = 0.0f;
-                if (respawns) {
-                    monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
-                }
-                map = new MapleMap(mapid, channel, TacosWzDataTool.getIntPath("info/returnMap", mapData, 0), monsterRate);
-
-                PortalFactory portalFactory = new PortalFactory();
-                for (IMapleData portal : mapData.getChildByPath("portal")) {
-                    map.addPortal(portalFactory.makePortal(map, TacosWzDataTool.getInt(portal.getChildByPath("pt")), portal));
-                }
-                List<MapleFoothold> allFootholds = new LinkedList<>();
-                Point lBound = new Point();
-                Point uBound = new Point();
-                MapleFoothold fh;
-
-                for (IMapleData footRoot : mapData.getChildByPath("foothold")) {
-                    for (IMapleData footCat : footRoot) {
-                        for (IMapleData footHold : footCat) {
-                            fh = new MapleFoothold(new Point(
-                                    TacosWzDataTool.getInt(footHold.getChildByPath("x1")), TacosWzDataTool.getInt(footHold.getChildByPath("y1"))), new Point(
-                                    TacosWzDataTool.getInt(footHold.getChildByPath("x2")), TacosWzDataTool.getInt(footHold.getChildByPath("y2"))), Integer.parseInt(footHold.getName()));
-                            fh.setPrev((short) TacosWzDataTool.getInt(footHold.getChildByPath("prev")));
-                            fh.setNext((short) TacosWzDataTool.getInt(footHold.getChildByPath("next")));
-
-                            if (fh.getX1() < lBound.x) {
-                                lBound.x = fh.getX1();
-                            }
-                            if (fh.getX2() > uBound.x) {
-                                uBound.x = fh.getX2();
-                            }
-                            if (fh.getY1() < lBound.y) {
-                                lBound.y = fh.getY1();
-                            }
-                            if (fh.getY2() > uBound.y) {
-                                uBound.y = fh.getY2();
-                            }
-                            allFootholds.add(fh);
-                        }
-                    }
-                }
-                MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
-                for (MapleFoothold foothold : allFootholds) {
-                    fTree.insert(foothold);
-                }
-                map.setFootholds(fTree);
-
-                int bossid = -1;
-                String msg = null;
-                if (mapData.getChildByPath("info/timeMob") != null) {
-                    bossid = TacosWzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
-                    msg = TacosWzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
-                }
-
-                // load life data (npc, monsters)
-                String type;
-                AbstractLoadedMapleLife myLife;
-
-                for (IMapleData life : mapData.getChildByPath("life")) {
-                    type = TacosWzDataTool.getString(life.getChildByPath("type"));
-                    if (npcs || !type.equals("n")) {
-                        myLife = loadLife(life, TacosWzDataTool.getString(life.getChildByPath("id")), type);
-
-                        if (myLife instanceof MapleMonster) {
-                            final MapleMonster mob = (MapleMonster) myLife;
-                            // hide mob
-                            if (!DWI_Block.checkMob(myLife.getId())) {
-                                map.addMonsterSpawn(mob,
-                                        TacosWzDataTool.getIntPath("mobTime", life, 0),
-                                        (byte) TacosWzDataTool.getIntPath("team", life, -1),
-                                        mob.getId() == bossid ? msg : null);
-                            }
-
-                        } else if (myLife != null) {
-                            // hide npc
-                            if (!DWI_Block.checkNpc(myLife.getId())) {
-                                map.addMapObject(myLife);
-                            }
-                        }
-                    }
-                }
-
-                // 設定ファイルに定義されたNPCを設置
-                if ((Region.IsJMS() && Version.getVersion() == 186)) {
-                    Path file = Paths.get(Property_Java.getDir_Scripts() + "map/" + mapid + ".txt");
-                    try {
-                        if (!Files.notExists(file)) {
-                            List<String> text;
-                            text = Files.readAllLines(file); // UTF-8
-                            for (int i = 0; i < text.size(); i++) {
-                                String[] npc_data = text.get(i).split(",");
-                                if (npc_data.length == 4) {
-
-                                    int npc_id = Integer.parseInt(npc_data[0]);
-                                    int npc_x = Integer.parseInt(npc_data[1]);
-                                    int npc_y = Integer.parseInt(npc_data[2]);
-                                    int npc_fh = Integer.parseInt(npc_data[3]);
-
-                                    MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
-                                    if (npc != null && !npc.getName().equals("MISSINGNO")) {
-                                        npc.setPosition(new Point(npc_x, npc_y));
-                                        npc.setCy(npc_y);
-                                        npc.setRx0(npc_x + 50);
-                                        npc.setRx1(npc_x - 50);
-                                        npc.setFh(npc_fh);
-                                        npc.setCustom(true);
-                                        map.addMapObject(npc);
-                                        //Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
-                                    }
-                                } else {
-                                    DebugLogger.ErrorLog("spawn npc format error: " + mapid);
-                                }
-                            }
-                        }
-                    } catch (IOException ex) {
-                        Logger.getLogger(MapleMapFactory.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-
-                MasterMonster.addAreaBossSpawn(map);
-                map.setCreateMobInterval(TacosWzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
-                map.loadMonsterRate(true);
-                map.setNodes(loadNodes(mapid, mapData));
-
-                //load reactor data
-                String id;
-                if (reactors && mapData.getChildByPath("reactor") != null) {
-                    for (IMapleData reactor : mapData.getChildByPath("reactor")) {
-                        id = TacosWzDataTool.getString(reactor.getChildByPath("id"));
-                        if (id != null) {
-                            map.spawnReactor(loadReactor(reactor, id, (byte) TacosWzDataTool.getInt(reactor.getChildByPath("f"), 0)));
-                        }
-                    }
-                }
-
-                try {
-                    map.setMapName(TacosWzDataTool.getStringPath("mapName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
-                    map.setStreetName(TacosWzDataTool.getStringPath("streetName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
-                } catch (Exception e) {
-                    map.setMapName("");
-                    map.setStreetName("");
-                }
-                map.setClock(mapData.getChildByPath("clock") != null); //clock was changed in wz to have x,y,width,height
-                map.setEverlast(TacosWzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0);
-                map.setTown(TacosWzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0);
-                map.setSoaring(TacosWzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0);
-                map.setPersonalShop(TacosWzDataTool.getInt(mapData.getChildByPath("info/personalShop"), 0) > 0);
-                map.setForceMove(TacosWzDataTool.getInt(mapData.getChildByPath("info/lvForceMove"), 0));
-                map.setHPDec((int) TacosWzDataTool.getLong(mapData.getChildByPath("info/decHP"), 0L));
-                map.setHPDecInterval(TacosWzDataTool.getInt(mapData.getChildByPath("info/decHPInterval"), 10000));
-                map.setHPDecProtect(TacosWzDataTool.getInt(mapData.getChildByPath("info/protectItem"), 0));
-                map.setForcedReturnMap(TacosWzDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID));
-                map.setTimeLimit(TacosWzDataTool.getInt(mapData.getChildByPath("info/timeLimit"), -1));
-                map.setFieldLimit(TacosWzDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0));
-                map.setFirstUserEnter(TacosWzDataTool.getString(mapData.getChildByPath("info/onFirstUserEnter"), ""));
-                map.setUserEnter(TacosWzDataTool.getString(mapData.getChildByPath("info/onUserEnter"), ""));
-                map.setRecoveryRate(TacosWzDataTool.getFloat(mapData.getChildByPath("info/recovery"), 1.0f));
-                map.setFixedMob(TacosWzDataTool.getInt(mapData.getChildByPath("info/fixedMobCapacity"), 0));
-                map.setConsumeItemCoolTime(TacosWzDataTool.getInt(mapData.getChildByPath("info/consumeItemCoolTime"), 0));
-
-                maps.put(omapid, map);
-            } finally {
-                lock.unlock();
-            }
+        if (map != null) {
+            return map;
         }
-        return map;
-    }
 
-    public MapleMap getInstanceMap(final int instanceid) {
-        return instanceMap.get(instanceid);
-    }
-
-    public void removeInstanceMap(final int instanceid) {
-        if (isInstanceMapLoaded(instanceid)) {
-            instanceMap.remove(instanceid);
+        IMapleData mapData;
+        try {
+            mapData = MapWz.get().getData(getMapName(mapid));
+        } catch (Exception e) {
+            // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
+            DebugLogger.ErrorLog("Invalid MapID = " + mapid);
+            mapid = DeveloperMode.DM_ERROR_MAP_ID.getInt();
+            omapid = mapid;
+            mapData = MapWz.get().getData(getMapName(mapid));
         }
-    }
 
-    public void removeMap(final int instanceid) {
-        if (isMapLoaded(instanceid)) {
-            maps.remove(instanceid);
-        }
-    }
-
-    public MapleMap CreateInstanceMap(int mapid, boolean respawns, boolean npcs, boolean reactors, int instanceid) {
-        if (isInstanceMapLoaded(instanceid)) {
-            return getInstanceMap(instanceid);
-        }
-        IMapleData mapData = MapWz.get().getData(getMapName(mapid));
         IMapleData link = mapData.getChildByPath("info/link");
         if (link != null) {
             mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntPath("info/link", mapData, 0)));
         }
 
-        float monsterRate = 0.0f;
-        if (respawns) {
-            monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
-        }
-        MapleMap map = new MapleMap(mapid, channel, TacosWzDataTool.getIntPath("info/returnMap", mapData, 0), monsterRate);
+        float monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
+        map = new MapleMap(mapid, channel, TacosWzDataTool.getIntPath("info/returnMap", mapData, 0), monsterRate);
 
         PortalFactory portalFactory = new PortalFactory();
         for (IMapleData portal : mapData.getChildByPath("portal")) {
@@ -304,10 +94,12 @@ public class MapleMapFactory {
         List<MapleFoothold> allFootholds = new LinkedList<>();
         Point lBound = new Point();
         Point uBound = new Point();
+        MapleFoothold fh;
+
         for (IMapleData footRoot : mapData.getChildByPath("foothold")) {
             for (IMapleData footCat : footRoot) {
                 for (IMapleData footHold : footCat) {
-                    MapleFoothold fh = new MapleFoothold(new Point(
+                    fh = new MapleFoothold(new Point(
                             TacosWzDataTool.getInt(footHold.getChildByPath("x1")), TacosWzDataTool.getInt(footHold.getChildByPath("y1"))), new Point(
                             TacosWzDataTool.getInt(footHold.getChildByPath("x2")), TacosWzDataTool.getInt(footHold.getChildByPath("y2"))), Integer.parseInt(footHold.getName()));
                     fh.setPrev((short) TacosWzDataTool.getInt(footHold.getChildByPath("prev")));
@@ -330,10 +122,11 @@ public class MapleMapFactory {
             }
         }
         MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
-        for (MapleFoothold fh : allFootholds) {
-            fTree.insert(fh);
+        for (MapleFoothold foothold : allFootholds) {
+            fTree.insert(foothold);
         }
         map.setFootholds(fTree);
+
         int bossid = -1;
         String msg = null;
         if (mapData.getChildByPath("info/timeMob") != null) {
@@ -347,22 +140,62 @@ public class MapleMapFactory {
 
         for (IMapleData life : mapData.getChildByPath("life")) {
             type = TacosWzDataTool.getString(life.getChildByPath("type"));
-            if (npcs || !type.equals("n")) {
-                myLife = loadLife(life, TacosWzDataTool.getString(life.getChildByPath("id")), type);
-
-                if (myLife instanceof MapleMonster) {
-                    final MapleMonster mob = (MapleMonster) myLife;
-
+            myLife = loadLife(life, TacosWzDataTool.getString(life.getChildByPath("id")), type);
+            if (myLife instanceof MapleMonster) {
+                final MapleMonster mob = (MapleMonster) myLife;
+                // hide mob
+                if (!DWI_Block.checkMob(myLife.getId())) {
                     map.addMonsterSpawn(mob,
                             TacosWzDataTool.getIntPath("mobTime", life, 0),
                             (byte) TacosWzDataTool.getIntPath("team", life, -1),
                             mob.getId() == bossid ? msg : null);
+                }
 
-                } else {
+            } else if (myLife != null) {
+                // hide npc
+                if (!DWI_Block.checkNpc(myLife.getId())) {
                     map.addMapObject(myLife);
                 }
             }
         }
+
+        // 設定ファイルに定義されたNPCを設置
+        if ((Region.IsJMS() && Version.getVersion() == 186)) {
+            Path file = Paths.get(Property_Java.getDir_Scripts() + "map/" + mapid + ".txt");
+            try {
+                if (!Files.notExists(file)) {
+                    List<String> text;
+                    text = Files.readAllLines(file); // UTF-8
+                    for (int i = 0; i < text.size(); i++) {
+                        String[] npc_data = text.get(i).split(",");
+                        if (npc_data.length == 4) {
+
+                            int npc_id = Integer.parseInt(npc_data[0]);
+                            int npc_x = Integer.parseInt(npc_data[1]);
+                            int npc_y = Integer.parseInt(npc_data[2]);
+                            int npc_fh = Integer.parseInt(npc_data[3]);
+
+                            MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
+                            if (npc != null && !npc.getName().equals("MISSINGNO")) {
+                                npc.setPosition(new Point(npc_x, npc_y));
+                                npc.setCy(npc_y);
+                                npc.setRx0(npc_x + 50);
+                                npc.setRx1(npc_x - 50);
+                                npc.setFh(npc_fh);
+                                npc.setCustom(true);
+                                map.addMapObject(npc);
+                                //Debug.DebugLog("Spawn NPC, NPC = " + npc.getName() + " (" + npc_id + "), Map = " + MapleDataTool.getString("streetName", nameData.getChildByPath(getMapStringName(omapid))) + " - " + MapleDataTool.getString("mapName", nameData.getChildByPath(getMapStringName(omapid))) + " (" + mapid + ")");
+                            }
+                        } else {
+                            DebugLogger.ErrorLog("spawn npc format error: " + mapid);
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(MapleMapFactory.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         MasterMonster.addAreaBossSpawn(map);
         map.setCreateMobInterval(TacosWzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
         map.loadMonsterRate(true);
@@ -370,7 +203,7 @@ public class MapleMapFactory {
 
         //load reactor data
         String id;
-        if (reactors && mapData.getChildByPath("reactor") != null) {
+        if (mapData.getChildByPath("reactor") != null) {
             for (IMapleData reactor : mapData.getChildByPath("reactor")) {
                 id = TacosWzDataTool.getString(reactor.getChildByPath("id"));
                 if (id != null) {
@@ -378,17 +211,19 @@ public class MapleMapFactory {
                 }
             }
         }
+
         try {
-            map.setMapName(TacosWzDataTool.getStringPath("mapName", StringWz.get().getMap().getChildByPath(getMapStringName(mapid)), ""));
-            map.setStreetName(TacosWzDataTool.getStringPath("streetName", StringWz.get().getMap().getChildByPath(getMapStringName(mapid)), ""));
+            map.setMapName(TacosWzDataTool.getStringPath("mapName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
+            map.setStreetName(TacosWzDataTool.getStringPath("streetName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
         } catch (Exception e) {
             map.setMapName("");
             map.setStreetName("");
         }
-        map.setClock(TacosWzDataTool.getInt(mapData.getChildByPath("info/clock"), 0) > 0);
+        map.setClock(mapData.getChildByPath("clock") != null); //clock was changed in wz to have x,y,width,height
         map.setEverlast(TacosWzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0);
         map.setTown(TacosWzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0);
         map.setSoaring(TacosWzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0);
+        map.setPersonalShop(TacosWzDataTool.getInt(mapData.getChildByPath("info/personalShop"), 0) > 0);
         map.setForceMove(TacosWzDataTool.getInt(mapData.getChildByPath("info/lvForceMove"), 0));
         map.setHPDec((int) TacosWzDataTool.getLong(mapData.getChildByPath("info/decHP"), 0L));
         map.setHPDecInterval(TacosWzDataTool.getInt(mapData.getChildByPath("info/decHPInterval"), 10000));
@@ -402,24 +237,8 @@ public class MapleMapFactory {
         map.setFixedMob(TacosWzDataTool.getInt(mapData.getChildByPath("info/fixedMobCapacity"), 0));
         map.setConsumeItemCoolTime(TacosWzDataTool.getInt(mapData.getChildByPath("info/consumeItemCoolTime"), 0));
 
-        instanceMap.put(instanceid, map);
+        maps.put(omapid, map);
         return map;
-    }
-
-    public boolean isMapLoaded(int mapId) {
-        return maps.containsKey(mapId);
-    }
-
-    public boolean isInstanceMapLoaded(int instanceid) {
-        return instanceMap.containsKey(instanceid);
-    }
-
-    public Collection<MapleMap> getAllMaps() {
-        return maps.values();
-    }
-
-    public Collection<MapleMap> getAllInstanceMaps() {
-        return instanceMap.values();
     }
 
     private AbstractLoadedMapleLife loadLife(IMapleData life, String id, String type) {

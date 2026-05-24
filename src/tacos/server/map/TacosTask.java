@@ -79,7 +79,7 @@ public class TacosTask {
 
         // mob respawn.
         long interval = map.getCreateMobInterval();
-        //chr.DebugMsg("doTask : createMobInterval = " + interval);
+        chr.DebugMsg("doTask : createMobInterval = " + interval);
         map.updateSpawn();
         return true;
     }

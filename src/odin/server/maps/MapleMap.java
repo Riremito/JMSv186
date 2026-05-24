@@ -103,10 +103,6 @@ public final class MapleMap extends TacosMap {
         if (monster == null || player == null || monster.dropsDisabled() || player.getPyramidSubway() != null) {
             return -1;
         }
-        // clear drops
-        if (getItemsSize() >= 225) {
-            removeDrops();
-        }
         // drop database, drop monseter book
         return super.dropFromMonster(player, monster);
     }

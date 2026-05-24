@@ -45,10 +45,6 @@ public class MonsterDrop {
     public static int dropFromDatabase(int channel, MapleCharacter player, MapleMonster monster) {
         MapleMap map = monster.getMap();
 
-        if (map.getItemsSize() >= 225) {
-            map.removeDrops();
-        }
-
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         byte drop_type = (byte) (monster.getStats().isExplosiveReward() ? 3 : monster.getStats().isFfaLoot() ? 2 : player.getParty() != null ? 1 : 0);
         int cmServerrate = player.getChannelServer().getMesoRate();
