@@ -109,20 +109,12 @@ public class TacosMap extends TacosMapData {
     protected long lastSpawnTime = 0;
     protected boolean isSpawns = true;
     protected int maxRegularSpawn = 0;
-    protected int fixedMob;
-    protected String onUserEnter;
-    protected String onFirstUserEnter;
-    protected boolean everlast = false;
     protected MapleNodes nodes;
     protected Map<String, Integer> environment = new LinkedHashMap<>();
     protected boolean squadTimer = false;
     protected String squad = "";
     protected ScheduledFuture<?> squadSchedule;
     protected MapleMapEffect mapEffect;
-    private long lastHurtTime = 0;
-    private int consumeItemCoolTime = 0;
-    private boolean personalShop;
-    private boolean soaring = false;
     // no idea.
     protected Lock mutex = new ReentrantLock();
     protected ReentrantReadWriteLock charactersLock = new ReentrantReadWriteLock();
@@ -157,26 +149,6 @@ public class TacosMap extends TacosMapData {
 
     public List<Spawns> getMonsterSpawn() {
         return this.monsterSpawn;
-    }
-
-    public void setFixedMob(int fm) {
-        this.fixedMob = fm;
-    }
-
-    public void setUserEnter(String onUserEnter) {
-        this.onUserEnter = onUserEnter;
-    }
-
-    public void setFirstUserEnter(String onFirstUserEnter) {
-        this.onFirstUserEnter = onFirstUserEnter;
-    }
-
-    public void setEverlast(boolean everlast) {
-        this.everlast = everlast;
-    }
-
-    public boolean getEverlast() {
-        return this.everlast;
     }
 
     public void setNodes(MapleNodes mn) {
@@ -224,45 +196,6 @@ public class TacosMap extends TacosMapData {
             this.squadSchedule.cancel(false);
             this.squadSchedule = null;
         }
-    }
-
-    @Override
-    public void setHPDec(int delta) {
-        super.setHPDec(delta);
-        if (0 < delta || mapid == 749040100) {
-            this.lastHurtTime = System.currentTimeMillis();
-        }
-    }
-
-    public boolean canHurt() {
-        if (this.lastHurtTime == 0) {
-            return false;
-        }
-        if (this.lastHurtTime + decHPInterval < System.currentTimeMillis()) {
-            this.lastHurtTime = System.currentTimeMillis();
-            return true;
-        }
-        return false;
-    }
-
-    public int getConsumeItemCoolTime() {
-        return consumeItemCoolTime;
-    }
-
-    public void setConsumeItemCoolTime(int ciit) {
-        this.consumeItemCoolTime = ciit;
-    }
-
-    public boolean allowPersonalShop() {
-        return this.personalShop;
-    }
-
-    public void setPersonalShop(boolean personalShop) {
-        this.personalShop = personalShop;
-    }
-
-    public void setSoaring(boolean soaring) {
-        this.soaring = soaring;
     }
 
     // object
@@ -410,13 +343,13 @@ public class TacosMap extends TacosMapData {
 
     public boolean sendInitialization(MapleCharacter chr) {
         // user enter script.
-        if (!onFirstUserEnter.equals("")) {
+        if (!getFirstUserEnter().equals("")) {
             if (getCharactersSize() == 1) {
-                MapScriptMethods.startScript_FirstUser(chr.getClient(), onFirstUserEnter);
+                MapScriptMethods.startScript_FirstUser(chr.getClient(), getFirstUserEnter());
             }
         }
-        if (!onUserEnter.equals("")) {
-            MapScriptMethods.startScript_User(chr.getClient(), onUserEnter);
+        if (!getUserEnter().equals("")) {
+            MapScriptMethods.startScript_User(chr.getClient(), getUserEnter());
         }
         // station clock.
         if (hasClock()) {
@@ -424,14 +357,14 @@ public class TacosMap extends TacosMapData {
             Calendar cal = Calendar.getInstance();
             chr.SendPacket((ResCField.Clock(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND))));
         }
-        if (TacosConstants.is_coconut(mapid)) {
+        if (TacosConstants.is_coconut(map_id)) {
             chr.setCoconutTeam(getCharactersSize() % 2);
         }
-        if (TacosConstants.is_coconut(mapid) || TacosConstants.is_bath(mapid)) {
+        if (TacosConstants.is_coconut(map_id) || TacosConstants.is_bath(map_id)) {
             chr.SendPacket(ResCField.FieldSpecificData(chr));
             return true;
         }
-        if (TacosConstants.is_aran_tutorial(mapid)) {
+        if (TacosConstants.is_aran_tutorial(map_id)) {
             chr.setForcedStatAran();
             chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
             return true;
@@ -458,7 +391,7 @@ public class TacosMap extends TacosMapData {
         TacosWorld world = chr.getWorld();
         int exit_timer = 5 * 60;
 
-        switch (mapid) {
+        switch (map_id) {
             case TacosConstants.MAP_ID_ZAKUM: {
                 if (boss_id == TacosConstants.MOB_ID_ZAKUM) {
                     broadcastMessage(ResCField.ZakumTimer(true, 5));
@@ -538,10 +471,10 @@ public class TacosMap extends TacosMapData {
         sendInitialization(chr);
         updateParty(chr);
         sendMapEffect(chr);
-        if (0 < timeLimit) {
-            chr.DebugMsg("timeLimit = " + timeLimit);
+        if (0 < getTimeLimit()) {
+            chr.DebugMsg("timeLimit = " + getTimeLimit());
             if (getForcedReturnMap() != null) {
-                chr.startMapTimeLimitTask(timeLimit, getForcedReturnMap());
+                chr.startMapTimeLimitTask(getTimeLimit(), getForcedReturnMap());
             }
         }
         sendExpedition(chr, null);
@@ -1253,7 +1186,7 @@ public class TacosMap extends TacosMapData {
         addMapObject(mdrop);
         spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, droppos, dropper.getPosition()));
 
-        if (!this.everlast) {
+        if (!getEverlast()) {
             mdrop.registerExpire(120000);
             if (droptype == 0 || droptype == 1) {
                 mdrop.registerFFA(30000);
@@ -1516,7 +1449,7 @@ public class TacosMap extends TacosMapData {
 
     public MapleSquad getSquadByMap() {
         String zz = null;
-        switch (mapid) {
+        switch (map_id) {
             case 105100400:
             case 105100300:
                 zz = "BossBalrog";
@@ -1570,7 +1503,7 @@ public class TacosMap extends TacosMapData {
 
     public OdinEventManager getEMByMap() {
         String em = null;
-        switch (mapid) {
+        switch (map_id) {
             case 105100400:
                 em = "BossBalrog_EASY";
                 break;
@@ -1672,8 +1605,8 @@ public class TacosMap extends TacosMapData {
         } else if (maxRegularSpawn > spawnSize) {
             maxRegularSpawn = spawnSize - (spawnSize / 15);
         }
-        if (fixedMob > 0) {
-            maxRegularSpawn = fixedMob;
+        if (getFixedMob() > 0) {
+            maxRegularSpawn = getFixedMob();
         }
         Collection<Spawns> newSpawn = new LinkedList<Spawns>();
         Collection<Spawns> newBossSpawn = new LinkedList<Spawns>();
@@ -1693,7 +1626,7 @@ public class TacosMap extends TacosMapData {
 
         if (first && spawnSize > 0) {
             lastSpawnTime = 0; // 即沸き
-            if (GameConstants.isForceRespawn(mapid)) {
+            if (GameConstants.isForceRespawn(map_id)) {
                 createMobInterval = 15000;
             }
         }
@@ -1724,7 +1657,7 @@ public class TacosMap extends TacosMapData {
                 Collections.shuffle(randomSpawn);
 
                 for (Spawns spawnPoint : randomSpawn) {
-                    if (spawnPoint.shouldSpawn() || GameConstants.isForceRespawn(mapid)) {
+                    if (spawnPoint.shouldSpawn() || GameConstants.isForceRespawn(map_id)) {
                         spawnPoint.spawnMonster(this);
                         spawned++;
                     }
@@ -1736,18 +1669,13 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    // unused
-    public boolean canSoar() {
-        return this.soaring;
-    }
-
     // compatbility
     public MapleMap getReturnMap() {
         return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(returnMapId);
     }
 
     public MapleMap getForcedReturnMap() {
-        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(forcedReturnMap);
+        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(getForcedReturnId());
     }
 
     public long getCreateMobInterval() {

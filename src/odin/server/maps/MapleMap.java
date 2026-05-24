@@ -378,7 +378,7 @@ public final class MapleMap extends TacosMap {
         addMapObject(drop);
         spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
         broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, dropper.getPosition())); // enable pick up for new players
-        if (!everlast) {
+        if (!getEverlast()) {
             drop.registerExpire(120000);
             activateItemReactors(drop, owner.getClient());
         }

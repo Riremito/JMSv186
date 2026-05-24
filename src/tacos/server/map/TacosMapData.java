@@ -23,9 +23,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import odin.provider.IMapleData;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
 import tacos.constants.TacosConstants;
+import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -33,25 +35,15 @@ import tacos.constants.TacosConstants;
  */
 public class TacosMapData {
 
-    protected int mapid;
+    protected int map_id;
     protected int returnMapId;
     private MapleFootholdTree footholds = null;
-    protected int fieldLimit;
-    protected int timeLimit;
-    protected int decHPInterval = 10000;
-    protected int forcedReturnMap = 999999999;
-    private float recoveryRate;
-    private int protectItem = 0;
-    private int decHP = 0;
-    private int lvForceMove = 0;
     private Map<Integer, TacosPortal> portals = new HashMap<>();
-    private boolean town;
-    private boolean clock;
     private String mapName, streetName;
     protected TacosMapSplit map_split = new TacosMapSplit();
 
     public TacosMapData(int mapid, int returnMapId) {
-        this.mapid = mapid;
+        this.map_id = mapid;
         this.returnMapId = returnMapId;
         if (this.returnMapId == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
             this.returnMapId = mapid;
@@ -59,7 +51,7 @@ public class TacosMapData {
     }
 
     public int getId() {
-        return this.mapid;
+        return this.map_id;
     }
 
     public int getReturnMapId() {
@@ -145,78 +137,6 @@ public class TacosMapData {
         return closest;
     }
 
-    public int getFieldLimit() {
-        return this.fieldLimit;
-    }
-
-    public void setFieldLimit(int fieldLimit) {
-        this.fieldLimit = fieldLimit;
-    }
-
-    public void setTimeLimit(int timeLimit) {
-        this.timeLimit = timeLimit;
-    }
-
-    public int getHPDecInterval() {
-        return this.decHPInterval;
-    }
-
-    public void setHPDecInterval(int delta) {
-        this.decHPInterval = delta;
-    }
-
-    public int getForcedReturnId() {
-        return this.forcedReturnMap;
-    }
-
-    public void setForcedReturnMap(int mapid) {
-        this.forcedReturnMap = mapid;
-    }
-
-    public float getRecoveryRate() {
-        return this.recoveryRate;
-    }
-
-    public void setRecoveryRate(float recoveryRate) {
-        this.recoveryRate = recoveryRate;
-    }
-
-    public int getHPDecProtect() {
-        return this.protectItem;
-    }
-
-    public void setHPDecProtect(int delta) {
-        this.protectItem = delta;
-    }
-
-    public int getHPDec() {
-        return this.decHP;
-    }
-
-    public void setHPDec(int delta) {
-        this.decHP = delta;
-    }
-
-    public final void setForceMove(int fm) {
-        this.lvForceMove = fm;
-    }
-
-    public boolean isTown() {
-        return this.town;
-    }
-
-    public void setTown(boolean town) {
-        this.town = town;
-    }
-
-    public boolean hasClock() {
-        return this.clock;
-    }
-
-    public void setClock(boolean hasClock) {
-        this.clock = hasClock;
-    }
-
     public String getMapName() {
         return this.mapName;
     }
@@ -233,4 +153,109 @@ public class TacosMapData {
         this.streetName = streetName;
     }
 
+    // load map data from wz.
+    private boolean clock;
+    private boolean everlast;
+    private boolean town;
+    private boolean soaring;
+    private boolean personalShop;
+    private int lvForceMove;
+    private int decHP = 0;
+    private int decHPInterval;
+    private int protectItem;
+    private int forcedReturnMap;
+    private int timeLimit;
+    private int fieldLimit;
+    private String onFirstUserEnter;
+    private String onUserEnter;
+    private float recoveryRate;
+    private int fixedMob;
+    private int consumeItemCoolTime;
+
+    public boolean loadMapData(IMapleData mapData) {
+        this.clock = mapData.getChildByPath("clock") != null;
+        this.everlast = TacosWzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0;
+        this.town = TacosWzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0;
+        this.soaring = TacosWzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0;
+        this.personalShop = TacosWzDataTool.getInt(mapData.getChildByPath("info/personalShop"), 0) > 0;
+        this.lvForceMove = TacosWzDataTool.getInt(mapData.getChildByPath("info/lvForceMove"), 0);
+        this.decHP = (int) TacosWzDataTool.getLong(mapData.getChildByPath("info/decHP"), 0L);
+        this.decHPInterval = TacosWzDataTool.getInt(mapData.getChildByPath("info/decHPInterval"), 10000);
+        this.protectItem = TacosWzDataTool.getInt(mapData.getChildByPath("info/protectItem"), 0);
+        this.forcedReturnMap = TacosWzDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID);
+        this.timeLimit = TacosWzDataTool.getInt(mapData.getChildByPath("info/timeLimit"), -1);
+        this.fieldLimit = TacosWzDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0);
+        this.onFirstUserEnter = TacosWzDataTool.getString(mapData.getChildByPath("info/onFirstUserEnter"), "");
+        this.onUserEnter = TacosWzDataTool.getString(mapData.getChildByPath("info/onUserEnter"), "");
+        this.recoveryRate = TacosWzDataTool.getFloat(mapData.getChildByPath("info/recovery"), 1.0f);
+        this.fixedMob = TacosWzDataTool.getInt(mapData.getChildByPath("info/fixedMobCapacity"), 0);
+        this.consumeItemCoolTime = TacosWzDataTool.getInt(mapData.getChildByPath("info/consumeItemCoolTime"), 0);
+        return true;
+    }
+
+    public boolean hasClock() {
+        return this.clock;
+    }
+
+    public boolean getEverlast() {
+        return this.everlast;
+    }
+
+    public boolean isTown() {
+        return this.town;
+    }
+
+    public boolean canSoar() {
+        return this.soaring;
+    }
+
+    public boolean allowPersonalShop() {
+        return this.personalShop;
+    }
+
+    public int getHPDec() {
+        return this.decHP;
+    }
+
+    public int getHPDecInterval() {
+        return this.decHPInterval;
+    }
+
+    public int getHPDecProtect() {
+        return this.protectItem;
+    }
+
+    public int getForcedReturnId() {
+        return this.forcedReturnMap;
+    }
+
+    public int getTimeLimit() {
+        return this.timeLimit;
+    }
+
+    public int getFieldLimit() {
+        return this.fieldLimit;
+    }
+
+    public String getFirstUserEnter() {
+        return this.onFirstUserEnter;
+    }
+
+    public String getUserEnter() {
+        return this.onUserEnter;
+    }
+
+    public float getRecoveryRate() {
+        return this.recoveryRate;
+    }
+
+    public int getFixedMob() {
+        return this.fixedMob;
+    }
+
+    public int getConsumeItemCoolTime() {
+        return this.consumeItemCoolTime;
+    }
+
+    // TODO : CAN WE FIX IT?
 }
