@@ -60,7 +60,6 @@ import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
-import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.server.shops.HiredMerchant;
@@ -68,7 +67,6 @@ import tacos.client.TacosCharacter;
 import tacos.client.TacosDragon;
 import tacos.client.TacosSkillPet;
 import tacos.constants.TacosConstants;
-import tacos.odin.OdinPair;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -107,7 +105,6 @@ public class TacosMap extends TacosMapData {
     protected long lastSpawnTime = 0;
     protected boolean isSpawns = true;
     protected int maxRegularSpawn = 0;
-    protected MapleNodes nodes;
     protected Map<String, Integer> environment = new LinkedHashMap<>();
     protected boolean squadTimer = false;
     protected String squad = "";
@@ -142,30 +139,6 @@ public class TacosMap extends TacosMapData {
 
     public List<Spawns> getMonsterSpawn() {
         return this.monsterSpawn;
-    }
-
-    public void setNodes(MapleNodes mn) {
-        this.nodes = mn;
-    }
-
-    public List<MapleNodes.MaplePlatform> getPlatforms() {
-        return this.nodes.getPlatforms();
-    }
-
-    public Collection<MapleNodes.MapleNodeInfo> getNodes() {
-        return this.nodes.getNodes();
-    }
-
-    public MapleNodes.MapleNodeInfo getNode(int index) {
-        return this.nodes.getNode(index);
-    }
-
-    public List<OdinPair<Integer, Integer>> getMobsToSpawn() {
-        return this.nodes.getMobsToSpawn();
-    }
-
-    public List<Integer> getSkillIds() {
-        return this.nodes.getSkillIds();
     }
 
     public Map<String, Integer> getEnvironment() {
@@ -455,7 +428,7 @@ public class TacosMap extends TacosMapData {
 
         // no split.
         sendChangeBGM(chr);
-        if (!getPlatforms().isEmpty()) {
+        if (!getNodeInfo().getPlatforms().isEmpty()) {
             chr.SendPacket(ResCField.FootHoldInfo(this));
         }
         if (!environment.isEmpty()) {
@@ -1601,8 +1574,8 @@ public class TacosMap extends TacosMapData {
         if (getFixedMob() > 0) {
             maxRegularSpawn = getFixedMob();
         }
-        Collection<Spawns> newSpawn = new LinkedList<Spawns>();
-        Collection<Spawns> newBossSpawn = new LinkedList<Spawns>();
+        Collection<Spawns> newSpawn = new LinkedList<>();
+        Collection<Spawns> newBossSpawn = new LinkedList<>();
         for (final Spawns s : monsterSpawn) {
             if (s.getCarnivalTeam() >= 2) {
                 continue; // Remove carnival spawned mobs

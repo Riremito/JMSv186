@@ -72,7 +72,7 @@ public class ReqCField_MonsterCarnival {
         final int num = cp.Decode4();
 
         if (tab == 0) {
-            final List<OdinPair<Integer, Integer>> mobs = chr.getMap().getMobsToSpawn();
+            final List<OdinPair<Integer, Integer>> mobs = chr.getMap().getNodeInfo().getMobsToSpawn();
             if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getRight()) {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
                 chr.sendStatChanged(true);
@@ -93,7 +93,7 @@ public class ReqCField_MonsterCarnival {
             }
 
         } else if (tab == 1) { //debuff
-            final List<Integer> skillid = chr.getMap().getSkillIds();
+            final List<Integer> skillid = chr.getMap().getNodeInfo().getSkillIds();
             if (num >= skillid.size()) {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
                 chr.sendStatChanged(true);

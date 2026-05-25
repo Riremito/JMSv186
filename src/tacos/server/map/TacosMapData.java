@@ -19,6 +19,8 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,11 +35,13 @@ import odin.server.life.MapleNPC;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
 import odin.server.maps.MapleMap;
+import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.data.MapWz;
 import tacos.wz.data.ReactorWz;
 import tacos.wz.ids.DWI_Block;
 
@@ -63,6 +67,40 @@ public class TacosMapData {
             return fallback;
         }
         return ret;
+    }
+
+    // load wz data.
+    private int link_id;
+
+    public boolean loadData() {
+        IMapleData mapData = MapWz.get().getImg(this.map_id);
+        if (mapData == null) {
+            DebugLogger.ErrorLog("loadData : invalid map id = " + this.map_id);
+            return false;
+        }
+        this.link_id = TacosWzDataTool.getInt(mapData.getChildByPath("info/link"), -1);
+
+        if (this.link_id != -1) {
+            mapData = MapWz.get().getImg(this.link_id);
+            if (mapData == null) {
+                DebugLogger.ErrorLog("loadData : invalid link id = " + this.link_id);
+                return false;
+            }
+        }
+
+        // load info.
+        loadInfo(mapData);
+        // load fh.
+        loadFootHolds(mapData);
+        // load portal.
+        loadPortals(mapData);
+        // load life.
+        loadLife(mapData);
+        // load reactor.
+        loadReactor(mapData);
+        // load nodeInfo.
+        loadNodeInfo(mapData);
+        return true;
     }
 
     // portal node.
@@ -412,6 +450,111 @@ public class TacosMapData {
         }
 
         return true;
+    }
+
+    // nodes nodeInfo.
+    private MapleNodes nodeInfo;
+
+    public boolean loadNodeInfo(IMapleData mapData) {
+        this.nodeInfo = new MapleNodes(this.map_id);
+        if (mapData.getChildByPath("nodeInfo") != null) {
+            for (IMapleData node : mapData.getChildByPath("nodeInfo")) {
+                try {
+                    if (node.getName().equals("start")) {
+                        nodeInfo.setNodeStart(TacosWzDataTool.getInt(node, 0));
+                        continue;
+                    } else if (node.getName().equals("end")) {
+                        nodeInfo.setNodeEnd(TacosWzDataTool.getInt(node, 0));
+                        continue;
+                    }
+                    List<Integer> edges = new ArrayList<>();
+                    if (node.getChildByPath("edge") != null) {
+                        for (IMapleData edge : node.getChildByPath("edge")) {
+                            edges.add(TacosWzDataTool.getInt(edge, -1));
+                        }
+                    }
+                    final MapleNodes.MapleNodeInfo mni = new MapleNodes.MapleNodeInfo(
+                            Integer.parseInt(node.getName()),
+                            TacosWzDataTool.getIntPath("key", node, 0),
+                            TacosWzDataTool.getIntPath("x", node, 0),
+                            TacosWzDataTool.getIntPath("y", node, 0),
+                            TacosWzDataTool.getIntPath("attr", node, 0), edges);
+                    nodeInfo.addNode(mni);
+                } catch (NumberFormatException e) {
+                } //start, end, edgeInfo = we dont need it
+            }
+            nodeInfo.sortNodes();
+        }
+        for (int i = 1; i <= 7; i++) {
+            if (mapData.getChildByPath(String.valueOf(i)) != null && mapData.getChildByPath(i + "/obj") != null) {
+                for (IMapleData node : mapData.getChildByPath(i + "/obj")) {
+                    int sn_count = TacosWzDataTool.getIntPath("SN_count", node, 0);
+                    String name = TacosWzDataTool.getStringPath("name", node, "");
+                    int speed = TacosWzDataTool.getIntPath("speed", node, 0);
+                    if (sn_count <= 0 || speed <= 0 || name.equals("")) {
+                        continue;
+                    }
+                    final List<Integer> SN = new ArrayList<>();
+                    for (int x = 0; x < sn_count; x++) {
+                        SN.add(TacosWzDataTool.getIntPath("SN" + x, node, 0));
+                    }
+                    final MapleNodes.MaplePlatform mni = new MapleNodes.MaplePlatform(
+                            name, TacosWzDataTool.getIntPath("start", node, 2), speed,
+                            TacosWzDataTool.getIntPath("x1", node, 0),
+                            TacosWzDataTool.getIntPath("y1", node, 0),
+                            TacosWzDataTool.getIntPath("x2", node, 0),
+                            TacosWzDataTool.getIntPath("y2", node, 0),
+                            TacosWzDataTool.getIntPath("r", node, 0), SN);
+                    nodeInfo.addPlatform(mni);
+                }
+            }
+        }
+        // load areas (EG PQ platforms)
+        if (mapData.getChildByPath("area") != null) {
+            int x1, y1, x2, y2;
+            Rectangle mapArea;
+            for (IMapleData area : mapData.getChildByPath("area")) {
+                x1 = TacosWzDataTool.getInt(area.getChildByPath("x1"));
+                y1 = TacosWzDataTool.getInt(area.getChildByPath("y1"));
+                x2 = TacosWzDataTool.getInt(area.getChildByPath("x2"));
+                y2 = TacosWzDataTool.getInt(area.getChildByPath("y2"));
+                mapArea = new Rectangle(x1, y1, (x2 - x1), (y2 - y1));
+                nodeInfo.addMapleArea(mapArea);
+            }
+        }
+        if (mapData.getChildByPath("monsterCarnival") != null) {
+            final IMapleData mc = mapData.getChildByPath("monsterCarnival");
+            if (mc.getChildByPath("mobGenPos") != null) {
+                for (IMapleData area : mc.getChildByPath("mobGenPos")) {
+                    nodeInfo.addMonsterPoint(TacosWzDataTool.getInt(area.getChildByPath("x")),
+                            TacosWzDataTool.getInt(area.getChildByPath("y")),
+                            TacosWzDataTool.getInt(area.getChildByPath("fh")),
+                            TacosWzDataTool.getInt(area.getChildByPath("cy")),
+                            TacosWzDataTool.getIntPath("team", area, -1));
+                }
+            }
+            if (mc.getChildByPath("mob") != null) {
+                for (IMapleData area : mc.getChildByPath("mob")) {
+                    nodeInfo.addMobSpawn(TacosWzDataTool.getInt(area.getChildByPath("id")), TacosWzDataTool.getInt(area.getChildByPath("spendCP")));
+                }
+            }
+            if (mc.getChildByPath("guardianGenPos") != null) {
+                for (IMapleData area : mc.getChildByPath("guardianGenPos")) {
+                    nodeInfo.addGuardianSpawn(new Point(TacosWzDataTool.getInt(area.getChildByPath("x")), TacosWzDataTool.getInt(area.getChildByPath("y"))), TacosWzDataTool.getIntPath("team", area, -1));
+                }
+            }
+            if (mc.getChildByPath("skill") != null) {
+                for (IMapleData area : mc.getChildByPath("skill")) {
+                    nodeInfo.addSkillId(TacosWzDataTool.getInt(area));
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public MapleNodes getNodeInfo() {
+        return this.nodeInfo;
     }
 
     // TODO : CAN WE FIX IT?

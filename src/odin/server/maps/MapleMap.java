@@ -539,7 +539,7 @@ public final class MapleMap extends TacosMap {
 
     public final boolean makeCarnivalSpawn(final int team, final MapleMonster newMons, final int num) {
         MonsterPoint ret = null;
-        for (MonsterPoint mp : nodes.getMonsterPoints()) {
+        for (MonsterPoint mp : getNodeInfo().getMonsterPoints()) {
             if (mp.team == team || mp.team == -1) {
                 final Point newpos = calcPointBelow(new Point(mp.x, mp.y));
                 newpos.y -= 1;
@@ -577,7 +577,7 @@ public final class MapleMap extends TacosMap {
         }
         Point guardz = null;
         final List<MapleReactor> react = getAllReactors();
-        for (OdinPair<Point, Integer> guard : nodes.getGuardians()) {
+        for (OdinPair<Point, Integer> guard : getNodeInfo().getGuardians()) {
             if (guard.getRight() == team || guard.getRight() == -1) {
                 boolean found = false;
                 for (MapleReactor r : react) {

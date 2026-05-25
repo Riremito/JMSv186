@@ -113,9 +113,9 @@ public class MobHandler {
     }
 
     public static final void MobNode(MapleCharacter chr, MapleMonster mob_from, int newNode) {
-        final int nodeSize = chr.getMap().getNodes().size();
+        final int nodeSize = chr.getMap().getNodeInfo().getNodes().size();
         if (mob_from != null && nodeSize > 0 && nodeSize >= newNode) {
-            final MapleNodeInfo mni = chr.getMap().getNode(newNode);
+            final MapleNodeInfo mni = chr.getMap().getNodeInfo().getNode(newNode);
             if (mni == null) {
                 return;
             }

@@ -338,10 +338,10 @@ public class ResCMobPool {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobRequestResultEscortInfo);
 
         sp.Encode4(monster.getObjectId()); //?
-        sp.Encode4(map.getNodes().size());
+        sp.Encode4(map.getNodeInfo().getNodes().size());
         sp.Encode4(monster.getPosition().x);
         sp.Encode4(monster.getPosition().y);
-        for (MapleNodes.MapleNodeInfo mni : map.getNodes()) {
+        for (MapleNodes.MapleNodeInfo mni : map.getNodeInfo().getNodes()) {
             sp.Encode4(mni.x);
             sp.Encode4(mni.y);
             sp.Encode4(mni.attr);
@@ -353,6 +353,7 @@ public class ResCMobPool {
 
         sp.EncodeZeroBytes(6);
         monster.setNodePacket(sp.get());
+
         return monster.getNodePacket();
     }
 

@@ -305,8 +305,8 @@ public class ResCField {
     public static final MaplePacket FootHoldInfo(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FootHoldInfo);
 
-        sp.Encode4(map.getPlatforms().size());
-        for (MapleNodes.MaplePlatform mp : map.getPlatforms()) {
+        sp.Encode4(map.getNodeInfo().getPlatforms().size());
+        for (MapleNodes.MaplePlatform mp : map.getNodeInfo().getPlatforms()) {
             sp.EncodeStr(mp.name);
             sp.Encode4(mp.start);
             sp.Encode4(mp.SN.size());
@@ -322,6 +322,7 @@ public class ResCField {
             sp.Encode4(mp.y1);
             sp.Encode2(mp.r);
         }
+
         return sp.get();
     }
 
