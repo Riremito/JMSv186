@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.constants;
 
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MapleWeaponType;
 import odin.client.status.MonsterStatus;
 import java.util.Calendar;
 import tacos.config.Region;
@@ -286,48 +285,6 @@ public class GameConstants {
         return MapleInventoryType.getByType(type);
     }
 
-    public static MapleWeaponType getWeaponType(final int itemId) {
-        int cat = itemId / 10000;
-        cat = cat % 100;
-        switch (cat) {
-            case 30:
-                return MapleWeaponType.SWORD1H;
-            case 31:
-                return MapleWeaponType.AXE1H;
-            case 32:
-                return MapleWeaponType.BLUNT1H;
-            case 33:
-                return MapleWeaponType.DAGGER;
-            case 34:
-                return MapleWeaponType.KATARA;
-            case 37:
-                return MapleWeaponType.WAND;
-            case 38:
-                return MapleWeaponType.STAFF;
-            case 40:
-                return MapleWeaponType.SWORD2H;
-            case 41:
-                return MapleWeaponType.AXE2H;
-            case 42:
-                return MapleWeaponType.BLUNT2H;
-            case 43:
-                return MapleWeaponType.SPEAR;
-            case 44:
-                return MapleWeaponType.POLE_ARM;
-            case 45:
-                return MapleWeaponType.BOW;
-            case 46:
-                return MapleWeaponType.CROSSBOW;
-            case 47:
-                return MapleWeaponType.CLAW;
-            case 48:
-                return MapleWeaponType.KNUCKLE;
-            case 49:
-                return MapleWeaponType.GUN;
-        }
-        return MapleWeaponType.NOT_A_WEAPON;
-    }
-
     public static boolean isEquip(final int itemId) {
         return itemId / 1000000 == 1;
     }
@@ -368,22 +325,27 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean isTwoHanded(final int itemId) {
-        switch (getWeaponType(itemId)) {
-            case AXE2H:
-            case GUN:
-            case KNUCKLE:
-            case BLUNT2H:
-            case BOW:
-            case CLAW:
-            case CROSSBOW:
-            case POLE_ARM:
-            case SPEAR:
-            case SWORD2H:
+    public static boolean isTwoHanded(int item_id) {
+        int cat = (item_id / 10000) % 100;
+
+        switch (cat) {
+            case 41:
+            case 49:
+            case 48:
+            case 42:
+            case 45:
+            case 47:
+            case 46:
+            case 44:
+            case 43:
+            case 40: {
                 return true;
-            default:
-                return false;
+            }
+            default: {
+                break;
+            }
         }
+        return false;
     }
 
     public static boolean isUse(final int id) {
