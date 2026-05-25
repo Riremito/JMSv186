@@ -22,9 +22,7 @@ package odin.server.maps;
 
 import tacos.config.DeveloperMode;
 import tacos.wz.data.MapWz;
-import tacos.wz.data.ReactorWz;
 import tacos.wz.data.StringWz;
-import tacos.wz.ids.DWI_Block;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -32,10 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
-import odin.server.life.AbstractLoadedMapleLife;
-import odin.server.life.MapleLifeFactory;
-import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapleNodes.MapleNodeInfo;
 import odin.server.maps.MapleNodes.MaplePlatform;
 import odin.tools.StringUtil;
@@ -80,39 +74,8 @@ public class MapleMapFactory {
         map.loadPortals(mapData);
         // load fh.
         map.loadFootHolds(mapData);
-
-        int bossid = -1;
-        String msg = null;
-        if (mapData.getChildByPath("info/timeMob") != null) {
-            bossid = TacosWzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
-            msg = TacosWzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
-        }
-
-        // load life data (npc, monsters)
-        String type;
-        AbstractLoadedMapleLife myLife;
-
-        for (IMapleData life : mapData.getChildByPath("life")) {
-            type = TacosWzDataTool.getString(life.getChildByPath("type"));
-            myLife = loadLife(life, TacosWzDataTool.getString(life.getChildByPath("id")), type);
-            if (myLife instanceof MapleMonster) {
-                final MapleMonster mob = (MapleMonster) myLife;
-                // hide mob
-                if (!DWI_Block.checkMob(myLife.getId())) {
-                    map.addMonsterSpawn(mob,
-                            TacosWzDataTool.getIntPath("mobTime", life, 0),
-                            (byte) TacosWzDataTool.getIntPath("team", life, -1),
-                            mob.getId() == bossid ? msg : null);
-                }
-
-            } else if (myLife != null) {
-                // hide npc
-                if (!DWI_Block.checkNpc(myLife.getId())) {
-                    map.addMapObject(myLife);
-                }
-            }
-        }
-
+        // load life.
+        map.loadLife(mapData);
         // add custom npc.
         CustomMap.addNPCtoMap(map);
 
@@ -122,15 +85,7 @@ public class MapleMapFactory {
         map.setNodes(loadNodes(map_id, mapData));
 
         //load reactor data
-        String id;
-        if (mapData.getChildByPath("reactor") != null) {
-            for (IMapleData reactor : mapData.getChildByPath("reactor")) {
-                id = TacosWzDataTool.getString(reactor.getChildByPath("id"));
-                if (id != null) {
-                    map.spawnReactor(loadReactor(reactor, id, (byte) TacosWzDataTool.getInt(reactor.getChildByPath("f"), 0)));
-                }
-            }
-        }
+        map.loadReactor(mapData);
 
         try {
             map.setMapName(TacosWzDataTool.getStringPath("mapName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
@@ -140,45 +95,9 @@ public class MapleMapFactory {
             map.setStreetName("");
         }
         // load info.
-        map.loadMapData(mapData);
+        map.loadInfo(mapData);
         maps.put(omapid, map);
         return map;
-    }
-
-    private AbstractLoadedMapleLife loadLife(IMapleData life, String id, String type) {
-        AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(Integer.parseInt(id), type);
-        if (myLife == null) {
-            return null;
-        }
-        myLife.setCy(TacosWzDataTool.getInt(life.getChildByPath("cy")));
-        IMapleData dF = life.getChildByPath("f");
-        if (dF != null) {
-            myLife.setF(TacosWzDataTool.getInt(dF));
-        }
-        myLife.setFh(TacosWzDataTool.getInt(life.getChildByPath("fh")));
-        myLife.setRx0(TacosWzDataTool.getInt(life.getChildByPath("rx0")));
-        myLife.setRx1(TacosWzDataTool.getInt(life.getChildByPath("rx1")));
-        myLife.setPosition(new Point(TacosWzDataTool.getInt(life.getChildByPath("x")), TacosWzDataTool.getInt(life.getChildByPath("y"))));
-
-        if (TacosWzDataTool.getIntPath("hide", life, 0) == 1 && myLife instanceof MapleNPC) {
-            myLife.setHide(true);
-//		} else if (hide > 1) {
-//			System.err.println("Hide > 1 ("+ hide +")");
-        }
-        return myLife;
-    }
-
-    private MapleReactor loadReactor(final IMapleData reactor, final String id, final byte FacingDirection) {
-        final MapleReactorStats stats = ReactorWz.get().getReactor(Integer.parseInt(id));
-        final MapleReactor myReactor = new MapleReactor(stats, Integer.parseInt(id));
-
-        stats.setFacingDirection(FacingDirection);
-        myReactor.setPosition(new Point(TacosWzDataTool.getInt(reactor.getChildByPath("x")), TacosWzDataTool.getInt(reactor.getChildByPath("y"))));
-        myReactor.setDelay(TacosWzDataTool.getInt(reactor.getChildByPath("reactorTime")) * 1000);
-        myReactor.setState((byte) 0);
-        myReactor.setName(TacosWzDataTool.getString(reactor.getChildByPath("name"), ""));
-
-        return myReactor;
     }
 
     public static String getMapName(int mapid) {

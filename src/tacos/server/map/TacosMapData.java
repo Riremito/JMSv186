@@ -26,10 +26,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import odin.provider.IMapleData;
+import odin.server.life.AbstractLoadedMapleLife;
+import odin.server.life.MapleLifeFactory;
+import odin.server.life.MapleMonster;
+import odin.server.life.MapleNPC;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
+import odin.server.maps.MapleMap;
+import odin.server.maps.MapleReactor;
+import odin.server.maps.MapleReactorStats;
 import tacos.constants.TacosConstants;
+import tacos.debug.DebugLogger;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.data.ReactorWz;
+import tacos.wz.ids.DWI_Block;
 
 /**
  *
@@ -80,6 +90,7 @@ public class TacosMapData {
     public void setStreetName(String streetName) {
         this.streetName = streetName;
     }
+
     // portal node.
     private Map<Integer, TacosPortal> portals = new HashMap<>();
 
@@ -234,7 +245,7 @@ public class TacosMapData {
     private int fixedMob;
     private int consumeItemCoolTime;
 
-    public boolean loadMapData(IMapleData mapData) {
+    public boolean loadInfo(IMapleData mapData) {
         this.clock = mapData.getChildByPath("clock") != null;
         this.everlast = TacosWzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0;
         this.town = TacosWzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0;
@@ -317,6 +328,88 @@ public class TacosMapData {
 
     public int getConsumeItemCoolTime() {
         return this.consumeItemCoolTime;
+    }
+
+    // life node.
+    public boolean loadLife(IMapleData mapData) {
+        int bossid = -1;
+        String msg = null;
+        if (mapData.getChildByPath("info/timeMob") != null) {
+            bossid = TacosWzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
+            msg = TacosWzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
+        }
+
+        for (IMapleData life : mapData.getChildByPath("life")) {
+            String type = TacosWzDataTool.getString(life.getChildByPath("type"));
+            int npc_id = TacosWzDataTool.getInt(life.getChildByPath("id"), -1);
+            if (npc_id == -1) {
+                DebugLogger.ErrorLog("loadLife : failed" + mapData.getParent().getName());
+                continue;
+            }
+            AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(npc_id, type);
+
+            if (myLife == null) {
+                DebugLogger.ErrorLog("loadLife : failed, " + npc_id);
+                continue;
+            }
+
+            myLife.setCy(TacosWzDataTool.getInt(life.getChildByPath("cy")));
+            IMapleData dF = life.getChildByPath("f");
+            if (dF != null) {
+                myLife.setF(TacosWzDataTool.getInt(dF));
+            }
+            myLife.setFh(TacosWzDataTool.getInt(life.getChildByPath("fh")));
+            myLife.setRx0(TacosWzDataTool.getInt(life.getChildByPath("rx0")));
+            myLife.setRx1(TacosWzDataTool.getInt(life.getChildByPath("rx1")));
+            myLife.setPosition(new Point(TacosWzDataTool.getInt(life.getChildByPath("x")), TacosWzDataTool.getInt(life.getChildByPath("y"))));
+
+            if (myLife instanceof MapleNPC) {
+                if (TacosWzDataTool.getIntPath("hide", life, 0) == 1) {
+                    myLife.setHide(true);
+                    DebugLogger.InfoLog("loadLife : hidden npc, " + npc_id);
+                }
+                if (DWI_Block.checkNpc(myLife.getId())) {
+                    DebugLogger.InfoLog("loadLife : blocked npc, " + npc_id);
+                    continue;
+                }
+                ((MapleMap) this).addMapObject(myLife);
+            }
+            if (myLife instanceof MapleMonster) {
+                MapleMonster mob = (MapleMonster) myLife;
+                if (DWI_Block.checkMob(myLife.getId())) {
+                    DebugLogger.InfoLog("loadLife : blocked mob, " + npc_id);
+                    continue;
+                }
+                ((MapleMap) this).addMonsterSpawn(mob, TacosWzDataTool.getIntPath("mobTime", life, 0), (byte) TacosWzDataTool.getIntPath("team", life, -1), mob.getId() == bossid ? msg : null);
+            }
+        }
+        return true;
+    }
+
+    // reactor node.
+    public boolean loadReactor(IMapleData mapData) {
+        for (IMapleData reactor : mapData.getChildByPath("reactor")) {
+            int reactor_id = TacosWzDataTool.getInt(reactor.getChildByPath("id"), -1);
+            if (reactor_id == -1) {
+                DebugLogger.ErrorLog("loadReactor : failed" + mapData.getParent().getName());
+                continue;
+            }
+            int FacingDirection = TacosWzDataTool.getInt(reactor.getChildByPath("f"), 0);
+
+            MapleReactorStats stats = ReactorWz.get().getReactor(reactor_id);
+            MapleReactor myReactor = new MapleReactor(stats, reactor_id);
+
+            stats.setFacingDirection((byte) FacingDirection);
+            myReactor.setPosition(new Point(TacosWzDataTool.getInt(reactor.getChildByPath("x")), TacosWzDataTool.getInt(reactor.getChildByPath("y"))));
+            myReactor.setDelay(TacosWzDataTool.getInt(reactor.getChildByPath("reactorTime")) * 1000);
+            myReactor.setState((byte) 0);
+            myReactor.setName(TacosWzDataTool.getString(reactor.getChildByPath("name"), ""));
+
+            myReactor.setMap(((MapleMap) this));
+            ((MapleMap) this).addMapObject(myReactor);
+        }
+
+        return true;
     }
 
     // TODO : CAN WE FIX IT?
