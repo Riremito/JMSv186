@@ -99,13 +99,11 @@ import tacos.unofficial.CustomMonsterBookDrop;
 public class TacosMap extends TacosMapData {
 
     protected int channel;
-    protected float monsterRate;
     protected Map<MapleMapObjectType, LinkedHashMap<Integer, MapleMapObject>> mapobjects;
     protected int runningOid = 100000;
     protected List<MapleCharacter> characters = new ArrayList<>();
     protected List<Spawns> monsterSpawn = new ArrayList<>();
     protected AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
-    protected int createMobInterval = 9000;
     protected long lastSpawnTime = 0;
     protected boolean isSpawns = true;
     protected int maxRegularSpawn = 0;
@@ -120,10 +118,9 @@ public class TacosMap extends TacosMapData {
     protected ReentrantReadWriteLock charactersLock = new ReentrantReadWriteLock();
     protected Map<MapleMapObjectType, ReentrantReadWriteLock> mapobjectlocks;
 
-    public TacosMap(int mapid, int channel, int returnMapId, float monsterRate) {
-        super(mapid, returnMapId);
+    public TacosMap(int mapid, int channel) {
+        super(mapid);
         this.channel = channel;
-        this.monsterRate = monsterRate;
 
         EnumMap<MapleMapObjectType, LinkedHashMap<Integer, MapleMapObject>> objsMap = new EnumMap<>(MapleMapObjectType.class);
         EnumMap<MapleMapObjectType, ReentrantReadWriteLock> objlockmap = new EnumMap<>(MapleMapObjectType.class);
@@ -137,10 +134,6 @@ public class TacosMap extends TacosMapData {
 
     public int getChannel() {
         return this.channel;
-    }
-
-    public void setCreateMobInterval(int createMobInterval) {
-        this.createMobInterval = createMobInterval;
     }
 
     public void setSpawns(final boolean fm) {
@@ -1599,7 +1592,7 @@ public class TacosMap extends TacosMapData {
 
     public void loadMonsterRate(boolean first) {
         final int spawnSize = monsterSpawn.size();
-        maxRegularSpawn = Math.round(spawnSize * monsterRate);
+        maxRegularSpawn = Math.round(spawnSize * getMonsterRate());
         if (maxRegularSpawn < 2) {
             maxRegularSpawn = 2;
         } else if (maxRegularSpawn > spawnSize) {
@@ -1626,9 +1619,6 @@ public class TacosMap extends TacosMapData {
 
         if (first && spawnSize > 0) {
             lastSpawnTime = 0; // 即沸き
-            if (GameConstants.isForceRespawn(map_id)) {
-                createMobInterval = 15000;
-            }
         }
     }
 
@@ -1657,7 +1647,7 @@ public class TacosMap extends TacosMapData {
                 Collections.shuffle(randomSpawn);
 
                 for (Spawns spawnPoint : randomSpawn) {
-                    if (spawnPoint.shouldSpawn() || GameConstants.isForceRespawn(map_id)) {
+                    if (spawnPoint.shouldSpawn()) {
                         spawnPoint.spawnMonster(this);
                         spawned++;
                     }
@@ -1671,15 +1661,11 @@ public class TacosMap extends TacosMapData {
 
     // compatbility
     public MapleMap getReturnMap() {
-        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(returnMapId);
+        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(getReturnMapId());
     }
 
     public MapleMap getForcedReturnMap() {
         return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(getForcedReturnId());
-    }
-
-    public long getCreateMobInterval() {
-        return this.createMobInterval;
     }
 
     public boolean updateSpawn() {

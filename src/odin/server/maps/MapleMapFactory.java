@@ -59,27 +59,24 @@ public class MapleMapFactory {
             mapData = MapWz.get().getImg(link_map_id);
         }
 
-        float monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
-        map = new MapleMap(map_id, channel, TacosWzDataTool.getIntPath("info/returnMap", mapData, 0), monsterRate);
-
-        // load portal.
-        map.loadPortals(mapData);
+        map = new MapleMap(map_id, channel);
+        // load info.
+        map.loadInfo(mapData);
         // load fh.
         map.loadFootHolds(mapData);
+        // load portal.
+        map.loadPortals(mapData);
         // load life.
         map.loadLife(mapData);
+        // load reactor.
+        map.loadReactor(mapData);
         // add custom npc.
         CustomMap.addNPCtoMap(map);
 
         MasterMonster.addAreaBossSpawn(map);
-        map.setCreateMobInterval(TacosWzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000));
         map.loadMonsterRate(true);
         map.setNodes(loadNodes(map_id, mapData));
 
-        //load reactor data
-        map.loadReactor(mapData);
-        // load info.
-        map.loadInfo(mapData);
         maps.put(map_id, map);
         return map;
     }

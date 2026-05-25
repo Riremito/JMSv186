@@ -58,8 +58,8 @@ import tacos.server.map.TacosMap;
 
 public final class MapleMap extends TacosMap {
 
-    public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
-        super(mapid, channel, returnMapId, monsterRate);
+    public MapleMap(int mapid, int channel) {
+        super(mapid, channel);
     }
 
     @Override

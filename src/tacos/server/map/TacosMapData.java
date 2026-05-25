@@ -48,22 +48,13 @@ import tacos.wz.ids.DWI_Block;
 public class TacosMapData {
 
     protected int map_id;
-    protected int returnMapId;
 
-    public TacosMapData(int mapid, int returnMapId) {
+    public TacosMapData(int mapid) {
         this.map_id = mapid;
-        this.returnMapId = returnMapId;
-        if (this.returnMapId == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
-            this.returnMapId = mapid;
-        }
     }
 
     public int getId() {
         return this.map_id;
-    }
-
-    public int getReturnMapId() {
-        return this.returnMapId;
     }
 
     public Point calcDropPos(Point initial, Point fallback) {
@@ -211,6 +202,9 @@ public class TacosMapData {
 
     // info node.
     private boolean clock;
+    private int returnMapId;
+    private int createMobInterval;
+    private float monsterRate;
     private boolean everlast;
     private boolean town;
     private boolean soaring;
@@ -230,6 +224,9 @@ public class TacosMapData {
 
     public boolean loadInfo(IMapleData mapData) {
         this.clock = mapData.getChildByPath("clock") != null;
+        this.returnMapId = TacosWzDataTool.getIntPath("info/returnMap", mapData, 0);
+        this.createMobInterval = TacosWzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000);
+        this.monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
         this.everlast = TacosWzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0;
         this.town = TacosWzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0;
         this.soaring = TacosWzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0;
@@ -246,11 +243,28 @@ public class TacosMapData {
         this.recoveryRate = TacosWzDataTool.getFloat(mapData.getChildByPath("info/recovery"), 1.0f);
         this.fixedMob = TacosWzDataTool.getInt(mapData.getChildByPath("info/fixedMobCapacity"), 0);
         this.consumeItemCoolTime = TacosWzDataTool.getInt(mapData.getChildByPath("info/consumeItemCoolTime"), 0);
+
+        if (this.returnMapId == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
+            this.returnMapId = this.map_id;
+        }
+
         return true;
     }
 
     public boolean hasClock() {
         return this.clock;
+    }
+
+    public int getReturnMapId() {
+        return this.returnMapId;
+    }
+
+    public long getCreateMobInterval() {
+        return this.createMobInterval;
+    }
+
+    public float getMonsterRate() {
+        return this.monsterRate;
     }
 
     public boolean getEverlast() {
@@ -371,7 +385,12 @@ public class TacosMapData {
 
     // reactor node.
     public boolean loadReactor(IMapleData mapData) {
-        for (IMapleData reactor : mapData.getChildByPath("reactor")) {
+        IMapleData reactors = mapData.getChildByPath("reactor");
+        if (reactors == null) {
+            return true;
+        }
+
+        for (IMapleData reactor : reactors) {
             int reactor_id = TacosWzDataTool.getInt(reactor.getChildByPath("id"), -1);
             if (reactor_id == -1) {
                 DebugLogger.ErrorLog("loadReactor : failed" + mapData.getParent().getName());

@@ -1497,15 +1497,6 @@ public class GameConstants {
         }
     }
 
-    public static boolean isForceRespawn(int mapid) {
-        switch (mapid) {
-            case 925100100: //crocs and stuff
-                return true;
-            default:
-                return mapid / 100000 == 9800 && (mapid % 10 == 1 || mapid % 1000 == 100);
-        }
-    }
-
     public static int getFishingTime(boolean vip, boolean gm) {
         return gm ? 100 : (vip ? 100 : 1000);
     }
