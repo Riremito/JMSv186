@@ -83,7 +83,7 @@ public class FamilyHandler {
                 } else if (victim.getTeleportName().length() > 0) {
                     c.getPlayer().dropMessage(1, "Another character has requested to summon this character. Please try again later.");
                 } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
-                    victim.getClient().getSession().write(ResCWvsContext.familySummonRequest(c.getPlayer().getName(), c.getPlayer().getMap().getMapName()));
+                    victim.getClient().getSession().write(ResCWvsContext.familySummonRequest(c.getPlayer().getName(), "MAP_NAME"));
                     victim.setTeleportName(c.getPlayer().getName());
                 } else {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");

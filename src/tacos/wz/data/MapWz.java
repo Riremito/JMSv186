@@ -18,6 +18,7 @@
  */
 package tacos.wz.data;
 
+import odin.provider.IMapleData;
 import tacos.wz.TacosWz;
 import tacos.config.Content;
 
@@ -41,4 +42,8 @@ public class MapWz extends TacosWz {
         super(path);
     }
 
+    public IMapleData getImg(int map_id) {
+        String target_img_path = String.format("Map/Map%d/%09d.img", (map_id / 100000000), map_id);
+        return get().getData(target_img_path);
+    }
 }

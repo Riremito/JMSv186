@@ -64,7 +64,7 @@ public class AramiaFireWorks {
     }
 
     private void broadcastServer(MapleCharacter c, int itemid) {
-        c.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNoticeItem("<Channel " + c.getClient().getChannelId() + "> " + c.getMap().getMapName() + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!", itemid));
+        c.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNoticeItem("<Channel " + c.getClient().getChannelId() + "> " + "MAP_NAME" + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!", itemid));
     }
 
     public final short getKegsPercentage() {

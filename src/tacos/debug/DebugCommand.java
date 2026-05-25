@@ -788,8 +788,8 @@ public class DebugCommand {
                 int mapid = DWI_LoadXML.getMap().getRandom();
                 MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(mapid);
                 chr.changeMap(map_to, map_to.getPortal(0));
-                chr.DebugMsg("random : map " + map_to.getId() + " - " + map_to.getStreetName() + "_" + map_to.getMapName()); // MapName code is buggy.
-                DebugLogger.InfoLog("random : map " + map_to.getId() + " - " + map_to.getStreetName() + "_" + map_to.getMapName());
+                chr.DebugMsg("random map : " + map_to.getId());
+                DebugLogger.InfoLog("random map : " + map_to.getId());
                 return true;
             }
             default: {

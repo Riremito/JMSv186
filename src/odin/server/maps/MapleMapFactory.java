@@ -20,9 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
-import tacos.config.DeveloperMode;
 import tacos.wz.data.MapWz;
-import tacos.wz.data.StringWz;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -32,7 +30,6 @@ import java.util.Map;
 import java.util.ArrayList;
 import odin.server.maps.MapleNodes.MapleNodeInfo;
 import odin.server.maps.MapleNodes.MaplePlatform;
-import odin.tools.StringUtil;
 import tacos.server.map.MasterMonster;
 import odin.provider.IMapleData;
 import tacos.unofficial.CustomMap;
@@ -45,26 +42,21 @@ public class MapleMapFactory {
     private int channel;
 
     public MapleMap getMap(int map_id) {
-        Integer omapid = map_id;
-        MapleMap map = maps.get(omapid);
+        MapleMap map = maps.get(map_id);
         if (map != null) {
             return map;
         }
 
-        IMapleData mapData;
-        try {
-            mapData = MapWz.get().getData(getMapName(map_id));
-        } catch (Exception e) {
-            // 存在しないMapIDが指定された場合は指定MapIDへ強制移動する
-            DebugLogger.ErrorLog("Invalid MapID = " + map_id);
-            map_id = DeveloperMode.DM_ERROR_MAP_ID.getInt();
-            omapid = map_id;
-            mapData = MapWz.get().getData(getMapName(map_id));
+        IMapleData mapData = MapWz.get().getImg(map_id);
+        if (mapData == null) {
+            DebugLogger.ErrorLog("Invalid MapID : " + map_id);
+            return null;
         }
 
         IMapleData link = mapData.getChildByPath("info/link");
         if (link != null) {
-            mapData = MapWz.get().getData(getMapName(TacosWzDataTool.getIntPath("info/link", mapData, 0)));
+            int link_map_id = TacosWzDataTool.getIntPath("info/link", mapData, 0);
+            mapData = MapWz.get().getImg(link_map_id);
         }
 
         float monsterRate = TacosWzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
@@ -86,72 +78,10 @@ public class MapleMapFactory {
 
         //load reactor data
         map.loadReactor(mapData);
-
-        try {
-            map.setMapName(TacosWzDataTool.getStringPath("mapName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
-            map.setStreetName(TacosWzDataTool.getStringPath("streetName", StringWz.get().getMap().getChildByPath(getMapStringName(omapid)), ""));
-        } catch (Exception e) {
-            map.setMapName("");
-            map.setStreetName("");
-        }
         // load info.
         map.loadInfo(mapData);
-        maps.put(omapid, map);
+        maps.put(map_id, map);
         return map;
-    }
-
-    public static String getMapName(int mapid) {
-        String mapName = StringUtil.getLeftPaddedStr(Integer.toString(mapid), '0', 9);
-        StringBuilder builder = new StringBuilder("Map/Map");
-        builder.append(mapid / 100000000);
-        builder.append("/");
-        builder.append(mapName);
-        builder.append(".img");
-
-        mapName = builder.toString();
-        return mapName;
-    }
-
-    // ?_? TODO : FIX!
-    private String getMapStringName(int mapid) {
-        StringBuilder builder = new StringBuilder();
-        if (mapid < 100000000) {
-            builder.append("maple");
-        } else if ((mapid >= 100000000 && mapid < 200000000) || mapid / 100000 == 5540) {
-            builder.append("victoria");
-        } else if (mapid >= 200000000 && mapid < 300000000) {
-            builder.append("ossyria");
-        } else if (mapid >= 300000000 && mapid < 400000000) {
-            builder.append("elin");
-        } else if (mapid >= 500000000 && mapid < 510000000) {
-            builder.append("thai");
-        } else if (mapid >= 540000000 && mapid < 600000000) {
-            builder.append("SG");
-        } else if (mapid >= 600000000 && mapid < 620000000) {
-            builder.append("MasteriaGL");
-        } else if ((mapid >= 670000000 && mapid < 677000000) || (mapid >= 678000000 && mapid < 682000000)) {
-            builder.append("global");
-        } else if (mapid >= 677000000 && mapid < 678000000) {
-            builder.append("Episode1GL");
-        } else if (mapid >= 682000000 && mapid < 683000000) {
-            builder.append("HalloweenGL");
-        } else if (mapid >= 683000000 && mapid < 684000000) {
-            builder.append("event");
-        } else if (mapid >= 684000000 && mapid < 685000000) {
-            builder.append("event_5th");
-        } else if (mapid >= 700000000 && mapid < 700000300) {
-            builder.append("wedding");
-        } else if (mapid >= 701000000 && mapid < 701020000) {
-            builder.append("china");
-        } else if (mapid >= 800000000 && mapid < 900000000) {
-            builder.append("jp");
-        } else {
-            builder.append("etc");
-        }
-        builder.append("/");
-        builder.append(mapid);
-
-        return builder.toString();
     }
 
     public void setChannel(int channel) {

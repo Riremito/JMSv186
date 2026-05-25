@@ -480,7 +480,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public int gainGachaponItem(int id, int quantity) {
-        return gainGachaponItem(id, quantity, client.getPlayer().getMap().getStreetName() + " - " + client.getPlayer().getMap().getMapName());
+        return gainGachaponItem(id, quantity, "");
     }
 
     public int gainGachaponItem(int id, int quantity, final String msg) {

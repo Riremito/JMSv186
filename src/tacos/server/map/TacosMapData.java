@@ -49,7 +49,6 @@ public class TacosMapData {
 
     protected int map_id;
     protected int returnMapId;
-    private String mapName, streetName;
 
     public TacosMapData(int mapid, int returnMapId) {
         this.map_id = mapid;
@@ -73,22 +72,6 @@ public class TacosMapData {
             return fallback;
         }
         return ret;
-    }
-
-    public String getMapName() {
-        return this.mapName;
-    }
-
-    public void setMapName(String mapName) {
-        this.mapName = mapName;
-    }
-
-    public String getStreetName() {
-        return this.streetName;
-    }
-
-    public void setStreetName(String streetName) {
-        this.streetName = streetName;
     }
 
     // portal node.
