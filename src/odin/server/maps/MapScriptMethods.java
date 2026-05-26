@@ -565,7 +565,7 @@ public class MapScriptMethods {
                         c.getSession().write(ResCUserLocal.SetStandAloneMode(false));
                         c.getSession().write(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
-                        final MapleMap mapto = c.getChannelServer().getMapFactory().getMap(900010000);
+                        final MapleMap mapto = chr.findMap(900010000);
                         c.getPlayer().changeMap(mapto, mapto.getPortal(0));
                         return;
                 }
@@ -743,7 +743,7 @@ public class MapScriptMethods {
             }
             case check_count: {
                 if (c.getPlayer().getMapId() == 950101010 && (!c.getPlayer().haveItem(4001433, 20) || c.getPlayer().getLevel() < 50)) { //ravana Map
-                    final MapleMap mapp = c.getChannelServer().getMapFactory().getMap(950101100); //exit Map
+                    final MapleMap mapp = chr.findMap(950101100); //exit Map
                     c.getPlayer().changeMap(mapp, mapp.getPortal(0));
                 }
                 break;

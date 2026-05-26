@@ -1634,11 +1634,11 @@ public class TacosMap extends TacosMapData {
 
     // compatbility
     public MapleMap getReturnMap() {
-        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(getReturnMapId());
+        return TacosWorld.find(0).getChannelServer(channel).findMap(getReturnMapId());
     }
 
     public MapleMap getForcedReturnMap() {
-        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(getForcedReturnId());
+        return TacosWorld.find(0).getChannelServer(channel).findMap(getForcedReturnId());
     }
 
     public boolean updateSpawn() {

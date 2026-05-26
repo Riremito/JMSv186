@@ -78,7 +78,7 @@ public class AramiaFireWorks {
 
             @Override
             public final void run() {
-                startEvent(player.getChannelServer().getMapFactory().getMap(100000200));
+                startEvent(player.findMap(100000200));
             }
         }, 10000);
     }
@@ -107,7 +107,7 @@ public class AramiaFireWorks {
     public void giveSuns(MapleCharacter player, int kegs) {
         this.sunshines += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = player.getChannelServer().getMapFactory().getMap(555000000);
+        final MapleMap map = player.findMap(555000000);
         final MapleReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_SUN / 6); gogo > 0; gogo -= (MAX_SUN / 6)) {
             switch (reactor.getState()) {
@@ -146,7 +146,7 @@ public class AramiaFireWorks {
 
             @Override
             public final void run() {
-                startSun(player.getChannelServer().getMapFactory().getMap(970010000));
+                startSun(player.findMap(970010000));
             }
         }, 10000);
     }
@@ -176,7 +176,7 @@ public class AramiaFireWorks {
     public final void giveDecs(final MapleCharacter player, final int kegs) {
         this.decorations += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = player.getChannelServer().getMapFactory().getMap(555000000);
+        final MapleMap map = player.findMap(555000000);
         final MapleReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_DEC / 6); gogo > 0; gogo -= (MAX_DEC / 6)) {
             switch (reactor.getState()) {
@@ -214,7 +214,7 @@ public class AramiaFireWorks {
 
             @Override
             public final void run() {
-                startDec(player.getChannelServer().getMapFactory().getMap(555000000));
+                startDec(player.findMap(555000000));
             }
         }, 10000); //no msg
     }

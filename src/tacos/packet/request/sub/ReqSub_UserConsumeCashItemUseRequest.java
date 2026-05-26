@@ -90,7 +90,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     }
                     map_id = target_chr.getMap().getId();
                 }
-                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
+                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.findMap(map_id).getFieldLimit())) {
                     return false;
                 }
                 item_use.run();

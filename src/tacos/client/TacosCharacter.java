@@ -42,7 +42,6 @@ import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapFactory;
 import odin.server.maps.MapleMapObjectType;
 import tacos.config.Region;
 import tacos.config.Version;
@@ -128,6 +127,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public TacosChannel getChannelServer() {
         return this.client.getChannelServer();
+    }
+
+    public MapleMap findMap(int map_id) {
+        return getChannelServer().findMap(map_id);
     }
 
     public int getWorldId() {
@@ -274,8 +277,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void updateMapById(int map_id, int portal_id) {
-        MapleMapFactory mapFactory = getChannelServer().getMapFactory();
-        MapleMap map_to = mapFactory.getMap(map_id);
+        MapleMap map_to = findMap(map_id);
 
         if (map_to != null) {
             int forced_return_map_id = map_to.getForcedReturnId();
@@ -284,7 +286,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         if (map_to == null) {
-            map_to = mapFactory.getMap(TacosConstants.DEFAULT_RETURN_MAP_ID); // return to default map.
+            map_to = findMap(TacosConstants.DEFAULT_RETURN_MAP_ID); // return to default map.
             DebugLogger.ErrorLog("updateMapById : invalid map = " + map_id);
         }
         TacosPortal portal_to = map_to.getPortal(portal_id);
@@ -345,13 +347,13 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             return false;
         }
         // direct map change.
-        map_to = getChannelServer().getMapFactory().getMap(map_id_to);
+        map_to = findMap(map_id_to);
         changeMap(map_to, map_to.getPortal(0));
         return true;
     }
 
     public boolean changeMap(int map_id) {
-        MapleMap map_to = getChannelServer().getMapFactory().getMap(map_id);
+        MapleMap map_to = findMap(map_id);
         if (map_to != null) {
             TacosPortal portal_to = map_to.getPortal(0);
             if (portal_to != null) {
@@ -364,7 +366,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public boolean changeMapWithCoordinate(int map_id, int x, int y) {
-        MapleMap map_to = getChannelServer().getMapFactory().getMap(map_id);
+        MapleMap map_to = findMap(map_id);
         if (map_to != null) {
             TacosPortal portal_to = map_to.findClosestSpawnpoint(new Point(x, y));
             if (portal_to != null) {

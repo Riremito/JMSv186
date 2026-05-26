@@ -357,7 +357,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     public MapleMap getMap() {
-        return TacosWorld.find(0).getChannelServer(channel).getMapFactory().getMap(map);
+        return TacosWorld.find(0).getChannelServer(channel).findMap(map);
     }
 
     @Override

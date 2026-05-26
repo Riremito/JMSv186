@@ -165,7 +165,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     private MapleMap getWarpMap(final int map) {
-        return this.client.getChannelServer().getMapFactory().getMap(map);
+        return getPlayer().findMap(map);
     }
 
     public final MapleMap getMap() {
@@ -333,11 +333,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void removeNpc(final int mapid, final int npcId) {
-        client.getChannelServer().getMapFactory().getMap(mapid).removeNpc(npcId);
+        getPlayer().findMap(mapid).removeNpc(npcId);
     }
 
     public final void forceStartReactor(final int mapid, final int id) {
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -350,7 +350,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void destroyReactor(final int mapid, final int id) {
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -363,7 +363,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void hitReactor(final int mapid, final int id) {
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -776,7 +776,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getMonsterCount(final int mapid) {
-        return client.getChannelServer().getMapFactory().getMap(mapid).getNumMonsters();
+        return getPlayer().findMap(mapid).getNumMonsters();
     }
 
     public final void teachSkill(final int id, final byte level, final byte masterlevel) {
@@ -1012,7 +1012,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public int getPlayerCount(int mapid) {
-        return client.getChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
+        return getPlayer().findMap(mapid).getCharactersSize();
     }
 
     public void playerMessage(String message) {
@@ -1026,5 +1026,4 @@ public abstract class OdinAbstractPlayerInteraction {
     public OdinEventInstanceManager getDisconnected(String event) {
         return null;
     }
-
 }

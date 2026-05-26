@@ -1680,7 +1680,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void changeMapBanish(int mapid, String portal, String msg) {
         dropMessage(5, msg);
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = findMap(mapid);
         changeMap(map, map.getPortal(portal));
     }
 

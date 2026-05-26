@@ -43,7 +43,7 @@ public class MapleSquad {
     }
 
     public MapleMap getBeginMap() {
-        return this.leader.get().getChannelServer().getMapFactory().getMap(beginMapId);
+        return this.leader.get().findMap(beginMapId);
     }
 
     public void clear() {

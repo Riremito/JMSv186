@@ -129,7 +129,7 @@ public class TacosPortal {
             if (this.targetmap == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
                 return false;
             }
-            MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(this.targetmap);
+            MapleMap map_to = chr.findMap(this.targetmap);
             TacosPortal portal_to = map_to.getPortal(this.target);
             // find portal failed.
             if (portal_to == null) {
