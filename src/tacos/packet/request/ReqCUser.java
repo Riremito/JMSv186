@@ -77,7 +77,6 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.MobAttackInfo;
 import odin.server.life.MobSkill;
-import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
@@ -115,6 +114,7 @@ import tacos.server.TacosWorld;
 import tacos.shared.TacosShared;
 import tacos.wz.data.MobWz;
 import tacos.wz.data.SkillWz;
+import tacos.wz.opt.FieldOpt;
 
 /**
  *
@@ -835,7 +835,7 @@ public class ReqCUser {
     public static boolean OnUserTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
         int channel = cp.Decode1(); // from 0.
 
-        if (!chr.isAlive() || FieldLimitType.ChannelSwitch.check(chr.getMap().getFieldLimit())) {
+        if (!chr.isAlive() || FieldOpt.FIELDOPT_MIGRATELIMIT.check(chr.getMap().getFieldLimit())) {
             return false;
         }
 
@@ -2190,7 +2190,7 @@ public class ReqCUser {
             case LEGEND_MYSTIC_DOOR:
             case EVANJR_MYSTIC_DOOR:
             case CITIZEN_MYSTIC_DOOR: {
-                if (FieldLimitType.MysticDoor.check(map.getFieldLimit())) {
+                if (FieldOpt.FIELDOPT_MYSTICDOORLIMIT.check(map.getFieldLimit())) {
                     return false;
                 }
                 if (effect.isMagicDoor()) {
@@ -2314,7 +2314,7 @@ public class ReqCUser {
                 break;
             }
             case MapTransferReq_RegisterList: {
-                if (FieldLimitType.VipRock.check(chr.getMap().getFieldLimit())) {
+                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit())) {
                     chr.SendPacket(ResCWvsContext.MapTransferResult(chr, OpsMapTransfer.MapTransferRes_NotAllowed, is_vip));
                     return true;
                 }
@@ -2529,7 +2529,7 @@ public class ReqCUser {
             return false;
         }
         MapleMap map = chr.getMap();
-        if (FieldLimitType.SummoningBag.check(map.getFieldLimit())) {
+        if (FieldOpt.FIELDOPT_SUMMONLIMIT.check(map.getFieldLimit())) {
             return false;
         }
         // used

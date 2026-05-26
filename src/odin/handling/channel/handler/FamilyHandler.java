@@ -30,9 +30,9 @@ import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
-import odin.server.maps.FieldLimitType;
 import tacos.database.query.DQ_Notes;
 import tacos.packet.ClientPacket;
+import tacos.wz.opt.FieldOpt;
 
 public class FamilyHandler {
 
@@ -61,13 +61,13 @@ public class FamilyHandler {
         switch (type) {
             case 0: //teleport: need add check for if not a safe place
                 victim = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-                if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
+                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                     success = false;
                 } else if (victim == null || (victim.isGM() && !c.getPlayer().isGM())) {
                     c.getPlayer().dropMessage(1, "Invalid name or you are not on the same channel.");
                     success = false;
-                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
+                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
                     c.getPlayer().changeMap(victim.getMap(), victim.getMap().getPortal(0));
                 } else {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
@@ -76,13 +76,13 @@ public class FamilyHandler {
                 break;
             case 1: // TODO give a check to the player being forced somewhere else..
                 victim = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-                if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
+                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                 } else if (victim == null || (victim.isGM() && !c.getPlayer().isGM())) {
                     c.getPlayer().dropMessage(1, "Invalid name or you are not on the same channel.");
                 } else if (victim.getTeleportName().length() > 0) {
                     c.getPlayer().dropMessage(1, "Another character has requested to summon this character. Please try again later.");
-                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
+                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
                     victim.getClient().getSession().write(ResCWvsContext.familySummonRequest(c.getPlayer().getName(), "MAP_NAME"));
                     victim.setTeleportName(c.getPlayer().getName());
                 } else {
@@ -182,8 +182,8 @@ public class FamilyHandler {
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
         MapleCharacter tt = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-        if (c.getPlayer().getFamilyId() > 0 && tt != null && tt.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(tt.getMap().getFieldLimit())
-                && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && c.getPlayer().isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
+        if (c.getPlayer().getFamilyId() > 0 && tt != null && tt.getFamilyId() == c.getPlayer().getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(tt.getMap().getFieldLimit())
+                && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(c.getPlayer().getMap().getFieldLimit()) && c.getPlayer().isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
                 && c.getPlayer().getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep) {
             //whew lots of checks
             boolean accepted = cp.Decode1() > 0;

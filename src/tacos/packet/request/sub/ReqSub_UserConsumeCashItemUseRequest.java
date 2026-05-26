@@ -50,10 +50,10 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleItemInformationProvider;
-import odin.server.maps.FieldLimitType;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.packet.ops.OpsCashItem;
+import tacos.wz.opt.FieldOpt;
 
 /**
  *
@@ -90,7 +90,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     }
                     map_id = target_chr.getMap().getId();
                 }
-                if (FieldLimitType.VipRock.check(chr.getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
+                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getChannelServer().getMapFactory().getMap(map_id).getFieldLimit())) {
                     return false;
                 }
                 item_use.run();

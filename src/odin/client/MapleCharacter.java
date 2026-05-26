@@ -100,7 +100,6 @@ import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleSummon;
-import odin.server.maps.FieldLimitType;
 import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.IMaplePlayerShop;
@@ -141,6 +140,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosPortal;
+import tacos.wz.opt.FieldOpt;
 
 public class MapleCharacter extends TacosCharacter {
 
@@ -1980,7 +1980,7 @@ public class MapleCharacter extends TacosCharacter {
             } else {
                 float diepercentage = 0.0f;
                 int expforlevel = SharedExpTable.getExpNeededForLevel(level);
-                if (map.isTown() || FieldLimitType.RegularExpLoss.check(map.getFieldLimit())) {
+                if (map.isTown() || FieldOpt.FIELDOPT_PORTALSCROLLLIMIT.check(map.getFieldLimit())) {
                     diepercentage = 0.01f;
                 } else {
                     float v8 = 0.0f;
@@ -4510,7 +4510,7 @@ public class MapleCharacter extends TacosCharacter {
             return false;
         }
 
-        if (FieldLimitType.PotionUse.check(map.getFieldLimit())) {
+        if (FieldOpt.FIELDOPT_NOMOBCAPACITYLIMIT.check(map.getFieldLimit())) {
             updateInv();
             return false;
         }
