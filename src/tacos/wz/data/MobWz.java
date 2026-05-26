@@ -28,7 +28,6 @@ import java.util.Map;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
 import tacos.odin.OdinPair;
-import odin.tools.StringUtil;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
@@ -54,6 +53,11 @@ public class MobWz extends TacosWz {
         super(path);
     }
 
+    public IMapleData getImg(int mob_id) {
+        String target_img_path = String.format("%07d.img", mob_id);
+        return get().getData(target_img_path);
+    }
+
     private Map<OdinPair<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
 
     public MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
@@ -66,14 +70,14 @@ public class MobWz extends TacosWz {
         }
 
         MobAttackInfo ret = new MobAttackInfo();
-        IMapleData mobData = getData(StringUtil.getLeftPaddedStr(Integer.toString(mob.getId()) + ".img", '0', 11));
+        IMapleData mobData = getImg(mob.getId());
         if (mobData != null) {
             IMapleData infoData = mobData.getChildByPath("info/link");
             if (infoData != null) {
-                String linkedmob = TacosWzDataTool.getStringPath("info/link", mobData, "");
-                mobData = getData(StringUtil.getLeftPaddedStr(linkedmob + ".img", '0', 11));
+                int link_id = TacosWzDataTool.getIntPath("info/link", mobData, 0);
+                mobData = getImg(link_id);
             }
-            final IMapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
+            IMapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
             if (attackData != null) {
                 ret.setDeadlyAttack(attackData.getChildByPath("deadlyAttack") != null);
                 ret.setMpBurn(TacosWzDataTool.getIntPath("mpBurn", attackData, 0));

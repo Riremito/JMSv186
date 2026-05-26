@@ -42,7 +42,6 @@ import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
 import odin.server.Randomizer;
-import odin.tools.StringUtil;
 
 /**
  *
@@ -164,10 +163,10 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static final MaplePacket updateQuestMobKills(final MapleQuestStatus status) {
-        final StringBuilder sb = new StringBuilder();
-        for (final int kills : status.getMobKills().values()) {
-            sb.append(StringUtil.getLeftPaddedStr(String.valueOf(kills), '0', 3));
+    public static MaplePacket updateQuestMobKills(MapleQuestStatus status) {
+        StringBuilder sb = new StringBuilder();
+        for (int kills : status.getMobKills().values()) {
+            sb.append(String.format("%03d", kills));
         }
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_QuestRecordMessage;

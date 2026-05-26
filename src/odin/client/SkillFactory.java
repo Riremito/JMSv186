@@ -25,21 +25,20 @@ import tacos.wz.data.StringWz;
 import java.util.Collection;
 import java.util.List;
 
-import odin.tools.StringUtil;
 import odin.provider.IMapleData;
 import tacos.wz.TacosWzDataTool;
 
 public class SkillFactory {
 
-    public static final ISkill getSkill(final int id) {
+    public static ISkill getSkill(int id) {
         return SkillWz.get().getSkill().get(id);
     }
 
-    public static final List<Integer> getSkillsByJob(final int jobId) {
+    public static List<Integer> getSkillsByJob(int jobId) {
         return SkillWz.get().getSkillsByJob().get(jobId);
     }
 
-    public static final String getSkillName(final int id) {
+    public static String getSkillName(int id) {
         ISkill skil = getSkill(id);
         if (skil != null) {
             return skil.getName();
@@ -47,21 +46,19 @@ public class SkillFactory {
         return null;
     }
 
-    public static final String getName(final int id) {
-        String strId = Integer.toString(id);
-        strId = StringUtil.getLeftPaddedStr(strId, '0', 7);
-        IMapleData skillroot = StringWz.get().getSkill().getChildByPath(strId);
+    public static String getName(int skill_id) {
+        IMapleData skillroot = StringWz.get().getSkill().getChildByPath(String.format("%07d", skill_id));
         if (skillroot != null) {
             return TacosWzDataTool.getString(skillroot.getChildByPath("name"), "");
         }
         return null;
     }
 
-    public static final SummonSkillEntry getSummonData(final int skillid) {
+    public static SummonSkillEntry getSummonData(int skillid) {
         return SkillWz.get().getSummonSkillInformation().get(skillid);
     }
 
-    public static final Collection<ISkill> getAllSkills() {
+    public static Collection<ISkill> getAllSkills() {
         return SkillWz.get().getSkill().values();
     }
 }

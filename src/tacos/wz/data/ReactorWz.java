@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import odin.server.maps.MapleReactorStats;
 import tacos.odin.OdinPair;
-import odin.tools.StringUtil;
 import odin.provider.IMapleData;
 import tacos.wz.TacosWzDataTool;
 
@@ -48,31 +47,36 @@ public class ReactorWz extends TacosWz {
         super(path);
     }
 
+    public IMapleData getImg(int reactor_id) {
+        String target_img_path = String.format("%07d.img", reactor_id);
+        return get().getData(target_img_path);
+    }
+
     private Map<Integer, MapleReactorStats> map_reactorStats = null;
 
-    public MapleReactorStats getReactor(int rid) {
+    public MapleReactorStats getReactor(int reactor_id) {
         if (map_reactorStats == null) {
             map_reactorStats = new HashMap<>();
         }
-        MapleReactorStats mrs_found = map_reactorStats.get(rid);
+        MapleReactorStats mrs_found = map_reactorStats.get(reactor_id);
         if (mrs_found != null) {
             return mrs_found;
         }
 
-        int infoId = rid;
-        IMapleData reactorData = getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
+        int link_id = reactor_id;
+        IMapleData reactorData = getImg(reactor_id);
         IMapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
-            infoId = TacosWzDataTool.getIntPath("info/link", reactorData, 0);
-            MapleReactorStats mrs_link = map_reactorStats.get(infoId);
+            link_id = TacosWzDataTool.getIntPath("info/link", reactorData, 0);
+            MapleReactorStats mrs_link = map_reactorStats.get(link_id);
             if (mrs_link != null) {
-                map_reactorStats.put(rid, mrs_link);
+                map_reactorStats.put(reactor_id, mrs_link);
                 return mrs_link;
             }
         }
 
         MapleReactorStats stats = new MapleReactorStats();
-        reactorData = getData(StringUtil.getLeftPaddedStr(Integer.toString(infoId) + ".img", '0', 11));
+        reactorData = getImg(link_id);
         if (reactorData == null) {
             return stats;
         }
@@ -102,10 +106,10 @@ public class ReactorWz extends TacosWz {
                 stats.addState(i, 999, null, (byte) (foundState ? -1 : (i + 1)), 0);
             }
         }
-        map_reactorStats.put(infoId, stats);
+        map_reactorStats.put(link_id, stats);
 
-        if (rid != infoId) {
-            map_reactorStats.put(rid, stats);
+        if (reactor_id != link_id) {
+            map_reactorStats.put(reactor_id, stats);
         }
 
         return stats;

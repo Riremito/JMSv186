@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import tacos.odin.OdinPair;
-import odin.tools.StringUtil;
 import odin.provider.IMapleData;
 import tacos.wz.TacosWzDataTool;
 
@@ -81,11 +80,11 @@ public class MapleLifeFactory {
         return false;
     }
 
-    public static MapleMonster getMonster(int mid) {
-        MapleMonsterStats stats = monsterStats.get(mid);
+    public static MapleMonster getMonster(int mob_id) {
+        MapleMonsterStats stats = monsterStats.get(mob_id);
 
         if (stats == null) {
-            IMapleData monsterData = MobWz.get().getData(StringUtil.getLeftPaddedStr(Integer.toString(mid) + ".img", '0', 11));
+            IMapleData monsterData = MobWz.get().getImg(mob_id);
             if (monsterData == null) {
                 return null;
             }
@@ -94,7 +93,7 @@ public class MapleLifeFactory {
 
             stats.setHp(TacosWzDataTool.getIntPath("maxHP", monsterInfoData, 0));
             int mp = TacosWzDataTool.getIntPath("maxMP", monsterInfoData, 0);
-            stats.setMp(IsBrokenMPMob(mid) ? 30000 : mp);
+            stats.setMp(IsBrokenMPMob(mob_id) ? 30000 : mp);
 
             stats.setExp(TacosWzDataTool.getIntPath("exp", monsterInfoData, 0));
             stats.setLevel((short) TacosWzDataTool.getIntPath("level", monsterInfoData, 0));
@@ -102,11 +101,11 @@ public class MapleLifeFactory {
             stats.setrareItemDropLevel((byte) TacosWzDataTool.getIntPath("rareItemDropLevel", monsterInfoData, 0));
             stats.setFixedDamage(TacosWzDataTool.getIntPath("fixedDamage", monsterInfoData, -1));
             stats.setOnlyNormalAttack(TacosWzDataTool.getIntPath("onlyNormalAttack", monsterInfoData, 0) > 0);
-            stats.setBoss(TacosWzDataTool.getIntPath("boss", monsterInfoData, 0) > 0 || mid == 8810018 || mid == 9410066 || (mid >= 8810118 && mid <= 8810122));
+            stats.setBoss(TacosWzDataTool.getIntPath("boss", monsterInfoData, 0) > 0 || mob_id == 8810018 || mob_id == 9410066 || (mob_id >= 8810118 && mob_id <= 8810122));
             stats.setExplosiveReward(TacosWzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
             stats.setFfaLoot(TacosWzDataTool.getIntPath("publicReward", monsterInfoData, 0) > 0);
             stats.setUndead(TacosWzDataTool.getIntPath("undead", monsterInfoData, 0) > 0);
-            stats.setName(TacosWzDataTool.getStringPath(mid + "/name", StringWz.get().getMob(), "MISSINGNO"));
+            stats.setName(TacosWzDataTool.getStringPath(mob_id + "/name", StringWz.get().getMob(), "MISSINGNO"));
             stats.setBuffToGive(TacosWzDataTool.getIntPath("buff", monsterInfoData, -1));
             stats.setFriendly(TacosWzDataTool.getIntPath("damagedByMob", monsterInfoData, 0) > 0);
             stats.setExplosiveReward(TacosWzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
@@ -127,7 +126,7 @@ public class MapleLifeFactory {
                 stats.setSelfD((byte) -1);
             }
             stats.setFirstAttack(TacosWzDataTool.getIntPath("firstAttack", monsterInfoData, 0) > 0);
-            if (stats.isBoss() || isDmgSponge(mid)) {
+            if (stats.isBoss() || isDmgSponge(mob_id)) {
                 if (hideHP || monsterInfoData.getChildByPath("hpTagColor") == null || monsterInfoData.getChildByPath("hpTagBgcolor") == null) {
                     stats.setTagColor(0);
                     stats.setTagBgColor(0);
@@ -168,9 +167,9 @@ public class MapleLifeFactory {
             decodeElementalString(stats, TacosWzDataTool.getStringPath("elemAttr", monsterInfoData, ""));
 
             // Other data which isn;t in the mob, but might in the linked data
-            final int link = TacosWzDataTool.getIntPath("link", monsterInfoData, 0);
-            if (link != 0) { // Store another copy, for faster processing.
-                monsterData = MobWz.get().getData(StringUtil.getLeftPaddedStr(link + ".img", '0', 11));
+            int link_id = TacosWzDataTool.getIntPath("link", monsterInfoData, 0);
+            if (link_id != 0) { // Store another copy, for faster processing.
+                monsterData = MobWz.get().getImg(link_id);
             }
 
             for (IMapleData idata : monsterData) {
@@ -188,16 +187,16 @@ public class MapleLifeFactory {
                 hpdisplaytype = 0;
             } else if (stats.isFriendly()) {
                 hpdisplaytype = 1;
-            } else if (mid >= 9300184 && mid <= 9300215) { // Mulung TC mobs
+            } else if (mob_id >= 9300184 && mob_id <= 9300215) { // Mulung TC mobs
                 hpdisplaytype = 2;
-            } else if (!stats.isBoss() || mid == 9410066) { // Not boss and dong dong chiang
+            } else if (!stats.isBoss() || mob_id == 9410066) { // Not boss and dong dong chiang
                 hpdisplaytype = 3;
             }
             stats.setHPDisplayType(hpdisplaytype);
 
-            monsterStats.put(mid, stats);
+            monsterStats.put(mob_id, stats);
         }
-        return new MapleMonster(mid, stats);
+        return new MapleMonster(mob_id, stats);
     }
 
     public static final void decodeElementalString(MapleMonsterStats stats, String elemAttr) {
