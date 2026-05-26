@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import tacos.wz.data.EtcWz;
 import tacos.wz.data.MobWz;
 import tacos.wz.data.StringWz;
 import java.util.ArrayList;
@@ -34,9 +33,7 @@ import tacos.wz.TacosWzDataTool;
 
 public class MapleLifeFactory {
 
-    private static Map<Integer, String> npcNames = new HashMap<Integer, String>();
-    private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<Integer, MapleMonsterStats>();
-    private static Map<Integer, Integer> NPCLoc = new HashMap<Integer, Integer>();
+    private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {
@@ -51,16 +48,7 @@ public class MapleLifeFactory {
         }
     }
 
-    public static int getNPCLocation(int npcid) {
-        if (NPCLoc.containsKey(npcid)) {
-            return NPCLoc.get(npcid);
-        }
-        final int map = TacosWzDataTool.getIntPath(Integer.toString(npcid) + "/0", EtcWz.get().getNpcLocation(), -1);
-        NPCLoc.put(npcid, map);
-        return map;
-    }
-
-    public static final List<Integer> getQuestCount(final int id) {
+    public static List<Integer> getQuestCount(int id) {
         return MobWz.get().getQuestCountGroup().get(id);
     }
 
@@ -199,15 +187,15 @@ public class MapleLifeFactory {
         return new MapleMonster(mob_id, stats);
     }
 
-    public static final void decodeElementalString(MapleMonsterStats stats, String elemAttr) {
+    public static void decodeElementalString(MapleMonsterStats stats, String elemAttr) {
         for (int i = 0; i < elemAttr.length(); i += 2) {
             stats.setEffectiveness(
                     Element.getFromChar(elemAttr.charAt(i)),
-                    ElementalEffectiveness.getByNumber(Integer.valueOf(String.valueOf(elemAttr.charAt(i + 1)))));
+                    ElementalEffectiveness.getByNumber(Integer.parseInt(String.valueOf(elemAttr.charAt(i + 1)))));
         }
     }
 
-    private static final boolean isDmgSponge(final int mid) {
+    private static boolean isDmgSponge(final int mid) {
         switch (mid) {
             case 8810018:
             case 8810118:
@@ -226,15 +214,14 @@ public class MapleLifeFactory {
         return false;
     }
 
-    public static MapleNPC getNPC(final int nid) {
-        String name = npcNames.get(nid);
+    private static Map<Integer, String> npcNames = new HashMap<>();
+
+    public static MapleNPC getNPC(int npc_id) {
+        String name = npcNames.get(npc_id);
         if (name == null) {
-            name = TacosWzDataTool.getStringPath(nid + "/name", StringWz.get().getNpc(), "MISSINGNO");
-            npcNames.put(nid, name);
+            name = TacosWzDataTool.getStringPath(npc_id + "/name", StringWz.get().getNpc(), "MISSINGNO");
+            npcNames.put(npc_id, name);
         }
-        if (name.contains("Maple TV")) {
-            return null;
-        }
-        return new MapleNPC(nid, name);
+        return new MapleNPC(npc_id, name);
     }
 }

@@ -138,5 +138,4 @@ public class EtcWz extends TacosWz {
 
         return map_SetItemInfo;
     }
-
 }

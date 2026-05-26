@@ -72,6 +72,7 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.data.EtcWz;
 import tacos.wz.data.ReactorWz;
 
 /**
@@ -325,6 +326,52 @@ public class DebugCommand {
                 pnpc.setFh(chr.getFH());
                 map.addMapObject(pnpc);
                 pnpc.sendSpawnData(chr.getClient());
+                return true;
+            }
+            case "/npclocation": {
+                if (!dcmd.check(1)) {
+                    return true;
+                }
+                int npc_id = dcmd.getInt(1);
+                if (!DWI_Validation.isValidNPCID(npc_id)) {
+                    chr.DebugMsg("npclocation : invalid id.");
+                    return true;
+                }
+
+                IMapleData npc_location = EtcWz.get().getNpcLocation();
+                if (npc_location == null) {
+                    chr.DebugMsg("npclocation : NpcLocation.img is not found.");
+                    return true;
+                }
+                npc_location = npc_location.getChildByPath(Integer.toString(npc_id));
+                if (npc_location == null) {
+                    chr.DebugMsg("npclocation : NpcLocation.img/npc_id is not found.");
+                    return true;
+                }
+
+                if (list_NameData_Map == null || list_NameData_Npc == null) {
+                    searchString(chr, "map", "TESTTEST");
+                    searchString(chr, "npc", "TESTTEST");
+                }
+
+                NameData nd_npc = NameData.find(list_NameData_Npc, npc_id);
+
+                if (nd_npc == null) {
+                    chr.DebugMsg("npclocation : error.");
+                    return true;
+                }
+
+                chr.DebugMsg("npclocation : " + nd_npc.name + " (" + nd_npc.id + ")");
+                for (IMapleData data : npc_location) {
+                    int map_id = TacosWzDataTool.getInt(data);
+                    NameData nd_map = NameData.find(list_NameData_Map, map_id);
+                    if (nd_map == null) {
+                        chr.DebugMsg("ERROR.");
+                        continue;
+                    }
+                    chr.DebugMsg(nd_map.streetName + " - " + nd_map.mapName + " (" + nd_map.id + ")");
+                }
+
                 return true;
             }
             // reactor.
@@ -976,6 +1023,18 @@ public class DebugCommand {
         public String name = null;
         public String mapName = null;
         public String streetName = null;
+
+        public static NameData find(ArrayList<NameData> nds, int id) {
+            if (nds == null) {
+                return null;
+            }
+            for (NameData nd : nds) {
+                if (nd.id == id) {
+                    return nd;
+                }
+            }
+            return null;
+        }
     }
 
     private static ArrayList<NameData> list_NameData_Npc = null;

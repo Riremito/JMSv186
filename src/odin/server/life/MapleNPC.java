@@ -29,33 +29,33 @@ public class MapleNPC extends AbstractLoadedMapleLife {
     private String name = "MISSINGNO";
     private boolean custom = false;
 
-    public MapleNPC(final int id, final String name) {
-        super(id);
+    public MapleNPC(int npc_id, String name) {
+        super(npc_id);
         this.name = name;
     }
 
-    public final boolean hasShop() {
+    public boolean hasShop() {
         return MapleShopFactory.getInstance().getShopForNPC(getId()) != null;
     }
 
-    public final void sendShop(final MapleClient c) {
+    public void sendShop(MapleClient c) {
         MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(c);
     }
 
     @Override
-    public void sendSpawnData(final MapleClient client) {
+    public void sendSpawnData(MapleClient client) {
     }
 
     @Override
-    public final void sendDestroyData(final MapleClient client) {
+    public void sendDestroyData(MapleClient client) {
     }
 
     @Override
-    public final MapleMapObjectType getType() {
+    public MapleMapObjectType getType() {
         return MapleMapObjectType.NPC;
     }
 
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
@@ -63,11 +63,11 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         this.name = n;
     }
 
-    public final boolean isCustom() {
+    public boolean isCustom() {
         return custom;
     }
 
-    public final void setCustom(final boolean custom) {
+    public void setCustom(boolean custom) {
         this.custom = custom;
     }
 }
