@@ -52,7 +52,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import tacos.config.DeveloperMode;
-import odin.constants.ServerConstants;
 import tacos.shared.SharedExpTable;
 import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
@@ -3960,10 +3959,6 @@ public class MapleCharacter extends TacosCharacter {
         final MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
         inv.addSlot((byte) amount);
         client.getSession().write(ResCWvsContext.InventoryGrow(type, (byte) inv.getSlotLimit()));
-    }
-
-    public boolean isStaff() {
-        return this.gmLevel > ServerConstants.PlayerGMRank.NORMAL.getLevel();
     }
 
     // TODO: gvup, vic, lose, draw, VR

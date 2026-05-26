@@ -28,6 +28,11 @@ import tacos.property.Property_ITC;
  */
 public class TacosITC extends TacosServer {
 
+    public static final int MTS_MESO = 5000; //mesos needed
+    public static final int MTS_BASE = 0; //+1000 to everything in MSEA but cash is costly here
+    public static final int MTS_TAX = 10; //+% to everything
+    public static final int MIN_MTS = 110;
+
     private int world_id;
     private OnlinePlayers onlines;
 

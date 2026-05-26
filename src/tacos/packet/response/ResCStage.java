@@ -24,7 +24,6 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import odin.constants.ServerConstants;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataCClientOptMan;
@@ -33,6 +32,7 @@ import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.struct.TestHelper;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCS_COMMODITY;
+import tacos.server.TacosITC;
 
 /**
  *
@@ -223,9 +223,9 @@ public class ResCStage {
         // CITC::LoadData
         {
             sp.EncodeStr(chr.getClient().getMapleId());
-            sp.Encode4(ServerConstants.MTS_MESO); // m_nRegisterFeeMeso
-            sp.Encode4(ServerConstants.MTS_TAX); // m_nCommissionRate
-            sp.Encode4(ServerConstants.MTS_BASE); // m_nCommissionBase
+            sp.Encode4(TacosITC.MTS_MESO); // m_nRegisterFeeMeso
+            sp.Encode4(TacosITC.MTS_TAX); // m_nCommissionRate
+            sp.Encode4(TacosITC.MTS_BASE); // m_nCommissionBase
             sp.Encode4(24); // m_nAuctionDurationMin
             sp.Encode4(168); // m_nAuctionDurationMax
             if (ServerConfig.JMS146orLater()) {

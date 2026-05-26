@@ -23,7 +23,6 @@ import odin.client.MapleClient;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
-import odin.constants.ServerConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsITC;
@@ -34,6 +33,7 @@ import odin.server.MTSCart;
 import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacketHeader;
+import tacos.server.TacosITC;
 
 /**
  *
@@ -112,7 +112,7 @@ public class ReqCITC {
                 long expiration = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
                 MTSStorage.getInstance().addToBuyNow(cart, item_copy, price, chr.getId(), chr.getName(), expiration);
                 MapleInventoryManipulator.removeFromSlot(c, inv_type, (short) inv_slot, (short) item_quantity, false);
-                chr.gainMeso(-ServerConstants.MTS_MESO, false);
+                chr.gainMeso(-TacosITC.MTS_MESO, false);
                 chr.SendPacket(WrapCITC.getMTSConfirmSell());
                 sendMTSPackets(cart, c, true);
                 return true;
