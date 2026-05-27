@@ -64,11 +64,65 @@ public class NameDataStorage {
 
         this.data = new TreeMap<>();
         switch (this.type) {
+            case ITEM: {
+                for (IMapleData wz_root : StringWz.get().getEqp().getChildren()) {
+                    for (IMapleData wz_data : wz_root.getChildren()) {
+                        int item_id = Integer.parseInt(wz_data.getName());
+                        String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                        add(item_id, item_name);
+                    }
+                }
+                for (IMapleData wz_data : StringWz.get().getConsume().getChildren()) {
+                    int item_id = Integer.parseInt(wz_data.getName());
+                    String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    add(item_id, item_name);
+                }
+                for (IMapleData wz_data : StringWz.get().getIns().getChildren()) {
+                    int item_id = Integer.parseInt(wz_data.getName());
+                    String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    add(item_id, item_name);
+                }
+                for (IMapleData wz_data : StringWz.get().getEtc().getChildren()) {
+                    int item_id = Integer.parseInt(wz_data.getName());
+                    String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    add(item_id, item_name);
+                }
+                for (IMapleData wz_data : StringWz.get().getPet().getChildren()) {
+                    int item_id = Integer.parseInt(wz_data.getName());
+                    String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    add(item_id, item_name);
+                }
+                for (IMapleData wz_data : StringWz.get().getCash().getChildren()) {
+                    int item_id = Integer.parseInt(wz_data.getName());
+                    String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    add(item_id, item_name);
+                }
+                return true;
+            }
+            case MAP: {
+                for (IMapleData wz_root : StringWz.get().getMap().getChildren()) {
+                    for (IMapleData wz_data : wz_root.getChildren()) {
+                        int id = Integer.parseInt(wz_data.getName());
+                        String mapName = TacosWzDataTool.getString(wz_data.getChildByPath("mapName"), NO_NAME);
+                        String streetName = TacosWzDataTool.getString(wz_data.getChildByPath("streetName"), NO_NAME);
+                        add(id, mapName, streetName);
+                    }
+                }
+                return true;
+            }
             case MOB: {
                 for (IMapleData wz_data : StringWz.get().getMob().getChildren()) {
                     int mob_id = Integer.parseInt(wz_data.getName());
                     String mob_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     add(mob_id, mob_name);
+                }
+                return true;
+            }
+            case NPC: {
+                for (IMapleData wz_data : StringWz.get().getNpc().getChildren()) {
+                    int npc_id = Integer.parseInt(wz_data.getName());
+                    String npc_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    add(npc_id, npc_name);
                 }
                 return true;
             }
@@ -104,6 +158,20 @@ public class NameDataStorage {
         return true;
     }
 
+    private boolean add(int id, String map_name, String street_name) {
+        if (this.data.containsKey(id)) {
+            DebugLogger.ErrorLog("NameData add : duplicated, " + this.type + ", id =" + id);
+            return false;
+        }
+
+        NameData nd = new NameData();
+        nd.id = id;
+        nd.mapName = map_name;
+        nd.streetName = street_name;
+        this.data.put(id, nd);
+        return true;
+    }
+
     public NameData get(int id) {
         if (this.data == null) {
             load();
@@ -121,6 +189,12 @@ public class NameDataStorage {
 
         ArrayList<NameData> result = new ArrayList<>();
         for (NameData nd : this.data.values()) {
+            if (this.type == NameDataType.MAP) {
+                if (nd.mapName.toLowerCase().contains(lower_name) || nd.streetName.toLowerCase().contains(lower_name)) {
+                    result.add(nd);
+                }
+                continue;
+            }
             if (nd.name.toLowerCase().contains(lower_name)) {
                 result.add(nd);
             }

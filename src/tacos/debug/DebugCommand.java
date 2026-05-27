@@ -264,10 +264,6 @@ public class DebugCommand {
                 if (!dcmd.check(1)) {
                     return true;
                 }
-                // to make list. TODO : fix
-                if (list_NameData_Item == null) {
-                    searchString(chr, "item", "TESTTEST");
-                }
 
                 String search_string = "";
                 for (int i = 1; i < dcmd.getLength(); i++) {
@@ -278,15 +274,13 @@ public class DebugCommand {
                 }
 
                 int shop_item_count = 0;
-                for (NameData nd : list_NameData_Item) {
-                    if (nd.name.contains(search_string)) {
-                        if (nd.available) {
-                            ds.addItem(nd.id);
-                            shop_item_count++;
-                            if (100 <= shop_item_count) {
-                                chr.DebugMsg("item search hits over 100 item names.");
-                                break;
-                            }
+                for (NameData nd : NameDataStorage.ITEM.find(search_string)) {
+                    if (nd.available) {
+                        ds.addItem(nd.id);
+                        shop_item_count++;
+                        if (100 <= shop_item_count) {
+                            chr.DebugMsg("item search hits over 100 item names.");
+                            break;
                         }
                     }
                 }
@@ -351,12 +345,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                if (list_NameData_Map == null || list_NameData_Npc == null) {
-                    searchString(chr, "map", "TESTTEST");
-                    searchString(chr, "npc", "TESTTEST");
-                }
-
-                NameData nd_npc = NameData.find(list_NameData_Npc, npc_id);
+                NameData nd_npc = NameDataStorage.NPC.get(npc_id);
 
                 if (nd_npc == null) {
                     chr.DebugMsg("npclocation : error.");
@@ -366,7 +355,7 @@ public class DebugCommand {
                 chr.DebugMsg("npclocation : " + nd_npc.name + " (" + nd_npc.id + ")");
                 for (IMapleData data : npc_location) {
                     int map_id = TacosWzDataTool.getInt(data);
-                    NameData nd_map = NameData.find(list_NameData_Map, map_id);
+                    NameData nd_map = NameDataStorage.MAP.get(map_id);
                     if (nd_map == null) {
                         chr.DebugMsg("ERROR.");
                         continue;
@@ -1018,34 +1007,15 @@ public class DebugCommand {
         return true;
     }
 
-    private static ArrayList<NameData> list_NameData_Npc = null;
-    private static ArrayList<NameData> list_NameData_Item = null;
-    private static ArrayList<NameData> list_NameData_Map = null;
-
     private static boolean searchString(MapleCharacter chr, String type, String search_name) {
 
         switch (type) {
             case "npc": {
-                if (list_NameData_Npc == null) {
-                    list_NameData_Npc = new ArrayList<>();
-                    for (IMapleData wz_data : StringWz.get().getNpc().getChildren()) {
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = DWI_Validation.isValidNPCID(id);
-                        nd.name = name;
-                        list_NameData_Npc.add(nd);
-                    }
-
-                }
-                for (NameData nd : list_NameData_Npc) {
-                    if (nd.name.contains(search_name)) {
-                        if (nd.available) {
-                            chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
-                        } else {
-                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                        }
+                for (NameData nd : NameDataStorage.NPC.find(search_name)) {
+                    if (nd.available) {
+                        chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
+                    } else {
+                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
                     }
                 }
                 return true;
@@ -1061,101 +1031,21 @@ public class DebugCommand {
                 return true;
             }
             case "item": {
-                if (list_NameData_Item == null) {
-                    list_NameData_Item = new ArrayList<>();
-                    for (IMapleData wz_root : StringWz.get().getEqp().getChildren()) {
-                        for (IMapleData wz_data : wz_root.getChildren()) {
-                            int id = Integer.parseInt(wz_data.getName());
-                            String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                            NameData nd = new NameData();
-                            nd.id = id;
-                            nd.available = DWI_Validation.isValidItemID(id);
-                            nd.name = name;
-                            list_NameData_Item.add(nd);
-                        }
-                    }
-                    for (IMapleData wz_data : StringWz.get().getConsume().getChildren()) {
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = DWI_Validation.isValidItemID(id);
-                        nd.name = name;
-                        list_NameData_Item.add(nd);
-                    }
-                    for (IMapleData wz_data : StringWz.get().getIns().getChildren()) {
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = DWI_Validation.isValidItemID(id);
-                        nd.name = name;
-                        list_NameData_Item.add(nd);
-                    }
-                    for (IMapleData wz_data : StringWz.get().getEtc().getChildren()) {
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = DWI_Validation.isValidItemID(id);
-                        nd.name = name;
-                        list_NameData_Item.add(nd);
-                    }
-                    for (IMapleData wz_data : StringWz.get().getPet().getChildren()) {
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = DWI_Validation.isValidItemID(id);
-                        nd.name = name;
-                        list_NameData_Item.add(nd);
-                    }
-                    for (IMapleData wz_data : StringWz.get().getCash().getChildren()) {
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = DWI_Validation.isValidItemID(id);
-                        nd.name = name;
-                        list_NameData_Item.add(nd);
-                    }
-                }
-                for (NameData nd : list_NameData_Item) {
-                    if (nd.name.contains(search_name)) {
-                        if (nd.available) {
-                            chr.DebugMsgItem(nd.id + " : \"" + nd.name + "\"", nd.id);
-                        } else {
-                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                        }
+                for (NameData nd : NameDataStorage.ITEM.find(search_name)) {
+                    if (nd.available) {
+                        chr.DebugMsgItem(nd.id + " : \"" + nd.name + "\"", nd.id);
+                    } else {
+                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
                     }
                 }
                 return true;
             }
             case "map": {
-                if (list_NameData_Map == null) {
-                    list_NameData_Map = new ArrayList<>();
-                    for (IMapleData wz_root : StringWz.get().getMap().getChildren()) {
-                        for (IMapleData wz_data : wz_root.getChildren()) {
-                            int id = Integer.parseInt(wz_data.getName());
-                            String mapName = TacosWzDataTool.getString(wz_data.getChildByPath("mapName"), "");
-                            String streetName = TacosWzDataTool.getString(wz_data.getChildByPath("streetName"), "");
-                            NameData nd = new NameData();
-                            nd.id = id;
-                            nd.available = DWI_Validation.isValidMapID(id); // test
-                            nd.mapName = mapName;
-                            nd.streetName = streetName;
-                            list_NameData_Map.add(nd);
-                        }
-                    }
-
-                }
-                for (NameData nd : list_NameData_Map) {
-                    if (nd.mapName.contains(search_name) || nd.streetName.contains(search_name)) {
-                        if (nd.available) {
-                            chr.DebugMsg(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
-                        } else {
-                            chr.DebugMsg2(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
-                        }
+                for (NameData nd : NameDataStorage.MAP.find(search_name)) {
+                    if (nd.available) {
+                        chr.DebugMsg(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
+                    } else {
+                        chr.DebugMsg2(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
                     }
                 }
                 return true;
@@ -1175,7 +1065,6 @@ public class DebugCommand {
             }
         }
 
-        chr.DebugMsg("searchString==");
         return true;
     }
 

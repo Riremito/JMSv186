@@ -18,25 +18,11 @@
  */
 package tacos.wz.ids;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author Riremito
  */
 public class NameData {
-
-    public static NameData find(ArrayList<NameData> nds, int id) {
-        if (nds == null) {
-            return null;
-        }
-        for (NameData nd : nds) {
-            if (nd.id == id) {
-                return nd;
-            }
-        }
-        return null;
-    }
 
     public int id = 0;
     public boolean available = true;
