@@ -226,5 +226,4 @@ public class StringWz extends TacosWz {
         list_drop_monsterbook.add(dmb);
         return dmb;
     }
-
 }

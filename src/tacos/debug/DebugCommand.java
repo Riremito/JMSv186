@@ -74,6 +74,8 @@ import tacos.server.TacosWorld;
 import tacos.wz.TacosWzDataTool;
 import tacos.wz.data.EtcWz;
 import tacos.wz.data.ReactorWz;
+import tacos.wz.ids.NameData;
+import tacos.wz.ids.NameDataStorage;
 
 /**
  *
@@ -1016,32 +1018,9 @@ public class DebugCommand {
         return true;
     }
 
-    static public class NameData {
-
-        public int id = 0;
-        boolean available = true;
-        public String name = null;
-        public String mapName = null;
-        public String streetName = null;
-
-        public static NameData find(ArrayList<NameData> nds, int id) {
-            if (nds == null) {
-                return null;
-            }
-            for (NameData nd : nds) {
-                if (nd.id == id) {
-                    return nd;
-                }
-            }
-            return null;
-        }
-    }
-
     private static ArrayList<NameData> list_NameData_Npc = null;
-    private static ArrayList<NameData> list_NameData_Mob = null;
     private static ArrayList<NameData> list_NameData_Item = null;
     private static ArrayList<NameData> list_NameData_Map = null;
-    private static ArrayList<NameData> list_NameData_Skill = null;
 
     private static boolean searchString(MapleCharacter chr, String type, String search_name) {
 
@@ -1072,26 +1051,11 @@ public class DebugCommand {
                 return true;
             }
             case "mob": {
-                if (list_NameData_Mob == null) {
-                    list_NameData_Mob = new ArrayList<>();
-                    for (IMapleData wz_data : StringWz.get().getMob().getChildren()) {
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = DWI_Validation.isValidMobID(id);
-                        nd.name = name;
-                        list_NameData_Mob.add(nd);
-                    }
-
-                }
-                for (NameData nd : list_NameData_Mob) {
-                    if (nd.name.contains(search_name)) {
-                        if (nd.available) {
-                            chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
-                        } else {
-                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                        }
+                for (NameData nd : NameDataStorage.MOB.find(search_name)) {
+                    if (nd.available) {
+                        chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
+                    } else {
+                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
                     }
                 }
                 return true;
@@ -1197,29 +1161,11 @@ public class DebugCommand {
                 return true;
             }
             case "skill": {
-                if (list_NameData_Skill == null) {
-                    list_NameData_Skill = new ArrayList<>();
-                    for (IMapleData wz_data : StringWz.get().getSkill().getChildren()) {
-                        if (wz_data.getChildByPath("bookName") != null) {
-                            continue;
-                        }
-                        int id = Integer.parseInt(wz_data.getName());
-                        String name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), "");
-                        NameData nd = new NameData();
-                        nd.id = id;
-                        nd.available = true; // test
-                        nd.name = name;
-                        list_NameData_Skill.add(nd);
-                    }
-
-                }
-                for (NameData nd : list_NameData_Skill) {
-                    if (nd.name.contains(search_name)) {
-                        if (nd.available) {
-                            chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
-                        } else {
-                            chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                        }
+                for (NameData nd : NameDataStorage.SKILL.find(search_name)) {
+                    if (nd.available) {
+                        chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
+                    } else {
+                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
                     }
                 }
                 return true;
