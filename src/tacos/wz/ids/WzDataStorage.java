@@ -190,10 +190,9 @@ public class WzDataStorage {
                 return true;
             }
             case SKILL: {
-                String path = "";
-                String regex = "";
+                String path = is_single_data_wz ? "Data.wz/Skill" : "Skill.wz";
 
-                if (!loadXML(path, regex)) {
+                if (!loadSkillXML(path)) {
                     DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
                     return false;
                 }
@@ -268,6 +267,33 @@ public class WzDataStorage {
                     // ignore hair
                     if (1000000 <= id) {
                         add(id);
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean loadSkillXML(String path) {
+        IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+        if (wz == null) {
+            return false;
+        }
+
+        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+        Pattern id_pattern = Pattern.compile("0*(\\d+)");
+        for (IMapleDataEntity dir : wz.getRootDirectory().getFiles()) {
+            Matcher img_matcher = img_pattern.matcher(dir.getName());
+            if (img_matcher.matches()) {
+                IMapleData md_skill = wz.getData(dir.getName()).getChildByPath("skill");
+                if (md_skill != null) {
+                    for (IMapleData md : md_skill.getChildren()) {
+                        Matcher id_matcher = id_pattern.matcher(md.getName());
+                        if (id_matcher.matches()) {
+                            int id = Integer.parseInt(md.getName());
+                            add(id);
+                        }
                     }
                 }
             }

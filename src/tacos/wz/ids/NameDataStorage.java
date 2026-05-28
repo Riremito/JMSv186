@@ -137,7 +137,9 @@ public class NameDataStorage {
                 return true;
             }
             case SKILL: {
-                // TODO : skill ids.
+                for (int skill_id : WzDataStorage.SKILL.getIds()) {
+                    add(skill_id);
+                }
                 for (IMapleData wz_data : StringWz.get().getSkill().getChildren()) {
                     if (wz_data.getChildByPath("bookName") != null) {
                         continue;
