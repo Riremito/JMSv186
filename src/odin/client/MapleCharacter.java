@@ -53,7 +53,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import tacos.config.DeveloperMode;
 import tacos.shared.SharedExpTable;
-import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
 import odin.handling.world.MapleParty;
@@ -140,6 +139,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosPortal;
+import tacos.wz.ids.WzDataStorage;
 import tacos.wz.opt.FieldOpt;
 
 public class MapleCharacter extends TacosCharacter {
@@ -356,7 +356,7 @@ public class MapleCharacter extends TacosCharacter {
                 rs.close();
 
                 for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, ret.id).values()) {
-                    if (!DWI_Validation.isValidItemID(mit.getLeft().getItemId())) {
+                    if (!WzDataStorage.ITEM.check(mit.getLeft().getItemId())) {
                         DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                         continue;
                     }
@@ -1590,7 +1590,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void setSkinColor(int skinColor) {
-        if (!DWI_Validation.isValidSkinID(skinColor)) {
+        if (!WzDataStorage.SKIN.check(skinColor)) {
             DebugLogger.ErrorLog("Invalid skin id : " + skinColor);
             this.skinColor = DWI_Dafault.SKIN;
             return;
@@ -1608,7 +1608,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void setHair(int hair) {
-        if (!DWI_Validation.isValidHairID(hair)) {
+        if (!WzDataStorage.HAIR.check(hair)) {
             DebugLogger.ErrorLog("Invalid hair id : " + hair);
             this.hair = DWI_Dafault.HAIR;
             return;
@@ -1617,7 +1617,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void setFace(int face) {
-        if (!DWI_Validation.isValidFaceID(face)) {
+        if (!WzDataStorage.FACE.check(face)) {
             DebugLogger.ErrorLog("Invalid face id : " + face);
             this.face = DWI_Dafault.FACE;
             return;
@@ -4370,19 +4370,19 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void setPetAutoHPItem(int item_id) {
-        if (item_id == 0 || DWI_Validation.isValidItemID(item_id)) {
+        if (item_id == 0 || WzDataStorage.ITEM.check(item_id)) {
             this.pet_auto_hp_item_id = item_id;
         }
     }
 
     public void setPetAutoMPItem(int item_id) {
-        if (item_id == 0 || DWI_Validation.isValidItemID(item_id)) {
+        if (item_id == 0 || WzDataStorage.ITEM.check(item_id)) {
             this.pet_auto_mp_item_id = item_id;
         }
     }
 
     public void setPetAutoCureItem(int item_id) {
-        if (item_id == 0 || DWI_Validation.isValidItemID(item_id)) {
+        if (item_id == 0 || WzDataStorage.ITEM.check(item_id)) {
             this.pet_auto_cure_item_id = item_id;
         }
     }

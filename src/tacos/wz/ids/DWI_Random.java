@@ -28,14 +28,14 @@ import java.util.Random;
 public class DWI_Random {
 
     public static int getMapIndex(int id) {
-        return DWI_LoadXML.getMap().getIds().indexOf(id);
+        return WzDataStorage.MAP.getIds().indexOf(id);
     }
 
     public static int getMapByIndex(int index) {
-        if (index < 0 || DWI_LoadXML.getMap().getIds().size() <= index) {
+        if (index < 0 || WzDataStorage.MAP.getIds().size() <= index) {
             return -1;
         }
-        return DWI_LoadXML.getMap().getIds().get(index);
+        return WzDataStorage.MAP.getIds().get(index);
     }
 
     public static int getRandomPotential(int rank) {

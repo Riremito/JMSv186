@@ -24,7 +24,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.SpawnPointAreaBoss;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
-import tacos.wz.ids.DWI_Validation;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -238,7 +238,7 @@ public class MasterMonster {
             }
         }
 
-        if (!DWI_Validation.isValidMobID(monsterid)) {
+        if (!WzDataStorage.MOB.check(monsterid)) {
             DebugLogger.ErrorLog("Invalid Mob ID = " + monsterid);
             return false;
         }

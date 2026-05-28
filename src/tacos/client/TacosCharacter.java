@@ -72,7 +72,7 @@ import tacos.unofficial.PetCharacter;
 import tacos.unofficial.PetMob;
 import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
-import tacos.wz.ids.DWI_Validation;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -457,7 +457,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void setJob(int job) {
-        if (!DWI_Validation.isValidJobID(job)) {
+        if (!WzDataStorage.JOB.check(job)) {
             DebugLogger.ErrorLog("Invalid job id : " + job);
             this.job = DWI_Dafault.JOB;
             return;

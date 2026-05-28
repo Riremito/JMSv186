@@ -26,8 +26,6 @@ import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.wz.data.ItemWz;
-import tacos.wz.ids.DWI_LoadXML;
-import tacos.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.ClientPacket;
@@ -37,6 +35,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.provider.IMapleData;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -126,7 +125,7 @@ public class DebugShop {
     }
 
     public boolean addItem(int item_id) {
-        if (!DWI_Validation.isValidItemID(item_id)) {
+        if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
             return false;
         }
@@ -152,7 +151,7 @@ public class DebugShop {
     }
 
     public boolean addItem(int item_id, int item_price, int item_quantity, int item_slot_max) {
-        if (!DWI_Validation.isValidItemID(item_id)) {
+        if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
             return false;
         }
@@ -167,7 +166,7 @@ public class DebugShop {
     }
 
     public boolean addItemRecharge(int item_id, int item_recharge_price) {
-        if (!DWI_Validation.isValidItemID(item_id)) {
+        if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("DebugShop : addItemRecharge, invalid item id = " + item_id);
             return false;
         }
@@ -218,7 +217,7 @@ public class DebugShop {
 
     public boolean setRandomItems(int count) {
         for (int i = 0; i < count; i++) {
-            this.addItem(DWI_LoadXML.getItem().getRandom());
+            this.addItem(WzDataStorage.ITEM.getRandom());
         }
         return true;
     }

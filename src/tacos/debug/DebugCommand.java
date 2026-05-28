@@ -31,8 +31,6 @@ import tacos.shared.SharedExpTable;
 import tacos.wz.data.SkillWz;
 import tacos.wz.data.StringWz;
 import tacos.wz.ids.DWI_Random;
-import tacos.wz.ids.DWI_Validation;
-import tacos.wz.ids.DWI_LoadXML;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +75,7 @@ import tacos.wz.data.MapWz;
 import tacos.wz.data.ReactorWz;
 import tacos.wz.ids.NameData;
 import tacos.wz.ids.NameDataStorage;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -202,7 +201,7 @@ public class DebugCommand {
                 }
                 int npc_id = dcmd.getInt(1);
 
-                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id)) {
+                if (!WzDataStorage.NPC.check(npc_id) || !remoteNPCTalk(client, npc_id)) {
                     chr.DebugMsg("npctalk : invalid id.");
                     return true;
                 }
@@ -216,7 +215,7 @@ public class DebugCommand {
                 }
                 int npc_id = dcmd.getInt(1);
                 // set Chief Stan
-                if (!DWI_Validation.isValidNPCID(npc_id) || !remoteNPCTalk(client, npc_id, 1012003)) {
+                if (!WzDataStorage.NPC.check(npc_id) || !remoteNPCTalk(client, npc_id, 1012003)) {
                     chr.DebugMsg("npctalk2 : invalid id.");
                     return true;
                 }
@@ -294,7 +293,7 @@ public class DebugCommand {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
-                if (!DWI_Validation.isValidNPCID(npc_id)) {
+                if (!WzDataStorage.NPC.check(npc_id)) {
                     chr.DebugMsg("npc : invalid id.");
                     return true;
                 }
@@ -328,7 +327,7 @@ public class DebugCommand {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
-                if (!DWI_Validation.isValidNPCID(npc_id)) {
+                if (!WzDataStorage.NPC.check(npc_id)) {
                     chr.DebugMsg("npclocation : invalid id.");
                     return true;
                 }
@@ -371,7 +370,7 @@ public class DebugCommand {
                 }
 
                 int reactor_id = dcmd.getInt(1);
-                if (!DWI_Validation.isValidReactorID(reactor_id)) {
+                if (!WzDataStorage.REACTOR.check(reactor_id)) {
                     chr.DebugMsg("reactor : invalid id.");
                     return true;
                 }
@@ -475,7 +474,7 @@ public class DebugCommand {
                 }
                 int item_id = dcmd.getInt(1);
 
-                if (!DWI_Validation.isValidItemID(item_id)) {
+                if (!WzDataStorage.ITEM.check(item_id)) {
                     return true;
                 }
                 int item_quantity = 1;
@@ -531,7 +530,7 @@ public class DebugCommand {
                     }
                 }
 
-                if (!DWI_Validation.isValidMobID(mob_id)) {
+                if (!WzDataStorage.MOB.check(mob_id)) {
                     chr.DebugMsg("mob : invalid id.");
                     return true;
                 }
@@ -780,7 +779,7 @@ public class DebugCommand {
             }
             case "/townmap": {
                 int count = 0;
-                for (int map_id : DWI_LoadXML.getMap().getIds()) {
+                for (int map_id : WzDataStorage.MAP.getIds()) {
                     IMapleData data = MapWz.get().getImg(map_id);
                     if (data != null) {
                         if (TacosWzDataTool.getIntPath("info/town", data, 0) != 0) {
@@ -828,9 +827,9 @@ public class DebugCommand {
             }
             // ランダム関連
             case "/randombeauty": {
-                int skin_id = DWI_LoadXML.getSkin().getRandom();
-                int face_id = DWI_LoadXML.getFace().getRandom();
-                int hair_id = DWI_LoadXML.getHair().getRandom();
+                int skin_id = WzDataStorage.SKIN.getRandom();
+                int face_id = WzDataStorage.FACE.getRandom();
+                int hair_id = WzDataStorage.HAIR.getRandom();
 
                 chr.setSkinColor((byte) (skin_id % 100));
                 chr.setFace(face_id);
@@ -842,7 +841,7 @@ public class DebugCommand {
             }
             case "/randomdrop": {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                int itemid = DWI_LoadXML.getItem().getRandom();
+                int itemid = WzDataStorage.ITEM.getRandom();
                 IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
                 map.spawnItemDrop(chr, chr, toDrop, chr.getPosition(), true, true);
                 String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
@@ -866,7 +865,7 @@ public class DebugCommand {
                 }
 
                 for (int i = 0; i < mob_count; i++) {
-                    int mobid = DWI_LoadXML.getMob().getRandom();
+                    int mobid = WzDataStorage.MOB.getRandom();
                     DebugLogger.InfoLog("random spawn: " + mobid);
                     MapleMonster mob = MapleLifeFactory.getMonster(mobid);
                     map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
@@ -877,7 +876,7 @@ public class DebugCommand {
                 return true;
             }
             case "/randommap": {
-                int mapid = DWI_LoadXML.getMap().getRandom();
+                int mapid = WzDataStorage.MAP.getRandom();
                 MapleMap map_to = chr.findMap(mapid);
                 chr.changeMap(map_to, map_to.getPortal(0));
                 chr.DebugMsg("random map : " + map_to.getId());
@@ -893,7 +892,7 @@ public class DebugCommand {
     }
 
     public static boolean changeMap(MapleCharacter chr, int map_id) {
-        if (!DWI_Validation.isValidMapID(map_id)) {
+        if (!WzDataStorage.MAP.check(map_id)) {
             return false;
         }
 
@@ -1013,7 +1012,7 @@ public class DebugCommand {
             }
         }
 
-        if (DWI_Validation.isValidNPCID(npc_id)) {
+        if (WzDataStorage.NPC.check(npc_id)) {
             remoteNPCTalk(client, npc_id);
         } else {
             remoteNPCTalk(client, npc_id, def_npc_id);
@@ -1085,7 +1084,7 @@ public class DebugCommand {
             int mob_count = mob_counts.get(i);
             IMapleData md_mob = StringWz.get().getMob().getChildByPath(Integer.toString(mob_id));
             String mob_name = md_mob != null ? TacosWzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
-            if (!DWI_Validation.isValidMobID(mob_id)) {
+            if (!WzDataStorage.MOB.check(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
                 continue;
             }

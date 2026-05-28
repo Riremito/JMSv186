@@ -19,8 +19,8 @@
 package tacos.debug;
 
 import odin.client.MapleCharacter;
-import tacos.wz.ids.DWI_LoadXML;
 import java.util.ArrayList;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -52,7 +52,7 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
     public ArrayList<Integer> getIdsTest(MapleCharacter chr, int answer) {
         ArrayList<Integer> ids = new ArrayList<>();
         if (answer == AvatarType.SKIN.ordinal()) {
-            for (int skin_id : DWI_LoadXML.getSkin().getIds()) {
+            for (int skin_id : WzDataStorage.SKIN.getIds()) {
                 ids.add(skin_id); // already filtered by list.
             }
             return ids;
@@ -60,7 +60,7 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
         if (answer == AvatarType.FACE.ordinal()) {
             int chr_face_color = chr.getFace() / 100 % 10;
             int chr_face_gender = chr.getFace() / 1000 % 10;
-            for (int id : DWI_LoadXML.getFace().getIds()) {
+            for (int id : WzDataStorage.FACE.getIds()) {
                 int id_color = id / 100 % 10;
                 int id_gender = id / 1000 % 10;
                 if (id_color == chr_face_color && id_gender == chr_face_gender) {
@@ -72,7 +72,7 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
         if (answer == AvatarType.FACE_COLOR.ordinal()) {
             int chr_face_base = chr.getFace() % 100;
             int chr_face_gender = chr.getFace() / 1000 % 10;
-            for (int id : DWI_LoadXML.getFace().getIds()) {
+            for (int id : WzDataStorage.FACE.getIds()) {
                 int id_base = id % 100;
                 int id_gender = id / 1000 % 10;
                 if (id_base == chr_face_base && id_gender == chr_face_gender) {
@@ -84,7 +84,7 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
         if (answer == AvatarType.HAIR.ordinal()) {
             int chr_hair_color = chr.getHair() % 10;
             int chr_hair_gender = (chr.getHair() % 30000) / 1000;
-            for (int id : DWI_LoadXML.getHair().getIds()) {
+            for (int id : WzDataStorage.HAIR.getIds()) {
                 int id_color = id % 10;
                 int id_gender = id % 30000 / 1000;
                 if (id_color == chr_hair_color && id_gender == chr_hair_gender) {
@@ -96,7 +96,7 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
         if (answer == AvatarType.HAIR_COLOR.ordinal()) {
             int chr_hair_base = chr.getHair() - (chr.getHair() % 10);
             int chr_hair_gender = (chr.getHair() % 30000) / 1000;
-            for (int id : DWI_LoadXML.getHair().getIds()) {
+            for (int id : WzDataStorage.HAIR.getIds()) {
                 int id_base = id - (id % 10);
                 int id_gender = id % 30000 / 1000;
                 if (id_base == chr_hair_base && id_gender == chr_hair_gender) {

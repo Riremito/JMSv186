@@ -19,11 +19,11 @@ import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.wz.ids.DWI_Validation;
 import tacos.database.DatabaseConnection;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.wz.ids.WzDataStorage;
 
 public class MapleShop {
 
@@ -77,7 +77,7 @@ public class MapleShop {
     }
 
     public void addItem(MapleShopItem item) {
-        if (DWI_Validation.isValidItemID(item.getItemId())) {
+        if (WzDataStorage.ITEM.check(item.getItemId())) {
             items.add(item);
         }
     }

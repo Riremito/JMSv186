@@ -24,7 +24,6 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
-import tacos.wz.ids.DWI_LoadXML;
 import java.util.List;
 import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
@@ -44,6 +43,7 @@ import tacos.odin.OdinPair;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.packet.ServerPacketHeader;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -192,7 +192,7 @@ public class ResCMiniRoomBaseDlg {
                 int sold_item_count = 3;
                 sp.Encode1(sold_item_count);
                 for (int i = 0; i < sold_item_count; i++) {
-                    sp.Encode4(DWI_LoadXML.getItem().getRandom());
+                    sp.Encode4(WzDataStorage.ITEM.getRandom());
                     sp.Encode2(7); // quanty
                     sp.Encode4(123); // price
                     sp.EncodeStr(chr.getName()); // buyer
@@ -207,7 +207,7 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode1(sale_item_count);
             for (int i = 0; i < sale_item_count; i++) {
                 MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-                int itemid = DWI_LoadXML.getItem().getRandom();
+                int itemid = WzDataStorage.ITEM.getRandom();
                 IItem item_gen = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? miip.randomizeStats((Equip) miip.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
 
                 sp.Encode2(1); // bundle
@@ -397,8 +397,9 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode2(visitor.size());
         for (String visit : visitor) {
             sp.EncodeStr(visit);
-            sp.Encode4(1); /////for the lul
+            sp.Encode4(1);
         }
+
         return sp.get();
     }
 

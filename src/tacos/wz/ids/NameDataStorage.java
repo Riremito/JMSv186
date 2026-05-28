@@ -31,29 +31,19 @@ import tacos.wz.data.StringWz;
  */
 public class NameDataStorage {
 
-    public static final NameDataStorage ITEM = new NameDataStorage(NameDataType.ITEM);
-    public static final NameDataStorage MAP = new NameDataStorage(NameDataType.MAP);
-    public static final NameDataStorage MOB = new NameDataStorage(NameDataType.MOB);
-    public static final NameDataStorage NPC = new NameDataStorage(NameDataType.NPC);
-    public static final NameDataStorage REACTOR = new NameDataStorage(NameDataType.REACTOR);
-    public static final NameDataStorage SKILL = new NameDataStorage(NameDataType.SKILL);
+    public static final NameDataStorage ITEM = new NameDataStorage(WzType.ITEM);
+    public static final NameDataStorage MAP = new NameDataStorage(WzType.MAP);
+    public static final NameDataStorage MOB = new NameDataStorage(WzType.MOB);
+    public static final NameDataStorage NPC = new NameDataStorage(WzType.NPC);
+    public static final NameDataStorage REACTOR = new NameDataStorage(WzType.REACTOR);
+    public static final NameDataStorage SKILL = new NameDataStorage(WzType.SKILL);
     private static final String NO_NAME = "<NO_NAME>";
     private static final String NO_STRING_DATA = "<NO_STRING_DATA>";
 
-    private enum NameDataType {
-        ITEM,
-        MAP,
-        MOB,
-        NPC,
-        REACTOR,
-        SKILL,
-        UNKNOWN;
-    }
-
-    private NameDataType type;
+    private WzType type;
     private TreeMap<Integer, NameData> data = null;
 
-    private NameDataStorage(NameDataType type) {
+    private NameDataStorage(WzType type) {
         this.type = type;
     }
 
@@ -66,7 +56,7 @@ public class NameDataStorage {
         this.data = new TreeMap<>();
         switch (this.type) {
             case ITEM: {
-                for (int item_id : DWI_LoadXML.getItem().getIds()) {
+                for (int item_id : WzDataStorage.ITEM.getIds()) {
                     add(item_id);
                 }
                 for (IMapleData wz_root : StringWz.get().getEqp().getChildren()) {
@@ -104,7 +94,7 @@ public class NameDataStorage {
                 return true;
             }
             case MAP: {
-                for (int map_id : DWI_LoadXML.getMap().getIds()) {
+                for (int map_id : WzDataStorage.MAP.getIds()) {
                     addMap(map_id);
                 }
                 for (IMapleData wz_root : StringWz.get().getMap().getChildren()) {
@@ -118,7 +108,7 @@ public class NameDataStorage {
                 return true;
             }
             case MOB: {
-                for (int mob_id : DWI_LoadXML.getMob().getIds()) {
+                for (int mob_id : WzDataStorage.MOB.getIds()) {
                     add(mob_id);
                 }
                 for (IMapleData wz_data : StringWz.get().getMob().getChildren()) {
@@ -129,7 +119,7 @@ public class NameDataStorage {
                 return true;
             }
             case NPC: {
-                for (int npc_id : DWI_LoadXML.getNpc().getIds()) {
+                for (int npc_id : WzDataStorage.NPC.getIds()) {
                     add(npc_id);
                 }
                 for (IMapleData wz_data : StringWz.get().getNpc().getChildren()) {
@@ -140,7 +130,7 @@ public class NameDataStorage {
                 return true;
             }
             case REACTOR: {
-                for (int npc_id : DWI_LoadXML.getReactor().getIds()) {
+                for (int npc_id : WzDataStorage.REACTOR.getIds()) {
                     add(npc_id);
                 }
                 // no reactor name data.
@@ -225,7 +215,7 @@ public class NameDataStorage {
     }
 
     public ArrayList<NameData> find(String name, boolean ignore_string_only) {
-        if (this.type == NameDataType.MAP) {
+        if (this.type == WzType.MAP) {
             return findMap(name, ignore_string_only);
         }
 

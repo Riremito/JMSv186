@@ -31,7 +31,7 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
-import tacos.wz.ids.DWI_Validation;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -70,7 +70,7 @@ public class CustomMap {
             int npc_y = Integer.parseInt(npc_data[2]);
             int npc_fh = Integer.parseInt(npc_data[3]);
 
-            if (!DWI_Validation.isValidNPCID(npc_id)) {
+            if (!WzDataStorage.NPC.check(npc_id)) {
                 DebugLogger.ErrorLog("addNPCtoMap : " + map_id + ", invalid npc id = " + npc_id);
                 continue;
             }

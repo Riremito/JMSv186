@@ -30,7 +30,6 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.wz.data.EtcWz;
-import tacos.wz.ids.DWI_Validation;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Character_slots;
 import tacos.database.query.DQ_Characters;
@@ -50,6 +49,7 @@ import tacos.packet.ClientPacketHeader;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -375,7 +375,7 @@ public class ReqCLogin {
             }
         }
         // data check
-        if (!DWI_Validation.isValidFaceID(face_id) || !DWI_Validation.isValidHairID(hair_id)) {
+        if (!WzDataStorage.FACE.check(face_id) || !WzDataStorage.HAIR.check(hair_id)) {
             DebugLogger.DebugLog("Character creation error");
             client.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
             return false;
@@ -430,7 +430,7 @@ public class ReqCLogin {
     }
 
     public boolean SetDefaultEquip(MapleCharacter newchar, int item_id) {
-        if (!DWI_Validation.isValidItemID(item_id)) {
+        if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("SetDefaultEquip, item_id = " + item_id);
             return false;
         }

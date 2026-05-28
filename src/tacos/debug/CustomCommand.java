@@ -25,7 +25,7 @@ import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.wz.ids.DWI_Validation;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -91,7 +91,7 @@ public class CustomCommand {
                 }
                 int map_id_to = dcmd.getInt(1);
 
-                if (map_id_to == 0 || !DWI_Validation.isValidMapID(map_id_to)) {
+                if (map_id_to == 0 || !WzDataStorage.MAP.check(map_id_to)) {
                     chr.DebugMsg("[AddPortal] Invalid MapID.");
                     return true;
                 }

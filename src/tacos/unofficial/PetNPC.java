@@ -24,7 +24,7 @@ import tacos.client.TacosCharacter;
 import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
-import tacos.wz.ids.DWI_Validation;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -48,7 +48,7 @@ public class PetNPC implements IPetEx {
     public boolean spawn(int id) {
         remove();
 
-        if (!DWI_Validation.isValidNPCID(id)) {
+        if (!WzDataStorage.NPC.check(id)) {
             return false;
         }
 

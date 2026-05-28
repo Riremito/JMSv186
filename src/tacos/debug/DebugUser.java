@@ -24,8 +24,8 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.DeveloperMode;
-import tacos.wz.ids.DWI_Validation;
 import odin.server.MapleItemInformationProvider;
+import tacos.wz.ids.WzDataStorage;
 
 /**
  *
@@ -39,7 +39,7 @@ public class DebugUser {
     }
 
     public static boolean AddItem(MapleCharacter chr, int itemid, int count) {
-        if (!DWI_Validation.isValidItemID(itemid)) {
+        if (!WzDataStorage.ITEM.check(itemid)) {
             return false;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
