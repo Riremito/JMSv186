@@ -242,6 +242,10 @@ public final class MapleMap extends TacosMap {
         spawnMonster_sSack(mob, pos, -2);
     }
 
+    public void spawnMonsterOnGroundBelow(MapleMonster mob, Point pos, int type) {
+        spawnMonster_sSack(mob, pos, type);
+    }
+
     public final int spawnMonsterWithEffectBelow(final MapleMonster mob, final Point pos, final int effect) {
         final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
         return spawnMonsterWithEffect(mob, effect, spos);

@@ -982,6 +982,10 @@ public abstract class OdinAbstractPlayerInteraction {
         spawnMonster(id, 1, new Point(x, y));
     }
 
+    public void spawnBossAtNPC(int id, int x, int y, int type) {
+        getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), new Point(x, y), type);
+    }
+
     // multiple monsters, remote location
     public void spawnMonster(int id, int qty, int x, int y) {
         spawnMonster(id, qty, new Point(x, y));
