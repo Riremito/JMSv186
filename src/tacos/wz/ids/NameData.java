@@ -18,15 +18,39 @@
  */
 package tacos.wz.ids;
 
+import lombok.Getter;
+import lombok.Setter;
+import odin.client.MapleCharacter;
+
 /**
  *
  * @author Riremito
  */
+@Getter
+@Setter
 public class NameData {
 
-    public int id = 0;
-    public boolean available = true;
-    public String name = null;
-    public String mapName = null;
-    public String streetName = null;
+    private int id = 0;
+    private String name = null;
+    private String mapName = null;
+    private String streetName = null;
+    private boolean available = false;
+
+    public void sendDebugMsg(MapleCharacter chr) {
+        String text = this.id + " : \"" + this.name + "\"";
+        if (this.available) {
+            chr.DebugMsg(text);
+        } else {
+            chr.DebugMsg2(text);
+        }
+    }
+
+    public void sendMapDebugMsg(MapleCharacter chr) {
+        String text = this.id + " : \"" + this.mapName + "\" - \"" + this.streetName + "\"";
+        if (this.available) {
+            chr.DebugMsg(text);
+        } else {
+            chr.DebugMsg2(text);
+        }
+    }
 }

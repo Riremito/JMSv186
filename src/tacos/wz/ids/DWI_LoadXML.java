@@ -29,7 +29,6 @@ import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
 import odin.provider.IMapleDataProvider;
-import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -192,29 +191,6 @@ public class DWI_LoadXML {
             }
         }
         return list.size();
-    }
-
-    public static int LoadTownMaps() {
-        IMapleDataProvider wz = (new TacosWz("Map.wz/Map")).getWzRoot();
-        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
-        for (IMapleDataDirectoryEntry map_dir : wz.getRootDirectory().getSubDirectories()) {
-            DebugLogger.DebugLog("dir = " + map_dir.getName());
-            for (IMapleDataEntity dir : map_dir.getFiles()) {
-                Matcher img_matcher = img_pattern.matcher(dir.getName());
-                if (img_matcher.matches()) {
-                    int map_id = Integer.parseInt(img_matcher.group(1));
-                    IMapleDataProvider map_root = (new TacosWz("Map.wz/Map/" + map_dir.getName() + "/")).getWzRoot();
-                    IMapleData map_data = map_root.getData(dir.getName());
-                    if (TacosWzDataTool.getIntPath("info/town", map_data, 0) != 0) {
-                        int map_id_return = TacosWzDataTool.getIntPath("info/returnMap", map_data, 0);
-                        if (map_id_return == map_id) {
-                            DebugLogger.DebugLog("town mapid = " + map_id);
-                        }
-                    }
-                }
-            }
-        }
-        return 0;
     }
 
     // test for gm command

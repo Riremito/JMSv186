@@ -73,6 +73,7 @@ import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.wz.TacosWzDataTool;
 import tacos.wz.data.EtcWz;
+import tacos.wz.data.MapWz;
 import tacos.wz.data.ReactorWz;
 import tacos.wz.ids.NameData;
 import tacos.wz.ids.NameDataStorage;
@@ -275,13 +276,11 @@ public class DebugCommand {
 
                 int shop_item_count = 0;
                 for (NameData nd : NameDataStorage.ITEM.find(search_string)) {
-                    if (nd.available) {
-                        ds.addItem(nd.id);
-                        shop_item_count++;
-                        if (100 <= shop_item_count) {
-                            chr.DebugMsg("item search hits over 100 item names.");
-                            break;
-                        }
+                    ds.addItem(nd.getId());
+                    shop_item_count++;
+                    if (100 <= shop_item_count) {
+                        chr.DebugMsg("item search hits over 100 item names.");
+                        break;
                     }
                 }
 
@@ -352,7 +351,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                chr.DebugMsg("npclocation : " + nd_npc.name + " (" + nd_npc.id + ")");
+                nd_npc.sendDebugMsg(chr);
                 for (IMapleData data : npc_location) {
                     int map_id = TacosWzDataTool.getInt(data);
                     NameData nd_map = NameDataStorage.MAP.get(map_id);
@@ -360,7 +359,7 @@ public class DebugCommand {
                         chr.DebugMsg("ERROR.");
                         continue;
                     }
-                    chr.DebugMsg(nd_map.streetName + " - " + nd_map.mapName + " (" + nd_map.id + ")");
+                    nd_map.sendMapDebugMsg(chr);
                 }
 
                 return true;
@@ -413,7 +412,40 @@ public class DebugCommand {
                     return true;
                 }
 
-                searchString(chr, dcmd.get(1).toLowerCase(), dcmd.get(2));
+                NameDataStorage nds;
+
+                switch (dcmd.get(1).toLowerCase()) {
+                    case "item" -> {
+                        nds = NameDataStorage.ITEM;
+                    }
+                    case "map" -> {
+                        nds = NameDataStorage.MAP;
+                        for (NameData nd : nds.find(dcmd.get(2), false)) {
+                            nd.sendMapDebugMsg(chr);
+                        }
+                        return true;
+                    }
+                    case "mob" -> {
+                        nds = NameDataStorage.MOB;
+                    }
+                    case "npc" -> {
+                        nds = NameDataStorage.NPC;
+                    }
+                    case "reactor" -> {
+                        // no names.
+                        return true;
+                    }
+                    case "skill" -> {
+                        nds = NameDataStorage.SKILL;
+                    }
+                    default -> {
+                        return true;
+                    }
+                }
+
+                for (NameData nd : nds.find(dcmd.get(2), false)) {
+                    nd.sendDebugMsg(chr);
+                }
                 return true;
             }
             case "/checkmapdata":
@@ -746,6 +778,28 @@ public class DebugCommand {
                 changeMap(chr, map_id);
                 return true;
             }
+            case "/townmap": {
+                int count = 0;
+                for (int map_id : DWI_LoadXML.getMap().getIds()) {
+                    IMapleData data = MapWz.get().getImg(map_id);
+                    if (data != null) {
+                        if (TacosWzDataTool.getIntPath("info/town", data, 0) != 0) {
+                            int return_map_id = TacosWzDataTool.getIntPath("info/returnMap", data, 0);
+                            if (map_id == return_map_id) {
+                                NameData nd = NameDataStorage.MAP.get(map_id);
+                                if (nd != null) {
+                                    nd.sendMapDebugMsg(chr);
+                                } else {
+                                    chr.DebugMsg(map_id + " : ERROR.");
+                                }
+                                count++;
+                            }
+                        }
+                    }
+                }
+                chr.DebugMsg("town map : " + count);
+                return true;
+            }
             case "/fm":
             case "/フリマ": {
                 chr.saveLocation(SavedLocationType.FREE_MARKET, map.getReturnMap().getId());
@@ -1004,67 +1058,6 @@ public class DebugCommand {
             ISkill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
         }
-        return true;
-    }
-
-    private static boolean searchString(MapleCharacter chr, String type, String search_name) {
-
-        switch (type) {
-            case "npc": {
-                for (NameData nd : NameDataStorage.NPC.find(search_name)) {
-                    if (nd.available) {
-                        chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
-                    } else {
-                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                    }
-                }
-                return true;
-            }
-            case "mob": {
-                for (NameData nd : NameDataStorage.MOB.find(search_name)) {
-                    if (nd.available) {
-                        chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
-                    } else {
-                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                    }
-                }
-                return true;
-            }
-            case "item": {
-                for (NameData nd : NameDataStorage.ITEM.find(search_name)) {
-                    if (nd.available) {
-                        chr.DebugMsgItem(nd.id + " : \"" + nd.name + "\"", nd.id);
-                    } else {
-                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                    }
-                }
-                return true;
-            }
-            case "map": {
-                for (NameData nd : NameDataStorage.MAP.find(search_name)) {
-                    if (nd.available) {
-                        chr.DebugMsg(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
-                    } else {
-                        chr.DebugMsg2(nd.id + " : \"" + nd.streetName + "\" - \"" + nd.mapName + "\"");
-                    }
-                }
-                return true;
-            }
-            case "skill": {
-                for (NameData nd : NameDataStorage.SKILL.find(search_name)) {
-                    if (nd.available) {
-                        chr.DebugMsg(nd.id + " : \"" + nd.name + "\"");
-                    } else {
-                        chr.DebugMsg2(nd.id + " : \"" + nd.name + "\"");
-                    }
-                }
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
         return true;
     }
 
