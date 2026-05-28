@@ -138,18 +138,10 @@ public class WzDataStorage {
                 return true;
             }
             case MAP: {
-                String regex = "0*(\\d+)\\.img";
-
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map0" : "Map.wz/Map/Map0", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map1" : "Map.wz/Map/Map1", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map2" : "Map.wz/Map/Map2", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map3" : "Map.wz/Map/Map3", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map4" : "Map.wz/Map/Map4", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map5" : "Map.wz/Map/Map5", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map6" : "Map.wz/Map/Map6", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map7" : "Map.wz/Map/Map7", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map8" : "Map.wz/Map/Map8", regex);
-                loadXML(is_single_data_wz ? "Data.wz/Map/Map/Map9" : "Map.wz/Map/Map9", regex);
+                if (!loadMapXML(is_single_data_wz ? "Data.wz/Map/Map" : "Map.wz/Map")) {
+                    DebugLogger.ErrorLog("WzDataStorage load : MAP.");
+                    return false;
+                }
 
                 dlt.End();
                 return true;
@@ -266,6 +258,33 @@ public class WzDataStorage {
                     int id = Integer.parseInt(img_matcher.group(1));
                     // ignore hair
                     if (1000000 <= id) {
+                        add(id);
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean loadMapXML(String path) {
+        IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+        if (wz == null) {
+            return false;
+        }
+
+        // Map.wz/Map
+        Pattern dir_pattern = Pattern.compile("Map(\\d+)");
+        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+        for (IMapleDataDirectoryEntry dir : wz.getRootDirectory().getSubDirectories()) {
+            Matcher dir_matcher = dir_pattern.matcher(dir.getName());
+            if (dir_matcher.matches()) {
+                // Map.wz/Map/Map[0-9]
+                for (IMapleDataEntity mde : dir.getFiles()) {
+                    // Map.wz/Map/Map[0-9]/
+                    Matcher img_matcher = img_pattern.matcher(mde.getName());
+                    if (img_matcher.matches()) {
+                        int id = Integer.parseInt(img_matcher.group(1));
                         add(id);
                     }
                 }
