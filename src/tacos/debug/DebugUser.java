@@ -25,7 +25,7 @@ import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.DeveloperMode;
 import odin.server.MapleItemInformationProvider;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

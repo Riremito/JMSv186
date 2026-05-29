@@ -24,7 +24,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.SpawnPointAreaBoss;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

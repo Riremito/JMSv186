@@ -16,9 +16,8 @@
  *
  *
  */
-package tacos.wz.data;
+package tacos.wz;
 
-import tacos.wz.WzXML;
 import tacos.config.Content;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import java.util.Map;
 import odin.server.StructSetItem;
 import odin.server.StructSetItem.SetItem;
 import odin.provider.IMapleData;
-import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -72,7 +70,7 @@ public class EtcWz extends WzXML {
 
         list_fn = new ArrayList<>();
         for (final IMapleData data : getForbiddenName().getChildren()) {
-            list_fn.add(TacosWzDataTool.getString(data));
+            list_fn.add(WzDataTool.getString(data));
         }
 
         return list_fn;
@@ -103,24 +101,24 @@ public class EtcWz extends WzXML {
         for (IMapleData dat : getSetItemInfo()) {
             StructSetItem itemz = new StructSetItem();
             itemz.setItemID = Integer.parseInt(dat.getName());
-            itemz.completeCount = TacosWzDataTool.getIntPath("completeCount", dat, 0);
+            itemz.completeCount = WzDataTool.getIntPath("completeCount", dat, 0);
             for (IMapleData level : dat.getChildByPath("ItemID")) {
-                itemz.itemIDs.add(TacosWzDataTool.getInt(level, 0));
+                itemz.itemIDs.add(WzDataTool.getInt(level, 0));
             }
             for (IMapleData level : dat.getChildByPath("Effect")) {
                 SetItem itez = new SetItem();
-                itez.incPDD = TacosWzDataTool.getIntPath("incPDD", level, 0);
-                itez.incMDD = TacosWzDataTool.getIntPath("incMDD", level, 0);
-                itez.incSTR = TacosWzDataTool.getIntPath("incSTR", level, 0);
-                itez.incDEX = TacosWzDataTool.getIntPath("incDEX", level, 0);
-                itez.incINT = TacosWzDataTool.getIntPath("incINT", level, 0);
-                itez.incLUK = TacosWzDataTool.getIntPath("incLUK", level, 0);
-                itez.incACC = TacosWzDataTool.getIntPath("incACC", level, 0);
-                itez.incPAD = TacosWzDataTool.getIntPath("incPAD", level, 0);
-                itez.incMAD = TacosWzDataTool.getIntPath("incMAD", level, 0);
-                itez.incSpeed = TacosWzDataTool.getIntPath("incSpeed", level, 0);
-                itez.incMHP = TacosWzDataTool.getIntPath("incMHP", level, 0);
-                itez.incMMP = TacosWzDataTool.getIntPath("incMMP", level, 0);
+                itez.incPDD = WzDataTool.getIntPath("incPDD", level, 0);
+                itez.incMDD = WzDataTool.getIntPath("incMDD", level, 0);
+                itez.incSTR = WzDataTool.getIntPath("incSTR", level, 0);
+                itez.incDEX = WzDataTool.getIntPath("incDEX", level, 0);
+                itez.incINT = WzDataTool.getIntPath("incINT", level, 0);
+                itez.incLUK = WzDataTool.getIntPath("incLUK", level, 0);
+                itez.incACC = WzDataTool.getIntPath("incACC", level, 0);
+                itez.incPAD = WzDataTool.getIntPath("incPAD", level, 0);
+                itez.incMAD = WzDataTool.getIntPath("incMAD", level, 0);
+                itez.incSpeed = WzDataTool.getIntPath("incSpeed", level, 0);
+                itez.incMHP = WzDataTool.getIntPath("incMHP", level, 0);
+                itez.incMMP = WzDataTool.getIntPath("incMMP", level, 0);
                 itemz.items.put(Integer.valueOf(level.getName()), itez);
             }
             map_SetItemInfo.put(itemz.setItemID, itemz);

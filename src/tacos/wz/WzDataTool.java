@@ -27,7 +27,7 @@ import tacos.debug.DebugLogger;
  *
  * @author Riremito
  */
-public class TacosWzDataTool {
+public class WzDataTool {
 
     // no default value.
     public static int getInt(IMapleData data) {
@@ -65,7 +65,7 @@ public class TacosWzDataTool {
             return getIntPath(path, source, def);
         }
         // post bb
-        return TacosWzExpression.getInt(getString(data), common_level);
+        return WzDataExpression.getInt(getString(data), common_level);
     }
 
     // get data.
@@ -177,5 +177,4 @@ public class TacosWzDataTool {
         }
         return ret;
     }
-
 }

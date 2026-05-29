@@ -31,7 +31,7 @@ import tacos.database.query.DQ_Storages;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ops.OpsDBCHAR;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

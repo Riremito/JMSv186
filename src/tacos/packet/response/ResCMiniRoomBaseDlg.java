@@ -43,7 +43,7 @@ import tacos.odin.OdinPair;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.packet.ServerPacketHeader;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

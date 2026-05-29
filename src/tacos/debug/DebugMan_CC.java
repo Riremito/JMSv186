@@ -20,7 +20,7 @@ package tacos.debug;
 
 import odin.client.MapleCharacter;
 import java.util.ArrayList;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

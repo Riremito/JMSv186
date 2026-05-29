@@ -35,16 +35,6 @@ import odin.provider.WzXML.WZEntry;
 import odin.provider.WzXML.XMLDomMapleData;
 import tacos.config.ContentCustom;
 import tacos.odin.OdinPair;
-import tacos.wz.data.CharacterWz;
-import tacos.wz.data.EtcWz;
-import tacos.wz.data.ItemWz;
-import tacos.wz.data.MapWz;
-import tacos.wz.data.MobWz;
-import tacos.wz.data.NpcWz;
-import tacos.wz.data.QuestWz;
-import tacos.wz.data.ReactorWz;
-import tacos.wz.data.SkillWz;
-import tacos.wz.data.StringWz;
 
 /**
  *

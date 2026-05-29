@@ -23,7 +23,7 @@ import tacos.database.DatabaseConnection;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 public class MapleShop {
 

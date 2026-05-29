@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,24 +16,17 @@
  *
  *
  */
-package tacos.wz.data;
+package tacos.wz;
 
-import odin.provider.IMapleData;
 import tacos.config.Content;
-import tacos.wz.WzXML;
 
 /**
  *
  * @author Riremito
  */
-public class MapWz extends WzXML {
+public class NpcWz extends WzXML {
 
-    public MapWz() {
-        super(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
-    }
-
-    public IMapleData getImg(int map_id) {
-        String target_img_path = String.format("Map/Map%d/%09d.img", (map_id / 100000000), map_id);
-        return getData(target_img_path);
+    public NpcWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Npc" : "Npc.wz");
     }
 }

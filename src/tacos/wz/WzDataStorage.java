@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.wz.ids;
+package tacos.wz;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -27,7 +27,6 @@ import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
 import tacos.debug.DebugLoadTime;
 import tacos.debug.DebugLogger;
-import tacos.wz.WzXML;
 
 /**
  *

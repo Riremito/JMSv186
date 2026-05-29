@@ -72,7 +72,7 @@ import tacos.unofficial.PetCharacter;
 import tacos.unofficial.PetMob;
 import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

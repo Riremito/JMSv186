@@ -16,9 +16,8 @@
  *
  *
  */
-package tacos.wz.data;
+package tacos.wz;
 
-import tacos.wz.WzXML;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
-import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -64,16 +62,16 @@ public class MobWz extends WzXML {
         if (mobData != null) {
             IMapleData infoData = mobData.getChildByPath("info/link");
             if (infoData != null) {
-                int link_id = TacosWzDataTool.getIntPath("info/link", mobData, 0);
+                int link_id = WzDataTool.getIntPath("info/link", mobData, 0);
                 mobData = getImg(link_id);
             }
             IMapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
             if (attackData != null) {
                 ret.setDeadlyAttack(attackData.getChildByPath("deadlyAttack") != null);
-                ret.setMpBurn(TacosWzDataTool.getIntPath("mpBurn", attackData, 0));
-                ret.setDiseaseSkill(TacosWzDataTool.getIntPath("disease", attackData, 0));
-                ret.setDiseaseLevel(TacosWzDataTool.getIntPath("level", attackData, 0));
-                ret.setMpCon(TacosWzDataTool.getIntPath("conMP", attackData, 0));
+                ret.setMpBurn(WzDataTool.getIntPath("mpBurn", attackData, 0));
+                ret.setDiseaseSkill(WzDataTool.getIntPath("disease", attackData, 0));
+                ret.setDiseaseLevel(WzDataTool.getIntPath("level", attackData, 0));
+                ret.setMpCon(WzDataTool.getIntPath("conMP", attackData, 0));
             }
         }
         map_mobAttacks.put(new OdinPair<>(mob.getId(), attack), ret);
@@ -95,7 +93,7 @@ public class MobWz extends WzXML {
                     if (dat != null && dat.getChildByPath("info") != null) {
                         List<Integer> z = new ArrayList<>();
                         for (IMapleData da : dat.getChildByPath("info")) {
-                            z.add(TacosWzDataTool.getInt(da, 0));
+                            z.add(WzDataTool.getInt(da, 0));
                         }
                         map_QuestCountGroup.put(id, z);
                     } else {

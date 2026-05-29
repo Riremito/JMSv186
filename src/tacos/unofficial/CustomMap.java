@@ -31,7 +31,7 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

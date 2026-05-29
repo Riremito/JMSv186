@@ -16,9 +16,8 @@
  *
  *
  */
-package tacos.wz.data;
+package tacos.wz;
 
-import tacos.wz.WzXML;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import odin.provider.IMapleData;

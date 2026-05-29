@@ -139,7 +139,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosPortal;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 import tacos.wz.opt.FieldOpt;
 
 public class MapleCharacter extends TacosCharacter {

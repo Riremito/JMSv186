@@ -27,7 +27,7 @@ import tacos.debug.DebugLogger;
  *
  * @author Riremito
  */
-public class TacosWzExpression {
+public class WzDataExpression {
 
     public static int getInt(String val, int level) {
         // not an expression.
@@ -70,5 +70,4 @@ public class TacosWzExpression {
         int ret = (int) expression.evaluate();
         return ret;
     }
-
 }

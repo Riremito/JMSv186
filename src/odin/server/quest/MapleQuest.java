@@ -10,7 +10,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.wz.data.QuestWz;
+import tacos.wz.QuestWz;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.WrapCUserLocal;
@@ -19,7 +19,7 @@ import odin.tools.FileoutputUtil;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.script.TacosScriptQuest;
-import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 public class MapleQuest {
@@ -72,8 +72,8 @@ public class MapleQuest {
                     final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
                         for (IMapleData mob : startReq.getChildren()) {
-                            ret.relevantMobs.put(TacosWzDataTool.getInt(mob.getChildByPath("id")),
-                                    TacosWzDataTool.getInt(mob.getChildByPath("count"), 0));
+                            ret.relevantMobs.put(WzDataTool.getInt(mob.getChildByPath("id")),
+                                    WzDataTool.getInt(mob.getChildByPath("count"), 0));
                         }
                     }
                     ret.startReqs.add(req);
@@ -89,8 +89,8 @@ public class MapleQuest {
                     MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
                         for (IMapleData mob : completeReq.getChildren()) {
-                            ret.relevantMobs.put(TacosWzDataTool.getInt(mob.getChildByPath("id")),
-                                    TacosWzDataTool.getInt(mob.getChildByPath("count"), 0));
+                            ret.relevantMobs.put(WzDataTool.getInt(mob.getChildByPath("id")),
+                                    WzDataTool.getInt(mob.getChildByPath("count"), 0));
                         }
                     } else if (req.getType().equals(MapleQuestRequirementType.endscript)) {
                         ret.customend = true;
@@ -118,11 +118,11 @@ public class MapleQuest {
 
         final IMapleData questInfo = WzXML.QUEST.getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
-            ret.name = TacosWzDataTool.getStringPath("name", questInfo, "");
-            ret.autoStart = TacosWzDataTool.getIntPath("autoStart", questInfo, 0) == 1;
-            ret.autoPreComplete = TacosWzDataTool.getIntPath("autoPreComplete", questInfo, 0) == 1;
-            ret.viewMedalItem = TacosWzDataTool.getIntPath("viewMedalItem", questInfo, 0);
-            ret.selectedSkillID = TacosWzDataTool.getIntPath("selectedSkillID", questInfo, 0);
+            ret.name = WzDataTool.getStringPath("name", questInfo, "");
+            ret.autoStart = WzDataTool.getIntPath("autoStart", questInfo, 0) == 1;
+            ret.autoPreComplete = WzDataTool.getIntPath("autoPreComplete", questInfo, 0) == 1;
+            ret.viewMedalItem = WzDataTool.getIntPath("viewMedalItem", questInfo, 0);
+            ret.selectedSkillID = WzDataTool.getIntPath("selectedSkillID", questInfo, 0);
         }
 
         // not in KMS55
@@ -134,7 +134,7 @@ public class MapleQuest {
                     //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
                     for (IMapleData c : d) {
                         for (IMapleData b : c) {
-                            pInfo.add(new OdinPair<>(c.getName(), new OdinPair<>(b.getName(), TacosWzDataTool.getInt(b, 0))));
+                            pInfo.add(new OdinPair<>(c.getName(), new OdinPair<>(b.getName(), WzDataTool.getInt(b, 0))));
                         }
                     }
                     ret.partyQuestInfo.put(d.getName(), pInfo);

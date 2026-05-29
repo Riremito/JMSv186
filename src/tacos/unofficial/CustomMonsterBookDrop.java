@@ -33,7 +33,7 @@ import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.server.map.MonsterDrop;
 import tacos.wz.WzXML;
-import tacos.wz.data.StringWz.DropMonsterBook;
+import tacos.wz.StringWz.DropMonsterBook;
 
 /**
  *

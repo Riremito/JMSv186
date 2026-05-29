@@ -27,7 +27,7 @@ import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCommodity;
-import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 /**
@@ -63,9 +63,9 @@ public class DataCS_COMMODITY {
         }
         // remove all onsale items.
         for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
-            int nItemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
-            int nSN = TacosWzDataTool.getIntPath("SN", field, 0);
-            int bOnSale = TacosWzDataTool.getIntPath("OnSale", field, 0);
+            int nItemId = WzDataTool.getIntPath("ItemId", field, 0);
+            int nSN = WzDataTool.getIntPath("SN", field, 0);
+            int bOnSale = WzDataTool.getIntPath("OnSale", field, 0);
             /*
             if (nItemId / 1000000 == 1) {
                 continue;

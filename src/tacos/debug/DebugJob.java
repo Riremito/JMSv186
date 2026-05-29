@@ -27,7 +27,7 @@ import odin.client.SkillFactory;
 import tacos.config.Version;
 import java.util.ArrayList;
 import odin.server.Randomizer;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

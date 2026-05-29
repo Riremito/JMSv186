@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.wz.ids;
+package tacos.wz;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -28,7 +28,7 @@ import odin.client.MapleCharacter;
  */
 @Getter
 @Setter
-public class NameData {
+public class WzName {
 
     private int id = 0;
     private String name = null;

@@ -16,16 +16,14 @@
  *
  *
  */
-package tacos.wz.data;
+package tacos.wz;
 
-import tacos.wz.WzXML;
 import tacos.config.Content;
 import java.util.HashMap;
 import java.util.Map;
 import odin.server.maps.MapleReactorStats;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
-import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -57,7 +55,7 @@ public class ReactorWz extends WzXML {
         IMapleData reactorData = getImg(reactor_id);
         IMapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
-            link_id = TacosWzDataTool.getIntPath("info/link", reactorData, 0);
+            link_id = WzDataTool.getIntPath("info/link", reactorData, 0);
             MapleReactorStats mrs_link = map_reactorStats.get(link_id);
             if (mrs_link != null) {
                 map_reactorStats.put(reactor_id, mrs_link);
@@ -81,17 +79,17 @@ public class ReactorWz extends WzXML {
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
                 IMapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
                 OdinPair<Integer, Integer> reactItem = null;
-                int type = TacosWzDataTool.getIntPath("type", reactorInfoData, 0);
+                int type = WzDataTool.getIntPath("type", reactorInfoData, 0);
                 if (type == 100) { //reactor waits for item
-                    reactItem = new OdinPair<>(TacosWzDataTool.getIntPath("0", reactorInfoData, 0), TacosWzDataTool.getIntPath("1", reactorInfoData, 1));
+                    reactItem = new OdinPair<>(WzDataTool.getIntPath("0", reactorInfoData, 0), WzDataTool.getIntPath("1", reactorInfoData, 1));
                     if (!areaSet) { //only set area of effect for item-triggered reactors once
-                        stats.setTL(TacosWzDataTool.getPoint(reactorInfoData.getChildByPath("lt")));
-                        stats.setBR(TacosWzDataTool.getPoint(reactorInfoData.getChildByPath("rb")));
+                        stats.setTL(WzDataTool.getPoint(reactorInfoData.getChildByPath("lt")));
+                        stats.setBR(WzDataTool.getPoint(reactorInfoData.getChildByPath("rb")));
                         areaSet = true;
                     }
                 }
                 foundState = true;
-                stats.addState(i, type, reactItem, (byte) TacosWzDataTool.getIntPath("state", reactorInfoData, 0), TacosWzDataTool.getIntPath("timeOut", reactorInfoData_, -1));
+                stats.addState(i, type, reactItem, (byte) WzDataTool.getIntPath("state", reactorInfoData, 0), WzDataTool.getIntPath("timeOut", reactorInfoData_, -1));
             } else {
                 stats.addState(i, 999, null, (byte) (foundState ? -1 : (i + 1)), 0);
             }

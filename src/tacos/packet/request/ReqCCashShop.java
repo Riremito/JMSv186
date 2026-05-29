@@ -33,7 +33,7 @@ import odin.server.CashItemFactory;
 import odin.server.CashItemInfo;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacketHeader;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

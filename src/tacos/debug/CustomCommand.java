@@ -25,7 +25,7 @@ import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

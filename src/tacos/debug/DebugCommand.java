@@ -67,11 +67,11 @@ import tacos.script.TacosScriptReactor;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
-import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
-import tacos.wz.ids.NameData;
-import tacos.wz.ids.NameDataStorage;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzName;
+import tacos.wz.WzNameStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -270,7 +270,7 @@ public class DebugCommand {
                 }
 
                 int shop_item_count = 0;
-                for (NameData nd : NameDataStorage.ITEM.find(search_string)) {
+                for (WzName nd : WzNameStorage.ITEM.find(search_string)) {
                     ds.addItem(nd.getId());
                     shop_item_count++;
                     if (100 <= shop_item_count) {
@@ -339,7 +339,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                NameData nd_npc = NameDataStorage.NPC.get(npc_id);
+                WzName nd_npc = WzNameStorage.NPC.get(npc_id);
 
                 if (nd_npc == null) {
                     chr.DebugMsg("npclocation : error.");
@@ -348,8 +348,8 @@ public class DebugCommand {
 
                 nd_npc.sendDebugMsg(chr);
                 for (IMapleData data : npc_location) {
-                    int map_id = TacosWzDataTool.getInt(data);
-                    NameData nd_map = NameDataStorage.MAP.get(map_id);
+                    int map_id = WzDataTool.getInt(data);
+                    WzName nd_map = WzNameStorage.MAP.get(map_id);
                     if (nd_map == null) {
                         chr.DebugMsg("ERROR.");
                         continue;
@@ -407,38 +407,38 @@ public class DebugCommand {
                     return true;
                 }
 
-                NameDataStorage nds;
+                WzNameStorage nds;
 
                 switch (dcmd.get(1).toLowerCase()) {
                     case "item" -> {
-                        nds = NameDataStorage.ITEM;
+                        nds = WzNameStorage.ITEM;
                     }
                     case "map" -> {
-                        nds = NameDataStorage.MAP;
-                        for (NameData nd : nds.find(dcmd.get(2), false)) {
+                        nds = WzNameStorage.MAP;
+                        for (WzName nd : nds.find(dcmd.get(2), false)) {
                             nd.sendMapDebugMsg(chr);
                         }
                         return true;
                     }
                     case "mob" -> {
-                        nds = NameDataStorage.MOB;
+                        nds = WzNameStorage.MOB;
                     }
                     case "npc" -> {
-                        nds = NameDataStorage.NPC;
+                        nds = WzNameStorage.NPC;
                     }
                     case "reactor" -> {
                         // no names.
                         return true;
                     }
                     case "skill" -> {
-                        nds = NameDataStorage.SKILL;
+                        nds = WzNameStorage.SKILL;
                     }
                     default -> {
                         return true;
                     }
                 }
 
-                for (NameData nd : nds.find(dcmd.get(2), false)) {
+                for (WzName nd : nds.find(dcmd.get(2), false)) {
                     nd.sendDebugMsg(chr);
                 }
                 return true;
@@ -778,10 +778,10 @@ public class DebugCommand {
                 for (int map_id : WzDataStorage.MAP.getIds()) {
                     IMapleData data = WzXML.MAP.getImg(map_id);
                     if (data != null) {
-                        if (TacosWzDataTool.getIntPath("info/town", data, 0) != 0) {
-                            int return_map_id = TacosWzDataTool.getIntPath("info/returnMap", data, 0);
+                        if (WzDataTool.getIntPath("info/town", data, 0) != 0) {
+                            int return_map_id = WzDataTool.getIntPath("info/returnMap", data, 0);
                             if (map_id == return_map_id) {
-                                NameData nd = NameDataStorage.MAP.get(map_id);
+                                WzName nd = WzNameStorage.MAP.get(map_id);
                                 if (nd != null) {
                                     nd.sendMapDebugMsg(chr);
                                 } else {
@@ -1079,7 +1079,7 @@ public class DebugCommand {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
             IMapleData md_mob = WzXML.STRING.getMob().getChildByPath(Integer.toString(mob_id));
-            String mob_name = md_mob != null ? TacosWzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
+            String mob_name = md_mob != null ? WzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
             if (!WzDataStorage.MOB.check(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
                 continue;

@@ -16,9 +16,8 @@
  *
  *
  */
-package tacos.wz.data;
+package tacos.wz;
 
-import tacos.wz.WzXML;
 import odin.client.inventory.PetCommand;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
@@ -32,7 +31,6 @@ import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
-import tacos.wz.TacosWzDataTool;
 
 /**
  *
@@ -167,58 +165,58 @@ public class ItemWz extends WzXML {
             List<StructPotentialItem> items = new LinkedList<>();
             for (IMapleData level : dat.getChildByPath("level")) {
                 StructPotentialItem item = new StructPotentialItem();
-                item.optionType = TacosWzDataTool.getIntPath("info/optionType", dat, 0);
-                item.reqLevel = TacosWzDataTool.getIntPath("info/reqLevel", dat, 0);
-                item.face = TacosWzDataTool.getStringPath("face", level, "");
-                item.boss = TacosWzDataTool.getIntPath("boss", level, 0) > 0;
+                item.optionType = WzDataTool.getIntPath("info/optionType", dat, 0);
+                item.reqLevel = WzDataTool.getIntPath("info/reqLevel", dat, 0);
+                item.face = WzDataTool.getStringPath("face", level, "");
+                item.boss = WzDataTool.getIntPath("boss", level, 0) > 0;
                 item.potentialID = Integer.parseInt(dat.getName());
-                item.attackType = (short) TacosWzDataTool.getIntPath("attackType", level, 0);
-                item.incMHP = (short) TacosWzDataTool.getIntPath("incMHP", level, 0);
-                item.incMMP = (short) TacosWzDataTool.getIntPath("incMMP", level, 0);
+                item.attackType = (short) WzDataTool.getIntPath("attackType", level, 0);
+                item.incMHP = (short) WzDataTool.getIntPath("incMHP", level, 0);
+                item.incMMP = (short) WzDataTool.getIntPath("incMMP", level, 0);
 
-                item.incSTR = (byte) TacosWzDataTool.getIntPath("incSTR", level, 0);
-                item.incDEX = (byte) TacosWzDataTool.getIntPath("incDEX", level, 0);
-                item.incINT = (byte) TacosWzDataTool.getIntPath("incINT", level, 0);
-                item.incLUK = (byte) TacosWzDataTool.getIntPath("incLUK", level, 0);
-                item.incACC = (byte) TacosWzDataTool.getIntPath("incACC", level, 0);
-                item.incEVA = (byte) TacosWzDataTool.getIntPath("incEVA", level, 0);
-                item.incSpeed = (byte) TacosWzDataTool.getIntPath("incSpeed", level, 0);
-                item.incJump = (byte) TacosWzDataTool.getIntPath("incJump", level, 0);
-                item.incPAD = (byte) TacosWzDataTool.getIntPath("incPAD", level, 0);
-                item.incMAD = (byte) TacosWzDataTool.getIntPath("incMAD", level, 0);
-                item.incPDD = (byte) TacosWzDataTool.getIntPath("incPDD", level, 0);
-                item.incMDD = (byte) TacosWzDataTool.getIntPath("incMDD", level, 0);
-                item.prop = (byte) TacosWzDataTool.getIntPath("prop", level, 0);
-                item.time = (byte) TacosWzDataTool.getIntPath("time", level, 0);
-                item.incSTRr = (byte) TacosWzDataTool.getIntPath("incSTRr", level, 0);
-                item.incDEXr = (byte) TacosWzDataTool.getIntPath("incDEXr", level, 0);
-                item.incINTr = (byte) TacosWzDataTool.getIntPath("incINTr", level, 0);
-                item.incLUKr = (byte) TacosWzDataTool.getIntPath("incLUKr", level, 0);
-                item.incMHPr = (byte) TacosWzDataTool.getIntPath("incMHPr", level, 0);
-                item.incMMPr = (byte) TacosWzDataTool.getIntPath("incMMPr", level, 0);
-                item.incACCr = (byte) TacosWzDataTool.getIntPath("incACCr", level, 0);
-                item.incEVAr = (byte) TacosWzDataTool.getIntPath("incEVAr", level, 0);
-                item.incPADr = (byte) TacosWzDataTool.getIntPath("incPADr", level, 0);
-                item.incMADr = (byte) TacosWzDataTool.getIntPath("incMADr", level, 0);
-                item.incPDDr = (byte) TacosWzDataTool.getIntPath("incPDDr", level, 0);
-                item.incMDDr = (byte) TacosWzDataTool.getIntPath("incMDDr", level, 0);
-                item.incCr = (byte) TacosWzDataTool.getIntPath("incCr", level, 0);
-                item.incDAMr = (byte) TacosWzDataTool.getIntPath("incDAMr", level, 0);
-                item.RecoveryHP = (byte) TacosWzDataTool.getIntPath("RecoveryHP", level, 0);
-                item.RecoveryMP = (byte) TacosWzDataTool.getIntPath("RecoveryMP", level, 0);
-                item.HP = (byte) TacosWzDataTool.getIntPath("HP", level, 0);
-                item.MP = (byte) TacosWzDataTool.getIntPath("MP", level, 0);
-                item.level = (byte) TacosWzDataTool.getIntPath("level", level, 0);
-                item.ignoreTargetDEF = (byte) TacosWzDataTool.getIntPath("ignoreTargetDEF", level, 0);
-                item.ignoreDAM = (byte) TacosWzDataTool.getIntPath("ignoreDAM", level, 0);
-                item.DAMreflect = (byte) TacosWzDataTool.getIntPath("DAMreflect", level, 0);
-                item.mpconReduce = (byte) TacosWzDataTool.getIntPath("mpconReduce", level, 0);
-                item.mpRestore = (byte) TacosWzDataTool.getIntPath("mpRestore", level, 0);
-                item.incMesoProp = (byte) TacosWzDataTool.getIntPath("incMesoProp", level, 0);
-                item.incRewardProp = (byte) TacosWzDataTool.getIntPath("incRewardProp", level, 0);
-                item.incAllskill = (byte) TacosWzDataTool.getIntPath("incAllskill", level, 0);
-                item.ignoreDAMr = (byte) TacosWzDataTool.getIntPath("ignoreDAMr", level, 0);
-                item.RecoveryUP = (byte) TacosWzDataTool.getIntPath("RecoveryUP", level, 0);
+                item.incSTR = (byte) WzDataTool.getIntPath("incSTR", level, 0);
+                item.incDEX = (byte) WzDataTool.getIntPath("incDEX", level, 0);
+                item.incINT = (byte) WzDataTool.getIntPath("incINT", level, 0);
+                item.incLUK = (byte) WzDataTool.getIntPath("incLUK", level, 0);
+                item.incACC = (byte) WzDataTool.getIntPath("incACC", level, 0);
+                item.incEVA = (byte) WzDataTool.getIntPath("incEVA", level, 0);
+                item.incSpeed = (byte) WzDataTool.getIntPath("incSpeed", level, 0);
+                item.incJump = (byte) WzDataTool.getIntPath("incJump", level, 0);
+                item.incPAD = (byte) WzDataTool.getIntPath("incPAD", level, 0);
+                item.incMAD = (byte) WzDataTool.getIntPath("incMAD", level, 0);
+                item.incPDD = (byte) WzDataTool.getIntPath("incPDD", level, 0);
+                item.incMDD = (byte) WzDataTool.getIntPath("incMDD", level, 0);
+                item.prop = (byte) WzDataTool.getIntPath("prop", level, 0);
+                item.time = (byte) WzDataTool.getIntPath("time", level, 0);
+                item.incSTRr = (byte) WzDataTool.getIntPath("incSTRr", level, 0);
+                item.incDEXr = (byte) WzDataTool.getIntPath("incDEXr", level, 0);
+                item.incINTr = (byte) WzDataTool.getIntPath("incINTr", level, 0);
+                item.incLUKr = (byte) WzDataTool.getIntPath("incLUKr", level, 0);
+                item.incMHPr = (byte) WzDataTool.getIntPath("incMHPr", level, 0);
+                item.incMMPr = (byte) WzDataTool.getIntPath("incMMPr", level, 0);
+                item.incACCr = (byte) WzDataTool.getIntPath("incACCr", level, 0);
+                item.incEVAr = (byte) WzDataTool.getIntPath("incEVAr", level, 0);
+                item.incPADr = (byte) WzDataTool.getIntPath("incPADr", level, 0);
+                item.incMADr = (byte) WzDataTool.getIntPath("incMADr", level, 0);
+                item.incPDDr = (byte) WzDataTool.getIntPath("incPDDr", level, 0);
+                item.incMDDr = (byte) WzDataTool.getIntPath("incMDDr", level, 0);
+                item.incCr = (byte) WzDataTool.getIntPath("incCr", level, 0);
+                item.incDAMr = (byte) WzDataTool.getIntPath("incDAMr", level, 0);
+                item.RecoveryHP = (byte) WzDataTool.getIntPath("RecoveryHP", level, 0);
+                item.RecoveryMP = (byte) WzDataTool.getIntPath("RecoveryMP", level, 0);
+                item.HP = (byte) WzDataTool.getIntPath("HP", level, 0);
+                item.MP = (byte) WzDataTool.getIntPath("MP", level, 0);
+                item.level = (byte) WzDataTool.getIntPath("level", level, 0);
+                item.ignoreTargetDEF = (byte) WzDataTool.getIntPath("ignoreTargetDEF", level, 0);
+                item.ignoreDAM = (byte) WzDataTool.getIntPath("ignoreDAM", level, 0);
+                item.DAMreflect = (byte) WzDataTool.getIntPath("DAMreflect", level, 0);
+                item.mpconReduce = (byte) WzDataTool.getIntPath("mpconReduce", level, 0);
+                item.mpRestore = (byte) WzDataTool.getIntPath("mpRestore", level, 0);
+                item.incMesoProp = (byte) WzDataTool.getIntPath("incMesoProp", level, 0);
+                item.incRewardProp = (byte) WzDataTool.getIntPath("incRewardProp", level, 0);
+                item.incAllskill = (byte) WzDataTool.getIntPath("incAllskill", level, 0);
+                item.ignoreDAMr = (byte) WzDataTool.getIntPath("ignoreDAMr", level, 0);
+                item.RecoveryUP = (byte) WzDataTool.getIntPath("RecoveryUP", level, 0);
                 switch (item.potentialID) {
                     case 31001:
                     case 31002:
@@ -321,8 +319,8 @@ public class ItemWz extends WzXML {
         int prob = 0;
         int inc = 0;
         if (skillData != null) {
-            prob = TacosWzDataTool.getIntPath("interact/" + skillId + "/prob", skillData, 0);
-            inc = TacosWzDataTool.getIntPath("interact/" + skillId + "/inc", skillData, 0);
+            prob = WzDataTool.getIntPath("interact/" + skillId + "/prob", skillData, 0);
+            inc = WzDataTool.getIntPath("interact/" + skillId + "/inc", skillData, 0);
         }
         PetCommand ret = new PetCommand(petId, skillId, prob, inc);
         map_petCommands.put(new OdinPair<>(petId, skillId), ret);
@@ -339,7 +337,7 @@ public class ItemWz extends WzXML {
         }
 
         IMapleData hungerData = getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
-        Integer ret = TacosWzDataTool.getInt(hungerData, 1);
+        Integer ret = WzDataTool.getInt(hungerData, 1);
         map_petHunger.put(petId, ret);
         return ret;
     }

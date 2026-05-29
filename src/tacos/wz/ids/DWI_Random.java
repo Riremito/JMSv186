@@ -18,6 +18,7 @@
  */
 package tacos.wz.ids;
 
+import tacos.wz.WzDataStorage;
 import java.util.Random;
 import tacos.wz.WzXML;
 

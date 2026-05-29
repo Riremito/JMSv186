@@ -16,7 +16,7 @@ import odin.client.MapleQuestStatus;
 
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
-import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzDataTool;
 
 public class MapleQuestRequirement implements Serializable {
 
@@ -40,7 +40,7 @@ public class MapleQuestRequirement implements Serializable {
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    dataStore.add(new OdinPair<Integer, Integer>(i, TacosWzDataTool.getInt(child.get(i), -1)));
+                    dataStore.add(new OdinPair<Integer, Integer>(i, WzDataTool.getInt(child.get(i), -1)));
                 }
                 break;
             }
@@ -50,8 +50,8 @@ public class MapleQuestRequirement implements Serializable {
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(TacosWzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            TacosWzDataTool.getInt(childdata.getChildByPath("acquire"), 0)));
+                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
+                            WzDataTool.getInt(childdata.getChildByPath("acquire"), 0)));
                 }
                 break;
             }
@@ -61,8 +61,8 @@ public class MapleQuestRequirement implements Serializable {
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(TacosWzDataTool.getInt(childdata.getChildByPath("id")),
-                            TacosWzDataTool.getInt(childdata.getChildByPath("state"), 0)));
+                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id")),
+                            WzDataTool.getInt(childdata.getChildByPath("state"), 0)));
                 }
                 break;
             }
@@ -72,8 +72,8 @@ public class MapleQuestRequirement implements Serializable {
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(TacosWzDataTool.getInt(childdata.getChildByPath("id")),
-                            TacosWzDataTool.getInt(childdata.getChildByPath("count"), 0)));
+                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id")),
+                            WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
                 }
                 break;
             }
@@ -85,11 +85,11 @@ public class MapleQuestRequirement implements Serializable {
             case mbmin:
             case lvmax:
             case lvmin: {
-                intStore = TacosWzDataTool.getInt(data, -1);
+                intStore = WzDataTool.getInt(data, -1);
                 break;
             }
             case end: {
-                stringStore = TacosWzDataTool.getString(data, null);
+                stringStore = WzDataTool.getString(data, null);
                 break;
             }
             case mob: {
@@ -98,15 +98,15 @@ public class MapleQuestRequirement implements Serializable {
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(TacosWzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            TacosWzDataTool.getInt(childdata.getChildByPath("count"), 0)));
+                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
+                            WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
                 }
                 break;
             }
             case fieldEnter: {
                 final IMapleData zeroField = data.getChildByPath("0");
                 if (zeroField != null) {
-                    intStore = TacosWzDataTool.getInt(zeroField);
+                    intStore = WzDataTool.getInt(zeroField);
                 } else {
                     intStore = -1;
                 }
@@ -118,8 +118,8 @@ public class MapleQuestRequirement implements Serializable {
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(TacosWzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            TacosWzDataTool.getInt(childdata.getChildByPath("min"), 0)));
+                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
+                            WzDataTool.getInt(childdata.getChildByPath("min"), 0)));
                 }
                 break;
             }
@@ -127,7 +127,7 @@ public class MapleQuestRequirement implements Serializable {
                 dataStore = new LinkedList<OdinPair<Integer, Integer>>();
 
                 for (IMapleData child : data) {
-                    dataStore.add(new OdinPair<Integer, Integer>(-1, TacosWzDataTool.getIntPath("id", child, 0)));
+                    dataStore.add(new OdinPair<Integer, Integer>(-1, WzDataTool.getIntPath("id", child, 0)));
                 }
                 break;
             }

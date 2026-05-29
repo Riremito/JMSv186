@@ -19,7 +19,7 @@ import tacos.config.ContentState;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
-import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 public class MapleItemInformationProvider {
@@ -184,7 +184,7 @@ public class MapleItemInformationProvider {
                     ret = 100;
                 }
             } else {
-                ret = (short) TacosWzDataTool.getInt(smEntry);
+                ret = (short) WzDataTool.getInt(smEntry);
             }
         }
         slotMaxCache.put(itemId, ret);
@@ -208,7 +208,7 @@ public class MapleItemInformationProvider {
         if (pData == null) {
             return -1;
         }
-        pEntry = TacosWzDataTool.getInt(pData);
+        pEntry = WzDataTool.getInt(pData);
 
         wholePriceCache.put(itemId, pEntry);
         return pEntry;
@@ -225,13 +225,13 @@ public class MapleItemInformationProvider {
         Double pEntry = null;
         IMapleData pData = item.getChildByPath("info/unitPrice");
         if (pData != null) {
-            pEntry = TacosWzDataTool.getDouble(pData, 1.0);
+            pEntry = WzDataTool.getDouble(pData, 1.0);
         } else {
             pData = item.getChildByPath("info/price");
             if (pData == null) {
                 return -1;
             }
-            pEntry = (double) TacosWzDataTool.getInt(pData, 1);
+            pEntry = (double) WzDataTool.getInt(pData, 1);
         }
         if (itemId == 2070019 || itemId == 2330007) {
             pEntry = 1.0;
@@ -256,21 +256,21 @@ public class MapleItemInformationProvider {
         if (info == null) {
             return null;
         }
-        ret.put("incPAD", (byte) TacosWzDataTool.getIntPath("incPAD", info, 0)); // WATK
-        ret.put("incMAD", (byte) TacosWzDataTool.getIntPath("incMAD", info, 0)); // MATK
-        ret.put("incACC", (byte) TacosWzDataTool.getIntPath("incACC", info, 0)); // ACC
-        ret.put("incEVA", (byte) TacosWzDataTool.getIntPath("incEVA", info, 0)); // AVOID
-        ret.put("incSpeed", (byte) TacosWzDataTool.getIntPath("incSpeed", info, 0)); // SPEED
-        ret.put("incJump", (byte) TacosWzDataTool.getIntPath("incJump", info, 0)); // JUMP
-        ret.put("incMaxHP", (byte) TacosWzDataTool.getIntPath("incMaxHP", info, 0)); // HP
-        ret.put("incMaxMP", (byte) TacosWzDataTool.getIntPath("incMaxMP", info, 0)); // MP
-        ret.put("incSTR", (byte) TacosWzDataTool.getIntPath("incSTR", info, 0)); // STR
-        ret.put("incINT", (byte) TacosWzDataTool.getIntPath("incINT", info, 0)); // INT
-        ret.put("incLUK", (byte) TacosWzDataTool.getIntPath("incLUK", info, 0)); // LUK
-        ret.put("incDEX", (byte) TacosWzDataTool.getIntPath("incDEX", info, 0)); // DEX
+        ret.put("incPAD", (byte) WzDataTool.getIntPath("incPAD", info, 0)); // WATK
+        ret.put("incMAD", (byte) WzDataTool.getIntPath("incMAD", info, 0)); // MATK
+        ret.put("incACC", (byte) WzDataTool.getIntPath("incACC", info, 0)); // ACC
+        ret.put("incEVA", (byte) WzDataTool.getIntPath("incEVA", info, 0)); // AVOID
+        ret.put("incSpeed", (byte) WzDataTool.getIntPath("incSpeed", info, 0)); // SPEED
+        ret.put("incJump", (byte) WzDataTool.getIntPath("incJump", info, 0)); // JUMP
+        ret.put("incMaxHP", (byte) WzDataTool.getIntPath("incMaxHP", info, 0)); // HP
+        ret.put("incMaxMP", (byte) WzDataTool.getIntPath("incMaxMP", info, 0)); // MP
+        ret.put("incSTR", (byte) WzDataTool.getIntPath("incSTR", info, 0)); // STR
+        ret.put("incINT", (byte) WzDataTool.getIntPath("incINT", info, 0)); // INT
+        ret.put("incLUK", (byte) WzDataTool.getIntPath("incLUK", info, 0)); // LUK
+        ret.put("incDEX", (byte) WzDataTool.getIntPath("incDEX", info, 0)); // DEX
 //	ret.put("incReqLevel", MapleDataTool.getInt("incReqLevel", info, 0)); // IDK!
-        ret.put("randOption", (byte) TacosWzDataTool.getIntPath("randOption", info, 0)); // Black Crystal Wa/MA
-        ret.put("randStat", (byte) TacosWzDataTool.getIntPath("randStat", info, 0)); // Dark Crystal - Str/Dex/int/Luk
+        ret.put("randOption", (byte) WzDataTool.getIntPath("randOption", info, 0)); // Black Crystal Wa/MA
+        ret.put("randStat", (byte) WzDataTool.getIntPath("randStat", info, 0)); // Dark Crystal - Str/Dex/int/Luk
 
         itemMakeStatsCache.put(itemId, ret);
         return ret;
@@ -343,7 +343,7 @@ public class MapleItemInformationProvider {
             Map<String, Integer> incs = new HashMap<String, Integer>();
             for (IMapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
                 if (data.getName().length() > 3) {
-                    incs.put(data.getName().substring(3), TacosWzDataTool.getIntPath(data.getName(), dat, 0));
+                    incs.put(data.getName().substring(3), WzDataTool.getIntPath(data.getName(), dat, 0));
                 }
             }
             ret.put(Integer.parseInt(dat.getName()), incs);
@@ -370,7 +370,7 @@ public class MapleItemInformationProvider {
                 if (data.getName().length() == 1) { //the numbers all them are one digit. everything else isnt so we're lucky here..
                     List<Integer> adds = new ArrayList<Integer>();
                     for (IMapleData skil : data.getChildByPath("Skill").getChildren()) {
-                        adds.add(TacosWzDataTool.getIntPath("id", skil, 0));
+                        adds.add(WzDataTool.getIntPath("id", skil, 0));
                     }
                     ret.put(Integer.valueOf(data.getName()), adds);
                 }
@@ -395,31 +395,31 @@ public class MapleItemInformationProvider {
         }
         for (final IMapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), TacosWzDataTool.getInt(data, 0));
+                ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
         }
-        ret.put("tuc", TacosWzDataTool.getIntPath("tuc", info, 0));
-        ret.put("reqLevel", TacosWzDataTool.getIntPath("reqLevel", info, 0));
-        ret.put("reqJob", TacosWzDataTool.getIntPath("reqJob", info, 0));
-        ret.put("reqSTR", TacosWzDataTool.getIntPath("reqSTR", info, 0));
-        ret.put("reqDEX", TacosWzDataTool.getIntPath("reqDEX", info, 0));
-        ret.put("reqINT", TacosWzDataTool.getIntPath("reqINT", info, 0));
-        ret.put("reqLUK", TacosWzDataTool.getIntPath("reqLUK", info, 0));
-        ret.put("reqPOP", TacosWzDataTool.getIntPath("reqPOP", info, 0));
-        ret.put("cash", TacosWzDataTool.getIntPath("cash", info, 0));
+        ret.put("tuc", WzDataTool.getIntPath("tuc", info, 0));
+        ret.put("reqLevel", WzDataTool.getIntPath("reqLevel", info, 0));
+        ret.put("reqJob", WzDataTool.getIntPath("reqJob", info, 0));
+        ret.put("reqSTR", WzDataTool.getIntPath("reqSTR", info, 0));
+        ret.put("reqDEX", WzDataTool.getIntPath("reqDEX", info, 0));
+        ret.put("reqINT", WzDataTool.getIntPath("reqINT", info, 0));
+        ret.put("reqLUK", WzDataTool.getIntPath("reqLUK", info, 0));
+        ret.put("reqPOP", WzDataTool.getIntPath("reqPOP", info, 0));
+        ret.put("cash", WzDataTool.getIntPath("cash", info, 0));
         ret.put("canLevel", info.getChildByPath("level") == null ? 0 : 1);
-        ret.put("cursed", TacosWzDataTool.getIntPath("cursed", info, 0));
-        ret.put("success", TacosWzDataTool.getIntPath("success", info, 0));
-        ret.put("setItemID", TacosWzDataTool.getIntPath("setItemID", info, 0));
-        ret.put("equipTradeBlock", TacosWzDataTool.getIntPath("equipTradeBlock", info, 0));
-        ret.put("durability", TacosWzDataTool.getIntPath("durability", info, -1));
+        ret.put("cursed", WzDataTool.getIntPath("cursed", info, 0));
+        ret.put("success", WzDataTool.getIntPath("success", info, 0));
+        ret.put("setItemID", WzDataTool.getIntPath("setItemID", info, 0));
+        ret.put("equipTradeBlock", WzDataTool.getIntPath("equipTradeBlock", info, 0));
+        ret.put("durability", WzDataTool.getIntPath("durability", info, -1));
 
         if (GameConstants.isMagicWeapon(itemId)) {
-            ret.put("elemDefault", TacosWzDataTool.getIntPath("elemDefault", info, 100));
-            ret.put("incRMAS", TacosWzDataTool.getIntPath("incRMAS", info, 100)); // Poison
-            ret.put("incRMAF", TacosWzDataTool.getIntPath("incRMAF", info, 100)); // Fire
-            ret.put("incRMAL", TacosWzDataTool.getIntPath("incRMAL", info, 100)); // Lightning
-            ret.put("incRMAI", TacosWzDataTool.getIntPath("incRMAI", info, 100)); // Ice
+            ret.put("elemDefault", WzDataTool.getIntPath("elemDefault", info, 100));
+            ret.put("incRMAS", WzDataTool.getIntPath("incRMAS", info, 100)); // Poison
+            ret.put("incRMAF", WzDataTool.getIntPath("incRMAF", info, 100)); // Fire
+            ret.put("incRMAL", WzDataTool.getIntPath("incRMAL", info, 100)); // Lightning
+            ret.put("incRMAI", WzDataTool.getIntPath("incRMAI", info, 100)); // Ice
         }
 
         equipStatsCache.put(itemId, ret);
@@ -469,7 +469,7 @@ public class MapleItemInformationProvider {
             return ret;
         }
         for (final IMapleData req : data.getChildren()) {
-            ret.add(TacosWzDataTool.getInt(req));
+            ret.add(WzDataTool.getInt(req));
         }
         scrollReqCache.put(itemId, ret);
         return ret;
@@ -916,8 +916,8 @@ public class MapleItemInformationProvider {
 
         for (final IMapleData child : data.getChildren()) {
             mobPairs.add(new OdinPair<>(
-                    TacosWzDataTool.getIntPath("id", child, 0),
-                    TacosWzDataTool.getIntPath("prob", child, 0)));
+                    WzDataTool.getIntPath("id", child, 0),
+                    WzDataTool.getIntPath("prob", child, 0)));
         }
         summonMobCache.put(itemId, mobPairs);
         return mobPairs;
@@ -931,7 +931,7 @@ public class MapleItemInformationProvider {
             return monsterBookID.get(id);
         }
         final IMapleData data = getItemData(id);
-        final int monsterid = TacosWzDataTool.getIntPath("info/mob", data, 0);
+        final int monsterid = WzDataTool.getIntPath("info/mob", data, 0);
 
         if (monsterid == 0) { // Hack.
             return 0;
@@ -946,7 +946,7 @@ public class MapleItemInformationProvider {
             return atk.intValue();
         }
         final IMapleData data = getItemData(itemId);
-        atk = Integer.valueOf(TacosWzDataTool.getIntPath("info/incPAD", data, 0));
+        atk = Integer.valueOf(WzDataTool.getIntPath("info/incPAD", data, 0));
         projectileWatkCache.put(itemId, atk);
         return atk.intValue();
     }
@@ -963,7 +963,7 @@ public class MapleItemInformationProvider {
         if (strings == null) {
             return null;
         }
-        final String ret = TacosWzDataTool.getStringPath("name", strings, null);
+        final String ret = WzDataTool.getStringPath("name", strings, null);
         nameCache.put(itemId, ret);
         return ret;
     }
@@ -976,7 +976,7 @@ public class MapleItemInformationProvider {
         if (strings == null) {
             return null;
         }
-        final String ret = TacosWzDataTool.getStringPath("desc", strings, null);
+        final String ret = WzDataTool.getStringPath("desc", strings, null);
         descCache.put(itemId, ret);
         return ret;
     }
@@ -989,7 +989,7 @@ public class MapleItemInformationProvider {
         if (strings == null) {
             return null;
         }
-        final String ret = TacosWzDataTool.getStringPath("msg", strings, null);
+        final String ret = WzDataTool.getStringPath("msg", strings, null);
         msgCache.put(itemId, ret);
         return ret;
     }
@@ -1001,7 +1001,7 @@ public class MapleItemInformationProvider {
         if (itemId / 10000 != 400) {
             return 0;
         }
-        final short lvl = (short) TacosWzDataTool.getIntPath("info/lv", getItemData(itemId), 0);
+        final short lvl = (short) WzDataTool.getIntPath("info/lv", getItemData(itemId), 0);
         itemMakeLevel.put(itemId, lvl);
         return lvl;
     }
@@ -1012,12 +1012,12 @@ public class MapleItemInformationProvider {
             return consumeOnPickupCache.get(itemId);
         }
         final IMapleData data = getItemData(itemId);
-        byte consume = (byte) TacosWzDataTool.getIntPath("spec/consumeOnPickup", data, 0);
+        byte consume = (byte) WzDataTool.getIntPath("spec/consumeOnPickup", data, 0);
         if (consume == 0) {
-            consume = (byte) TacosWzDataTool.getIntPath("specEx/consumeOnPickup", data, 0);
+            consume = (byte) WzDataTool.getIntPath("specEx/consumeOnPickup", data, 0);
         }
         if (consume == 1) {
-            if (TacosWzDataTool.getIntPath("spec/party", getItemData(itemId), 0) > 0) {
+            if (WzDataTool.getIntPath("spec/party", getItemData(itemId), 0) > 0) {
                 consume = 2;
             }
         }
@@ -1032,7 +1032,7 @@ public class MapleItemInformationProvider {
         final IMapleData data = getItemData(itemId);
 
         boolean trade = false;
-        if (TacosWzDataTool.getIntPath("info/tradeBlock", data, 0) == 1 || TacosWzDataTool.getIntPath("info/quest", data, 0) == 1) {
+        if (WzDataTool.getIntPath("info/tradeBlock", data, 0) == 1 || WzDataTool.getIntPath("info/quest", data, 0) == 1) {
             trade = true;
         }
         dropRestrictionCache.put(itemId, trade);
@@ -1043,7 +1043,7 @@ public class MapleItemInformationProvider {
         if (pickupRestrictionCache.containsKey(itemId)) {
             return pickupRestrictionCache.get(itemId);
         }
-        final boolean bRestricted = TacosWzDataTool.getIntPath("info/only", getItemData(itemId), 0) == 1;
+        final boolean bRestricted = WzDataTool.getIntPath("info/only", getItemData(itemId), 0) == 1;
 
         pickupRestrictionCache.put(itemId, bRestricted);
         return bRestricted;
@@ -1053,7 +1053,7 @@ public class MapleItemInformationProvider {
         if (accCache.containsKey(itemId)) {
             return accCache.get(itemId);
         }
-        final boolean bRestricted = TacosWzDataTool.getIntPath("info/accountSharable", getItemData(itemId), 0) == 1;
+        final boolean bRestricted = WzDataTool.getIntPath("info/accountSharable", getItemData(itemId), 0) == 1;
 
         accCache.put(itemId, bRestricted);
         return bRestricted;
@@ -1063,7 +1063,7 @@ public class MapleItemInformationProvider {
         if (stateChangeCache.containsKey(itemId)) {
             return stateChangeCache.get(itemId);
         }
-        final int triggerItem = TacosWzDataTool.getIntPath("info/stateChangeItem", getItemData(itemId), 0);
+        final int triggerItem = WzDataTool.getIntPath("info/stateChangeItem", getItemData(itemId), 0);
         stateChangeCache.put(itemId, triggerItem);
         return triggerItem;
     }
@@ -1072,14 +1072,14 @@ public class MapleItemInformationProvider {
         if (mesoCache.containsKey(itemId)) {
             return mesoCache.get(itemId);
         }
-        final int triggerItem = TacosWzDataTool.getIntPath("info/meso", getItemData(itemId), 0);
+        final int triggerItem = WzDataTool.getIntPath("info/meso", getItemData(itemId), 0);
         mesoCache.put(itemId, triggerItem);
         return triggerItem;
     }
 
     // info/damaとか
     public final int getInt(final int itemId, final String text) {
-        final int triggerItem = TacosWzDataTool.getIntPath(text, getItemData(itemId), 0);
+        final int triggerItem = WzDataTool.getIntPath(text, getItemData(itemId), 0);
         return triggerItem;
     }
 
@@ -1087,7 +1087,7 @@ public class MapleItemInformationProvider {
         if (karmaEnabledCache.containsKey(itemId)) {
             return karmaEnabledCache.get(itemId) == 1;
         }
-        final int iRestricted = TacosWzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
+        final int iRestricted = WzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
 
         karmaEnabledCache.put(itemId, iRestricted);
         return iRestricted == 1;
@@ -1097,7 +1097,7 @@ public class MapleItemInformationProvider {
         if (karmaEnabledCache.containsKey(itemId)) {
             return karmaEnabledCache.get(itemId) == 2;
         }
-        final int iRestricted = TacosWzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
+        final int iRestricted = WzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
 
         karmaEnabledCache.put(itemId, iRestricted);
         return iRestricted == 2;
@@ -1107,7 +1107,7 @@ public class MapleItemInformationProvider {
         if (blockPickupCache.containsKey(itemId)) {
             return blockPickupCache.get(itemId);
         }
-        final boolean iRestricted = TacosWzDataTool.getIntPath("info/pickUpBlock", getItemData(itemId), 0) == 1;
+        final boolean iRestricted = WzDataTool.getIntPath("info/pickUpBlock", getItemData(itemId), 0) == 1;
 
         blockPickupCache.put(itemId, iRestricted);
         return iRestricted;
@@ -1117,7 +1117,7 @@ public class MapleItemInformationProvider {
         if (logoutExpireCache.containsKey(itemId)) {
             return logoutExpireCache.get(itemId);
         }
-        final boolean iRestricted = TacosWzDataTool.getIntPath("info/expireOnLogout", getItemData(itemId), 0) == 1;
+        final boolean iRestricted = WzDataTool.getIntPath("info/expireOnLogout", getItemData(itemId), 0) == 1;
 
         logoutExpireCache.put(itemId, iRestricted);
         return iRestricted;
@@ -1127,7 +1127,7 @@ public class MapleItemInformationProvider {
         if (notSaleCache.containsKey(itemId)) {
             return notSaleCache.get(itemId);
         }
-        final boolean bRestricted = TacosWzDataTool.getIntPath("info/notSale", getItemData(itemId), 0) == 1;
+        final boolean bRestricted = WzDataTool.getIntPath("info/notSale", getItemData(itemId), 0) == 1;
 
         notSaleCache.put(itemId, bRestricted);
         return bRestricted;
@@ -1151,12 +1151,12 @@ public class MapleItemInformationProvider {
         for (final IMapleData reward : rewards) {
             StructRewardItem struct = new StructRewardItem();
 
-            struct.itemid = TacosWzDataTool.getIntPath("item", reward, 0);
-            struct.prob = (byte) TacosWzDataTool.getIntPath("prob", reward, 0);
-            struct.quantity = (short) TacosWzDataTool.getIntPath("count", reward, 0);
-            struct.effect = TacosWzDataTool.getStringPath("Effect", reward, "");
-            struct.worldmsg = TacosWzDataTool.getStringPath("worldMsg", reward, null);
-            struct.period = TacosWzDataTool.getIntPath("period", reward, -1);
+            struct.itemid = WzDataTool.getIntPath("item", reward, 0);
+            struct.prob = (byte) WzDataTool.getIntPath("prob", reward, 0);
+            struct.quantity = (short) WzDataTool.getIntPath("count", reward, 0);
+            struct.effect = WzDataTool.getStringPath("Effect", reward, "");
+            struct.worldmsg = WzDataTool.getStringPath("worldMsg", reward, null);
+            struct.period = WzDataTool.getIntPath("period", reward, -1);
 
             totalprob += struct.prob;
 
@@ -1185,17 +1185,17 @@ public class MapleItemInformationProvider {
         final Map<String, Integer> ret = new LinkedHashMap<>();
         for (final IMapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), TacosWzDataTool.getInt(data, 0));
+                ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
         }
-        ret.put("masterLevel", TacosWzDataTool.getIntPath("masterLevel", info, 0));
-        ret.put("reqSkillLevel", TacosWzDataTool.getIntPath("reqSkillLevel", info, 0));
-        ret.put("success", TacosWzDataTool.getIntPath("success", info, 0));
+        ret.put("masterLevel", WzDataTool.getIntPath("masterLevel", info, 0));
+        ret.put("reqSkillLevel", WzDataTool.getIntPath("reqSkillLevel", info, 0));
+        ret.put("success", WzDataTool.getIntPath("success", info, 0));
 
         final IMapleData skill = info.getChildByPath("skill");
 
         for (int i = 0; i < skill.getChildren().size(); i++) { // List of allowed skillIds
-            ret.put("skillid" + i, TacosWzDataTool.getIntPath(Integer.toString(i), skill, 0));
+            ret.put("skillid" + i, WzDataTool.getIntPath(Integer.toString(i), skill, 0));
         }
         SkillStatsCache.put(itemId, ret);
         return ret;
@@ -1217,7 +1217,7 @@ public class MapleItemInformationProvider {
             } catch (NumberFormatException e) {
                 continue;
             }
-            curPetId = TacosWzDataTool.getInt(c, 0);
+            curPetId = WzDataTool.getInt(c, 0);
             if (curPetId == 0) {
                 break;
             }
@@ -1231,7 +1231,7 @@ public class MapleItemInformationProvider {
         if (isQuestItemCache.containsKey(itemId)) {
             return isQuestItemCache.get(itemId);
         }
-        final boolean questItem = TacosWzDataTool.getIntPath("info/quest", getItemData(itemId), 0) == 1;
+        final boolean questItem = WzDataTool.getIntPath("info/quest", getItemData(itemId), 0) == 1;
         isQuestItemCache.put(itemId, questItem);
         return questItem;
     }
@@ -1249,9 +1249,9 @@ public class MapleItemInformationProvider {
         }
         final List<Integer> consumeItems = new ArrayList<Integer>();
         for (IMapleData consume : itemD.getChildByPath("consumeItem")) {
-            consumeItems.add(TacosWzDataTool.getInt(consume, 0));
+            consumeItems.add(WzDataTool.getInt(consume, 0));
         }
-        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<>(TacosWzDataTool.getIntPath("questId", itemD, 0), consumeItems);
+        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<>(WzDataTool.getIntPath("questId", itemD, 0), consumeItems);
         questItems.put(itemId, questItem);
         return questItem;
     }

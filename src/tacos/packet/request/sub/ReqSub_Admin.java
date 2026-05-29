@@ -27,7 +27,7 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
-import tacos.wz.ids.WzDataStorage;
+import tacos.wz.WzDataStorage;
 
 /**
  *

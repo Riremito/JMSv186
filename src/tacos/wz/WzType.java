@@ -16,18 +16,22 @@
  *
  *
  */
-package tacos.wz.data;
-
-import tacos.config.Content;
-import tacos.wz.WzXML;
+package tacos.wz;
 
 /**
  *
  * @author Riremito
  */
-public class NpcWz extends WzXML {
-
-    public NpcWz() {
-        super(Content.Wz_SingleFile.get() ? "Data.wz/Npc" : "Npc.wz");
-    }
+public enum WzType {
+    SKIN,
+    FACE,
+    HAIR,
+    JOB,
+    ITEM,
+    MAP,
+    MOB,
+    NPC,
+    REACTOR,
+    SKILL,
+    UNKNOWN;
 }
