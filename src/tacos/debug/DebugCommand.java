@@ -28,8 +28,6 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
 import tacos.shared.SharedExpTable;
-import tacos.wz.data.SkillWz;
-import tacos.wz.data.StringWz;
 import tacos.wz.ids.DWI_Random;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -70,9 +68,7 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.wz.TacosWzDataTool;
-import tacos.wz.data.EtcWz;
-import tacos.wz.data.MapWz;
-import tacos.wz.data.ReactorWz;
+import tacos.wz.WzXML;
 import tacos.wz.ids.NameData;
 import tacos.wz.ids.NameDataStorage;
 import tacos.wz.ids.WzDataStorage;
@@ -332,7 +328,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                IMapleData npc_location = EtcWz.get().getNpcLocation();
+                IMapleData npc_location = WzXML.ETC.getNpcLocation();
                 if (npc_location == null) {
                     chr.DebugMsg("npclocation : NpcLocation.img is not found.");
                     return true;
@@ -375,7 +371,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                MapleReactorStats reactorSt = ReactorWz.get().getReactor(reactor_id);
+                MapleReactorStats reactorSt = WzXML.REACTOR.getReactor(reactor_id);
                 if (reactorSt == null) {
                     chr.DebugMsg("reactor : reactorSt = null.");
                     return true;
@@ -583,7 +579,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                chr.giveDebuff(dis, SkillWz.get().getMobSkillData(mob_skill_id, mob_skill_level));
+                chr.giveDebuff(dis, WzXML.SKILL.getMobSkillData(mob_skill_id, mob_skill_level));
                 chr.DebugMsg("mobdkill : " + mob_skill_id);
                 return true;
             }
@@ -780,7 +776,7 @@ public class DebugCommand {
             case "/townmap": {
                 int count = 0;
                 for (int map_id : WzDataStorage.MAP.getIds()) {
-                    IMapleData data = MapWz.get().getImg(map_id);
+                    IMapleData data = WzXML.MAP.getImg(map_id);
                     if (data != null) {
                         if (TacosWzDataTool.getIntPath("info/town", data, 0) != 0) {
                             int return_map_id = TacosWzDataTool.getIntPath("info/returnMap", data, 0);
@@ -1040,7 +1036,7 @@ public class DebugCommand {
     }
 
     private static boolean getBasicSkill(MapleCharacter chr) {
-        for (int skill_id : SkillWz.get().getBasicSkill(chr, debug_basic_job)) {
+        for (int skill_id : WzXML.SKILL.getBasicSkill(chr, debug_basic_job)) {
             if (!checkDebugBasicSkill(skill_id)) {
                 continue;
             }
@@ -1052,7 +1048,7 @@ public class DebugCommand {
     }
 
     private static boolean resetBasicSkill(MapleCharacter chr) {
-        for (int skill_id : SkillWz.get().getBasicSkill(chr, debug_basic_job)) {
+        for (int skill_id : WzXML.SKILL.getBasicSkill(chr, debug_basic_job)) {
             chr.DebugMsg("RemoveSkill : " + skill_id);
             ISkill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
@@ -1082,7 +1078,7 @@ public class DebugCommand {
         for (int i = 0; i < mob_ids.size(); i++) {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
-            IMapleData md_mob = StringWz.get().getMob().getChildByPath(Integer.toString(mob_id));
+            IMapleData md_mob = WzXML.STRING.getMob().getChildByPath(Integer.toString(mob_id));
             String mob_name = md_mob != null ? TacosWzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
             if (!WzDataStorage.MOB.check(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");

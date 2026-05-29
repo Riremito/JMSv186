@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.Skill;
@@ -42,20 +42,10 @@ import tacos.wz.TacosWzDataTool;
  *
  * @author Riremito
  */
-public class SkillWz extends TacosWz {
+public class SkillWz extends WzXML {
 
-    private static SkillWz wz = null;
-
-    public static SkillWz get() {
-        if (wz == null) {
-            wz = new SkillWz(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz");
-        }
-
-        return wz;
-    }
-
-    public SkillWz(String path) {
-        super(path);
+    public SkillWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz");
     }
 
     private Map<Integer, ISkill> map_Skill = null;

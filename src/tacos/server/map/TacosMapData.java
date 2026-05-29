@@ -41,8 +41,7 @@ import odin.server.maps.MapleReactorStats;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.wz.TacosWzDataTool;
-import tacos.wz.data.MapWz;
-import tacos.wz.data.ReactorWz;
+import tacos.wz.WzXML;
 import tacos.wz.ids.DWI_Block;
 
 /**
@@ -73,7 +72,7 @@ public class TacosMapData {
     private int link_id;
 
     public boolean loadData() {
-        IMapleData mapData = MapWz.get().getImg(this.map_id);
+        IMapleData mapData = WzXML.MAP.getImg(this.map_id);
         if (mapData == null) {
             DebugLogger.ErrorLog("loadData : invalid map id = " + this.map_id);
             return false;
@@ -81,7 +80,7 @@ public class TacosMapData {
         this.link_id = TacosWzDataTool.getInt(mapData.getChildByPath("info/link"), -1);
 
         if (this.link_id != -1) {
-            mapData = MapWz.get().getImg(this.link_id);
+            mapData = WzXML.MAP.getImg(this.link_id);
             if (mapData == null) {
                 DebugLogger.ErrorLog("loadData : invalid link id = " + this.link_id);
                 return false;
@@ -436,7 +435,7 @@ public class TacosMapData {
             }
             int FacingDirection = TacosWzDataTool.getInt(reactor.getChildByPath("f"), 0);
 
-            MapleReactorStats stats = ReactorWz.get().getReactor(reactor_id);
+            MapleReactorStats stats = WzXML.REACTOR.getReactor(reactor_id);
             MapleReactor myReactor = new MapleReactor(stats, reactor_id);
 
             stats.setFacingDirection((byte) FacingDirection);

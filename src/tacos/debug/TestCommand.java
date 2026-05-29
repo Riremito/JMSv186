@@ -38,7 +38,7 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.TacosChannel;
-import tacos.wz.data.ItemWz;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -90,7 +90,7 @@ public class TestCommand {
 
             case "/hm": {
                 List<Integer> ids = new ArrayList<>();
-                IMapleData md_item_sub_type = ItemWz.get().getItemImg(503);
+                IMapleData md_item_sub_type = WzXML.ITEM.getItemImg(503);
                 if (md_item_sub_type != null) {
                     for (IMapleData md_item : md_item_sub_type.getChildren()) {
                         int item_id = Integer.parseInt(md_item.getName());

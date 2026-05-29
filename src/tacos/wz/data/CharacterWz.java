@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import odin.provider.IMapleData;
@@ -29,20 +29,10 @@ import odin.provider.IMapleDataEntity;
  *
  * @author Riremito
  */
-public class CharacterWz extends TacosWz {
+public class CharacterWz extends WzXML {
 
-    private static CharacterWz wz = null;
-
-    public static CharacterWz get() {
-        if (wz == null) {
-            wz = new CharacterWz(Content.Wz_SingleFile.get() ? "Data.wz/Character" : "Character.wz");
-        }
-
-        return wz;
-    }
-
-    public CharacterWz(String path) {
-        super(path);
+    public CharacterWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Character" : "Character.wz");
     }
 
     public IMapleData getItemData(int id) {

@@ -20,6 +20,7 @@ import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.script.TacosScriptQuest;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzXML;
 
 public class MapleQuest {
 
@@ -52,8 +53,8 @@ public class MapleQuest {
      */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
-        final IMapleData basedata1 = QuestWz.get().getCheck().getChildByPath(String.valueOf(id));
-        final IMapleData basedata2 = QuestWz.get().getAct().getChildByPath(String.valueOf(id));
+        final IMapleData basedata1 = WzXML.QUEST.getCheck().getChildByPath(String.valueOf(id));
+        final IMapleData basedata2 = WzXML.QUEST.getAct().getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;
@@ -115,7 +116,7 @@ public class MapleQuest {
             }
         }
 
-        final IMapleData questInfo = QuestWz.get().getQuestInfo().getChildByPath(String.valueOf(id));
+        final IMapleData questInfo = WzXML.QUEST.getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
             ret.name = TacosWzDataTool.getStringPath("name", questInfo, "");
             ret.autoStart = TacosWzDataTool.getIntPath("autoStart", questInfo, 0) == 1;
@@ -126,7 +127,7 @@ public class MapleQuest {
 
         // not in KMS55
         if (Version.GreaterOrEqual(Region.KMS, 65)) {
-            final IMapleData pquestInfo = QuestWz.get().getPQuest().getChildByPath(String.valueOf(id));
+            final IMapleData pquestInfo = WzXML.QUEST.getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
                 for (IMapleData d : pquestInfo.getChildByPath("rank")) {
                     List<OdinPair<String, OdinPair<String, Integer>>> pInfo = new ArrayList<>();

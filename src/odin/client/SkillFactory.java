@@ -20,22 +20,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import tacos.wz.data.SkillWz;
-import tacos.wz.data.StringWz;
 import java.util.Collection;
 import java.util.List;
 
 import odin.provider.IMapleData;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzXML;
 
 public class SkillFactory {
 
     public static ISkill getSkill(int id) {
-        return SkillWz.get().getSkill().get(id);
+        return WzXML.SKILL.getSkill().get(id);
     }
 
     public static List<Integer> getSkillsByJob(int jobId) {
-        return SkillWz.get().getSkillsByJob().get(jobId);
+        return WzXML.SKILL.getSkillsByJob().get(jobId);
     }
 
     public static String getSkillName(int id) {
@@ -47,7 +46,7 @@ public class SkillFactory {
     }
 
     public static String getName(int skill_id) {
-        IMapleData skillroot = StringWz.get().getSkill().getChildByPath(String.format("%07d", skill_id));
+        IMapleData skillroot = WzXML.STRING.getSkill().getChildByPath(String.format("%07d", skill_id));
         if (skillroot != null) {
             return TacosWzDataTool.getString(skillroot.getChildByPath("name"), "");
         }
@@ -55,10 +54,10 @@ public class SkillFactory {
     }
 
     public static SummonSkillEntry getSummonData(int skillid) {
-        return SkillWz.get().getSummonSkillInformation().get(skillid);
+        return WzXML.SKILL.getSummonSkillInformation().get(skillid);
     }
 
     public static Collection<ISkill> getAllSkills() {
-        return SkillWz.get().getSkill().values();
+        return WzXML.SKILL.getSkill().values();
     }
 }

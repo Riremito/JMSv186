@@ -112,8 +112,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
 import tacos.shared.TacosShared;
-import tacos.wz.data.MobWz;
-import tacos.wz.data.SkillWz;
+import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -1156,7 +1155,7 @@ public class ReqCUser {
             map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
             return true;
         }
-        MobAttackInfo attackInfo = MobWz.get().getMobAttackInfo(monster, uhd.nAttackIdx);
+        MobAttackInfo attackInfo = WzXML.MOB.getMobAttackInfo(monster, uhd.nAttackIdx);
         if (attackInfo != null) {
             // deadlyAttack, 1:1
             if (attackInfo.isDeadlyAttack()) {
@@ -1188,7 +1187,7 @@ public class ReqCUser {
                 return true;
             }
             // mob skill.
-            MobSkill mob_skill = SkillWz.get().getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
+            MobSkill mob_skill = WzXML.SKILL.getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
             if (mob_skill != null) {
                 if (uhd.nDamage != 0) {
                     mob_skill.applyEffect(chr, monster, false);
@@ -1197,7 +1196,7 @@ public class ReqCUser {
             monster.setMp(monster.getMp() - attackInfo.getMpCon());
         }
         if (0 < uhd.nReflect) {
-            MobSkill skill = SkillWz.get().getMobSkillData(0, uhd.nReflect);
+            MobSkill skill = WzXML.SKILL.getMobSkillData(0, uhd.nReflect);
             if (skill != null) {
                 skill.applyEffect(chr, monster, false);
             }

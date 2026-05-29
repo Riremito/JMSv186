@@ -18,8 +18,8 @@
  */
 package tacos.wz.ids;
 
-import tacos.wz.data.ItemWz;
 import java.util.Random;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -41,18 +41,17 @@ public class DWI_Random {
     public static int getRandomPotential(int rank) {
         Random rand = new Random();
         if (rank == 1) {
-            return ItemWz.get().getRarePotential().get(rand.nextInt(ItemWz.get().getRarePotential().size()));
+            return WzXML.ITEM.getRarePotential().get(rand.nextInt(WzXML.ITEM.getRarePotential().size()));
         }
         if (rank == 2) {
-            return ItemWz.get().getEpicPotential().get(rand.nextInt(ItemWz.get().getEpicPotential().size()));
+            return WzXML.ITEM.getEpicPotential().get(rand.nextInt(WzXML.ITEM.getEpicPotential().size()));
         }
         if (rank == 3) {
-            return ItemWz.get().getUniquePotential().get(rand.nextInt(ItemWz.get().getUniquePotential().size()));
+            return WzXML.ITEM.getUniquePotential().get(rand.nextInt(WzXML.ITEM.getUniquePotential().size()));
         }
         if (rank == 4) {
-            return ItemWz.get().getLegendaryPotential().get(rand.nextInt(ItemWz.get().getLegendaryPotential().size()));
+            return WzXML.ITEM.getLegendaryPotential().get(rand.nextInt(WzXML.ITEM.getLegendaryPotential().size()));
         }
         return 0;
     }
-
 }

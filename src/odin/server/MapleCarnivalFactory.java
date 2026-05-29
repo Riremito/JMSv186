@@ -1,8 +1,8 @@
 package odin.server;
 
 import odin.client.MapleDisease;
-import tacos.wz.data.SkillWz;
 import odin.server.life.MobSkill;
+import tacos.wz.WzXML;
 
 public class MapleCarnivalFactory {
 
@@ -13,11 +13,11 @@ public class MapleCarnivalFactory {
     }
 
     public MCSkill getSkill(final int id) {
-        return SkillWz.get().getMCSkill().get(id);
+        return WzXML.SKILL.getMCSkill().get(id);
     }
 
     public MCSkill getGuardian(final int id) {
-        return SkillWz.get().getMCGuardian().get(id);
+        return WzXML.SKILL.getMCGuardian().get(id);
     }
 
     public static class MCSkill {
@@ -33,7 +33,7 @@ public class MapleCarnivalFactory {
         }
 
         public MobSkill getSkill() {
-            return SkillWz.get().getMobSkillData(skillid, 1); //level?
+            return WzXML.SKILL.getMobSkillData(skillid, 1); //level?
         }
 
         public MapleDisease getDisease() {

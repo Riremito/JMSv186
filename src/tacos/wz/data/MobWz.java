@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -37,25 +37,15 @@ import tacos.wz.TacosWzDataTool;
  *
  * @author Riremito
  */
-public class MobWz extends TacosWz {
+public class MobWz extends WzXML {
 
-    private static MobWz wz = null;
-
-    public static MobWz get() {
-        if (wz == null) {
-            wz = new MobWz(Content.Wz_SingleFile.get() ? "Data.wz/Mob" : "Mob.wz");
-        }
-
-        return wz;
-    }
-
-    public MobWz(String path) {
-        super(path);
+    public MobWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Mob" : "Mob.wz");
     }
 
     public IMapleData getImg(int mob_id) {
         String target_img_path = String.format("%07d.img", mob_id);
-        return get().getData(target_img_path);
+        return getData(target_img_path);
     }
 
     private Map<OdinPair<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;

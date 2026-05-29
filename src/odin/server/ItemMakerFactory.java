@@ -1,20 +1,19 @@
 package odin.server;
 
-import tacos.wz.data.EtcWz;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzXML;
 
 public class ItemMakerFactory {
 
     private final static ItemMakerFactory instance = new ItemMakerFactory();
-    protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<Integer, ItemMakerCreateEntry>();
-    protected Map<Integer, GemCreateEntry> gemCache = new HashMap<Integer, GemCreateEntry>();
+    protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<>();
+    protected Map<Integer, GemCreateEntry> gemCache = new HashMap<>();
 
     public static ItemMakerFactory getInstance() {
         // DO ItemMakerFactory.getInstance() on ChannelServer startup.
@@ -26,7 +25,7 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        if (EtcWz.get().getItemMake() == null) {
+        if (WzXML.ETC.getItemMake() == null) {
             return;
         }
 
@@ -35,7 +34,7 @@ public class ItemMakerFactory {
         GemCreateEntry ret;
         ItemMakerCreateEntry imt;
 
-        for (IMapleData dataType : EtcWz.get().getItemMake().getChildren()) {
+        for (IMapleData dataType : WzXML.ETC.getItemMake().getChildren()) {
             int type = Integer.parseInt(dataType.getName());
             switch (type) {
                 case 0: { // Caching of gem

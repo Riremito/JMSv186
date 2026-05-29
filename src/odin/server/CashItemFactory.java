@@ -1,6 +1,5 @@
 package odin.server;
 
-import tacos.wz.data.EtcWz;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.PreparedStatement;
@@ -13,6 +12,7 @@ import java.util.Map.Entry;
 import odin.server.CashItemInfo.CashModInfo;
 import odin.provider.IMapleData;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzXML;
 
 public class CashItemFactory {
 
@@ -31,8 +31,8 @@ public class CashItemFactory {
     }
 
     public void initialize() {
-        final List<Integer> itemids = new ArrayList<Integer>();
-        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
+        final List<Integer> itemids = new ArrayList<>();
+        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
             final int itemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
             final int SN = TacosWzDataTool.getIntPath("SN", field, 0);
 
@@ -62,7 +62,7 @@ public class CashItemFactory {
     }
 
     public final CashItemInfo getItem(int item_SN) {
-        final CashItemInfo cii = itemStats.get(Integer.valueOf(item_SN));
+        final CashItemInfo cii = itemStats.get(item_SN);
 
         // OK
         if (cii != null) {
@@ -70,7 +70,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
+        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
             int SN = TacosWzDataTool.getIntPath("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
@@ -102,7 +102,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
+        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
             int ItemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;
@@ -130,10 +130,10 @@ public class CashItemFactory {
         }
         final List<CashItemInfo> packageItems = new ArrayList<>();
 
-        if (EtcWz.get().getCashPackage() == null || EtcWz.get().getCashPackage().getChildByPath(itemId + "/SN") == null) {
+        if (WzXML.ETC.getCashPackage() == null || WzXML.ETC.getCashPackage().getChildByPath(itemId + "/SN") == null) {
             return null;
         }
-        for (IMapleData d : EtcWz.get().getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
+        for (IMapleData d : WzXML.ETC.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
             packageItems.add(itemStats.get(TacosWzDataTool.getInt(d, 0)));
         }
         itemPackage.put(itemId, packageItems);

@@ -29,7 +29,7 @@ import odin.provider.IMapleDataProvider;
 import tacos.config.Content;
 import tacos.debug.DebugLoadTime;
 import tacos.debug.DebugLogger;
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -72,7 +72,7 @@ public class WzDataStorage {
                 String path = is_single_data_wz ? "Data.wz/Character" : "Character.wz";
                 String regex = "0*(\\d+)\\.img";
 
-                IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+                IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
                 if (wz == null) {
                     DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
                     return false;
@@ -201,7 +201,7 @@ public class WzDataStorage {
     }
 
     private boolean loadXML(String path, String regex) {
-        IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
         if (wz == null) {
             return false;
         }
@@ -219,7 +219,7 @@ public class WzDataStorage {
     }
 
     private boolean loadItemXML(String path) {
-        IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
         if (wz == null) {
             return false;
         }
@@ -245,7 +245,7 @@ public class WzDataStorage {
     }
 
     public boolean loadEquipXML(String path) {
-        IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
         if (wz == null) {
             return false;
         }
@@ -268,7 +268,7 @@ public class WzDataStorage {
     }
 
     private boolean loadMapXML(String path) {
-        IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
         if (wz == null) {
             return false;
         }
@@ -295,7 +295,7 @@ public class WzDataStorage {
     }
 
     private boolean loadSkillXML(String path) {
-        IMapleDataProvider wz = (new TacosWz(path)).getWzRoot();
+        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
         if (wz == null) {
             return false;
         }

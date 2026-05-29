@@ -23,7 +23,7 @@ import java.util.TreeMap;
 import odin.provider.IMapleData;
 import tacos.debug.DebugLogger;
 import tacos.wz.TacosWzDataTool;
-import tacos.wz.data.StringWz;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -59,34 +59,34 @@ public class NameDataStorage {
                 for (int item_id : WzDataStorage.ITEM.getIds()) {
                     add(item_id);
                 }
-                for (IMapleData wz_root : StringWz.get().getEqp().getChildren()) {
+                for (IMapleData wz_root : WzXML.STRING.getEqp().getChildren()) {
                     for (IMapleData wz_data : wz_root.getChildren()) {
                         int item_id = Integer.parseInt(wz_data.getName());
                         String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                         updateName(item_id, item_name);
                     }
                 }
-                for (IMapleData wz_data : StringWz.get().getConsume().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getConsume().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
                     String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     updateName(item_id, item_name);
                 }
-                for (IMapleData wz_data : StringWz.get().getIns().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getIns().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
                     String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     updateName(item_id, item_name);
                 }
-                for (IMapleData wz_data : StringWz.get().getEtc().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getEtc().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
                     String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     updateName(item_id, item_name);
                 }
-                for (IMapleData wz_data : StringWz.get().getPet().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getPet().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
                     String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     updateName(item_id, item_name);
                 }
-                for (IMapleData wz_data : StringWz.get().getCash().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getCash().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
                     String item_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     updateName(item_id, item_name);
@@ -97,7 +97,7 @@ public class NameDataStorage {
                 for (int map_id : WzDataStorage.MAP.getIds()) {
                     addMap(map_id);
                 }
-                for (IMapleData wz_root : StringWz.get().getMap().getChildren()) {
+                for (IMapleData wz_root : WzXML.STRING.getMap().getChildren()) {
                     for (IMapleData wz_data : wz_root.getChildren()) {
                         int map_id = Integer.parseInt(wz_data.getName());
                         String mapName = TacosWzDataTool.getString(wz_data.getChildByPath("mapName"), NO_NAME);
@@ -111,7 +111,7 @@ public class NameDataStorage {
                 for (int mob_id : WzDataStorage.MOB.getIds()) {
                     add(mob_id);
                 }
-                for (IMapleData wz_data : StringWz.get().getMob().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getMob().getChildren()) {
                     int mob_id = Integer.parseInt(wz_data.getName());
                     String mob_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     updateName(mob_id, mob_name);
@@ -122,7 +122,7 @@ public class NameDataStorage {
                 for (int npc_id : WzDataStorage.NPC.getIds()) {
                     add(npc_id);
                 }
-                for (IMapleData wz_data : StringWz.get().getNpc().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getNpc().getChildren()) {
                     int npc_id = Integer.parseInt(wz_data.getName());
                     String npc_name = TacosWzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
                     updateName(npc_id, npc_name);
@@ -140,7 +140,7 @@ public class NameDataStorage {
                 for (int skill_id : WzDataStorage.SKILL.getIds()) {
                     add(skill_id);
                 }
-                for (IMapleData wz_data : StringWz.get().getSkill().getChildren()) {
+                for (IMapleData wz_data : WzXML.STRING.getSkill().getChildren()) {
                     if (wz_data.getChildByPath("bookName") != null) {
                         continue;
                     }

@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import tacos.config.Content;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,25 +31,15 @@ import tacos.wz.TacosWzDataTool;
  *
  * @author Riremito
  */
-public class ReactorWz extends TacosWz {
+public class ReactorWz extends WzXML {
 
-    private static ReactorWz wz = null;
-
-    public static ReactorWz get() {
-        if (wz == null) {
-            wz = new ReactorWz(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz");
-        }
-
-        return wz;
-    }
-
-    public ReactorWz(String path) {
-        super(path);
+    public ReactorWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz");
     }
 
     public IMapleData getImg(int reactor_id) {
         String target_img_path = String.format("%07d.img", reactor_id);
-        return get().getData(target_img_path);
+        return getData(target_img_path);
     }
 
     private Map<Integer, MapleReactorStats> map_reactorStats = null;
@@ -114,5 +104,4 @@ public class ReactorWz extends TacosWz {
 
         return stats;
     }
-
 }

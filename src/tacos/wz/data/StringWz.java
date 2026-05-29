@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -31,20 +31,10 @@ import tacos.wz.ids.WzDataStorage;
  *
  * @author Riremito
  */
-public class StringWz extends TacosWz {
+public class StringWz extends WzXML {
 
-    private static StringWz wz = null;
-
-    public static StringWz get() {
-        if (wz == null) {
-            wz = new StringWz(Content.Wz_SingleFile.get() ? "Data.wz/String" : "String.wz");
-        }
-
-        return wz;
-    }
-
-    public StringWz(String path) {
-        super(path);
+    public StringWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/String" : "String.wz");
     }
 
     private IMapleData checkSubDirectory(IMapleData md, String dir_name) {

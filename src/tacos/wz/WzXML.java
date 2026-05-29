@@ -34,12 +34,38 @@ import odin.provider.WzXML.WZEntry;
 import odin.provider.WzXML.XMLDomMapleData;
 import tacos.config.ContentCustom;
 import tacos.odin.OdinPair;
+import tacos.wz.data.CharacterWz;
+import tacos.wz.data.EtcWz;
+import tacos.wz.data.ItemWz;
+import tacos.wz.data.MapWz;
+import tacos.wz.data.MobWz;
+import tacos.wz.data.QuestWz;
+import tacos.wz.data.ReactorWz;
+import tacos.wz.data.SkillWz;
+import tacos.wz.data.StringWz;
 
 /**
  *
  * @author Riremito
  */
-public class TacosWz implements IMapleDataProvider {
+public class WzXML implements IMapleDataProvider {
+
+    public static final CharacterWz CHARACTER = new CharacterWz();
+    // Effect
+    public static final EtcWz ETC = new EtcWz();
+    public static final ItemWz ITEM = new ItemWz();
+    // List
+    public static final MapWz MAP = new MapWz();
+    public static final MobWz MOB = new MobWz();
+    // Morph
+    // Npc
+    public static final QuestWz QUEST = new QuestWz();
+    public static final ReactorWz REACTOR = new ReactorWz();
+    public static final SkillWz SKILL = new SkillWz();
+    // Sound
+    public static final StringWz STRING = new StringWz();
+    // TamingMob
+    // UI
 
     private static List<OdinPair<String, IMapleData>> xml_cache = new ArrayList<>();
     private IMapleDataProvider wz_root = null;
@@ -47,7 +73,7 @@ public class TacosWz implements IMapleDataProvider {
     private File root_dir;
     protected WZDirectoryEntry rootDirectory;
 
-    public TacosWz(String path) {
+    public WzXML(String path) {
         this.root_path = path;
         setWzRoot();
     }
@@ -186,5 +212,4 @@ public class TacosWz implements IMapleDataProvider {
     public IMapleDataDirectoryEntry getRootDirectory() {
         return this.rootDirectory;
     }
-
 }

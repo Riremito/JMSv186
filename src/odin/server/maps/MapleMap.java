@@ -31,7 +31,6 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
-import tacos.wz.data.ReactorWz;
 import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
@@ -55,6 +54,7 @@ import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.server.map.TacosMap;
+import tacos.wz.WzXML;
 
 public final class MapleMap extends TacosMap {
 
@@ -597,7 +597,7 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (guardz != null) {
-            final MapleReactorStats stats = ReactorWz.get().getReactor(9980000 + team);
+            final MapleReactorStats stats = WzXML.REACTOR.getReactor(9980000 + team);
             final MapleReactor my = new MapleReactor(stats, 9980000 + team);
             stats.setFacingDirection((byte) 0); //always
             my.setPosition(guardz);
@@ -615,5 +615,4 @@ public final class MapleMap extends TacosMap {
         }
         return guardz != null;
     }
-
 }

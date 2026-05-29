@@ -19,31 +19,21 @@
 package tacos.wz.data;
 
 import odin.provider.IMapleData;
-import tacos.wz.TacosWz;
 import tacos.config.Content;
+import tacos.wz.WzXML;
 
 /**
  *
  * @author Riremito
  */
-public class MapWz extends TacosWz {
+public class MapWz extends WzXML {
 
-    private static MapWz wz = null;
-
-    public static MapWz get() {
-        if (wz == null) {
-            wz = new MapWz(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
-        }
-
-        return wz;
-    }
-
-    public MapWz(String path) {
-        super(path);
+    public MapWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Map" : "Map.wz");
     }
 
     public IMapleData getImg(int map_id) {
         String target_img_path = String.format("Map/Map%d/%09d.img", (map_id / 100000000), map_id);
-        return get().getData(target_img_path);
+        return getData(target_img_path);
     }
 }

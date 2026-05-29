@@ -32,7 +32,7 @@ import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.server.map.MonsterDrop;
-import tacos.wz.data.StringWz;
+import tacos.wz.WzXML;
 import tacos.wz.data.StringWz.DropMonsterBook;
 
 /**
@@ -53,7 +53,7 @@ public class CustomMonsterBookDrop {
     private DropMonsterBook book_info = null;
 
     public CustomMonsterBookDrop(MapleMonster monster) {
-        this.book_info = StringWz.get().getMonseterBookDrop(monster.getId());
+        this.book_info = WzXML.STRING.getMonseterBookDrop(monster.getId());
     }
 
     public List<Integer> getDropItems() {
@@ -157,7 +157,7 @@ public class CustomMonsterBookDrop {
             dropped_count++;
         }
 
-        if (!StringWz.get().checkBookAvailable()) {
+        if (!WzXML.STRING.checkBookAvailable()) {
             return dropped_count;
         }
 
@@ -171,5 +171,4 @@ public class CustomMonsterBookDrop {
         }
         return dropped_count;
     }
-
 }

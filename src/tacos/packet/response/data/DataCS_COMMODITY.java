@@ -28,7 +28,7 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCommodity;
 import tacos.wz.TacosWzDataTool;
-import tacos.wz.data.EtcWz;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -62,7 +62,7 @@ public class DataCS_COMMODITY {
             return ONSALE_LIST;
         }
         // remove all onsale items.
-        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
+        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
             int nItemId = TacosWzDataTool.getIntPath("ItemId", field, 0);
             int nSN = TacosWzDataTool.getIntPath("SN", field, 0);
             int bOnSale = TacosWzDataTool.getIntPath("OnSale", field, 0);

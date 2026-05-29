@@ -26,7 +26,6 @@ import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.wz.data.ItemWz;
 import tacos.debug.DebugLogger;
 import odin.handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
@@ -45,6 +44,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObjectType;
 import tacos.packet.ClientPacketHeader;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -182,7 +182,7 @@ public class ReqCUser_Pet {
         //slea.skip(5);
         cp.DecodeBuffer(5); // ?_?
         final byte command = cp.Decode1();
-        final PetCommand petCommand = ItemWz.get().getPetCommand(pet.getPetItemId(), (int) command);
+        final PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;

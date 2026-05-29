@@ -29,7 +29,6 @@ import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.wz.data.EtcWz;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Character_slots;
 import tacos.database.query.DQ_Characters;
@@ -49,6 +48,7 @@ import tacos.packet.ClientPacketHeader;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
+import tacos.wz.WzXML;
 import tacos.wz.ids.WzDataStorage;
 
 /**
@@ -640,7 +640,7 @@ public class ReqCLogin {
         if ((Content.CharacterNameLength.getInt() - 1) < character_name.getBytes().length) {
             return false;
         }
-        if (EtcWz.get().isForbiddenName(character_name)) {
+        if (WzXML.ETC.isForbiddenName(character_name)) {
             return false;
         }
         // already registered
@@ -649,5 +649,4 @@ public class ReqCLogin {
         }
         return true;
     }
-
 }

@@ -30,7 +30,7 @@ import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.LeaveType;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.wz.data.ItemWz;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -117,7 +117,7 @@ public class TacosTask {
                     continue;
                 }
             }
-            int newFullness = pet.getFullness() - ItemWz.get().getHunger(pet.getPetItemId());
+            int newFullness = pet.getFullness() - WzXML.ITEM.getHunger(pet.getPetItemId());
             if (newFullness <= 5) {
                 pet.setFullness(15);
                 chr.unequipPet(pet, true, true);

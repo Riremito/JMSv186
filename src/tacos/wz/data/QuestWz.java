@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import tacos.config.Content;
 import odin.provider.IMapleData;
 
@@ -26,20 +26,10 @@ import odin.provider.IMapleData;
  *
  * @author Riremito
  */
-public class QuestWz extends TacosWz {
+public class QuestWz extends WzXML {
 
-    private static QuestWz wz = null;
-
-    public static QuestWz get() {
-        if (wz == null) {
-            wz = new QuestWz(Content.Wz_SingleFile.get() ? "Data.wz/Quest" : "Quest.wz");
-        }
-
-        return wz;
-    }
-
-    public QuestWz(String path) {
-        super(path);
+    public QuestWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Quest" : "Quest.wz");
     }
 
     public IMapleData getAct() {
@@ -57,5 +47,4 @@ public class QuestWz extends TacosWz {
     public IMapleData getPQuest() {
         return getData("PQuest.img");
     }
-
 }

@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import tacos.wz.data.MobWz;
-import tacos.wz.data.StringWz;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +28,7 @@ import java.util.Map;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.wz.TacosWzDataTool;
+import tacos.wz.WzXML;
 
 public class MapleLifeFactory {
 
@@ -49,7 +48,7 @@ public class MapleLifeFactory {
     }
 
     public static List<Integer> getQuestCount(int id) {
-        return MobWz.get().getQuestCountGroup().get(id);
+        return WzXML.MOB.getQuestCountGroup().get(id);
     }
 
     // fix broken MP mob
@@ -72,7 +71,7 @@ public class MapleLifeFactory {
         MapleMonsterStats stats = monsterStats.get(mob_id);
 
         if (stats == null) {
-            IMapleData monsterData = MobWz.get().getImg(mob_id);
+            IMapleData monsterData = WzXML.MOB.getImg(mob_id);
             if (monsterData == null) {
                 return null;
             }
@@ -93,7 +92,7 @@ public class MapleLifeFactory {
             stats.setExplosiveReward(TacosWzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
             stats.setFfaLoot(TacosWzDataTool.getIntPath("publicReward", monsterInfoData, 0) > 0);
             stats.setUndead(TacosWzDataTool.getIntPath("undead", monsterInfoData, 0) > 0);
-            stats.setName(TacosWzDataTool.getStringPath(mob_id + "/name", StringWz.get().getMob(), "MISSINGNO"));
+            stats.setName(TacosWzDataTool.getStringPath(mob_id + "/name", WzXML.STRING.getMob(), "MISSINGNO"));
             stats.setBuffToGive(TacosWzDataTool.getIntPath("buff", monsterInfoData, -1));
             stats.setFriendly(TacosWzDataTool.getIntPath("damagedByMob", monsterInfoData, 0) > 0);
             stats.setExplosiveReward(TacosWzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
@@ -157,7 +156,7 @@ public class MapleLifeFactory {
             // Other data which isn;t in the mob, but might in the linked data
             int link_id = TacosWzDataTool.getIntPath("link", monsterInfoData, 0);
             if (link_id != 0) { // Store another copy, for faster processing.
-                monsterData = MobWz.get().getImg(link_id);
+                monsterData = WzXML.MOB.getImg(link_id);
             }
 
             for (IMapleData idata : monsterData) {
@@ -219,7 +218,7 @@ public class MapleLifeFactory {
     public static MapleNPC getNPC(int npc_id) {
         String name = npcNames.get(npc_id);
         if (name == null) {
-            name = TacosWzDataTool.getStringPath(npc_id + "/name", StringWz.get().getNpc(), "MISSINGNO");
+            name = TacosWzDataTool.getStringPath(npc_id + "/name", WzXML.STRING.getNpc(), "MISSINGNO");
             npcNames.put(npc_id, name);
         }
         return new MapleNPC(npc_id, name);

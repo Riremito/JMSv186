@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import odin.client.inventory.PetCommand;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
@@ -38,22 +38,13 @@ import tacos.wz.TacosWzDataTool;
  *
  * @author Riremito
  */
-public class ItemWz extends TacosWz {
+public class ItemWz extends WzXML {
 
-    private static ItemWz wz = null;
+    public ItemWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Item" : "Item.wz");
+    }
+
     private static final int item_sub_type_pet = 500;
-
-    public static ItemWz get() {
-        if (wz == null) {
-            wz = new ItemWz(Content.Wz_SingleFile.get() ? "Data.wz/Item" : "Item.wz");
-        }
-
-        return wz;
-    }
-
-    public ItemWz(String path) {
-        super(path);
-    }
 
     public IMapleData getItemData(int id) {
         int item_type = id / 1000000;

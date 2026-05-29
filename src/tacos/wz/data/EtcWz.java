@@ -18,7 +18,7 @@
  */
 package tacos.wz.data;
 
-import tacos.wz.TacosWz;
+import tacos.wz.WzXML;
 import tacos.config.Content;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,20 +33,10 @@ import tacos.wz.TacosWzDataTool;
  *
  * @author Riremito
  */
-public class EtcWz extends TacosWz {
+public class EtcWz extends WzXML {
 
-    private static EtcWz wz = null;
-
-    public static EtcWz get() {
-        if (wz == null) {
-            wz = new EtcWz(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
-        }
-
-        return wz;
-    }
-
-    public EtcWz(String path) {
-        super(path);
+    public EtcWz() {
+        super(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
     }
 
     public IMapleData getForbiddenName() {
