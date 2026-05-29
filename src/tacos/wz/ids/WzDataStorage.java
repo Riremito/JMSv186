@@ -25,8 +25,6 @@ import java.util.regex.Pattern;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
-import odin.provider.IMapleDataProvider;
-import tacos.config.Content;
 import tacos.debug.DebugLoadTime;
 import tacos.debug.DebugLogger;
 import tacos.wz.WzXML;
@@ -62,24 +60,13 @@ public class WzDataStorage {
             return false;
         }
 
-        boolean is_single_data_wz = Content.Wz_SingleFile.get();
-
         this.data = new ArrayList<>();
 
         DebugLoadTime dlt = new DebugLoadTime("WzDataStorage (" + this.type + ")");
         switch (this.type) {
             case SKIN: {
-                String path = is_single_data_wz ? "Data.wz/Character" : "Character.wz";
-                String regex = "0*(\\d+)\\.img";
-
-                IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
-                if (wz == null) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
-                }
-
-                Pattern pattern = Pattern.compile(regex);
-                for (IMapleDataEntity dir : wz.getRootDirectory().getFiles()) {
+                Pattern pattern = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.CHARACTER.getRootDirectory().getFiles()) {
                     Matcher matcher = pattern.matcher(dir.getName());
                     if (matcher.matches()) {
                         int id = Integer.parseInt(matcher.group(1)) % 100;
@@ -91,102 +78,170 @@ public class WzDataStorage {
                 return true;
             }
             case FACE: {
-                String path = is_single_data_wz ? "Data.wz/Character/Face" : "Character.wz/Face";
-                String regex = "0*(\\d+)\\.img";
-
-                if (!loadXML(path, regex)) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
+                Pattern pattern = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.CHARACTER.getSubDirectoryFiles("Face")) {
+                    Matcher matcher = pattern.matcher(dir.getName());
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        add(id);
+                    }
                 }
 
                 dlt.End();
                 return true;
             }
             case HAIR: {
-                String path = is_single_data_wz ? "Data.wz/Character/Hair" : "Character.wz/Hair";
-                String regex = "0*(\\d+)\\.img";
-
-                if (!loadXML(path, regex)) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
+                Pattern pattern = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.CHARACTER.getSubDirectoryFiles("Hair")) {
+                    Matcher matcher = pattern.matcher(dir.getName());
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        add(id);
+                    }
                 }
 
                 dlt.End();
                 return true;
             }
             case JOB: {
-                String path = is_single_data_wz ? "Data.wz/Skill" : "Skill.wz";
-                String regex = "(\\d+)\\.img";
-
-                if (!loadXML(path, regex)) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
+                Pattern pattern = Pattern.compile("(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.SKILL.getRootDirectory().getFiles()) {
+                    Matcher matcher = pattern.matcher(dir.getName());
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        add(id);
+                    }
                 }
 
                 dlt.End();
                 return true;
             }
             case ITEM: {
-                loadItemXML(is_single_data_wz ? "Data.wz/Item/Cash/" : "Item.wz/Cash/");
-                loadItemXML(is_single_data_wz ? "Data.wz/Item/Consume/" : "Item.wz/Consume/");
-                loadItemXML(is_single_data_wz ? "Data.wz/Item/Etc/" : "Item.wz/Etc/");
-                loadItemXML(is_single_data_wz ? "Data.wz/Item/Install/" : "Item.wz/Install/");
-                loadEquipXML(is_single_data_wz ? "Data.wz/Character/" : "Character.wz/");
-                loadXML(is_single_data_wz ? "Data.wz/Item/Pet/" : "Item.wz/Pet/", "0*(\\d+)\\.img");
+                Pattern pattern_equip = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataDirectoryEntry equip_dir : WzXML.CHARACTER.getRootDirectory().getSubDirectories()) {
+                    for (IMapleDataEntity dir : equip_dir.getFiles()) {
+                        Matcher img_matcher = pattern_equip.matcher(dir.getName());
+                        if (img_matcher.matches()) {
+                            int id = Integer.parseInt(img_matcher.group(1));
+                            // ignore hair
+                            if (1000000 <= id) {
+                                add(id);
+                            }
+                        }
+                    }
+                }
+                // Item.wz/Cash/0501.img
+                Pattern pattern_item = Pattern.compile("0*(\\d+)\\.img");
+                Pattern pattern_id = Pattern.compile("0*(\\d+)");
+
+                for (IMapleDataDirectoryEntry dir : WzXML.ITEM.getRootDirectory().getSubDirectories()) {
+                    switch (dir.getName()) {
+                        case "Cash", "Consume", "Etc", "Install" -> {
+                            for (IMapleDataEntity mde : dir.getFiles()) {
+                                if (pattern_item.matcher(mde.getName()).matches()) {
+                                    for (IMapleData md : WzXML.ITEM.getData(dir.getName() + "/" + mde.getName()).getChildren()) {
+                                        if (pattern_id.matcher(md.getName()).matches()) {
+                                            int id = Integer.parseInt(md.getName());
+                                            add(id);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        default -> {
+                        }
+                    }
+                }
+                // Item.wz/Pet/5000000.img
+                Pattern pattern_pet = Pattern.compile("(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.ITEM.getSubDirectoryFiles("Pet")) {
+                    Matcher matcher = pattern_pet.matcher(dir.getName());
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        add(id);
+                    }
+                }
 
                 dlt.End();
                 return true;
             }
             case MAP: {
-                if (!loadMapXML(is_single_data_wz ? "Data.wz/Map/Map" : "Map.wz/Map")) {
-                    DebugLogger.ErrorLog("WzDataStorage load : MAP.");
-                    return false;
+                Pattern dir_pattern = Pattern.compile("Map(\\d+)");
+                Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataDirectoryEntry dir : WzXML.MAP.getSubDirectory("Map").getSubDirectories()) {
+                    Matcher dir_matcher = dir_pattern.matcher(dir.getName());
+                    if (dir_matcher.matches()) {
+                        // Map.wz/Map/Map[0-9]
+                        for (IMapleDataEntity mde : dir.getFiles()) {
+                            // Map.wz/Map/Map[0-9]/
+                            Matcher img_matcher = img_pattern.matcher(mde.getName());
+                            if (img_matcher.matches()) {
+                                int id = Integer.parseInt(img_matcher.group(1));
+                                add(id);
+                            }
+                        }
+                    }
                 }
 
                 dlt.End();
                 return true;
             }
             case MOB: {
-                String path = is_single_data_wz ? "Data.wz/Mob" : "Mob.wz";
-                String regex = "0*(\\d+)\\.img";
-
-                if (!loadXML(path, regex)) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
+                Pattern pattern = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.MOB.getRootDirectory().getFiles()) {
+                    Matcher matcher = pattern.matcher(dir.getName());
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        add(id);
+                    }
                 }
 
                 dlt.End();
                 return true;
             }
             case NPC: {
-                String path = is_single_data_wz ? "Data.wz/NPC" : "NPC.wz";
-                String regex = "0*(\\d+)\\.img";
-
-                if (!loadXML(path, regex)) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
+                Pattern pattern = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.NPC.getRootDirectory().getFiles()) {
+                    Matcher matcher = pattern.matcher(dir.getName());
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        add(id);
+                    }
                 }
 
                 dlt.End();
                 return true;
             }
             case REACTOR: {
-                String path = is_single_data_wz ? "Data.wz/Reactor" : "Reactor.wz";
-                String regex = "0*(\\d+)\\.img";
-                if (!loadXML(path, regex)) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
+                Pattern pattern = Pattern.compile("0*(\\d+)\\.img");
+                for (IMapleDataEntity dir : WzXML.REACTOR.getWzRoot().getRootDirectory().getFiles()) {
+                    Matcher matcher = pattern.matcher(dir.getName());
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        add(id);
+                    }
                 }
 
                 dlt.End();
                 return true;
             }
             case SKILL: {
-                String path = is_single_data_wz ? "Data.wz/Skill" : "Skill.wz";
-
-                if (!loadSkillXML(path)) {
-                    DebugLogger.ErrorLog("WzDataStorage load : path = " + path);
-                    return false;
+                Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
+                Pattern id_pattern = Pattern.compile("0*(\\d+)");
+                for (IMapleDataEntity dir : WzXML.SKILL.getRootDirectory().getFiles()) {
+                    Matcher img_matcher = img_pattern.matcher(dir.getName());
+                    if (img_matcher.matches()) {
+                        IMapleData md_skill = WzXML.SKILL.getData(dir.getName()).getChildByPath("skill");
+                        if (md_skill != null) {
+                            for (IMapleData md : md_skill.getChildren()) {
+                                Matcher id_matcher = id_pattern.matcher(md.getName());
+                                if (id_matcher.matches()) {
+                                    int id = Integer.parseInt(md.getName());
+                                    add(id);
+                                }
+                            }
+                        }
+                    }
                 }
 
                 dlt.End();
@@ -198,127 +253,6 @@ public class WzDataStorage {
         }
 
         return false;
-    }
-
-    private boolean loadXML(String path, String regex) {
-        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
-        if (wz == null) {
-            return false;
-        }
-
-        Pattern pattern = Pattern.compile(regex);
-        for (IMapleDataEntity dir : wz.getRootDirectory().getFiles()) {
-            Matcher matcher = pattern.matcher(dir.getName());
-            if (matcher.matches()) {
-                int id = Integer.parseInt(matcher.group(1));
-                add(id);
-            }
-        }
-
-        return true;
-    }
-
-    private boolean loadItemXML(String path) {
-        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
-        if (wz == null) {
-            return false;
-        }
-
-        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
-        Pattern id_pattern = Pattern.compile("0*(\\d+)");
-        for (IMapleDataEntity dir : wz.getRootDirectory().getFiles()) {
-            Matcher img_matcher = img_pattern.matcher(dir.getName());
-            if (img_matcher.matches()) {
-                for (IMapleData md : wz.getData(dir.getName()).getChildren()) {
-                    Matcher id_matcher = id_pattern.matcher(md.getName());
-                    if (id_matcher.matches()) {
-                        int id = Integer.parseInt(md.getName());
-                        add(id);
-                    } else {
-                        DebugLogger.DebugLog("invalid item data = " + dir.getName() + " -> " + md.getName());
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-    public boolean loadEquipXML(String path) {
-        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
-        if (wz == null) {
-            return false;
-        }
-
-        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
-        for (IMapleDataDirectoryEntry equip_dir : wz.getRootDirectory().getSubDirectories()) {
-            for (IMapleDataEntity dir : equip_dir.getFiles()) {
-                Matcher img_matcher = img_pattern.matcher(dir.getName());
-                if (img_matcher.matches()) {
-                    int id = Integer.parseInt(img_matcher.group(1));
-                    // ignore hair
-                    if (1000000 <= id) {
-                        add(id);
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private boolean loadMapXML(String path) {
-        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
-        if (wz == null) {
-            return false;
-        }
-
-        // Map.wz/Map
-        Pattern dir_pattern = Pattern.compile("Map(\\d+)");
-        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
-        for (IMapleDataDirectoryEntry dir : wz.getRootDirectory().getSubDirectories()) {
-            Matcher dir_matcher = dir_pattern.matcher(dir.getName());
-            if (dir_matcher.matches()) {
-                // Map.wz/Map/Map[0-9]
-                for (IMapleDataEntity mde : dir.getFiles()) {
-                    // Map.wz/Map/Map[0-9]/
-                    Matcher img_matcher = img_pattern.matcher(mde.getName());
-                    if (img_matcher.matches()) {
-                        int id = Integer.parseInt(img_matcher.group(1));
-                        add(id);
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private boolean loadSkillXML(String path) {
-        IMapleDataProvider wz = (new WzXML(path)).getWzRoot();
-        if (wz == null) {
-            return false;
-        }
-
-        Pattern img_pattern = Pattern.compile("0*(\\d+)\\.img");
-        Pattern id_pattern = Pattern.compile("0*(\\d+)");
-        for (IMapleDataEntity dir : wz.getRootDirectory().getFiles()) {
-            Matcher img_matcher = img_pattern.matcher(dir.getName());
-            if (img_matcher.matches()) {
-                IMapleData md_skill = wz.getData(dir.getName()).getChildByPath("skill");
-                if (md_skill != null) {
-                    for (IMapleData md : md_skill.getChildren()) {
-                        Matcher id_matcher = id_pattern.matcher(md.getName());
-                        if (id_matcher.matches()) {
-                            int id = Integer.parseInt(md.getName());
-                            add(id);
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
     }
 
     private boolean add(int id) {

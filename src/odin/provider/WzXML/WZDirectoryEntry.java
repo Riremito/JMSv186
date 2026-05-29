@@ -58,6 +58,17 @@ public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntr
     }
 
     @Override
+    public IMapleDataDirectoryEntry getSubDirectory(String path) {
+        for (IMapleDataDirectoryEntry mde : this.subdirs) {
+            if (mde.getName().equals(path)) {
+                return mde;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public List<IMapleDataEntity> getFiles() {
         return Collections.unmodifiableList(files);
     }

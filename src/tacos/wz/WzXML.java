@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
+import odin.provider.IMapleDataEntity;
 import odin.provider.IMapleDataProvider;
 import odin.provider.WzXML.WZDirectoryEntry;
 import odin.provider.WzXML.WZEntry;
@@ -39,6 +40,7 @@ import tacos.wz.data.EtcWz;
 import tacos.wz.data.ItemWz;
 import tacos.wz.data.MapWz;
 import tacos.wz.data.MobWz;
+import tacos.wz.data.NpcWz;
 import tacos.wz.data.QuestWz;
 import tacos.wz.data.ReactorWz;
 import tacos.wz.data.SkillWz;
@@ -58,7 +60,7 @@ public class WzXML implements IMapleDataProvider {
     public static final MapWz MAP = new MapWz();
     public static final MobWz MOB = new MobWz();
     // Morph
-    // Npc
+    public static final NpcWz NPC = new NpcWz();
     public static final QuestWz QUEST = new QuestWz();
     public static final ReactorWz REACTOR = new ReactorWz();
     public static final SkillWz SKILL = new SkillWz();
@@ -211,5 +213,13 @@ public class WzXML implements IMapleDataProvider {
     @Override
     public IMapleDataDirectoryEntry getRootDirectory() {
         return this.rootDirectory;
+    }
+
+    public IMapleDataDirectoryEntry getSubDirectory(String path) {
+        return this.rootDirectory.getSubDirectory(path);
+    }
+
+    public List<IMapleDataEntity> getSubDirectoryFiles(String path) {
+        return this.rootDirectory.getSubDirectory(path).getFiles();
     }
 }
