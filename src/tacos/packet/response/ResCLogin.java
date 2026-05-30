@@ -25,7 +25,6 @@ import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.network.MaplePacket;
 import java.util.List;
-import java.util.Random;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataAvatarLook;
@@ -1021,29 +1020,18 @@ public class ResCLogin {
         return sp.get();
     }
 
-    // いらない機能
     public static final MaplePacket SetMapLogin() {
-        // JMS v186.1には3つのログイン画面が存在するのでランダムに割り振ってみる
-        String[] LoginScreen = {"MapLogin", "MapLogin1", "MapLogin2"};
-        if (!(Region.IsJMS() && Version.getVersion() == 186)) {
-            return SetMapLogin(LoginScreen[0]);
-        }
-        return SetMapLogin(LoginScreen[(new Random().nextInt(3))]);
-    }
-
-    // ログイン画面へ切り替え
-    public static final MaplePacket SetMapLogin(String LoginScreen) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_SetMapLogin);
-        // ログイン画面の名称
-        sp.EncodeStr(LoginScreen);
+
+        // WzXMLの読み込み方法を変更しないと遅延するので、固定値にしておく
+        sp.EncodeStr("MapLogin"); // WzXML.UI.getRandomMapLogin()
         if (Version.PostBB()) {
-            // JMS187 : 2010121510 (2010/12/15 10:00), 職業開放日時
-            sp.Encode4(2010121510); // job unlock date.
+            sp.Encode4(2010121510); // JMS187 : 2010121510 (2010/12/15 10:00)
         }
         if (Version.GreaterOrEqual(Region.TWMS, 148)) {
             sp.Encode1(1);
         }
+
         return sp.get();
     }
-
 }

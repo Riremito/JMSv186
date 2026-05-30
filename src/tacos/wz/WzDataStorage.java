@@ -65,12 +65,16 @@ public class WzDataStorage {
         switch (this.type) {
             case SKIN: {
                 // Character.wz/00002000.img
+                ArrayList<Integer> skin_ids_cache = new ArrayList<>();
                 Pattern pattern_skin_img = Pattern.compile("0*(\\d+)\\.img");
                 for (IMapleDataEntity dir : WzXML.CHARACTER.getRootDirectory().getFiles()) {
                     Matcher matcher_skin_img = pattern_skin_img.matcher(dir.getName());
                     if (matcher_skin_img.matches()) {
                         int id = Integer.parseInt(matcher_skin_img.group(1)) % 100;
-                        add(id);
+                        if (!skin_ids_cache.contains(id)) {
+                            add(id);
+                            skin_ids_cache.add(id);
+                        }
                     }
                 }
 
@@ -272,6 +276,7 @@ public class WzDataStorage {
 
     private boolean add(int id) {
         if (this.data.contains(id)) {
+            DebugLogger.ErrorLog("WzDataStorage add : duplicated, " + this.type + ", " + id);
             return false;
         }
 

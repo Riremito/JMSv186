@@ -57,7 +57,7 @@ public class WzXML implements IMapleDataProvider {
     // Sound
     public static final StringWz STRING = new StringWz();
     // TamingMob
-    // UI
+    public static final UIWz UI = new UIWz();
 
     private static List<OdinPair<String, IMapleData>> xml_cache = new ArrayList<>();
     private IMapleDataProvider wz_root = null;

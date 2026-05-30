@@ -968,19 +968,6 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final String getDesc(final int itemId) {
-        if (descCache.containsKey(itemId)) {
-            return descCache.get(itemId);
-        }
-        final IMapleData strings = getStringData(itemId);
-        if (strings == null) {
-            return null;
-        }
-        final String ret = WzDataTool.getStringPath("desc", strings, null);
-        descCache.put(itemId, ret);
-        return ret;
-    }
-
     public final String getMsg(final int itemId) {
         if (msgCache.containsKey(itemId)) {
             return msgCache.get(itemId);

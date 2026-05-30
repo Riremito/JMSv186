@@ -412,6 +412,10 @@ public class DebugCommand {
                 switch (dcmd.get(1).toLowerCase()) {
                     case "item" -> {
                         nds = WzNameStorage.ITEM;
+                        for (WzName nd : nds.find(dcmd.get(2), false)) {
+                            nd.sendDebugMsgItem(chr);
+                        }
+                        return true;
                     }
                     case "map" -> {
                         nds = WzNameStorage.MAP;

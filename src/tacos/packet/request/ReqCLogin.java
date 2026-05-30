@@ -176,9 +176,7 @@ public class ReqCLogin {
                 return true;
             }
             case CP_JMS_GetMapLogin: {
-                // JMS186 : @001A
-                // MapLoginの設定を取得 (UI.wz/MapLogin.img)
-                client.SendPacket(ResCLogin.SetMapLogin("MapLogin"));
+                client.SendPacket(ResCLogin.SetMapLogin());
                 return true;
             }
             default: {

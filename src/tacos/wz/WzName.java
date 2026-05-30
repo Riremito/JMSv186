@@ -45,6 +45,15 @@ public class WzName {
         }
     }
 
+    public void sendDebugMsgItem(MapleCharacter chr) {
+        String text = this.id + " : \"" + this.name + "\"";
+        if (this.available) {
+            chr.DebugMsgItem(text, this.id);
+        } else {
+            chr.DebugMsg2(text);
+        }
+    }
+
     public void sendMapDebugMsg(MapleCharacter chr) {
         String text = this.id + " : \"" + this.mapName + "\" - \"" + this.streetName + "\"";
         if (this.available) {
