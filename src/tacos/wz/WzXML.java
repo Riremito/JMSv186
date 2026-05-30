@@ -54,7 +54,7 @@ public class WzXML implements IMapleDataProvider {
     public static final QuestWz QUEST = new QuestWz();
     public static final ReactorWz REACTOR = new ReactorWz();
     public static final SkillWz SKILL = new SkillWz();
-    // Sound
+    public static final SoundWz SOUND = new SoundWz();
     public static final StringWz STRING = new StringWz();
     // TamingMob
     public static final UIWz UI = new UIWz();

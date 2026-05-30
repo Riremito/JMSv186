@@ -883,6 +883,12 @@ public class DebugCommand {
                 DebugLogger.InfoLog("random map : " + map_to.getId());
                 return true;
             }
+            case "/randombgm": {
+                String bgm = WzXML.SOUND.getRandomBGM();
+                map.setChangeBGM(bgm);
+                chr.DebugMsg("random BGM : " + bgm);
+                return true;
+            }
             default: {
                 break;
             }
