@@ -31,6 +31,7 @@ import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacket;
@@ -46,7 +47,7 @@ public class ParseCUser_Attack {
     public static final AttackInfo parseAttack(ClientPacket cp, ClientPacketHeader header, MapleCharacter chr) {
         final AttackInfo attack = new AttackInfo();
         // attack type
-        attack.AttackHeader = header;
+        attack.header = header;
         // attacker data
         attack.CharacterId = chr.getId();
         attack.m_nLevel = chr.getLevel();
@@ -91,7 +92,7 @@ public class ParseCUser_Attack {
             if (Version.GreaterOrEqual(Region.GMS, 95)) {
                 cp.Decode4();
                 cp.Decode4();
-                if (attack.AttackHeader == ClientPacketHeader.CP_UserMagicAttack) {
+                if (attack.header == ClientPacketHeader.CP_UserMagicAttack) {
                     cp.Decode4();
                     cp.Decode4();
                     cp.Decode4();
@@ -110,11 +111,11 @@ public class ParseCUser_Attack {
             cp.Decode4(); // Crc
         }
         attack.tKeyDown = 0;
-        if (attack.is_keydown_skill()) {
+        if (TacosConstants.is_keydown_skill(attack.nSkillID)) {
             attack.tKeyDown = cp.Decode4();
         }
         if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 95)) {
-            if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
+            if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode1();
             }
         }
@@ -138,11 +139,11 @@ public class ParseCUser_Attack {
         if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
             cp.Decode4(); // dwID
         }
-        if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
+        if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
             attack.ProperBulletPosition = cp.Decode2();
             attack.pnCashItemPos = cp.Decode2();
             attack.nShootRange0a = cp.Decode1(); // nShootRange0a, GetShootRange0 func, is AOE or not, TT/ Avenger = 41, Showdown = 0
-            if (0 < attack.nShootRange0a && !attack.IsShadowMeso() && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null) {
+            if (0 < attack.nShootRange0a && !TacosConstants.is_shadow_meso(attack.nSkillID) && chr.getBuffedValue(MapleBuffStat.SOULARROW) == null) {
                 IItem BulletItem;
                 if (0 < attack.pnCashItemPos) {
                     BulletItem = chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos);
@@ -157,7 +158,7 @@ public class ParseCUser_Attack {
         int damage;
         List<OdinPair<Integer, Boolean>> allDamageNumbers = new ArrayList<>();
         attack.allDamage = new ArrayList<>();
-        for (int i = 0; i < attack.GetMobCount(); i++) {
+        for (int i = 0; i < attack.getMobCount(); i++) {
             int nTargetID = cp.Decode4();
             // v131 to v186 OK
             cp.Decode1(); // v366->nHitAction
@@ -168,9 +169,9 @@ public class ParseCUser_Attack {
             cp.Decode2(); // Mob Something
             cp.Decode2(); // Mob Something
             cp.Decode2(); // Mob Something
-            if (!attack.IsMesoExplosion()) {
+            if (!TacosConstants.is_mesp_explosion(attack.nSkillID)) {
                 cp.Decode2(); // v366->tDelay
-                for (int j = 0; j < attack.GetDamagePerMob(); j++) {
+                for (int j = 0; j < attack.getDamagePerMob(); j++) {
                     damage = cp.Decode4(); // 366->aDamage[i]
                     allDamageNumbers.add(new OdinPair<>(damage, false));
                 }
@@ -190,7 +191,7 @@ public class ParseCUser_Attack {
             attack.allDamage.add(new AttackPair(nTargetID, allDamageNumbers));
         }
         if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS180orLater()) {
-            if (attack.AttackHeader == ClientPacketHeader.CP_UserShootAttack) {
+            if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode2();
                 cp.Decode2();
             }
@@ -203,7 +204,7 @@ public class ParseCUser_Attack {
         if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
             DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
         }
-        if (attack.IsMesoExplosion()) {
+        if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
             attack.allMeso = new ArrayList<>();
             byte bullets = cp.Decode1();
             for (int i = 0; i < bullets; i++) {

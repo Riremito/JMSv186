@@ -37,6 +37,7 @@ import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
+import tacos.constants.TacosConstants;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacketHeader;
 
@@ -57,7 +58,7 @@ public class ResCUserRemote {
 
     // CUserRemote::OnAttack
     public static MaplePacket UserAttack(AttackInfo attack) {
-        ServerPacket sp = new ServerPacket(attack.GetHeader());
+        ServerPacket sp = new ServerPacket(attack.getHeader());
         boolean is_hide_damage = ContentCustom.CC_HIDE_DAMAGE.get();
 
         if (Version.LessOrEqual(Region.JMS, 147)) {
@@ -79,7 +80,7 @@ public class ResCUserRemote {
                     if (is_hide_damage) {
                         continue;
                     }
-                    if (attack.IsMesoExplosion()) {
+                    if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
                         sp.Encode1(oned.attack.size());
                     }
                     for (OdinPair<Integer, Boolean> eachd : oned.attack) {
@@ -87,7 +88,7 @@ public class ResCUserRemote {
                     }
                 }
             }
-            if (attack.IsQuantumExplosion()) {
+            if (TacosConstants.is_keydown_skill_remote(attack.nSkillID)) {
                 sp.Encode4(attack.tKeyDown);
             }
             return sp.get();
@@ -117,7 +118,7 @@ public class ResCUserRemote {
             if (oned.attack != null) {
                 sp.Encode4(oned.objectid);
                 sp.Encode1(7);
-                if (attack.IsMesoExplosion()) {
+                if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
                     sp.Encode1(oned.attack.size());
                 }
                 for (OdinPair<Integer, Boolean> eachd : oned.attack) {
@@ -130,11 +131,11 @@ public class ResCUserRemote {
                 }
             }
         }
-        if (attack.IsQuantumExplosion()) {
+        if (TacosConstants.is_keydown_skill_remote(attack.nSkillID)) {
             sp.Encode4(attack.tKeyDown);
         }
         if (ServerConfig.JMS164orLater()) {
-            if (attack.GetHeader() == ServerPacketHeader.LP_UserShootAttack) {
+            if (attack.getHeader() == ServerPacketHeader.LP_UserShootAttack) {
                 sp.Encode2(attack.X);
                 sp.Encode2(attack.Y);
             }

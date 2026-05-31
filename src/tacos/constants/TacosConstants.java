@@ -18,6 +18,8 @@
  */
 package tacos.constants;
 
+import tacos.packet.ops.OpsSkill;
+
 /**
  *
  * @author Riremito
@@ -131,5 +133,60 @@ public class TacosConstants {
             return true;
         }
         return false;
+    }
+
+    public static boolean is_keydown_skill(int skill_id) {
+        if (is_keydown_skill_remote(skill_id)) {
+            return true;
+        }
+
+        switch (OpsSkill.find(skill_id)) {
+            case BOWMASTER_STORM_ARROW:
+            case CROSSBOWMASTER_PIERCING:
+            // pirate
+            case INFIGHTER_SCREW_PUNCH:
+            case GUNSLINGER_THROWING_BOMB:
+            case CAPTAIN_RAPID_FIRE:
+            // cygnus
+            case NIGHTWALKER_POISON_BOMB:
+            case STRIKER_SCREW_PUNCH:
+            // dual blade
+            case DUAL5_FINAL_CUT:
+            case DUAL5_MONSTER_BOMB:
+            // resistance
+            case WINDBREAKER_STORM_ARROW:
+            case WILDHUNTER_WILD_SHOOT: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean is_keydown_skill_remote(int skill_id) {
+        switch (OpsSkill.find(skill_id)) {
+            case ARCHMAGE1_BIGBANG:
+            case ARCHMAGE2_BIGBANG:
+            case BISHOP_BIGBANG:
+            // evan
+            case EVAN_ICE_BREATH:
+            case EVAN_BREATH: {
+                return true;
+            }
+            default: {
+                break;
+            }
+        }
+        return false;
+    }
+
+    public static boolean is_mesp_explosion(int skill_id) {
+        return OpsSkill.find(skill_id) == OpsSkill.THIEFMASTER_MESO_EXPLOSION;
+    }
+
+    public static boolean is_shadow_meso(int skill_id) {
+        return OpsSkill.find(skill_id) == OpsSkill.HERMIT_SHADOW_MESO;
     }
 }

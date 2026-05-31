@@ -27,13 +27,10 @@ import odin.client.ISkill;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
 import odin.client.SkillFactory;
-import tacos.config.Region;
-import tacos.config.Version;
 import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.OpsSkill;
 
 public class AttackInfo {
 
@@ -43,7 +40,7 @@ public class AttackInfo {
     public Point position;
     public boolean real = true;
 
-    public ClientPacketHeader AttackHeader;
+    public ClientPacketHeader header;
     public int CharacterId;
     public int X;
     public int Y;
@@ -64,8 +61,8 @@ public class AttackInfo {
     public short pnCashItemPos;
     public int nShootRange0a;
 
-    public ServerPacketHeader GetHeader() {
-        switch (AttackHeader) {
+    public ServerPacketHeader getHeader() {
+        switch (header) {
             case CP_UserMeleeAttack: {
                 return ServerPacketHeader.LP_UserMeleeAttack;
             }
@@ -86,90 +83,13 @@ public class AttackInfo {
     }
 
     // hit count per mob
-    public int GetDamagePerMob() {
+    public int getDamagePerMob() {
         return HitKey & 0x0F; // nDamagePerMob_1
     }
 
     // number of mobs
-    public int GetMobCount() {
+    public int getMobCount() {
         return (HitKey >> 4) & 0x0F; // nCount
-    }
-
-    public boolean IsMesoExplosion() {
-        return nSkillID == OpsSkill.THIEFMASTER_MESO_EXPLOSION.get();
-    }
-
-    public boolean IsShadowMeso() {
-        return nSkillID == 4111004;
-    }
-
-    public boolean is_keydown_skill() {
-        switch (nSkillID) {
-            // Melee
-            case 5101004: // Corkscrew
-            case 15101003: // Cygnus corkscrew
-            case 5201002: // Gernard
-            case 14111006: // Poison bomb
-            case 4341002:
-            case 4341003:
-            // Shoot
-            case 9001011: // (GM) Lightning Vulcan
-            case 3121004: // Hurricane
-            case 3221001: // Pierce
-            case 5221004: // Rapidfire
-            case 13111002: // Cygnus Hurricane
-            case 33121009:
-            // Magic
-            case 2121001: // Quantum Explosion
-            case 2221001: // Quantum Explosion
-            case 2321001: // Quantum Explosion
-            case 22121000: //breath
-            case 22151001: {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
-    public boolean IsQuantumExplosion() {
-        switch (nSkillID) {
-            case 2121001: // Quantum Explosion
-            case 2221001: // Quantum Explosion
-            case 2321001: // Quantum Explosion
-            {
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-
-    }
-
-    public boolean IsFinalAfterSlashBlast() {
-        return (BuffKey & 0x01) > 0;
-    }
-
-    public boolean IsShadowPartner() {
-        return ((BuffKey >> 3) & 0x01) > 0;
-    }
-
-    public int GetAttackAction() {
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            return AttackActionKey & 0x7F;
-        }
-        return AttackActionKey & 0x7FFF;
-    }
-
-    public boolean IsLeft() {
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            return ((AttackActionKey >> 7) & 0x01) > 0;
-        }
-        return ((AttackActionKey >> 15) & 0x01) > 0;
     }
 
     public final MapleStatEffect getAttackEffect(final MapleCharacter chr, int skillLevel, final ISkill skill_) {
