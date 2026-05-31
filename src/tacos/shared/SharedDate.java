@@ -19,6 +19,8 @@
 package tacos.shared;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  *
@@ -44,4 +46,10 @@ public class SharedDate {
         return getTimeStamp(DATE_FOREVER);
     }
 
+    // quest date.
+    private static final SimpleDateFormat sdf_quest = new SimpleDateFormat("yyyy-MM-dd");
+
+    public static String getDateString() {
+        return sdf_quest.format(Calendar.getInstance().getTime());
+    }
 }

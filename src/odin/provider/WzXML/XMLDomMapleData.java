@@ -35,7 +35,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import odin.tools.FileoutputUtil;
 import odin.provider.IMapleDataEntity;
 import odin.provider.IMapleData;
 
@@ -83,7 +82,6 @@ public class XMLDomMapleData implements IMapleData {
                         break;
                     }
                 } catch (NullPointerException e) {
-                    FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e); //ugh.
                 }
             }
             if (!foundChild) {

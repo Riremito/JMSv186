@@ -114,7 +114,6 @@ import odin.server.maps.Event_PyramidSubway;
 import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
 import odin.tools.ConcurrentEnumMap;
-import odin.tools.FileoutputUtil;
 import tacos.client.TacosCharacter;
 import tacos.database.ops.InvTypeDB;
 import tacos.network.MockIOSession;
@@ -139,6 +138,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosPortal;
+import tacos.shared.SharedDate;
 import tacos.wz.WzDataStorage;
 import tacos.wz.opt.FieldOpt;
 
@@ -1862,7 +1862,6 @@ public class MapleCharacter extends TacosCharacter {
             // 転職時にDBへ反映する
             saveToDB(false, false);
         } catch (Exception e) {
-            FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, e); //all jobs throw errors :(
         }
     }
 
@@ -2113,7 +2112,6 @@ public class MapleCharacter extends TacosCharacter {
                 }
             }
         } catch (Exception e) {
-            FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, e); //all jobs throw errors :(
         }
     }
 
@@ -4098,7 +4096,7 @@ public class MapleCharacter extends TacosCharacter {
                 if (mins2 <= 0 || mins < mins2) {
                     updateOneInfo(questid, "min", String.valueOf(mins));
                     updateOneInfo(questid, "sec", String.valueOf(secs));
-                    updateOneInfo(questid, "date", FileoutputUtil.CurrentReadable_Date());
+                    updateOneInfo(questid, "date", SharedDate.getDateString());
                 }
                 final int newCmp = Integer.parseInt(getOneInfo(questid, "cmp")) + 1;
                 updateOneInfo(questid, "cmp", String.valueOf(newCmp));
@@ -4602,8 +4600,6 @@ public class MapleCharacter extends TacosCharacter {
                     OdinWorld.Family.setFamilyMemberOnline(chrf, false, -1);
                 }
             } catch (final Exception e) {
-                e.printStackTrace();
-                FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);
             } finally {
                 if (RemoveInChannelServer && srv_ch != null) {
                     srv_ch.getOnlinePlayers().remove(this);
@@ -4623,8 +4619,6 @@ public class MapleCharacter extends TacosCharacter {
                     OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);
                 }
             } catch (final Exception e) {
-                e.printStackTrace();
-                FileoutputUtil.outputFileError(FileoutputUtil.Acc_Stuck, e);
             }
         }
 

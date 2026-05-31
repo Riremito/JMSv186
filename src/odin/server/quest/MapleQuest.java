@@ -10,12 +10,10 @@ import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.wz.QuestWz;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import odin.tools.FileoutputUtil;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.script.TacosScriptQuest;
@@ -171,10 +169,6 @@ public class MapleQuest {
                 }
                 quests.put(quest_id, ret);
             } catch (Exception ex) {
-                ex.printStackTrace();
-                FileoutputUtil.outputFileError(FileoutputUtil.ScriptEx_Log, ex);
-                FileoutputUtil.log(FileoutputUtil.ScriptEx_Log, "Caused by questID " + quest_id);
-                System.out.println("Caused by questID " + quest_id);
                 return new MapleCustomQuest(quest_id);
             }
         }

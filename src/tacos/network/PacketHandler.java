@@ -33,7 +33,6 @@ import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import odin.server.Randomizer;
-import odin.tools.FileoutputUtil;
 import org.apache.mina.common.ExecutorThreadModel;
 import tacos.packet.ClientPacketHeader;
 import tacos.server.TacosLogin;
@@ -208,8 +207,6 @@ public class PacketHandler extends IoHandlerAdapter {
             }
 
         } catch (Exception e) {
-            FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e);
-            e.printStackTrace();
         }
     }
 

@@ -114,14 +114,12 @@ public class Start {
         DQ_Accounts.resetLoginState();
         OdinWorld.init();
 
-        WorldTimer.getInstance().start();
         EtcTimer.getInstance().start();
         MapTimer.getInstance().start();
         MobTimer.getInstance().start();
         CloneTimer.getInstance().start();
         EventTimer.getInstance().start();
         BuffTimer.getInstance().start();
-        PingTimer.getInstance().start();
 
         /*
         DebugLogger.SetupLog("INFO");
@@ -164,7 +162,6 @@ public class Start {
                         DatabaseConnection.closeAll();
                     } catch (SQLException ex) {
                     }
-                    WorldTimer.getInstance().stop();
                     MapTimer.getInstance().stop();
                     MobTimer.getInstance().stop();
                     BuffTimer.getInstance().stop();
