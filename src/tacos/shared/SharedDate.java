@@ -32,14 +32,14 @@ import java.util.Calendar;
  */
 public class SharedDate {
 
-    private static final String DATE_BASE = "2339-01-01 18:00:00"; // UTC+9 (JST)
+    private static final String DATE_WINDOWS_BASE = "1601-01-01 00:00:00"; // UTC+9 (JST)
     private static final String DATE_MAGICAL = "2027-07-07 07:00:00";
     private static final String DATE_FOREVER = "2079-07-07 07:00:00";
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final SimpleDateFormat SDF_QUEST = new SimpleDateFormat("yyyy-MM-dd");
 
     public static long getTimestampLong(String date) {
-        return (Timestamp.valueOf(date).getTime() + Timestamp.valueOf(DATE_BASE).getTime()) * 10000;
+        return (Timestamp.valueOf(date).getTime() - Timestamp.valueOf(DATE_WINDOWS_BASE).getTime()) * 10000;
     }
 
     // quest date.
