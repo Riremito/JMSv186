@@ -22,8 +22,6 @@ package odin.server.quest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.io.Serializable;
-
 import odin.client.ISkill;
 import odin.constants.GameConstants;
 import odin.client.inventory.InventoryException;
@@ -42,26 +40,22 @@ import odin.server.Randomizer;
 import odin.provider.IMapleData;
 import tacos.wz.WzDataTool;
 
-public class MapleQuestAction implements Serializable {
+public class MapleQuestAction {
 
-    private static final long serialVersionUID = 9179541993413738569L;
     private MapleQuestActionType type;
     private IMapleData data;
     private MapleQuest quest;
 
-    /**
-     * Creates a new instance of MapleQuestAction
-     */
     public MapleQuestAction(MapleQuestActionType type, IMapleData data, MapleQuest quest) {
         this.type = type;
         this.data = data;
         this.quest = quest;
     }
 
-    private static boolean canGetItem(IMapleData item, MapleCharacter c) {
+    private static boolean canGetItem(IMapleData item, MapleCharacter client) {
         if (item.getChildByPath("gender") != null) {
             final int gender = WzDataTool.getInt(item.getChildByPath("gender"));
-            if (gender != 2 && gender != c.getGender()) {
+            if (gender != 2 && gender != client.getGender()) {
                 return false;
             }
         }
@@ -70,7 +64,7 @@ public class MapleQuestAction implements Serializable {
             final List<Integer> code = getJobBy5ByteEncoding(job);
             boolean jobFound = false;
             for (int codec : code) {
-                if (codec / 100 == c.getJob() / 100) {
+                if (codec / 100 == client.getJob() / 100) {
                     jobFound = true;
                     break;
                 }
@@ -79,7 +73,7 @@ public class MapleQuestAction implements Serializable {
                 final int jobEx = WzDataTool.getInt(item.getChildByPath("jobEx"));
                 final List<Integer> codeEx = getJobBy5ByteEncoding(jobEx);
                 for (int codec : codeEx) {
-                    if (codec / 100 == c.getJob() / 100) {
+                    if (codec / 100 == client.getJob() / 100) {
                         jobFound = true;
                         break;
                     }
@@ -90,15 +84,15 @@ public class MapleQuestAction implements Serializable {
         return true;
     }
 
-    public final boolean RestoreLostItem(final MapleCharacter c, final int itemid) {
+    public boolean RestoreLostItem(MapleCharacter client, int item_id) {
         if (type == MapleQuestActionType.item) {
             int retitem;
 
-            for (final IMapleData iEntry : data.getChildren()) {
+            for (IMapleData iEntry : data.getChildren()) {
                 retitem = WzDataTool.getInt(iEntry.getChildByPath("id"), -1);
-                if (retitem == itemid) {
-                    if (!c.haveItem(retitem, 1, true, false)) {
-                        MapleInventoryManipulator.addById(c.getClient(), retitem, (short) 1);
+                if (retitem == item_id) {
+                    if (!client.haveItem(retitem, 1, true, false)) {
+                        MapleInventoryManipulator.addById(client.getClient(), retitem, (short) 1);
                     }
                     return true;
                 }
@@ -107,23 +101,23 @@ public class MapleQuestAction implements Serializable {
         return false;
     }
 
-    public void runStart(MapleCharacter c, Integer extSelection) {
+    public void runStart(MapleCharacter client, Integer extSelection) {
         MapleQuestStatus status;
         switch (type) {
             case exp:
-                status = c.getQuest(quest);
+                status = client.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.gainExp(WzDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(c.getLevel()), true, true, true);
+                client.gainExp(WzDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(client.getLevel()), true, true, true);
                 break;
             case item:
                 // first check for randomness in item selection
-                Map<Integer, Integer> props = new HashMap<Integer, Integer>();
+                Map<Integer, Integer> props = new HashMap<>();
                 IMapleData prop;
                 for (IMapleData iEntry : data.getChildren()) {
                     prop = iEntry.getChildByPath("prop");
-                    if (prop != null && WzDataTool.getInt(prop) != -1 && canGetItem(iEntry, c)) {
+                    if (prop != null && WzDataTool.getInt(prop) != -1 && canGetItem(iEntry, client)) {
                         for (int i = 0; i < WzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
                             props.put(props.size(), WzDataTool.getInt(iEntry.getChildByPath("id")));
                         }
@@ -131,11 +125,11 @@ public class MapleQuestAction implements Serializable {
                 }
                 int selection = 0;
                 int extNum = 0;
-                if (props.size() > 0) {
+                if (!props.isEmpty()) {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
                 for (IMapleData iEntry : data.getChildren()) {
-                    if (!canGetItem(iEntry, c)) {
+                    if (!canGetItem(iEntry, client)) {
                         continue;
                     }
                     final int id = WzDataTool.getInt(iEntry.getChildByPath("id"), -1);
@@ -151,43 +145,43 @@ public class MapleQuestAction implements Serializable {
                     final short count = (short) WzDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         try {
-                            MapleInventoryManipulator.removeById(c.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
+                            MapleInventoryManipulator.removeById(client.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
                         } catch (InventoryException ie) {
                             // it's better to catch this here so we'll atleast try to remove the other items
                             System.err.println("[h4x] Completing a quest without meeting the requirements" + ie);
                         }
-                        c.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
+                        client.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
                     } else { // add items
                         final int period = WzDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440; //im guessing.
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
                         if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                             final String msg = "You have attained title <" + name + ">";
-                            c.dropMessage(-1, msg);
-                            c.dropMessage(5, msg);
+                            client.dropMessage(-1, msg);
+                            client.dropMessage(5, msg);
                         }
-                        MapleInventoryManipulator.addById(c.getClient(), id, count, "", null, period);
-                        c.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
+                        MapleInventoryManipulator.addById(client.getClient(), id, count, "", null, period);
+                        client.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
                     }
                 }
                 break;
             case nextQuest:
-                status = c.getQuest(quest);
+                status = client.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.getClient().getSession().write(ResCUserLocal.UserQuestResult(quest.getId(), status.getNpc(), WzDataTool.getInt(data)));
+                client.getClient().getSession().write(ResCUserLocal.UserQuestResult(quest.getId(), status.getNpc(), WzDataTool.getInt(data)));
                 break;
             case money:
-                status = c.getQuest(quest);
+                status = client.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                c.gainMeso(WzDataTool.getInt(data, 0), true, false, true);
+                client.gainMeso(WzDataTool.getInt(data, 0), true, false, true);
                 break;
             case quest:
                 for (IMapleData qEntry : data) {
-                    c.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(WzDataTool.getInt(qEntry.getChildByPath("id"))),
-                                    (byte) WzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
+                    client.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(WzDataTool.getInt(qEntry.getChildByPath("id"))),
+                            (byte) WzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             case skill:
@@ -199,27 +193,27 @@ public class MapleQuestAction implements Serializable {
                     final ISkill skillObject = SkillFactory.getSkill(skillid);
 
                     for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
-                        if (skillObject.isBeginnerSkill() || c.getJob() == WzDataTool.getInt(applicableJob)) {
-                            c.changeSkillLevel(skillObject,
-                                    (byte) Math.max(skillLevel, c.getSkillLevel(skillObject)),
-                                    (byte) Math.max(masterLevel, c.getMasterLevel(skillObject)));
+                        if (skillObject.isBeginnerSkill() || client.getJob() == WzDataTool.getInt(applicableJob)) {
+                            client.changeSkillLevel(skillObject,
+                                    (byte) Math.max(skillLevel, client.getSkillLevel(skillObject)),
+                                    (byte) Math.max(masterLevel, client.getMasterLevel(skillObject)));
                             break;
                         }
                     }
                 }
                 break;
             case pop:
-                status = c.getQuest(quest);
+                status = client.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
                 final int fameGain = WzDataTool.getInt(data, 0);
-                c.addFame(fameGain);
-                c.sendStatChanged();
-                c.SendPacket(ResWrapper.getShowFameGain(fameGain));
+                client.addFame(fameGain);
+                client.sendStatChanged();
+                client.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             case buffItemID:
-                status = c.getQuest(quest);
+                status = client.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
@@ -227,7 +221,7 @@ public class MapleQuestAction implements Serializable {
                 if (tobuff == -1) {
                     break;
                 }
-                MapleItemInformationProvider.getInstance().getItemEffect(tobuff).applyTo(c);
+                MapleItemInformationProvider.getInstance().getItemEffect(tobuff).applyTo(client);
                 break;
             case infoNumber: {
 //		System.out.println("quest : "+MapleDataTool.getInt(data, 0)+"");
@@ -235,7 +229,7 @@ public class MapleQuestAction implements Serializable {
                 break;
             }
             case sp: {
-                status = c.getQuest(quest);
+                status = client.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
@@ -245,17 +239,17 @@ public class MapleQuestAction implements Serializable {
                         int finalJob = 0;
                         for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
                             final int job_val = WzDataTool.getInt(jEntry, 0);
-                            if (c.getJob() >= job_val && job_val > finalJob) {
+                            if (client.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;
                             }
                         }
                         if (finalJob == 0) {
-                            c.gainSP(sp_val);
+                            client.gainSP(sp_val);
                         } else {
-                            c.gainSP(sp_val, GameConstants.getSkillBook(finalJob));
+                            client.gainSP(sp_val, GameConstants.getSkillBook(finalJob));
                         }
                     } else {
-                        c.gainSP(sp_val);
+                        client.gainSP(sp_val);
                     }
                 }
                 break;
@@ -281,7 +275,7 @@ public class MapleQuestAction implements Serializable {
                 }
                 int selection = 0;
                 int extNum = 0;
-                if (props.size() > 0) {
+                if (!props.isEmpty()) {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
                 byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
@@ -371,7 +365,7 @@ public class MapleQuestAction implements Serializable {
             }
             case item: {
                 // first check for randomness in item selection
-                Map<Integer, Integer> props = new HashMap<Integer, Integer>();
+                Map<Integer, Integer> props = new HashMap<>();
 
                 for (IMapleData iEntry : data.getChildren()) {
                     final IMapleData prop = iEntry.getChildByPath("prop");
@@ -383,7 +377,7 @@ public class MapleQuestAction implements Serializable {
                 }
                 int selection = 0;
                 int extNum = 0;
-                if (props.size() > 0) {
+                if (!props.isEmpty()) {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
                 for (IMapleData iEntry : data.getChildren()) {
@@ -429,7 +423,7 @@ public class MapleQuestAction implements Serializable {
             case quest: {
                 for (IMapleData qEntry : data) {
                     chr.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(WzDataTool.getInt(qEntry.getChildByPath("id"))),
-                                    (byte) WzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
+                            (byte) WzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             }
@@ -495,7 +489,7 @@ public class MapleQuestAction implements Serializable {
     }
 
     private static List<Integer> getJobBy5ByteEncoding(int encoded) {
-        List<Integer> ret = new ArrayList<Integer>();
+        List<Integer> ret = new ArrayList<>();
         if ((encoded & 0x1) != 0) {
             ret.add(0);
         }
@@ -555,14 +549,5 @@ public class MapleQuestAction implements Serializable {
             ret.add(3500);
         }
         return ret;
-    }
-
-    public MapleQuestActionType getType() {
-        return type;
-    }
-
-    @Override
-    public String toString() {
-        return type + ": " + data;
     }
 }

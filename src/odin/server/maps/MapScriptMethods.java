@@ -24,7 +24,6 @@ import java.awt.Point;
 import odin.client.MapleCharacter;
 
 import odin.client.MapleClient;
-import odin.client.MapleQuestStatus;
 import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.arg.ArgFieldEffect;
@@ -36,8 +35,6 @@ import odin.server.Randomizer;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
-import odin.server.quest.MapleQuest;
-import odin.server.quest.MapleQuest.MedalQuest;
 import tacos.debug.DebugLogger;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -578,64 +575,6 @@ public class MapScriptMethods {
                 break;
             }
             case explorationPoint: {
-                if (client.getPlayer().getMapId() == 104000000) {
-                    client.getSession().write(ResCUserLocal.SetStandAloneMode(false));
-                    client.getSession().write(ResCUserLocal.SetDirectionMode(false));
-                    chr.updateStat();
-                    client.getSession().write(ResWrapper.MapNameDisplay(client.getPlayer().getMapId()));
-                }
-                MedalQuest m = null;
-                for (MedalQuest mq : MedalQuest.values()) {
-                    for (int i : mq.maps) {
-                        if (client.getPlayer().getMapId() == i) {
-                            m = mq;
-                            break;
-                        }
-                    }
-                }
-                if (m != null && client.getPlayer().getLevel() >= m.level && client.getPlayer().getQuestStatus(m.questid) != 2) {
-                    if (client.getPlayer().getQuestStatus(m.lquestid) != 1) {
-                        MapleQuest.getInstance(m.lquestid).forceStart(client.getPlayer(), 0, "0");
-                    }
-                    if (client.getPlayer().getQuestStatus(m.questid) != 1) {
-                        MapleQuest.getInstance(m.questid).forceStart(client.getPlayer(), 0, null);
-                        final StringBuilder sb = new StringBuilder("enter=");
-                        for (int i = 0; i < m.maps.length; i++) {
-                            sb.append("0");
-                        }
-                        client.getPlayer().updateInfoQuest(m.questid - 2005, sb.toString());
-                        MapleQuest.getInstance(m.questid - 1995).forceStart(client.getPlayer(), 0, "0");
-                    }
-                    final String quest = client.getPlayer().getInfoQuest(m.questid - 2005);
-                    final MapleQuestStatus stat = client.getPlayer().getQuestNAdd(MapleQuest.getInstance(m.questid - 1995));
-                    if (stat.getCustomData() == null) { //just a check.
-                        stat.setCustomData("0");
-                    }
-                    int number = Integer.parseInt(stat.getCustomData());
-                    final StringBuilder sb = new StringBuilder("enter=");
-                    boolean changedd = false;
-                    for (int i = 0; i < m.maps.length; i++) {
-                        boolean changed = false;
-                        if (client.getPlayer().getMapId() == m.maps[i]) {
-                            if (quest.substring(i + 6, i + 7).equals("0")) {
-                                sb.append("1");
-                                changed = true;
-                                changedd = true;
-                            }
-                        }
-                        if (!changed) {
-                            sb.append(quest.substring(i + 6, i + 7));
-                        }
-                    }
-                    if (changedd) {
-                        number++;
-                        client.getPlayer().updateInfoQuest(m.questid - 2005, sb.toString());
-                        MapleQuest.getInstance(m.questid - 1995).forceStart(client.getPlayer(), 0, String.valueOf(number));
-                        client.getPlayer().dropMessage(-1, "Visited " + number + "/" + m.maps.length + " regions.");
-                        client.getPlayer().dropMessage(-1, "Title " + String.valueOf(m) + " Explorer currently in progress");
-                        client.SendPacket(ResWrapper.showQuestMsg("Title " + String.valueOf(m) + " Explorer currently in progress " + number + "/" + m.maps.length + " completed"));
-                    }
-                }
                 break;
             }
             case go10000:

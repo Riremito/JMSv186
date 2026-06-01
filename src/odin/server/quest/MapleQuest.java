@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import tacos.config.Region;
@@ -46,9 +45,6 @@ public class MapleQuest {
         this.id = id;
     }
 
-    /**
-     * Creates a new instance of MapleQuest
-     */
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
         // read reqs
         final IMapleData basedata1 = WzXML.QUEST.getCheck().getChildByPath(String.valueOf(id));
@@ -61,7 +57,7 @@ public class MapleQuest {
         final IMapleData startReqData = basedata1.getChildByPath("0");
         if (startReqData != null) {
             final List<IMapleData> startC = startReqData.getChildren();
-            if (startC != null && startC.size() > 0) {
+            if (startC != null && !startC.isEmpty()) {
                 for (IMapleData startReq : startC) {
                     final MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
                     if (type.equals(MapleQuestRequirementType.interval)) {
@@ -82,7 +78,7 @@ public class MapleQuest {
         final IMapleData completeReqData = basedata1.getChildByPath("1");
         if (completeReqData != null) {
             final List<IMapleData> completeC = completeReqData.getChildren();
-            if (completeC != null && completeC.size() > 0) {
+            if (completeC != null && !completeC.isEmpty()) {
                 for (IMapleData completeReq : completeC) {
                     MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
@@ -143,33 +139,20 @@ public class MapleQuest {
         return true;
     }
 
-    public List<OdinPair<String, OdinPair<String, Integer>>> getInfoByRank(final String rank) {
+    public List<OdinPair<String, OdinPair<String, Integer>>> getInfoByRank(String rank) {
         return partyQuestInfo.get(rank);
     }
 
-    public final int getSkillID() {
+    public int getSkillID() {
         return selectedSkillID;
-    }
-
-    public final String getName() {
-        return name;
-    }
-
-    public static void clearQuests() {
-        quests.clear();
     }
 
     public static MapleQuest getInstance(int quest_id) {
         MapleQuest ret = quests.get(quest_id);
         if (ret == null) {
             ret = new MapleQuest(quest_id);
-            try {
-                if (GameConstants.isCustomQuest(quest_id) || !loadQuest(ret, quest_id)) {
-                    ret = new MapleCustomQuest(quest_id);
-                }
+            if (loadQuest(ret, quest_id)) {
                 quests.put(quest_id, ret);
-            } catch (Exception ex) {
-                return new MapleCustomQuest(quest_id);
             }
         }
         return ret;
@@ -257,18 +240,18 @@ public class MapleQuest {
         chr.updateQuest(newStatus);
     }
 
-    public void forceStart(MapleCharacter c, int npc, String customData) {
-        final MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 1, npc);
-        newStatus.setForfeited(c.getQuest(this).getForfeited());
-        newStatus.setCompletionTime(c.getQuest(this).getCompletionTime());
+    public void forceStart(MapleCharacter chr, int npc, String customData) {
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 1, npc);
+        newStatus.setForfeited(chr.getQuest(this).getForfeited());
+        newStatus.setCompletionTime(chr.getQuest(this).getCompletionTime());
         newStatus.setCustomData(customData);
-        c.updateQuest(newStatus);
+        chr.updateQuest(newStatus);
     }
 
-    public void forceComplete(MapleCharacter c, int npc) {
-        final MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 2, npc);
-        newStatus.setForfeited(c.getQuest(this).getForfeited());
-        c.updateQuest(newStatus);
+    public void forceComplete(MapleCharacter chr, int npc) {
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 2, npc);
+        newStatus.setForfeited(chr.getQuest(this).getForfeited());
+        chr.updateQuest(newStatus);
     }
 
     public int getId() {
@@ -286,26 +269,5 @@ public class MapleQuest {
 
     public int getMedalItem() {
         return viewMedalItem;
-    }
-
-    public static enum MedalQuest {
-
-        Beginner(29005, 29015, 15, new int[]{104000000, 104010001, 100000006, 104020000, 100000000, 100010000, 100040000, 100040100, 101010103, 101020000, 101000000, 102000000, 101030104, 101030406, 102020300, 103000000, 102050000, 103010001, 103030200, 110000000}),
-        ElNath(29006, 29012, 50, new int[]{200000000, 200010100, 200010300, 200080000, 200080100, 211000000, 211030000, 211040300, 211041200, 211041800}),
-        LudusLake(29007, 29012, 40, new int[]{222000000, 222010400, 222020000, 220000000, 220020300, 220040200, 221020701, 221000000, 221030600, 221040400}),
-        Underwater(29008, 29012, 40, new int[]{230000000, 230010400, 230010200, 230010201, 230020000, 230020201, 230030100, 230040000, 230040200, 230040400}),
-        MuLung(29009, 29012, 50, new int[]{251000000, 251010200, 251010402, 251010500, 250010500, 250010504, 250000000, 250010300, 250010304, 250020300}),
-        NihalDesert(29010, 29012, 70, new int[]{261030000, 261020401, 261020000, 261010100, 261000000, 260020700, 260020300, 260000000, 260010600, 260010300}),
-        MinarForest(29011, 29012, 70, new int[]{240000000, 240010200, 240010800, 240020401, 240020101, 240030000, 240040400, 240040511, 240040521, 240050000}),
-        Sleepywood(29014, 29015, 50, new int[]{105040300, 105070001, 105040305, 105090200, 105090300, 105090301, 105090312, 105090500, 105090900, 105080000});
-        public int questid, level, lquestid;
-        public int[] maps;
-
-        private MedalQuest(int questid, int lquestid, int level, int[] maps) {
-            this.questid = questid; //infoquest = questid -2005, customdata = questid -1995
-            this.level = level;
-            this.lquestid = lquestid;
-            this.maps = maps; //note # of maps
-        }
     }
 }

@@ -4,8 +4,6 @@ import odin.client.ISkill;
 import java.util.Calendar;
 import java.util.List;
 import java.util.LinkedList;
-import java.io.Serializable;
-
 import odin.client.inventory.IItem;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
@@ -13,23 +11,18 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
-
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.wz.WzDataTool;
 
-public class MapleQuestRequirement implements Serializable {
+public class MapleQuestRequirement {
 
-    private static final long serialVersionUID = 9179541993413738569L;
     private MapleQuest quest;
     private MapleQuestRequirementType type;
     private int intStore;
     private String stringStore;
     private List<OdinPair<Integer, Integer>> dataStore;
 
-    /**
-     * Creates a new instance of MapleQuestRequirement
-     */
     public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, IMapleData data) {
         this.type = type;
         this.quest = quest;
@@ -37,42 +30,42 @@ public class MapleQuestRequirement implements Serializable {
         switch (type) {
             case job: {
                 final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<OdinPair<Integer, Integer>>();
+                dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    dataStore.add(new OdinPair<Integer, Integer>(i, WzDataTool.getInt(child.get(i), -1)));
+                    dataStore.add(new OdinPair<>(i, WzDataTool.getInt(child.get(i), -1)));
                 }
                 break;
             }
             case skill: {
                 final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<OdinPair<Integer, Integer>>();
+                dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
+                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
                             WzDataTool.getInt(childdata.getChildByPath("acquire"), 0)));
                 }
                 break;
             }
             case quest: {
                 final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<OdinPair<Integer, Integer>>();
+                dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id")),
+                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id")),
                             WzDataTool.getInt(childdata.getChildByPath("state"), 0)));
                 }
                 break;
             }
             case item: {
                 final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<OdinPair<Integer, Integer>>();
+                dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id")),
+                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id")),
                             WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
                 }
                 break;
@@ -94,11 +87,11 @@ public class MapleQuestRequirement implements Serializable {
             }
             case mob: {
                 final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<OdinPair<Integer, Integer>>();
+                dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
+                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
                             WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
                 }
                 break;
@@ -114,31 +107,31 @@ public class MapleQuestRequirement implements Serializable {
             }
             case mbcard: {
                 final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<OdinPair<Integer, Integer>>();
+                dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
                     final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<Integer, Integer>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
+                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
                             WzDataTool.getInt(childdata.getChildByPath("min"), 0)));
                 }
                 break;
             }
             case pet: {
-                dataStore = new LinkedList<OdinPair<Integer, Integer>>();
+                dataStore = new LinkedList<>();
 
                 for (IMapleData child : data) {
-                    dataStore.add(new OdinPair<Integer, Integer>(-1, WzDataTool.getIntPath("id", child, 0)));
+                    dataStore.add(new OdinPair<>(-1, WzDataTool.getIntPath("id", child, 0)));
                 }
                 break;
             }
         }
     }
 
-    public boolean check(MapleCharacter c, Integer npcid) {
+    public boolean check(MapleCharacter chr, Integer npc_id) {
         switch (type) {
             case job:
                 for (OdinPair<Integer, Integer> a : dataStore) {
-                    if (a.getRight() == c.getJob() || c.isGM()) {
+                    if (a.getRight() == chr.getJob() || chr.isGM()) {
                         return true;
                     }
                 }
@@ -150,16 +143,16 @@ public class MapleQuestRequirement implements Serializable {
                     final ISkill skil = SkillFactory.getSkill(skill);
                     if (acquire) {
                         if (skil.isFourthJob()) {
-                            if (c.getMasterLevel(skil) == 0) {
+                            if (chr.getMasterLevel(skil) == 0) {
                                 return false;
                             }
                         } else {
-                            if (c.getSkillLevel(skil) == 0) {
+                            if (chr.getSkillLevel(skil) == 0) {
                                 return false;
                             }
                         }
                     } else {
-                        if (c.getSkillLevel(skil) > 0 || c.getMasterLevel(skil) > 0) {
+                        if (chr.getSkillLevel(skil) > 0 || chr.getMasterLevel(skil) > 0) {
                             return false;
                         }
                     }
@@ -168,7 +161,7 @@ public class MapleQuestRequirement implements Serializable {
             }
             case quest:
                 for (OdinPair<Integer, Integer> a : dataStore) {
-                    final MapleQuestStatus q = c.getQuest(MapleQuest.getInstance(a.getLeft()));
+                    final MapleQuestStatus q = chr.getQuest(MapleQuest.getInstance(a.getLeft()));
                     final int state = a.getRight();
                     if (state != 0) {
                         if (q == null && state == 0) {
@@ -189,7 +182,7 @@ public class MapleQuestRequirement implements Serializable {
                     itemId = a.getLeft();
                     quantity = 0;
                     iType = GameConstants.getInventoryType(itemId);
-                    for (IItem item : c.getInventory(iType).listById(itemId)) {
+                    for (IItem item : chr.getInventory(iType).listById(itemId)) {
                         quantity += item.getQuantity();
                     }
                     final int count = a.getRight();
@@ -199,9 +192,9 @@ public class MapleQuestRequirement implements Serializable {
                 }
                 return true;
             case lvmin:
-                return c.getLevel() >= intStore;
+                return chr.getLevel() >= intStore;
             case lvmax:
-                return c.getLevel() <= intStore;
+                return chr.getLevel() <= intStore;
             case end:
                 final String timeStr = stringStore;
                 final Calendar cal = Calendar.getInstance();
@@ -211,20 +204,20 @@ public class MapleQuestRequirement implements Serializable {
                 for (OdinPair<Integer, Integer> a : dataStore) {
                     final int mobId = a.getLeft();
                     final int killReq = a.getRight();
-                    if (c.getQuest(quest).getMobKills(mobId) < killReq) {
+                    if (chr.getQuest(quest).getMobKills(mobId) < killReq) {
                         return false;
                     }
                 }
                 return true;
             case npc:
-                return npcid == null || npcid == intStore;
+                return npc_id == null || npc_id == intStore;
             case fieldEnter:
                 if (intStore != -1) {
-                    return intStore == c.getMapId();
+                    return intStore == chr.getMapId();
                 }
                 return false;
             case mbmin:
-                if (c.getMonsterBook().getTotalCards() >= intStore) {
+                if (chr.getMonsterBook().getTotalCards() >= intStore) {
                     return true;
                 }
                 return false;
@@ -232,26 +225,26 @@ public class MapleQuestRequirement implements Serializable {
                 for (OdinPair<Integer, Integer> a : dataStore) {
                     final int cardId = a.getLeft();
                     final int killReq = a.getRight();
-                    if (c.getMonsterBook().getLevelByCard(cardId) < killReq) {
+                    if (chr.getMonsterBook().getLevelByCard(cardId) < killReq) {
                         return false;
                     }
                 }
                 return true;
             case pop:
-                return c.getFame() <= intStore;
+                return chr.getFame() <= intStore;
             case questComplete:
-                return c.getNumQuest() >= intStore;
+                return chr.getNumQuest() >= intStore;
             case interval:
-                return c.getQuest(quest).getStatus() != 2 || c.getQuest(quest).getCompletionTime() <= System.currentTimeMillis() - intStore * 60 * 1000L;
+                return chr.getQuest(quest).getStatus() != 2 || chr.getQuest(quest).getCompletionTime() <= System.currentTimeMillis() - intStore * 60 * 1000L;
             case pet:
                 for (OdinPair<Integer, Integer> a : dataStore) {
-                    if (c.getPetById(a.getRight()) == -1) {
+                    if (chr.getPetById(a.getRight()) == -1) {
                         return false;
                     }
                 }
                 return true;
             case pettamenessmin:
-                for (MaplePet pet : c.getPets()) {
+                for (MaplePet pet : chr.getPets()) {
                     if (pet.getSummoned() && pet.getCloseness() >= intStore) {
                         return true;
                     }
@@ -264,10 +257,5 @@ public class MapleQuestRequirement implements Serializable {
 
     public MapleQuestRequirementType getType() {
         return type;
-    }
-
-    @Override
-    public String toString() {
-        return type.toString();
     }
 }
