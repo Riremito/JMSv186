@@ -26,6 +26,8 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.packet.response.ResCSummonedPool;
 import odin.server.MapleStatEffect;
+import tacos.packet.ops.OpsAssist;
+import tacos.packet.ops.OpsMoveAbility;
 
 public class MapleSummon extends AbstractAnimatedMapleMapObject {
 
@@ -34,9 +36,9 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     private MapleMap map; //required for instanceMaps
     private short hp;
     private boolean changedMap = false;
-    private SummonMovementType movementType;
+    private OpsMoveAbility movementType;
 
-    public MapleSummon(final MapleCharacter owner, final MapleStatEffect skill, final Point pos, final SummonMovementType movementType) {
+    public MapleSummon(MapleCharacter owner, MapleStatEffect skill, Point pos, OpsMoveAbility movementType) {
         super();
         this.ownerid = owner.getId();
         this.ownerLevel = owner.getLevel();
@@ -97,7 +99,7 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
         this.hp += delta;
     }
 
-    public final SummonMovementType getMovementType() {
+    public OpsMoveAbility getMovementType() {
         return movementType;
     }
 
@@ -164,23 +166,31 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
         return skillLevel;
     }
 
-    public final int getSummonType() {
+    public OpsAssist getSummonType() {
         if (isPuppet()) {
-            return 0;
+            return OpsAssist.ASSIST_NONE;
         }
         switch (skill) {
-            case 1321007:
-                return 2;
+            case 1321007: {
+                return OpsAssist.ASSIST_HEAL;
+            }
             case 35111001: //satellite.
             case 35111009:
-            case 35111010:
-                return 3;
+            case 35111010: {
+                return OpsAssist.ASSIST_ATTACK_EX;
+            }
             case 35121009: //bots n. tots
-                return 4;
-            //case 4111007: //TEMP
-            //	return 6; //TEMP
+            {
+                return OpsAssist.ASSIST_SUMMON;
+            }
+            case 4111007: {
+                return OpsAssist.ASSIST_ATTACK_COUNTER;
+            }
+            default: {
+                break;
+            }
         }
-        return 1;
+        return OpsAssist.ASSIST_ATTACK;
     }
 
     @Override

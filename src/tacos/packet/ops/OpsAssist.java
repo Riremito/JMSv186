@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,30 +18,27 @@
  */
 package tacos.packet.ops;
 
-import tacos.config.Region;
-import tacos.config.Version;
-
 /**
  *
  * @author Riremito
  */
-public enum OpsMoveAbility implements IPacketOps {
-    MOVEABILITY_STOP(0),
-    MOVEABILITY_WALK(1),
-    MOVEABILITY_WALK_RANDOM(2),
-    MOVEABILITY_JUMP(3),
-    MOVEABILITY_FLY(4),
-    MOVEABILITY_FLY_RANDOM(5),
-    MOVEABILITY_ESCORT(6),
+public enum OpsAssist implements IPacketOps {
+    ASSIST_NONE(0),
+    ASSIST_ATTACK(1),
+    ASSIST_HEAL(2),
+    ASSIST_ATTACK_EX(3),
+    ASSIST_SUMMON(4),
+    ASSIST_ATTACK_MANUAL(5),
+    ASSIST_ATTACK_COUNTER(6),
     UNKNOWN;
 
     private int value;
 
-    OpsMoveAbility(int val) {
+    OpsAssist(int val) {
         this.value = val;
     }
 
-    OpsMoveAbility() {
+    OpsAssist() {
         this.value = -1;
     }
 
@@ -56,22 +53,11 @@ public enum OpsMoveAbility implements IPacketOps {
     }
 
     public static void clear() {
-        for (OpsMoveAbility ops : values()) {
+        for (OpsAssist ops : values()) {
             ops.set(UNKNOWN.get());
         }
     }
 
     public static void init() {
-        if (Version.PostBB()) {
-            return;
-        }
-        if (Version.LessOrEqual(Region.JMS, 147)) {
-            clear();
-            MOVEABILITY_STOP.set(0);
-            MOVEABILITY_WALK.set(1);
-            MOVEABILITY_JUMP.set(2);
-            MOVEABILITY_FLY.set(3);
-            MOVEABILITY_FLY_RANDOM.set(4);
-        }
     }
 }

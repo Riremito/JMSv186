@@ -24,7 +24,6 @@ import odin.constants.GameConstants;
 import java.util.Arrays;
 import java.util.Collections;
 import odin.server.maps.MapleMapObject;
-import odin.server.maps.SummonMovementType;
 import java.util.EnumMap;
 import java.util.concurrent.ScheduledFuture;
 import tacos.packet.ops.OpsSecondaryStat;
@@ -46,6 +45,7 @@ import odin.server.maps.MapleMist;
 import odin.server.maps.MapleSummon;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
+import tacos.packet.ops.OpsMoveAbility;
 import tacos.wz.WzDataTool;
 
 public class MapleStatEffect implements Serializable {
@@ -1033,7 +1033,7 @@ public class MapleStatEffect implements Serializable {
                 applyMonsterBuff(applyfrom);
             }
         }
-        final SummonMovementType summonMovementType = getSummonMovementType();
+        OpsMoveAbility summonMovementType = getSummonMovementType();
         if (summonMovementType != null) {
             final MapleSummon tosummon = new MapleSummon(applyfrom, this, new Point(pos == null ? applyfrom.getPosition() : pos), summonMovementType);
             if (!tosummon.isPuppet()) {
@@ -1240,7 +1240,7 @@ public class MapleStatEffect implements Serializable {
         chr.registerEffect(this, starttime, BuffTimer.getInstance().schedule(new CancelEffectAction(chr, this, starttime),
                 ((starttime + localDuration) - System.currentTimeMillis())));
 
-        final SummonMovementType summonMovementType = getSummonMovementType();
+        OpsMoveAbility summonMovementType = getSummonMovementType();
         if (summonMovementType != null) {
             final MapleSummon tosummon = new MapleSummon(chr, this, chr.getPosition(), summonMovementType);
             if (!tosummon.isPuppet()) {
@@ -1997,7 +1997,7 @@ public class MapleStatEffect implements Serializable {
         return level;
     }
 
-    public final SummonMovementType getSummonMovementType() {
+    public OpsMoveAbility getSummonMovementType() {
         if (!skill) {
             return null;
         }
@@ -2017,18 +2017,18 @@ public class MapleStatEffect implements Serializable {
             //case 35121010: //TEMP
             case 35121011:
                 //case 4111007: //TEMP
-                return SummonMovementType.STATIONARY;
+                return OpsMoveAbility.MOVEABILITY_STOP;
             case 3211005: // golden eagle
             case 3111005: // golden hawk
             case 33111005:
             case 2311006: // summon dragon
             case 3221005: // frostprey
             case 3121006: // phoenix
-                return SummonMovementType.CIRCLE_FOLLOW;
+                return OpsMoveAbility.MOVEABILITY_FLY;
             case 5211002: // bird - pirate
-                return SummonMovementType.CIRCLE_STATIONARY;
+                return OpsMoveAbility.MOVEABILITY_FLY_RANDOM;
             case 32111006: //reaper
-                return SummonMovementType.WALK_STATIONARY;
+                return OpsMoveAbility.MOVEABILITY_WALK_RANDOM;
             case 1321007: // beholder
             case 2121005: // elquines
             case 2221005: // ifrit
@@ -2042,7 +2042,7 @@ public class MapleStatEffect implements Serializable {
             case 35111001:
             case 35111010:
             case 35111009:
-                return SummonMovementType.FOLLOW;
+                return OpsMoveAbility.MOVEABILITY_WALK;
         }
         return null;
     }

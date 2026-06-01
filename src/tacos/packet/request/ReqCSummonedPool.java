@@ -43,8 +43,8 @@ import odin.server.life.MapleMonster;
 import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleSummon;
-import odin.server.maps.SummonMovementType;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsMoveAbility;
 
 /**
  *
@@ -117,7 +117,7 @@ public class ReqCSummonedPool {
 
     // CSummoned::OnMove
     public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleSummon summon) {
-        if (summon.getMovementType() == SummonMovementType.STATIONARY || summon.isChangedMap()) {
+        if (summon.getMovementType() == OpsMoveAbility.MOVEABILITY_STOP || summon.isChangedMap()) {
             return false;
         }
 

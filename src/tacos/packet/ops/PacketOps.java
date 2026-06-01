@@ -50,6 +50,7 @@ public class PacketOps {
         OpsMREnterResult.init();
         OpsITC.init();
         OpsUI.init();
+        OpsMoveAbility.init();
     }
 
 }

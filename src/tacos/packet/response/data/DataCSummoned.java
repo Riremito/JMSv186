@@ -50,8 +50,8 @@ public class DataCSummoned {
         data.Encode2(summon.getPosition().y); // m_ptPos.y
         data.Encode1(summon.getSkill() == 32111006 ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
         data.Encode2(summon.getFh()); // m_dwSN (CStaticFoothold)
-        data.Encode1(summon.getMovementType().getValue()); // m_nMoveAbility
-        data.Encode1(summon.getSummonType()); // m_nAssistType
+        data.Encode1(summon.getMovementType().get()); // m_nMoveAbility
+        data.Encode1(summon.getSummonType().get()); // m_nAssistType
         data.Encode1(animated ? 0 : 1); //nEnterType ENTER_TYPE_DEFAULT, ENTER_TYPE_CREATE_SUMMONED
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
