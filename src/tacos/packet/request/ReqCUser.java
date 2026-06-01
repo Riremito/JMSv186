@@ -2128,8 +2128,6 @@ public class ReqCUser {
         byte nSLV = cp.Decode1();
         OpsSkill ops_skill = OpsSkill.find(nSkillID);
 
-        chr.DebugMsg("OnUserSkillUseRequest : nSkillID = " + nSkillID + ", " + ops_skill);
-
         chr.SendPacket(ResCWvsContext.SkillUseResult()); // unlock.
 
         ISkill skill = SkillFactory.getSkill(nSkillID);

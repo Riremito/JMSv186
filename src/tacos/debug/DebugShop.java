@@ -105,7 +105,7 @@ public class DebugShop {
 
     public boolean start(MapleCharacter chr) {
         chr.DebugMsg("DebugShop : started.");
-        if (0 < this.shopStocks.size()) {
+        if (!this.shopStocks.isEmpty()) {
             if (GameConstants.isRechargable(this.shopStocks.get(0).item_id)) {
                 List<ShopStock> old_shopStocks = shopStocks;
                 shopStocks = new ArrayList<>();
@@ -357,5 +357,4 @@ public class DebugShop {
         public int item_recharge_price = 0;
         public int item_slot_max = 1;
     }
-
 }
