@@ -232,7 +232,7 @@ public class WzDataStorage {
             case REACTOR: {
                 // Reactor.wz/0002000.img
                 Pattern pattern_reactor_img = Pattern.compile("0*(\\d+)\\.img");
-                for (IMapleDataEntity dir : WzXML.REACTOR.getWzRoot().getRootDirectory().getFiles()) {
+                for (IMapleDataEntity dir : WzXML.REACTOR.getRootDirectory().getFiles()) {
                     Matcher matcher_reactor_img = pattern_reactor_img.matcher(dir.getName());
                     if (matcher_reactor_img.matches()) {
                         int id = Integer.parseInt(matcher_reactor_img.group(1));

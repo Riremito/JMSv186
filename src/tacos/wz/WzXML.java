@@ -29,7 +29,6 @@ import java.util.List;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
-import odin.provider.IMapleDataProvider;
 import odin.provider.WzXML.WZDirectoryEntry;
 import odin.provider.WzXML.WZEntry;
 import odin.provider.WzXML.XMLDomMapleData;
@@ -40,7 +39,7 @@ import tacos.odin.OdinPair;
  *
  * @author Riremito
  */
-public class WzXML implements IMapleDataProvider {
+public class WzXML {
 
     public static final CharacterWz CHARACTER = new CharacterWz();
     // Effect
@@ -60,7 +59,6 @@ public class WzXML implements IMapleDataProvider {
     public static final UIWz UI = new UIWz();
 
     private static List<OdinPair<String, IMapleData>> xml_cache = new ArrayList<>();
-    private IMapleDataProvider wz_root = null;
     private String root_path = null;
     private File root_dir;
     protected WZDirectoryEntry rootDirectory;
@@ -68,10 +66,6 @@ public class WzXML implements IMapleDataProvider {
     public WzXML(String path) {
         this.root_path = path;
         setWzRoot();
-    }
-
-    public IMapleDataProvider getWzRoot() {
-        return this.wz_root;
     }
 
     private boolean setWzRoot() {
@@ -89,7 +83,6 @@ public class WzXML implements IMapleDataProvider {
 
         DebugLogger.XmlLog("setWzRoot : " + this.root_path);
 
-        this.wz_root = this;
         this.root_dir = file;
         this.rootDirectory = new WZDirectoryEntry(this.root_dir.getName(), 0, 0, null);
         createEntry(this.root_dir, this.rootDirectory);
@@ -155,7 +148,6 @@ public class WzXML implements IMapleDataProvider {
         return null;
     }
 
-    @Override
     public IMapleData getData(String data_path) {
         String full_path = this.root_path + "/" + data_path;
         // data is already loaded.
@@ -200,7 +192,6 @@ public class WzXML implements IMapleDataProvider {
         return domMapleData;
     }
 
-    @Override
     public IMapleDataDirectoryEntry getRootDirectory() {
         return this.rootDirectory;
     }
