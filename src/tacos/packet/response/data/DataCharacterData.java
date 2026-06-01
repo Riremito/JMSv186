@@ -32,7 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.struct.Structure;
-import tacos.packet.response.struct.TestHelper;
+import tacos.shared.SharedDate;
 
 /**
  *
@@ -203,7 +203,7 @@ public class DataCharacterData {
             }
         }
         data.Encode4(0);
-        data.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+        data.Encode8(SharedDate.getTimestamp());
         if ((datamask & 70368744177664L) != 0) {
             if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode4(0);

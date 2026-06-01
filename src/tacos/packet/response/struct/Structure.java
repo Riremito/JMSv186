@@ -19,25 +19,10 @@ import java.util.Map;
 import odin.server.life.MapleMonster;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
-import odin.tools.KoreanDateUtil;
 import tacos.odin.OdinPair;
+import tacos.shared.SharedDate;
 
 public class Structure {
-
-    // Login Server
-    public static final byte[] addExpirationTime(final long time) {
-        ServerPacket data = new ServerPacket();
-        data.Encode1(0);
-        data.Encode2(1408);
-        if (time != -1) {
-            data.Encode4(KoreanDateUtil.getItemTimestamp(time));
-            data.Encode1(1);
-        } else {
-            data.Encode4(400967355);
-            data.Encode1(2);
-        }
-        return data.get().getBytes();
-    }
 
     public static boolean is_ignore_master_level_for_common(int skill_id) {
         // JMS v302
@@ -276,7 +261,7 @@ public class Structure {
         return false;
     }
 
-    public static final byte[] addSkillInfo(final MapleCharacter chr) {
+    public static byte[] addSkillInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
@@ -290,7 +275,7 @@ public class Structure {
 
             // not in v165
             if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
-                data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
+                data.Encode8(SharedDate.getTimestamp(skill.getValue().expiration));
             }
 
             if (is_skill_need_master_level(skill.getKey().getId())) {
@@ -359,21 +344,17 @@ public class Structure {
         return data.get().getBytes();
     }
 
-    public static byte[] addQuestComplete(final MapleCharacter chr) {
+    public static byte[] addQuestComplete(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(0);
         }
 
-        final List<MapleQuestStatus> completed = chr.getCompletedQuests();
-        int time;
-        data.Encode2(completed.size());
-        for (final MapleQuestStatus q : completed) {
-            data.Encode2(q.getQuest().getId());
-            time = KoreanDateUtil.getQuestTimestamp(q.getCompletionTime());
-            data.Encode4(time); // maybe start time? no effect.
-            data.Encode4(time); // completion time
+        data.Encode2(chr.getCompletedQuests().size());
+        for (MapleQuestStatus mqs : chr.getCompletedQuests()) {
+            data.Encode2(mqs.getQuest().getId());
+            data.Encode8(SharedDate.getTimestamp(mqs.getCompletionTime()));
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {

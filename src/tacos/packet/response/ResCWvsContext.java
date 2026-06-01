@@ -67,7 +67,6 @@ import tacos.packet.response.data.DataSecondaryStat;
 import tacos.packet.response.data.DataGW_CharacterStat;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import tacos.packet.response.struct.InvOp;
-import tacos.packet.response.struct.TestHelper;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.maps.MapleDoor;
@@ -378,7 +377,7 @@ public class ResCWvsContext {
                         break;
                     }
                     case QUEST_COMPLETE: {
-                        sp.Encode8(System.currentTimeMillis());
+                        sp.Encode8(SharedDate.getTimestamp());
                         break;
                     }
                     default: {
@@ -533,7 +532,7 @@ public class ResCWvsContext {
             sp.Encode4(notes.getInt("id"));
             sp.EncodeStr(notes.getString("from"));
             sp.EncodeStr(notes.getString("message"));
-            sp.Encode8(TestHelper.getKoreanTimestamp(notes.getLong("timestamp")));
+            sp.Encode8(SharedDate.getTimestamp(notes.getLong("timestamp")));
             sp.Encode1(notes.getInt("gift"));
             notes.next();
         }
@@ -1970,7 +1969,7 @@ public class ResCWvsContext {
         data.Encode4(rs.localthreadID);
         data.Encode4(rs.ownerID);
         data.EncodeStr(rs.name);
-        data.Encode8(TestHelper.getKoreanTimestamp(rs.timestamp));
+        data.Encode8(SharedDate.getTimestamp(rs.timestamp));
         data.Encode4(rs.icon);
         data.Encode4(rs.getReplyCount());
         return data.get().getBytes();
@@ -1982,7 +1981,7 @@ public class ResCWvsContext {
         sp.Encode1(7);
         sp.Encode4(thread.localthreadID);
         sp.Encode4(thread.ownerID);
-        sp.Encode8(TestHelper.getKoreanTimestamp(thread.timestamp));
+        sp.Encode8(SharedDate.getTimestamp(thread.timestamp));
         sp.EncodeStr(thread.name);
         sp.EncodeStr(thread.text);
         sp.Encode4(thread.icon);
@@ -1990,7 +1989,7 @@ public class ResCWvsContext {
         for (MapleBBSThread.MapleBBSReply reply : thread.replies.values()) {
             sp.Encode4(reply.replyid);
             sp.Encode4(reply.ownerID);
-            sp.Encode8(TestHelper.getKoreanTimestamp(reply.timestamp));
+            sp.Encode8(SharedDate.getTimestamp(reply.timestamp));
             sp.EncodeStr(reply.content);
         }
         return sp.get();

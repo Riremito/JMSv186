@@ -20,6 +20,10 @@ package tacos.shared;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
 /**
@@ -31,25 +35,38 @@ public class SharedDate {
     private static final String DATE_BASE = "2339-01-01 18:00:00"; // UTC+9 (JST)
     private static final String DATE_MAGICAL = "2027-07-07 07:00:00";
     private static final String DATE_FOREVER = "2079-07-07 07:00:00";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat SDF_QUEST = new SimpleDateFormat("yyyy-MM-dd");
 
-    public static long getTimeStamp(String date) {
+    public static long getTimestampLong(String date) {
         return (Timestamp.valueOf(date).getTime() + Timestamp.valueOf(DATE_BASE).getTime()) * 10000;
+    }
+
+    // quest date.
+    public static String getDateString() {
+        return SDF_QUEST.format(Calendar.getInstance().getTime());
+    }
+
+    public static String getDateString(long timestamp) {
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()).format(FORMATTER);
+    }
+
+    // quest complete time.
+    public static long getTimestamp() {
+        return getTimestamp(System.currentTimeMillis());
+    }
+
+    public static long getTimestamp(long timestamp) {
+        return getTimestampLong(getDateString(timestamp));
     }
 
     // 2027-07-07 (Pet)
     public static long getMagicalExpirationDate() {
-        return getTimeStamp(DATE_MAGICAL);
+        return getTimestampLong(DATE_MAGICAL);
     }
 
     // 2079-07-07 (non Pet items)
     public static long getNoExpirationDate() {
-        return getTimeStamp(DATE_FOREVER);
-    }
-
-    // quest date.
-    private static final SimpleDateFormat sdf_quest = new SimpleDateFormat("yyyy-MM-dd");
-
-    public static String getDateString() {
-        return sdf_quest.format(Calendar.getInstance().getTime());
+        return getTimestampLong(DATE_FOREVER);
     }
 }

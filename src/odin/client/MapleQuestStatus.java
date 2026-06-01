@@ -23,16 +23,13 @@ package odin.client;
 import odin.constants.GameConstants;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.io.Serializable;
-
 import java.util.Map.Entry;
 import odin.server.life.MapleLifeFactory;
 import odin.server.quest.MapleQuest;
 
-public class MapleQuestStatus implements Serializable {
+public class MapleQuestStatus {
 
-    private static final long serialVersionUID = 91795419934134L;
-    private transient MapleQuest quest;
+    private MapleQuest quest;
     private byte status;
     private Map<Integer, Integer> killedMobs = null;
     private int npc;
@@ -40,10 +37,7 @@ public class MapleQuestStatus implements Serializable {
     private int forfeited = 0;
     private String customData;
 
-    /**
-     * Creates a new instance of MapleQuestStatus
-     */
-    public MapleQuestStatus(final MapleQuest quest, final byte status) {
+    public MapleQuestStatus(MapleQuest quest, byte status) {
         this.quest = quest;
         this.setStatus(status);
         this.completionTime = System.currentTimeMillis();
@@ -54,7 +48,7 @@ public class MapleQuestStatus implements Serializable {
         }
     }
 
-    public MapleQuestStatus(final MapleQuest quest, final byte status, final int npc) {
+    public MapleQuestStatus(MapleQuest quest, byte status, int npc) {
         this.quest = quest;
         this.setStatus(status);
         this.setNpc(npc);
@@ -90,14 +84,14 @@ public class MapleQuestStatus implements Serializable {
         return GameConstants.isCustomQuest(quest.getId());
     }
 
-    private final void registerMobs() {
-        killedMobs = new LinkedHashMap<Integer, Integer>();
+    private void registerMobs() {
+        killedMobs = new LinkedHashMap<>();
         for (final int i : quest.getRelevantMobs().keySet()) {
             killedMobs.put(i, 0);
         }
     }
 
-    private final int maxMob(final int mobid) {
+    private int maxMob(final int mobid) {
         for (final Map.Entry<Integer, Integer> qs : quest.getRelevantMobs().entrySet()) {
             if (qs.getKey() == mobid) {
                 return qs.getValue();
@@ -134,7 +128,7 @@ public class MapleQuestStatus implements Serializable {
         return false;
     }
 
-    private final boolean questCount(final int mo, final int id) {
+    private boolean questCount(final int mo, final int id) {
         if (MapleLifeFactory.getQuestCount(mo) != null) {
             for (int i : MapleLifeFactory.getQuestCount(mo)) {
                 if (i == id) {
@@ -145,21 +139,21 @@ public class MapleQuestStatus implements Serializable {
         return false;
     }
 
-    public final void setMobKills(final int id, final int count) {
+    public void setMobKills(final int id, final int count) {
         if (killedMobs == null) {
             registerMobs(); //lol
         }
         killedMobs.put(id, count);
     }
 
-    public final boolean hasMobKills() {
+    public boolean hasMobKills() {
         if (killedMobs == null) {
             return false;
         }
-        return killedMobs.size() > 0;
+        return !killedMobs.isEmpty();
     }
 
-    public final int getMobKills(final int id) {
+    public int getMobKills(int id) {
         final Integer mob = killedMobs.get(id);
         if (mob == null) {
             return 0;
@@ -167,23 +161,23 @@ public class MapleQuestStatus implements Serializable {
         return mob;
     }
 
-    public final Map<Integer, Integer> getMobKills() {
+    public Map<Integer, Integer> getMobKills() {
         return killedMobs;
     }
 
-    public final long getCompletionTime() {
+    public long getCompletionTime() {
         return completionTime;
     }
 
-    public final void setCompletionTime(final long completionTime) {
+    public void setCompletionTime(long completionTime) {
         this.completionTime = completionTime;
     }
 
-    public final int getForfeited() {
+    public int getForfeited() {
         return forfeited;
     }
 
-    public final void setForfeited(final int forfeited) {
+    public void setForfeited(int forfeited) {
         if (forfeited >= this.forfeited) {
             this.forfeited = forfeited;
         } else {
@@ -191,11 +185,11 @@ public class MapleQuestStatus implements Serializable {
         }
     }
 
-    public final void setCustomData(final String customData) {
+    public void setCustomData(String customData) {
         this.customData = customData;
     }
 
-    public final String getCustomData() {
+    public String getCustomData() {
         return customData;
     }
 }

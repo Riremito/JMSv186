@@ -29,10 +29,10 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataCClientOptMan;
 import tacos.packet.response.data.DataCWvsContext;
 import tacos.packet.response.data.DataCharacterData;
-import tacos.packet.response.struct.TestHelper;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCS_COMMODITY;
 import tacos.server.TacosITC;
+import tacos.shared.SharedDate;
 
 /**
  *
@@ -135,7 +135,7 @@ public class ResCStage {
             sp.Encode1(0);
         }
         // サーバーの時間?
-        sp.Encode8(TestHelper.getTime(System.currentTimeMillis())); // ftServer
+        sp.Encode8(SharedDate.getTimestamp()); // ftServer
         if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
@@ -199,7 +199,7 @@ public class ResCStage {
         if (part == 2) {
             // 008AAA80
             sp.EncodeBuffer(DataCharacterData.Encode_302_2(chr, datamask_2));
-            sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+            sp.Encode8(SharedDate.getTimestamp());
             sp.Encode4(100); // nMobStatAdjustRate
             if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 sp.Encode1(0);
@@ -229,7 +229,7 @@ public class ResCStage {
             sp.Encode4(24); // m_nAuctionDurationMin
             sp.Encode4(168); // m_nAuctionDurationMax
             if (ServerConfig.JMS146orLater()) {
-                sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+                sp.Encode8(SharedDate.getTimestamp());
             }
         }
         return sp.get();

@@ -26,9 +26,9 @@ import tacos.packet.ops.arg.ArgITCNormalItemResult;
 import tacos.packet.response.ResCITC;
 import odin.server.MTSStorage;
 import tacos.network.MaplePacket;
-import odin.tools.KoreanDateUtil;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
+import tacos.shared.SharedDate;
 
 /**
  *
@@ -105,12 +105,10 @@ public class WrapCITC {
         data.Encode4(item.getTaxes()); //this + below = price
         data.Encode4(item.getPrice()); //price
         data.Encode8(0);
-        data.Encode4(KoreanDateUtil.getQuestTimestamp(item.getEndingDate()));
-        data.Encode4(KoreanDateUtil.getQuestTimestamp(item.getEndingDate()));
+        data.Encode8(SharedDate.getTimestamp(item.getEndingDate()));
         data.EncodeStr(item.getSeller()); //account name (what was nexon thinking?)
         data.EncodeStr(item.getSeller()); //char name
         data.EncodeZeroBytes(28);
-
         return data.get().getBytes();
     }
 
