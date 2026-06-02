@@ -61,7 +61,7 @@ public class TacosReward {
         public int max;
     }
 
-    private static TreeMap<Integer, ArrayList<Reward>> REWARDS = new TreeMap<>();
+    private static final TreeMap<Integer, ArrayList<Reward>> REWARDS = new TreeMap<>();
 
     public static ArrayList<Reward> getRewardData(int mob_id) {
         ArrayList<Reward> list_reward = REWARDS.get(mob_id);
@@ -103,37 +103,6 @@ public class TacosReward {
         MapleMap map = monster.getMap();
         int mob_id = monster.getId();
 
-        /*
-        ArrayList<Reward> list_reward = REWARDS.get(mob_id);
-        if (list_reward == null) {
-            IMapleData mob_drop_table = ServerImg.SI.getReward().getChildByPath(String.format("m%07d", mob_id));
-            if (mob_drop_table != null) {
-                list_reward = new ArrayList<>();
-                for (IMapleData mob_drop : mob_drop_table.getChildren()) {
-                    Reward reward = new Reward();
-                    reward.money = WzDataTool.getIntPath("money", mob_drop, 0);
-                    reward.item = WzDataTool.getIntPath("item", mob_drop, 0);
-                    String prob_str = WzDataTool.getStringPath("prob", mob_drop, "[R8]0.0").replace("[R8]", "");
-                    reward.prob = (int) (Double.parseDouble(prob_str) * PROB_MAX);
-                    reward.min = WzDataTool.getIntPath("min", mob_drop, 1);
-                    reward.max = WzDataTool.getIntPath("max", mob_drop, 1);
-
-                    if (reward.item != 0) {
-                        if (!WzDataStorage.ITEM.check(reward.item)) {
-                            chr.DebugMsg("getReward : " + mob_id + ", invalid item = " + reward.item);
-                            DebugLogger.ErrorLog("getReward : " + mob_id + ", invalid item = " + reward.item);
-                            continue;
-                        }
-                    }
-
-                    list_reward.add(reward);
-                }
-
-                DebugLogger.XmlLog("getReward : " + mob_id + ", count = " + list_reward.size());
-                REWARDS.put(mob_id, list_reward);
-            }
-        }
-         */
         ArrayList<Reward> list_reward = getRewardData(mob_id);
         if (!list_reward.isEmpty()) {
             MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();

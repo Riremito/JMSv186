@@ -94,6 +94,10 @@ public class DebugShop {
     public DebugShop() {
         shopStocks = new ArrayList<>();
     }
+    public DebugShop(int npc_id) {
+        this();
+        this.npc_id = npc_id;
+    }
 
     public int getNpcId() {
         return this.npc_id;

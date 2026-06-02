@@ -111,6 +111,7 @@ import tacos.packet.response.wrapper.WrapCUserRemote;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
+import tacos.server.map.TacosNpcShop;
 import tacos.shared.TacosShared;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
@@ -1342,7 +1343,9 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc : getConversation = " + chr.getConversation());
             return false;
         }
-
+        if (TacosNpcShop.checkNpcShop(chr, npc.getId())) {
+            return true;
+        }
         if (npc.hasShop()) {
             chr.DebugMsg("OnUserSelectNpc : " + npc.getId() + ", shop");
             chr.setConversation(1);
