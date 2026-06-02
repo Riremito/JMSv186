@@ -67,6 +67,8 @@ import tacos.script.TacosScriptReactor;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
+import tacos.server.map.TacosReward;
+import tacos.server.map.TacosReward.Reward;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 import tacos.wz.WzName;
@@ -450,6 +452,26 @@ public class DebugCommand {
             case "/checkmapdata":
             case "/mapdata": {
                 checkMapData(chr);
+                return true;
+            }
+            case "/md2": {
+                ArrayList<Integer> mob_ids = new ArrayList<>();
+                for (Spawns sp : map.getMonsterSpawn()) {
+                    int mob_id = sp.getMonster().getId();
+                    if (!mob_ids.contains(mob_id)) {
+                        mob_ids.add(mob_id);
+                    }
+                }
+                for (int mob_id : mob_ids) {
+                    chr.DebugMsg("[" + mob_id + " - " + WzNameStorage.MOB.get(mob_id).getName() + "]");
+                    for (Reward reward : TacosReward.getRewardData(mob_id)) {
+                        if (reward.item != 0) {
+                            chr.DebugMsgItem(reward.item + " : " + String.format("%05.2f%%", reward.prob * 100.0 / TacosReward.PROB_MAX) + " - " + WzNameStorage.ITEM.get(reward.item).getName(), reward.item);
+                        } else {
+                            chr.DebugMsg("meso : " + String.format("%05.2f%%", reward.prob * 100.0 / TacosReward.PROB_MAX) + " - " + reward.money);
+                        }
+                    }
+                }
                 return true;
             }
             // client

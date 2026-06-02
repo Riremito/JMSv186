@@ -31,7 +31,7 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
-import tacos.server.map.MonsterDrop;
+import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
 import tacos.wz.StringWz.DropMonsterBook;
 
@@ -152,7 +152,7 @@ public class CustomMonsterBookDrop {
             int level = monster.getStats().getLevel();
             int base_meso = 5 + (level * 5);
             int meso_value = base_meso + Randomizer.nextInt((base_meso / 10));
-            Point drop_pos = MonsterDrop.getDropPosition(monster, drop_type, dropped_count);
+            Point drop_pos = TacosReward.getDropPosition(monster, drop_type, dropped_count);
             map.spawnMobMesoDrop(meso_value, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, false, drop_type);
             dropped_count++;
         }
@@ -164,7 +164,7 @@ public class CustomMonsterBookDrop {
         CustomMonsterBookDrop cmbd = new CustomMonsterBookDrop(monster);
         for (int item_id : cmbd.getDropItems()) {
             IItem idrop = (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(item_id)) : new Item(item_id, (byte) 0, (short) 1, (byte) 0);
-            Point drop_pos = MonsterDrop.getDropPosition(monster, drop_type, dropped_count);
+            Point drop_pos = TacosReward.getDropPosition(monster, drop_type, dropped_count);
 
             map.spawnMobDrop(idrop, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, drop_type, (short) 0);
             dropped_count++;

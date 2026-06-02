@@ -54,6 +54,7 @@ import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.server.map.TacosMap;
+import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
 
 public final class MapleMap extends TacosMap {
@@ -98,20 +99,11 @@ public final class MapleMap extends TacosMap {
         super.spawnReactor(reactor);
     }
 
-    @Override
-    public int dropFromMonster(MapleCharacter player, MapleMonster monster) {
-        if (monster == null || player == null || monster.dropsDisabled() || player.getPyramidSubway() != null) {
-            return -1;
-        }
-        // drop database, drop monseter book
-        return super.dropFromMonster(player, monster);
-    }
-
-    public final void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean second, byte animation) {
+    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, byte animation) {
         killMonster(monster, chr, withDrops, second, animation, 0);
     }
 
-    public final void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean second, byte animation, final int lastSkill) {
+    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, byte animation, int lastSkill) {
         if ((monster.getId() == 8810122 || monster.getId() == 8810018) && !second) {
             MapTimer.getInstance().schedule(new Runnable() {
 
@@ -218,18 +210,14 @@ public final class MapleMap extends TacosMap {
                 }
             }
         }
-        if (withDrops) {
-            MapleCharacter drop = null;
-            if (dropOwner <= 0) {
-                drop = chr;
-            } else {
-                drop = getCharacterById(dropOwner);
-                if (drop == null) {
-                    drop = chr;
-                }
-            }
-            dropFromMonster(drop, monster);
+        if (!withDrops) {
+            return;
         }
+        MapleCharacter killer = getCharacterById(dropOwner); // highest damage player
+        if (killer == null) {
+            killer = chr;
+        }
+        TacosReward.getReward(killer, monster);
     }
 
     public final void spawnMonster_sSack(final MapleMonster mob, final Point pos, final int spawnType) {

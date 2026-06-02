@@ -33,7 +33,7 @@ public class Property_Java {
 
     public static boolean setPath() {
         // cmd line arguments
-        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Region.GetRegionName() + "_v" + Version.getVersion() + "/";
+        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Region.GetRegionName() + "_v" + Version.getVersion();
         path_scripts = System.getProperty("user.dir") + "/scripts/scripts_" + Region.GetRegionName() + "/";
 
         if (!(new File(path_scripts)).isDirectory()) {
@@ -46,8 +46,11 @@ public class Property_Java {
         return path_wz_xml;
     }
 
+    public static String getDir_WzXml_BMS8() {
+        return System.getProperty("user.dir") + "/wz_xml/xml_BMS_v8";
+    }
+
     public static String getDir_Scripts() {
         return path_scripts;
     }
-
 }
