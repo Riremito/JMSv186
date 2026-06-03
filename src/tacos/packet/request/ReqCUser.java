@@ -2228,6 +2228,7 @@ public class ReqCUser {
             chr.cancelEffect(skill.getEffect(1), false, -1);
         }
 
+        chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr));
         map.broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, skill_id), false);
         return true;
     }

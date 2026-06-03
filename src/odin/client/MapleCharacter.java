@@ -1284,27 +1284,11 @@ public class MapleCharacter extends TacosCharacter {
     public void cancelBuffStats(MapleBuffStat... stat) {
         List<MapleBuffStat> buffStatList = Arrays.asList(stat);
         deregisterBuffStats(buffStatList);
-        cancelPlayerBuffs(buffStatList, null);
     }
 
     public void cancelEffectFromBuffStat(MapleBuffStat stat) {
         if (effects.get(stat) != null) {
             cancelEffect(effects.get(stat).effect, false, -1);
-        }
-    }
-
-    private void cancelPlayerBuffs(List<MapleBuffStat> buffstats, MapleStatEffect effect) {
-        boolean write = client.getChannelServer().getOnlinePlayers().findById(getId()) != null;
-        if (buffstats.contains(MapleBuffStat.HOMING_BEACON)) {
-            if (write) {
-                client.getSession().write(ResCWvsContext.cancelHoming());
-            }
-        } else {
-            if (write) {
-                stats.recalcLocalStats();
-            }
-            client.getSession().write(ResCWvsContext.cancelBuff(buffstats, effect));
-            map.broadcastMessage(this, ResCUserRemote.cancelForeignBuff(getId(), buffstats), false);
         }
     }
 
@@ -1402,36 +1386,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public int getSkillLevel(int skillid) {
         return getSkillLevel(SkillFactory.getSkill(skillid));
-    }
-
-    public final void handleEnergyCharge(final int skillid, final int targets) {
-        final ISkill echskill = SkillFactory.getSkill(skillid);
-        final byte skilllevel = getSkillLevel(echskill);
-        if (skilllevel > 0) {
-            final MapleStatEffect echeff = echskill.getEffect(skilllevel);
-            if (targets > 0) {
-                if (getBuffedValue(MapleBuffStat.ENERGY_CHARGE) == null) {
-                    echeff.applyEnergyBuff(this, true); // Infinity time
-                } else {
-                    Integer energyLevel = getBuffedValue(MapleBuffStat.ENERGY_CHARGE);
-                    //TODO: bar going down
-                    if (energyLevel < 10000) {
-                        energyLevel += (echeff.getX() * targets);
-                        client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, skillid));
-                        map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, this, skillid), false);
-
-                        if (energyLevel >= 10000) {
-                            energyLevel = 10000;
-                        }
-                        client.getSession().write(ResCWvsContext.giveEnergyChargeTest(energyLevel, echeff.getDuration() / 1000));
-                        setBuffedValue(MapleBuffStat.ENERGY_CHARGE, Integer.valueOf(energyLevel));
-                    } else if (energyLevel == 10000) {
-                        echeff.applyEnergyBuff(this, false); // One with time
-                        setBuffedValue(MapleBuffStat.ENERGY_CHARGE, Integer.valueOf(10001));
-                    }
-                }
-            }
-        }
     }
 
     public final void handleBattleshipHP(int damage) {

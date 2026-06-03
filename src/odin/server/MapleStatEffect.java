@@ -1264,24 +1264,6 @@ public class MapleStatEffect implements Serializable {
         applyto.registerEffect(this, starttime, null);
     }
 
-    public final void applyEnergyBuff(final MapleCharacter applyto, final boolean infinity) {
-        final List<OdinPair<MapleBuffStat, Integer>> stat = this.statups;
-
-        final long starttime = System.currentTimeMillis();
-        if (infinity) {
-            applyto.getClient().getSession().write(ResCWvsContext.giveEnergyChargeTest(0, duration / 1000));
-            applyto.registerEffect(this, starttime, null);
-        } else {
-            applyto.cancelEffect(this, true, -1);
-            applyto.getMap().broadcastMessage(applyto, ResCUserRemote.giveEnergyChargeTest(applyto.getId(), 10000, duration / 1000), false);
-            final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
-            final ScheduledFuture<?> schedule = BuffTimer.getInstance().schedule(cancelAction, ((starttime + duration) - System.currentTimeMillis()));
-            this.statups = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.ENERGY_CHARGE, 10000));
-            applyto.registerEffect(this, starttime, schedule);
-            this.statups = stat;
-        }
-    }
-
     private final void applyBuffEffect(final MapleCharacter applyfrom, final MapleCharacter applyto, final boolean primary, final int newDuration) {
         int localDuration = newDuration;
         if (primary) {
@@ -1296,21 +1278,12 @@ public class MapleStatEffect implements Serializable {
             case 5001005: // Dash
             case 4321000: //tornado spin
             case 15001003: {
-                applyto.getClient().getSession().write(ResCWvsContext.givePirate(statups, localDuration / 1000, sourceid));
-                applyto.getMap().broadcastMessage(applyto, ResCUserRemote.giveForeignPirate(statups, localDuration / 1000, applyto.getId(), sourceid), false);
                 normal = false;
                 break;
             }
             case 5211006: // Homing Beacon
             case 22151002: //killer wings
             case 5220011: {// Bullseye
-                if (applyto.getLinkMid() > 0) {
-                    applyto.getClient().getSession().write(ResCWvsContext.cancelHoming());
-                    applyto.getClient().getSession().write(ResCWvsContext.giveHoming(sourceid, applyto.getLinkMid()));
-                } else {
-                    return;
-                }
-                normal = false;
                 break;
             }
             case 13101006:

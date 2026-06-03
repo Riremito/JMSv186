@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
-import odin.client.MapleDisease;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
@@ -58,7 +57,6 @@ import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.ops.arg.ArgFriend;
 import tacos.packet.ops.arg.ArgMessage;
-import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import tacos.packet.response.data.DataCUIUserInfo;
@@ -205,13 +203,12 @@ public class ResCWvsContext {
         return sp.get();
     }
 
-    public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
+    // CWvsContext::OnTemporaryStatReset
+    public static MaplePacket TemporaryStatReset(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
+
         int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-        ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
-        for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
-            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
-        }
+
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode4(buff_mask[11]);
             sp.Encode4(buff_mask[10]);
@@ -243,6 +240,7 @@ public class ResCWvsContext {
             sp.Encode4(buff_mask[0]);
             sp.Encode4(buff_mask[1]);
         }
+
         sp.Encode1(0);
         return sp.get();
     }
@@ -1525,112 +1523,6 @@ public class ResCWvsContext {
 
         sp.Encode4(chr.getId());
         sp.Encode4(chr.getMaplePoint());
-        return sp.get();
-    }
-    // CWvsContext::OnMacroSysDataInit
-
-    public static MaplePacket cancelDebuff(long mask, boolean first) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
-
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            sp.EncodeZeroBytes(4);
-        }
-        sp.Encode8(first ? mask : 0);
-        sp.Encode8(first ? 0 : mask);
-        sp.Encode1(1);
-        return sp.get();
-    }
-
-    public static MaplePacket cancelHoming() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
-
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            sp.EncodeZeroBytes(4);
-        }
-        sp.Encode8(MapleBuffStat.HOMING_BEACON.getValue());
-        sp.Encode8(0);
-        return sp.get();
-    }
-
-    public static MaplePacket giveDebuff(final List<OdinPair<MapleDisease, Integer>> statups, int skillid, int level, int duration) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.EncodeBuffer(ResCUserRemote.writeLongDiseaseMask(statups));
-        for (OdinPair<MapleDisease, Integer> statup : statups) {
-            sp.Encode2(statup.getRight().shortValue());
-            sp.Encode2(skillid);
-            sp.Encode2(level);
-            sp.Encode4(duration);
-        }
-        sp.Encode2(0); // ??? wk charges have 600 here o.o
-        sp.Encode2(900); //Delay
-        sp.Encode1(1);
-        return sp.get();
-    }
-
-    public static MaplePacket givePirate(List<OdinPair<MapleBuffStat, Integer>> statups, int duration, int skillid) {
-        final boolean infusion = skillid == 5121009 || skillid == 15111005;
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
-        sp.Encode2(0);
-        for (OdinPair<MapleBuffStat, Integer> stat : statups) {
-            sp.Encode4(stat.getRight());
-            sp.Encode8(skillid);
-            sp.EncodeZeroBytes(infusion ? 6 : 1);
-            sp.Encode2(duration);
-        }
-        sp.Encode2(infusion ? 600 : 0);
-        if (!infusion) {
-            sp.Encode1(1); //does this only come in dash?
-        }
-        return sp.get();
-    }
-
-    public static MaplePacket giveMount(int buffid, int skillid, List<OdinPair<MapleBuffStat, Integer>> statups) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
-        sp.Encode2(0);
-        sp.Encode4(buffid); // 1902000 saddle
-        sp.Encode4(skillid); // skillid
-        sp.Encode4(0); // Server tick value
-        sp.Encode2(0);
-        sp.Encode1(0);
-        sp.Encode1(2); // Total buffed times
-        return sp.get();
-    }
-
-    public static MaplePacket giveEnergyChargeTest(int bar, int bufflength) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.Encode8(MapleBuffStat.ENERGY_CHARGE.getValue());
-        sp.Encode8(0);
-        sp.Encode2(0);
-        sp.Encode4(0);
-        sp.Encode4(1555445060); //?
-        sp.Encode2(0);
-        sp.Encode4(Math.min(bar, 10000)); // 0 = no bar, 10000 = full bar
-        sp.Encode8(0); //skillid, but its 0 here
-        sp.Encode1(0);
-        sp.Encode4(bar >= 10000 ? bufflength : 0); //short - bufflength...50
-        return sp.get();
-    }
-
-    public static MaplePacket giveHoming(int skillid, int mobid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            sp.EncodeZeroBytes(4);
-        }
-        sp.Encode8(MapleBuffStat.HOMING_BEACON.getValue());
-        sp.Encode8(0);
-        sp.Encode2(0);
-        sp.Encode4(1);
-        sp.Encode8(skillid);
-        sp.Encode1(0);
-        sp.Encode4(mobid);
-        sp.Encode2(0);
         return sp.get();
     }
 

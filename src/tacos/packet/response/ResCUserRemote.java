@@ -314,14 +314,6 @@ public class ResCUserRemote {
         return sp.get();
     }
 
-    public static MaplePacket cancelForeignBuff(int cid, List<MapleBuffStat> statups) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatReset);
-
-        sp.Encode4(cid);
-        sp.EncodeBuffer(writeLongMaskFromList(statups));
-        return sp.get();
-    }
-
     public static byte[] writeLongMaskFromList(List<MapleBuffStat> statups) {
         ServerPacket data = new ServerPacket();
 
@@ -423,41 +415,6 @@ public class ResCUserRemote {
         data.Encode8(secondmask);
 
         return data.get().getBytes();
-    }
-
-    public static MaplePacket giveForeignPirate(List<OdinPair<MapleBuffStat, Integer>> statups, int duration, int cid, int skillid) {
-        final boolean infusion = skillid == 5121009 || skillid == 15111005;
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
-
-        sp.Encode4(cid);
-        sp.EncodeBuffer(writeLongMask(statups));
-
-        sp.Encode2(0);
-        for (OdinPair<MapleBuffStat, Integer> stat : statups) {
-            sp.Encode4(stat.getRight().intValue());
-            sp.Encode8(skillid);
-            sp.EncodeZeroBytes(infusion ? 7 : 1);
-            sp.Encode2(duration); //duration... seconds
-        }
-        sp.Encode2(infusion ? 600 : 0);
-        return sp.get();
-    }
-
-    public static MaplePacket giveEnergyChargeTest(int cid, int bar, int bufflength) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
-
-        sp.Encode4(cid);
-        sp.Encode8(MapleBuffStat.ENERGY_CHARGE.getValue());
-        sp.Encode8(0);
-        sp.Encode2(0);
-        sp.Encode4(0);
-        sp.Encode4(1555445060); //?
-        sp.Encode2(0);
-        sp.Encode4(Math.min(bar, 10000)); // 0 = no bar, 10000 = full bar
-        sp.Encode8(0); //skillid, but its 0 here
-        sp.Encode1(0);
-        sp.Encode4(bar >= 10000 ? bufflength : 0); //short - bufflength...50
-        return sp.get();
     }
 
     public static MaplePacket showPetLevelUp(MapleCharacter chr, int index) {
