@@ -2221,14 +2221,34 @@ public class ReqCUser {
         MapleMap map = chr.getMap();
         int skill_id = cp.Decode4();
 
-        ISkill skill = SkillFactory.getSkill(skill_id);
-        if (skill.isChargeSkill()) {
-            chr.setKeyDownSkill_Time(0);
+        MapleStatEffect effect = null;
+        if (skill_id < 0) {
+            int item_id = skill_id;
+            effect = MapleItemInformationProvider.getInstance().getItemEffect(item_id);
+            if (effect == null) {
+                DebugLogger.ErrorLog("OnUserSkillCancelRequest : " + item_id);
+                return false;
+            }
         } else {
-            chr.cancelEffect(skill.getEffect(1), false, -1);
+            ISkill skill = SkillFactory.getSkill(skill_id);
+            if (skill == null) {
+                return false;
+            }
+
+            if (skill.isChargeSkill()) {
+                chr.setKeyDownSkill_Time(0);
+            } else {
+                chr.cancelEffect(skill.getEffect(1), false, -1);
+            }
+
+            effect = skill.getEffect(chr.getSkillLevel(GameConstants.getLinkedAranSkill(skill_id)));
+            if (effect == null) {
+                DebugLogger.ErrorLog("OnUserSkillCancelRequest : " + skill_id);
+                return false;
+            }
         }
 
-        chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr));
+        chr.SendPacket(ResCWvsContext.TemporaryStatReset(effect));
         map.broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, skill_id), false);
         return true;
     }

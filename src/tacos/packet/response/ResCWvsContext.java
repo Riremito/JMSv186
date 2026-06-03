@@ -73,8 +73,10 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsParty;
+import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataForcedStat;
+import static tacos.packet.response.data.DataSecondaryStat.getBuffSize;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -204,41 +206,17 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnTemporaryStatReset
-    public static MaplePacket TemporaryStatReset(MapleCharacter chr) {
+    public static MaplePacket TemporaryStatReset(MapleStatEffect effect) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
 
-        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+        int[] buff_mask = new int[getBuffSize() / 4];
+        ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = effect.getOss();
+        for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
+            buff_mask[pss.getLeft().getNl()] |= pss.getLeft().getNr();
+        }
 
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
-            sp.Encode4(buff_mask[11]);
-            sp.Encode4(buff_mask[10]);
-            sp.Encode4(buff_mask[9]);
-        }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
-            sp.Encode4(buff_mask[8]);
-        }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            sp.Encode4(buff_mask[7]);
-            sp.Encode4(buff_mask[6]);
-            sp.Encode4(buff_mask[5]);
-        }
-        // JMS v187+
-        if (Version.PostBB()) {
-            if (!Region.IsIMS() && !Region.IsTHMS() && !Version.Equal(Region.KMST, 330)) {
-                sp.Encode4(buff_mask[4]);
-            }
-        }
-        if (ServerConfig.JMS146orLater()) {
-            sp.Encode4(buff_mask[3]);
-            sp.Encode4(buff_mask[2]);
-        }
-        if (ServerConfig.JMS146orLater()) {
-            sp.Encode4(buff_mask[1]);
-            sp.Encode4(buff_mask[0]);
-        } else {
-            // JMS v131
-            sp.Encode4(buff_mask[0]);
-            sp.Encode4(buff_mask[1]);
+        for (int index = 0; index < buff_mask.length; index++) {
+            sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
         }
 
         sp.Encode1(0);

@@ -52,71 +52,62 @@ public class DataSecondaryStat {
         return data.get().getBytes();
     }
 
+    public static int getBuffSize() {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            return 48;
+        }
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+            return 36;
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+            return 32;
+        }
+        // post bb ex.
+        if (Version.Equal(Region.KMST, 330) || Region.check(Region.THMS) || Region.check(Region.IMS)) {
+            return 16;
+        }
+        // JMS187
+        if (Version.PostBB()) {
+            return 20;
+        }
+        // JMS147
+        if (ServerConfig.JMS146orLater()) {
+            return 16;
+        }
+        // JMS131, reverse order.
+        return 8;
+    }
+
     // SecondaryStat::DecodeForLocal
     public static byte[] EncodeForLocal(MapleStatEffect mse) {
         ServerPacket data = new ServerPacket();
-        int skill_id = mse.getSourceId();
-        int buff_time = mse.getDuration();
-        int[] buff_mask = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+        int[] buff_mask = new int[getBuffSize() / 4];
         // test
+        ServerPacket data_effect = new ServerPacket();
         ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
         for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
-            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
-        }
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
-            data.Encode4(buff_mask[11]);
-            data.Encode4(buff_mask[10]);
-            data.Encode4(buff_mask[9]);
-        }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89)) {
-            data.Encode4(buff_mask[8]);
-        }
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            data.Encode4(buff_mask[7]);
-            data.Encode4(buff_mask[6]);
-            data.Encode4(buff_mask[5]);
-        }
-        // JMS v187+
-        if (Version.PostBB()) {
-            if (!Region.IsIMS() && !Region.IsTHMS() && !Version.Equal(Region.KMST, 330)) {
-                data.Encode4(buff_mask[4]);
+            buff_mask[pss.getLeft().getNl()] |= pss.getLeft().getNr();
+
+            if (Version.GreaterOrEqual(Region.THMS, 96)) {
+                data_effect.Encode4(pss.getRight());
+            } else {
+                data_effect.Encode2(pss.getRight());
+            }
+
+            data_effect.Encode4(mse.isSkill() ? mse.getSourceId() : -mse.getSourceId());
+            if (ServerConfig.JMS146orLater()) {
+                data_effect.Encode4(mse.getDuration());
+            } else {
+                data_effect.Encode2(mse.getDuration());
             }
         }
-        if (ServerConfig.JMS146orLater()) {
-            data.Encode4(buff_mask[3]);
-            data.Encode4(buff_mask[2]);
+
+        for (int index = 0; index < buff_mask.length; index++) {
+            data.Encode4(buff_mask[buff_mask.length - 1 - index]);
         }
-        if (ServerConfig.JMS146orLater()) {
-            data.Encode4(buff_mask[1]); // シャープアイズ等
-            data.Encode4(buff_mask[0]); // ブースター等
-        } else {
-            // JMS v131
-            data.Encode4(buff_mask[0]);
-            data.Encode4(buff_mask[1]);
-        }
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 32; j++) {
-                if ((buff_mask[i] & (1 << j)) > 0) {
-                    int effect = 0;
-                    for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
-                        if (pss.getLeft().getN() == i && pss.getLeft().get() == j) {
-                            effect = pss.getRight();
-                        }
-                    }
-                    if (Region.IsTHMS() && Version.PostBB()) {
-                        data.Encode4(effect);
-                    } else {
-                        data.Encode2(effect);
-                    }
-                    data.Encode4(mse.isSkill() ? skill_id : -skill_id);
-                    if (ServerConfig.JMS146orLater()) {
-                        data.Encode4(buff_time);
-                    } else {
-                        data.Encode2(buff_time);
-                    }
-                }
-            }
-        }
+        data.EncodeBuffer(data_effect.get().getBytes());
+
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode2(0);
         }
@@ -131,6 +122,7 @@ public class DataSecondaryStat {
             data.Encode4(0);
             data.Encode4(0);
         }
+
         return data.get().getBytes();
     }
 }
