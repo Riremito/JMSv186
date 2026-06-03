@@ -26,7 +26,6 @@ import odin.client.MapleCharacter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
-import tacos.packet.response.ResCWvsContext;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.MapleStatEffect.CancelEffectAction;
@@ -126,7 +125,6 @@ public class MapleFamilyBuff {
         }
 
         public void applyTo(MapleCharacter chr) {
-            chr.getClient().getSession().write(ResCWvsContext.giveBuff(-getEffectId(), duration * 60000, effects, null));
             final MapleStatEffect eff = MapleItemInformationProvider.getInstance().getItemEffect(getEffectId());
             chr.cancelEffect(eff, true, -1, effects);
             final long starttime = System.currentTimeMillis();

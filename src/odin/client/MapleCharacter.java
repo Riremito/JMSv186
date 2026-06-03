@@ -1438,10 +1438,8 @@ public class MapleCharacter extends TacosCharacter {
             }
             List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, neworbcount));
             setBuffedValue(MapleBuffStat.COMBO, neworbcount);
-            int duration = ceffect.getDuration();
-            duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
 
-            client.getSession().write(ResCWvsContext.giveBuff(combo.getId(), duration, stat, ceffect));
+            SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
             map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
         }
     }
@@ -1470,7 +1468,7 @@ public class MapleCharacter extends TacosCharacter {
         int duration = ceffect.getDuration();
         duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
 
-        client.getSession().write(ResCWvsContext.giveBuff(combo.getId(), duration, stat, ceffect));
+        SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
         map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
     }
 

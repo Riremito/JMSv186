@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
@@ -188,6 +187,7 @@ public class ResCWvsContext {
     // CWvsContext::OnTemporaryStatSet
     public static MaplePacket TemporaryStatSet(MapleStatEffect effect) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
+
         sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
         sp.Encode2(0); // delay
         if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
@@ -286,11 +286,6 @@ public class ResCWvsContext {
 
         sp.Encode1(0); // unused.
         return sp.get();
-    }
-
-    // warpper
-    public static MaplePacket giveBuff(int buffid, int bufflength, List<OdinPair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
-        return TemporaryStatSet(effect);
     }
 
     // CWvsContext::OnGivePopularityResult

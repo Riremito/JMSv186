@@ -1254,11 +1254,10 @@ public class MapleStatEffect implements Serializable {
         }
     }
 
-    public final void applyComboBuff(final MapleCharacter applyto, int combo) {
-        final List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.ARAN_COMBO, (int) combo));
-        applyto.getClient().getSession().write(ResCWvsContext.giveBuff(sourceid, 99999, stat, this)); // Hackish timing, todo find out
+    public void applyComboBuff(MapleCharacter applyto, int combo) {
+        applyto.SendPacket(ResCWvsContext.TemporaryStatSet(this)); // Hackish timing, todo find out
 
-        final long starttime = System.currentTimeMillis();
+        long starttime = System.currentTimeMillis();
 //	final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
 //	final ScheduledFuture<?> schedule = TimerManager.getInstance().schedule(cancelAction, ((starttime + 99999) - System.currentTimeMillis()));
         applyto.registerEffect(this, starttime, null);
@@ -1328,8 +1327,6 @@ public class MapleStatEffect implements Serializable {
                 if (applyto.getBuffedValue(MapleBuffStat.WK_CHARGE) != null && applyto.getBuffSource(MapleBuffStat.WK_CHARGE) != sourceid) {
                     localstatups = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.LIGHTNING_CHARGE, 1));
                 }
-                applyto.getClient().getSession().write(ResCWvsContext.giveBuff(sourceid, localDuration, localstatups, this));
-                normal = false;
                 break;
             }
 
@@ -1365,20 +1362,14 @@ public class MapleStatEffect implements Serializable {
             }
             case 15111006: { // Spark
                 localstatups = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.SPARK, x));
-                applyto.getClient().getSession().write(ResCWvsContext.giveBuff(sourceid, localDuration, localstatups, this));
-                normal = false;
                 break;
             }
             case 4341002: { // Final Cut
                 localstatups = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.FINAL_CUT, y));
-                applyto.getClient().getSession().write(ResCWvsContext.giveBuff(sourceid, localDuration, localstatups, this));
-                normal = false;
                 break;
             }
             case 4331003: { // Owl Spirit
                 localstatups = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.OWL_SPIRIT, y));
-                applyto.getClient().getSession().write(ResCWvsContext.giveBuff(sourceid, localDuration, localstatups, this));
-                normal = false;
                 break;
             }
             case 4331002: { // Mirror Image
@@ -1393,8 +1384,6 @@ public class MapleStatEffect implements Serializable {
                 if (isSoaring()) {
                     localstatups = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.SOARING, 1));
                     applyto.getMap().broadcastMessage(applyto, ResCUserRemote.giveForeignBuff(applyto.getId(), localstatups, this), false);
-                    applyto.getClient().getSession().write(ResCWvsContext.giveBuff(sourceid, localDuration, localstatups, this));
-                    normal = false;
                     //} else if (berserk > 0) {
                     //    final List<Pair<MapleBuffStat, Integer>> stat = Collections.singletonList(new Pair<MapleBuffStat, Integer>(MapleBuffStat.PYRAMID_PQ, berserk));
                     //    applyto.getMap().broadcastMessage(applyto, MaplePacketCreator.giveForeignBuff(applyto.getId(), stat, this), false);
@@ -1408,8 +1397,8 @@ public class MapleStatEffect implements Serializable {
                 break;
         }
         // Broadcast effect to self
-        if (normal && statups.size() > 0) {
-            applyto.getClient().getSession().write(ResCWvsContext.giveBuff((skill ? sourceid : -sourceid), localDuration, statups, this));
+        if (normal && !statups.isEmpty()) {
+            applyto.SendPacket(ResCWvsContext.TemporaryStatSet(this));
         }
         final long starttime = System.currentTimeMillis();
         final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
