@@ -60,23 +60,21 @@ import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import tacos.packet.response.data.DataCUIUserInfo;
 import tacos.packet.response.data.DataCWvsContext;
-import tacos.packet.response.data.DataSecondaryStat;
 import tacos.packet.response.data.DataGW_CharacterStat;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import tacos.packet.response.struct.InvOp;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleStatEffect;
 import odin.server.maps.MapleDoor;
+import tacos.client.TacosBuff;
+import tacos.client.TacosBuff.Buff;
 import tacos.odin.OdinPair;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsParty;
-import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataForcedStat;
-import static tacos.packet.response.data.DataSecondaryStat.getBuffSize;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -187,10 +185,51 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnTemporaryStatSet
-    public static MaplePacket TemporaryStatSet(MapleStatEffect effect) {
+    public static MaplePacket TemporaryStatSet(TacosCharacter chr, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
-        sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
+        // SecondaryStat::DecodeForLocal
+        int[] buff_mask = TacosBuff.getBuffBuffer();
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
+        }
+        for (int index = 0; index < buff_mask.length; index++) {
+            sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
+        }
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            if (Version.GreaterOrEqual(Region.THMS, 96)) {
+                sp.Encode4(buff.buff_effect);
+            } else {
+                sp.Encode2(buff.buff_effect);
+            }
+            sp.Encode4(buff.buff_id);
+            if (ServerConfig.JMS146orLater()) {
+                sp.Encode4(buff.buff_time);
+            } else {
+                sp.Encode2(buff.buff_time);
+            }
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            sp.Encode2(0);
+        }
+        if (ServerConfig.JMS146orLater()) {
+            sp.Encode1(0); // nDefenseAtt
+            sp.Encode1(0); // nDefenseState
+            // CTS_SwallowBuff
+            // 1 byte : tSwallowBuffTime_
+            // CTS_Dice
+            // 4 bytes x 22
+            // CTS_BlessingArmor
+            // 4 bytes : nBlessingArmorIncPAD_
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148)) {
+            sp.Encode1(0);
+        }
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            sp.Encode4(0);
+            sp.Encode4(0);
+        }
+        // DecodeForLocal - end.
         sp.Encode2(0); // delay
         if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
@@ -206,15 +245,13 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnTemporaryStatReset
-    public static MaplePacket TemporaryStatReset(MapleStatEffect effect) {
+    public static MaplePacket TemporaryStatReset(TacosCharacter chr, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
 
-        int[] buff_mask = new int[getBuffSize() / 4];
-        ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = effect.getOss();
-        for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
-            buff_mask[pss.getLeft().getNl()] |= pss.getLeft().getNr();
+        int[] buff_mask = TacosBuff.getBuffBuffer();
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
         }
-
         for (int index = 0; index < buff_mask.length; index++) {
             sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
         }

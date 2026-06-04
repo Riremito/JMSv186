@@ -32,7 +32,6 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleCarnivalFactory.MCSkill;
@@ -1255,7 +1254,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     public void applyComboBuff(MapleCharacter applyto, int combo) {
-        applyto.SendPacket(ResCWvsContext.TemporaryStatSet(this)); // Hackish timing, todo find out
+        //applyto.SendPacket(ResCWvsContext.TemporaryStatSet(this)); // Hackish timing, todo find out
 
         long starttime = System.currentTimeMillis();
 //	final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);
@@ -1398,7 +1397,7 @@ public class MapleStatEffect implements Serializable {
         }
         // Broadcast effect to self
         if (normal && !statups.isEmpty()) {
-            applyto.SendPacket(ResCWvsContext.TemporaryStatSet(this));
+            //applyto.SendPacket(ResCWvsContext.TemporaryStatSet(this));
         }
         final long starttime = System.currentTimeMillis();
         final CancelEffectAction cancelAction = new CancelEffectAction(applyto, this, starttime);

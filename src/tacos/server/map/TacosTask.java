@@ -26,9 +26,11 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
+import tacos.client.TacosBuff;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.LeaveType;
 import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.wz.WzXML;
 
@@ -96,6 +98,11 @@ public class TacosTask {
                 chr.SendPacket(ResCUserLocal.SkillCooltimeSet(skill_id, 0));
             }
         }
+        // buff.
+        for (TacosBuff.Buff buff : chr.getBuff().getCTSTimeout(time)) {
+            chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff.buff_id));
+        }
+        chr.getBuff().removeTimeout(time);
 
         // debuff.
         for (MapleDiseaseValueHolder dvh : chr.getAllDiseases()) {

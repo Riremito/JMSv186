@@ -51,7 +51,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import tacos.config.DeveloperMode;
 import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
@@ -1439,7 +1438,7 @@ public class MapleCharacter extends TacosCharacter {
             List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, neworbcount));
             setBuffedValue(MapleBuffStat.COMBO, neworbcount);
 
-            SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
+            //SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
             map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
         }
     }
@@ -1468,7 +1467,7 @@ public class MapleCharacter extends TacosCharacter {
         int duration = ceffect.getDuration();
         duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
 
-        SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
+        //SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
         map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
     }
 
@@ -4465,7 +4464,8 @@ public class MapleCharacter extends TacosCharacter {
             return false;
         }
 
-        if (!MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId()).applyTo(this)) {
+        MapleStatEffect effect = MapleItemInformationProvider.getInstance().getItemEffect(toUse.getItemId());
+        if (!effect.applyTo(this)) {
             updateInv();
             return false;
         }
@@ -4575,32 +4575,5 @@ public class MapleCharacter extends TacosCharacter {
         }
 
         return true;
-    }
-
-    // cool down
-    private Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>();
-
-    public List<MapleCoolDownValueHolder> getCooldowns() {
-        return new ArrayList<>(coolDowns.values());
-    }
-
-    public void addCooldown(int skill_id, int time) {
-        int cool_time = time;
-        if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
-            cool_time = Math.min(time, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
-        }
-        long start_time = System.currentTimeMillis();
-        long end_time = start_time + (cool_time * 1000);
-        coolDowns.put(skill_id, new MapleCoolDownValueHolder(skill_id, start_time, end_time));
-    }
-
-    public void removeCooldown(int skill_id) {
-        if (coolDowns.containsKey(skill_id)) {
-            coolDowns.remove(skill_id);
-        }
-    }
-
-    public boolean skillisCooling(int skill_id) {
-        return coolDowns.containsKey(skill_id);
     }
 }

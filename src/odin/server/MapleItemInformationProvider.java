@@ -891,7 +891,7 @@ public class MapleItemInformationProvider {
     public MapleStatEffect getItemEffect(int itemId) {
         MapleStatEffect ret = itemEffects.get(itemId);
         if (ret == null) {
-            final IMapleData item = getItemData(itemId);
+            IMapleData item = getItemData(itemId);
             if (item == null) {
                 return null;
             }

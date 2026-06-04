@@ -296,9 +296,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserStatChangeItemCancelRequest: {
-                int item_id = cp.Decode4();
-
-                chr.cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(-item_id), false, -1);
+                OnUserStatChangeItemCancelRequest(chr, cp);
                 return true;
             }
             case CP_UserMobSummonItemUseRequest: {
@@ -2129,29 +2127,14 @@ public class ReqCUser {
         int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int nSkillID = cp.Decode4();
         byte nSLV = cp.Decode1();
+
+        chr.SendPacket(ResCWvsContext.SkillUseResult());
+        if (chr.getBuff().update(nSkillID)) {
+            chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, nSkillID));
+            return true;
+        }
+
         OpsSkill ops_skill = OpsSkill.find(nSkillID);
-
-        chr.SendPacket(ResCWvsContext.SkillUseResult()); // unlock.
-
-        ISkill skill = SkillFactory.getSkill(nSkillID);
-        if (skill == null) {
-            return false;
-        }
-        MapleStatEffect effect = skill.getEffect(chr.getSkillLevel(GameConstants.getLinkedAranSkill(nSkillID)));
-        if (effect == null) {
-            return false;
-        }
-        if (0 < effect.getCooldown()) {
-            if (chr.skillisCooling(nSkillID)) {
-                chr.sendStatChanged(true);
-                return true;
-            }
-            if (ops_skill != OpsSkill.CAPTAIN_BATTLESHIP) {
-                chr.SendPacket(ResCUserLocal.SkillCooltimeSet(nSkillID, effect.getCooldown()));
-                chr.addCooldown(nSkillID, effect.getCooldown());
-            }
-        }
-
         switch (ops_skill) {
             case HERO_MONSTER_MAGNET:
             case DARKKNIGHT_MONSTER_MAGNET: {
@@ -2184,34 +2167,12 @@ public class ReqCUser {
                 //map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(chr.getId(), nSkillID, 1, slea.readByte()), chr.getPosition());
                 return true;
             }
-            case PRIEST_MYSTIC_DOOR:
-            case NOVICE_MYSTIC_DOOR:
-            case NOBLESSE_MYSTIC_DOOR:
-            case LEGEND_MYSTIC_DOOR:
-            case EVANJR_MYSTIC_DOOR:
-            case CITIZEN_MYSTIC_DOOR: {
-                if (FieldOpt.FIELDOPT_MYSTICDOORLIMIT.check(map.getFieldLimit())) {
-                    return false;
-                }
-                if (effect.isMagicDoor()) {
-                    return false;
-                }
-                effect.applyTo(chr, chr.getPosition());
-                return true;
-            }
-            case NOVICE_MONSTER_RIDING:
-            case NOBLESSE_MONSTER_RIDING:
-            case LEGEND_MONSTER_RIDING:
-            case EVANJR_MONSTER_RIDING:
-            case CITIZEN_MONSTER_RIDING: {
-                break;
-            }
             default: {
-                effect.applyTo(chr, chr.getPosition());
                 break;
             }
         }
 
+        chr.sendStatChanged(true);
         DebugLogger.ErrorLog("OnUserSkillUseRequest : not coded, " + nSkillID + ", " + ops_skill);
         return false;
     }
@@ -2219,37 +2180,14 @@ public class ReqCUser {
     // CancelBuffHandler
     public static boolean OnUserSkillCancelRequest(MapleCharacter chr, ClientPacket cp) {
         MapleMap map = chr.getMap();
-        int skill_id = cp.Decode4();
+        int buff_id = cp.Decode4();
 
-        MapleStatEffect effect = null;
-        if (skill_id < 0) {
-            int item_id = skill_id;
-            effect = MapleItemInformationProvider.getInstance().getItemEffect(item_id);
-            if (effect == null) {
-                DebugLogger.ErrorLog("OnUserSkillCancelRequest : " + item_id);
-                return false;
-            }
-        } else {
-            ISkill skill = SkillFactory.getSkill(skill_id);
-            if (skill == null) {
-                return false;
-            }
-
-            if (skill.isChargeSkill()) {
-                chr.setKeyDownSkill_Time(0);
-            } else {
-                chr.cancelEffect(skill.getEffect(1), false, -1);
-            }
-
-            effect = skill.getEffect(chr.getSkillLevel(GameConstants.getLinkedAranSkill(skill_id)));
-            if (effect == null) {
-                DebugLogger.ErrorLog("OnUserSkillCancelRequest : " + skill_id);
-                return false;
-            }
+        chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
+        if (!chr.getBuff().remove(buff_id)) {
+            return false;
         }
 
-        chr.SendPacket(ResCWvsContext.TemporaryStatReset(effect));
-        map.broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, skill_id), false);
+        map.broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, buff_id), false);
         return true;
     }
 
@@ -2534,7 +2472,23 @@ public class ReqCUser {
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
 
-        chr.useItem(item_slot, item_id);
+        if (chr.useItem(item_slot, item_id)) {
+            if (chr.getBuff().update(-item_id)) {
+                chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, -item_id));
+                return true;
+            }
+        }
+        return true;
+    }
+
+    public static boolean OnUserStatChangeItemCancelRequest(MapleCharacter chr, ClientPacket cp) {
+        int buff_id = cp.Decode4(); // negative item id.
+
+        chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
+        if (!chr.getBuff().remove(buff_id)) {
+            return false;
+        }
+
         return true;
     }
 
