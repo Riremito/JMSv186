@@ -495,5 +495,150 @@ public enum OpsSecondaryStat implements IPacketOps {
             // 119 last.
             return;
         }
+        // UINT128
+        if (Version.GreaterOrEqual(Region.JMS, 164)) {
+            clear();
+            CTS_PAD.set(0);
+            CTS_PDD.set(1);
+            CTS_MAD.set(2);
+            CTS_MDD.set(3);
+            CTS_ACC.set(4);
+            CTS_EVA.set(5);
+            CTS_Craft.set(6);
+            CTS_Speed.set(7);
+            CTS_Jump.set(8);
+            CTS_MagicGuard.set(9);
+            CTS_DarkSight.set(10);
+            CTS_Booster.set(11);
+            CTS_PowerGuard.set(12);
+            CTS_MaxHP.set(13);
+            CTS_MaxMP.set(14);
+            CTS_Invincible.set(15);
+            CTS_SoulArrow.set(16);
+            CTS_Stun.set(17);
+            CTS_Poison.set(18);
+            CTS_Seal.set(19);
+            CTS_Darkness.set(20);
+            CTS_ComboCounter.set(21);
+            CTS_WeaponCharge.set(22);
+            CTS_DragonBlood.set(23);
+            CTS_HolySymbol.set(24);
+            CTS_MesoUp.set(25);
+            CTS_ShadowPartner.set(26);
+            CTS_PickPocket.set(27);
+            CTS_MesoGuard.set(28);
+            CTS_Thaw.set(29);
+            CTS_Weakness.set(30);
+            CTS_Curse.set(31);
+            CTS_Slow.set(32);
+            CTS_Morph.set(33);
+            CTS_Regen.set(34);
+            CTS_BasicStatUp.set(35);
+            CTS_Stance.set(36);
+            CTS_SharpEyes.set(37);
+            CTS_ManaReflection.set(38);
+            CTS_Attract.set(39);
+            CTS_SpiritJavelin.set(40);
+            CTS_Infinity.set(41);
+            CTS_Holyshield.set(42);
+            CTS_HamString.set(43);
+            CTS_Blind.set(44);
+            CTS_Concentration.set(45);
+            CTS_BanMap.set(46);
+            CTS_MaxLevelBuff.set(47);
+            CTS_MesoUpByItem.set(48);
+            CTS_Ghost.set(49);
+            CTS_Barrier.set(50);
+            CTS_ReverseInput.set(51); // OK
+            //
+            CTS_DojangBerserk.set(57);
+            CTS_DojangInvincible.set(58);
+            CTS_Spark.set(59);
+            CTS_DojangShield.set(60);
+            CTS_SoulMasterFinal.set(61);
+            CTS_WindBreakerFinal.set(62);
+            CTS_ElementalReset.set(63);
+            CTS_WindWalk.set(64); // OK
+            // 65
+            // 66
+            CTS_EnergyCharged.set(67); // OK
+            CTS_Dash_Speed.set(68);
+            CTS_Dash_Jump.set(69);
+            CTS_RideVehicle.set(70);
+            CTS_PartyBooster.set(71);
+            CTS_GuidedBullet.set(72);
+            // 73
+            return;
+        }
+        // UINT128
+        if (Version.GreaterOrEqual(Region.JMS, 147)) {
+            clear();
+            CTS_PAD.set(0);
+            CTS_PDD.set(1);
+            CTS_MAD.set(2);
+            CTS_MDD.set(3);
+            CTS_ACC.set(4);
+            CTS_EVA.set(5);
+            CTS_Craft.set(6);
+            CTS_Speed.set(7);
+            CTS_Jump.set(8);
+            CTS_MagicGuard.set(9);
+            CTS_DarkSight.set(10);
+            CTS_Booster.set(11);
+            CTS_PowerGuard.set(12);
+            CTS_MaxHP.set(13);
+            CTS_MaxMP.set(14);
+            CTS_Invincible.set(15);
+            CTS_SoulArrow.set(16);
+            CTS_Stun.set(17);
+            CTS_Poison.set(18);
+            CTS_Seal.set(19);
+            CTS_Darkness.set(20);
+            CTS_ComboCounter.set(21);
+            CTS_WeaponCharge.set(22);
+            CTS_DragonBlood.set(23);
+            CTS_HolySymbol.set(24);
+            CTS_MesoUp.set(25);
+            CTS_ShadowPartner.set(26);
+            CTS_PickPocket.set(27);
+            CTS_MesoGuard.set(28);
+            CTS_Thaw.set(29);
+            CTS_Weakness.set(30);
+            CTS_Curse.set(31);
+            CTS_Slow.set(32);
+            CTS_Morph.set(33);
+            CTS_Regen.set(34);
+            CTS_BasicStatUp.set(35);
+            CTS_Stance.set(36);
+            CTS_SharpEyes.set(37);
+            CTS_ManaReflection.set(38);
+            CTS_Attract.set(39);
+            CTS_SpiritJavelin.set(40);
+            CTS_Infinity.set(41);
+            CTS_Holyshield.set(42);
+            CTS_HamString.set(43);
+            CTS_Blind.set(44);
+            CTS_Concentration.set(45);
+            CTS_BanMap.set(46);
+            CTS_MaxLevelBuff.set(47);
+            CTS_MesoUpByItem.set(48);
+            CTS_Ghost.set(49);
+            CTS_Barrier.set(50);
+            CTS_ReverseInput.set(51); // OK
+            // 52
+            // 53
+            // 54
+            // 55
+            // 56
+            // 57
+            // 58
+            CTS_EnergyCharged.set(59);
+            CTS_Dash_Speed.set(60);
+            CTS_Dash_Jump.set(61);
+            CTS_RideVehicle.set(62);
+            CTS_PartyBooster.set(63);
+            CTS_GuidedBullet.set(64);
+            return;
+        }
     }
 }
