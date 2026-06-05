@@ -32,7 +32,6 @@ import tacos.wz.ids.DWI_Random;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import odin.client.MapleDisease;
 import odin.client.inventory.Item;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCNpcPool;
@@ -52,6 +51,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
 import tacos.database.query.DQ_Accounts;
 import odin.provider.IMapleData;
+import odin.server.life.MobSkill;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
@@ -588,7 +588,7 @@ public class DebugCommand {
                 return true;
             }
             // mob skill.
-            case "/mobskill":
+            case "/ms":
             case "/disease": {
                 if (!dcmd.check(1)) {
                     return true;
@@ -596,17 +596,25 @@ public class DebugCommand {
 
                 int mob_skill_id = dcmd.getInt(1);
                 int mob_skill_level = 1;
-                if (OpsMobSkill.find(mob_skill_id) == OpsMobSkill.UNKNOWN) {
+                OpsMobSkill oms = OpsMobSkill.find(mob_skill_id);
+                if (oms == OpsMobSkill.UNKNOWN) {
                     chr.DebugMsg("mobdkill : invalid or not supported id.");
                     return true;
                 }
-                MapleDisease dis = MapleDisease.getBySkill(mob_skill_id);
-                if (dis == null) {
-                    chr.DebugMsg("mobdkill : not found.");
+                MobSkill ms = WzXML.SKILL.getMobSkillData(mob_skill_id, mob_skill_level);
+                if (ms == null) {
+                    chr.DebugMsg("MobSkill : not found.");
                     return true;
                 }
 
-                chr.giveDebuff(dis, WzXML.SKILL.getMobSkillData(mob_skill_id, mob_skill_level));
+                int cts = oms.getDisease().get();
+                int buff_id = mob_skill_id | (mob_skill_level << 16);
+                int buff_effect = Math.max(ms.getX(), 1);
+                int buff_time = dcmd.check(2) ? dcmd.getInt(2) : 5000;
+                if (chr.getBuff().updateTest(cts, buff_id, buff_effect, buff_time)) {
+                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
+                }
+
                 chr.DebugMsg("mobdkill : " + mob_skill_id);
                 return true;
             }

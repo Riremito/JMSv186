@@ -36,24 +36,24 @@ public enum OpsMobSkill implements IPacketOps {
     MOBSKILL_MGUARDUP_M(113),
     MOBSKILL_HEAL_M(114),
     MOBSKILL_HASTE_M(115),
-    MOBSKILL_SEAL(120),
-    MOBSKILL_DARKNESS(121),
-    MOBSKILL_WEAKNESS(122),
-    MOBSKILL_STUN(123),
-    MOBSKILL_CURSE(124),
-    MOBSKILL_POISON(125),
-    MOBSKILL_SLOW(126),
+    MOBSKILL_SEAL(120, OpsSecondaryStat.CTS_Seal),
+    MOBSKILL_DARKNESS(121, OpsSecondaryStat.CTS_Darkness),
+    MOBSKILL_WEAKNESS(122, OpsSecondaryStat.CTS_Weakness),
+    MOBSKILL_STUN(123, OpsSecondaryStat.CTS_Stun),
+    MOBSKILL_CURSE(124, OpsSecondaryStat.CTS_Curse),
+    MOBSKILL_POISON(125, OpsSecondaryStat.CTS_Poison),
+    MOBSKILL_SLOW(126, OpsSecondaryStat.CTS_Slow),
     MOBSKILL_DISPEL(127),
-    MOBSKILL_ATTRACT(128),
-    MOBSKILL_BANMAP(129),
+    MOBSKILL_ATTRACT(128, OpsSecondaryStat.CTS_Attract),
+    MOBSKILL_BANMAP(129, OpsSecondaryStat.CTS_BanMap),
     MOBSKILL_AREA_FIRE(130),
     MOBSKILL_AREA_POISON(131),
-    MOBSKILL_REVERSE_INPUT(132),
-    MOBSKILL_UNDEAD(133),
-    MOBSKILL_STOPPORTION(134),
-    MOBSKILL_STOPMOTION(135),
-    MOBSKILL_FEAR(136),
-    MOBSKILL_FROZEN(137),
+    MOBSKILL_REVERSE_INPUT(132, OpsSecondaryStat.CTS_ReverseInput),
+    MOBSKILL_UNDEAD(133, OpsSecondaryStat.CTS_Undead),
+    MOBSKILL_STOPPORTION(134, OpsSecondaryStat.CTS_StopPortion),
+    MOBSKILL_STOPMOTION(135, OpsSecondaryStat.CTS_StopMotion),
+    MOBSKILL_FEAR(136, OpsSecondaryStat.CTS_Fear),
+    MOBSKILL_FROZEN(137, OpsSecondaryStat.CTS_Frozen),
     MOBSKILL_PHYSICALIMMUNE(140),
     MOBSKILL_MAGICIMMUNE(141),
     MOBSKILL_HARDSKIN(142),
@@ -77,18 +77,30 @@ public enum OpsMobSkill implements IPacketOps {
     UNKNOWN;
 
     private int value;
+    private OpsSecondaryStat disease;
 
     OpsMobSkill(int val) {
         this.value = val;
+        this.disease = OpsSecondaryStat.UNKNOWN;
+    }
+
+    OpsMobSkill(int val, OpsSecondaryStat disease) {
+        this.value = val;
+        this.disease = disease;
     }
 
     OpsMobSkill() {
         this.value = -1;
+        this.disease = OpsSecondaryStat.UNKNOWN;
     }
 
     @Override
     public int get() {
         return this.value;
+    }
+
+    public OpsSecondaryStat getDisease() {
+        return this.disease;
     }
 
     @Override
