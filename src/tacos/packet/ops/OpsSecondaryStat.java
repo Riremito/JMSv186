@@ -151,7 +151,7 @@ public enum OpsSecondaryStat implements IPacketOps {
     CTS_EnergyCharged(122, TwoStateType.EXPIRE_LAST),
     CTS_Dash_Speed(123, TwoStateType.EXPIRE_LAST),
     CTS_Dash_Jump(124, TwoStateType.EXPIRE_LAST),
-    CTS_RideVehicle(125, TwoStateType.NO_EXPIRE),
+    CTS_RideVehicle(125, TwoStateType.RIDING),
     CTS_PartyBooster(126, TwoStateType.EXPIRE_CURRENT),
     CTS_GuidedBullet(127, TwoStateType.GUIDED_BULLET),
     CTS_Undead(128, TwoStateType.EXPIRE_LAST),
@@ -184,6 +184,7 @@ public enum OpsSecondaryStat implements IPacketOps {
 
     public static enum TwoStateType {
         NOT_TWO_STATE,
+        RIDING,
         NO_EXPIRE,
         EXPIRE_CURRENT,
         EXPIRE_LAST,

@@ -254,29 +254,52 @@ public class ResCWvsContext {
                 continue;
             }
             // TemporaryStatBase<long>::DecodeForClient
-            sp.Encode4(buff.buff_effect); // m_value
-            sp.Encode4(buff.buff_effect_2); // m_reason
-            sp.Encode1(0); // DecodeTime
-            sp.Encode4(0); // DecodeTime
             switch (buff.ops.getTwoState()) {
+                case RIDING: {
+                    sp.Encode4(chr.getMount() != null ? chr.getMount().getItemId() : 0); // m_value
+                    sp.Encode4(1); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
+                    break;
+                }
                 case NO_EXPIRE: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
                     break;
                 }
                 case EXPIRE_LAST: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
                     sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
                     break;
                 }
                 case EXPIRE_CURRENT: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
                     sp.Encode1(0); // DecodeTime
                     sp.Encode4(0); // DecodeTime -> m_tCurrentTime
                     sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
                     break;
                 }
                 case GUIDED_BULLET: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
                     sp.Encode4(0); // m_dwMobID
                     break;
                 }
                 default: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
                     break;
                 }
             }
