@@ -853,10 +853,10 @@ public class MapleStatEffect implements Serializable {
             }
         }
         if (ret.isMonsterRiding()) {
-            statups.add(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.MONSTER_RIDING, 1));
+            statups.add(new OdinPair<>(MapleBuffStat.MONSTER_RIDING, 1));
         }
         if (ret.isMorph() || ret.isPirateMorph()) {
-            statups.add(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.MORPH, ret.getMorph()));
+            statups.add(new OdinPair<>(MapleBuffStat.MORPH, ret.getMorph()));
         }
         ret.monsterStatus = monsterStatus;
         statups.trimToSize();

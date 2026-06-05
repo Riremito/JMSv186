@@ -73,6 +73,7 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsParty;
+import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataForcedStat;
 import tacos.server.map.TacosPortal;
@@ -188,15 +189,30 @@ public class ResCWvsContext {
     public static MaplePacket TemporaryStatSet(TacosCharacter chr, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
 
+        boolean is_swallow_buff = false;
+        boolean is_dice = false;
+        boolean is_blessing_armor = false;
         // SecondaryStat::DecodeForLocal
         int[] buff_mask = TacosBuff.getBuffBuffer();
         for (Buff buff : chr.getBuff().getCTS(buff_id)) {
             buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
+            if (buff.ops == OpsSecondaryStat.CTS_Dice) {
+                is_dice = true;
+            }
+            if (buff.ops == OpsSecondaryStat.CTS_BlessingArmor) {
+                is_blessing_armor = true;
+            }
+            if (buff.ops == OpsSecondaryStat.CTS_SwallowAttackDamage || buff.ops == OpsSecondaryStat.CTS_SwallowDefence || buff.ops == OpsSecondaryStat.CTS_SwallowCritical || buff.ops == OpsSecondaryStat.CTS_SwallowMaxMP || buff.ops == OpsSecondaryStat.CTS_SwallowEvasion) {
+                is_swallow_buff = true;
+            }
         }
         for (int index = 0; index < buff_mask.length; index++) {
             sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
         }
         for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            if (buff.ops.isTwoState()) {
+                continue;
+            }
             if (Version.GreaterOrEqual(Region.THMS, 96)) {
                 sp.Encode4(buff.buff_effect);
             } else {
@@ -215,12 +231,55 @@ public class ResCWvsContext {
         if (ServerConfig.JMS146orLater()) {
             sp.Encode1(0); // nDefenseAtt
             sp.Encode1(0); // nDefenseState
+        }
+        // JMS187, GMS95
+        if (Version.PostBB()) {
             // CTS_SwallowBuff
-            // 1 byte : tSwallowBuffTime_
+            if (is_swallow_buff) {
+                sp.Encode1(0);
+            }
             // CTS_Dice
-            // 4 bytes x 22
+            if (is_dice) {
+                for (int i = 0; i < 22; i++) {
+                    sp.Encode4(0);
+                }
+            }
             // CTS_BlessingArmor
-            // 4 bytes : nBlessingArmorIncPAD_
+            if (is_blessing_armor) {
+                sp.Encode4(0);
+            }
+        }
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            if (!buff.ops.isTwoState()) {
+                continue;
+            }
+            // TemporaryStatBase<long>::DecodeForClient
+            sp.Encode4(buff.buff_effect); // m_value
+            sp.Encode4(buff.buff_effect_2); // m_reason
+            sp.Encode1(0); // DecodeTime
+            sp.Encode4(0); // DecodeTime
+            switch (buff.ops.getTwoState()) {
+                case NO_EXPIRE: {
+                    break;
+                }
+                case EXPIRE_LAST: {
+                    sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
+                    break;
+                }
+                case EXPIRE_CURRENT: {
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime -> m_tCurrentTime
+                    sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
+                    break;
+                }
+                case GUIDED_BULLET: {
+                    sp.Encode4(0); // m_dwMobID
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
         }
         if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148)) {
             sp.Encode1(0);

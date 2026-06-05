@@ -57,7 +57,7 @@ public class TacosBuff {
             return new int[8]; // 32
         }
         // post bb ex.
-        if (Version.Equal(Region.KMST, 330) || Region.check(Region.THMS) || Region.check(Region.IMS)) {
+        if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.GMS, 95) || Region.check(Region.THMS) || Region.check(Region.IMS)) {
             return new int[4]; // 16
         }
         // JMS187
@@ -76,6 +76,7 @@ public class TacosBuff {
 
         public OpsSecondaryStat ops;
         public int buff_effect;
+        public int buff_effect_2;
         public int buff_id; // skill id,  negative value is item id.
         public int buff_time;
         public long server_time;
@@ -177,6 +178,26 @@ public class TacosBuff {
             return true;
         }
 
+        return false;
+    }
+
+    public boolean updateTest(int index, int buff_id, int buff_effect, int buff_time) {
+        return updateTest(index, buff_id, buff_effect, buff_time, 0);
+    }
+
+    public boolean updateTest(int index, int buff_id, int buff_effect, int buff_time, int buff_effect_2) {
+        long time = System.currentTimeMillis();
+        OpsSecondaryStat ops = OpsSecondaryStat.find(index);
+        for (Buff buff : buffs) {
+            if (buff.ops == ops) {
+                buff.buff_effect = buff_effect;
+                buff.buff_effect_2 = buff_effect_2;
+                buff.buff_id = buff_id;
+                buff.buff_time = buff_time;
+                buff.server_time = time;
+                return true;
+            }
+        }
         return false;
     }
 

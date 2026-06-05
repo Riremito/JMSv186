@@ -57,6 +57,7 @@ import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobSkill;
+import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
@@ -607,6 +608,53 @@ public class DebugCommand {
 
                 chr.giveDebuff(dis, WzXML.SKILL.getMobSkillData(mob_skill_id, mob_skill_level));
                 chr.DebugMsg("mobdkill : " + mob_skill_id);
+                return true;
+            }
+            case "/mt": {
+                if (!dcmd.check(1)) {
+                    return true;
+                }
+                int cts = dcmd.getInt(1);
+                int buff_id = -4000000;
+                int buff_effect = dcmd.check(2) ? dcmd.getInt(2) : 1;
+                int buff_time = dcmd.check(3) ? dcmd.getInt(3) : 5000;
+                if (chr.getBuff().updateTest(dcmd.getInt(1), buff_id, buff_effect, buff_time)) {
+                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
+                }
+                chr.DebugMsg("mt : " + OpsSecondaryStat.find(cts) + "(" + cts + "), buff_effect = " + buff_effect + ", buff_time =" + buff_time);
+                return true;
+            }
+            case "/mt2": {
+                if (!dcmd.check(3)) {
+                    return true;
+                }
+
+                int cts = dcmd.getInt(1);
+                if (!OpsSecondaryStat.find(cts).isTwoState()) {
+                    chr.DebugMsg("mt2 : not a two state buff.");
+                    return false;
+                }
+
+                int buff_id = -4000000;
+                int buff_effect = dcmd.getInt(2);
+                int buff_effect_2 = dcmd.getInt(3);
+                int buff_time = dcmd.check(4) ? dcmd.getInt(4) : 5000;
+
+                if (chr.getBuff().updateTest(dcmd.getInt(1), buff_id, buff_effect, buff_time, buff_effect_2)) {
+                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
+                }
+                chr.DebugMsg("mt : " + OpsSecondaryStat.find(cts) + "(" + cts + "), buff_effect = " + buff_effect + ", " + buff_effect_2);
+                return true;
+            }
+            case "/ride": {
+                int buff_id = -4000000;
+                int buff_effect = 1902000;
+                int buff_effect_2 = 1004;
+                int buff_time = dcmd.check(2) ? dcmd.getInt(2) : 5000;
+
+                if (chr.getBuff().updateTest(OpsSecondaryStat.CTS_RideVehicle.get(), buff_id, buff_effect, buff_time, buff_effect_2)) {
+                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
+                }
                 return true;
             }
             // ステータス関連
