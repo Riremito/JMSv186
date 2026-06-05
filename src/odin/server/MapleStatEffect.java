@@ -219,6 +219,26 @@ public class MapleStatEffect implements Serializable {
                 oss.add(new OdinPair<>(OpsSecondaryStat.CTS_SpiritJavelin, 0));
                 return true;
             }
+            case BMAGE_AURA_DARK: {
+                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_DarkAura, x));
+                return true;
+            }
+            case BMAGE_AURA_BLUE: {
+                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_BlueAura, x));
+                return true;
+            }
+            case BMAGE_AURA_YELLOW: {
+                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_YellowAura, x));
+                return true;
+            }
+            case BMAGE_CYCLONE: {
+                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Cyclone, x));
+                return true;
+            }
+            case NOVICE_MONSTER_RIDING: {
+                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_RideVehicle, 1));
+                return true;
+            }
             default: {
                 break;
             }
@@ -807,24 +827,24 @@ public class MapleStatEffect implements Serializable {
                 case 32001003: //dark aura
                 case 32120000:
                     ret.duration = 60 * 120 * 1000; //because it seems to dispel asap.
-                    statups.add(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.DARK_AURA, ret.x));
+                    statups.add(new OdinPair<>(MapleBuffStat.DARK_AURA, ret.x));
                     break;
                 case 32101002: //blue aura
                 case 32110000:
                     ret.duration = 60 * 120 * 1000; //because it seems to dispel asap.
-                    statups.add(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.BLUE_AURA, ret.x));
+                    statups.add(new OdinPair<>(MapleBuffStat.BLUE_AURA, ret.x));
                     break;
                 case 32101003: //yellow aura
                 case 32120001:
                     ret.duration = 60 * 120 * 1000; //because it seems to dispel asap.
-                    statups.add(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.YELLOW_AURA, ret.x));
+                    statups.add(new OdinPair<>(MapleBuffStat.YELLOW_AURA, ret.x));
                     break;
                 case 33101004: //it's raining mines
-                    statups.add(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.RAINING_MINES, ret.x)); //x?
+                    statups.add(new OdinPair<>(MapleBuffStat.RAINING_MINES, ret.x)); //x?
                     break;
                 case 35101007: //perfect armor
                     ret.duration = 60 * 120 * 1000;
-                    statups.add(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.PERFECT_ARMOR, ret.x));
+                    statups.add(new OdinPair<>(MapleBuffStat.PERFECT_ARMOR, ret.x));
                     break;
                 case 35121006: //satellite safety
                     ret.duration = 60 * 120 * 1000;

@@ -148,7 +148,7 @@ public enum OpsSecondaryStat implements IPacketOps {
     CTS_TeleportMasteryOn(119),
     CTS_CombatOrders(120),
     CTS_Beholder(121),
-    CTS_EnergyCharged(122, TwoStateType.NO_EXPIRE),
+    CTS_EnergyCharged(122, TwoStateType.EXPIRE_LAST),
     CTS_Dash_Speed(123, TwoStateType.EXPIRE_LAST),
     CTS_Dash_Jump(124, TwoStateType.EXPIRE_LAST),
     CTS_RideVehicle(125, TwoStateType.NO_EXPIRE),
@@ -354,11 +354,11 @@ public enum OpsSecondaryStat implements IPacketOps {
             CTS_TeleportMasteryOn.set(117);
             CTS_CombatOrders.set(118);
             CTS_Beholder.set(119);
-            CTS_EnergyCharged.set(120);
+            // 120
             // 121
             // 122
-            // 123
-            CTS_Dash_Speed.set(124); // +1
+            CTS_EnergyCharged.set(123);
+            CTS_Dash_Speed.set(124);
             CTS_Dash_Jump.set(125);
             CTS_RideVehicle.set(126);
             CTS_PartyBooster.set(127);
@@ -366,6 +366,7 @@ public enum OpsSecondaryStat implements IPacketOps {
             // 129 = battle mage aura.
             return;
         }
+        // UINT128
         if (Version.GreaterOrEqual(Region.JMS, 186)) {
             clear();
             CTS_PAD.set(0);
@@ -378,7 +379,7 @@ public enum OpsSecondaryStat implements IPacketOps {
             CTS_Speed.set(7);
             CTS_Jump.set(8);
             CTS_MagicGuard.set(9);
-            CTS_DarkSight.set(10); // OK
+            CTS_DarkSight.set(10);
             CTS_Booster.set(11);
             CTS_PowerGuard.set(12);
             CTS_MaxHP.set(13);
@@ -394,20 +395,20 @@ public enum OpsSecondaryStat implements IPacketOps {
             CTS_DragonBlood.set(23);
             CTS_HolySymbol.set(24);
             CTS_MesoUp.set(25);
-            CTS_ShadowPartner.set(26); // OK
+            CTS_ShadowPartner.set(26);
             CTS_PickPocket.set(27);
             CTS_MesoGuard.set(28);
             CTS_Thaw.set(29);
-            CTS_Weakness.set(30); // OK
+            CTS_Weakness.set(30);
             CTS_Curse.set(31);
             CTS_Slow.set(32);
             CTS_Morph.set(33);
             CTS_Regen.set(34);
-            CTS_BasicStatUp.set(35); // OK
+            CTS_BasicStatUp.set(35);
             CTS_Stance.set(36);
             CTS_SharpEyes.set(37);
             CTS_ManaReflection.set(38);
-            CTS_Attract.set(39); // OK
+            CTS_Attract.set(39);
             CTS_SpiritJavelin.set(40);
             CTS_Infinity.set(41);
             CTS_Holyshield.set(42);
@@ -416,68 +417,81 @@ public enum OpsSecondaryStat implements IPacketOps {
             CTS_Concentration.set(45);
             CTS_BanMap.set(46);
             CTS_MaxLevelBuff.set(47);
-            CTS_Barrier.set(48);
+            CTS_MesoUpByItem.set(48);
             CTS_Ghost.set(49);
-            CTS_DojangShield.set(50); // OK
+            CTS_Barrier.set(50);
             CTS_ReverseInput.set(51); // OK
-            //CTS_MesoUpByItem.set();
-            //CTS_ItemUpByItem.set();
-            //CTS_RespectPImmune.set();
-            //CTS_RespectMImmune.set();
-            //CTS_DefenseAtt.set();
-            //CTS_DefenseState.set();
-            CTS_DojangBerserk.set(57);
-            CTS_DojangInvincible.set(58); // OK
-            //CTS_Spark.set();
-            //CTS_SoulMasterFinal.set();
-            //CTS_WindBreakerFinal.set();
-            //CTS_ElementalReset.set();
-            CTS_WindWalk.set(64); // OK
-            //CTS_EventRate.set();
-            CTS_ComboAbilityBuff.set(65);
-            CTS_ComboDrain.set(66);
-            CTS_ComboBarrier.set(67);
-            CTS_BodyPressure.set(68);
-            CTS_SmartKnockback.set(69);
-            CTS_RepeatEffect.set(70);
-            CTS_ExpBuffRate.set(71);
-            CTS_StopPortion.set(72);
-            CTS_StopMotion.set(73);
-            CTS_Fear.set(74); // OK
-            //CTS_EvanSlow.set();
-            //CTS_MagicShield.set();
-            //CTS_MagicResistance.set();
-            CTS_SoulStone.set(77);
-            //
-            CTS_Flying.set(80); // OK
+            /*
+            CTS_ItemUpByItem.set(0);
+            CTS_RespectPImmune.set(0);
+            CTS_RespectMImmune.set(0);
+            CTS_DefenseAtt.set(0);
+            CTS_DefenseState.set(0);
+            CTS_IncEffectHPPotion.set(0);
+            CTS_IncEffectMPPotion.set(0);
+             */
+            CTS_DojangBerserk.set(57); // -2
+            CTS_DojangInvincible.set(58);
+            CTS_Spark.set(59);
+            CTS_DojangShield.set(60);
+            CTS_SoulMasterFinal.set(61);
+            CTS_WindBreakerFinal.set(62);
+            CTS_ElementalReset.set(63);
+            CTS_WindWalk.set(64);
+            CTS_EventRate.set(65);
+            CTS_ComboAbilityBuff.set(66);
+            CTS_ComboDrain.set(67);
+            CTS_ComboBarrier.set(68);
+            CTS_BodyPressure.set(69);
+            CTS_SmartKnockback.set(70);
+            CTS_RepeatEffect.set(71);
+            CTS_ExpBuffRate.set(72);
+            CTS_StopPortion.set(73);
+            CTS_StopMotion.set(74);
+            CTS_Fear.set(75);
+            CTS_EvanSlow.set(76);
+            CTS_MagicShield.set(77);
+            CTS_MagicResistance.set(78);
+            CTS_SoulStone.set(79);
+            CTS_Flying.set(80);
             CTS_Frozen.set(81);
-            //
-            CTS_ThornsEffect.set(83);
-            //CTS_SwallowAttackDamage.set(84);
-            //CTS_MorewildDamageUp.set(88);
-            //CTS_Mine.set();
-            CTS_Cyclone.set(99); // OK
+            CTS_AssistCharge.set(82);
+            CTS_Enrage.set(83);
+            CTS_SuddenDeath.set(84);
+            CTS_NotDamaged.set(85);
+            CTS_FinalCut.set(86);
+            CTS_ThornsEffect.set(87);
+            CTS_SwallowAttackDamage.set(88);
+            CTS_MorewildDamageUp.set(89);
+            CTS_Mine.set(90);
+            CTS_EMHP.set(91);
+            CTS_EMMP.set(92);
+            CTS_EPAD.set(93);
+            CTS_EPDD.set(94);
+            CTS_EMDD.set(95);
+            CTS_Guard.set(96);
+            CTS_SafetyDamage.set(97);
+            CTS_SafetyAbsorb.set(98);
+            CTS_Cyclone.set(99);
             CTS_SwallowCritical.set(100);
             CTS_SwallowMaxMP.set(101);
             CTS_SwallowDefence.set(102);
             CTS_SwallowEvasion.set(103);
             CTS_Conversion.set(104);
             CTS_Revive.set(105);
-            CTS_Sneak.set(106); // OK, 107も同じ?
-            CTS_Mechanic.set(107);
-            CTS_Aura.set(108);
+            CTS_Sneak.set(106); // OK
+            //
             CTS_DarkAura.set(109);
             CTS_BlueAura.set(110);
-            CTS_YellowAura.set(111);
-            CTS_SuperBody.set(112);
-            //CTS_MorewildMaxHP.set(113);
-            CTS_Dice.set(120);
-            CTS_BlessingArmor.set(121);
-            CTS_DamR.set(122);
-            CTS_TeleportMasteryOn.set(123);
-            CTS_CombatOrders.set(125);
-            CTS_Beholder.set(126);
-            CTS_SwallowBuff.set(127);
+            CTS_YellowAura.set(111); // broken?
+            //
+            CTS_EnergyCharged.set(113); // OK
+            CTS_Dash_Speed.set(114);
+            CTS_Dash_Jump.set(115);
+            CTS_RideVehicle.set(116);
+            CTS_PartyBooster.set(117);
+            CTS_GuidedBullet.set(118);
+            // 119 last.
             return;
         }
     }

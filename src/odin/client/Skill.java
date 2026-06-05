@@ -237,7 +237,7 @@ public class Skill implements ISkill {
     @Override
     public MapleStatEffect getEffect(final int level) {
         if (effects.size() < level) {
-            if (effects.size() > 0) { //incAllskill
+            if (!effects.isEmpty()) { //incAllskill
                 return effects.get(effects.size() - 1);
             }
             return null;
