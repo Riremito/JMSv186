@@ -85,6 +85,13 @@ public class TacosTask {
         return true;
     }
 
+    public static void doCharacterTask_Buff(MapleCharacter chr, long time) {
+        for (TacosBuff.Buff buff : chr.getBuff().getCTSTimeout(time)) {
+            chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff.buff_id));
+        }
+        chr.getBuff().removeTimeout(time);
+    }
+
     public static boolean doCharacterTask(MapleCharacter chr, long time) {
         if (!chr.updateTime(time, 3000)) {
             return false;
@@ -98,11 +105,9 @@ public class TacosTask {
                 chr.SendPacket(ResCUserLocal.SkillCooltimeSet(skill_id, 0));
             }
         }
+
         // buff.
-        for (TacosBuff.Buff buff : chr.getBuff().getCTSTimeout(time)) {
-            chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff.buff_id));
-        }
-        chr.getBuff().removeTimeout(time);
+        doCharacterTask_Buff(chr, time);
 
         // debuff.
         for (MapleDiseaseValueHolder dvh : chr.getAllDiseases()) {

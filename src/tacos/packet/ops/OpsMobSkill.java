@@ -49,7 +49,7 @@ public enum OpsMobSkill implements IPacketOps {
     MOBSKILL_AREA_FIRE(130),
     MOBSKILL_AREA_POISON(131),
     MOBSKILL_REVERSE_INPUT(132, OpsSecondaryStat.CTS_ReverseInput),
-    MOBSKILL_UNDEAD(133, OpsSecondaryStat.CTS_Undead),
+    MOBSKILL_UNDEAD(133, OpsSecondaryStat.CTS_IncEffectHPPotion),
     MOBSKILL_STOPPORTION(134, OpsSecondaryStat.CTS_StopPortion),
     MOBSKILL_STOPMOTION(135, OpsSecondaryStat.CTS_StopMotion),
     MOBSKILL_FEAR(136, OpsSecondaryStat.CTS_Fear),
