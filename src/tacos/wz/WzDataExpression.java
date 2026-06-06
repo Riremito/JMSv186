@@ -35,6 +35,13 @@ public class WzDataExpression {
             return Integer.parseInt(val);
         }
         // expression for post BB Skill.wz. (JMS187+)
+
+        // EMS89 fix.
+        if (val.contains("=")) {
+            DebugLogger.ErrorLog("TacosWzExpression : = is found. " + val);
+            val = val.replace("=", "");
+        }
+
         ExpressionBuilder builder = new ExpressionBuilder(val);
         builder.variable("x"); // x : skill level.
         builder.variable("y"); // y : skill level? (KMS169)

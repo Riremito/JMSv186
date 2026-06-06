@@ -28,8 +28,6 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
 import odin.constants.GameConstants;
 import odin.provider.IMapleData;
 import odin.server.MapleItemInformationProvider;
@@ -152,12 +150,6 @@ public class TacosReward {
         int cmServerrate = chr.getChannelServer().getMesoRate();
         int chServerrate = chr.getChannelServer().getDropRate();
 
-        double showdown = 100.0;
-        MonsterStatusEffect mse = monster.getBuff(MonsterStatus.SHOWDOWN);
-        if (mse != null) {
-            showdown += mse.getX();
-        }
-
         MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
         List<MonsterDropEntry> dropEntry = mi.retrieveDrop(monster.getId());
         Collections.shuffle(dropEntry);
@@ -180,7 +172,7 @@ public class TacosReward {
             }
 
             // ボスは無条件でドロップ確定, 通常Mobはx/1000の確率でDBの値を参照してドロップする
-            if (forced_drop || (Math.floor(Math.random() * 1000) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0) * (showdown / 100.0)))) {
+            if (forced_drop || (Math.floor(Math.random() * 1000) < (int) (de.chance * chServerrate * chr.getDropMod() * (chr.getStat().dropBuff / 100.0)))) {
                 // メル
                 if (de.itemId == 0) {
                     int mesos = de.Minimum;

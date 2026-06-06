@@ -442,9 +442,6 @@ public class MapleStatEffect implements Serializable {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
             }
         }
-        if (skill) {
-            removeMonsterBuff(applyfrom);
-        }
         if (primary) {
             if ((overTime || isHeal()) && !isEnergyCharge()) {
                 applyBuff(applyfrom, newDuration);
@@ -570,46 +567,6 @@ public class MapleStatEffect implements Serializable {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private final void removeMonsterBuff(final MapleCharacter applyfrom) {
-        List<MonsterStatus> cancel = new ArrayList<MonsterStatus>();
-        ;
-        switch (sourceid) {
-            case 1111007:
-                cancel.add(MonsterStatus.WDEF);
-                cancel.add(MonsterStatus.WEAPON_DEFENSE_UP);
-                //cancel.add(MonsterStatus.WEAPON_IMMUNITY);
-                break;
-            case 1211009:
-                cancel.add(MonsterStatus.MDEF);
-                cancel.add(MonsterStatus.MAGIC_DEFENSE_UP);
-                //cancel.add(MonsterStatus.MAGIC_IMMUNITY);
-                break;
-            case 1311007:
-                cancel.add(MonsterStatus.WATK);
-                cancel.add(MonsterStatus.WEAPON_ATTACK_UP);
-                cancel.add(MonsterStatus.MATK);
-                cancel.add(MonsterStatus.MAGIC_ATTACK_UP);
-                break;
-            default:
-                return;
-        }
-        final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        final List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
-        int i = 0;
-
-        for (final MapleMapObject mo : affected) {
-            if (makeChanceResult()) {
-                for (MonsterStatus stat : cancel) {
-                    ((MapleMonster) mo).cancelStatus(stat);
-                }
-            }
-            i++;
-            if (i >= mobCount) {
-                break;
             }
         }
     }

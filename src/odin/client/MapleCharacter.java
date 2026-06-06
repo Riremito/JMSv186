@@ -1960,7 +1960,7 @@ public class MapleCharacter extends TacosCharacter {
     public void controlMonster(MapleMonster monster, boolean aggro) {
         monster.setController(this);
         controlled.add(monster);
-        client.SendPacket(ResCMobPool.MobChangeController(monster, false, aggro));
+        client.SendPacket(ResCMobPool.MobChangeController(monster, aggro));
     }
 
     public void stopControllingMonster(MapleMonster monster) {

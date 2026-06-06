@@ -165,24 +165,24 @@ public class ReqCMobPool {
         int level = 0;
 
         if (useSkill) {// && (skill == -1 || skill == 0)) {
-            final byte size = monster.getNoSkills();
+            byte size = monster.getNoSkills();
             boolean used = false;
 
             if (size > 0) {
-                final OdinPair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
+                OdinPair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
                 realskill = skillToUse.getLeft();
                 level = skillToUse.getRight();
                 // Skill ID and Level
-                final MobSkill mobSkill = WzXML.SKILL.getMobSkillData(realskill, level);
+                MobSkill mobSkill = WzXML.SKILL.getMobSkillData(realskill, level);
 
-                if (mobSkill != null && !mobSkill.checkCurrentBuff(chr, monster)) {
+                if (mobSkill != null) {
                     final long now = System.currentTimeMillis();
                     final long ls = monster.getLastSkillUsed(realskill);
 
                     if (ls == 0 || ((now - ls) > mobSkill.getCoolTime())) {
                         monster.setLastSkillUsed(realskill, now, mobSkill.getCoolTime());
 
-                        final int reqHp = (int) (((float) monster.getHp() / monster.getMobMaxHp()) * 100); // In case this monster have 2.1b and above HP
+                        int reqHp = (int) (((float) monster.getHp() / monster.getMobMaxHp()) * 100); // In case this monster have 2.1b and above HP
                         if (reqHp <= mobSkill.getHP()) {
                             used = true;
                             mobSkill.applyEffect(chr, monster, true);

@@ -490,7 +490,7 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCMobPool.MobEnterField(mob, -1, 0, 0));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
-                    chr.SendPacket(ResCMobPool.MobChangeController(mob, false, mob.isFirstAttack()));
+                    chr.SendPacket(ResCMobPool.MobChangeController(mob, mob.isFirstAttack()));
                     chr.controlMonster(mob, mob.isFirstAttack());
                     mob.setControllerHasAggro(mob.isFirstAttack());
                     mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
@@ -723,7 +723,7 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCMobPool.MobEnterField(mob, -1, 0, 0));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
-                    chr.SendPacket(ResCMobPool.MobChangeController(mob, false, mob.isFirstAttack()));
+                    chr.SendPacket(ResCMobPool.MobChangeController(mob, mob.isFirstAttack()));
                     chr.controlMonster(mob, mob.isFirstAttack());
                     mob.setControllerHasAggro(mob.isFirstAttack());
                     mob.setControllerKnowsAboutAggro(mob.isFirstAttack());

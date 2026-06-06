@@ -54,12 +54,10 @@ import tacos.packet.response.wrapper.ResWrapper;
 import tacos.odin.OdinEventInstanceManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.Timer.MobTimer;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
-import odin.tools.ConcurrentEnumMap;
 import tacos.odin.OdinPair;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
@@ -70,15 +68,14 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private int mp;
     private byte venom_counter, carnivalTeam;
     private MapleMap map;
-    private WeakReference<MapleMonster> sponge = new WeakReference<MapleMonster>(null);
+    private WeakReference<MapleMonster> sponge = new WeakReference<>(null);
     private int linkoid = 0, lastNode = -1, lastNodeController = -1, highestDamageChar = 0; // Just a reference for monster EXP distribution after dead
-    private WeakReference<MapleCharacter> controller = new WeakReference<MapleCharacter>(null);
+    private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
     private boolean fake, dropsDisabled, controllerHasAggro, controllerKnowsAboutAggro;
-    private final Collection<AttackerEntry> attackers = new LinkedList<AttackerEntry>();
+    private final Collection<AttackerEntry> attackers = new LinkedList<>();
     private OdinEventInstanceManager eventInstance;
     private MonsterListener listener = null;
     private MaplePacket reflectpack = null, nodepack = null;
-    private final Map<MonsterStatus, MonsterStatusEffect> stati = new ConcurrentEnumMap<MonsterStatus, MonsterStatusEffect>(MonsterStatus.class);
     private Map<Integer, Long> usedSkills;
     private int stolen = -1; //monster can only be stolen ONCE
     private ScheduledFuture<?> dropItemSchedule;
@@ -94,7 +91,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         initWithStats(monster.stats);
     }
 
-    private final void initWithStats(final MapleMonsterStats stats) {
+    private void initWithStats(final MapleMonsterStats stats) {
         setStance(5);
         this.stats = stats;
         hp = stats.getHp();
@@ -106,7 +103,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         dropsDisabled = false;
 
         if (stats.getNoSkills() > 0) {
-            usedSkills = new HashMap<Integer, Long>();
+            usedSkills = new HashMap<>();
         }
     }
 
@@ -198,7 +195,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
 
         // 屋台等の状態変化系は初期状態は調整しない
-        if (stats.getRevives().size() > 0) {
+        if (!stats.getRevives().isEmpty()) {
             return false;
         }
 
@@ -344,15 +341,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
     }
 
-    private final void giveExpToCharacter(final MapleCharacter attacker, int exp, final boolean highestDamage, final int numExpSharers, final byte pty, final byte Class_Bonus_EXP_PERCENT, final byte Premium_Bonus_EXP_PERCENT, final int lastskillID) {
+    private void giveExpToCharacter(MapleCharacter attacker, int exp, boolean highestDamage, int numExpSharers, byte pty, byte Class_Bonus_EXP_PERCENT, byte Premium_Bonus_EXP_PERCENT, int lastskillID) {
         if (highestDamage) {
             highestDamageChar = attacker.getId();
         }
         if (exp > 0) {
-            final MonsterStatusEffect mse = stati.get(MonsterStatus.SHOWDOWN);
-            if (mse != null) {
-                exp += (int) (exp * (mse.getX() / 100.0));
-            }
             exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
             exp *= attacker.getChannelServer().getExpRate();
             //do this last just incase someone has a 2x exp card and its set to max value
@@ -400,7 +393,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             killer.getPyramidSubway().onKill(killer);
         }
         MapleMonster oldSponge = getSponge();
-        sponge = new WeakReference<MapleMonster>(null);
+        sponge = new WeakReference<>(null);
         if (oldSponge != null && oldSponge.isAlive()) {
             boolean set = true;
             for (MapleMapObject mon : map.getAllMonsters()) {
@@ -417,8 +410,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         nodepack = null;
         reflectpack = null;
-        stati.clear();
-        //attackers.clear();
         cancelDropItem();
         if (listener != null) {
             listener.monsterKilled();
@@ -745,27 +736,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 return;
             }
         }
-        final MonsterStatusEffect oldEffect = stati.get(stat);
-        if (oldEffect != null) {
-            stati.remove(stat);
-            if (oldEffect.getStati() == null) {
-                oldEffect.cancelTask();
-                oldEffect.cancelPoisonSchedule();
-            }
-        }
-        final MobTimer timerManager = MobTimer.getInstance();
-        final Runnable cancelTask = new Runnable() {
-
-            @Override
-            public final void run() {
-                cancelStatus(stat);
-            }
-        };
-        if (poison && getHp() > 1) {
-            final int poisonDamage = (int) Math.min(Short.MAX_VALUE, (long) (getMobMaxHp() / (70.0 - from.getSkillLevel(status.getSkill())) + 0.999));
-            status.setValue(MonsterStatus.POISON, Integer.valueOf(poisonDamage));
-            status.setPoisonSchedule(timerManager.register(new PoisonTask(poisonDamage, from, status, cancelTask, false), 1000, 1000));
-        } else if (venom) {
+        if (venom) {
             int poisonLevel = 0;
             int matk = 0;
 
@@ -802,97 +773,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 default:
                     return; // Hack, using venom without the job required
             }
-            final int luk = from.getStat().getLuk();
-            final int maxDmg = (int) Math.ceil(Math.min(Short.MAX_VALUE, 0.2 * luk * matk));
-            final int minDmg = (int) Math.ceil(Math.min(Short.MAX_VALUE, 0.1 * luk * matk));
-            int gap = maxDmg - minDmg;
-            if (gap == 0) {
-                gap = 1;
-            }
-            int poisonDamage = 0;
-            for (int i = 0; i < getVenomMulti(); i++) {
-                poisonDamage = poisonDamage + (Randomizer.nextInt(gap) + minDmg);
-            }
-            poisonDamage = Math.min(Short.MAX_VALUE, poisonDamage);
-            status.setValue(MonsterStatus.POISON, Integer.valueOf(poisonDamage));
-            status.setPoisonSchedule(timerManager.register(new PoisonTask(poisonDamage, from, status, cancelTask, false), 1000, 1000));
-
-        } else if (statusSkill == 4111003 || statusSkill == 14111001) { // shadow web
-            status.setPoisonSchedule(timerManager.schedule(new PoisonTask((int) (getMobMaxHp() / 50.0 + 0.999), from, status, cancelTask, true), 3500));
-
-        } else if (statusSkill == 4121004 || statusSkill == 4221004) {
-            final int damage = (from.getStat().getStr() + from.getStat().getLuk()) * 2 * (60 / 100);
-            status.setPoisonSchedule(timerManager.register(new PoisonTask(damage, from, status, cancelTask, false), 1000, 1000));
         }
-
-        stati.put(stat, status);
-        map.broadcastMessage(ResCMobPool.MobStatSet(getObjectId(), status), getPosition());
-        if (getController() != null && !getController().isMapObjectVisible(this)) {
-            getController().getClient().getSession().write(ResCMobPool.MobStatSet(getObjectId(), status));
-        }
-        int aniTime = 0;
-        if (skilz != null) {
-            aniTime = skilz.getAnimationTime();
-        }
-        ScheduledFuture<?> schedule = timerManager.schedule(cancelTask, duration + aniTime);
-        status.setCancelTask(schedule);
-    }
-
-    public final void dispelSkill(final MobSkill skillId) {
-        List<MonsterStatus> toCancel = new ArrayList<MonsterStatus>();
-        for (Entry<MonsterStatus, MonsterStatusEffect> effects : stati.entrySet()) {
-            if (effects.getValue().getMobSkill() != null && effects.getValue().getMobSkill().getSkillId() == skillId.getSkillId()) { //not checking for level.
-                toCancel.add(effects.getKey());
-            }
-        }
-        for (MonsterStatus stat : toCancel) {
-            cancelStatus(stat);
-        }
-    }
-
-    public final void applyMonsterBuff(final Map<MonsterStatus, Integer> effect, final int skillId, final long duration, final MobSkill skill, final List<Integer> reflection) {
-        MobTimer timerManager = MobTimer.getInstance();
-        final Runnable cancelTask = new Runnable() {
-
-            @Override
-            public final void run() {
-                if (reflection.size() > 0) {
-                    MapleMonster.this.reflectpack = null;
-                }
-                if (isAlive()) {
-                    for (MonsterStatus z : effect.keySet()) {
-                        cancelStatus(z);
-                    }
-                }
-            }
-        };
-        for (Entry<MonsterStatus, Integer> z : effect.entrySet()) {
-            final MonsterStatusEffect effectz = new MonsterStatusEffect(z.getKey(), z.getValue(), 0, skill, true);
-            stati.put(z.getKey(), effectz);
-        }
-        if (reflection.size() > 0) {
-            this.reflectpack = ResCMobPool.MobStatSet(getObjectId(), effect, reflection, skill);
-            map.broadcastMessage(reflectpack, getPosition());
-            if (getController() != null && !getController().isMapObjectVisible(this)) {
-                getController().getClient().getSession().write(this.reflectpack);
-            }
-        } else {
-            for (Entry<MonsterStatus, Integer> z : effect.entrySet()) {
-                map.broadcastMessage(ResCMobPool.MobStatSet(getObjectId(), z.getKey(), z.getValue(), skill), getPosition());
-                if (getController() != null && !getController().isMapObjectVisible(this)) {
-                    getController().getClient().getSession().write(ResCMobPool.MobStatSet(getObjectId(), z.getKey(), z.getValue(), skill));
-                }
-            }
-        }
-        timerManager.schedule(cancelTask, duration);
-    }
-
-    public final boolean isBuffed(final MonsterStatus status) {
-        return stati.containsKey(status);
-    }
-
-    public final MonsterStatusEffect getBuff(final MonsterStatus status) {
-        return stati.get(status);
     }
 
     public final void setFake(final boolean fake) {
@@ -1298,29 +1179,20 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         this.linkoid = lo;
     }
 
-    public final Map<MonsterStatus, MonsterStatusEffect> getStati() {
-        return stati;
-    }
-
-    public void addEmpty() {
-        stati.put(MonsterStatus.EMPTY, new MonsterStatusEffect(MonsterStatus.EMPTY, 0, 0, null, false));
-        stati.put(MonsterStatus.SUMMON, new MonsterStatusEffect(MonsterStatus.SUMMON, 0, 0, null, false));
-    }
-
-    public final int getStolen() {
+    public int getStolen() {
         return stolen;
     }
 
-    public final void setStolen(final int s) {
+    public void setStolen(final int s) {
         this.stolen = s;
     }
 
-    public final void handleSteal(MapleCharacter chr) {
+    public void handleSteal(MapleCharacter chr) {
         ISkill steal = SkillFactory.getSkill(4201004);
         final int level = chr.getSkillLevel(steal);
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
             final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
-            final List<MonsterDropEntry> dropEntry = new ArrayList<MonsterDropEntry>(mi.retrieveDrop(getId()));
+            final List<MonsterDropEntry> dropEntry = new ArrayList<>(mi.retrieveDrop(getId()));
             Collections.shuffle(dropEntry);
             IItem idrop;
             for (MonsterDropEntry d : dropEntry) {
@@ -1355,20 +1227,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public final int getLastNodeController() {
         return lastNodeController;
-    }
-
-    public final void cancelStatus(final MonsterStatus stat) {
-        final MonsterStatusEffect mse = stati.get(stat);
-        if (mse == null || !isAlive()) {
-            return;
-        }
-        mse.cancelPoisonSchedule();
-        map.broadcastMessage(ResCMobPool.MobStatReset(getObjectId(), stat), getPosition());
-        if (getController() != null && !getController().isMapObjectVisible(MapleMonster.this)) {
-            getController().getClient().SendPacket(ResCMobPool.MobStatReset(getObjectId(), stat));
-        }
-        stati.remove(stat);
-        setVenomMulti((byte) 0);
     }
 
     public final void cancelDropItem() {

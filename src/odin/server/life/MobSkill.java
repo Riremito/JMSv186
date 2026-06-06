@@ -98,45 +98,6 @@ public class MobSkill {
         this.limit = limit;
     }
 
-    public boolean checkCurrentBuff(MapleCharacter player, MapleMonster monster) {
-        boolean stop = false;
-        switch (skillId) {
-            case 100:
-            case 110:
-            case 150:
-                stop = monster.isBuffed(MonsterStatus.WEAPON_ATTACK_UP);
-                break;
-            case 101:
-            case 111:
-            case 151:
-                stop = monster.isBuffed(MonsterStatus.MAGIC_ATTACK_UP);
-                break;
-            case 102:
-            case 112:
-            case 152:
-                stop = monster.isBuffed(MonsterStatus.WEAPON_DEFENSE_UP);
-                break;
-            case 103:
-            case 113:
-            case 153:
-                stop = monster.isBuffed(MonsterStatus.MAGIC_DEFENSE_UP);
-                break;
-            //154-157, don't stop it
-            case 140:
-            case 141:
-            case 142:
-            case 143:
-            case 144:
-            case 145:
-                stop = monster.isBuffed(MonsterStatus.DAMAGE_IMMUNITY) || monster.isBuffed(MonsterStatus.MAGIC_IMMUNITY) || monster.isBuffed(MonsterStatus.WEAPON_IMMUNITY);
-                break;
-            case 200:
-                stop = player.getMap().getNumMonsters() >= limit;
-                break;
-        }
-        return stop;
-    }
-
     public void applyEffect(MapleCharacter player, MapleMonster monster, boolean skill) {
         Map<MonsterStatus, Integer> stats = new EnumMap<>(MonsterStatus.class);
         List<Integer> reflection = new LinkedList<>();
@@ -295,15 +256,6 @@ public class MobSkill {
                 break;
         }
 
-        if (!stats.isEmpty() && monster != null) {
-            if (lt != null && rb != null && skill) {
-                for (MapleMapObject mons : getObjectsInRange(monster, MapleMapObjectType.MONSTER)) {
-                    ((MapleMonster) mons).applyMonsterBuff(stats, getSkillId(), getDuration(), this, reflection);
-                }
-            } else {
-                monster.applyMonsterBuff(stats, getSkillId(), getDuration(), this, reflection);
-            }
-        }
         if (monster != null) {
             monster.setMp(monster.getMp() - getMpCon());
         }

@@ -57,19 +57,45 @@ public class TacosBuff {
             return new int[8]; // 32
         }
         // post bb ex.
-        if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.GMS, 95) || Region.check(Region.THMS) || Region.check(Region.IMS)) {
+        if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.GMS, 95) || Version.Equal(Region.THMS, 96) || Version.Equal(Region.IMS, 1)) {
             return new int[4]; // 16
         }
-        // JMS187
+        // JMS187, CMS88, EMS76
         if (Version.PostBB()) {
             return new int[5]; // 20
         }
-        // JMS147
+        // JMS147, TWMS77, THMS87, BMS24
         if (ServerConfig.JMS146orLater()) {
             return new int[4]; // 16
         }
         // JMS131, reverse order.
         return new int[2];
+    }
+
+    public static int[] getMobBuffBuffer() {
+        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            return new int[12]; // 48
+        }
+        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+            return new int[9]; //36
+        }
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+            return new int[8]; // 32
+        }
+        // post bb ex.
+        if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.GMS, 95) || Version.Equal(Region.THMS, 96) || Version.Equal(Region.IMS, 1)) {
+            return new int[4]; // 16
+        }
+        // JMS187-194 (Post-BB)
+        if (Version.PostBB()) {
+            return new int[5]; // 20
+        }
+        // JMS180-186 (Pre-BB)
+        if (Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.KMS, 95) || Version.Equal(Region.THMS, 87)) {
+            return new int[4]; // 16
+        }
+        // JMS131-164, KMS31-65, BMS24
+        return new int[1]; // 4
     }
 
     public static class Buff {

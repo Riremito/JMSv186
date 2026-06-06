@@ -19,22 +19,18 @@
 package tacos.packet.response;
 
 import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.struct.Structure;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
+import tacos.client.TacosBuff;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -45,6 +41,7 @@ public class ResCMobPool {
 
     public static MaplePacket MobEnterField(MapleMonster monster, int spawnType, int effect, int link) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEnterField);
+
         sp.Encode4(monster.getObjectId());
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
@@ -58,28 +55,31 @@ public class ResCMobPool {
         }
 
         // CMob::SetTemporaryStat
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        int[] buff_mask = TacosBuff.getMobBuffBuffer();
+        for (int index = 0; index < buff_mask.length; index++) {
+            sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
+        }
+        // MobStat::DecodeTemporary
 
-        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164) || Version.Equal(Region.BMS, 24)) { // TODO
-            sp.Encode4(0); // 後でなおす
-        } else {
-            sp.EncodeBuffer(Structure.MonsterStatus(monster));
+        // credit to 垂垂 for fixing mob fall down issue
+        if (monster.getFh() == 0) {
+            DebugLogger.DebugLog("MobEnterField : FH = 0");
         }
 
         // CMob::Init
-        // credit to 垂垂 for fixing mob fall down issue
-        if (monster.getFh() == 0) {
-            DebugLogger.DebugLog("Spawn FH = 0");
-        }
-
         sp.Encode2(monster.getPosition().x); // m_ptPosPrev.x
         sp.Encode2(monster.getPosition().y); // m_ptPosPrev.y
         sp.Encode1(monster.getStance()); // m_nMoveAction_CS
         sp.Encode2(monster.getFh()); // pvcMobActiveObj
         sp.Encode2(monster.getOriginFh()); // m_pInterface
         sp.Encode1(spawnType);
+
         if (spawnType == -3 || 0 <= spawnType) {
             sp.Encode4(link); // dwOption
+        }
+
+        if (Version.LessOrEqual(Region.KMS, 31)) {
+            return sp.get();
         }
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
@@ -87,13 +87,22 @@ public class ResCMobPool {
             return sp.get();
         }
 
+        // KMS41
         sp.Encode1(monster.getCarnivalTeam()); // m_nTeamForMCarnival
+
+        if (Version.LessOrEqual(Region.JMS, 131)) {
+            return sp.get();
+        }
+        // JMS146
         if (ServerConfig.JMS146orLater()) {
             sp.Encode4(0); // nEffectItemID
         }
+        // JMS186, GMS95
+        // not in KMST330, TWMS125
         if (ServerConfig.JMS165orLater()) {
             sp.Encode4(0); // m_nPhase
         }
+
         return sp.get();
     }
 
@@ -106,52 +115,47 @@ public class ResCMobPool {
     }
 
     // controlMonster
-    public static MaplePacket MobChangeController(MapleMonster monster, boolean newSpawn, boolean aggro) {
+    public static MaplePacket MobChangeController(MapleMonster monster, boolean aggro) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
 
-        sp.Encode1(aggro ? 2 : 1);
-        sp.Encode4(monster.getObjectId());
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        int nLevel = aggro ? 2 : 1;
+        sp.Encode1(nLevel); // nLevel, local or not.
+
+        // GMS95
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            // nLevel != 0 && CClientOptMan::GetOpt & 2
+            /*
+            sp.Encode4(0);
+            sp.Encode4(0);
+            sp.Encode4(0);
+             */
+        }
+
+        sp.Encode4(monster.getObjectId()); // dwMobId
+
+        if (nLevel != 0) {
+            if (Version.LessOrEqual(Region.KMS, 1)) {
+            } else {
+                sp.Encode1(1); // nCalcDamageIndex, 1 = Control normal, 5 = Control none
+            }
+            // CMobPool::SetLocalMob
+            sp.Encode4(monster.getId()); // dwTemplateID
+
+            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                sp.Encode1(0);
+            }
+
+            // CMob::SetTemporaryStat
+            int[] buff_mask = TacosBuff.getMobBuffBuffer();
+            for (int index = 0; index < buff_mask.length; index++) {
+                sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
+            }
+            // MobStat::DecodeTemporary
         } else {
-            sp.Encode1(1); // 1 = Control normal, 5 = Control none
-        }
-        sp.Encode4(monster.getId());
-
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(0);
+            // CMobPool::SetRemoteMob
+            // no packet data.
         }
 
-        if (Version.LessOrEqual(Region.KMS, 1)) {
-
-        } else if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 164) || Version.Equal(Region.BMS, 24)) { // TODO
-            sp.Encode4(0); // 後でなおす
-        } else {
-            sp.EncodeBuffer(Structure.MonsterStatus(monster));
-        }
-
-        // credit to 垂垂 for fixing mob fall down issue
-        if (monster.getFh() == 0) {
-            DebugLogger.DebugLog("Control FH = 0");
-        }
-
-        sp.Encode2(monster.getPosition().x);
-        sp.Encode2(monster.getPosition().y);
-        sp.Encode1(monster.getStance()); // Bitfield
-        sp.Encode2(monster.getFh()); // FH
-        sp.Encode2(monster.getOriginFh()); // Origin FH
-        sp.Encode1(monster.isFake() ? -4 : newSpawn ? -2 : -1);
-
-        if (Version.LessOrEqual(Region.KMS, 1)) {
-            // spawm valuen changed?
-            sp.Encode4(0);
-            return sp.get();
-        }
-
-        sp.Encode1(monster.getCarnivalTeam());
-        if (ServerConfig.JMS146orLater()) {
-            sp.Encode4(0);
-            sp.Encode4(0);
-        }
         return sp.get();
     }
 
@@ -209,11 +213,12 @@ public class ResCMobPool {
         return sp.get();
     }
 
-    public static MaplePacket MobStatSet(final int oid, final MonsterStatus mse, int x, MobSkill skil) {
+    public static MaplePacket MobStatSet(int oid, MonsterStatus mse, int x, MobSkill skil) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatSet);
+
         sp.Encode4(oid);
-        sp.Encode8(Structure.getSpecialLongMask(Collections.singletonList(mse)));
-        sp.Encode8(Structure.getLongMask(Collections.singletonList(mse)));
+        sp.Encode8(0);
+        sp.Encode8(0);
         sp.Encode2(x);
         sp.Encode2(skil.getSkillId());
         sp.Encode2(skil.getSkillLevel());
@@ -224,56 +229,12 @@ public class ResCMobPool {
         return sp.get();
     }
 
-    public static MaplePacket MobStatSet(final int oid, final MonsterStatusEffect mse) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatSet);
-        sp.Encode4(oid);
-        //aftershock extra int here
-        sp.Encode8(Structure.getSpecialLongMask(Collections.singletonList(mse.getStati())));
-        sp.Encode8(Structure.getLongMask(Collections.singletonList(mse.getStati())));
-        sp.Encode2(mse.getX());
-        if (mse.isMonsterSkill()) {
-            sp.Encode2(mse.getMobSkill().getSkillId());
-            sp.Encode2(mse.getMobSkill().getSkillLevel());
-        } else if (mse.getSkill() > 0) {
-            sp.Encode4(mse.getSkill());
-        }
-        sp.Encode2(mse.getStati().isEmpty() ? 1 : 0); // might actually be the buffTime but it's not displayed anywhere
-        sp.Encode2(0); // delay in ms
-        sp.Encode1(1); // size
-        sp.Encode1(1); // ? v97
-        return sp.get();
-    }
-
-    public static MaplePacket MobStatSet(final int oid, final Map<MonsterStatus, Integer> stati, final List<Integer> reflection, MobSkill skil) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatSet);
-        sp.Encode4(oid);
-        sp.Encode8(Structure.getSpecialLongMask(stati.keySet()));
-        sp.Encode8(Structure.getLongMask(stati.keySet()));
-        for (Map.Entry<MonsterStatus, Integer> mse : stati.entrySet()) {
-            sp.Encode2(mse.getValue());
-            sp.Encode2(skil.getSkillId());
-            sp.Encode2(skil.getSkillLevel());
-            sp.Encode2(mse.getKey().isEmpty() ? 1 : 0); // might actually be the buffTime but it's not displayed anywhere
-        }
-        for (Integer ref : reflection) {
-            sp.Encode4(ref);
-        }
-        sp.Encode4(0);
-        sp.Encode2(0); // delay in ms
-        int size = stati.size(); // size
-        if (reflection.size() > 0) {
-            size /= 2; // This gives 2 buffs per reflection but it's really one buff
-        }
-        sp.Encode1(size); // size
-        sp.Encode1(1); // ? v97
-        return sp.get();
-    }
-
     public static MaplePacket MobStatReset(int oid, MonsterStatus stat) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatReset);
+
         sp.Encode4(oid);
-        sp.Encode8(Structure.getSpecialLongMask(Collections.singletonList(stat)));
-        sp.Encode8(Structure.getLongMask(Collections.singletonList(stat)));
+        sp.Encode8(0);
+        sp.Encode8(0);
         sp.Encode1(1); // reflector is 3~!??
         sp.Encode1(2); // ? v97
         return sp.get();
@@ -365,5 +326,4 @@ public class ResCMobPool {
         sp.Encode1(bSuccess);
         return sp.get();
     }
-
 }
