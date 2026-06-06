@@ -21,16 +21,11 @@
  */
 package odin.handling.world.family;
 
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
-import odin.server.MapleStatEffect.CancelEffectAction;
-import odin.server.Timer.BuffTimer;
-import tacos.odin.OdinPair;
 
 public class MapleFamilyBuff {
     //todo; read from somewhere
@@ -79,7 +74,6 @@ public class MapleFamilyBuff {
 
         public String name, desc;
         public int count, rep, type, index, questID, duration, effect;
-        public List<OdinPair<MapleBuffStat, Integer>> effects;
 
         public MapleFamilyBuffEntry(int index, String name, String desc, int count, int rep, int type, int questID, int duration, int effect) {
             this.name = name;
@@ -91,7 +85,6 @@ public class MapleFamilyBuff {
             this.index = index;
             this.duration = duration;
             this.effect = effect;
-            this.effects = getEffects();
         }
 
         public int getEffectId() {
@@ -104,33 +97,9 @@ public class MapleFamilyBuff {
             return 2022332; //custom
         }
 
-        public final List<OdinPair<MapleBuffStat, Integer>> getEffects() {
-            //custom
-            List<OdinPair<MapleBuffStat, Integer>> ret = new ArrayList<>();
-            switch (type) {
-                case 2: //drop
-                    ret.add(new OdinPair<>(MapleBuffStat.DROP_RATE, effect));
-                    ret.add(new OdinPair<>(MapleBuffStat.MESO_RATE, effect));
-                    break;
-                case 3: //exp
-                    ret.add(new OdinPair<>(MapleBuffStat.EXPRATE, effect));
-                    break;
-                case 4: //both
-                    ret.add(new OdinPair<>(MapleBuffStat.EXPRATE, effect));
-                    ret.add(new OdinPair<>(MapleBuffStat.DROP_RATE, effect));
-                    ret.add(new OdinPair<>(MapleBuffStat.MESO_RATE, effect));
-                    break;
-            }
-            return ret;
-        }
-
         public void applyTo(MapleCharacter chr) {
-            final MapleStatEffect eff = MapleItemInformationProvider.getInstance().getItemEffect(getEffectId());
-            chr.cancelEffect(eff, true, -1, effects);
-            final long starttime = System.currentTimeMillis();
-            final CancelEffectAction cancelAction = new CancelEffectAction(chr, eff, starttime);
-            final ScheduledFuture<?> schedule = BuffTimer.getInstance().schedule(cancelAction, ((starttime + (duration * 60000)) - starttime));
-            chr.registerEffect(eff, starttime, schedule, effects);
+            MapleStatEffect eff = MapleItemInformationProvider.getInstance().getItemEffect(getEffectId());
+            // buff.
         }
     }
 }

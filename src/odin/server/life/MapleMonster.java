@@ -36,7 +36,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.IItem;
 import odin.client.ISkill;
 import odin.client.inventory.Item;
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleClient;
@@ -355,14 +354,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             final MonsterStatusEffect mse = stati.get(MonsterStatus.SHOWDOWN);
             if (mse != null) {
                 exp += (int) (exp * (mse.getX() / 100.0));
-            }
-            final Integer holySymbol = attacker.getBuffedValue(MapleBuffStat.HOLY_SYMBOL);
-            if (holySymbol != null) {
-                if (numExpSharers == 1) {
-                    exp *= 1.0 + (holySymbol.doubleValue() / 500.0);
-                } else {
-                    exp *= 1.0 + (holySymbol.doubleValue() / 100.0);
-                }
             }
             exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
             exp *= attacker.getChannelServer().getExpRate();

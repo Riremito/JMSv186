@@ -32,7 +32,6 @@ import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Randomizer;
-import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import tacos.debug.DebugLogger;
@@ -523,7 +522,6 @@ public class MapScriptMethods {
             }
             case undomorphdarco:
             case reundodraco: {
-                client.getPlayer().cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(2210016), false, -1);
                 break;
             }
             case goAdventure: {

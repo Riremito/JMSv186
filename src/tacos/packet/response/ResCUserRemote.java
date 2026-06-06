@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
@@ -32,7 +31,6 @@ import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
-import odin.server.MapleStatEffect;
 import odin.tools.AttackPair;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
@@ -301,78 +299,6 @@ public class ResCUserRemote {
         sp.Encode4(cid);
         sp.Encode4(curhp);
         sp.Encode4(maxhp);
-        return sp.get();
-    }
-
-    public static MaplePacket cancelForeignDebuff(int cid, long mask, boolean first) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatReset);
-
-        sp.Encode4(cid);
-        sp.Encode8(first ? mask : 0);
-        sp.Encode8(first ? 0 : mask);
-        return sp.get();
-    }
-
-    public static byte[] writeLongMaskFromList(List<MapleBuffStat> statups) {
-        ServerPacket data = new ServerPacket();
-
-        long firstmask = 0;
-        long secondmask = 0;
-        for (MapleBuffStat statup : statups) {
-            if (statup.isFirst()) {
-                firstmask |= statup.getValue();
-            } else {
-                secondmask |= statup.getValue();
-            }
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            data.EncodeZeroBytes(4);
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 164)) {
-            data.Encode8(firstmask);
-        }
-
-        data.Encode8(secondmask);
-
-        return data.get().getBytes();
-    }
-
-    public static byte[] writeLongMask(List<OdinPair<MapleBuffStat, Integer>> statups) {
-        ServerPacket data = new ServerPacket();
-
-        long firstmask = 0;
-        long secondmask = 0;
-        for (OdinPair<MapleBuffStat, Integer> statup : statups) {
-            if (statup.getLeft().isFirst()) {
-                firstmask |= statup.getLeft().getValue();
-            } else {
-                secondmask |= statup.getLeft().getValue();
-            }
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            data.EncodeZeroBytes(4);
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 164)) {
-            data.Encode8(firstmask);
-        }
-        data.Encode8(secondmask);
-
-        return data.get().getBytes();
-    }
-
-    public static MaplePacket giveForeignBuff(int cid, List<OdinPair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
-
-        sp.Encode4(cid);
-        sp.EncodeBuffer(writeLongMask(statups));
-        for (OdinPair<MapleBuffStat, Integer> statup : statups) {
-            sp.Encode2(statup.getRight().shortValue());
-        }
-        sp.Encode2(0); // same as give_buff
-        if (effect.isMorph()) {
-            sp.Encode1(0);
-        }
-        sp.Encode1(0);
         return sp.get();
     }
 

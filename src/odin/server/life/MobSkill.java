@@ -186,15 +186,8 @@ public class MobSkill {
                 }
                 break;
             case 127:
-                if (lt != null && rb != null && skill && monster != null && player != null) {
-                    for (MapleCharacter character : getPlayersInRange(monster, player)) {
-                        character.dispel();
-                    }
-                } else if (player != null) {
-                    player.dispel();
-                }
+                // dispel.
                 break;
-
             case 129: // Banish
                 if (monster != null) {
                     final BanishInfo info = monster.getStats().getBanishInfo();

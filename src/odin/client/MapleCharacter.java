@@ -37,7 +37,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Deque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -64,7 +63,6 @@ import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
-import java.util.EnumMap;
 import java.util.HashMap;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsQuest;
@@ -111,7 +109,6 @@ import odin.server.Timer.MapTimer;
 import odin.server.maps.Event_PyramidSubway;
 import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
-import odin.tools.ConcurrentEnumMap;
 import tacos.client.TacosCharacter;
 import tacos.database.ops.InvTypeDB;
 import tacos.network.MockIOSession;
@@ -159,7 +156,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient Set<MapleMapObject> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
-    private transient Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentEnumMap<>(MapleBuffStat.class);
     private transient Map<Integer, MapleSummon> summons;
     private CashShop cs;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
@@ -976,93 +972,12 @@ public class MapleCharacter extends TacosCharacter {
         return quests;
     }
 
-    public boolean isActiveBuffedValue(int skillid) {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillid) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public Integer getBuffedValue(MapleBuffStat effect) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        return mbsvh == null ? null : mbsvh.value;
-    }
-
-    public final Integer getBuffedSkill_X(final MapleBuffStat effect) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return null;
-        }
-        return mbsvh.effect.getX();
-    }
-
-    public final Integer getBuffedSkill_Y(final MapleBuffStat effect) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return null;
-        }
-        return mbsvh.effect.getY();
-    }
-
-    public boolean isBuffFrom(MapleBuffStat stat, ISkill skill) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(stat);
-        if (mbsvh == null) {
-            return false;
-        }
-        return mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skill.getId();
-    }
-
-    public int getBuffSource(MapleBuffStat stat) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(stat);
-        return mbsvh == null ? -1 : mbsvh.effect.getSourceId();
-    }
-
     public int getItemQuantity(int itemid, boolean checkEquipped) {
         int possesed = inventory[GameConstants.getInventoryType(itemid).ordinal()].countById(itemid);
         if (checkEquipped) {
             possesed += inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(itemid);
         }
         return possesed;
-    }
-
-    public void setBuffedValue(MapleBuffStat effect, int value) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        if (mbsvh == null) {
-            return;
-        }
-        mbsvh.value = value;
-    }
-
-    public Long getBuffedStarttime(MapleBuffStat effect) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        return mbsvh == null ? null : Long.valueOf(mbsvh.startTime);
-    }
-
-    public MapleStatEffect getStatForBuff(MapleBuffStat effect) {
-        final MapleBuffStatValueHolder mbsvh = effects.get(effect);
-        return mbsvh == null ? null : mbsvh.effect;
-    }
-
-    private void prepareDragonBlood(final MapleStatEffect bloodEffect) {
-        if (dragonBloodSchedule != null) {
-            dragonBloodSchedule.cancel(false);
-        }
-        dragonBloodSchedule = BuffTimer.getInstance().register(new Runnable() {
-
-            @Override
-            public void run() {
-                if (stats.getHp() - bloodEffect.getX() > 1) {
-                    cancelBuffStats(MapleBuffStat.DRAGONBLOOD);
-                } else {
-                    addHP(-bloodEffect.getX());
-                    client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillSpecial, bloodEffect.getSourceId()));
-                    //map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillSpecial, MapleCharacter.this, bloodEffect.getSourceId()), false);
-                }
-            }
-        }, 4000, 4000);
     }
 
     public void startMapTimeLimitTask(int time, final MapleMap to) {
@@ -1150,256 +1065,11 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule) {
-        registerEffect(effect, starttime, schedule, effect.getStatups());
-    }
-
-    public void registerEffect(MapleStatEffect effect, long starttime, ScheduledFuture<?> schedule, List<OdinPair<MapleBuffStat, Integer>> statups) {
-        if (effect.isDragonBlood()) {
-            prepareDragonBlood(effect);
-        } else if (effect.isBerserk()) {
-            checkBerserk();
-        } else if (effect.isBeholder()) {
-            prepareBeholderEffect();
-        }
-        int clonez = 0;
-        for (OdinPair<MapleBuffStat, Integer> statup : statups) {
-            if (statup.getLeft() == MapleBuffStat.ILLUSION) {
-                clonez = statup.getRight();
-            }
-            int value = statup.getRight().intValue();
-            if (statup.getLeft() == MapleBuffStat.MONSTER_RIDING && effect.getSourceId() == 5221006) {
-                if (battleshipHP <= 0) {//quick hack
-                    battleshipHP = value; //copy this as well
-                }
-            }
-            effects.put(statup.getLeft(), new MapleBuffStatValueHolder(effect, starttime, schedule, value));
-        }
-
-        stats.recalcLocalStats();
-    }
-
-    public List<MapleBuffStat> getBuffStats(final MapleStatEffect effect, final long startTime) {
-        final List<MapleBuffStat> bstats = new ArrayList<MapleBuffStat>();
-        final Map<MapleBuffStat, MapleBuffStatValueHolder> allBuffs = new EnumMap<MapleBuffStat, MapleBuffStatValueHolder>(effects);
-        for (Entry<MapleBuffStat, MapleBuffStatValueHolder> stateffect : allBuffs.entrySet()) {
-            final MapleBuffStatValueHolder mbsvh = stateffect.getValue();
-            if (mbsvh.effect.sameSource(effect) && (startTime == -1 || startTime == mbsvh.startTime)) {
-                bstats.add(stateffect.getKey());
-            }
-        }
-        return bstats;
-    }
-
-    private void deregisterBuffStats(List<MapleBuffStat> stats) {
-        List<MapleBuffStatValueHolder> effectsToCancel = new ArrayList<MapleBuffStatValueHolder>(stats.size());
-        for (MapleBuffStat stat : stats) {
-            final MapleBuffStatValueHolder mbsvh = effects.remove(stat);
-            if (mbsvh != null) {
-                boolean addMbsvh = true;
-                for (MapleBuffStatValueHolder contained : effectsToCancel) {
-                    if (mbsvh.startTime == contained.startTime && contained.effect == mbsvh.effect) {
-                        addMbsvh = false;
-                    }
-                }
-                if (addMbsvh) {
-                    effectsToCancel.add(mbsvh);
-                }
-                if (stat == MapleBuffStat.SUMMON || stat == MapleBuffStat.PUPPET || stat == MapleBuffStat.REAPER) {
-                    final int summonId = mbsvh.effect.getSourceId();
-                    final MapleSummon summon = summons.get(summonId);
-                    if (summon != null) {
-                        map.broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
-                        map.removeMapObject(summon);
-                        removeVisibleMapObject(summon);
-                        summons.remove(summonId);
-                        if (summon.getSkill() == 1321007) {
-                            if (beholderHealingSchedule != null) {
-                                beholderHealingSchedule.cancel(false);
-                                beholderHealingSchedule = null;
-                            }
-                            if (beholderBuffSchedule != null) {
-                                beholderBuffSchedule.cancel(false);
-                                beholderBuffSchedule = null;
-                            }
-                        }
-                    }
-                } else if (stat == MapleBuffStat.DRAGONBLOOD) {
-                    if (dragonBloodSchedule != null) {
-                        dragonBloodSchedule.cancel(false);
-                        dragonBloodSchedule = null;
-                    }
-                }
-            }
-        }
-        for (MapleBuffStatValueHolder cancelEffectCancelTasks : effectsToCancel) {
-            if (getBuffStats(cancelEffectCancelTasks.effect, cancelEffectCancelTasks.startTime).size() == 0) {
-                if (cancelEffectCancelTasks.schedule != null) {
-                    cancelEffectCancelTasks.schedule.cancel(false);
-                }
-            }
-        }
-    }
-
-    /**
-     * @param effect
-     * @param overwrite when overwrite is set no data is sent and all the
-     * Buffstats in the StatEffect are deregistered
-     * @param startTime
-     */
-    public void cancelEffect(final MapleStatEffect effect, final boolean overwrite, final long startTime) {
-        cancelEffect(effect, overwrite, startTime, effect.getStatups());
-    }
-
-    public void cancelEffect(final MapleStatEffect effect, final boolean overwrite, final long startTime, List<OdinPair<MapleBuffStat, Integer>> statups) {
-        List<MapleBuffStat> buffstats;
-        if (!overwrite) {
-            buffstats = getBuffStats(effect, startTime);
-        } else {
-            buffstats = new ArrayList<MapleBuffStat>(statups.size());
-            for (OdinPair<MapleBuffStat, Integer> statup : statups) {
-                buffstats.add(statup.getLeft());
-            }
-        }
-        if (buffstats.size() <= 0) {
-            return;
-        }
-        deregisterBuffStats(buffstats);
-        if (effect.isMagicDoor()) {
-            // remove for all on maps
-            if (!getDoors().isEmpty()) {
-                removeDoor();
-                silentPartyUpdate();
-            }
-//	} else if (effect.isMonsterRiding()) {
-//	    if (effect.getSourceId() != 5221006) {
-//		getMount().cancelSchedule();
-//	    }
-        }
-    }
-
-    public void cancelBuffStats(MapleBuffStat... stat) {
-        List<MapleBuffStat> buffStatList = Arrays.asList(stat);
-        deregisterBuffStats(buffStatList);
-    }
-
-    public void cancelEffectFromBuffStat(MapleBuffStat stat) {
-        if (effects.get(stat) != null) {
-            cancelEffect(effects.get(stat).effect, false, -1);
-        }
-    }
-
-    public void dispel() {
-        if (!isHidden()) {
-            final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
-            for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-                if (mbsvh.effect.isSkill() && mbsvh.schedule != null && !mbsvh.effect.isMorph()) {
-                    cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-                }
-            }
-        }
-    }
-
-    public void dispelSkill(int skillid) {
-        final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<>(effects.values());
-
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            if (skillid == 0) {
-                if (mbsvh.effect.isSkill() && (mbsvh.effect.getSourceId() == 4331003 || mbsvh.effect.getSourceId() == 4331002 || mbsvh.effect.getSourceId() == 4341002 || mbsvh.effect.getSourceId() == 22131001 || mbsvh.effect.getSourceId() == 1321007 || mbsvh.effect.getSourceId() == 2121005 || mbsvh.effect.getSourceId() == 2221005 || mbsvh.effect.getSourceId() == 2311006 || mbsvh.effect.getSourceId() == 2321003 || mbsvh.effect.getSourceId() == 3111002 || mbsvh.effect.getSourceId() == 3111005 || mbsvh.effect.getSourceId() == 3211002 || mbsvh.effect.getSourceId() == 3211005 || mbsvh.effect.getSourceId() == 4111002)) {
-                    cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-                    break;
-                }
-            } else {
-                if (mbsvh.effect.isSkill() && mbsvh.effect.getSourceId() == skillid) {
-                    cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-                    break;
-                }
-            }
-        }
-    }
-
-    public void dispelBuff(int skillid) {
-        final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
-
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            if (mbsvh.effect.getSourceId() == skillid) {
-                cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-                break;
-            }
-        }
-    }
-
-    public void cancelAllBuffs_() {
-        effects.clear();
-    }
-
-    public void cancelAllBuffs() {
-        final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
-
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-        }
-    }
-
-    public void cancelMorphs() {
-        final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
-
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            switch (mbsvh.effect.getSourceId()) {
-                case 5111005:
-                case 5121003:
-                case 15111002:
-                case 13111005:
-                    return; // Since we can't have more than 1, save up on loops
-                default:
-                    if (mbsvh.effect.isMorph()) {
-                        cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-                        continue;
-                    }
-            }
-        }
-    }
-
-    public int getMorphState() {
-        LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            if (mbsvh.effect.isMorph()) {
-                return mbsvh.effect.getSourceId();
-            }
-        }
-        return -1;
-    }
-
-    public void cancelMagicDoor() {
-        final LinkedList<MapleBuffStatValueHolder> allBuffs = new LinkedList<MapleBuffStatValueHolder>(effects.values());
-
-        for (MapleBuffStatValueHolder mbsvh : allBuffs) {
-            if (mbsvh.effect.isMagicDoor()) {
-                cancelEffect(mbsvh.effect, false, mbsvh.startTime);
-                break;
-            }
-        }
-    }
-
     public int getSkillLevel(int skillid) {
         return getSkillLevel(SkillFactory.getSkill(skillid));
     }
 
-    public final void handleBattleshipHP(int damage) {
-        if (isActiveBuffedValue(5221006)) {
-            battleshipHP -= damage;
-            if (battleshipHP <= 0) {
-                battleshipHP = 0;
-                final MapleStatEffect effect = getStatForBuff(MapleBuffStat.MONSTER_RIDING);
-                client.getSession().write(ResCUserLocal.SkillCooltimeSet(5221006, effect.getCooldown()));
-                addCooldown(5221006, effect.getCooldown());
-                dispelSkill(5221006);
-            }
-        }
-    }
-
-    public final void handleOrbgain() {
-        int orbcount = getBuffedValue(MapleBuffStat.COMBO);
+    public void handleOrbgain() {
         ISkill combo;
         ISkill advcombo;
 
@@ -1422,22 +1092,6 @@ public class MapleCharacter extends TacosCharacter {
             ceffect = advcombo.getEffect(advComboSkillLevel);
         } else if (getSkillLevel(combo) > 0) {
             ceffect = combo.getEffect(getSkillLevel(combo));
-        } else {
-            return;
-        }
-
-        if (orbcount < ceffect.getX() + 1) {
-            int neworbcount = orbcount + 1;
-            if (advComboSkillLevel > 0 && ceffect.makeChanceResult()) {
-                if (neworbcount < ceffect.getX() + 1) {
-                    neworbcount++;
-                }
-            }
-            List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, neworbcount));
-            setBuffedValue(MapleBuffStat.COMBO, neworbcount);
-
-            //SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
-            map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
         }
     }
 
@@ -1456,17 +1110,6 @@ public class MapleCharacter extends TacosCharacter {
         if (getSkillLevel(combo) <= 0) {
             return;
         }
-        MapleStatEffect ceffect = getStatForBuff(MapleBuffStat.COMBO);
-        if (ceffect == null) {
-            return;
-        }
-        List<OdinPair<MapleBuffStat, Integer>> stat = Collections.singletonList(new OdinPair<MapleBuffStat, Integer>(MapleBuffStat.COMBO, 1));
-        setBuffedValue(MapleBuffStat.COMBO, 1);
-        int duration = ceffect.getDuration();
-        duration += (int) ((getBuffedStarttime(MapleBuffStat.COMBO) - System.currentTimeMillis()));
-
-        //SendPacket(ResCWvsContext.TemporaryStatSet(ceffect));
-        map.broadcastMessage(this, ResCUserRemote.giveForeignBuff(getId(), stat, ceffect), false);
     }
 
     public void silentEnforceMaxHpMp() {
@@ -1802,11 +1445,6 @@ public class MapleCharacter extends TacosCharacter {
             guildUpdate();
             familyUpdate();
             baseSkills();
-            if (newJob >= 2200 && newJob <= 2218) { //make new
-                if (getBuffedValue(MapleBuffStat.MONSTER_RIDING) != null) {
-                    cancelBuffStats(MapleBuffStat.MONSTER_RIDING);
-                }
-            }
 
             // 転職時にDBへ反映する
             saveToDB(false, false);
@@ -1901,20 +1539,6 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void playerDead() {
-        final MapleStatEffect statss = getStatForBuff(MapleBuffStat.SOUL_STONE);
-        if (statss != null) {
-            dropMessage(5, "You have been revived by Soul Stone.");
-            getStat().setHp(((getStat().getMaxHp() / 100) * statss.getX()));
-            setStance(0);
-            changeMap(getMap(), getMap().getPortal(0));
-            return;
-        }
-        dispelSkill(0);
-        cancelEffectFromBuffStat(MapleBuffStat.MORPH);
-        cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
-        cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
-        cancelEffectFromBuffStat(MapleBuffStat.REAPER);
-        cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
         if (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000) {
             int charms = getItemQuantity(5130000, false);
             if (charms > 0) {
@@ -4089,12 +3713,6 @@ public class MapleCharacter extends TacosCharacter {
         if (getTrade() != null) {
             MapleTrade.cancelTrade(getTrade(), client);
         }
-        if (!dc) {
-            cancelEffectFromBuffStat(MapleBuffStat.MONSTER_RIDING);
-            cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
-            cancelEffectFromBuffStat(MapleBuffStat.REAPER);
-            cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
-        }
         if (getPyramidSubway() != null) {
             getPyramidSubway().dispose(this);
         }
@@ -4417,7 +4035,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public final void removalTask() {
         try {
-            this.cancelAllBuffs_();
             if (this.getMarriageId() > 0) {
                 final MapleQuestStatus stat1 = this.getQuestNAdd(MapleQuest.getInstance(160001));
                 final MapleQuestStatus stat2 = this.getQuestNAdd(MapleQuest.getInstance(160002));

@@ -40,7 +40,6 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleStatEffect;
 import odin.server.StructPotentialItem;
 import odin.server.StructSetItem;
 import odin.server.StructSetItem.SetItem;
@@ -534,51 +533,6 @@ public class PlayerStats {
         localmaxmp_ += (percent_mp * localmaxmp_) / 100f;
         magic = Math.min(magic, 1999); //buffs can make it higher
 
-        Integer buff = chra.getBuffedValue(MapleBuffStat.MAPLE_WARRIOR);
-        if (buff != null) {
-            final double d = buff.doubleValue() / 100.0;
-            localstr += d * str; //base only
-            localdex += d * dex;
-            localluk += d * luk;
-
-            final int before = localint_;
-            localint_ += d * int_;
-            magic += localint_ - before;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ECHO_OF_HERO);
-        if (buff != null) {
-            final double d = buff.doubleValue() / 100.0;
-            watk += (int) (watk * d);
-            magic += (int) (magic * d);
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ARAN_COMBO);
-        if (buff != null) {
-            watk += buff.intValue() / 10;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MAXHP);
-        if (buff != null) {
-            localmaxhp_ += (buff.doubleValue() / 100.0) * localmaxhp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.CONVERSION);
-        if (buff != null) {
-            localmaxhp_ += (buff.doubleValue() / 100.0) * localmaxhp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MAXMP);
-        if (buff != null) {
-            localmaxmp_ += (buff.doubleValue() / 100.0) * localmaxmp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MP_BUFF);
-        if (buff != null) {
-            localmaxmp_ += (buff.doubleValue() / 100.0) * localmaxmp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ENHANCED_MAXHP);
-        if (buff != null) {
-            localmaxhp_ += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ENHANCED_MAXMP);
-        if (buff != null) {
-            localmaxmp_ += buff.intValue();
-        }
         switch (chra.getJob()) {
             case 322: { // Crossbowman
                 final ISkill expert = SkillFactory.getSkill(3220004);
@@ -654,120 +608,10 @@ public class PlayerStats {
             magic += blessoffairy.getEffect(boflevel).getY();
             accuracy += blessoffairy.getEffect(boflevel).getX();
         }
-        buff = chra.getBuffedValue(MapleBuffStat.EXPRATE);
-        if (buff != null) {
-            expBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DROP_RATE);
-        if (buff != null) {
-            dropBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ACASH_RATE);
-        if (buff != null) {
-            cashBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MESO_RATE);
-        if (buff != null) {
-            mesoBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MESOUP);
-        if (buff != null) {
-            mesoBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ACC);
-        if (buff != null) {
-            accuracy += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.WATK);
-        if (buff != null) {
-            watk += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ENHANCED_WATK);
-        if (buff != null) {
-            watk += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MATK);
-        if (buff != null) {
-            magic += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.SPEED);
-        if (buff != null) {
-            speed += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.JUMP);
-        if (buff != null) {
-            jump += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DASH_SPEED);
-        if (buff != null) {
-            speed += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DASH_JUMP);
-        if (buff != null) {
-            jump += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DAMAGE_BUFF);
-        if (buff != null) {
-            dam_r += buff.doubleValue();
-            bossdam_r += buff.doubleValue();
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.FINAL_CUT);
-        if (buff != null) {
-            dam_r *= buff.doubleValue() / 100.0;
-            bossdam_r *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.OWL_SPIRIT);
-        if (buff != null) {
-            dam_r *= buff.doubleValue() / 100.0;
-            bossdam_r *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.BERSERK_FURY);
-        if (buff != null) {
-            dam_r *= 2.0;
-            bossdam_r *= 2.0;
-        }
         final ISkill bx = SkillFactory.getSkill(1320006);
         if (chra.getSkillLevel(bx) > 0) {
             dam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
             bossdam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.PYRAMID_PQ);
-        if (buff != null) {
-            final MapleStatEffect eff = chra.getStatForBuff(MapleBuffStat.PYRAMID_PQ);
-            dam_r *= eff.getBerserk() / 100.0;
-            bossdam_r *= eff.getBerserk() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.WK_CHARGE);
-        if (buff != null) {
-            final MapleStatEffect eff = chra.getStatForBuff(MapleBuffStat.WK_CHARGE);
-            dam_r *= eff.getDamage() / 100.0;
-            bossdam_r *= eff.getDamage() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.LIGHTNING_CHARGE);
-        if (buff != null) {
-            final MapleStatEffect eff = chra.getStatForBuff(MapleBuffStat.LIGHTNING_CHARGE);
-            dam_r *= eff.getDamage() / 100.0;
-            bossdam_r *= eff.getDamage() / 100.0;
-        }
-        buff = chra.getBuffedSkill_X(MapleBuffStat.THORNS);
-        if (buff != null) {
-            added_sharpeye_rate += buff.intValue();
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.THORNS);
-        if (buff != null) {
-            added_sharpeye_dmg += buff.intValue() - 100;
-        }
-        buff = chra.getBuffedSkill_X(MapleBuffStat.SHARP_EYES);
-        if (buff != null) {
-            added_sharpeye_rate += buff.intValue();
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.SHARP_EYES);
-        if (buff != null) {
-            added_sharpeye_dmg += buff.intValue() - 100;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.CRITICAL_RATE_BUFF);
-        if (buff != null) {
-            added_sharpeye_rate += buff.intValue();
         }
         if (speed > 140) {
             speed = 140;
@@ -777,23 +621,6 @@ public class PlayerStats {
         }
         speedMod = speed / 100.0f;
         jumpMod = jump / 100.0f;
-        Integer mount = chra.getBuffedValue(MapleBuffStat.MONSTER_RIDING);
-        if (mount != null) {
-            jumpMod = 1.23f;
-            switch (mount.intValue()) {
-                case 1:
-                    speedMod = 1.5f;
-                    break;
-                case 2:
-                    speedMod = 1.7f;
-                    break;
-                case 3:
-                    speedMod = 1.8f;
-                    break;
-                default:
-                    System.err.println("Unhandeled monster riding level, Speedmod = " + speedMod + "");
-            }
-        }
         hands = this.localdex + this.localint_ + this.localluk;
 
         localmaxhp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxhp_)));

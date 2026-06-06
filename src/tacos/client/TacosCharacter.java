@@ -978,7 +978,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         int combo_level = this.m_nCombo / 10;
         if (this.m_nCombo % 10 == 0 && 1 <= combo_level && combo_level <= 10) {
             if (combo_level <= ((MapleCharacter) this).getSkillLevel(OpsSkill.ARAN_COMBO_ABILITY.get())) {
-                SkillFactory.getSkill(OpsSkill.ARAN_COMBO_ABILITY.get()).getEffect(combo_level).applyComboBuff((MapleCharacter) this, this.m_nCombo);
+                // buff.
             }
         }
         return true;

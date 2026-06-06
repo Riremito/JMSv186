@@ -716,12 +716,11 @@ public abstract class OdinAbstractPlayerInteraction {
         client.getSession().write(ResWrapper.getStatusMsg(id));
     }
 
-    public final void cancelItem(final int id) {
-        client.getPlayer().cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(id), false, -1);
+    public void cancelItem(int id) {
     }
 
-    public final int getMorphState() {
-        return client.getPlayer().getMorphState();
+    public int getMorphState() {
+        return 0;
     }
 
     public final void removeAll(final int id) {

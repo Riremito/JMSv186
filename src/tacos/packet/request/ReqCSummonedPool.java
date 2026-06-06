@@ -19,7 +19,6 @@
 package tacos.packet.request;
 
 import odin.client.ISkill;
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.SkillFactory;
@@ -205,8 +204,6 @@ public class ReqCSummonedPool {
                 chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
                 chr.getMap().removeMapObject(summon);
                 chr.removeVisibleMapObject(summon);
-                chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
-                chr.cancelEffectFromBuffStat(MapleBuffStat.REAPER);
             }
             return;
         }
@@ -301,8 +298,6 @@ public class ReqCSummonedPool {
             chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
             chr.getMap().removeMapObject(summon);
             chr.removeVisibleMapObject(summon);
-            chr.cancelEffectFromBuffStat(MapleBuffStat.SUMMON);
-            chr.cancelEffectFromBuffStat(MapleBuffStat.REAPER);
         }
     }
 
@@ -319,9 +314,6 @@ public class ReqCSummonedPool {
             summon = iter.next();
             if (summon.isPuppet() && summon.getOwnerId() == chr.getId()) { //We can only have one puppet(AFAIK O.O) so this check is safe.
                 summon.addHP((short) -damage);
-                if (summon.getHP() <= 0) {
-                    chr.cancelEffectFromBuffStat(MapleBuffStat.PUPPET);
-                }
                 chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
                 break;
             }

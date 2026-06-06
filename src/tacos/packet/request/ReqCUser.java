@@ -42,7 +42,6 @@ import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleBuffStat;
 import odin.handling.channel.handler.AllianceHandler;
 import odin.handling.channel.handler.BBSHandler;
 import odin.handling.channel.handler.FamilyHandler;
@@ -1204,10 +1203,7 @@ public class ReqCUser {
         }
         if (uhd.nReflect != 0) {
             if (uhd.bPowerGuard != 0) {
-                Integer rate = chr.getBuffedValue(MapleBuffStat.POWERGUARD);
-                if (rate == null) {
-                    return true;
-                }
+                Integer rate = 0; // PG SKILL.
                 int reflect_damage = (int) (uhd.nDamage / 100.0 * rate);
                 uhd.nDelta = uhd.nDamage - reflect_damage;
                 monster.damage(chr, reflect_damage, true);
@@ -1218,7 +1214,7 @@ public class ReqCUser {
                 return true;
             }
         }
-        Integer magic_guard_rate = chr.getBuffedValue(MapleBuffStat.MAGIC_GUARD);
+        Integer magic_guard_rate = 0; // MG SKILL
         if (magic_guard_rate != null) {
             int mp_damage = (int) (uhd.nDamage / 100.0 * magic_guard_rate);
             if (chr.getStat().getMp() < mp_damage) {
@@ -1232,7 +1228,7 @@ public class ReqCUser {
             chr.DebugMsg("MagicGuard : " + uhd.nDamage + " -> " + hp_damage + ", " + mp_damage);
             return true;
         }
-        Integer meso_guard_rate = chr.getBuffedValue(MapleBuffStat.MESOGUARD);
+        Integer meso_guard_rate = 0; // MESO GUARD SKILL.
         if (meso_guard_rate != null) {
             int meso_damage = (int) (uhd.nDamage / 100.0 * meso_guard_rate);
             if (chr.getMeso() < meso_damage) {
