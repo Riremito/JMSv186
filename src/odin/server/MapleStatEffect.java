@@ -11,7 +11,6 @@ import java.util.Map;
 import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.MapleCoolDownValueHolder;
-import odin.client.MapleDisease;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import odin.client.inventory.IItem;
@@ -34,7 +33,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
-import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.Timer.BuffTimer;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
@@ -61,7 +59,6 @@ public class MapleStatEffect implements Serializable {
     private int expBuff, itemup, mesoup, cashup, berserk, illusion, booster, berserk2, cp, nuffSkill;
     private byte level;
     private int exp; // gashaEXP, consume 237
-    private List<MapleDisease> cureDebuffs;
     private ArrayList<OdinPair<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
     public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level) {
@@ -320,24 +317,6 @@ public class MapleStatEffect implements Serializable {
         ret.berserk2 = WzDataTool.getIntExpression("berserk2", source, 0, common_level);
         ret.booster = 0;
         ret.illusion = WzDataTool.getIntExpression("illusion", source, 0, common_level);
-
-        List<MapleDisease> cure = new ArrayList<>(5);
-        if (WzDataTool.getIntPath("poison", source, 0) > 0) {
-            cure.add(MapleDisease.POISON);
-        }
-        if (WzDataTool.getIntPath("seal", source, 0) > 0) {
-            cure.add(MapleDisease.SEAL);
-        }
-        if (WzDataTool.getIntPath("darkness", source, 0) > 0) {
-            cure.add(MapleDisease.DARKNESS);
-        }
-        if (WzDataTool.getIntPath("weakness", source, 0) > 0) {
-            cure.add(MapleDisease.WEAKEN);
-        }
-        if (WzDataTool.getIntPath("curse", source, 0) > 0) {
-            cure.add(MapleDisease.CURSE);
-        }
-        ret.cureDebuffs = cure;
 
         final IMapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
@@ -955,15 +934,7 @@ public class MapleStatEffect implements Serializable {
             hpchange = stat.getMaxHp();
             applyto.setStance(0); //TODO fix death bug, player doesnt spawn on other screen
         }
-        if (isDispel() && makeChanceResult()) {
-            applyto.dispelDebuffs();
-        } else if (isHeroWill()) {
-            applyto.dispelDebuff(MapleDisease.SEDUCE);
-        } else if (cureDebuffs.size() > 0) {
-            for (final MapleDisease debuff : cureDebuffs) {
-                applyfrom.dispelDebuff(debuff);
-            }
-        } else if (isMPRecovery()) {
+        if (isMPRecovery()) {
             final int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);
             if (stat.getHp() > toDecreaseHP) {
                 hpchange += -toDecreaseHP; // -10% of max HP
@@ -973,7 +944,7 @@ public class MapleStatEffect implements Serializable {
             mpchange += ((toDecreaseHP / 100) * getY());
         }
         if (hpchange != 0) {
-            if (hpchange < 0 && (-hpchange) > stat.getHp() && !applyto.hasDisease(MapleDisease.ZOMBIFY)) {
+            if (hpchange < 0 && (-hpchange) > stat.getHp()) {
                 return false;
             }
             stat.setHp(stat.getHp() + hpchange);
@@ -1014,27 +985,6 @@ public class MapleStatEffect implements Serializable {
             applyto.CPUpdate(false, applyto.getAvailableCP(), applyto.getTotalCP(), 0);
             for (MapleCharacter chr : applyto.getMap().getCharacters()) {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
-            }
-        } else if (nuffSkill != 0 && applyto.getParty() != null) {
-            final MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(nuffSkill);
-            if (skil != null) {
-                final MapleDisease dis = skil.getDisease();
-                for (MapleCharacter chr : applyto.getMap().getCharacters()) {
-                    if (chr.getParty() == null || (chr.getParty().getId() != applyto.getParty().getId())) {
-                        if (skil.targetsAll || Randomizer.nextBoolean()) {
-                            if (dis == null) {
-                                chr.dispel();
-                            } else if (skil.getSkill() == null) {
-                                chr.giveDebuff(dis, 1, 30000, MapleDisease.getByDisease(dis), 1);
-                            } else {
-                                chr.giveDebuff(dis, skil.getSkill());
-                            }
-                            if (!skil.targetsAll) {
-                                break;
-                            }
-                        }
-                    }
-                }
             }
         }
         if (overTime && !isEnergyCharge()) {
@@ -1454,18 +1404,12 @@ public class MapleStatEffect implements Serializable {
                 } else {
                     hpchange += hp;
                 }
-                if (applyfrom.hasDisease(MapleDisease.ZOMBIFY)) {
-                    hpchange /= 2;
-                }
             } else { // assumption: this is heal
                 hpchange += makeHealHP(hp / 100.0, applyfrom.getStat().getTotalMagic(), 3, 5);
-                if (applyfrom.hasDisease(MapleDisease.ZOMBIFY)) {
-                    hpchange = -hpchange;
-                }
             }
         }
         if (hpR != 0) {
-            hpchange += (int) (applyfrom.getStat().getCurrentMaxHp() * hpR) / (applyfrom.hasDisease(MapleDisease.ZOMBIFY) ? 2 : 1);
+            hpchange += (int) (applyfrom.getStat().getCurrentMaxHp() * hpR);
         }
         // actually receivers probably never get any hp when it's not heal but whatever
         if (primary) {

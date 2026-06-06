@@ -108,7 +108,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.BuffTimer;
 import odin.server.Timer.EtcTimer;
 import odin.server.Timer.MapTimer;
-import odin.server.life.MobSkill;
 import odin.server.maps.Event_PyramidSubway;
 import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
@@ -160,9 +159,8 @@ public class MapleCharacter extends TacosCharacter {
     private transient Set<MapleMapObject> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
-    private transient Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentEnumMap<MapleBuffStat, MapleBuffStatValueHolder>(MapleBuffStat.class);
+    private transient Map<MapleBuffStat, MapleBuffStatValueHolder> effects = new ConcurrentEnumMap<>(MapleBuffStat.class);
     private transient Map<Integer, MapleSummon> summons;
-    private transient Map<MapleDisease, MapleDiseaseValueHolder> diseases = new ConcurrentEnumMap<MapleDisease, MapleDiseaseValueHolder>(MapleDisease.class);
     private CashShop cs;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
@@ -3107,67 +3105,6 @@ public class MapleCharacter extends TacosCharacter {
         OK, NOT_TODAY, NOT_THIS_MONTH
     }
 
-    public final List<MapleDiseaseValueHolder> getAllDiseases() {
-        return new ArrayList<MapleDiseaseValueHolder>(diseases.values());
-    }
-
-    public final boolean hasDisease(final MapleDisease dis) {
-        return diseases.keySet().contains(dis);
-    }
-
-    public void giveDebuff(final MapleDisease disease, MobSkill skill) {
-        giveDebuff(disease, skill.getX(), skill.getDuration(), skill.getSkillId(), skill.getSkillLevel());
-    }
-
-    public void giveDebuff(final MapleDisease disease, int x, long duration, int skillid, int level) {
-        final List<OdinPair<MapleDisease, Integer>> debuff = Collections.singletonList(new OdinPair<MapleDisease, Integer>(disease, Integer.valueOf(x)));
-
-        if (!hasDisease(disease) && diseases.size() < 2) {
-            if (!(disease == MapleDisease.SEDUCE || disease == MapleDisease.STUN)) {
-                if (isActiveBuffedValue(2321005)) {
-                    return;
-                }
-            }
-
-            diseases.put(disease, new MapleDiseaseValueHolder(disease, System.currentTimeMillis(), duration));
-            DebugLogger.ErrorLog("debuff");
-            //client.getSession().write(ResCWvsContext.giveDebuff(debuff, skillid, level, (int) duration));
-            //map.broadcastMessage(this, ResCUserRemote.giveForeignDebuff(id, debuff, skillid, level), false);
-        }
-    }
-
-    public final void giveSilentDebuff(final List<MapleDiseaseValueHolder> ld) {
-        if (ld != null) {
-            for (final MapleDiseaseValueHolder disease : ld) {
-                diseases.put(disease.disease, disease);
-            }
-        }
-    }
-
-    public void dispelDebuff(MapleDisease debuff) {
-        if (hasDisease(debuff)) {
-            long mask = debuff.getValue();
-            boolean first = debuff.isFirst();
-            DebugLogger.ErrorLog("dispelDebuff");
-            //client.getSession().write(ResCWvsContext.cancelDebuff(mask, first));
-            //map.broadcastMessage(this, ResCUserRemote.cancelForeignDebuff(id, mask, first), false);
-
-            diseases.remove(debuff);
-        }
-    }
-
-    public void dispelDebuffs() {
-        dispelDebuff(MapleDisease.CURSE);
-        dispelDebuff(MapleDisease.DARKNESS);
-        dispelDebuff(MapleDisease.POISON);
-        dispelDebuff(MapleDisease.SEAL);
-        dispelDebuff(MapleDisease.WEAKEN);
-    }
-
-    public void cancelAllDebuffs() {
-        diseases.clear();
-    }
-
     public void setLevel(final int level) {
         this.level = level;
     }
@@ -4481,7 +4418,6 @@ public class MapleCharacter extends TacosCharacter {
     public final void removalTask() {
         try {
             this.cancelAllBuffs_();
-            this.cancelAllDebuffs();
             if (this.getMarriageId() > 0) {
                 final MapleQuestStatus stat1 = this.getQuestNAdd(MapleQuest.getInstance(160001));
                 final MapleQuestStatus stat2 = this.getQuestNAdd(MapleQuest.getInstance(160002));

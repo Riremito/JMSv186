@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
-import odin.client.MapleDisease;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
@@ -375,46 +374,6 @@ public class ResCUserRemote {
         }
         sp.Encode1(0);
         return sp.get();
-    }
-
-    public static MaplePacket giveForeignDebuff(int cid, final List<OdinPair<MapleDisease, Integer>> statups, int skillid, int level) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
-
-        sp.Encode4(cid);
-        sp.EncodeBuffer(writeLongDiseaseMask(statups));
-
-        if (skillid == 125) {
-            sp.Encode2(0);
-        }
-        sp.Encode2(skillid);
-        sp.Encode2(level);
-        sp.Encode2(0); // same as give_buff
-        sp.Encode2(900); //Delay
-        return sp.get();
-    }
-
-    // List<Pair<MapleDisease, Integer>>
-    public static byte[] writeLongDiseaseMask(List<OdinPair<MapleDisease, Integer>> statups) {
-        ServerPacket data = new ServerPacket();
-
-        long firstmask = 0;
-        long secondmask = 0;
-        for (OdinPair<MapleDisease, Integer> statup : statups) {
-            if (statup.getLeft().isFirst()) {
-                firstmask |= statup.getLeft().getValue();
-            } else {
-                secondmask |= statup.getLeft().getValue();
-            }
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            data.EncodeZeroBytes(4);
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 164)) {
-            data.Encode8(firstmask);
-        }
-        data.Encode8(secondmask);
-
-        return data.get().getBytes();
     }
 
     public static MaplePacket showPetLevelUp(MapleCharacter chr, int index) {

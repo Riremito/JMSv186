@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 import odin.client.MapleCharacter;
-import odin.client.MapleDisease;
 import odin.client.status.MonsterStatus;
 import java.util.EnumMap;
 import odin.server.maps.MapleMapObject;
@@ -139,7 +138,6 @@ public class MobSkill {
     }
 
     public void applyEffect(MapleCharacter player, MapleMonster monster, boolean skill) {
-        MapleDisease disease = null;
         Map<MonsterStatus, Integer> stats = new EnumMap<>(MonsterStatus.class);
         List<Integer> reflection = new LinkedList<>();
 
@@ -186,22 +184,6 @@ public class MobSkill {
                 } else if (monster != null) {
                     monster.heal(getX(), getY(), true);
                 }
-                break;
-            case 120:
-            case 121:
-            case 122:
-            case 123:
-            case 124:
-            case 125:
-            case 126: // Slow
-            case 128: // Seduce
-            case 132:
-            case 133:
-            case 134:
-            case 135:
-            case 136:
-            case 137:
-                disease = MapleDisease.getBySkill(skillId);
                 break;
             case 127:
                 if (lt != null && rb != null && skill && monster != null && player != null) {
@@ -327,15 +309,6 @@ public class MobSkill {
                 }
             } else {
                 monster.applyMonsterBuff(stats, getSkillId(), getDuration(), this, reflection);
-            }
-        }
-        if (disease != null && player != null) {
-            if (lt != null && rb != null && skill && monster != null) {
-                for (MapleCharacter chr : getPlayersInRange(monster, player)) {
-                    chr.giveDebuff(disease, this);
-                }
-            } else {
-                player.giveDebuff(disease, this);
             }
         }
         if (monster != null) {

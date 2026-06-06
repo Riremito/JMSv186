@@ -20,13 +20,11 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MapleDisease;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleCarnivalFactory;
-import odin.server.Randomizer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
@@ -105,25 +103,7 @@ public class ReqCField_MonsterCarnival {
                 chr.sendStatChanged(true);
                 return;
             }
-            final MapleDisease dis = skil.getDisease();
             boolean found = false;
-            for (MapleCharacter player : chr.getMap().getCharacters()) {
-                if (player.getParty() == null || (player.getParty().getId() != player.getParty().getId())) {
-                    if (skil.targetsAll || Randomizer.nextBoolean()) {
-                        found = true;
-                        if (dis == null) {
-                            player.dispel();
-                        } else if (skil.getSkill() == null) {
-                            player.giveDebuff(dis, 1, 30000, MapleDisease.getByDisease(dis), 1);
-                        } else {
-                            player.giveDebuff(dis, skil.getSkill());
-                        }
-                        if (!skil.targetsAll) {
-                            break;
-                        }
-                    }
-                }
-            }
             if (found) {
                 chr.getCarnivalParty().useCP(chr, skil.cpLoss);
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);

@@ -21,7 +21,6 @@ package tacos.server.map;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.MapleCoolDownValueHolder;
-import odin.client.MapleDiseaseValueHolder;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.server.maps.MapleMap;
@@ -108,13 +107,6 @@ public class TacosTask {
 
         // buff.
         doCharacterTask_Buff(chr, time);
-
-        // debuff.
-        for (MapleDiseaseValueHolder dvh : chr.getAllDiseases()) {
-            if (dvh.startTime + dvh.length <= time) {
-                chr.dispelDebuff(dvh.disease);
-            }
-        }
 
         // pet.
         for (MaplePet pet : chr.getPets()) {

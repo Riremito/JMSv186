@@ -36,7 +36,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.IItem;
 import odin.client.ISkill;
 import odin.client.inventory.Item;
-import odin.client.MapleDisease;
 import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
@@ -364,9 +363,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 } else {
                     exp *= 1.0 + (holySymbol.doubleValue() / 100.0);
                 }
-            }
-            if (attacker.hasDisease(MapleDisease.CURSE)) {
-                exp /= 2;
             }
             exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
             exp *= attacker.getChannelServer().getExpRate();
