@@ -21,11 +21,8 @@
  */
 package odin.handling.world.family;
 
-import odin.client.MapleCharacter;
 import java.util.ArrayList;
 import java.util.List;
-import odin.server.MapleItemInformationProvider;
-import odin.server.MapleStatEffect;
 
 public class MapleFamilyBuff {
     //todo; read from somewhere
@@ -95,11 +92,6 @@ public class MapleFamilyBuff {
                     return 2450018;
             }
             return 2022332; //custom
-        }
-
-        public void applyTo(MapleCharacter chr) {
-            MapleStatEffect eff = MapleItemInformationProvider.getInstance().getItemEffect(getEffectId());
-            // buff.
         }
     }
 }

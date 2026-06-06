@@ -969,10 +969,6 @@ public class MapleStatEffect implements Serializable {
         return overTime;
     }
 
-    public final boolean sameSource(final MapleStatEffect effect) {
-        return effect != null && this.sourceid == effect.sourceid && this.skill == effect.skill;
-    }
-
     public final int getX() {
         return x;
     }

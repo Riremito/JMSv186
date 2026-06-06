@@ -103,7 +103,6 @@ import odin.server.CashShop;
 import tacos.odin.OdinPair;
 import odin.server.MapleCarnivalChallenge;
 import odin.server.MapleInventoryManipulator;
-import odin.server.Timer.BuffTimer;
 import odin.server.Timer.EtcTimer;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.Event_PyramidSubway;
@@ -2821,30 +2820,6 @@ public class MapleCharacter extends TacosCharacter {
         this.keydown_skill = keydown_skill;
     }
 
-    public void checkBerserk() {
-        if (BerserkSchedule != null) {
-            BerserkSchedule.cancel(false);
-            BerserkSchedule = null;
-        }
-
-        final ISkill BerserkX = SkillFactory.getSkill(1320006);
-        final int skilllevel = getSkillLevel(BerserkX);
-        if (skilllevel >= 1) {
-            final MapleStatEffect ampStat = BerserkX.getEffect(skilllevel);
-            stats.Berserk = stats.getHp() * 100 / stats.getMaxHp() <= ampStat.getX();
-            client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillUse, 1320006, stats.Berserk));
-            map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillUse, this, 1320006, stats.Berserk), false);
-
-            BerserkSchedule = BuffTimer.getInstance().schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    checkBerserk();
-                }
-            }, 10000);
-        }
-    }
-
     public boolean IsBerserk() {
         final ISkill BerserkX = SkillFactory.getSkill(1320006);
         final int skilllevel = getSkillLevel(BerserkX);
@@ -2874,52 +2849,6 @@ public class MapleCharacter extends TacosCharacter {
         // CUser::LoadSwallowingEffect
         // mask |= 4;
         return mask;
-    }
-
-    private void prepareBeholderEffect() {
-        if (beholderHealingSchedule != null) {
-            beholderHealingSchedule.cancel(false);
-        }
-        if (beholderBuffSchedule != null) {
-            beholderBuffSchedule.cancel(false);
-        }
-        ISkill bHealing = SkillFactory.getSkill(1320008);
-        final int bHealingLvl = getSkillLevel(bHealing);
-        final int berserkLvl = getSkillLevel(SkillFactory.getSkill(1320006));
-
-        if (bHealingLvl > 0) {
-            final MapleStatEffect healEffect = bHealing.getEffect(bHealingLvl);
-            int healInterval = healEffect.getX() * 1000;
-            beholderHealingSchedule = BuffTimer.getInstance().register(new Runnable() {
-
-                @Override
-                public void run() {
-                    int remhppercentage = (int) Math.ceil((getStat().getHp() * 100.0) / getStat().getMaxHp());
-                    if (berserkLvl == 0 || remhppercentage >= berserkLvl + 10) {
-                        addHP(healEffect.getHp());
-                    }
-                    //client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
-                    //map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, 5));
-                    //map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
-                }
-            }, healInterval, healInterval);
-        }
-        ISkill bBuff = SkillFactory.getSkill(1320009);
-        final int bBuffLvl = getSkillLevel(bBuff);
-        if (bBuffLvl > 0) {
-            final MapleStatEffect buffEffect = bBuff.getEffect(bBuffLvl);
-            int buffInterval = buffEffect.getX() * 1000;
-            beholderBuffSchedule = BuffTimer.getInstance().register(new Runnable() {
-
-                @Override
-                public void run() {
-                    //buffEffect.applyTo(MapleCharacter.this);
-                    //client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, 1321007));
-                    //map.broadcastMessage(ResCSummonedPool.summonSkill(getId(), 1321007, Randomizer.nextInt(3) + 6));
-                    //map.broadcastMessage(MapleCharacter.this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, MapleCharacter.this, 1321007), false);
-                }
-            }, buffInterval, buffInterval);
-        }
     }
 
     public void setADBoard(String text) {

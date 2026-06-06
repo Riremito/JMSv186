@@ -22,13 +22,11 @@ package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
-import java.util.List;
 import tacos.packet.response.ResCWvsContext;
 import tacos.database.query.DQ_Notes;
 import tacos.packet.ClientPacket;
@@ -90,19 +88,6 @@ public class FamilyHandler {
                 }
                 return; //RETURN not break
             case 4: // 6 family members in pedigree online Drop Rate & Exp Rate + 100% 30 minutes
-                final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
-                List<MapleFamilyCharacter> chrs = fam.getMFC(c.getPlayer().getId()).getOnlineJuniors(fam);
-                if (chrs.size() < 7) {
-                    success = false;
-                } else {
-                    for (MapleFamilyCharacter chrz : chrs) {
-                        MapleCharacter chrr = c.getWorld().findOnlinePlayerById(chrz.getId());
-                        if (chrr != null) {
-                            entry.applyTo(chrr);
-                        }
-                        //chrr.getClient().getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                    }
-                }
                 break;
 
             case 2: // drop rate + 50% 15 min
@@ -111,24 +96,9 @@ public class FamilyHandler {
             case 6: // exp rate + 100% 15 min
             case 7: // drop rate + 100% 30 min
             case 8: // exp rate + 100% 30 min
-                //c.getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                entry.applyTo(c.getPlayer());
                 break;
             case 9: // drop rate + 100% party 30 min
             case 10: // exp rate + 100% party 30 min
-                entry.applyTo(c.getPlayer());
-                //c.getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                if (c.getPlayer().getParty() != null) {
-                    for (MaplePartyCharacter mpc : c.getPlayer().getParty().getMembers()) {
-                        if (mpc.getId() != c.getPlayer().getId()) {
-                            MapleCharacter chr = c.getPlayer().getMap().getCharacterById(mpc.getId());
-                            if (chr != null) {
-                                entry.applyTo(chr);
-                                //chr.getClient().getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                            }
-                        }
-                    }
-                }
                 break;
         }
         if (success) { //again
