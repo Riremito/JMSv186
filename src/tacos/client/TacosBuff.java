@@ -68,8 +68,11 @@ public class TacosBuff {
         if (ServerConfig.JMS146orLater()) {
             return new int[4]; // 16
         }
+        if (Version.Equal(Region.KMS, 1)) {
+            return new int[1]; // 4
+        }
         // JMS131, reverse order.
-        return new int[2];
+        return new int[2]; // 8
     }
 
     public static int[] getMobBuffBuffer() {
@@ -94,6 +97,7 @@ public class TacosBuff {
         if (Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.KMS, 95) || Version.Equal(Region.THMS, 87)) {
             return new int[4]; // 16
         }
+        // KMS1 = none or 4.
         // JMS131-164, KMS31-65, BMS24
         return new int[1]; // 4
     }

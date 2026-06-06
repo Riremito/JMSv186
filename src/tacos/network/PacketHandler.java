@@ -205,8 +205,8 @@ public class PacketHandler extends IoHandlerAdapter {
             if (!((IPacketHandler) this).OnPacket(client, header, cp)) {
                 DebugLogger.CPLog(cp);
             }
-
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -46,9 +46,15 @@ public class MapleQuest {
     }
 
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
-        // read reqs
-        final IMapleData basedata1 = WzXML.QUEST.getCheck().getChildByPath(String.valueOf(id));
-        final IMapleData basedata2 = WzXML.QUEST.getAct().getChildByPath(String.valueOf(id));
+        IMapleData check_img = WzXML.QUEST.getCheck();
+        IMapleData act_img = WzXML.QUEST.getAct();
+        // KMS1
+        if (check_img == null || act_img == null) {
+            return false;
+        }
+
+        IMapleData basedata1 = check_img.getChildByPath(String.valueOf(id));
+        IMapleData basedata2 = act_img.getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;

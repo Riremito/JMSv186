@@ -39,15 +39,37 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCMobPool {
 
-    public static MaplePacket MobEnterField(MapleMonster monster, int spawnType, int effect, int link) {
+    public static MaplePacket MobEnterField_KMS1(MapleMonster monster, int spawnType, int effect, int link) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEnterField);
 
         sp.Encode4(monster.getObjectId());
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        sp.Encode4(monster.getId());
 
-        } else {
-            sp.Encode1(1); // 1 = Control normal, 5 = Control none
+        // CMob::Init
+        sp.Encode2(monster.getPosition().x); // m_ptPosPrev.x
+        sp.Encode2(monster.getPosition().y); // m_ptPosPrev.y
+        sp.Encode1(monster.getStance()); // m_nMoveAction_CS
+        sp.Encode2(monster.getFh()); // pvcMobActiveObj
+        sp.Encode2(monster.getOriginFh()); // m_pInterface
+        sp.Encode1(spawnType);
+
+        if (spawnType == -3 || 0 <= spawnType) {
+            sp.Encode4(link); // dwOption
         }
+
+        sp.Encode4(0); // mob stat?
+        return sp.get();
+    }
+
+    public static MaplePacket MobEnterField(MapleMonster monster, int spawnType, int effect, int link) {
+        if (Version.Equal(Region.KMS, 1)) {
+            return MobEnterField_KMS1(monster, spawnType, effect, link);
+        }
+
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEnterField);
+
+        sp.Encode4(monster.getObjectId());
+        sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(monster.getId());
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -79,11 +101,6 @@ public class ResCMobPool {
         }
 
         if (Version.LessOrEqual(Region.KMS, 31)) {
-            return sp.get();
-        }
-
-        if (Version.LessOrEqual(Region.KMS, 1)) {
-            sp.Encode4(0); // mob stat?
             return sp.get();
         }
 
@@ -133,11 +150,12 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); // dwMobId
 
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            return sp.get();
+        }
+
         if (nLevel != 0) {
-            if (Version.LessOrEqual(Region.KMS, 1)) {
-            } else {
-                sp.Encode1(1); // nCalcDamageIndex, 1 = Control normal, 5 = Control none
-            }
+            sp.Encode1(1); // nCalcDamageIndex, 1 = Control normal, 5 = Control none
             // CMobPool::SetLocalMob
             sp.Encode4(monster.getId()); // dwTemplateID
 
