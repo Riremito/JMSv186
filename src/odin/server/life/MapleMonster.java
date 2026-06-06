@@ -123,12 +123,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public final void setSponge(final MapleMonster mob) {
-        sponge = new WeakReference<MapleMonster>(mob);
+        sponge = new WeakReference<>(mob);
     }
 
-    public final void setMap(final MapleMap map) {
+    public void setMap(final MapleMap map) {
         this.map = map;
-        startDropItemSchedule();
     }
 
     public final long getHp() {
@@ -322,7 +321,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
             }
         }
-        startDropItemSchedule();
     }
 
     public void heal(int hp, int mp, final boolean broadcast) {
@@ -684,21 +682,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         this.eventInstance = eventInstance;
     }
 
-    public final int getStatusSourceID(final MonsterStatus status) {
-        final MonsterStatusEffect effect = stati.get(status);
-        if (effect != null) {
-            return effect.getSkill();
-        }
-        return -1;
-    }
-
-    public final ElementalEffectiveness getEffectiveness(final Element e) {
-        if (stati.size() > 0 && stati.get(MonsterStatus.DOOM) != null) {
-            return ElementalEffectiveness.NORMAL; // like blue snails
-        }
-        return stats.getEffectiveness(e);
-    }
-
     public final void applyStatus(final MapleCharacter from, final MonsterStatusEffect status, final boolean poison, final long duration, final boolean venom) {
         applyStatus(from, status, poison, duration, venom, true);
     }
@@ -902,16 +885,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             }
         }
         timerManager.schedule(cancelTask, duration);
-    }
-
-    public final void setTempEffectiveness(final Element e, final long milli) {
-        stats.setEffectiveness(e, ElementalEffectiveness.WEAK);
-        MobTimer.getInstance().schedule(new Runnable() {
-
-            public void run() {
-                stats.removeEffectiveness(e);
-            }
-        }, milli);
     }
 
     public final boolean isBuffed(final MonsterStatus status) {
@@ -1403,34 +1376,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             dropItemSchedule.cancel(false);
             dropItemSchedule = null;
         }
-    }
-
-    public final void startDropItemSchedule() {
-        cancelDropItem();
-        if (stats.getDropItemPeriod() <= 0 || !isAlive()) {
-            return;
-        }
-        final int itemId;
-        switch (getId()) {
-            case 9300061:
-                itemId = 4001101;
-                break;
-            default: //until we find out ... what other mobs use this and how to get the ITEMID
-                return;
-        }
-        shouldDropItem = false;
-        dropItemSchedule = MobTimer.getInstance().register(new Runnable() {
-
-            public void run() {
-                if (isAlive() && map != null) {
-                    if (shouldDropItem) {
-                        map.spawnAutoDrop(itemId, getPosition());
-                    } else {
-                        shouldDropItem = true;
-                    }
-                }
-            }
-        }, stats.getDropItemPeriod() * 1000);
     }
 
     public MaplePacket getNodePacket() {

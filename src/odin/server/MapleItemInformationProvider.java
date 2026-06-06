@@ -56,16 +56,8 @@ public class MapleItemInformationProvider {
     protected final List<OdinPair<Integer, String>> itemNameCache = new ArrayList<OdinPair<Integer, String>>();
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
-    protected final Map<Integer, OdinPair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<Integer, OdinPair<Integer, List<StructRewardItem>>>();
+    protected Map<Integer, OdinPair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
     protected final Map<Integer, OdinPair<Integer, List<Integer>>> questItems = new HashMap<>();
-
-    public StructSetItem getSetItem(int setItemId) {
-        return WzXML.ETC.getSetItemInfoList().get(setItemId);
-    }
-
-    public final List<StructPotentialItem> getPotentialInfo(int potId) {
-        return WzXML.ITEM.getItemOptionList().get(potId);
-    }
 
     public static final MapleItemInformationProvider getInstance() {
         return instance;
@@ -1120,7 +1112,7 @@ public class MapleItemInformationProvider {
         return bRestricted;
     }
 
-    public final OdinPair<Integer, List<StructRewardItem>> getRewardItem(final int itemid) {
+    public OdinPair<Integer, List<StructRewardItem>> getRewardItem(final int itemid) {
         if (RewardItem.containsKey(itemid)) {
             return RewardItem.get(itemid);
         }
@@ -1133,7 +1125,7 @@ public class MapleItemInformationProvider {
             return null;
         }
         int totalprob = 0; // As there are some rewards with prob above 2000, we can't assume it's always 100
-        List<StructRewardItem> all = new ArrayList<StructRewardItem>();
+        List<StructRewardItem> all = new ArrayList<>();
 
         for (final IMapleData reward : rewards) {
             StructRewardItem struct = new StructRewardItem();

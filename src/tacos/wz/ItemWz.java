@@ -23,14 +23,13 @@ import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import odin.server.StructPotentialItem;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
+import tacos.unofficial.PotentialOptimization;
+import tacos.unofficial.PotentialOptimization.PotentialOptionData;
 
 /**
  *
@@ -137,7 +136,6 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    Map<Integer, List<StructPotentialItem>> map_ItemOption = null;
     ArrayList<Integer> list_RarePotential = null;
     ArrayList<Integer> list_EpicPotential = null;
     ArrayList<Integer> list_UniquePotential = null;
@@ -147,159 +145,144 @@ public class ItemWz extends WzXML {
         return getData("ItemOption.img");
     }
 
-    public Map<Integer, List<StructPotentialItem>> getItemOptionList() {
-        if (map_ItemOption != null) {
-            return map_ItemOption;
+    public boolean loadItemOpton() {
+        if (this.list_RarePotential != null) {
+            return true;
         }
-        map_ItemOption = new HashMap<>();
-        list_RarePotential = new ArrayList<>();
-        list_EpicPotential = new ArrayList<>();
-        list_UniquePotential = new ArrayList<>();
-        list_LegendaryPotential = new ArrayList<>();
+
+        this.list_RarePotential = new ArrayList<>();
+        this.list_EpicPotential = new ArrayList<>();
+        this.list_UniquePotential = new ArrayList<>();
+        this.list_LegendaryPotential = new ArrayList<>();
 
         if (getItemOption() == null) {
-            return map_ItemOption;
+            return false;
         }
 
         for (IMapleData dat : getItemOption()) {
-            List<StructPotentialItem> items = new LinkedList<>();
+            ArrayList<PotentialOptionData> pods = new ArrayList<>();
             for (IMapleData level : dat.getChildByPath("level")) {
-                StructPotentialItem item = new StructPotentialItem();
-                item.optionType = WzDataTool.getIntPath("info/optionType", dat, 0);
-                item.reqLevel = WzDataTool.getIntPath("info/reqLevel", dat, 0);
-                item.face = WzDataTool.getStringPath("face", level, "");
-                item.boss = WzDataTool.getIntPath("boss", level, 0) > 0;
-                item.potentialID = Integer.parseInt(dat.getName());
-                item.attackType = (short) WzDataTool.getIntPath("attackType", level, 0);
-                item.incMHP = (short) WzDataTool.getIntPath("incMHP", level, 0);
-                item.incMMP = (short) WzDataTool.getIntPath("incMMP", level, 0);
+                PotentialOptionData pod = new PotentialOptionData();
 
-                item.incSTR = (byte) WzDataTool.getIntPath("incSTR", level, 0);
-                item.incDEX = (byte) WzDataTool.getIntPath("incDEX", level, 0);
-                item.incINT = (byte) WzDataTool.getIntPath("incINT", level, 0);
-                item.incLUK = (byte) WzDataTool.getIntPath("incLUK", level, 0);
-                item.incACC = (byte) WzDataTool.getIntPath("incACC", level, 0);
-                item.incEVA = (byte) WzDataTool.getIntPath("incEVA", level, 0);
-                item.incSpeed = (byte) WzDataTool.getIntPath("incSpeed", level, 0);
-                item.incJump = (byte) WzDataTool.getIntPath("incJump", level, 0);
-                item.incPAD = (byte) WzDataTool.getIntPath("incPAD", level, 0);
-                item.incMAD = (byte) WzDataTool.getIntPath("incMAD", level, 0);
-                item.incPDD = (byte) WzDataTool.getIntPath("incPDD", level, 0);
-                item.incMDD = (byte) WzDataTool.getIntPath("incMDD", level, 0);
-                item.prop = (byte) WzDataTool.getIntPath("prop", level, 0);
-                item.time = (byte) WzDataTool.getIntPath("time", level, 0);
-                item.incSTRr = (byte) WzDataTool.getIntPath("incSTRr", level, 0);
-                item.incDEXr = (byte) WzDataTool.getIntPath("incDEXr", level, 0);
-                item.incINTr = (byte) WzDataTool.getIntPath("incINTr", level, 0);
-                item.incLUKr = (byte) WzDataTool.getIntPath("incLUKr", level, 0);
-                item.incMHPr = (byte) WzDataTool.getIntPath("incMHPr", level, 0);
-                item.incMMPr = (byte) WzDataTool.getIntPath("incMMPr", level, 0);
-                item.incACCr = (byte) WzDataTool.getIntPath("incACCr", level, 0);
-                item.incEVAr = (byte) WzDataTool.getIntPath("incEVAr", level, 0);
-                item.incPADr = (byte) WzDataTool.getIntPath("incPADr", level, 0);
-                item.incMADr = (byte) WzDataTool.getIntPath("incMADr", level, 0);
-                item.incPDDr = (byte) WzDataTool.getIntPath("incPDDr", level, 0);
-                item.incMDDr = (byte) WzDataTool.getIntPath("incMDDr", level, 0);
-                item.incCr = (byte) WzDataTool.getIntPath("incCr", level, 0);
-                item.incDAMr = (byte) WzDataTool.getIntPath("incDAMr", level, 0);
-                item.RecoveryHP = (byte) WzDataTool.getIntPath("RecoveryHP", level, 0);
-                item.RecoveryMP = (byte) WzDataTool.getIntPath("RecoveryMP", level, 0);
-                item.HP = (byte) WzDataTool.getIntPath("HP", level, 0);
-                item.MP = (byte) WzDataTool.getIntPath("MP", level, 0);
-                item.level = (byte) WzDataTool.getIntPath("level", level, 0);
-                item.ignoreTargetDEF = (byte) WzDataTool.getIntPath("ignoreTargetDEF", level, 0);
-                item.ignoreDAM = (byte) WzDataTool.getIntPath("ignoreDAM", level, 0);
-                item.DAMreflect = (byte) WzDataTool.getIntPath("DAMreflect", level, 0);
-                item.mpconReduce = (byte) WzDataTool.getIntPath("mpconReduce", level, 0);
-                item.mpRestore = (byte) WzDataTool.getIntPath("mpRestore", level, 0);
-                item.incMesoProp = (byte) WzDataTool.getIntPath("incMesoProp", level, 0);
-                item.incRewardProp = (byte) WzDataTool.getIntPath("incRewardProp", level, 0);
-                item.incAllskill = (byte) WzDataTool.getIntPath("incAllskill", level, 0);
-                item.ignoreDAMr = (byte) WzDataTool.getIntPath("ignoreDAMr", level, 0);
-                item.RecoveryUP = (byte) WzDataTool.getIntPath("RecoveryUP", level, 0);
-                switch (item.potentialID) {
+                pod.optionType = WzDataTool.getIntPath("info/optionType", dat, 0);
+                pod.reqLevel = WzDataTool.getIntPath("info/reqLevel", dat, 0);
+                pod.face = WzDataTool.getStringPath("face", level, "");
+                pod.boss = WzDataTool.getIntPath("boss", level, 0) > 0;
+                pod.potentialID = Integer.parseInt(dat.getName());
+                pod.attackType = (short) WzDataTool.getIntPath("attackType", level, 0);
+                pod.incMHP = (short) WzDataTool.getIntPath("incMHP", level, 0);
+                pod.incMMP = (short) WzDataTool.getIntPath("incMMP", level, 0);
+                pod.incSTR = (byte) WzDataTool.getIntPath("incSTR", level, 0);
+                pod.incDEX = (byte) WzDataTool.getIntPath("incDEX", level, 0);
+                pod.incINT = (byte) WzDataTool.getIntPath("incINT", level, 0);
+                pod.incLUK = (byte) WzDataTool.getIntPath("incLUK", level, 0);
+                pod.incACC = (byte) WzDataTool.getIntPath("incACC", level, 0);
+                pod.incEVA = (byte) WzDataTool.getIntPath("incEVA", level, 0);
+                pod.incSpeed = (byte) WzDataTool.getIntPath("incSpeed", level, 0);
+                pod.incJump = (byte) WzDataTool.getIntPath("incJump", level, 0);
+                pod.incPAD = (byte) WzDataTool.getIntPath("incPAD", level, 0);
+                pod.incMAD = (byte) WzDataTool.getIntPath("incMAD", level, 0);
+                pod.incPDD = (byte) WzDataTool.getIntPath("incPDD", level, 0);
+                pod.incMDD = (byte) WzDataTool.getIntPath("incMDD", level, 0);
+                pod.prop = (byte) WzDataTool.getIntPath("prop", level, 0);
+                pod.time = (byte) WzDataTool.getIntPath("time", level, 0);
+                pod.incSTRr = (byte) WzDataTool.getIntPath("incSTRr", level, 0);
+                pod.incDEXr = (byte) WzDataTool.getIntPath("incDEXr", level, 0);
+                pod.incINTr = (byte) WzDataTool.getIntPath("incINTr", level, 0);
+                pod.incLUKr = (byte) WzDataTool.getIntPath("incLUKr", level, 0);
+                pod.incMHPr = (byte) WzDataTool.getIntPath("incMHPr", level, 0);
+                pod.incMMPr = (byte) WzDataTool.getIntPath("incMMPr", level, 0);
+                pod.incACCr = (byte) WzDataTool.getIntPath("incACCr", level, 0);
+                pod.incEVAr = (byte) WzDataTool.getIntPath("incEVAr", level, 0);
+                pod.incPADr = (byte) WzDataTool.getIntPath("incPADr", level, 0);
+                pod.incMADr = (byte) WzDataTool.getIntPath("incMADr", level, 0);
+                pod.incPDDr = (byte) WzDataTool.getIntPath("incPDDr", level, 0);
+                pod.incMDDr = (byte) WzDataTool.getIntPath("incMDDr", level, 0);
+                pod.incCr = (byte) WzDataTool.getIntPath("incCr", level, 0);
+                pod.incDAMr = (byte) WzDataTool.getIntPath("incDAMr", level, 0);
+                pod.RecoveryHP = (byte) WzDataTool.getIntPath("RecoveryHP", level, 0);
+                pod.RecoveryMP = (byte) WzDataTool.getIntPath("RecoveryMP", level, 0);
+                pod.HP = (byte) WzDataTool.getIntPath("HP", level, 0);
+                pod.MP = (byte) WzDataTool.getIntPath("MP", level, 0);
+                pod.level = (byte) WzDataTool.getIntPath("level", level, 0);
+                pod.ignoreTargetDEF = (byte) WzDataTool.getIntPath("ignoreTargetDEF", level, 0);
+                pod.ignoreDAM = (byte) WzDataTool.getIntPath("ignoreDAM", level, 0);
+                pod.DAMreflect = (byte) WzDataTool.getIntPath("DAMreflect", level, 0);
+                pod.mpconReduce = (byte) WzDataTool.getIntPath("mpconReduce", level, 0);
+                pod.mpRestore = (byte) WzDataTool.getIntPath("mpRestore", level, 0);
+                pod.incMesoProp = (byte) WzDataTool.getIntPath("incMesoProp", level, 0);
+                pod.incRewardProp = (byte) WzDataTool.getIntPath("incRewardProp", level, 0);
+                pod.incAllskill = (byte) WzDataTool.getIntPath("incAllskill", level, 0);
+                pod.ignoreDAMr = (byte) WzDataTool.getIntPath("ignoreDAMr", level, 0);
+                pod.RecoveryUP = (byte) WzDataTool.getIntPath("RecoveryUP", level, 0);
+
+                switch (pod.potentialID) {
                     case 31001:
                     case 31002:
                     case 31003:
-                    case 31004:
-                        item.skillID = item.potentialID - 23001;
+                    case 31004: {
+                        pod.skillID = pod.potentialID - 23001;
                         break;
-                    default:
-                        item.skillID = 0;
+                    }
+                    default: {
+                        pod.skillID = 0;
                         break;
+                    }
                 }
-                items.add(item);
-            }
-            map_ItemOption.put(Integer.parseInt(dat.getName()), items);
 
-            // 不要な潜在削除
-            if (/*Version.GreaterOrEqual(Region.JMS, 302)*/true) {
-                StructPotentialItem ci = items.get(0);
-                if (ci.incSTRr == 0 && ci.incDEXr == 0 && ci.incINTr == 0 && ci.incLUKr == 0
-                        && ci.incMHPr == 0 && ci.incMMPr == 0
-                        && ci.incPADr == 0 && ci.incMADr == 0) {
-                    continue;
-                }
+                pods.add(pod);
+            }
+
+            // block adding weak potential options to potential list.
+            if (PotentialOptimization.ignore(pods.get(0))) {
+                continue;
             }
 
             int potential_id = Integer.parseInt(dat.getName());
             switch (potential_id / 10000) {
                 case 1: {
-                    list_RarePotential.add(potential_id);
+                    this.list_RarePotential.add(potential_id);
                     break;
                 }
                 case 2: {
-                    list_EpicPotential.add(potential_id);
+                    this.list_EpicPotential.add(potential_id);
                     break;
                 }
                 case 3: {
-                    list_UniquePotential.add(potential_id);
+                    this.list_UniquePotential.add(potential_id);
                     break;
                 }
                 case 4: {
-                    list_LegendaryPotential.add(potential_id);
+                    this.list_LegendaryPotential.add(potential_id);
                     break;
                 }
                 default: {
-                    //Debug.ErrorLog("invalid rank potential : " + potential_id);
                     break;
                 }
             }
         }
 
-        return map_ItemOption;
+        return true;
     }
 
     public ArrayList<Integer> getRarePotential() {
-        if (list_RarePotential != null) {
-            return list_RarePotential;
-        }
-        getItemOptionList();
-        return list_RarePotential;
+        loadItemOpton();
+        return this.list_RarePotential;
     }
 
     public ArrayList<Integer> getEpicPotential() {
-        if (list_EpicPotential != null) {
-            return list_EpicPotential;
-        }
-        getItemOptionList();
-        return list_EpicPotential;
+        loadItemOpton();
+        return this.list_EpicPotential;
     }
 
     public ArrayList<Integer> getUniquePotential() {
-        if (list_UniquePotential != null) {
-            return list_UniquePotential;
-        }
-        getItemOptionList();
-        return list_UniquePotential;
+        loadItemOpton();
+        return this.list_UniquePotential;
     }
 
     public ArrayList<Integer> getLegendaryPotential() {
-        if (list_LegendaryPotential != null) {
-            return list_LegendaryPotential;
-        }
-        getItemOptionList();
-        return list_LegendaryPotential;
+        loadItemOpton();
+        return this.list_LegendaryPotential;
     }
 
     // Pet
@@ -341,5 +324,4 @@ public class ItemWz extends WzXML {
         map_petHunger.put(petId, ret);
         return ret;
     }
-
 }

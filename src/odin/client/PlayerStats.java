@@ -31,8 +31,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -40,9 +38,6 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.StructPotentialItem;
-import odin.server.StructSetItem;
-import odin.server.StructSetItem.SetItem;
 
 public class PlayerStats {
 
@@ -263,7 +258,6 @@ public class PlayerStats {
         } else if (chra.getJob() == 400 || (chra.getJob() >= 410 && chra.getJob() <= 412) || (chra.getJob() >= 1400 && chra.getJob() <= 1412)) {
             watk = 30; //stars
         }
-        StructPotentialItem pot;
         dam_r = 0.0;
         bossdam_r = 0.0;
         expBuff = 100.0;
@@ -376,92 +370,11 @@ public class PlayerStats {
                 setHandling.put(set, value); //id of Set, number of items to go with the set
             }
             if (equip.getHidden() > 1) {
-                int[] potentials = {equip.getPotential1(), equip.getPotential2(), equip.getPotential3()};
-                for (int i : potentials) {
-                    if (i > 0) {
-                        pot = ii.getPotentialInfo(i).get(ii.getReqLevel(equip.getItemId()) / 10);
-                        if (pot != null) {
-                            localstr += pot.incSTR;
-                            localdex += pot.incDEX;
-                            localint_ += pot.incINT;
-                            localluk += pot.incLUK;
-                            localmaxhp += pot.incMHP;
-                            localmaxmp += pot.incMMP;
-                            watk += pot.incPAD;
-                            magic += pot.incINT + pot.incMAD;
-                            speed += pot.incSpeed;
-                            jump += pot.incJump;
-                            accuracy += pot.incACC;
-                            incAllskill += pot.incAllskill;
-                            percent_hp += pot.incMHPr;
-                            percent_mp += pot.incMMPr;
-                            percent_str += pot.incSTRr;
-                            percent_dex += pot.incDEXr;
-                            percent_int += pot.incINTr;
-                            percent_luk += pot.incLUKr;
-                            percent_acc += pot.incACCr;
-                            percent_atk += pot.incPADr;
-                            percent_matk += pot.incMADr;
-                            added_sharpeye_rate += pot.incCr;
-                            added_sharpeye_dmg += pot.incCr;
-                            if (!pot.boss) {
-                                dam_r = (double) Math.max(pot.incDAMr, dam_r);
-                            } else {
-                                bossdam_r = (double) Math.max(pot.incDAMr, bossdam_r); //SET, not add
-                            }
-                            recoverHP += pot.RecoveryHP;
-                            recoverMP += pot.RecoveryMP;
-                            RecoveryUP += pot.RecoveryUP;
-                            if (pot.HP > 0) {
-                                hpRecover += pot.HP;
-                                hpRecoverProp += pot.prop;
-                            }
-                            if (pot.MP > 0) {
-                                mpRecover += pot.MP;
-                                mpRecoverProp += pot.prop;
-                            }
-                            mpconReduce += pot.mpconReduce;
-                            incMesoProp += pot.incMesoProp;
-                            incRewardProp += pot.incRewardProp;
-                            if (pot.DAMreflect > 0) {
-                                DAMreflect += pot.DAMreflect;
-                                DAMreflect_rate += pot.prop;
-                            }
-                            mpRestore += pot.mpRestore;
-                            if (!first_login && pot.skillID > 0) {
-                                chra.changeSkillLevel_Skip(SkillFactory.getSkill(getSkillByJob(pot.skillID, chra.getJob())), (byte) 1, (byte) 1);
-                            }
-                        }
-                    }
-                }
                 if (equip.getDurability() > 0) {
                     durabilityHandling.add((Equip) equip);
                 }
                 if (canEquipLevel && GameConstants.getMaxLevel(equip.getItemId()) > 0 && (GameConstants.getStatFromWeapon(equip.getItemId()) == null ? (equip.getEquipLevel() <= GameConstants.getMaxLevel(equip.getItemId())) : (equip.getEquipLevel() < GameConstants.getMaxLevel(equip.getItemId())))) {
                     equipLevelHandling.add((Equip) equip);
-                }
-            }
-        }
-        final Iterator<Entry<Integer, Integer>> iter = setHandling.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Entry<Integer, Integer> entry = iter.next();
-            final StructSetItem set = ii.getSetItem(entry.getKey());
-            if (set != null) {
-                final Map<Integer, SetItem> itemz = set.getItems();
-                for (Entry<Integer, SetItem> ent : itemz.entrySet()) {
-                    if (ent.getKey() <= entry.getValue()) {
-                        SetItem se = ent.getValue();
-                        localstr += se.incSTR;
-                        localdex += se.incDEX;
-                        localint_ += se.incINT;
-                        localluk += se.incLUK;
-                        watk += se.incPAD;
-                        magic += se.incINT + se.incMAD;
-                        speed += se.incSpeed;
-                        accuracy += se.incACC;
-                        localmaxhp_ += se.incMHP;
-                        localmaxmp_ += se.incMMP;
-                    }
                 }
             }
         }

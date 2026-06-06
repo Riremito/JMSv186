@@ -21,19 +21,6 @@ public abstract class Timer {
         }
     }
 
-    public static class BuffTimer extends Timer {
-
-        private static BuffTimer instance = new BuffTimer();
-
-        private BuffTimer() {
-            name = "Bufftimer";
-        }
-
-        public static BuffTimer getInstance() {
-            return instance;
-        }
-    }
-
     public static class EventTimer extends Timer {
 
         private static EventTimer instance = new EventTimer();

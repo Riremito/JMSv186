@@ -119,7 +119,6 @@ public class Start {
         MobTimer.getInstance().start();
         CloneTimer.getInstance().start();
         EventTimer.getInstance().start();
-        BuffTimer.getInstance().start();
 
         /*
         DebugLogger.SetupLog("INFO");
@@ -164,7 +163,6 @@ public class Start {
                     }
                     MapTimer.getInstance().stop();
                     MobTimer.getInstance().stop();
-                    BuffTimer.getInstance().stop();
                     CloneTimer.getInstance().stop();
                     EventTimer.getInstance().stop();
                     EtcTimer.getInstance().stop();
@@ -175,5 +173,4 @@ public class Start {
         DebugLogger.SetupLog("DONE!");
         return;
     }
-
 }

@@ -20,11 +20,7 @@ package tacos.wz;
 
 import tacos.config.Content;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import odin.server.StructSetItem;
-import odin.server.StructSetItem.SetItem;
 import odin.provider.IMapleData;
 
 /**
@@ -83,47 +79,5 @@ public class EtcWz extends WzXML {
             }
         }
         return false;
-    }
-
-    private Map<Integer, StructSetItem> map_SetItemInfo = null;
-
-    public Map<Integer, StructSetItem> getSetItemInfoList() {
-        if (map_SetItemInfo != null) {
-            return map_SetItemInfo;
-        }
-
-        map_SetItemInfo = new HashMap<>();
-
-        if (getSetItemInfo() == null) {
-            return map_SetItemInfo;
-        }
-
-        for (IMapleData dat : getSetItemInfo()) {
-            StructSetItem itemz = new StructSetItem();
-            itemz.setItemID = Integer.parseInt(dat.getName());
-            itemz.completeCount = WzDataTool.getIntPath("completeCount", dat, 0);
-            for (IMapleData level : dat.getChildByPath("ItemID")) {
-                itemz.itemIDs.add(WzDataTool.getInt(level, 0));
-            }
-            for (IMapleData level : dat.getChildByPath("Effect")) {
-                SetItem itez = new SetItem();
-                itez.incPDD = WzDataTool.getIntPath("incPDD", level, 0);
-                itez.incMDD = WzDataTool.getIntPath("incMDD", level, 0);
-                itez.incSTR = WzDataTool.getIntPath("incSTR", level, 0);
-                itez.incDEX = WzDataTool.getIntPath("incDEX", level, 0);
-                itez.incINT = WzDataTool.getIntPath("incINT", level, 0);
-                itez.incLUK = WzDataTool.getIntPath("incLUK", level, 0);
-                itez.incACC = WzDataTool.getIntPath("incACC", level, 0);
-                itez.incPAD = WzDataTool.getIntPath("incPAD", level, 0);
-                itez.incMAD = WzDataTool.getIntPath("incMAD", level, 0);
-                itez.incSpeed = WzDataTool.getIntPath("incSpeed", level, 0);
-                itez.incMHP = WzDataTool.getIntPath("incMHP", level, 0);
-                itez.incMMP = WzDataTool.getIntPath("incMMP", level, 0);
-                itemz.items.put(Integer.valueOf(level.getName()), itez);
-            }
-            map_SetItemInfo.put(itemz.setItemID, itemz);
-        }
-
-        return map_SetItemInfo;
     }
 }
