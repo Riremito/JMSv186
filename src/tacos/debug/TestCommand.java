@@ -261,10 +261,10 @@ public class TestCommand {
                 chr.SendPacket(ResCMobPool.MobCrcKeyChanged(monster, 0xBEEF));
             }
             case 13 -> {
-                chr.SendPacket(ResCMobPool.MobSpecialEffectBySkill(monster, chr, 3110001, 500));
+                chr.SendPacket(ResCMobPool.MobSpecialEffectBySkill(monster, chr, 3110001, 1000));
             }
             case 14 -> {
-                chr.SendPacket(ResCMobPool.MobAffected(monster, 3110001, 500));
+                chr.SendPacket(ResCMobPool.MobAffected(monster, 4341003, 1000));
             }
             case 15 -> {
                 chr.SendPacket(ResCMobPool.MobSuspendReset(monster));
