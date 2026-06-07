@@ -61,6 +61,7 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMobPool::OnMobEnterField
     public static MaplePacket MobEnterField(MapleMonster monster, int spawnType, int effect, int link) {
         if (Version.Equal(Region.KMS, 1)) {
             return MobEnterField_KMS1(monster, spawnType, effect, link);
@@ -123,6 +124,7 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMobPool::OnMobLeaveField
     public static MaplePacket MobLeaveField(MapleMonster monster, int animation) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobLeaveField);
 
@@ -131,7 +133,7 @@ public class ResCMobPool {
         return sp.get();
     }
 
-    // controlMonster
+    // CMobPool::OnMobChangeController
     public static MaplePacket MobChangeController(MapleMonster monster, boolean aggro) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
 
@@ -185,6 +187,7 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMob::OnMove
     public static MaplePacket MobMove(MapleMonster monster, boolean bNextAttackPossible, int bLeft, int mob_skill, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobMove);
 
@@ -215,6 +218,7 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMob::OnCtrlAck
     public static MaplePacket MobCtrlAck(MapleMonster monster, short moveid, int skillId, int skillLevel) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobCtrlAck);
 
@@ -231,6 +235,7 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMob::OnStatSet
     public static MaplePacket MobStatSet(int oid, MonsterStatus mse, int x, MobSkill skil) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatSet);
 
@@ -247,6 +252,7 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMob::OnStatReset
     public static MaplePacket MobStatReset(int oid, MonsterStatus stat) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatReset);
 
@@ -258,6 +264,9 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMob::OnSuspendReset
+    // CMob::OnAffected
+    // CMob::OnDamaged
     public static MaplePacket MobDamaged(MapleMonster monster, int nDamage, int type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobDamaged);
 
@@ -271,12 +280,8 @@ public class ResCMobPool {
         return sp.get();
     }
 
-    public static MaplePacket MobEscortReturnBefore(int oid) {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_MobEscortReturnBefore);
-        p.Encode4(oid);
-        return p.get();
-    }
-
+    // CMob::OnSpecialEffectBySkill
+    // CMob::OnHPIndicator
     public static MaplePacket MobHPIndicator(MapleMonster monster, int remhppercentage) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobHPIndicator);
 
@@ -285,20 +290,17 @@ public class ResCMobPool {
         return sp.get();
     }
 
-    public static MaplePacket MobEscortStopSay(int oid, int itemId, String msg) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEscortStopSay);
-        sp.Encode4(oid);
-        sp.Encode4(500); //?
-        sp.Encode4(itemId);
-        sp.Encode1(itemId <= 0 ? 0 : 1);
-        sp.Encode1(msg == null || msg.length() <= 0 ? 0 : 1);
-        if (msg != null && msg.length() > 0) {
-            sp.EncodeStr(msg);
-        }
-        sp.Encode4(1); //?
+    // CMobPool::OnMobCrcKeyChanged
+    // CMob::OnCatchEffect
+    public static MaplePacket MobCatchEffect(MapleMonster monster, byte bSuccess) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobCatchEffect);
+
+        sp.Encode4(monster.getObjectId());
+        sp.Encode1(bSuccess);
         return sp.get();
     }
 
+    // CMob::OnEffectByItem
     public static MaplePacket MobEffectByItem(int mobid, int itemid, byte success) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEffectByItem);
 
@@ -308,6 +310,9 @@ public class ResCMobPool {
         return sp.get();
     }
 
+    // CMob::OnMobSpeaking
+    // CMob::OnMobSkillDelay
+    // CMob::OnEscortFullPath
     public static MaplePacket MobRequestResultEscortInfo(MapleMonster monster, MapleMap map) {
         //idk.
         if (monster.getNodePacket() != null) {
@@ -336,12 +341,30 @@ public class ResCMobPool {
         return monster.getNodePacket();
     }
 
-    // CMob::OnCatchEffect
-    public static MaplePacket MobCatchEffect(MapleMonster monster, byte bSuccess) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobCatchEffect);
+    // CMob::OnEscortStopEndPermmision
+    // CMob::OnEscortStopSay
+    public static MaplePacket MobEscortStopSay(int oid, int itemId, String msg) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEscortStopSay);
 
-        sp.Encode4(monster.getObjectId());
-        sp.Encode1(bSuccess);
+        sp.Encode4(oid);
+        sp.Encode4(500); //?
+        sp.Encode4(itemId);
+        sp.Encode1(itemId <= 0 ? 0 : 1);
+        sp.Encode1(msg == null || msg.length() <= 0 ? 0 : 1);
+        if (msg != null && msg.length() > 0) {
+            sp.EncodeStr(msg);
+        }
+        sp.Encode4(1); //?
         return sp.get();
     }
+
+    // CMob::OnEscortReturnBefore
+    public static MaplePacket MobEscortReturnBefore(int oid) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEscortReturnBefore);
+
+        sp.Encode4(oid);
+        return sp.get();
+    }
+    // CMob::OnNextAttack
+    // CMob::OnMobAttackedByMob
 }

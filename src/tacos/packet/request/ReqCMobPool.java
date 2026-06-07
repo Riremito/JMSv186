@@ -1,4 +1,21 @@
-// Mob
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
@@ -19,10 +36,14 @@ import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
 
+/**
+ *
+ * @author Riremito
+ */
 public class ReqCMobPool {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -35,7 +56,6 @@ public class ReqCMobPool {
         int oid = cp.Decode4();
 
         MapleMonster monster = map.getMonsterByOid(oid);
-
         if (monster == null) {
             return true;
         }
@@ -141,7 +161,7 @@ public class ReqCMobPool {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
-                DebugLogger.DebugLog("0x00FFDDCC... " + String.format("08X", ffddcc_1) + " | " + String.format("08X", ffddcc_2));
+                DebugLogger.DebugLog("0x00FFDDCC... " + String.format("%08X", ffddcc_1) + " | " + String.format("%08X", ffddcc_2));
             }
         }
         if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
@@ -196,7 +216,6 @@ public class ReqCMobPool {
             }
         }
 
-        chr.getClient().SendPacket(ResCMobPool.MobCtrlAck(monster, moveid, realskill, level));
+        chr.SendPacket(ResCMobPool.MobCtrlAck(monster, moveid, realskill, level));
     }
-
 }
