@@ -2159,7 +2159,7 @@ public class ReqCUser {
                     if (monster == null) {
                         continue;
                     }
-                    map.broadcastMessage(chr, ResCMobPool.MobCatchEffect(monster, magnets.get(i)), false);
+                    map.broadcastMessage(chr, ResCMobPool.MobCatchEffect(monster, magnets.get(i) != 0), false);
                 }
                 // magnet effect for remote?
                 //map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(chr.getId(), nSkillID, 1, slea.readByte()), chr.getPosition());
@@ -2564,23 +2564,23 @@ public class ReqCUser {
             switch (item_id) {
                 case 2270004: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, (byte) 0);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                         MapleInventoryManipulator.addById(chr.getClient(), 4001169, (short) 1);
                     } else {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 0));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
                     }
                     break;
                 }
                 case 2270002: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, (byte) 0);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 0));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
                     }
                     break;
@@ -2590,7 +2590,7 @@ public class ReqCUser {
                     if (mob.getId() != 9300101) {
                         break;
                     }
-                    map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
+                    map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
                     map.killMonster(mob, chr, true, false, (byte) 0);
                     MapleInventoryManipulator.addById(chr.getClient(), 1902000, (short) 1, null);
                     MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
@@ -2602,11 +2602,11 @@ public class ReqCUser {
                         break;
                     }
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 1));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, (byte) 0);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob.getId(), item_id, (byte) 0));
+                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
                     }
                     break;

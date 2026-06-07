@@ -559,8 +559,8 @@ public class DebugCommand {
                 }
 
                 for (int i = 0; i < count; i++) {
-                    MapleMonster mosnter = MapleLifeFactory.getMonster(mob_id);
-                    map.spawnMonsterOnGroundBelow(mosnter, chr.getPosition());
+                    MapleMonster monster = MapleLifeFactory.getMonster(mob_id);
+                    map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
                 }
 
                 chr.DebugMsg("mob : " + mob_id);

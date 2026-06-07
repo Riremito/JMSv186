@@ -120,7 +120,7 @@ public class MobHandler {
                 return;
             }
             if (mni.attr == 2) { //talk
-                chr.getMap().talkMonster("Please escort me carefully.", 5120035, mob_from.getObjectId()); //temporary for now. itemID is located in WZ file
+                chr.getMap().talkMonster("Please escort me carefully.", 5120035, mob_from); //temporary for now. itemID is located in WZ file
             }
             if (mob_from.getLastNode() >= newNode) {
                 return;

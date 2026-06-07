@@ -25,6 +25,8 @@ import java.util.Random;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.provider.IMapleData;
+import odin.server.life.MapleLifeFactory;
+import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
@@ -34,6 +36,7 @@ import odin.server.shops.HiredMerchant;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -196,11 +199,84 @@ public class TestCommand {
                 }
                 return true;
             }
+            case "/mobtest": {
+                List<MapleMonster> monsters = map.getAllMonsters();
+                MapleMonster monster = null;
+                if (map.getAllMonsters().isEmpty()) {
+                    monster = MapleLifeFactory.getMonster(130101);
+                    map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
+                } else {
+                    monster = monsters.get(0);
+                }
+
+                int index = dcmd.check(1) ? dcmd.getInt(1) : 1;
+                chr.DebugMsg("monsterPacketTest : " + index);
+                monsterPacketTest(chr, monster, index);
+                return true;
+            }
             default: {
                 break;
             }
         }
 
         return false;
+    }
+
+    public static void monsterPacketTest(MapleCharacter chr, MapleMonster monster, int index) {
+        switch (index) {
+            case 1 -> {
+                chr.SendPacket(ResCMobPool.MobAttackedByMob(monster, 1, 7777));
+            }
+            case 2 -> {
+                chr.SendPacket(ResCMobPool.MobNextAttack(monster, 1));
+            }
+            case 3 -> {
+                chr.SendPacket(ResCMobPool.MobEscortReturnBefore(monster));
+            }
+            case 4 -> {
+                chr.SendPacket(ResCMobPool.MobEscortStopSay(monster, 5120035, "MobEscortStopSay"));
+            }
+            case 5 -> {
+                chr.SendPacket(ResCMobPool.MobRequestResultEscortInfo(monster, chr.getMap()));
+            }
+            case 6 -> {
+                chr.SendPacket(ResCMobPool.MobEscortStopEndPermmision(monster));
+            }
+            case 7 -> {
+                chr.SendPacket(ResCMobPool.MobSkillDelay(monster));
+            }
+            case 8 -> {
+                chr.SendPacket(ResCMobPool.MobChargeCount(monster, 1, 1));
+            }
+            case 9 -> {
+                chr.SendPacket(ResCMobPool.MobSpeaking(monster, 0, 0));
+            }
+            case 10 -> {
+                chr.SendPacket(ResCMobPool.MobEffectByItem(monster, 2270004, true));
+            }
+            case 11 -> {
+                chr.SendPacket(ResCMobPool.MobCatchEffect(monster, true));
+            }
+            case 12 -> {
+                chr.SendPacket(ResCMobPool.MobCrcKeyChanged(monster, 0xBEEF));
+            }
+            case 13 -> {
+                chr.SendPacket(ResCMobPool.MobSpecialEffectBySkill(monster, chr, 3110001, 500));
+            }
+            case 14 -> {
+                chr.SendPacket(ResCMobPool.MobAffected(monster, 3110001, 500));
+            }
+            case 15 -> {
+                chr.SendPacket(ResCMobPool.MobSuspendReset(monster));
+            }
+            case 16 -> {
+                chr.SendPacket(ResCMobPool.MobStatReset(monster));
+            }
+            case 17 -> {
+                chr.SendPacket(ResCMobPool.MobStatSet(monster));
+            }
+            default -> {
+            }
+        }
     }
 }

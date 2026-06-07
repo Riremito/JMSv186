@@ -376,12 +376,12 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public final void talkMonster(final String msg, final int itemId, final int objectid) {
+    public void talkMonster(String msg, int itemId, MapleMonster monster) {
         if (itemId > 0) {
             startMapEffect(msg, itemId, false);
         }
-        broadcastMessage(ResCMobPool.MobEscortStopSay(objectid, itemId, msg)); //5120035
-        broadcastMessage(ResCMobPool.MobEscortReturnBefore(objectid));
+        broadcastMessage(ResCMobPool.MobEscortStopSay(monster, itemId, msg)); // 5120035
+        broadcastMessage(ResCMobPool.MobEscortReturnBefore(monster));
     }
 
     public final void startMapEffect(final String msg, final int itemId) {
