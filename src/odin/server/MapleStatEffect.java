@@ -324,12 +324,7 @@ public class MapleStatEffect implements Serializable {
         return ret;
     }
 
-    /**
-     * @param applyto
-     * @param obj
-     * @param attack damage done by the skill
-     */
-    public final void applyPassive(final MapleCharacter applyto, final MapleMapObject obj) {
+    public void applyPassive(MapleCharacter applyto, MapleMapObject obj) {
         if (makeChanceResult()) {
             switch (sourceid) { // MP eater
                 case 2100000:
@@ -338,14 +333,14 @@ public class MapleStatEffect implements Serializable {
                     if (obj == null || obj.getType() != MapleMapObjectType.MONSTER) {
                         return;
                     }
-                    final MapleMonster mob = (MapleMonster) obj; // x is absorb percentage
+                    MapleMonster mob = (MapleMonster) obj; // x is absorb percentage
                     if (!mob.getStats().isBoss()) {
-                        final int absorbMp = Math.min((int) (mob.getMobMaxMp() * (getX() / 100.0)), mob.getMp());
+                        int absorbMp = Math.min((int) (mob.getMobMaxMp() * (getX() / 100.0)), mob.getMp());
                         if (absorbMp > 0) {
                             mob.setMp(mob.getMp() - absorbMp);
                             applyto.getStat().setMp((short) (applyto.getStat().getMp() + absorbMp));
-                            applyto.getClient().SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillUse, sourceid));
-                            applyto.getMap().broadcastMessage(applyto, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillUse, applyto, sourceid), false);
+                            //applyto.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillUse, sourceid));
+                            //applyto.getMap().broadcastMessage(applyto, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillUse, applyto, sourceid), false);
                         }
                     }
                     break;

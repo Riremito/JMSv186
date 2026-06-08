@@ -22,6 +22,7 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import tacos.client.TacosCharacter;
 import tacos.network.MaplePacket;
+import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
 import tacos.wz.WzDataStorage;
@@ -56,8 +57,9 @@ public class PetMob implements IPetEx {
         this.monster.setPosition(this.character.getPosition());
         this.monster.setFH(this.character.getFH());
         this.monster.setOriginFh(this.character.getFH());
-
-        SendPacket(ResCMobPool.MobEnterField(this.monster, -2, 0, 0));
+        this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
+        SendPacket(ResCMobPool.MobEnterField(this.monster));
+        this.monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         return true;
     }
 

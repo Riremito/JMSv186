@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
@@ -32,6 +31,7 @@ import odin.server.maps.MapleNodes;
 import tacos.client.TacosBuff;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
+import tacos.packet.ops.OpsMobAppear;
 
 /**
  *
@@ -39,37 +39,18 @@ import tacos.packet.ops.OpsAttackIndex;
  */
 public class ResCMobPool {
 
-    public static MaplePacket MobEnterField_KMS1(MapleMonster monster, int spawnType, int effect, int link) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEnterField);
-
-        sp.Encode4(monster.getObjectId()); // dwMobID
-        sp.Encode4(monster.getId());
-
-        // CMob::Init
-        sp.Encode2(monster.getPosition().x); // m_ptPosPrev.x
-        sp.Encode2(monster.getPosition().y); // m_ptPosPrev.y
-        sp.Encode1(monster.getStance()); // m_nMoveAction_CS
-        sp.Encode2(monster.getFh()); // pvcMobActiveObj
-        sp.Encode2(monster.getOriginFh()); // m_pInterface
-        sp.Encode1(spawnType);
-
-        if (spawnType == -3 || 0 <= spawnType) {
-            sp.Encode4(link); // dwOption
-        }
-
-        sp.Encode4(0); // mob stat?
-        return sp.get();
-    }
-
     // CMobPool::OnMobEnterField
-    public static MaplePacket MobEnterField(MapleMonster monster, int spawnType, int effect, int link) {
-        if (Version.Equal(Region.KMS, 1)) {
-            return MobEnterField_KMS1(monster, spawnType, effect, link);
-        }
-
+    public static MaplePacket MobEnterField(MapleMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEnterField);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
+
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            sp.Encode4(monster.getId());
+            sp.EncodeBuffer(CMob_Init(monster));
+            return sp.get();
+        }
+
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(monster.getId());
 
@@ -77,51 +58,78 @@ public class ResCMobPool {
             sp.Encode1(0);
         }
 
-        // CMob::SetTemporaryStat
+        sp.EncodeBuffer(CMob_SetTemporaryStat(monster));
+        sp.EncodeBuffer(CMob_Init(monster)); // if mob is not found in the map, extra data is read.
+        return sp.get();
+    }
+
+    // CMob::SetTemporaryStat
+    public static byte[] CMob_SetTemporaryStat(MapleMonster monster) {
+        ServerPacket data = new ServerPacket();
+
         int[] buff_mask = TacosBuff.getMobBuffBuffer();
         for (int index = 0; index < buff_mask.length; index++) {
-            sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
+            data.Encode4(buff_mask[buff_mask.length - 1 - index]);
         }
+
         // MobStat::DecodeTemporary
+        // TODO
+        return data.getBytes();
+    }
 
-        // credit to 垂垂 for fixing mob fall down issue
-        if (monster.getFh() == 0) {
-            DebugLogger.DebugLog("MobEnterField : FH = 0");
+    public static byte[] CMob_Init(MapleMonster monster) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode2(monster.getPosition().x); // m_ptPosPrev.x
+        data.Encode2(monster.getPosition().y); // m_ptPosPrev.y
+        data.Encode1(monster.getStance()); // m_nMoveAction_CS
+        data.Encode2(monster.getFh()); // pvcMobActiveObj, Fh  causes fall down, credit to 垂垂 for fixing mob fall down issue
+        data.Encode2(monster.getOriginFh()); // m_pInterface
+
+        OpsMobAppear ops_at = monster.getAT();
+        switch (ops_at) {
+            case MOBAPPEAR_NORMAL, MOBAPPEAR_REGEN, MOBAPPEAR_SUSPENDED, MOBAPPEAR_DELAY -> {
+                data.Encode1(monster.getAT().get()); // nAppearType
+            }
+            case MOBAPPEAR_REVIVED -> {
+                data.Encode1(monster.getAT().get()); // nAppearType
+                data.Encode4(monster.getLinkOid()); // dwOption
+            }
+            case MOBAPPEAR_EFFECT -> {
+                data.Encode1(monster.getATEx()); // nAppearType
+                data.Encode4(monster.getLinkOid()); // dwOption
+            }
         }
 
-        // CMob::Init
-        sp.Encode2(monster.getPosition().x); // m_ptPosPrev.x
-        sp.Encode2(monster.getPosition().y); // m_ptPosPrev.y
-        sp.Encode1(monster.getStance()); // m_nMoveAction_CS
-        sp.Encode2(monster.getFh()); // pvcMobActiveObj
-        sp.Encode2(monster.getOriginFh()); // m_pInterface
-        sp.Encode1(spawnType);
-
-        if (spawnType == -3 || 0 <= spawnType) {
-            sp.Encode4(link); // dwOption
+        // KMS1
+        if (Version.LessOrEqual(Region.KMS, 1)) {
+            data.EncodeBuffer(CMob_SetTemporaryStat(monster));
+            return data.getBytes();
         }
 
+        // KMS31
         if (Version.LessOrEqual(Region.KMS, 31)) {
-            return sp.get();
+            return data.getBytes();
         }
 
         // KMS41
-        sp.Encode1(monster.getCarnivalTeam()); // m_nTeamForMCarnival
+        data.Encode1(monster.getCarnivalTeam()); // m_nTeamForMCarnival
 
+        // JMS131
         if (Version.LessOrEqual(Region.JMS, 131)) {
-            return sp.get();
+            return data.getBytes();
         }
         // JMS146
         if (ServerConfig.JMS146orLater()) {
-            sp.Encode4(0); // nEffectItemID
+            data.Encode4(0); // nEffectItemID
         }
         // JMS186, GMS95
         // not in KMST330, TWMS125
         if (ServerConfig.JMS165orLater()) {
-            sp.Encode4(0); // m_nPhase
+            data.Encode4(0); // m_nPhase
         }
 
-        return sp.get();
+        return data.getBytes();
     }
 
     // CMobPool::OnMobLeaveField
@@ -144,20 +152,20 @@ public class ResCMobPool {
         if (Version.GreaterOrEqual(Region.GMS, 95)) {
             // nLevel != 0 && CClientOptMan::GetOpt & 2
             /*
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
              */
         }
 
         sp.Encode4(monster.getObjectId()); // dwMobId
 
-        if (Version.LessOrEqual(Region.KMS, 1)) {
-            return sp.get();
-        }
-
         if (nLevel != 0) {
-            sp.Encode1(1); // nCalcDamageIndex, 1 = Control normal, 5 = Control none
+            if (Version.LessOrEqual(Region.KMS, 1)) {
+                // none
+            } else {
+                sp.Encode1(1); // nCalcDamageIndex, 1 = Control normal, 5 = Control none
+            }
             // CMobPool::SetLocalMob
             sp.Encode4(monster.getId()); // dwTemplateID
 
@@ -165,12 +173,12 @@ public class ResCMobPool {
                 sp.Encode1(0);
             }
 
-            // CMob::SetTemporaryStat
-            int[] buff_mask = TacosBuff.getMobBuffBuffer();
-            for (int index = 0; index < buff_mask.length; index++) {
-                sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
+            if (Version.LessOrEqual(Region.KMS, 1)) {
+                // none.
+            } else {
+                sp.EncodeBuffer(CMob_SetTemporaryStat(monster));
             }
-            // MobStat::DecodeTemporary
+            sp.EncodeBuffer(CMob_Init(monster)); // if mob is not found in the map, extra data is read.
         } else {
             // CMobPool::SetRemoteMob
             // no packet data.

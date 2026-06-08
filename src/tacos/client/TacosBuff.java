@@ -98,7 +98,7 @@ public class TacosBuff {
             return new int[4]; // 16
         }
         // KMS1 = none or 4.
-        // JMS131-164, KMS31-65, BMS24
+        // JMS131-164, KMS1-65, BMS24
         return new int[1]; // 4
     }
 

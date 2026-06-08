@@ -79,6 +79,10 @@ public class ServerPacket {
         return new ByteArrayMaplePacket(b);
     }
 
+    public byte[] getBytes() {
+        return get().getBytes();
+    }
+
     public String getString() {
         String text = null;
         if (Content.PacketHeaderSize.getInt() == 2) {

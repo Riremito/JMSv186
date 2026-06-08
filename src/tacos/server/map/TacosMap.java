@@ -69,6 +69,7 @@ import tacos.client.TacosSkillPet;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.network.MaplePacket;
+import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCDropPool;
@@ -487,7 +488,7 @@ public class TacosMap extends TacosMapData {
             }
             int state = enter_state.get(number);
             if ((state & 1) != 0) {
-                chr.SendPacket(ResCMobPool.MobEnterField(mob, -1, 0, 0));
+                chr.SendPacket(ResCMobPool.MobEnterField(mob));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
                     chr.SendPacket(ResCMobPool.MobChangeController(mob, mob.isFirstAttack()));
@@ -720,7 +721,7 @@ public class TacosMap extends TacosMapData {
             int state = move_state.get(number);
 
             if ((state & 1) != 0) {
-                chr.SendPacket(ResCMobPool.MobEnterField(mob, -1, 0, 0));
+                chr.SendPacket(ResCMobPool.MobEnterField(mob));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
                     chr.SendPacket(ResCMobPool.MobChangeController(mob, mob.isFirstAttack()));
@@ -1027,33 +1028,43 @@ public class TacosMap extends TacosMapData {
     public void spawnRevives(MapleMonster monster, int oid) {
         checkRemoveAfter(monster);
         monster.setLinkOid(oid);
+        monster.setAT(OpsMobAppear.MOBAPPEAR_REVIVED);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, -3, 0, oid));
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
         updateMonsterController(monster);
+        monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         this.spawnedMonstersOnMap.incrementAndGet();
     }
 
     public void spawnMonster(MapleMonster monster, int spawnType) {
+        OpsMobAppear ops_at = OpsMobAppear.find(spawnType);
+
         checkRemoveAfter(monster);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, spawnType, 0, 0));
+        monster.setAT(ops_at != OpsMobAppear.UNKNOWN ? ops_at : OpsMobAppear.MOBAPPEAR_EFFECT);
+        monster.setATEx(spawnType);
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
         updateMonsterController(monster);
+        monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         this.spawnedMonstersOnMap.incrementAndGet();
     }
 
     public int spawnMonsterWithEffect(MapleMonster monster, int effect, Point pos) {
         monster.setPosition(pos);
+        monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, -2, effect, 0));
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
         updateMonsterController(monster);
+        monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         this.spawnedMonstersOnMap.incrementAndGet();
         return monster.getObjectId();
     }
 
     public void spawnFakeMonster(MapleMonster monster) {
         monster.setFake(true);
+        monster.setAT(OpsMobAppear.MOBAPPEAR_SUSPENDED);
         addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster, -4, 0, 0));
+        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
         updateMonsterController(monster);
         this.spawnedMonstersOnMap.incrementAndGet();
     }

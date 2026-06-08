@@ -59,6 +59,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import tacos.odin.OdinPair;
+import tacos.packet.ops.OpsMobAppear;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
@@ -595,11 +596,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     @Override
-    public final void sendSpawnData(final MapleClient client) {
+    public void sendSpawnData(MapleClient client) {
         if (!isAlive()) {
             return;
         }
-        client.SendPacket(ResCMobPool.MobEnterField(this, (lastNode >= 0 ? -2 : -1), fake ? 0xfc : (lastNode >= 0 ? 12 : 0), 0));
+        client.SendPacket(ResCMobPool.MobEnterField(this));
         if (reflectpack != null) {
             client.getSession().write(reflectpack);
         }
@@ -1242,5 +1243,24 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public void setNodePacket(final MaplePacket np) {
         this.nodepack = np;
+    }
+
+    private OpsMobAppear appear_type = OpsMobAppear.MOBAPPEAR_NORMAL;
+    private int nAppearType = -1;
+
+    public OpsMobAppear getAT() {
+        return this.appear_type;
+    }
+
+    public void setAT(OpsMobAppear appear_type) {
+        this.appear_type = appear_type;
+    }
+
+    public int getATEx() {
+        return this.nAppearType;
+    }
+
+    public void setATEx(int nAppearType) {
+        this.nAppearType = nAppearType;
     }
 }
