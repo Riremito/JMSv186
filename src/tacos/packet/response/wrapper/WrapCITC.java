@@ -25,7 +25,6 @@ import tacos.packet.ops.OpsITC;
 import tacos.packet.ops.arg.ArgITCNormalItemResult;
 import tacos.packet.response.ResCITC;
 import odin.server.MTSStorage;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import tacos.shared.SharedDate;
@@ -36,7 +35,7 @@ import tacos.shared.SharedDate;
  */
 public class WrapCITC {
 
-    public static final MaplePacket getMTSFailCancel() {
+    public static ServerPacket getMTSFailCancel() {
         ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
         arg.ops_res = OpsITC.ITCRes_CancelSaleItem_Failed;
         arg.ops_fail_reason = OpsITC.ITCFailReason_NoRemainCash;
@@ -44,14 +43,14 @@ public class WrapCITC {
         return ResCITC.ITCNormalItemResult(arg);
     }
 
-    public static final MaplePacket getMTSConfirmSell() {
+    public static ServerPacket getMTSConfirmSell() {
         ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
         arg.ops_res = OpsITC.ITCRes_RegisterSaleEntry_Done;
 
         return ResCITC.ITCNormalItemResult(arg);
     }
 
-    public static final MaplePacket addToCartMessage(boolean fail, boolean remove) {
+    public static ServerPacket addToCartMessage(boolean fail, boolean remove) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         if (remove) {
@@ -69,17 +68,17 @@ public class WrapCITC {
                 sp.Encode1(41);
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket getMTSConfirmCancel() {
+    public static ServerPacket getMTSConfirmCancel() {
         ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
         arg.ops_res = OpsITC.ITCRes_CancelSaleItem_Done;
 
         return ResCITC.ITCNormalItemResult(arg);
     }
 
-    public static final MaplePacket sendMTS(final List<MTSStorage.MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
+    public static ServerPacket sendMTS(final List<MTSStorage.MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(21); //operation
@@ -94,7 +93,7 @@ public class WrapCITC {
             sp.EncodeBuffer(addMTSItemInfo(item));
         }
         sp.Encode1(0); //0 or 1?
-        return sp.get();
+        return sp;
     }
 
     public static byte[] addMTSItemInfo(MTSStorage.MTSItemInfo item) {
@@ -109,19 +108,19 @@ public class WrapCITC {
         data.EncodeStr(item.getSeller()); //account name (what was nexon thinking?)
         data.EncodeStr(item.getSeller()); //char name
         data.EncodeZeroBytes(28);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static final MaplePacket getMTSWantedListingOver(final int nx, final int items) {
+    public static ServerPacket getMTSWantedListingOver(final int nx, final int items) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(61);
         sp.Encode4(nx);
         sp.Encode4(items);
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket getTransferInventory(final List<IItem> items, final boolean changed) {
+    public static ServerPacket getTransferInventory(final List<IItem> items, final boolean changed) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(33);
@@ -137,26 +136,26 @@ public class WrapCITC {
         }
         sp.Encode4(-47 + i - 1);
         sp.Encode1(changed ? 1 : 0);
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket getMTSConfirmBuy() {
+    public static ServerPacket getMTSConfirmBuy() {
         ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
         arg.ops_res = OpsITC.ITCRes_BuyItem_Done;
 
         return ResCITC.ITCNormalItemResult(arg);
     }
 
-    public static final MaplePacket getMTSConfirmTransfer(final int quantity, final int pos) {
+    public static ServerPacket getMTSConfirmTransfer(final int quantity, final int pos) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(39);
         sp.Encode4(quantity);
         sp.Encode4(pos);
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket getMTSFailBuy() {
+    public static ServerPacket getMTSFailBuy() {
         ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
         arg.ops_res = OpsITC.ITCRes_BuyItem_Failed;
         arg.ops_fail_reason = OpsITC.ITCFailReason_NoRemainCash;
@@ -164,7 +163,7 @@ public class WrapCITC {
         return ResCITC.ITCNormalItemResult(arg);
     }
 
-    public static final MaplePacket getNotYetSoldInv(final List<MTSStorage.MTSItemInfo> items) {
+    public static ServerPacket getNotYetSoldInv(final List<MTSStorage.MTSItemInfo> items) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(35);
@@ -172,10 +171,10 @@ public class WrapCITC {
         for (MTSStorage.MTSItemInfo item : items) {
             sp.EncodeBuffer(addMTSItemInfo(item));
         }
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket getMTSFailSell() {
+    public static ServerPacket getMTSFailSell() {
         ArgITCNormalItemResult arg = new ArgITCNormalItemResult();
         arg.ops_res = OpsITC.ITCRes_RegisterSaleEntry_Failed;
         arg.ops_fail_reason = OpsITC.ITCFailReason_NoRemainCash;

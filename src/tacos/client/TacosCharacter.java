@@ -50,7 +50,7 @@ import tacos.config.Version;
 import tacos.constants.TacosConstants;
 import tacos.database.LazyData;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferField;
@@ -100,7 +100,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
     protected TacosStorage storage = null;
 
-    public void SendPacket(MaplePacket packet) {
+    public void SendPacket(ServerPacket packet) {
         this.client.SendPacket(packet);
     }
 

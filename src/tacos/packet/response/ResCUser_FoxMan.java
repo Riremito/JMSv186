@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -30,12 +29,12 @@ import tacos.packet.request.parse.ParseCMovePath;
  */
 public class ResCUser_FoxMan {
 
-    public static MaplePacket FoxManEnterField(MapleCharacter chr) {
+    public static ServerPacket FoxManEnterField(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManEnterField);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
         sp.EncodeBuffer(Create());
-        return sp.get();
+        return sp;
     }
 
     // CFoxMan::OnCreated
@@ -48,36 +47,36 @@ public class ResCUser_FoxMan {
         data.Encode2(0); // FH, dwSN
         data.Encode1(0); // m_nUpgrade
         data.Encode4(0); // m_anFoxManEquip[0]
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // CFoxMan::OnMove
-    public static MaplePacket FoxManMove(MapleCharacter chr, ParseCMovePath data) {
+    public static ServerPacket FoxManMove(MapleCharacter chr, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManMove);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
         sp.EncodeBuffer(data.get());
-        return sp.get();
+        return sp;
     }
 
     // CFoxMan::OnExclResult
-    public static MaplePacket FoxManExclResult(MapleCharacter chr) {
+    public static ServerPacket FoxManExclResult(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManExclResult);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
-        return sp.get();
+        return sp;
     }
 
     // CFoxMan::OnShowChangeEffect
-    public static MaplePacket FoxManShowChangeEffect(MapleCharacter chr) {
+    public static ServerPacket FoxManShowChangeEffect(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManShowChangeEffect);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
-        return sp.get();
+        return sp;
     }
 
     // CFoxMan::OnModified
-    public static MaplePacket FoxManModified(MapleCharacter chr, boolean is_change_equip) {
+    public static ServerPacket FoxManModified(MapleCharacter chr, boolean is_change_equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManModified);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
@@ -87,13 +86,13 @@ public class ResCUser_FoxMan {
         }
         // for local
         sp.Encode1(1); // for SetExclRequestSent
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket FoxManLeaveField(MapleCharacter chr) {
+    public static ServerPacket FoxManLeaveField(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManLeaveField);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
-        return sp.get();
+        return sp;
     }
 }

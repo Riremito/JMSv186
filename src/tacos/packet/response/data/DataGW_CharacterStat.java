@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package tacos.packet.response.data;
 
@@ -152,7 +150,7 @@ public class DataGW_CharacterStat {
 
             // CMS
             if (Version.GreaterOrEqual(Region.CMS, 104)) {
-                return data.get().getBytes();
+                return data.getBytes();
             }
 
             data.EncodeZeroBytes(25);
@@ -161,7 +159,7 @@ public class DataGW_CharacterStat {
             data.Encode1(0);
             data.Encode1(0);
             data.Encode1(0);
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -203,7 +201,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
@@ -270,7 +268,7 @@ public class DataGW_CharacterStat {
                         data.Encode4(0);
                         data.Encode4(0);
                     }
-                    return data.get().getBytes();
+                    return data.getBytes();
                 }
                 if (ServerConfig.KMS118orLater()) {
                     data.EncodeZeroBytes(10);
@@ -278,9 +276,9 @@ public class DataGW_CharacterStat {
                     data.Encode4(0);
                     data.Encode4(0);
                     data.Encode4(0);
-                    return data.get().getBytes();
+                    return data.getBytes();
                 }
-                return data.get().getBytes();
+                return data.getBytes();
             } else {
                 if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 116)) {
                     data.EncodeZeroBytes(21);
@@ -297,7 +295,7 @@ public class DataGW_CharacterStat {
                 data.Encode8(0);
                 data.Encode4(0);
                 data.Encode4(0);
-                return data.get().getBytes();
+                return data.getBytes();
             }
 
             if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126)) {
@@ -329,7 +327,7 @@ public class DataGW_CharacterStat {
                 data.Encode4(0);
                 data.Encode4(0);
             }
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         data.Encode4(chr.getExp()); // nEXP
@@ -348,14 +346,14 @@ public class DataGW_CharacterStat {
         data.Encode1(chr.getPortal()); // nPortal
 
         if (Region.IsVMS()) {
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         if (Region.check(Region.KMSB)) {
             data.Encode8(0);
             data.Encode4(0);
             data.Encode4(0);
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.IsEMS() && Version.PreBB()) || Region.IsBMS()) {
@@ -364,7 +362,7 @@ public class DataGW_CharacterStat {
 
         // KMS 84
         if (Version.LessOrEqual(Region.KMS, 84) || Region.IsBMS()) {
-            return data.get().getBytes();
+            return data.getBytes();
         }
         // JMS 180, KMS 95
         if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 92)) {
@@ -373,17 +371,17 @@ public class DataGW_CharacterStat {
 
         if (Version.Equal(Region.KMST, 330)) {
             data.Encode4(0); // same as JMS187?
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         // KMS, CMS, EMS
         if (Region.IsKMS() || Region.IsCMS() || Region.IsGMS() || Region.IsEMS() || Region.IsIMS() || Region.IsMSEA()) {
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         if (Region.IsTHMS()) {
             data.Encode4(0);
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         // TWMS
@@ -394,7 +392,7 @@ public class DataGW_CharacterStat {
             data.Encode1(0);
             data.Encode1(0);
             data.Encode1(0);
-            return data.get().getBytes();
+            return data.getBytes();
         }
         // JMS
         if (Version.PreBB()) {
@@ -405,7 +403,7 @@ public class DataGW_CharacterStat {
             if (ServerConfig.JMS180orLater()) {
                 data.Encode4(0);
             }
-            return data.get().getBytes();
+            return data.getBytes();
         }
         // Post BB
         if (Version.Equal(Region.JMS, 187)) {
@@ -415,7 +413,7 @@ public class DataGW_CharacterStat {
         data.Encode8(0);
         data.Encode4(0);
         data.Encode4(0);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // GW_CharacterStat::DecodeMoney
@@ -426,7 +424,7 @@ public class DataGW_CharacterStat {
         } else {
             data.Encode4(chr.getMeso());
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // DecodeBuffer size 0x0C
@@ -436,7 +434,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getId());
         data.Encode4(chr.getTama());
         data.Encode4(0);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // GW_CharacterStat::DecodeChangeStat
@@ -588,6 +586,6 @@ public class DataGW_CharacterStat {
             data.Encode4(chr.getGashaEXP());
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

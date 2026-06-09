@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
 import java.util.Map;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChatGroup;
@@ -42,22 +41,22 @@ import tacos.server.map.TacosMap;
  */
 public class ResCField {
 
-    public static MaplePacket TransferFieldReqIgnored(OpsTransferField ops) {
+    public static ServerPacket TransferFieldReqIgnored(OpsTransferField ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferFieldReqIgnored);
 
         sp.Encode1(ops.get());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket TransferChannelReqIgnored(OpsTransferChannel ops) {
+    public static ServerPacket TransferChannelReqIgnored(OpsTransferChannel ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferChannelReqIgnored);
 
         sp.Encode1(ops.get());
-        return sp.get();
+        return sp;
     }
 
     // CField::OnFieldSpecificData
-    public static MaplePacket FieldSpecificData(TacosCharacter chr) {
+    public static ServerPacket FieldSpecificData(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
         int map_id = chr.getMapId();
 
@@ -65,31 +64,31 @@ public class ResCField {
         // CField_ShowaBath::DecodeFieldSpecificData
         // CField_Tutorial::DecodeFieldSpecificData
         if (TacosConstants.is_bath(map_id)) {
-            return sp.get();
+            return sp;
         }
 
         // 1 byte extra data.
         // CField_Coconut::DecodeFieldSpecificData
         if (TacosConstants.is_coconut(map_id)) {
             sp.Encode1(chr.getCoconutTeam());
-            return sp.get();
+            return sp;
         }
         // CField_Battlefield::DecodeFieldSpecificData
         // CField_MonsterCarnival::DecodeFieldSpecificData
         // CField_MonsterCarnivalRevive::DecodeFieldSpecificData
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket GroupMessage(OpsChatGroup ops, String name, String message) {
+    public static ServerPacket GroupMessage(OpsChatGroup ops, String name, String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GroupMessage);
 
         sp.Encode1(ops.get());
         sp.EncodeStr(name);
         sp.EncodeStr(message);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
+    public static ServerPacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
 
         sp.Encode1(req_res.get() | loc_whis.get());
@@ -143,17 +142,17 @@ public class ResCField {
         }
         // 9  (0x09) = 0x01 | 0x08
         // 72 (0x48) = 0x08 | 0x40
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket MobSummonItemUseResult(boolean result) {
+    public static ServerPacket MobSummonItemUseResult(boolean result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
 
         sp.Encode1(result ? 1 : 0);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket FieldEffect(ArgFieldEffect st) {
+    public static ServerPacket FieldEffect(ArgFieldEffect st) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldEffect);
         sp.Encode1(st.flag.get());
         switch (st.flag) {
@@ -212,18 +211,18 @@ public class ResCField {
                 break;
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket FieldObstacleOnOff(String env, int mode) {
+    public static ServerPacket FieldObstacleOnOff(String env, int mode) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
 
         sp.EncodeStr(env);
         sp.Encode4(mode);
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket FieldObstacleOnOffStatus(TacosMap map) {
+    public static ServerPacket FieldObstacleOnOffStatus(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOffStatus);
 
         sp.Encode4(map.getEnvironment().size());
@@ -231,11 +230,11 @@ public class ResCField {
             sp.EncodeStr(mp.getKey());
             sp.Encode4(mp.getValue());
         }
-        return sp.get();
+        return sp;
     }
 
     // CField::OnBlowWeather
-    public static MaplePacket BlowWeather(String msg, int itemid, boolean active) {
+    public static ServerPacket BlowWeather(String msg, int itemid, boolean active) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BlowWeather);
 
         sp.Encode4(active ? itemid : 0);
@@ -243,66 +242,66 @@ public class ResCField {
             sp.EncodeStr(msg);
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket PlayJukeBox(int item_id, String name) {
+    public static ServerPacket PlayJukeBox(int item_id, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayJukeBox);
 
         sp.Encode4(item_id);
         sp.EncodeStr(name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket AdminResult(int value) {
+    public static ServerPacket AdminResult(int value) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
 
         sp.Encode1(value);
         sp.EncodeZeroBytes(17);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket Quiz(int questionSet, int questionId, boolean askQuestion) {
+    public static ServerPacket Quiz(int questionSet, int questionId, boolean askQuestion) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
 
         sp.Encode1(askQuestion ? 1 : 0);
         sp.Encode1(questionSet);
         sp.Encode2(questionId);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket Desc() {
+    public static ServerPacket Desc() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
 
         sp.Encode1(0);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket Clock(int hour, int min, int sec) {
+    public static ServerPacket Clock(int hour, int min, int sec) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(1); // station clock
         sp.Encode1(hour);
         sp.Encode1(min);
         sp.Encode1(sec);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket Clock(int time) {
+    public static ServerPacket Clock(int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
 
         sp.Encode1(2); // timer
         sp.Encode4(time);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket DestroyClock() {
+    public static ServerPacket DestroyClock() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
 
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket FootHoldInfo(TacosMap map) {
+    public static ServerPacket FootHoldInfo(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FootHoldInfo);
 
         sp.Encode4(map.getNodeInfo().getPlatforms().size());
@@ -323,38 +322,38 @@ public class ResCField {
             sp.Encode2(mp.r);
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket HontaleTimer(boolean spawned, int time_minute) {
+    public static ServerPacket HontaleTimer(boolean spawned, int time_minute) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode1(time_minute); // minute
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket ChaosZakumTimer(boolean spawned, int time_second) {
+    public static ServerPacket ChaosZakumTimer(boolean spawned, int time_second) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time_second);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket HontailTimer(boolean spawned, int time_second) {
+    public static ServerPacket HontailTimer(boolean spawned, int time_second) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time_second);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket ZakumTimer(boolean spawned, int time_second) {
+    public static ServerPacket ZakumTimer(boolean spawned, int time_second) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
 
         sp.Encode1(spawned ? 1 : 0);
         sp.Encode4(time_second);
-        return sp.get();
+        return sp;
     }
 }

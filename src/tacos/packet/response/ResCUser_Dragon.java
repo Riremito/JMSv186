@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.client.TacosDragon;
@@ -31,7 +30,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCUser_Dragon {
 
     // CDragon::OnCreated
-    public static MaplePacket DragonEnterField(TacosDragon dragon) {
+    public static ServerPacket DragonEnterField(TacosDragon dragon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonEnterField);
 
         sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
@@ -40,24 +39,24 @@ public class ResCUser_Dragon {
         sp.Encode1(dragon.getMoveAction()); // m_nMoveAction
         sp.Encode2(0); // unused
         sp.Encode2(dragon.getJobCode()); // m_nJobCode
-        return sp.get();
+        return sp;
     }
 
     // CDragon::OnMove
-    public static MaplePacket DragonMove(TacosDragon dragon, ParseCMovePath data) {
+    public static ServerPacket DragonMove(TacosDragon dragon, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonMove);
 
         sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
         sp.EncodeBuffer(data.get());
-        return sp.get();
+        return sp;
     }
 
     // not coded in GMS v95, but KMST v2.1029 removes dragon when you change other job.
-    public static MaplePacket DragonLeaveField(TacosDragon dragon) {
+    public static ServerPacket DragonLeaveField(TacosDragon dragon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonLeaveField);
 
         sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
-        return sp.get();
+        return sp;
     }
 
 }

@@ -19,7 +19,7 @@
 package tacos.client;
 
 import org.apache.mina.common.IoSession;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 
 /**
  *
@@ -38,7 +38,7 @@ public class BaseClient {
     }
 
     // TODO : fix class to byte[]
-    public void SendPacket(MaplePacket packet) {
+    public void SendPacket(ServerPacket packet) {
         this.session.write(packet);
     }
 

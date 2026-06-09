@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleReactor;
 import tacos.packet.ServerPacketHeader;
@@ -29,7 +28,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCReactorPool {
 
-    public static MaplePacket ReactorChangeState(MapleReactor reactor, int stance) {
+    public static ServerPacket ReactorChangeState(MapleReactor reactor, int stance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorChangeState);
 
         sp.Encode4(reactor.getObjectId());
@@ -39,10 +38,10 @@ public class ResCReactorPool {
         sp.Encode2(stance);
         sp.Encode1(0);
         sp.Encode1(4);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket ReactorEnterField(MapleReactor reactor) {
+    public static ServerPacket ReactorEnterField(MapleReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorEnterField);
 
         sp.Encode4(reactor.getObjectId());
@@ -52,17 +51,17 @@ public class ResCReactorPool {
         sp.Encode2(reactor.getPosition().y);
         sp.Encode1(reactor.getFacingDirection()); // stance
         sp.EncodeStr(reactor.getName());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket ReactorLeaveField(MapleReactor reactor) {
+    public static ServerPacket ReactorLeaveField(MapleReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorLeaveField);
 
         sp.Encode4(reactor.getObjectId());
         sp.Encode1(reactor.getState());
         sp.Encode2(reactor.getPosition().x);
         sp.Encode2(reactor.getPosition().y);
-        return sp.get();
+        return sp;
     }
 
 }

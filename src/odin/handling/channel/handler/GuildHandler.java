@@ -26,10 +26,10 @@ import java.util.Iterator;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.network.MaplePacket;
 import odin.handling.world.OdinWorld;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ClientPacket;
+import tacos.packet.ServerPacket;
 
 public class GuildHandler {
 
@@ -164,7 +164,7 @@ public class GuildHandler {
                         }
                         c.getSession().write(ResCWvsContext.showGuildInfo(c.getPlayer()));
                         final MapleGuild gs = OdinWorld.Guild.getGuild(guildId);
-                        for (MaplePacket pack : OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true)) {
+                        for (ServerPacket pack : OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true)) {
                             if (pack != null) {
                                 c.getSession().write(pack);
                             }

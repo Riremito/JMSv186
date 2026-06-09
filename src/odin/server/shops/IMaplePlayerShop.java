@@ -23,9 +23,9 @@ package odin.server.shops;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.network.MaplePacket;
 import odin.server.shops.AbstractPlayerStore.BoughtItem;
 import tacos.odin.OdinPair;
+import tacos.packet.ServerPacket;
 
 public interface IMaplePlayerShop {
 
@@ -70,7 +70,7 @@ public interface IMaplePlayerShop {
 
     public void removeFromSlot(int slot);
 
-    public void broadcastToVisitors(MaplePacket packet);
+    public void broadcastToVisitors(ServerPacket packet);
 
     public void addVisitor(MapleCharacter visitor);
 

@@ -24,7 +24,6 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import odin.constants.GameConstants;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataCClientOptMan;
 import tacos.packet.response.data.DataCWvsContext;
@@ -42,7 +41,7 @@ import tacos.shared.SharedDate;
 public class ResCStage {
 
     // CStage::OnSetField
-    public static final MaplePacket SetField(MapleCharacter chr, boolean bCharacterData) {
+    public static ServerPacket SetField(MapleCharacter chr, boolean bCharacterData) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // JMS184orLater
         if (((Region.IsJMS() || Region.IsCMS() || Region.IsGMS()) && ServerConfig.JMS186orLater())
@@ -128,7 +127,7 @@ public class ResCStage {
         }
 
         if (Version.LessOrEqual(Region.KMS, 31)) {
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
@@ -153,11 +152,11 @@ public class ResCStage {
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
-        return sp.get();
+        return sp;
     }
 
     // 分割版
-    public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, long datamask_2) {
+    public static ServerPacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, long datamask_2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
@@ -192,7 +191,7 @@ public class ResCStage {
                 sp.Encode1(0); // not 0, 0059E9C0
             }
             sp.Encode1(0);
-            return sp.get();
+            return sp;
         }
 
         // sub
@@ -209,15 +208,15 @@ public class ResCStage {
             if (Version.GreaterOrEqual(Region.JMS, 308)) {
                 sp.Encode1(0);
             }
-            return sp.get();
+            return sp;
         }
 
         // Err
-        return sp.get();
+        return sp;
     }
 
     // CStage::OnSetITC
-    public static final MaplePacket SetITC(final MapleCharacter chr) {
+    public static ServerPacket SetITC(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetITC);
         sp.EncodeBuffer(DataCharacterData.Encode(chr));
         // CITC::LoadData
@@ -232,11 +231,11 @@ public class ResCStage {
                 sp.Encode8(SharedDate.getTimestamp());
             }
         }
-        return sp.get();
+        return sp;
     }
 
     // CStage::OnSetCashShop
-    public static MaplePacket SetCashShop(MapleClient c) {
+    public static ServerPacket SetCashShop(MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetCashShop);
         sp.EncodeBuffer(DataCharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
@@ -280,7 +279,7 @@ public class ResCStage {
             sp.Encode4(0);
         }
 
-        return sp.get();
+        return sp;
     }
 
 }

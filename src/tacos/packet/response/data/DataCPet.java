@@ -45,6 +45,6 @@ public class DataCPet {
             data.Encode1(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

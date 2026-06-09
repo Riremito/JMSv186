@@ -23,7 +23,7 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUserRemote;
@@ -42,7 +42,7 @@ public class PetCharacter implements IPetEx {
     }
 
     @Override
-    public void SendPacket(MaplePacket packet) {
+    public void SendPacket(ServerPacket packet) {
         this.character.getMap().broadcastMessage(packet);
     }
 

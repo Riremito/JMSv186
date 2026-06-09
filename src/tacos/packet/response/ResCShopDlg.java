@@ -25,7 +25,6 @@ import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedDate;
 import tacos.debug.DebugShop;
-import tacos.network.MaplePacket;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsShop;
@@ -40,7 +39,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCShopDlg {
 
     // CShopDlg::OnPacket
-    public static MaplePacket ShopResult(OpsShop ops, int level) {
+    public static ServerPacket ShopResult(OpsShop ops, int level) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopResult);
 
         sp.Encode1(ops.get());
@@ -77,15 +76,15 @@ public class ResCShopDlg {
             sp.Encode1(0);
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket ShopResult(OpsShop ops) {
+    public static ServerPacket ShopResult(OpsShop ops) {
         return ResCShopDlg.ShopResult(ops, 0);
     }
 
     // CShopDlg::OnPacket
-    public static MaplePacket OpenShopDlg_DS(DebugShop ds) {
+    public static ServerPacket OpenShopDlg_DS(DebugShop ds) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -168,10 +167,10 @@ public class ResCShopDlg {
                 sp.EncodeZeroBytes(32);
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket OpenShopDlg(MapleClient c, int sid, List<MapleShopItem> items) {
+    public static ServerPacket OpenShopDlg(MapleClient c, int sid, List<MapleShopItem> items) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
@@ -252,7 +251,7 @@ public class ResCShopDlg {
                 sp.EncodeZeroBytes(32);
             }
         }
-        return sp.get();
+        return sp;
     }
 
 }

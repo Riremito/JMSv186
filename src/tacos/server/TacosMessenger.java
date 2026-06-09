@@ -20,7 +20,7 @@ package tacos.server;
 
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.builder.MessengerData;
 import tacos.packet.ops.OpsMessenger;
 import tacos.packet.response.ResCUIMessenger;
@@ -88,7 +88,7 @@ public class TacosMessenger {
         return players_in;
     }
 
-    public void SendPacket(MaplePacket packet, TacosCharacter chr) {
+    public void SendPacket(ServerPacket packet, TacosCharacter chr) {
         for (TacosCharacter player : getPlayers()) {
             if (player == chr) {
                 continue;

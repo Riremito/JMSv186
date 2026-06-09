@@ -68,7 +68,7 @@ import tacos.client.TacosDragon;
 import tacos.client.TacosSkillPet;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCAffectedAreaPool;
@@ -183,7 +183,7 @@ public class TacosMap extends TacosMapData {
         this.mapobjects.get(mapobject.getType()).put(this.runningOid, mapobject);
     }
 
-    public void spawnRangedMapObject(MapleMapObject mapobject, MaplePacket packet) {
+    public void spawnRangedMapObject(MapleMapObject mapobject, ServerPacket packet) {
         for (MapleCharacter player : this.characters) {
             if (player.getViewRangeSq() < player.getPosition().distanceSq(mapobject.getPosition())) {
                 continue;
@@ -1365,26 +1365,26 @@ public class TacosMap extends TacosMapData {
     }
 
     // self and other players in range.
-    public void broadcastMessage(MaplePacket packet, Point rangedFrom) {
+    public void broadcastMessage(ServerPacket packet, Point rangedFrom) {
         broadcastMessageInternal(null, packet, rangedFrom, false);
     }
 
     // other players in range.
-    public void broadcastMessageTo(TacosCharacter source, MaplePacket packet, Point rangedFrom) {
+    public void broadcastMessageTo(TacosCharacter source, ServerPacket packet, Point rangedFrom) {
         broadcastMessageInternal(source, packet, rangedFrom, false);
     }
 
     // self and other players.
-    public void broadcastMessage(MaplePacket packet) {
+    public void broadcastMessage(ServerPacket packet) {
         broadcastMessageInternal(null, packet, null, true);
     }
 
     // self and other players, or other players.
-    public void broadcastMessage(TacosCharacter source, MaplePacket packet, boolean repeatToSource) {
+    public void broadcastMessage(TacosCharacter source, ServerPacket packet, boolean repeatToSource) {
         broadcastMessageInternal(repeatToSource ? null : source, packet, source.getPosition(), true);
     }
 
-    private void broadcastMessageInternal(TacosCharacter source, MaplePacket packet, Point rangedFrom, boolean ignoreRange) {
+    private void broadcastMessageInternal(TacosCharacter source, ServerPacket packet, Point rangedFrom, boolean ignoreRange) {
         Iterator<MapleCharacter> ltr = characters.iterator();
         TacosCharacter chr;
         while (ltr.hasNext()) {

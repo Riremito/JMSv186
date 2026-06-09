@@ -18,13 +18,13 @@
  */
 package tacos.packet.response.wrapper;
 
+import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.arg.ArgBroadcastMsg;
@@ -49,29 +49,29 @@ import odin.server.Randomizer;
  */
 public class ResWrapper {
 
-    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item) {
+    public static ServerPacket addInventorySlot(MapleInventoryType type, IItem item) {
         return addInventorySlot(type, item, false);
     }
 
-    public static MaplePacket addInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
+    public static ServerPacket addInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
         InvOp io = new InvOp();
         io.add(type, item);
         return ResCWvsContext.InventoryOperation(fromDrop, io);
     }
 
-    public static MaplePacket updateInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
+    public static ServerPacket updateInventorySlot(MapleInventoryType type, IItem item, boolean fromDrop) {
         InvOp io = new InvOp();
         io.update(type, item);
         return ResCWvsContext.InventoryOperation(fromDrop, io);
     }
 
-    public static MaplePacket dropInventoryItemUpdate(MapleInventoryType type, IItem item) {
+    public static ServerPacket dropInventoryItemUpdate(MapleInventoryType type, IItem item) {
         InvOp io = new InvOp();
         io.update(type, item);
         return ResCWvsContext.InventoryOperation(true, io);
     }
 
-    public static final MaplePacket updatePet(final MaplePet pet, final IItem item) {
+    public static ServerPacket updatePet(final MaplePet pet, final IItem item) {
         InvOp io = new InvOp();
         // ペットと装備の更新時はアイテムを削除する必要はなく、同一スロットにアイテムを追加するだけで良い
         // アイテム削除を行うとペットと装備固有のクエストが再発生する
@@ -79,29 +79,29 @@ public class ResWrapper {
         return ResCWvsContext.InventoryOperation(false, io);
     }
 
-    public static MaplePacket moveInventoryItem(MapleInventoryType type, int src, int dst) {
+    public static ServerPacket moveInventoryItem(MapleInventoryType type, int src, int dst) {
         return moveInventoryItem(type, src, dst, (byte) -1);
     }
 
-    public static MaplePacket moveInventoryItem(MapleInventoryType type, int src, int dst, short equipIndicator) {
+    public static ServerPacket moveInventoryItem(MapleInventoryType type, int src, int dst, short equipIndicator) {
         InvOp io = new InvOp();
         io.move(type, src, dst);
         return ResCWvsContext.InventoryOperation(true, io);
     }
 
-    public static MaplePacket dropInventoryItem(MapleInventoryType type, short src) {
+    public static ServerPacket dropInventoryItem(MapleInventoryType type, short src) {
         InvOp io = new InvOp();
         io.remove(type, src);
         return ResCWvsContext.InventoryOperation(true, io);
     }
 
-    public static MaplePacket clearInventoryItem(MapleInventoryType type, short slot, boolean fromDrop) {
+    public static ServerPacket clearInventoryItem(MapleInventoryType type, short slot, boolean fromDrop) {
         InvOp io = new InvOp();
         io.remove(type, slot);
         return ResCWvsContext.InventoryOperation(fromDrop, io);
     }
 
-    public static MaplePacket scrolledItem(IItem scroll, IItem item, boolean destroyed, boolean potential) {
+    public static ServerPacket scrolledItem(IItem scroll, IItem item, boolean destroyed, boolean potential) {
         InvOp io = new InvOp();
 
         // 書
@@ -121,7 +121,7 @@ public class ResWrapper {
         return ResCWvsContext.InventoryOperation(true, io);
     }
 
-    public static MaplePacket moveAndMergeInventoryItem(MapleInventoryType type, IItem item, short slot_remove) {
+    public static ServerPacket moveAndMergeInventoryItem(MapleInventoryType type, IItem item, short slot_remove) {
         InvOp io = new InvOp();
         io.move(type, slot_remove, item.getPosition()); // new item frame movement
         io.remove(type, slot_remove);
@@ -129,7 +129,7 @@ public class ResWrapper {
         return ResCWvsContext.InventoryOperation(true, io);
     }
 
-    public static MaplePacket moveAndMergeWithRestInventoryItem(MapleInventoryType type, IItem item_max, IItem item_rest) {
+    public static ServerPacket moveAndMergeWithRestInventoryItem(MapleInventoryType type, IItem item_max, IItem item_rest) {
         InvOp io = new InvOp();
         io.update(type, item_rest);
         io.update(type, item_max);
@@ -137,17 +137,17 @@ public class ResWrapper {
     }
 
     // 装着時交換不可など
-    public static MaplePacket updateSpecialItemUse_(IItem item, byte invType) {
+    public static ServerPacket updateSpecialItemUse_(IItem item, byte invType) {
         InvOp io = new InvOp();
         io.add(GameConstants.getInventoryType(item.getItemId()), item);
         return ResCWvsContext.InventoryOperation(true, io);
     }
 
-    public static MaplePacket getShowInventoryFull() {
+    public static ServerPacket getShowInventoryFull() {
         return getShowInventoryStatus(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL);
     }
 
-    public static final MaplePacket GainEXP_Monster(final int gain, final boolean white, final int partyinc, final int Class_Bonus_EXP, final int Equipment_Bonus_EXP, final int Premium_Bonus_EXP) {
+    public static ServerPacket GainEXP_Monster(final int gain, final boolean white, final int partyinc, final int Class_Bonus_EXP, final int Equipment_Bonus_EXP, final int Premium_Bonus_EXP) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_IncEXPMessage;
         ma.Inc_EXP_TextColor = white ? 1 : 0;
@@ -163,7 +163,7 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket updateQuestMobKills(MapleQuestStatus status) {
+    public static ServerPacket updateQuestMobKills(MapleQuestStatus status) {
         StringBuilder sb = new StringBuilder();
         for (int kills : status.getMobKills().values()) {
             sb.append(String.format("%03d", kills));
@@ -176,7 +176,7 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket showGainCard(int itemid) {
+    public static ServerPacket showGainCard(int itemid) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_DropPickUpMessage;
         ma.dt = OpsDropPickUpMessage.PICKUP_MONSTER_CARD;
@@ -184,21 +184,21 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket getGPMsg(int inc_gp) {
+    public static ServerPacket getGPMsg(int inc_gp) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_IncGPMessage;
         ma.Inc_GP = inc_gp;
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket getStatusMsg(int itemid) {
+    public static ServerPacket getStatusMsg(int itemid) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_GiveBuffMessage;
         ma.ItemID = itemid;
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket getSPMsg(byte inc_sp, short jobid) {
+    public static ServerPacket getSPMsg(byte inc_sp, short jobid) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_IncSPMessage;
         ma.JobID = jobid;
@@ -206,7 +206,7 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static final MaplePacket updateInfoQuest(final int quest, final String data) {
+    public static ServerPacket updateInfoQuest(final int quest, final String data) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_QuestRecordExMessage;
         ma.QuestID = (short) quest;
@@ -214,14 +214,14 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static final MaplePacket getShowFameGain(int inc_fame) {
+    public static ServerPacket getShowFameGain(int inc_fame) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_IncPOPMessage;
         ma.Inc_Fame = inc_fame;
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket DropPickUpMessage(int itemId, short quantity) {
+    public static ServerPacket DropPickUpMessage(int itemId, short quantity) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_DropPickUpMessage;
         ma.dt = OpsDropPickUpMessage.PICKUP_ITEM;
@@ -230,14 +230,14 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket getShowInventoryStatus(OpsDropPickUpMessage dm) {
+    public static ServerPacket getShowInventoryStatus(OpsDropPickUpMessage dm) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_DropPickUpMessage;
         ma.dt = dm;
         return ResCWvsContext.Message(ma);
     }
 
-    public static final MaplePacket GainEXP_Others(final int gain, final boolean inChat, final boolean white) {
+    public static ServerPacket GainEXP_Others(final int gain, final boolean inChat, final boolean white) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_IncEXPMessage;
         ma.Inc_EXP_TextColor = white ? 1 : 0;
@@ -246,7 +246,7 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static final MaplePacket showMesoGain(int gain, boolean inChat) {
+    public static ServerPacket showMesoGain(int gain, boolean inChat) {
         if (!inChat) {
             ArgMessage ma = new ArgMessage();
             ma.mt = OpsMessage.MS_DropPickUpMessage;
@@ -260,7 +260,7 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static final MaplePacket GainTamaMessage(int inc_tama) {
+    public static ServerPacket GainTamaMessage(int inc_tama) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_JMS_Pachinko;
         ma.Inc_Tama = inc_tama;
@@ -294,49 +294,49 @@ public class ResWrapper {
     // CWvsContext::OnTownPortal
     // CWvsContext::OnOpenGate
     // CWvsContext::OnBroadcastMsg
-    public static MaplePacket BroadCastMsgNoticeOld(String message) {
+    public static ServerPacket BroadCastMsgNoticeOld(String message) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_NOTICE; // 告知事項
         bma.message = message;
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsgAlert(String message) {
+    public static ServerPacket BroadCastMsgAlert(String message) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_ALERT; // ダイアログ
         bma.message = message;
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsgSlide(String message) {
+    public static ServerPacket BroadCastMsgSlide(String message) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_SLIDE; // 上部メッセージ
         bma.message = message;
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsgEvent(String message) {
+    public static ServerPacket BroadCastMsgEvent(String message) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_EVENT; // ピンク文字
         bma.message = message;
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsg_SN(int type, String message) {
+    public static ServerPacket BroadCastMsg_SN(int type, String message) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.find((byte) type); // 古いscript (serverNotice)用
         bma.message = message;
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsgNotice(String message) {
+    public static ServerPacket BroadCastMsgNotice(String message) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX; // 青文字
         bma.message = message;
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsgNoticeItem(String message, int item_id) {
+    public static ServerPacket BroadCastMsgNoticeItem(String message, int item_id) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX; // 青文字
         bma.message = message;
@@ -344,7 +344,7 @@ public class ResWrapper {
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsgGachaponAnnounce(MapleCharacter chr, IItem item) {
+    public static ServerPacket BroadCastMsgGachaponAnnounce(MapleCharacter chr, IItem item) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_GACHAPONANNOUNCE; // ガシャポン, アバターランダムボックス
         bma.chr = chr;
@@ -354,7 +354,7 @@ public class ResWrapper {
         return ResCWvsContext.BroadcastMsg(bma);
     }
 
-    public static MaplePacket BroadCastMsgRandomBoxAnnounce(MapleCharacter chr, IItem item) {
+    public static ServerPacket BroadCastMsgRandomBoxAnnounce(MapleCharacter chr, IItem item) {
         ArgBroadcastMsg bma = new ArgBroadcastMsg();
         bma.bm = OpsBroadcastMsg.BM_GACHAPONANNOUNCE;
         bma.chr = chr;
@@ -432,7 +432,7 @@ public class ResWrapper {
     // CWvsContext::OnDisallowedDeliveryQuestList
     // CWvsContext::OnMacroSysDataInit
 
-    public static final MaplePacket updateQuest(final MapleQuestStatus quest) {
+    public static ServerPacket updateQuest(final MapleQuestStatus quest) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_QuestRecordMessage;
         ma.QuestID = (short) quest.getQuest().getId();
@@ -441,37 +441,37 @@ public class ResWrapper {
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket showQuestMsg(String msg) {
+    public static ServerPacket showQuestMsg(String msg) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_SystemMessage;
         ma.str = msg;
         return ResCWvsContext.Message(ma);
     }
 
-    public static MaplePacket itemExpired(int itemid) {
+    public static ServerPacket itemExpired(int itemid) {
         ArgMessage ma = new ArgMessage();
         ma.mt = OpsMessage.MS_CashItemExpireMessage;
         ma.ItemID = itemid;
         return ResCWvsContext.Message(ma);
     }
 
-    public static final MaplePacket MapNameDisplay(final int mapid) {
+    public static ServerPacket MapNameDisplay(final int mapid) {
         return ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "maplemap/enter/" + mapid));
     }
 
-    public static MaplePacket playSound(String sound) {
+    public static ServerPacket playSound(String sound) {
         return ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, sound));
     }
 
-    public static MaplePacket showEffect(String effect) {
+    public static ServerPacket showEffect(String effect) {
         return ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, effect));
     }
 
-    public static MaplePacket musicChange(String song) {
+    public static ServerPacket musicChange(String song) {
         return ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, song));
     }
 
-    public static MaplePacket environmentChange(String env, int mode) {
+    public static ServerPacket environmentChange(String env, int mode) {
         return ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.find(mode), env));
     }
 
@@ -484,14 +484,14 @@ public class ResWrapper {
         chr.SendPacket(playSound("quest2288/" + Randomizer.nextInt(9))); // test bgm
     }
 
-    public static MaplePacket updateBuddylist(MapleCharacter chr) {
+    public static ServerPacket updateBuddylist(MapleCharacter chr) {
         ArgFriend frs = new ArgFriend();
         frs.flag = OpsFriend.FriendRes_LoadFriend_Done;
         frs.chr = chr;
         return ResCWvsContext.FriendResult(frs);
     }
 
-    public static MaplePacket requestBuddylistAdd(int friend_id, String name, int level, int job) {
+    public static ServerPacket requestBuddylistAdd(int friend_id, String name, int level, int job) {
         ArgFriend frs = new ArgFriend();
         frs.flag = OpsFriend.FriendRes_Invite;
         frs.friend_id = friend_id;
@@ -503,7 +503,7 @@ public class ResWrapper {
         return ResCWvsContext.FriendResult(frs);
     }
 
-    public static MaplePacket updateBuddyChannel(int friend_id, int friend_channel) {
+    public static ServerPacket updateBuddyChannel(int friend_id, int friend_channel) {
         ArgFriend frs = new ArgFriend();
         frs.flag = OpsFriend.FriendRes_Notify;
         frs.friend_id = friend_id;
@@ -511,7 +511,7 @@ public class ResWrapper {
         return ResCWvsContext.FriendResult(frs);
     }
 
-    public static MaplePacket updateBuddyCapacity(int capacity) {
+    public static ServerPacket updateBuddyCapacity(int capacity) {
         ArgFriend frs = new ArgFriend();
         frs.flag = OpsFriend.FriendRes_IncMaxCount_Done;
         frs.nFriendMax = capacity;
@@ -519,56 +519,49 @@ public class ResWrapper {
     }
 
     // test
-    public static MaplePacket buddylistMessage(OpsFriend flag) {
+    public static ServerPacket buddylistMessage(OpsFriend flag) {
         ArgFriend frs = new ArgFriend();
         frs.flag = flag;
         return ResCWvsContext.FriendResult(frs);
     }
 
-    public static MaplePacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
-        ServerPacket data = new ServerPacket();
-
-        data.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, talk, false, false).getBytes());
-        data.Encode4(def);
-        data.Encode4(min);
-        data.Encode4(max);
-        return data.get();
+    public static ServerPacket getNPCTalkNum(int npc, String talk, int def, int min, int max) {
+        // not coded.
+        return ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, talk, false, false);
     }
 
-    public static final MaplePacket getMapSelection(final int npcid, final String sel) {
+    public static ServerPacket getMapSelection(final int npcid, final String sel) {
         return ResCScriptMan.ScriptMessage(npcid, OpsScriptMan.SM_ASKSLIDEMENU, (byte) 0, sel, false, false);
     }
 
-    public static MaplePacket getNPCTalkStyle(int npc, String talk, int... args) {
-        ServerPacket data = new ServerPacket();
+    public static ServerPacket getNPCTalkStyle(int npc, String talk, int... args) {
 
-        data.EncodeBuffer(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, talk, false, false).getBytes());
-        data.Encode1(args.length);
+        ArrayList<Integer> ids = new ArrayList<>(args.length);
 
-        for (int i = 0; i < args.length; i++) {
-            data.Encode4(args[i]);
+        for (int num : args) {
+            ids.add(num);
         }
 
-        return data.get();
+        return ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, talk, false, false, ids);
     }
 
-    public static MaplePacket showItemUnavailable() {
+    public static ServerPacket showItemUnavailable() {
         return ResWrapper.getShowInventoryStatus(OpsDropPickUpMessage.PICKUP_UNAVAILABLE);
     }
 
-    public static MaplePacket removeMapEffect() {
+    public static ServerPacket removeMapEffect() {
         return ResCField.BlowWeather(null, 0, false);
     }
 
-    public static final MaplePacket sendGhostStatus(final String type, final String amount) {
+    public static ServerPacket sendGhostStatus(final String type, final String amount) {
         return ResCWvsContext.sendString(3, type, amount); //Red_Stage(1-5), Blue_Stage, blueTeamDamage, redTeamDamage
     }
 
-    public static MaplePacket MulungEnergy(int energy) {
+    public static ServerPacket MulungEnergy(int energy) {
         return sendPyramidEnergy("energy", String.valueOf(energy));
     }
 
-    public static final MaplePacket sendGhostPoint(final String type, final String amount) {
+    public static ServerPacket sendGhostPoint(final String type, final String amount) {
         return ResCWvsContext.sendString(2, type, amount); //PRaid_Point (0-1500???)
     }
 
@@ -577,7 +570,7 @@ public class ResWrapper {
     //update_quest_info - 08 53 1E 00 00 00 00 00 00 00 00
     //show_status_info - 01 51 1E 01 01 00 30
     //update_quest_info - 08 51 1E 00 00 00 00 00 00 00 00
-    public static final MaplePacket sendPyramidEnergy(final String type, final String amount) {
+    public static ServerPacket sendPyramidEnergy(final String type, final String amount) {
         return ResCWvsContext.sendString(1, type, amount);
     }
 

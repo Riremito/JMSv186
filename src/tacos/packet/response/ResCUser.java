@@ -23,7 +23,6 @@ import odin.client.inventory.IEquip;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.struct.Structure;
@@ -36,7 +35,7 @@ import tacos.packet.response.struct.Structure;
 public class ResCUser {
 
     // CUser::OnChat
-    public static MaplePacket UserChat(MapleCharacter chr, String message, boolean bOnlyBalloon) {
+    public static ServerPacket UserChat(MapleCharacter chr, String message, boolean bOnlyBalloon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChat);
 
         sp.Encode4(chr.getId());
@@ -51,11 +50,11 @@ public class ResCUser {
             sp.Encode1(0);
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CUser::OnADBoard
-    public static MaplePacket UserADBoard(MapleCharacter chr) {
+    public static ServerPacket UserADBoard(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserADBoard);
 
         String message = chr.getADBoard();
@@ -68,21 +67,21 @@ public class ResCUser {
             sp.EncodeStr(message);
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CUser::OnMiniRoomBalloon
-    public static MaplePacket sendPlayerShopBox(MapleCharacter chr) {
+    public static ServerPacket sendPlayerShopBox(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMiniRoomBalloon);
 
         sp.Encode4(chr.getId());
         sp.EncodeBuffer(Structure.AnnounceBox(chr));
-        return sp.get();
+        return sp;
     }
 
     // CUser::SetConsumeItemEffect
     // CUser::ShowItemUpgradeEffect
-    public static MaplePacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
+    public static ServerPacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -116,34 +115,34 @@ public class ResCUser {
                 sp.Encode4(0); // 2 = 装備のアップグレードに成功しました。
             }
         }
-        return sp.get();
+        return sp;
     }
 
     // CUser::ShowItemHyperUpgradeEffect
     // CUser::ShowItemOptionUpgradeEffect
     // CUser::ShowItemReleaseEffect
-    public static MaplePacket UserItemReleaseEffect(MapleCharacter chr, short equip_item_slot) {
+    public static ServerPacket UserItemReleaseEffect(MapleCharacter chr, short equip_item_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemReleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode2(equip_item_slot);
-        return sp.get();
+        return sp;
     }
 
     // CUser::ShowItemUnreleaseEffect
-    public static MaplePacket UserItemUnreleaseEffect(MapleCharacter chr) {
+    public static ServerPacket UserItemUnreleaseEffect(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUnreleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode1(1);
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode4(0); // 金印 2049500
         }
-        return sp.get();
+        return sp;
     }
 
     // CUser::OnHitByUser
     // CUser::OnTeslaTriangle
     // CUser::OnFollowCharacter
-    public static MaplePacket UserFollowCharacter(MapleCharacter chr, boolean bTransferField) {
+    public static ServerPacket UserFollowCharacter(MapleCharacter chr, boolean bTransferField) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacter);
 
         sp.Encode4(chr.getId()); // dwCharacterID (m_dwPassenserID)
@@ -158,15 +157,15 @@ public class ResCUser {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CUser::OnShowPQReward
     // JMS
-    public static MaplePacket fishingCaught(int chrid) {
+    public static ServerPacket fishingCaught(int chrid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
         sp.Encode4(chrid);
-        return sp.get();
+        return sp;
     }
 
 }

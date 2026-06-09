@@ -23,12 +23,12 @@ package odin.server.maps;
 import java.awt.Point;
 
 import odin.client.MapleCharacter;
-import tacos.network.MaplePacket;
 import odin.handling.world.MaplePartyCharacter;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MapleLifeFactory;
+import tacos.packet.ServerPacket;
 
 public class Event_DojoAgent {
 
@@ -124,7 +124,7 @@ public class Event_DojoAgent {
         return canenter;
     }
 
-    public static MaplePacket Mulung_Pts(int recv, int total) {
+    public static ServerPacket Mulung_Pts(int recv, int total) {
         // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
         return ResWrapper.showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
     }

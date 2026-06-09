@@ -21,7 +21,6 @@ package tacos.packet.response;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
@@ -35,7 +34,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCNpcPool {
 
-    public static MaplePacket ImitatedNPCData(PlayerNPC npc) {
+    public static ServerPacket ImitatedNPCData(PlayerNPC npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ImitatedNPCData);
 
         int number_of_npcs = (npc.getCharacter() == null) ? 0 : 1;
@@ -46,16 +45,16 @@ public class ResCNpcPool {
             sp.EncodeBuffer(DataAvatarLook.Encode(npc.getCharacter())); // AvatarLook::Decode
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket NpcEnterField(MapleNPC npc, boolean show) {
+    public static ServerPacket NpcEnterField(MapleNPC npc, boolean show) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcEnterField);
 
         sp.Encode4(npc.getObjectId()); // dwNpcId
         sp.Encode4(npc.getId()); // NpcTemplate
         sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
-        return sp.get();
+        return sp;
     }
 
     // CNpc::Init
@@ -74,17 +73,17 @@ public class ResCNpcPool {
             data.Encode1(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static MaplePacket NpcLeaveField(MapleNPC npc) {
+    public static ServerPacket NpcLeaveField(MapleNPC npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcLeaveField);
 
         sp.Encode4(npc.getObjectId());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket NpcChangeController(MapleNPC npc, boolean is_local, boolean show) {
+    public static ServerPacket NpcChangeController(MapleNPC npc, boolean is_local, boolean show) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcChangeController);
 
         sp.Encode1(is_local ? 1 : 0);
@@ -94,10 +93,10 @@ public class ResCNpcPool {
             sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket NpcMove(MapleNPC npc, int nChatIdx, int m_nOneTimeAction, ParseCMovePath move_path) {
+    public static ServerPacket NpcMove(MapleNPC npc, int nChatIdx, int m_nOneTimeAction, ParseCMovePath move_path) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcMove);
 
         sp.Encode4(npc.getObjectId());
@@ -112,7 +111,7 @@ public class ResCNpcPool {
             sp.EncodeBuffer(move_path.get());
         }
 
-        return sp.get();
+        return sp;
     }
 
 }

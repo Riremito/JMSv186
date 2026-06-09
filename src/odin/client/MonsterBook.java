@@ -137,7 +137,7 @@ public class MonsterBook {
             data.Encode1(all.getValue()); // Level
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // addCharInfoPacket
@@ -149,7 +149,7 @@ public class MonsterBook {
         data.Encode4(SpecialCard);
         data.Encode4(NormalCard + SpecialCard);
         data.Encode4(MapleItemInformationProvider.getInstance().getCardMobId(bookcover));
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public int getLevel(int cardid) {

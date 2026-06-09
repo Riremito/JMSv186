@@ -892,7 +892,7 @@ public class MapleCharacter extends TacosCharacter {
             data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public final void updateInfoQuest(final int questid, final String data) {
@@ -3068,7 +3068,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void startMonsterCarnival(final int enemyavailable, final int enemytotal) {
-        client.getSession().write(ResCField_MonsterCarnival.startMonsterCarnival(this, enemyavailable, enemytotal));
+        client.getSession().write(ResCField_MonsterCarnival.MCarnivalEnter(this, enemyavailable, enemytotal));
     }
 
     public void CPUpdate(final boolean party, final int available, final int total, final int team) {
@@ -3076,7 +3076,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void playerDiedCPQ(final String name, final int lostCP, final int team) {
-        client.getSession().write(ResCField_MonsterCarnival.playerDiedMessage(name, lostCP, team));
+        client.getSession().write(ResCField_MonsterCarnival.MCarnivalDeath(name, lostCP, team));
     }
 
     public boolean getCanTalk() {

@@ -21,7 +21,6 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCUserRemote;
@@ -33,7 +32,7 @@ import tacos.packet.response.data.DataCUserRemote;
 public class ResCUserPool {
 
     // CUserPool::OnUserEnterField
-    public static MaplePacket UserEnterField(MapleCharacter chr) {
+    public static ServerPacket UserEnterField(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEnterField);
 
         sp.Encode4(chr.getId());
@@ -45,14 +44,14 @@ public class ResCUserPool {
         } else {
             sp.EncodeBuffer(DataCUserRemote.Init(chr));
         }
-        return sp.get();
+        return sp;
     }
 
     // CUserPool::OnUserLeaveField
-    public static MaplePacket UserLeaveField(MapleCharacter chr) {
+    public static ServerPacket UserLeaveField(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserLeaveField);
 
         sp.Encode4(chr.getId());
-        return sp.get();
+        return sp;
     }
 }

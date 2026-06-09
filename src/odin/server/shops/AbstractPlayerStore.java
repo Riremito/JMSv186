@@ -36,7 +36,6 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
 import java.util.ArrayList;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCUser;
@@ -44,6 +43,7 @@ import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
 import tacos.odin.OdinPair;
+import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosWorld;
 
@@ -86,11 +86,11 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     @Override
-    public void broadcastToVisitors(MaplePacket packet) {
+    public void broadcastToVisitors(ServerPacket packet) {
         broadcastToVisitors(packet, true);
     }
 
-    public void broadcastToVisitors(MaplePacket packet, boolean owner) {
+    public void broadcastToVisitors(ServerPacket packet, boolean owner) {
         for (WeakReference<MapleCharacter> chr : chrs) {
             if (chr != null && chr.get() != null) {
                 chr.get().getClient().getSession().write(packet);
@@ -101,7 +101,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         }
     }
 
-    public void broadcastToVisitors(MaplePacket packet, int exception) {
+    public void broadcastToVisitors(ServerPacket packet, int exception) {
         for (WeakReference<MapleCharacter> chr : chrs) {
             if (chr != null && chr.get() != null && getVisitorSlot(chr.get()) != exception) {
                 chr.get().getClient().getSession().write(packet);

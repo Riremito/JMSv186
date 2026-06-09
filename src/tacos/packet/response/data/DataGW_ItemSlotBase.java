@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
+ *
  */
 package tacos.packet.response.data;
 
@@ -63,7 +64,7 @@ public class DataGW_ItemSlotBase {
                 data.Encode1(pos);
             }
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] EncodeSlotEnd(ItemType it) {
@@ -80,7 +81,7 @@ public class DataGW_ItemSlotBase {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte getPotentialRank(Equip equip) {
@@ -338,7 +339,7 @@ public class DataGW_ItemSlotBase {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
     // JMS v184, v185, KMS 95
 
@@ -380,7 +381,7 @@ public class DataGW_ItemSlotBase {
         }
         data.Encode8(0);
         data.Encode4(-1);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] EncodeEquip_EMS89(Equip equip, boolean hasUniqueId) {
@@ -434,7 +435,7 @@ public class DataGW_ItemSlotBase {
             data.Encode4(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] EncodeEquip_KMS197(Equip equip, boolean hasUniqueId) {
@@ -587,7 +588,7 @@ public class DataGW_ItemSlotBase {
         data.Encode2(0); // nSoulSocketID
         data.Encode2(0); // nSoulOption
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // E8 ?? ?? ?? ?? 84 C0 74 ?? 6A 08
@@ -610,6 +611,6 @@ public class DataGW_ItemSlotBase {
             data.Encode4(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

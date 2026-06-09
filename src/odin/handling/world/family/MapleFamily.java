@@ -30,13 +30,13 @@ import java.util.Iterator;
 
 import odin.client.MapleCharacter;
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
 import odin.handling.world.OdinWorld;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
 
 public class MapleFamily implements java.io.Serializable {
@@ -191,26 +191,26 @@ public class MapleFamily implements java.io.Serializable {
         return leaderid;
     }
 
-    public final String getNotice() {
+    public String getNotice() {
         if (notice == null) {
             return "";
         }
         return notice;
     }
 
-    public final String getLeaderName() {
+    public String getLeaderName() {
         return leadername;
     }
 
-    public final void broadcast(final MaplePacket packet, List<Integer> cids) {
+    public void broadcast(ServerPacket packet, List<Integer> cids) {
         broadcast(packet, -1, FCOp.NONE, cids);
     }
 
-    public final void broadcast(final MaplePacket packet, final int exception, List<Integer> cids) {
+    public void broadcast(ServerPacket packet, final int exception, List<Integer> cids) {
         broadcast(packet, exception, FCOp.NONE, cids);
     }
 
-    public final void broadcast(final MaplePacket packet, final int exceptionId, final FCOp bcop, List<Integer> cids) {
+    public void broadcast(ServerPacket packet, final int exceptionId, final FCOp bcop, List<Integer> cids) {
         //passing null to cids will ensure all
         buildNotifications();
         for (MapleFamilyCharacter mgc : members.values()) {

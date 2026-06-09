@@ -88,6 +88,6 @@ public class DataCSummoned {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

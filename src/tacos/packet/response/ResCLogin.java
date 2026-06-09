@@ -23,7 +23,6 @@ import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.network.MaplePacket;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -44,7 +43,7 @@ import tacos.tools.TacosTools;
 public class ResCLogin {
 
     // CClientSocket::OnSelectCharacter
-    public static MaplePacket SelectCharacterResult(TacosServer game_server, int character_id) {
+    public static ServerPacket SelectCharacterResult(TacosServer game_server, int character_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterResult);
         sp.Encode1(0);
         sp.Encode1(0);
@@ -59,13 +58,13 @@ public class ResCLogin {
             sp.Encode1(0);
             sp.Encode8(0);
             sp.Encode1(0);
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
             sp.Encode8(0);
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.GMS, 111)) {
@@ -73,16 +72,16 @@ public class ResCLogin {
             sp.Encode2(0);
             sp.Encode2(0);
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket EnableSPWResult() {
+    public static ServerPacket EnableSPWResult() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EnableSPWResult);
 
         // ?
         sp.Encode1(0);
         sp.Encode1(0);
-        return sp.get();
+        return sp;
     }
 
     // v131 - v186 OK
@@ -148,17 +147,17 @@ public class ResCLogin {
 
 // v131
 // CLogin::OnCheckGameGuardUpdatedResult
-    public static MaplePacket CheckGameGuardUpdated(boolean isOK) {
+    public static ServerPacket CheckGameGuardUpdated(boolean isOK) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_CheckGameGuardUpdatedResult);
         // 0 = Update Game Guard
         // 1 = Enable Login Button
         sp.Encode1(isOK ? 1 : 0);
-        return sp.get();
+        return sp;
     }
 
     // v186+
     // CLogin::OnRecommendWorldMessage
-    public static MaplePacket RecommendWorldMessage() {
+    public static ServerPacket RecommendWorldMessage() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RecommendWorldMessage);
         String[] recommendedReasons = {"これはSELECTを押してもワールドがアクティブになるだけです", "ゴミ機能です", "XXXX"};
         sp.Encode1(recommendedReasons.length);
@@ -166,12 +165,12 @@ public class ResCLogin {
             sp.Encode4(world_id);
             sp.EncodeStr(recommendedReasons[world_id]);
         }
-        return sp.get();
+        return sp;
     }
 
     // CLogin::OnGuestIDLoginResult
     // CWvsContext::SetAccountInfo
-    public static final MaplePacket GuestIDLoginResult(MapleClient c, LoginResult result) {
+    public static ServerPacket GuestIDLoginResult(MapleClient c, LoginResult result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuestIDLoginResult);
         sp.Encode1(result.Get()); // result code
         switch (result) {
@@ -190,11 +189,11 @@ public class ResCLogin {
                 break;
             }
         }
-        return sp.get();
+        return sp;
     }
 
     // CLogin::OnViewAllCharResult
-    public static MaplePacket ViewAllCharResult(MapleClient c, boolean isAlloc) {
+    public static ServerPacket ViewAllCharResult(MapleClient c, boolean isAlloc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ViewAllCharResult);
         List<MapleCharacter> chars = c.loadCharactersFromDB(); // world 0 only (test)
         sp.Encode1(isAlloc ? 1 : 0);
@@ -215,17 +214,17 @@ public class ResCLogin {
                 sp.Encode4(chr.getJobRankMove());
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket CheckPasswordResult(MapleClient client, int result) {
+    public static ServerPacket CheckPasswordResult(MapleClient client, int result) {
         return CheckPasswordResult(client, LoginResult.Find(result));
     }
 
     // CLogin::OnCheckPasswordResult
     // CClientSocket::OnCheckPassword
     // getAuthSuccessRequest, getLoginFailed
-    public static final MaplePacket CheckPasswordResult(MapleClient client, LoginResult result) {
+    public static ServerPacket CheckPasswordResult(MapleClient client, LoginResult result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPasswordResult);
         sp.Encode1(result.Get()); // result
 
@@ -606,35 +605,35 @@ public class ResCLogin {
                 break;
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket CreateNewCharacterResult(final MapleCharacter chr, final boolean worked) {
+    public static ServerPacket CreateNewCharacterResult(final MapleCharacter chr, final boolean worked) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CreateNewCharacterResult);
         sp.Encode1(worked ? 0 : 1);
         if (worked) {
             if (Region.check(Region.KMSB)) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
-                return sp.get();
+                return sp;
             }
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
         }
-        return sp.get();
+        return sp;
     }
 
     // not tested
-    public static MaplePacket CheckPinCodeResult(final byte mode) {
+    public static ServerPacket CheckPinCodeResult(final byte mode) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPinCodeResult);
         /*
         14 : Invalid password
         15 : Second password is incorrect
          */
         sp.Encode1(mode);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket WorldInformation(TacosWorld world) {
+    public static ServerPacket WorldInformation(TacosWorld world) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WorldInformation);
 
         if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
@@ -648,7 +647,7 @@ public class ResCLogin {
             if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 116)) {
                 sp.Encode1(0);
             }
-            return sp.get();
+            return sp;
         }
 
         sp.EncodeStr(world.getName()); // sName
@@ -692,7 +691,7 @@ public class ResCLogin {
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode4(0);
         }
-        return sp.get();
+        return sp;
     }
 
     public static byte[] CharList_TWMS(MapleClient c) {
@@ -735,27 +734,27 @@ public class ResCLogin {
             data.Encode1(0);
             data.Encode4(charslots);
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // キャラクターセレクト
     // getCharList
-    // public static final MaplePacket getCharList(final boolean secondpw, final List<MapleCharacter> chars, int charslots) {
-    public static final MaplePacket SelectWorldResult(MapleClient c, LoginResult result) {
+    // public static ServerPacket getCharList(final boolean secondpw, final List<MapleCharacter> chars, int charslots) {
+    public static ServerPacket SelectWorldResult(MapleClient c, LoginResult result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectWorldResult);
         sp.Encode1(result.Get());
         if (result != LoginResult.SUCCESS) {
             // error
-            return sp.get();
+            return sp;
         }
 
         if (Region.IsTWMS()) {
             sp.EncodeBuffer(CharList_TWMS(c));
-            return sp.get();
+            return sp;
         }
         if (Region.IsCMS()) {
             sp.EncodeBuffer(CharList_CMS(c));
-            return sp.get();
+            return sp;
         }
         List<MapleCharacter> chars = c.loadCharactersFromDB(true);
         int charslots = c.getCharSlots();
@@ -791,7 +790,7 @@ public class ResCLogin {
         }
 
         if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.KMS, 31)) {
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.KMS, 160)) {
@@ -805,7 +804,7 @@ public class ResCLogin {
                 sp.Encode4(0);
                 sp.Encode1(0);
             }
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
@@ -818,7 +817,7 @@ public class ResCLogin {
                 sp.Encode4(0);
                 sp.Encode1(0);
             }
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -846,12 +845,12 @@ public class ResCLogin {
             sp.Encode1(1);
             sp.Encode1(1);
             sp.Encode1(1);
-            return sp.get();
+            return sp;
         }
 
         if (Region.IsBMS()) {
             sp.Encode4(charslots);
-            return sp.get();
+            return sp;
         }
 
         if (Region.IsMSEA() || Region.IsIMS()) {
@@ -859,7 +858,7 @@ public class ResCLogin {
             sp.Encode1(0);
             sp.Encode4(charslots);
             sp.Encode4(0);
-            return sp.get();
+            return sp;
         }
 
         if (Region.IsTHMS()) {
@@ -868,14 +867,14 @@ public class ResCLogin {
             sp.Encode4(charslots);
             sp.Encode4(0);
             sp.Encode8(0);
-            return sp.get();
+            return sp;
         }
 
         if (Version.Between(Region.JMS, 146, 147) || Region.IsVMS()) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.GMS, 91)) {
@@ -893,7 +892,7 @@ public class ResCLogin {
                 sp.Encode4(0);
                 sp.Encode1(0);
             }
-            return sp.get();
+            return sp;
         }
 
         if (Version.GreaterOrEqual(Region.GMS, 83)) {
@@ -901,20 +900,20 @@ public class ResCLogin {
         }
         if (Version.GreaterOrEqual(Region.GMS, 82)) {
             sp.Encode4(charslots); // m_nSlotCount
-            return sp.get();
+            return sp;
         }
 
         // EMS v55
         if ((Region.IsEMS() && Version.getVersion() <= 55)
                 || (Region.IsGMS() && Version.getVersion() <= 73)) {
             sp.Encode4(charslots); // m_nSlotCount
-            return sp.get();
+            return sp;
         }
         if (Region.IsEMS() && Version.getVersion() <= 70) {
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0);
             sp.Encode8(0);
-            return sp.get();
+            return sp;
         }
 
         if (Region.IsKMS() || Region.IsEMS()) {
@@ -927,7 +926,7 @@ public class ResCLogin {
             if (Region.IsEMS()) {
                 sp.Encode8(0);
             }
-            return sp.get();
+            return sp;
         }
         // BIGBANG
         if (Version.Equal(Region.JMS, 187)) {
@@ -935,12 +934,12 @@ public class ResCLogin {
             sp.Encode1(0);
             sp.Encode4(charslots);
             sp.Encode4(1); // Character Cards
-            return sp.get();
+            return sp;
         }
         if (Version.LessOrEqual(Region.JMS, 131)) {
             sp.Encode1(3); // charslots
             sp.Encode1(0);
-            return sp.get();
+            return sp;
         }
         // 2次パスワードの利用状態
         if (Version.PostBB()) {
@@ -953,7 +952,7 @@ public class ResCLogin {
             sp.Encode4(charslots);
             sp.Encode4(0); // Character Card
             sp.Encode4(0); // idk
-            return sp.get();
+            return sp;
         }
 
         if (Region.IsJMS()
@@ -962,22 +961,22 @@ public class ResCLogin {
         } else {
             sp.Encode8(charslots);
         }
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket DeleteCharacterResult(int character_id, boolean success) {
+    public static ServerPacket DeleteCharacterResult(int character_id, boolean success) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DeleteCharacterResult);
 
         sp.Encode4(character_id);
         sp.Encode1(success ? 0 : 1);
-        return sp.get();
+        return sp;
     }
 
     // CLogin::OnLatestConnectedWorld
-    public static MaplePacket LatestConnectedWorld() {
+    public static ServerPacket LatestConnectedWorld() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_LatestConnectedWorld);
         sp.Encode4(0); // World ID
-        return sp.get();
+        return sp;
     }
 
     public static byte[] CharList_CMS(MapleClient c) {
@@ -1002,25 +1001,25 @@ public class ResCLogin {
             data.Encode4(0);
             data.Encode4(0);
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static MaplePacket CheckUserLimitResult(int status) {
+    public static ServerPacket CheckUserLimitResult(int status) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckUserLimitResult);
 
         sp.Encode2(status);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket CheckDuplicatedIDResult(String name, boolean isOK) {
+    public static ServerPacket CheckDuplicatedIDResult(String name, boolean isOK) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckDuplicatedIDResult);
 
         sp.EncodeStr(name);
         sp.Encode1(isOK ? 0 : 1); // 0 = OK
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket SetMapLogin() {
+    public static ServerPacket SetMapLogin() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_SetMapLogin);
 
         // WzXMLの読み込み方法を変更しないと遅延するので、固定値にしておく
@@ -1032,6 +1031,6 @@ public class ResCLogin {
             sp.Encode1(1);
         }
 
-        return sp.get();
+        return sp;
     }
 }

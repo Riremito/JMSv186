@@ -318,7 +318,7 @@ public class Event_PyramidSubway {
             player.gainExp(exp, true, false, false);
         }
         player.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
-        player.getClient().getSession().write(ResCField_MassacreResult.sendPyramidResult(rank, exp));
+        player.getClient().getSession().write(ResCField_MassacreResult.MassacreResult(rank, exp));
         dispose(player);
     }
 
@@ -360,11 +360,11 @@ public class Event_PyramidSubway {
             for (MaplePartyCharacter mpc : c.getParty().getMembers()) {
                 final MapleCharacter chr = map.getCharacterById(mpc.getId());
                 if (chr != null) {
-                    chr.getClient().getSession().write(ResCField_Massacre.sendPyramidUpdate(energybar));
+                    chr.getClient().getSession().write(ResCField_Massacre.MassacreIncGauge(energybar));
                 }
             }
         } else {
-            c.getClient().getSession().write(ResCField_Massacre.sendPyramidUpdate(energybar));
+            c.getClient().getSession().write(ResCField_Massacre.MassacreIncGauge(energybar));
         }
     }
 

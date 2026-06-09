@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
@@ -96,27 +95,26 @@ public class ResCParcelDlg {
     };
 
     // 宅配
-    public static MaplePacket Open(boolean isQuick, boolean isNPC) {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_Parcel);
+    public static ServerPacket Open(boolean isQuick, boolean isNPC) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
         // 0x3B or 0x40
         if (isQuick) {
             // 速達のUI
-            p.Encode1(Action.OPEN_EXPRESS.Get());
-            return p.get();
+            sp.Encode1(Action.OPEN_EXPRESS.Get());
+            return sp;
         }
         // 通常のUI
-        p.Encode1((byte) Action.OPEN.Get());
+        sp.Encode1((byte) Action.OPEN.Get());
         // NPC会話 or 速達の通知から開いたかの判定
-        p.Encode1((byte) (isNPC ? 0 : 1));
-        p.Encode1((byte) 0);
-        p.Encode1((byte) 0);
-        return p.get();
+        sp.Encode1((byte) (isNPC ? 0 : 1));
+        sp.Encode1((byte) 0);
+        sp.Encode1((byte) 0);
+        return sp;
     }
 
-    public static MaplePacket Send() {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_Parcel);
-        p.Encode1((byte) Action.SEND.Get());
-        return p.get();
+    public static ServerPacket Send() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Parcel);
+        sp.Encode1((byte) Action.SEND.Get());
+        return sp;
     }
-
 }

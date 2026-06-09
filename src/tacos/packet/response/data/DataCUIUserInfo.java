@@ -19,11 +19,7 @@
 package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
-import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.config.Region;
-import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 
@@ -57,7 +53,7 @@ public class DataCUIUserInfo {
             data.Encode4(/*inv_pet != null ? inv_pet.getItemId() : 0*/0); // nItemID
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] SetPetInfo_JMS131(MapleCharacter chr, MaplePet pet) {
@@ -70,6 +66,6 @@ public class DataCUIUserInfo {
         data.Encode1(pet.getFullness()); // pet fullness
         data.Encode2(0);
         data.Encode4(/*inv_pet != null ? inv_pet.getItemId() : 0*/0); // nItemID
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

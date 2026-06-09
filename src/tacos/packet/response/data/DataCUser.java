@@ -32,6 +32,6 @@ public class DataCUser {
         data.Encode4(expression);
         data.Encode4(-1);
         data.Encode1(0);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

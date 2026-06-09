@@ -123,6 +123,6 @@ public class PlayerRandomStream {
         data.Encode4((int) s2);
         data.Encode4((int) v6);
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

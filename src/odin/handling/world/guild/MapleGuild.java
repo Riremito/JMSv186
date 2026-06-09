@@ -29,13 +29,11 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
-
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleBBSThread.MapleBBSReply;
 import java.sql.Statement;
@@ -353,16 +351,16 @@ public class MapleGuild implements java.io.Serializable {
         return signature;
     }
 
-    public final void broadcast(final MaplePacket packet) {
+    public void broadcast(ServerPacket packet) {
         broadcast(packet, -1, BCOp.NONE);
     }
 
-    public final void broadcast(final MaplePacket packet, final int exception) {
+    public void broadcast(ServerPacket packet, int exception) {
         broadcast(packet, exception, BCOp.NONE);
     }
 
     // multi-purpose function that reaches every member of guild (except the character with exceptionId) in all channels with as little access to rmi as possible
-    public final void broadcast(final MaplePacket packet, final int exceptionId, final BCOp bcop) {
+    public void broadcast(ServerPacket packet, int exceptionId, BCOp bcop) {
         wL.lock();
         try {
             buildNotifications();
@@ -782,7 +780,7 @@ public class MapleGuild implements java.io.Serializable {
                 data.Encode4(mgc.getAllianceRank());
             }
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // null indicates successful invitation being sent

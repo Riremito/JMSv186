@@ -286,7 +286,7 @@ public class Structure {
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode2(0);
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] addCoolDownInfo(MapleCharacter chr) {
@@ -307,7 +307,7 @@ public class Structure {
                 data.Encode2((short) cool_time);
             }
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] addQuestInfo(final MapleCharacter chr) {
@@ -337,7 +337,7 @@ public class Structure {
             data.Encode2(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] addQuestComplete(MapleCharacter chr) {
@@ -356,7 +356,7 @@ public class Structure {
         if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode2(0);
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // v165, v186
@@ -407,7 +407,7 @@ public class Structure {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] addRocksInfo(final MapleCharacter chr) {
@@ -418,7 +418,7 @@ public class Structure {
         }
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         final int[] map = chr.getRocks();
@@ -438,7 +438,7 @@ public class Structure {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] addMonsterBookInfo(final MapleCharacter chr) {
@@ -455,7 +455,7 @@ public class Structure {
                 data.Encode1(all.getValue());
             }
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
@@ -467,7 +467,7 @@ public class Structure {
             data.Encode2(q.getKey());
             data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // addAnnounceBox
@@ -480,7 +480,7 @@ public class Structure {
             data.Encode1(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // addInteraction
@@ -500,6 +500,6 @@ public class Structure {
             data.Encode1(shop.isOpen() ? 0 : 1);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

@@ -47,7 +47,7 @@ public class DataCS_COMMODITY {
             data.EncodeBuffer(EncodeModifiedData(onsale));
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     private static ArrayList<CS_COMMODITY> ONSALE_LIST = null;
@@ -205,7 +205,7 @@ public class DataCS_COMMODITY {
         }
 
         if (!mask4) {
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         // 0x10000
@@ -216,7 +216,7 @@ public class DataCS_COMMODITY {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

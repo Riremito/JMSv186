@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsRPS;
@@ -29,16 +28,16 @@ import tacos.packet.ops.OpsRPS;
  */
 public class ResCRPSGameDlg {
 
-    public static MaplePacket RPSGame(OpsRPS ops) {
+    public static ServerPacket RPSGame(OpsRPS ops) {
         return RPSGame(ops, 0, 0, 0);
     }
 
-    public static MaplePacket RPSGame(OpsRPS ops, int m_nNpcSelect, int m_nCntStraightVictories) {
+    public static ServerPacket RPSGame(OpsRPS ops, int m_nNpcSelect, int m_nCntStraightVictories) {
         return RPSGame(ops, m_nNpcSelect, m_nCntStraightVictories, 0);
     }
 
     // CRPSGameDlg::OnPacket
-    public static MaplePacket RPSGame(OpsRPS ops, int m_nNpcSelect, int m_nCntStraightVictories, int nTemplateID) {
+    public static ServerPacket RPSGame(OpsRPS ops, int m_nNpcSelect, int m_nCntStraightVictories, int nTemplateID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RPSGame);
 
         sp.Encode1(ops.get()); // nType
@@ -73,6 +72,6 @@ public class ResCRPSGameDlg {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 }

@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import tacos.config.ServerConfig;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMist;
 import tacos.packet.ServerPacketHeader;
@@ -32,7 +31,7 @@ public class ResCAffectedAreaPool {
 
     // CAffectedAreaPool::OnAffectedAreaCreated
     // CAffectedArea::MakeEnterFieldPacket
-    public static MaplePacket AffectedAreaCreated(MapleMist mist) {
+    public static ServerPacket AffectedAreaCreated(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaCreated);
 
         sp.Encode4(mist.getObjectId()); // m_dwID
@@ -56,16 +55,16 @@ public class ResCAffectedAreaPool {
             sp.Encode4(0); // nPhase
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CAffectedAreaPool::OnAffectedAreaRemoved
     // CAffectedArea::MakeLeaveFieldPacket
-    public static MaplePacket AffectedAreaRemoved(MapleMist mist) {
+    public static ServerPacket AffectedAreaRemoved(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaRemoved);
 
         sp.Encode4(mist.getObjectId()); // m_dwID
-        return sp.get();
+        return sp;
     }
 
 }

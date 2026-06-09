@@ -38,7 +38,7 @@ public class DataCWvsContext {
         data.Encode4(0); // something
         if (Version.GreaterOrEqual(Region.GMS, 126)) {
             // 0 = no data.
-            return data.get().getBytes();
+            return data.getBytes();
         }
         if (ServerConfig.JMS194orLater()) {
             data.Encode4(0);
@@ -46,7 +46,7 @@ public class DataCWvsContext {
         data.Encode4(0); // item1?
         data.Encode4(0); // item2?
         data.Encode4(0); // item3?
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // CWvsContext::CFriend::Reset
@@ -74,9 +74,8 @@ public class DataCWvsContext {
 
         ServerPacket data = new ServerPacket();
         data.Encode1(friend_list.size());
-        data.EncodeBuffer(data_friend.get().getBytes());
-        data.EncodeBuffer(data_in_shop.get().getBytes());
-        return data.get().getBytes();
+        data.EncodeBuffer(data_friend.getBytes());
+        data.EncodeBuffer(data_in_shop.getBytes());
+        return data.getBytes();
     }
-
 }

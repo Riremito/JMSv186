@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package tacos.packet.response;
 
@@ -25,7 +23,6 @@ import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsScriptMan;
@@ -39,11 +36,11 @@ public class ResCScriptMan {
     // CScriptMan::OnPacket
     // CScriptMan::OnScriptMessage
     // getNPCTalk, getMapSelection, getNPCTalkStyle, getNPCTalkNum, getNPCTalkText, getEvanTutorial
-    public static MaplePacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next) {
+    public static ServerPacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next) {
         return ScriptMessage(npcid, smt, param, text, prev, next, null);
     }
 
-    public static MaplePacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next, ArrayList<Integer> ids) {
+    public static ServerPacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next, ArrayList<Integer> ids) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptMessage);
         sp.Encode1(4); // nSpeakerTypeID, not used
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
@@ -84,9 +81,9 @@ public class ResCScriptMan {
             }
             case SM_ASKNUMBER: {
                 sp.EncodeStr(text);
-                //p.Encode4(0);
-                //p.Encode4(0);
-                //p.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
                 break;
             }
             case SM_ASKMENU: {
@@ -147,10 +144,11 @@ public class ResCScriptMan {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getEvanTutorial(String data) {
+    // TODO : fix
+    public static ServerPacket getEvanTutorial(String data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptMessage);
 
         sp.Encode4(8);
@@ -159,7 +157,6 @@ public class ResCScriptMan {
         sp.Encode1(1);
         sp.Encode1(1);
         sp.EncodeStr(data);
-        return sp.get();
+        return sp;
     }
-
 }

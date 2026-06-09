@@ -28,7 +28,6 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
-import tacos.network.MaplePacket;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
 import odin.handling.world.OdinWorld;
@@ -44,6 +43,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
@@ -299,9 +299,9 @@ public class ReqCClientSocket {
                 // guild
                 if (0 < chr.getGuildId()) {
                     chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
-                    List<MaplePacket> packetList = OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true);
+                    List<ServerPacket> packetList = OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true);
                     if (packetList != null) {
-                        for (MaplePacket pack : packetList) {
+                        for (ServerPacket pack : packetList) {
                             if (pack != null) {
                                 chr.SendPacket(pack);
                             }

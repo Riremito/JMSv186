@@ -21,7 +21,7 @@ package tacos.unofficial;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import tacos.client.TacosCharacter;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
 import tacos.wz.WzDataStorage;
@@ -40,7 +40,7 @@ public class PetNPC implements IPetEx {
     }
 
     @Override
-    public void SendPacket(MaplePacket packet) {
+    public void SendPacket(ServerPacket packet) {
         this.character.getMap().broadcastMessage(packet);
     }
 

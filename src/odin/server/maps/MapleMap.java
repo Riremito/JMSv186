@@ -31,7 +31,6 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
-import tacos.network.MaplePacket;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.EnterType;
@@ -53,6 +52,7 @@ import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
+import tacos.packet.ServerPacket;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
@@ -422,7 +422,7 @@ public final class MapleMap extends TacosMap {
         startMapEffect(msg, itemId, true);
     }
 
-    public final void broadcastMessageClone(final MapleCharacter source, final MaplePacket packet) {
+    public void broadcastMessageClone(MapleCharacter source, ServerPacket packet) {
         int clone_delay = 1000;
         MapTimer.getInstance().schedule(new Runnable() {
             @Override
@@ -432,7 +432,7 @@ public final class MapleMap extends TacosMap {
         }, clone_delay);
     }
 
-    public final void broadcastMessageDelayed(MapleCharacter source, MaplePacket packet) {
+    public final void broadcastMessageDelayed(MapleCharacter source, ServerPacket packet) {
         int delay = 1000;
         MapTimer.getInstance().schedule(new Runnable() {
             @Override

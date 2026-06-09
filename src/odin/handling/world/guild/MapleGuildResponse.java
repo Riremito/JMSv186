@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world.guild;
 
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
 
 public enum MapleGuildResponse {
@@ -38,7 +38,7 @@ public enum MapleGuildResponse {
         return value;
     }
 
-    public MaplePacket getPacket() {
+    public ServerPacket getPacket() {
         return ResCWvsContext.genericGuildMessage((byte) value);
     }
 }

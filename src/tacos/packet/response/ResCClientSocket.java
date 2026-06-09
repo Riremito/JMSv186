@@ -21,7 +21,6 @@ package tacos.packet.response;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.server.TacosServer;
@@ -34,7 +33,7 @@ import tacos.tools.TacosTools;
 public class ResCClientSocket {
 
     // サーバーのバージョン情報
-    public static final MaplePacket getHello(final byte[] sendIv, final byte[] recvIv) {
+    public static ServerPacket getHello(final byte[] sendIv, final byte[] recvIv) {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
         switch (Region.getRegion()) {
@@ -86,29 +85,29 @@ public class ResCClientSocket {
          */
         // ヘッダにサイズを書き込む
         sp.setHello();
-        return sp.get();
+        return sp;
     }
 
     // CClientSocket::OnAuthenMessage
-    public static final MaplePacket AuthenMessage() {
+    public static ServerPacket AuthenMessage() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AuthenMessage);
         sp.Encode4(1); // id
         sp.Encode1(1);
-        return sp.get();
+        return sp;
     }
 
     // Internet Cafe
     // プレミアムクーポン itemid 5420007
     // CClientSocket::OnAuthenCodeChanged
-    public static final MaplePacket AuthenCodeChanged() {
+    public static ServerPacket AuthenCodeChanged() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AuthenCodeChanged);
         sp.Encode1(2); // Open UI
         sp.Encode4(1);
-        return sp.get();
+        return sp;
     }
 
     // CClientSocket::OnMigrateCommand
-    public static MaplePacket MigrateCommand(TacosServer server) {
+    public static ServerPacket MigrateCommand(TacosServer server) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MigrateCommand);
         sp.Encode1(1);
         sp.Encode4(TacosTools.getGameServerIP(server.getGlobalIP()));
@@ -117,12 +116,12 @@ public class ResCClientSocket {
         if (Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
         }
-        return sp.get();
+        return sp;
     }
 
     // CClientSocket::OnAliveReq
-    public static final MaplePacket AliveReq() {
+    public static ServerPacket AliveReq() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AliveReq);
-        return sp.get();
+        return sp;
     }
 }

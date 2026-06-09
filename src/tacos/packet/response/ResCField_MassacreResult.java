@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
@@ -28,12 +27,11 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_MassacreResult {
 
-    public static MaplePacket sendPyramidResult(byte rank, int amount) {
+    public static ServerPacket MassacreResult(byte rank, int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MassacreResult);
 
         sp.Encode1(rank);
         sp.Encode4(amount); //1-132 ?
-        return sp.get();
+        return sp;
     }
-
 }

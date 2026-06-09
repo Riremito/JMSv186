@@ -33,7 +33,7 @@ public class DataSecondaryStat {
         data.EncodeZeroBytes(16);
         data.Encode1(0);
         data.Encode1(0);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] EncodeForRemote_JMS302(MapleCharacter chr) {
@@ -42,6 +42,6 @@ public class DataSecondaryStat {
         data.Encode1(0);
         data.Encode1(0);
         data.Encode1(0);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

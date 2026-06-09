@@ -23,7 +23,6 @@ import odin.client.inventory.MapleRing;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import tacos.network.MaplePacket;
 import odin.handling.channel.handler.AttackInfo;
 import java.util.List;
 import tacos.packet.ServerPacket;
@@ -45,16 +44,16 @@ import tacos.packet.ServerPacketHeader;
 public class ResCUserRemote {
 
     // CUserRemote::OnMove
-    public static MaplePacket UserMove(MapleCharacter chr, ParseCMovePath data) {
+    public static ServerPacket UserMove(MapleCharacter chr, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMove);
 
         sp.Encode4(chr.getId());
         sp.EncodeBuffer(data.get());
-        return sp.get();
+        return sp;
     }
 
     // CUserRemote::OnAttack
-    public static MaplePacket UserAttack(AttackInfo attack) {
+    public static ServerPacket UserAttack(AttackInfo attack) {
         ServerPacket sp = new ServerPacket(attack.getHeader());
         boolean is_hide_damage = ContentCustom.CC_HIDE_DAMAGE.get();
 
@@ -88,7 +87,7 @@ public class ResCUserRemote {
             if (TacosConstants.is_keydown_skill_remote(attack.nSkillID)) {
                 sp.Encode4(attack.tKeyDown);
             }
-            return sp.get();
+            return sp;
         }
 
         sp.Encode4(attack.CharacterId);
@@ -137,11 +136,11 @@ public class ResCUserRemote {
                 sp.Encode2(attack.Y);
             }
         }
-        return sp.get();
+        return sp;
     }
 
     // CUserRemote::OnSkillPrepare
-    public static MaplePacket UserSkillPrepare(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
+    public static ServerPacket UserSkillPrepare(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillPrepare);
 
         sp.Encode4(chr.getId());
@@ -155,16 +154,16 @@ public class ResCUserRemote {
         }
 
         sp.Encode1(m_nPrepareSkillActionSpeed); // m_nPrepareSkillActionSpeed
-        return sp.get();
+        return sp;
     }
 
     // CUserRemote::OnSkillCancel
-    public static MaplePacket UserSkillCancel(MapleCharacter chr, int nSkillID) {
+    public static ServerPacket UserSkillCancel(MapleCharacter chr, int nSkillID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillCancel);
 
         sp.Encode4(chr.getId());
         sp.Encode4(nSkillID);
-        return sp.get();
+        return sp;
     }
 
     public static class UserHitData {
@@ -186,7 +185,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnHit
-    public static MaplePacket UserHit(UserHitData uhd) {
+    public static ServerPacket UserHit(UserHitData uhd) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHit);
 
         sp.Encode4(uhd.dwCharacterID);
@@ -223,29 +222,29 @@ public class ResCUserRemote {
             sp.Encode4(uhd.nSkillID); // fake skill id.
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CUser::OnEmotion
-    public static MaplePacket UserEmotion(MapleCharacter chr, int expression) {
+    public static ServerPacket UserEmotion(MapleCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotion);
 
         sp.Encode4(chr.getId()); // remote
         sp.EncodeBuffer(DataCUser.Emotion(expression));
-        return sp.get();
+        return sp;
     }
 
     // CUser::SetActiveEffectItem
-    public static MaplePacket UserSetActiveEffectItem(MapleCharacter chr) {
+    public static ServerPacket UserSetActiveEffectItem(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActiveEffectItem);
 
         sp.Encode4(chr.getId());
         sp.Encode4(chr.getActiveEffectItem());
-        return sp.get();
+        return sp;
     }
 
     // CUserRemote::OnSetActivePortableChair
-    public static MaplePacket UserSetActivePortableChair(int characterid, int itemid) {
+    public static ServerPacket UserSetActivePortableChair(int characterid, int itemid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActivePortableChair);
 
         sp.Encode4(characterid);
@@ -255,11 +254,11 @@ public class ResCUserRemote {
             sp.Encode4(0);
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CUserRemote::OnAvatarModified
-    public static MaplePacket UserAvatarModified(TacosCharacter chr, int flag) {
+    public static ServerPacket UserAvatarModified(TacosCharacter chr, int flag) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserAvatarModified);
 
         sp.Encode4(chr.getId());
@@ -278,41 +277,41 @@ public class ResCUserRemote {
         sp.Encode1(0); // Friendship -> data
         sp.Encode1(0); // Marriage -> data
         sp.Encode4(0); // m_nCompletedSetItemID
-        return sp.get();
+        return sp;
     }
 
     // CUser::OnEffect
-    public static MaplePacket UserEffectRemote(ArgUserEffect arg) {
+    public static ServerPacket UserEffectRemote(ArgUserEffect arg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(arg.chr.getId());
         sp.EncodeBuffer(ResCUserLocal.EffectData(arg));
-        return sp.get();
+        return sp;
     }
 
     // CUserRemote::OnSetTemporaryStat
     // CUserRemote::OnResetTemporaryStat
     // CUserRemote::OnReceiveHP
-    public static MaplePacket UserHP(int cid, int curhp, int maxhp) {
+    public static ServerPacket UserHP(int cid, int curhp, int maxhp) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHP);
 
         sp.Encode4(cid);
         sp.Encode4(curhp);
         sp.Encode4(maxhp);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket showPetLevelUp(MapleCharacter chr, int index) {
+    public static ServerPacket showPetLevelUp(MapleCharacter chr, int index) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());
         sp.Encode1(4);
         sp.Encode1(0);
         sp.Encode4(index);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
+    public static ServerPacket showRewardItemAnimation(int itemId, String effect, int from_playerid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(from_playerid);
@@ -322,26 +321,26 @@ public class ResCUserRemote {
         if (effect != null && effect.length() > 0) {
             sp.EncodeStr(effect);
         }
-        return sp.get();
+        return sp;
     }
 
     //its likely that durability items use this
-    public static MaplePacket showHpHealed(int cid, final int amount) {
+    public static ServerPacket showHpHealed(int cid, final int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(cid);
         sp.Encode1(10); //Type
         sp.Encode4(amount);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
+    public static ServerPacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());
         sp.Encode1(17);
         sp.Encode4(is_success ? 0 : 1);
-        return sp.get();
+        return sp;
     }
 
     public static byte[] addRingInfo(List<MapleRing> rings) {
@@ -355,7 +354,7 @@ public class ResCUserRemote {
             data.Encode4(ring.getItemId());
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

@@ -147,5 +147,4 @@ public class ClientPacket {
     public int getRemainingSize() {
         return packet.length - this.decoded;
     }
-
 }

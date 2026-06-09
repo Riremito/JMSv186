@@ -137,7 +137,7 @@ public class DataCUserRemote {
             data.Encode1(chr.getCoconutTeam()); // 0059F0ED
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] Init_JMS147(MapleCharacter chr) {
@@ -213,7 +213,7 @@ public class DataCUserRemote {
             data.Encode4(chr.getMarriageItemId()); // m_nWeddingRingID
         }
         data.Encode1(chr.getEffectMask()); // m_nDelayedEffectFlag
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] Init_JMS302(MapleCharacter chr) {
@@ -334,6 +334,6 @@ public class DataCUserRemote {
         }
         data.Encode4(0);
         data.Encode4(0);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

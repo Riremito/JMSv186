@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.builder.MessengerData;
@@ -32,7 +31,7 @@ import tacos.packet.response.data.DataAvatarLook;
 public class ResCUIMessenger {
 
     // CUIMessenger::OnPacket
-    public static MaplePacket Messenger(OpsMessenger ops, MessengerData pd) {
+    public static ServerPacket Messenger(OpsMessenger ops, MessengerData pd) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(ops.get());
@@ -91,6 +90,6 @@ public class ResCUIMessenger {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 }

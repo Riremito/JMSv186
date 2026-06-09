@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsCashItem;
@@ -29,11 +28,10 @@ import tacos.packet.ops.OpsCashItem;
  */
 public class ResCUIVega {
 
-    public static MaplePacket VegaResult(OpsCashItem m_nRet1) {
+    public static ServerPacket VegaResult(OpsCashItem m_nRet1) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_VegaResult);
 
         sp.Encode1(m_nRet1.get());
-        return sp.get();
+        return sp;
     }
-
 }

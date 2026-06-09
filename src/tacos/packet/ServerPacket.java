@@ -20,8 +20,6 @@ package tacos.packet;
 
 import tacos.config.CodePage;
 import tacos.config.Content;
-import tacos.network.ByteArrayMaplePacket;
-import tacos.network.MaplePacket;
 import java.util.ArrayList;
 
 /**
@@ -69,18 +67,13 @@ public class ServerPacket {
         return true;
     }
 
-    // TODO : fix return value to byte[]
-    public MaplePacket get() {
+    public byte[] getBytes() {
         byte[] b = new byte[this.encoded];
         for (int i = 0; i < this.encoded; i++) {
             b[i] = this.packet.get(i);
         }
 
-        return new ByteArrayMaplePacket(b);
-    }
-
-    public byte[] getBytes() {
-        return get().getBytes();
+        return b;
     }
 
     public String getString() {
@@ -184,5 +177,4 @@ public class ServerPacket {
             Encode1(0);
         }
     }
-
 }

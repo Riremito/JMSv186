@@ -78,7 +78,7 @@ public class DataForcedStat {
             data.Encode1(fs.getSpeedMax());
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

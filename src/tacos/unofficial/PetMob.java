@@ -21,7 +21,7 @@ package tacos.unofficial;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import tacos.client.TacosCharacter;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
@@ -41,7 +41,7 @@ public class PetMob implements IPetEx {
     }
 
     @Override
-    public void SendPacket(MaplePacket packet) {
+    public void SendPacket(ServerPacket packet) {
         this.character.getMap().broadcastMessage(packet);
     }
 

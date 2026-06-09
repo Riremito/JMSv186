@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
@@ -28,13 +27,13 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_AriantArena {
 
-    public static MaplePacket showAriantScoreBoard() {
+    public static ServerPacket showAriantScoreBoard() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShowArenaResult);
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket updateAriantPQRanking(String name, int score, boolean empty) {
+    public static ServerPacket updateAriantPQRanking(String name, int score, boolean empty) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ArenaScore);
 
         sp.Encode1(empty ? 0 : 1);
@@ -43,7 +42,7 @@ public class ResCField_AriantArena {
             sp.Encode4(score);
         }
 
-        return sp.get();
+        return sp;
     }
 
 }

@@ -213,7 +213,7 @@ public class DataCharacterData {
                 data.EncodeZeroBytes(32);
             }
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] InventoryInfo(MapleCharacter chr, long datamask) {
@@ -362,14 +362,14 @@ public class DataCharacterData {
                 // from 3 to 4
                 data.Encode4(-1);
             }
-            return data.get().getBytes();
+            return data.getBytes();
         }
         // 不明
         if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             // func 004FB8B0
             data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // all data
@@ -1347,7 +1347,7 @@ public class DataCharacterData {
                 break;
             }
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] Encode_302_2(MapleCharacter chr, long datamask) {
@@ -1367,7 +1367,7 @@ public class DataCharacterData {
         if ((datamask & 4194304) != 0) {
             data.Encode2(0);
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

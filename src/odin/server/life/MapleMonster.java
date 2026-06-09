@@ -42,7 +42,6 @@ import odin.client.MapleClient;
 import odin.client.SkillFactory;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
-import tacos.network.MaplePacket;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import java.awt.Point;
@@ -59,6 +58,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import tacos.odin.OdinPair;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
@@ -76,7 +76,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private final Collection<AttackerEntry> attackers = new LinkedList<>();
     private OdinEventInstanceManager eventInstance;
     private MonsterListener listener = null;
-    private MaplePacket reflectpack = null, nodepack = null;
+    private ServerPacket reflectpack = null, nodepack = null;
     private Map<Integer, Long> usedSkills;
     private int stolen = -1; //monster can only be stolen ONCE
     private ScheduledFuture<?> dropItemSchedule;
@@ -1237,11 +1237,11 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
     }
 
-    public MaplePacket getNodePacket() {
+    public ServerPacket getNodePacket() {
         return nodepack;
     }
 
-    public void setNodePacket(final MaplePacket np) {
+    public void setNodePacket(ServerPacket np) {
         this.nodepack = np;
     }
 

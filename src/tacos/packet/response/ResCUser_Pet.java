@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
 import tacos.config.Version;
-import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -80,7 +79,7 @@ public class ResCUser_Pet {
     }
 
     // showPet
-    public static MaplePacket PetActivated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
+    public static ServerPacket PetActivated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
         ServerPacket sp = new ServerPacket((transfer_field || Version.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
         sp.Encode4(chr.getId());
 
@@ -91,14 +90,14 @@ public class ResCUser_Pet {
             }
             if (!spawn) {
                 sp.Encode1(msg.get());
-                return sp.get();
+                return sp;
             }
             sp.Encode1(0);
             sp.EncodeBuffer(DataCPet.Init(pet));
             if (transfer_field) {
                 sp.Encode2(0);
             }
-            return sp.get();
+            return sp;
         }
 
         if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
@@ -119,22 +118,22 @@ public class ResCUser_Pet {
             sp.Encode1(msg.get());
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
+    public static ServerPacket Activated(MapleCharacter chr, MaplePet pet) {
         return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
     }
 
-    public static MaplePacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
+    public static ServerPacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
         return PetActivated(chr, pet, false, msg, false);
     }
 
-    public static MaplePacket TransferField(MapleCharacter chr, MaplePet pet) {
+    public static ServerPacket TransferField(MapleCharacter chr, MaplePet pet) {
         return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
-    public static final MaplePacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
+    public static ServerPacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetMove);
 
         sp.Encode4(chr.getId());
@@ -146,10 +145,10 @@ public class ResCUser_Pet {
         }
 
         sp.EncodeBuffer(data.get());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket PetAction(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
+    public static ServerPacket PetAction(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetAction);
 
         sp.Encode4(chr.getId());
@@ -158,10 +157,10 @@ public class ResCUser_Pet {
         sp.Encode1(nAction);
         sp.EncodeStr(pet_message);
         // post BB may have extra 1 bytes
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket PetNameChanged(MapleCharacter chr, MaplePet pet, String pet_name) {
+    public static ServerPacket PetNameChanged(MapleCharacter chr, MaplePet pet, String pet_name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
         sp.Encode4(chr.getId());
@@ -171,10 +170,10 @@ public class ResCUser_Pet {
             sp.Encode4(chr.getPetIndex(pet));
         }
         sp.EncodeStr(pet_name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket PetActionCommand(int cid, byte command, int slot, boolean success, boolean food) {
+    public static ServerPacket PetActionCommand(int cid, byte command, int slot, boolean success, boolean food) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActionCommand);
 
         sp.Encode4(cid);
@@ -186,7 +185,7 @@ public class ResCUser_Pet {
         } else {
             sp.Encode2(success ? 1 : 0);
         }
-        return sp.get();
+        return sp;
     }
 
 }

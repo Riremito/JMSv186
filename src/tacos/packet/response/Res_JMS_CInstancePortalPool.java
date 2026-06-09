@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleDynamicPortal;
 import tacos.packet.ServerPacketHeader;
@@ -29,7 +28,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class Res_JMS_CInstancePortalPool {
 
-    public static MaplePacket InstancePortalCreated(MapleDynamicPortal dynamic_portal) {
+    public static ServerPacket InstancePortalCreated(MapleDynamicPortal dynamic_portal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_InstancePortalCreated);
 
         sp.Encode1(1);
@@ -41,7 +40,6 @@ public class Res_JMS_CInstancePortalPool {
         sp.Encode4(0);
         sp.Encode2(dynamic_portal.getPosition().x);
         sp.Encode2(dynamic_portal.getPosition().y);
-        return sp.get();
+        return sp;
     }
-
 }

@@ -83,7 +83,7 @@ public class ReqCField_MonsterCarnival {
                 for (MapleCharacter player : chr.getMap().getCharacters()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
-                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.playerSummoned(chr.getName(), tab, num));
+                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the monster."));
@@ -111,7 +111,7 @@ public class ReqCField_MonsterCarnival {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                     //chr.dropMessage(5, "[" + (chr.getCarnivalParty().getTeam() == 0 ? "Red" : "Blue") + "] " + chr.getName() + " has used a skill. [" + dis.name() + "].");
                 }
-                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.playerSummoned(chr.getName(), tab, num));
+                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
@@ -130,7 +130,7 @@ public class ReqCField_MonsterCarnival {
                 for (MapleCharacter player : chr.getMap().getCharacters()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
-                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.playerSummoned(chr.getName(), tab, num));
+                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
                 chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the being."));

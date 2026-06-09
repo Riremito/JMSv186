@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleBBSThread;
@@ -22,6 +21,7 @@ import odin.handling.world.guild.MapleGuildAlliance;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
@@ -211,7 +211,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void guildPacket(int gid, MaplePacket message) {
+        public static void guildPacket(int gid, ServerPacket message) {
             MapleGuild g = getGuild(gid);
             if (g != null) {
                 g.broadcast(message);
@@ -440,7 +440,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Broadcast {
 
-        public static void sendGuildPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
+        public static void sendGuildPacket(int targetIds, ServerPacket packet, int exception, int guildid) {
             if (targetIds == exception) {
                 return;
             }
@@ -450,7 +450,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void sendFamilyPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
+        public static void sendFamilyPacket(int targetIds, ServerPacket packet, int exception, int guildid) {
             if (targetIds == exception) {
                 return;
             }
@@ -583,7 +583,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void sendGuild(final MaplePacket packet, final int exceptionId, final int allianceid) {
+        public static void sendGuild(ServerPacket packet, final int exceptionId, final int allianceid) {
             final MapleGuildAlliance alliance = getAlliance(allianceid);
             if (alliance != null) {
                 for (int i = 0; i < alliance.getNoGuilds(); i++) {
@@ -688,8 +688,8 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static List<MaplePacket> getAllianceInfo(final int allianceid, final boolean start) {
-            List<MaplePacket> ret = new ArrayList<MaplePacket>();
+        public static List<ServerPacket> getAllianceInfo(final int allianceid, final boolean start) {
+            List<ServerPacket> ret = new ArrayList<>();
             final MapleGuildAlliance alliance = getAlliance(allianceid);
             if (alliance != null) {
                 if (start) {
@@ -800,7 +800,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void familyPacket(int gid, MaplePacket message, int cid) {
+        public static void familyPacket(int gid, ServerPacket message, int cid) {
             MapleFamily f = getFamily(gid);
             if (f != null) {
                 f.broadcast(message, -1, f.getMFC(cid).getPedigree());

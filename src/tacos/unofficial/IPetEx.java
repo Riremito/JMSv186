@@ -18,7 +18,7 @@
  */
 package tacos.unofficial;
 
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 
 /**
@@ -27,7 +27,7 @@ import tacos.packet.request.parse.ParseCMovePath;
  */
 public interface IPetEx {
 
-    public void SendPacket(MaplePacket packet);
+    public void SendPacket(ServerPacket packet);
 
     public boolean spawn(int id);
 

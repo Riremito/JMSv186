@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 
 /**
  *
@@ -70,13 +70,13 @@ public class TacosWorld {
         // to do remove.
     }
 
-    public void broadcastPacket(MaplePacket packet) {
+    public void broadcastPacket(ServerPacket packet) {
         for (TacosChannel ch_server : this.channels) {
             ch_server.broadcastPacket(packet);
         }
     }
 
-    public void broadcastMegaphonePacket(MaplePacket packet) {
+    public void broadcastMegaphonePacket(ServerPacket packet) {
         for (TacosChannel ch_server : this.channels) {
             ch_server.broadcastMegaphonePacket(packet);
         }

@@ -22,7 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.guild;
 
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
 import odin.handling.world.OdinWorld;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,6 +30,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 
@@ -169,15 +169,15 @@ public class MapleGuildAlliance implements java.io.Serializable {
         return true;
     }
 
-    public final void broadcast(final MaplePacket packet) {
+    public  void broadcast( ServerPacket packet) {
         broadcast(packet, -1, GAOp.NONE, false);
     }
 
-    public final void broadcast(final MaplePacket packet, final int exception) {
+    public  void broadcast( ServerPacket packet,  int exception) {
         broadcast(packet, exception, GAOp.NONE, false);
     }
 
-    public final void broadcast(final MaplePacket packet, final int exceptionId, final GAOp op, final boolean expelled) {
+    public  void broadcast( ServerPacket packet,  int exceptionId,  GAOp op,  boolean expelled) {
         if (op == GAOp.DISBAND) {
             OdinWorld.Alliance.setOldAlliance(exceptionId, expelled, allianceid); //-1 = alliance gone, exceptionId = guild left/expelled
         } else if (op == GAOp.NEWGUILD) {

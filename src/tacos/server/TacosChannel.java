@@ -29,9 +29,9 @@ import odin.server.MapleSquad;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
-import tacos.network.MaplePacket;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.network.PacketHandler_Game;
+import tacos.packet.ServerPacket;
 import tacos.property.Property_Dummy_World;
 import tacos.server.map.MasterMonster;
 import tacos.unofficial.CustomMap;
@@ -69,13 +69,13 @@ public class TacosChannel extends TacosServer {
         super.shutdown();
     }
 
-    public void broadcastPacket(MaplePacket packet) {
+    public void broadcastPacket(ServerPacket packet) {
         for (MapleCharacter player : getOnlinePlayers().get()) {
             player.SendPacket(packet);
         }
     }
 
-    public void broadcastMegaphonePacket(MaplePacket packet) {
+    public void broadcastMegaphonePacket(ServerPacket packet) {
         for (MapleCharacter player : getOnlinePlayers().get()) {
             if (!player.getSmega()) {
                 continue;
