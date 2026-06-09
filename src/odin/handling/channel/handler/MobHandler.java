@@ -67,19 +67,6 @@ public class MobHandler {
         }
     }
 
-    public static final void MonsterBomb(MapleCharacter chr, MapleMonster monster) {
-
-        if (!chr.isAlive() || chr.isHidden()) {
-            return;
-        }
-
-        final byte selfd = monster.getStats().getSelfD();
-
-        if (selfd != -1) {
-            chr.getMap().killMonster(monster, chr, false, false, selfd);
-        }
-    }
-
     public static final void AutoAggro(MapleCharacter chr, MapleMonster monster) {
         if (chr.getMap() == null || chr.isHidden()) { //no evidence :)
             return;

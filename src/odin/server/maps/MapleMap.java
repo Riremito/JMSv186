@@ -53,6 +53,7 @@ import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMobLeaveField;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
@@ -99,17 +100,17 @@ public final class MapleMap extends TacosMap {
         super.spawnReactor(reactor);
     }
 
-    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, byte animation) {
+    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, OpsMobLeaveField animation) {
         killMonster(monster, chr, withDrops, second, animation, 0);
     }
 
-    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, byte animation, int lastSkill) {
+    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, OpsMobLeaveField animation, int lastSkill) {
         if ((monster.getId() == 8810122 || monster.getId() == 8810018) && !second) {
             MapTimer.getInstance().schedule(new Runnable() {
 
                 @Override
                 public void run() {
-                    killMonster(monster, chr, true, true, (byte) 1);
+                    killMonster(monster, chr, true, true, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
                     killAllMonsters(true);
                 }
             }, 3000);
@@ -118,7 +119,7 @@ public final class MapleMap extends TacosMap {
         if (monster.getId() == 8820014) { //pb sponge, kills pb(w) first before dying
             killMonster(8820000);
         } else if (monster.getId() == 9300166) { //ariant pq bomb
-            animation = 4; //or is it 3?
+            animation = OpsMobLeaveField.MOBLEAVEFIELD_SWALLOW; //or is it 3?
         }
         spawnedMonstersOnMap.decrementAndGet();
         removeMapObject(monster);

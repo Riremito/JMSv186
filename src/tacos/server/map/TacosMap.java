@@ -70,6 +70,7 @@ import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
+import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCDropPool;
@@ -731,7 +732,7 @@ public class TacosMap extends TacosMapData {
                 }
             }
             if ((state & 4) != 0) {
-                chr.SendPacket(ResCMobPool.MobLeaveField(mob, 0));
+                chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
             }
         }
         // npc
@@ -979,7 +980,7 @@ public class TacosMap extends TacosMapData {
 
     public void removeMonster(MapleMonster monster) {
         this.spawnedMonstersOnMap.decrementAndGet();
-        broadcastMessage(ResCMobPool.MobLeaveField(monster, 0));
+        broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
         removeMapObject(monster);
     }
 
@@ -987,7 +988,7 @@ public class TacosMap extends TacosMapData {
         this.spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
         monster.spawnRevives();
-        broadcastMessage(ResCMobPool.MobLeaveField(monster, 1));
+        broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
         removeMapObject(monster);
     }
 
@@ -996,7 +997,7 @@ public class TacosMap extends TacosMapData {
             MapleMonster monster = (MapleMonster) monstermo;
             this.spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
-            broadcastMessage(ResCMobPool.MobLeaveField(monster, animate ? 1 : 0));
+            broadcastMessage(ResCMobPool.MobLeaveField(monster, animate ? OpsMobLeaveField.MOBLEAVEFIELD_ETC : OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
             removeMapObject(monster);
         }
     }
@@ -1006,7 +1007,7 @@ public class TacosMap extends TacosMapData {
             if (((MapleMonster) mmo).getId() == monsId) {
                 this.spawnedMonstersOnMap.decrementAndGet();
                 removeMapObject(mmo);
-                broadcastMessage(ResCMobPool.MobLeaveField((MapleMonster) mmo, 1));
+                broadcastMessage(ResCMobPool.MobLeaveField((MapleMonster) mmo, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
                 return true;
             }
         }

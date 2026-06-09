@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,39 +16,38 @@
  *
  *
  */
-package tacos.client;
-
-import org.apache.mina.common.IoSession;
-import tacos.packet.ServerPacket;
+package tacos.packet.ops;
 
 /**
  *
  * @author Riremito
  */
-public class BaseClient {
+public enum OpsMobLeaveField implements IPacketOps {
+    MOBLEAVEFIELD_REMAINHP(0),
+    MOBLEAVEFIELD_ETC(1),
+    MOBLEAVEFIELD_SELFDESTRUCT(2),
+    MOBLEAVEFIELD_DESTRUCTBYMISS(3),
+    MOBLEAVEFIELD_SWALLOW(4),
+    MOBLEAVEFIELD_SUMMONTIMEOUT(5),
+    UNKNOWN;
 
-    private final IoSession session;
+    private int value;
 
-    public BaseClient(IoSession session) {
-        this.session = session;
+    OpsMobLeaveField(int val) {
+        this.value = val;
     }
 
-    public IoSession getSession() {
-        return this.session;
+    OpsMobLeaveField() {
+        this.value = -1;
     }
 
-    public void SendPacket(ServerPacket packet) {
-        this.session.write(packet);
+    @Override
+    public int get() {
+        return this.value;
     }
 
-    public void closeSession() {
-        this.session.suspendRead();
-        this.session.suspendWrite();
-        // TODO : close session.
-    }
-
-    public String getIPAddress() {
-        // /IP:Port
-        return this.session.getRemoteAddress().toString().split(":")[0].replace("/", "");
+    @Override
+    public void set(int val) {
+        this.value = val;
     }
 }

@@ -94,6 +94,7 @@ import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsMemo;
+import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsSkill;
@@ -2565,7 +2566,7 @@ public class ReqCUser {
                 case 2270004: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
-                        map.killMonster(mob, chr, true, false, (byte) 0);
+                        map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                         MapleInventoryManipulator.addById(chr.getClient(), 4001169, (short) 1);
                     } else {
@@ -2577,7 +2578,7 @@ public class ReqCUser {
                 case 2270002: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
-                        map.killMonster(mob, chr, true, false, (byte) 0);
+                        map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
@@ -2591,7 +2592,7 @@ public class ReqCUser {
                         break;
                     }
                     map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
-                    map.killMonster(mob, chr, true, false, (byte) 0);
+                    map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                     MapleInventoryManipulator.addById(chr.getClient(), 1902000, (short) 1, null);
                     MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     break;
@@ -2603,7 +2604,7 @@ public class ReqCUser {
                     }
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
-                        map.killMonster(mob, chr, true, false, (byte) 0);
+                        map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));

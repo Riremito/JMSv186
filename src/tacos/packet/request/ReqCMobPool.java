@@ -34,6 +34,7 @@ import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsMobLeaveField;
 import tacos.wz.WzXML;
 
 /**
@@ -89,7 +90,11 @@ public class ReqCMobPool {
                 return true;
             }
             case CP_MobSelfDestruct: {
-                MobHandler.MonsterBomb(chr, monster);
+                if (monster.getStats().getSelfD() != -1) {
+                    if (monster.getHp() <= monster.getStats().getSelfDHp()) {
+                        map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
+                    }
+                }
                 return true;
             }
             case CP_MobAttackMob: {

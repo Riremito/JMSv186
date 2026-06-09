@@ -56,6 +56,7 @@ import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
 import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.arg.ArgFieldEffect;
@@ -580,7 +581,7 @@ public class DebugCommand {
                         mob.setHp(0);
                         map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
                     }
-                    map.killMonster(mob, chr, true, false, (byte) 1);
+                    map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
                     count--;
                 }
 

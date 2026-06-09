@@ -60,6 +60,7 @@ import odin.server.maps.MapleMapObjectType;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
+import tacos.packet.ops.OpsMobLeaveField;
 
 public class MapleMonster extends AbstractLoadedMapleLife {
 
@@ -252,21 +253,17 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (stats.getSelfD() != -1) {
             hp -= rDamage;
             if (hp > 0) {
-                if (hp < stats.getSelfDHp()) { // HP is below the selfd level
-                    map.killMonster(this, from, false, false, stats.getSelfD(), lastSkill);
-                } else { // Show HP
-                    for (final AttackerEntry mattacker : attackers) {
-                        for (final AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
-                            if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
-                                if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
-                                    cattacker.getAttacker().getClient().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
-                                }
+                for (final AttackerEntry mattacker : attackers) {
+                    for (final AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
+                        if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
+                            if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
+                                cattacker.getAttacker().getClient().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                             }
                         }
                     }
                 }
             } else { // Character killed it without explosing :(
-                map.killMonster(this, from, true, false, (byte) 1, lastSkill);
+                map.killMonster(this, from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
             }
         } else {
             if (sponge.get() != null) {
@@ -276,7 +273,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     sponge.get().hp -= rDamage;
 
                     if (sponge.get().hp <= 0) {
-                        map.killMonster(sponge.get(), from, true, false, (byte) 1, lastSkill);
+                        map.killMonster(sponge.get(), from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                     } else {
                         map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, sponge.get())));
                     }
@@ -315,7 +312,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                         this.setHp(0);
                         map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, this)));
                     }
-                    map.killMonster(this, from, true, false, (byte) 1, lastSkill);
+                    map.killMonster(this, from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                 }
             }
         }
@@ -405,7 +402,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
             }
             if (set) { //all sponge monsters are dead, please kill off the sponge
-                map.killMonster(oldSponge, killer, true, false, (byte) 1);
+                map.killMonster(oldSponge, killer, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
             }
         }
 
@@ -617,9 +614,9 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     @Override
-    public final void sendDestroyData(final MapleClient client) {
+    public void sendDestroyData(MapleClient client) {
         if (lastNode == -1) {
-            client.SendPacket(ResCMobPool.MobLeaveField(this, 0));
+            client.SendPacket(ResCMobPool.MobLeaveField(this, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
         }
         if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
             resetShammos(client);

@@ -31,6 +31,7 @@ import tacos.client.TacosBuff;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsMobAppear;
+import tacos.packet.ops.OpsMobLeaveField;
 
 /**
  *
@@ -133,11 +134,16 @@ public class ResCMobPool {
     }
 
     // CMobPool::OnMobLeaveField
-    public static ServerPacket MobLeaveField(MapleMonster monster, int animation) {
+    public static ServerPacket MobLeaveField(MapleMonster monster, OpsMobLeaveField dead_type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobLeaveField);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
-        sp.Encode1(animation); // 0 = dissapear, 1 = fade out, 2+ = special
+        sp.Encode1(dead_type.get()); // m_nDeadType
+
+        if (dead_type == OpsMobLeaveField.MOBLEAVEFIELD_SWALLOW) {
+            sp.Encode4(0); // m_dwSwallowCharacterID
+        }
+
         return sp;
     }
 

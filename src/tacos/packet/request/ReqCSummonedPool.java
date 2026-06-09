@@ -43,6 +43,7 @@ import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleSummon;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMoveAbility;
 
 /**
@@ -196,7 +197,7 @@ public class ReqCSummonedPool {
                 mob.damage(chr, toDamage, true);
                 chr.checkMonsterAggro(mob);
                 if (!mob.isAlive()) {
-                    chr.getClient().SendPacket(ResCMobPool.MobLeaveField(mob, 1));
+                    chr.getClient().SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
                 }
             }
 
@@ -280,7 +281,7 @@ public class ReqCSummonedPool {
             final int toDamage = attackEntry.getDamage();
             final MapleMonster mob = attackEntry.getMonster();
 
-            if (toDamage > 0 && summonEffect.getMonsterStati().size() > 0) {
+            if (toDamage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
                 if (summonEffect.makeChanceResult()) {
                     for (Map.Entry<MonsterStatus, Integer> z : summonEffect.getMonsterStati().entrySet()) {
                         mob.applyStatus(chr, new MonsterStatusEffect(z.getKey(), z.getValue(), summonSkill.getId(), null, false), summonEffect.isPoison(), 4000, false);
@@ -290,7 +291,7 @@ public class ReqCSummonedPool {
             mob.damage(chr, toDamage, true);
             chr.checkMonsterAggro(mob);
             if (!mob.isAlive()) {
-                chr.getClient().SendPacket(ResCMobPool.MobLeaveField(mob, 1));
+                chr.getClient().SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
             }
         }
 
