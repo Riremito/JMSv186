@@ -90,10 +90,17 @@ public class ReqCMobPool {
                 return true;
             }
             case CP_MobSelfDestruct: {
-                if (monster.getStats().getSelfD() != -1) {
-                    if (monster.getHp() <= monster.getStats().getSelfDHp()) {
-                        map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
-                    }
+                int nActionType = monster.getStats().getSelfD();
+                if (nActionType == -1) {
+                    return false;
+                }
+                if ((nActionType & 1) != 0 && monster.getHp() <= monster.getStats().getSelfDHp()) {
+                    map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
+                    return true;
+                }
+                if ((nActionType & 2) != 0) {
+                    map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
+                    return true;
                 }
                 return true;
             }
