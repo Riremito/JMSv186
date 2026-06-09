@@ -24,7 +24,6 @@ import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
-import odin.handling.channel.handler.MobHandler;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
@@ -32,9 +31,11 @@ import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
+import odin.server.maps.MapleNodes;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.response.wrapper.ResWrapper;
 import tacos.wz.WzXML;
 
 /**
@@ -54,89 +55,60 @@ public class ReqCMobPool {
             return true;
         }
 
-        int oid = cp.Decode4();
+        int m_dwMobID = cp.Decode4();
 
-        MapleMonster monster = map.getMonsterByOid(oid);
+        MapleMonster monster = map.getMonsterByOid(m_dwMobID);
         if (monster == null) {
             return true;
         }
 
         switch (header) {
             case CP_MobMove: {
-                OnMove(cp, chr, monster);
+                OnMove(chr, cp, monster, map);
                 return true;
             }
             case CP_MobApplyCtrl: {
-                MobHandler.AutoAggro(chr, monster);
+                OnMobApplyCtrl(chr, cp, monster, map);
                 return true;
             }
             case CP_MobDropPickUpRequest: {
+                OnMobDropPickUpRequest(chr, cp, monster, map);
                 return true;
             }
             case CP_MobHitByObstacle: {
+                OnMobHitByObstacle(chr, cp, monster, map);
                 return true;
             }
             case CP_MobHitByMob: {
-                cp.Decode4(); // skip
-                int oid_to = cp.Decode4();
-
-                MapleMonster monster_to = map.getMonsterByOid(oid_to);
-
-                if (monster_to == null) {
-                    return true;
-                }
-
-                MobHandler.FriendlyDamage(chr, monster, monster_to);
+                OnMobHitByMob(chr, cp, monster, map);
                 return true;
             }
             case CP_MobSelfDestruct: {
-                int nActionType = monster.getStats().getSelfD();
-                if (nActionType == -1) {
-                    return false;
-                }
-                if ((nActionType & 1) != 0 && monster.getHp() <= monster.getStats().getSelfDHp()) {
-                    map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
-                    return true;
-                }
-                if ((nActionType & 2) != 0) {
-                    map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
-                    return true;
-                }
+                OnMobSelfDestruct(chr, cp, monster, map);
                 return true;
             }
             case CP_MobAttackMob: {
-                cp.Decode4();
-                int oid_to = cp.Decode4();
-
-                MapleMonster monster_to = map.getMonsterByOid(oid_to);
-
-                if (monster_to == null) {
-                    return true;
-                }
-
-                cp.Decode1();
-
-                int damage = cp.Decode4();
-
-                MobHandler.HypnotizeDmg(chr, monster, monster_to, damage);
+                OnMobAttackMob(chr, cp, monster, map);
                 return true;
             }
             case CP_MobSkillDelayEnd: {
+                OnMobSkillDelayEnd(chr, cp, monster, map);
                 return true;
             }
             case CP_MobTimeBombEnd: {
+                OnMobTimeBombEnd(chr, cp, monster, map);
                 return true;
             }
             case CP_MobEscortCollision: {
-                int newNode = cp.Decode4();
-                MobHandler.MobNode(chr, monster, newNode);
+                OnMobEscortCollision(chr, cp, monster, map);
                 return true;
             }
             case CP_MobRequestEscortInfo: {
-                MobHandler.DisplayNode(chr, monster);
+                OnMobRequestEscortInfo(chr, cp, monster, map);
                 return true;
             }
             case CP_MobEscortStopEndRequest: {
+                OnMobEscortStopEndRequest(chr, cp, monster, map);
                 return true;
             }
             default: {
@@ -147,8 +119,7 @@ public class ReqCMobPool {
         return false;
     }
 
-    // MoveMonster
-    public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleMonster monster) {
+    public static boolean OnMove(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
         byte unk1 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
         short moveid = cp.Decode2();
         boolean bNextAttackPossible = cp.Decode1() > 0;
@@ -187,7 +158,6 @@ public class ReqCMobPool {
             move_path.update(monster);
         }
 
-        MapleMap map = chr.getMap();
         map.broadcastMessageTo(chr, ResCMobPool.MobMove(monster, bNextAttackPossible, bLeft, mob_skill, move_path), monster.getPosition());
         return true;
     }
@@ -196,7 +166,7 @@ public class ReqCMobPool {
         int realskill = 0;
         int level = 0;
 
-        if (useSkill) {// && (skill == -1 || skill == 0)) {
+        if (useSkill) {
             byte size = monster.getNoSkills();
             boolean used = false;
 
@@ -229,5 +199,166 @@ public class ReqCMobPool {
         }
 
         chr.SendPacket(ResCMobPool.MobCtrlAck(monster, moveid, realskill, level));
+    }
+
+    public static boolean OnMobApplyCtrl(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        if (monster.getController() == null || map.getCharacterById(monster.getController().getId()) == null) {
+            monster.switchController(chr, true);
+            return true;
+        }
+        return true;
+    }
+
+    public static boolean OnMobDropPickUpRequest(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        DebugLogger.ErrorLog("OnMobDropPickUpRequest : not coded.");
+        return true;
+    }
+
+    public static boolean OnMobHitByObstacle(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        int nDamage = cp.Decode4();
+
+        DebugLogger.ErrorLog("OnMobHitByObstacle : not coded.");
+        return true;
+    }
+
+    /*
+        タイラス護衛
+        mod id : 9300093
+     */
+    public static boolean OnMobHitByMob(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        int m_dwCharacterId = cp.Decode4();
+        int m_dwMobID = cp.Decode4();
+
+        MapleMonster monster_to = map.getMonsterByOid(m_dwMobID);
+        if (monster_to == null || !monster_to.getStats().isFriendly()) {
+            DebugLogger.ErrorLog("OnMobHitByMob : err.");
+            return false;
+        }
+
+        // TODO : fix damage.
+        int damage = (int) (monster_to.getMobMaxHp() / 5);
+
+        monster_to.setHp(Math.max(0, monster_to.getHp() - damage));
+        map.broadcastMessage(ResCMobPool.MobDamaged(monster_to, damage, 1));
+
+        if (monster_to.getHp() <= 0) {
+            map.killMonster(monster_to, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
+        }
+
+        return true;
+    }
+
+    /*
+        ダークスター等
+        mob id : 8500004
+     */
+    public static boolean OnMobSelfDestruct(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        int nActionType = monster.getStats().getSelfD();
+        if (nActionType == -1) {
+            return false;
+        }
+        if ((nActionType & 1) != 0 && monster.getHp() <= monster.getStats().getSelfDHp()) {
+            map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
+            return true;
+        }
+        if ((nActionType & 2) != 0) {
+            map.killMonster(monster, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_SELFDESTRUCT);
+            return true;
+        }
+        return true;
+    }
+
+    /*
+        ホブ帝王の復活
+        map id : 921120100
+        mob id : 9300275
+     */
+    public static boolean OnMobAttackMob(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        int m_dwCharacterId = cp.Decode4();
+        int m_dwMobID = cp.Decode4();
+
+        MapleMonster monster_to = map.getMonsterByOid(m_dwMobID);
+        if (monster_to == null || !monster_to.getStats().isFriendly()) {
+            return true;
+        }
+
+        byte vx = cp.Decode1();
+        int damage = cp.Decode4();
+        byte vy = cp.Decode1();
+        short x = cp.Decode2();
+        short y = cp.Decode2();
+
+        // shamos, 9300275
+        DebugLogger.ErrorLog("OnMobAttackMob : not coded");
+        return true;
+    }
+
+    public static boolean OnMobSkillDelayEnd(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        DebugLogger.ErrorLog("OnMobSkillDelayEnd : not coded");
+        return true;
+    }
+
+    public static boolean OnMobTimeBombEnd(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        DebugLogger.ErrorLog("OnMobTimeBombEnd : not coded");
+        return true;
+    }
+
+    public static boolean OnMobEscortCollision(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        int m_nCurrentDestIndex = cp.Decode4();
+
+        DebugLogger.DebugLog("OnMobEscortCollision : ...");
+
+        int nodeSize = map.getNodeInfo().getNodes().size();
+        if (monster != null && nodeSize > 0 && nodeSize >= m_nCurrentDestIndex) {
+            final MapleNodes.MapleNodeInfo mni = map.getNodeInfo().getNode(m_nCurrentDestIndex);
+            if (mni == null) {
+                return false;
+            }
+            if (mni.attr == 2) { //talk
+                map.talkMonster("Please escort me carefully.", 5120035, monster); //temporary for now. itemID is located in WZ file
+            }
+            if (monster.getLastNode() >= m_nCurrentDestIndex) {
+                return false;
+            }
+            monster.setLastNode(m_nCurrentDestIndex);
+            if (nodeSize == m_nCurrentDestIndex) { //the last node on the map.
+                int newMap = -1;
+                switch (chr.getMapId() / 100) {
+                    case 9211200:
+                        newMap = 921120100;
+                        break;
+                    case 9211201:
+                        newMap = 921120200;
+                        break;
+                    case 9211202:
+                        newMap = 921120300;
+                        break;
+                    case 9211203:
+                        newMap = 921120400;
+                        break;
+                    case 9211204:
+                        map.removeMonster(monster);
+                        break;
+
+                }
+                if (newMap > 0) {
+                    map.broadcastMessage(ResWrapper.BroadCastMsgEvent("Proceed to the next stage."));
+                    map.removeMonster(monster);
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean OnMobRequestEscortInfo(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        DebugLogger.DebugLog("OnMobRequestEscortInfo : ...");
+        chr.SendPacket(ResCMobPool.MobRequestResultEscortInfo(monster, map));
+        return true;
+    }
+
+    public static boolean OnMobEscortStopEndRequest(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        DebugLogger.ErrorLog("OnMobEscortStopEndRequest : not coded");
+        return true;
     }
 }
