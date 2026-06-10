@@ -976,11 +976,11 @@ public class ReqCUser {
                 return false;
             }
             if (0 < skill_effect.getCooldown()) {
-                if (chr.skillisCooling(attack.skill)) {
+                OpsSkill ops_skill = OpsSkill.find(attack.skill);
+                if (chr.getCoolTime().check(ops_skill)) {
                     return false;
                 }
-                chr.addCooldown(attack.skill, skill_effect.getCooldown());
-                chr.SendPacket(ResCUserLocal.SkillCooltimeSet(attack.skill, skill_effect.getCooldown())); // cool time.
+                chr.getCoolTime().add(ops_skill, skill_effect.getCooldown());
             }
             if (attack.skill != OpsSkill.CLERIC_HEAL.get()) {
                 skill_effect.applyTo(chr);

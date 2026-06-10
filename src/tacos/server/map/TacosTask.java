@@ -20,7 +20,6 @@ package tacos.server.map;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MapleCoolDownValueHolder;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.server.maps.MapleMap;
@@ -28,7 +27,6 @@ import odin.server.maps.MapleMapItem;
 import tacos.client.TacosBuff;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.LeaveType;
-import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.wz.WzXML;
@@ -95,19 +93,10 @@ public class TacosTask {
         if (!chr.updateTime(time, 3000)) {
             return false;
         }
-
         // skill cool time.
-        for (MapleCoolDownValueHolder cdvh : chr.getCooldowns()) {
-            if (cdvh.end_time <= time) {
-                int skill_id = cdvh.skill_id;
-                chr.removeCooldown(skill_id);
-                chr.SendPacket(ResCUserLocal.SkillCooltimeSet(skill_id, 0));
-            }
-        }
-
+        chr.getCoolTime().update(time);
         // buff.
         doCharacterTask_Buff(chr, time);
-
         // pet.
         for (MaplePet pet : chr.getPets()) {
             if (!pet.getSummoned()) {

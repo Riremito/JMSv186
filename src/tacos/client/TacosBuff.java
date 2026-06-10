@@ -37,7 +37,6 @@ import static tacos.packet.ops.OpsSkill.LEGEND_MYSTIC_DOOR;
 import static tacos.packet.ops.OpsSkill.NOBLESSE_MYSTIC_DOOR;
 import static tacos.packet.ops.OpsSkill.NOVICE_MYSTIC_DOOR;
 import static tacos.packet.ops.OpsSkill.PRIEST_MYSTIC_DOOR;
-import tacos.packet.response.ResCUserLocal;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -149,12 +148,11 @@ public class TacosBuff {
             }
 
             if (0 < effect.getCooldown()) {
-                if (this.chr.skillisCooling(buff_id)) {
+                if (this.chr.getCoolTime().check(ops_skill)) {
                     return false;
                 }
                 if (ops_skill != OpsSkill.CAPTAIN_BATTLESHIP) {
-                    this.chr.SendPacket(ResCUserLocal.SkillCooltimeSet(buff_id, effect.getCooldown()));
-                    this.chr.addCooldown(buff_id, effect.getCooldown());
+                    this.chr.getCoolTime().add(ops_skill, effect.getCooldown());
                 }
             }
 

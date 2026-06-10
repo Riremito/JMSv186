@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import odin.client.MapleCharacter;
-import odin.client.MapleCoolDownValueHolder;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import odin.client.inventory.IItem;
@@ -24,7 +23,6 @@ import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCTownPortalPool;
-import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.life.MapleMonster;
@@ -488,14 +486,10 @@ public class MapleStatEffect implements Serializable {
             final MapleMist mist = new MapleMist(bounds, applyfrom, this);
             applyfrom.getMap().spawnMist(mist, getDuration(), false);
 
-        } else if (isTimeLeap()) { // Time Leap
-            for (MapleCoolDownValueHolder i : applyto.getCooldowns()) {
-                if (i.skill_id != 5121010) {
-                    applyto.removeCooldown(i.skill_id);
-                    applyto.SendPacket(ResCUserLocal.SkillCooltimeSet(i.skill_id, 0));
-                }
-            }
+        } else if (isTimeLeap()) {
+            applyto.getCoolTime().timeLeap();
         }
+
         return true;
     }
 
@@ -554,12 +548,7 @@ public class MapleStatEffect implements Serializable {
                         affected.getMap().broadcastMessage(affected, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, affected, sourceid), false);
                     }
                     if (isTimeLeap()) {
-                        for (MapleCoolDownValueHolder i : affected.getCooldowns()) {
-                            if (i.skill_id != 5121010) {
-                                affected.removeCooldown(i.skill_id);
-                                affected.SendPacket(ResCUserLocal.SkillCooltimeSet(i.skill_id, 0));
-                            }
-                        }
+                        affected.getCoolTime().timeLeap();
                     }
                 }
             }

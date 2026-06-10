@@ -3,7 +3,6 @@ package tacos.packet.response.struct;
 import tacos.packet.ServerPacket;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleCoolDownValueHolder;
 import odin.client.MapleQuestStatus;
 import odin.client.SkillEntry;
 import odin.client.inventory.MapleRing;
@@ -285,27 +284,6 @@ public class Structure {
         }
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode2(0);
-        }
-        return data.getBytes();
-    }
-
-    public static byte[] addCoolDownInfo(MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
-
-        data.Encode2(cd.size());
-        for (MapleCoolDownValueHolder cooling : cd) {
-            data.Encode4(cooling.skill_id);
-            long cool_time = cooling.end_time - System.currentTimeMillis();
-            if (cool_time < 0) {
-                cool_time = 0;
-            }
-            cool_time /= 1000;
-            if (Version.GreaterOrEqual(Region.JMS, 302) | Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-                data.Encode4((int) cool_time);
-            } else {
-                data.Encode2((short) cool_time);
-            }
         }
         return data.getBytes();
     }

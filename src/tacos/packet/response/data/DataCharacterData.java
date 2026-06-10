@@ -87,8 +87,8 @@ public class DataCharacterData {
         if ((datamask & 256) != 0) {
             data.EncodeBuffer(Structure.addSkillInfo(chr));
         }
-        if ((datamask & 32768) != 0) {
-            data.EncodeBuffer(Structure.addCoolDownInfo(chr));
+        if ((datamask & 0x8000) != 0) {
+            data.EncodeBuffer(chr.getCoolTime().getBufferForLogin(System.currentTimeMillis()));
         }
         if ((datamask & 1024) != 0) {
             data.Encode2(0); // not 0 -> Encode4 x5
@@ -529,7 +529,7 @@ public class DataCharacterData {
             if (Version.LessOrEqual(Region.KMS, 1)) {
 
             } else {
-                data.EncodeBuffer(Structure.addCoolDownInfo(chr));
+                data.EncodeBuffer(chr.getCoolTime().getBufferForLogin(System.currentTimeMillis()));
             }
         }
         // 0x200 [addQuestInfo] changed v165,v186,v188,v194
@@ -1369,5 +1369,4 @@ public class DataCharacterData {
         }
         return data.getBytes();
     }
-
 }

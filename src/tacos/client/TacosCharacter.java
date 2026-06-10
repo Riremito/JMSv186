@@ -28,7 +28,6 @@ import odin.client.BuddylistEntry;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MapleCoolDownValueHolder;
 import odin.client.MonsterBook;
 import odin.client.PlayerStats;
 import odin.client.SkillEntry;
@@ -44,7 +43,6 @@ import odin.handling.world.guild.MapleGuildCharacter;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
-import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.Version;
 import tacos.constants.TacosConstants;
@@ -1055,31 +1053,11 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.buff;
     }
 
-    // cool down
-    private Map<Integer, MapleCoolDownValueHolder> coolDowns = new LinkedHashMap<>();
+    // cool time.
+    private TacosCoolTime skill_ct = new TacosCoolTime(this);
 
-    public List<MapleCoolDownValueHolder> getCooldowns() {
-        return new ArrayList<>(coolDowns.values());
-    }
-
-    public void addCooldown(int skill_id, int time) {
-        int cool_time = time;
-        if (DeveloperMode.DM_SKILL_COOL_TIME.getInt() != 0) {
-            cool_time = Math.min(time, DeveloperMode.DM_SKILL_COOL_TIME.getInt());
-        }
-        long start_time = System.currentTimeMillis();
-        long end_time = start_time + (cool_time * 1000);
-        coolDowns.put(skill_id, new MapleCoolDownValueHolder(skill_id, start_time, end_time));
-    }
-
-    public void removeCooldown(int skill_id) {
-        if (coolDowns.containsKey(skill_id)) {
-            coolDowns.remove(skill_id);
-        }
-    }
-
-    public boolean skillisCooling(int skill_id) {
-        return coolDowns.containsKey(skill_id);
+    public TacosCoolTime getCoolTime() {
+        return this.skill_ct;
     }
 
     // unofficial.
