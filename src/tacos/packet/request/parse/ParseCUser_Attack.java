@@ -21,11 +21,13 @@ package tacos.packet.request.parse;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import odin.client.ISkill;
 import odin.client.MapleCharacter;
+import odin.client.SkillFactory;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
-import odin.handling.channel.handler.AttackInfo;
-import odin.tools.AttackPair;
+import odin.constants.GameConstants;
+import odin.server.MapleStatEffect;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
@@ -35,6 +37,7 @@ import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ServerPacketHeader;
 
 /**
  *
@@ -42,9 +45,89 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ParseCUser_Attack {
 
+    public static class AttackPair {
+
+        public int objectid;
+        public List<OdinPair<Integer, Boolean>> attack;
+
+        public AttackPair(int objectid, List<OdinPair<Integer, Boolean>> attack) {
+            this.objectid = objectid;
+            this.attack = attack;
+        }
+    }
+
+    public int skill;
+    public List<AttackPair> allDamage;
+    public List<Integer> allMeso;
+    public Point position;
+    public boolean real = true;
+    public ClientPacketHeader header;
+    public int CharacterId;
+    public int X;
+    public int Y;
+    public int SkillLevel;
+    public int nMastery;
+    public int nBulletItemID;
+    public int m_nLevel;
+    public int FieldKey;
+    public int HitKey;
+    public int nSkillID;
+    public int tKeyDown;
+    public int BuffKey;
+    public int AttackActionKey;
+    public int nAttackActionType;
+    public int nAttackSpeed;
+    public int tAttackTime;
+    public short ProperBulletPosition;
+    public short pnCashItemPos;
+    public int nShootRange0a;
+
+    public ServerPacketHeader getHeader() {
+        switch (header) {
+            case CP_UserMeleeAttack -> {
+                return ServerPacketHeader.LP_UserMeleeAttack;
+            }
+            case CP_UserShootAttack -> {
+                return ServerPacketHeader.LP_UserShootAttack;
+            }
+            case CP_UserMagicAttack -> {
+                return ServerPacketHeader.LP_UserMagicAttack;
+            }
+            case CP_UserBodyAttack -> {
+                return ServerPacketHeader.LP_UserBodyAttack;
+            }
+            default -> {
+            }
+        }
+        return ServerPacketHeader.UNKNOWN;
+    }
+
+    // hit count per mob
+    public int getDamagePerMob() {
+        return HitKey & 0x0F; // nDamagePerMob_1
+    }
+
+    // number of mobs
+    public int getMobCount() {
+        return (HitKey >> 4) & 0x0F; // nCount
+    }
+
+    public MapleStatEffect getAttackEffect(MapleCharacter chr, int skillLevel, ISkill skill_) {
+        if (GameConstants.isMulungSkill(skill) || GameConstants.isPyramidSkill(skill)) {
+            skillLevel = 1;
+        } else if (skillLevel <= 0) {
+            return null;
+        }
+        if (GameConstants.isLinkedAranSkill(skill)) {
+            final ISkill skillLink = SkillFactory.getSkill(skill);
+            return skillLink.getEffect(skillLevel);
+        }
+        return skill_.getEffect(skillLevel);
+    }
+
     // BMS CUser::OnAttack
-    public static final AttackInfo parseAttack(ClientPacket cp, ClientPacketHeader header, MapleCharacter chr) {
-        final AttackInfo attack = new AttackInfo();
+    public static ParseCUser_Attack parse(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
+        ParseCUser_Attack attack = new ParseCUser_Attack();
         // attack type
         attack.header = header;
         // attacker data
@@ -155,9 +238,9 @@ public class ParseCUser_Attack {
             }
         }
         int damage;
-        List<OdinPair<Integer, Boolean>> allDamageNumbers = new ArrayList<>();
         attack.allDamage = new ArrayList<>();
         for (int i = 0; i < attack.getMobCount(); i++) {
+            List<OdinPair<Integer, Boolean>> allDamageNumbers = new ArrayList<>();
             int nTargetID = cp.Decode4();
             // v131 to v186 OK
             cp.Decode1(); // v366->nHitAction
@@ -188,6 +271,9 @@ public class ParseCUser_Attack {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
             attack.allDamage.add(new AttackPair(nTargetID, allDamageNumbers));
+            if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
+                DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
+            }
         }
         if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS180orLater()) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
@@ -200,9 +286,6 @@ public class ParseCUser_Attack {
         attack.position = new Point();
         attack.position.x = cp.Decode2();
         attack.position.y = cp.Decode2();
-        if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-            DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
-        }
         if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
             attack.allMeso = new ArrayList<>();
             byte bullets = cp.Decode1();

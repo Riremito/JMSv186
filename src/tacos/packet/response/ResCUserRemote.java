@@ -23,19 +23,19 @@ import odin.client.inventory.MapleRing;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import odin.handling.channel.handler.AttackInfo;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
-import odin.tools.AttackPair;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
 import tacos.constants.TacosConstants;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.request.parse.ParseCUser_Attack;
+import tacos.packet.request.parse.ParseCUser_Attack.AttackPair;
 
 /**
  *
@@ -53,7 +53,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnAttack
-    public static ServerPacket UserAttack(AttackInfo attack) {
+    public static ServerPacket UserAttack(ParseCUser_Attack attack) {
         ServerPacket sp = new ServerPacket(attack.getHeader());
         boolean is_hide_damage = ContentCustom.CC_HIDE_DAMAGE.get();
 
@@ -356,5 +356,4 @@ public class ResCUserRemote {
 
         return data.getBytes();
     }
-
 }

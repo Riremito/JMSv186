@@ -36,7 +36,6 @@ import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
-import odin.handling.channel.handler.AttackInfo;
 import odin.handling.world.MapleParty;
 import odin.handling.world.OdinWorld;
 import java.util.ArrayList;
@@ -82,7 +81,6 @@ import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
-import odin.tools.AttackPair;
 import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
 import tacos.debug.DebugCommand;
@@ -102,6 +100,7 @@ import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
+import tacos.packet.request.parse.ParseCUser_Attack.AttackPair;
 import tacos.packet.request.sub.ReqSub_Admin;
 import tacos.packet.request.sub.ReqSub_FriendRequest;
 import tacos.packet.response.ResCDropPool;
@@ -175,20 +174,11 @@ public class ReqCUser {
                 OnUserPortableChairSitRequest(cp, chr);
                 return true;
             }
-            case CP_UserMeleeAttack: {
-                OnUserAttack(header, cp, chr);
-                return true;
-            }
-            case CP_UserShootAttack: {
-                OnUserAttack(header, cp, chr);
-                return true;
-            }
-            case CP_UserMagicAttack: {
-                OnUserAttack(header, cp, chr);
-                return true;
-            }
+            case CP_UserMeleeAttack:
+            case CP_UserShootAttack:
+            case CP_UserMagicAttack:
             case CP_UserBodyAttack: {
-                OnUserAttack(header, cp, chr);
+                OnUserAttack(chr, header, cp);
                 return true;
             }
             case CP_UserHit: {
@@ -972,8 +962,9 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserAttack(ClientPacketHeader header, ClientPacket cp, MapleCharacter chr) {
-        AttackInfo attack = ParseCUser_Attack.parseAttack(cp, header, chr);
+    // BMS, CUser::OnAttack
+    public static boolean OnUserAttack(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
+        ParseCUser_Attack attack = ParseCUser_Attack.parse(chr, header, cp);
         MapleMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;
         if (is_skill_attack) {
@@ -1008,6 +999,9 @@ public class ReqCUser {
             skill_pick_pocket = SkillFactory.getSkill(OpsSkill.THIEFMASTER_PICKPOCKET.get());
             skill_effect_pick_pocket = skill_pick_pocket.getEffect(30); // level.
         }
+
+        // for remote users.
+        map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         boolean is_steal = attack.skill == OpsSkill.THIEF_STEAL.get();
         for (AttackPair oned : attack.allDamage) {
             MapleMonster monster = map.getMonsterByOid(oned.objectid);
@@ -1051,8 +1045,6 @@ public class ReqCUser {
                 map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.LeaveType.MESO_EXPLOSION));
             }
         }
-        // for remote users.
-        map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         return true;
     }
 
