@@ -275,16 +275,23 @@ public class ParseCUser_Attack {
                     attack.rand_counter++; // DAMAGE
                     damage = cp.Decode4(); // 366->aDamage[i]
                     boolean critical = false;
+                    if (Version.PreBB()) {
+                        attack.rand_counter++;
+                    }
                     if (chr.getCalcDamage().isNextAttackCritical() || TacosCalcDamage.getRand(attack.randoms[attack.rand_counter++ % attack.rand_size], 0.0, 100.0) < critical_rate) { // CRITICAL
                         critical = true;
-                        attack.rand_counter++; // CRITICAL DAMAGE
+                        if (Version.PostBB()) {
+                            attack.rand_counter++; // CRITICAL DAMAGE
+                        }
                     }
 
                     //chr.DebugMsg(String.format("%d : %d = " + critical, j, damage));
                     allDamageNumbers.add(new OdinPair<>(damage, critical));
                     // BOSS.
-                    if (is_boss) {
-                        attack.rand_counter++;
+                    if (Version.PostBB()) {
+                        if (is_boss) {
+                            attack.rand_counter++;
+                        }
                     }
                     // SHADOW MESO.
                 }
