@@ -229,6 +229,9 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     // enter game server.
     protected void sendSetField(MapleCharacter mchr, boolean bCharacterData) {
+        if (bCharacterData) {
+            getCalcDamage().setSeed();
+        }
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             SendPacket(ResCStage.SetField_JMS_302(mchr, 1, bCharacterData, 0));
             SendPacket(ResCStage.SetField_JMS_302(mchr, 2, bCharacterData, -1));
@@ -1058,6 +1061,13 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public TacosCoolTime getCoolTime() {
         return this.skill_ct;
+    }
+
+    // rand
+    private TacosCalcDamage calc_damage = new TacosCalcDamage();
+
+    public TacosCalcDamage getCalcDamage() {
+        return this.calc_damage;
     }
 
     // unofficial.

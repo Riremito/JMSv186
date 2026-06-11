@@ -159,7 +159,6 @@ public class MapleCharacter extends TacosCharacter {
     private CashShop cs;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
-    private transient PlayerRandomStream CRand;
     private transient MapleShop shop;
     private transient MapleTrade trade;
     private byte[] petStore;
@@ -328,7 +327,6 @@ public class MapleCharacter extends TacosCharacter {
             pse.close();
 
             if (channelserver) {
-                ret.CRand = new PlayerRandomStream();
                 ret.monsterbook = MonsterBook.loadCards(character_id);
 
                 ps = con.prepareStatement("SELECT * FROM inventoryslot where characterid = ?");
@@ -877,10 +875,6 @@ public class MapleCharacter extends TacosCharacter {
         ps.setInt(1, id);
         ps.executeUpdate();
         ps.close();
-    }
-
-    public final PlayerRandomStream CRand() {
-        return CRand;
     }
 
     public final byte[] QuestInfoPacket() {
@@ -3858,7 +3852,6 @@ public class MapleCharacter extends TacosCharacter {
         ret.bookCover = bookCover;
         ret.monsterbook = monsterbook;
         ret.mount = mount;
-        ret.CRand = new PlayerRandomStream();
         ret.gmLevel = gmLevel;
         ret.gender = gender;
         ret.dwPosMap = map.getId();
