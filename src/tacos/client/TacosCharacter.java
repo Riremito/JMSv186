@@ -1070,6 +1070,13 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.calc_damage;
     }
 
+    // critical
+    private TacosCriticalRate critical_rate = new TacosCriticalRate(this);
+
+    public TacosCriticalRate getCriticalRate() {
+        return this.critical_rate;
+    }
+
     // unofficial.
     private PetCharacter pet_player = new PetCharacter(this);
     private PetMob pet_mob = new PetMob(this);

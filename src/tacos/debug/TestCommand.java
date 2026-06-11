@@ -90,7 +90,10 @@ public class TestCommand {
                 DebugCommand.remoteNPCTalk(client, 9010021, 1012003);
                 return true;
             }
-
+            case "/cr": {
+                chr.DebugMsg(String.format("Critical : %d%%", chr.getCriticalRate().get()));
+                return true;
+            }
             case "/hm": {
                 List<Integer> ids = new ArrayList<>();
                 IMapleData md_item_sub_type = WzXML.ITEM.getItemImg(503);

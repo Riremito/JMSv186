@@ -28,6 +28,7 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleStatEffect;
+import odin.server.life.MapleMonster;
 import tacos.client.TacosCalcDamage;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
@@ -244,6 +245,7 @@ public class ParseCUser_Attack {
         }
         int damage;
         attack.allDamage = new ArrayList<>();
+        int critical_rate = chr.getCriticalRate().get(); // TODO : fix (postBB NL)
         for (int i = 0; i < attack.getMobCount(); i++) {
             List<OdinPair<Integer, Boolean>> allDamageNumbers = new ArrayList<>();
             int nTargetID = cp.Decode4();
@@ -256,6 +258,12 @@ public class ParseCUser_Attack {
             cp.Decode2(); // Mob Something
             cp.Decode2(); // Mob Something
             cp.Decode2(); // Mob Something
+
+            MapleMonster monster = chr.getMap().getMonsterByOid(nTargetID);
+            boolean is_boss = false;
+            if (monster != null) {
+                is_boss = monster.getStats().isBoss();
+            }
             attack.rand_counter = 0;
             attack.randoms = chr.getCalcDamage().getRandoms(attack.rand_size);
             if (!TacosConstants.is_mesp_explosion(attack.nSkillID)) {
@@ -265,16 +273,19 @@ public class ParseCUser_Attack {
                     attack.rand_counter++; // NON ADMIN
                     // SKILL.
                     attack.rand_counter++; // DAMAGE
-                    int critical_rate = 55; // TODO : fix (postBB NL)
+                    damage = cp.Decode4(); // 366->aDamage[i]
                     boolean critical = false;
                     if (chr.getCalcDamage().isNextAttackCritical() || TacosCalcDamage.getRand(attack.randoms[attack.rand_counter++ % attack.rand_size], 0.0, 100.0) < critical_rate) { // CRITICAL
                         critical = true;
                         attack.rand_counter++; // CRITICAL DAMAGE
                     }
-                    damage = cp.Decode4(); // 366->aDamage[i]
+
                     //chr.DebugMsg(String.format("%d : %d = " + critical, j, damage));
                     allDamageNumbers.add(new OdinPair<>(damage, critical));
                     // BOSS.
+                    if (is_boss) {
+                        attack.rand_counter++;
+                    }
                     // SHADOW MESO.
                 }
             } else {
