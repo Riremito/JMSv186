@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
 import tacos.config.Version;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +32,10 @@ import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
+import tacos.config.ServerConfig;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsSkill;
 import tacos.packet.request.parse.ParseCUser_Attack;
 
 /**
@@ -53,85 +54,77 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnAttack
-    public static ServerPacket UserAttack(ParseCUser_Attack attack) {
+    public static ServerPacket UserAttack(MapleCharacter chr, ParseCUser_Attack attack) {
         ServerPacket sp = new ServerPacket(attack.getHeader());
         boolean is_hide_damage = ContentCustom.CC_HIDE_DAMAGE.get();
 
-        if (Version.LessOrEqual(Region.JMS, 147)) {
-            sp.Encode4(attack.CharacterId);
-            sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // & 0xF0 to hide damages.
-            sp.Encode1(attack.SkillLevel); // nPassiveSLV
-            if (0 < attack.nSkillID) {
-                sp.Encode4(attack.nSkillID); // nSkillID
-            }
-            sp.Encode1(attack.BuffKey); // bSerialAttack
-            sp.Encode1(attack.AttackActionKey);
-            sp.Encode1(attack.nAttackActionType);
-            sp.Encode1(attack.nAttackSpeed); // nActionSpeed
-            sp.Encode4(attack.nBulletItemID); // nBulletItemID
-            for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
-                sp.Encode4(entry.getKey()); // mob object id.
-                sp.Encode1(7);
-                if (is_hide_damage) {
-                    continue;
-                }
-                if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
-                    sp.Encode1(entry.getValue().size()); // hits
-                }
-                for (Integer damage : entry.getValue()) {
-                    sp.Encode4(damage); // damage
-                }
-            }
-            if (TacosConstants.is_keydown_skill_remote(attack.nSkillID)) {
-                sp.Encode4(attack.tKeyDown);
-            }
-            return sp;
+        sp.Encode4(attack.CharacterId); // dwCharacterID
+        sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
+
+        if (ServerConfig.JMS164orLater()) {
+            sp.Encode1(attack.m_nLevel); // m_nLevel
         }
 
-        sp.Encode4(attack.CharacterId);
-        sp.Encode1(attack.HitKey);
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode1(attack.m_nLevel);
-        }
-        sp.Encode1(attack.SkillLevel); // nPassiveSLV
-        if (0 < attack.nSkillID) {
+        sp.Encode1(attack.SkillLevel); // nSLV
+
+        if (attack.SkillLevel != 0) {
             sp.Encode4(attack.nSkillID); // nSkillID
         }
-        if (ServerConfig.JMS164orLater()) {
-            sp.Encode1(attack.BuffKey); // bSerialAttack
+
+        OpsSkill skill = OpsSkill.find(attack.nSkillID);
+        if (Version.PostBB()) {
+            if (skill == OpsSkill.SNIPER_STRAFE) {
+                OpsSkill passive_skill = OpsSkill.CROSSBOWMASTER_ULTIMATE_STRAFE;
+                int nPassiveSLV = chr.getSkillLevel(passive_skill);
+                sp.Encode1(nPassiveSLV); // nPassiveSLV
+                if (nPassiveSLV != 0) {
+                    sp.Encode4(passive_skill.get()); // pPassiveSkill
+                }
+            }
         }
+
+        sp.Encode1(attack.BuffKey); // bSerialAttack
+
         if (Version.LessOrEqual(Region.JMS, 147)) {
             sp.Encode1(attack.AttackActionKey);
         } else {
             sp.Encode2(attack.AttackActionKey);
         }
+
         sp.Encode1(attack.nAttackSpeed); // nActionSpeed
         sp.Encode1(attack.nMastery); // nMastery
         sp.Encode4(attack.nBulletItemID); // nBulletItemID
+
         for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
-            sp.Encode4(entry.getKey());
+            sp.Encode4(entry.getKey()); // mob object id.
             sp.Encode1(7);
+            if (is_hide_damage) {
+                continue;
+            }
             if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
-                sp.Encode1(entry.getValue().size());
+                sp.Encode1(entry.getValue().size()); // hits
             }
             for (Integer damage : entry.getValue()) {
-                if (Version.LessOrEqual(Region.JMS, 131) || Version.Equal(Region.KMST, 330)) {
-                    sp.Encode4(damage);
+                if (Version.LessOrEqual(Region.JMS, 147) || Version.Equal(Region.KMST, 330)) {
+                    sp.Encode4(damage); // damage
                 } else {
                     sp.Encode1((damage & 0x80000000) != 0 ? 1 : 0); // critical.
                     sp.Encode4(damage & 0x7FFFFFFF);
                 }
             }
         }
+
         if (TacosConstants.is_keydown_skill_remote(attack.nSkillID)) {
             sp.Encode4(attack.tKeyDown);
         }
+
         if (ServerConfig.JMS164orLater()) {
             if (attack.getHeader() == ServerPacketHeader.LP_UserShootAttack) {
                 sp.Encode2(attack.X);
                 sp.Encode2(attack.Y);
             }
         }
+
         return sp;
     }
 

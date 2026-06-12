@@ -965,6 +965,7 @@ public class ReqCUser {
     public static boolean OnUserAttack(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         ParseCUser_Attack attack = ParseCUser_Attack.parse(chr, header, cp);
         attack.setCritical(chr);
+
         MapleMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;
         if (is_skill_attack) {
@@ -1001,7 +1002,7 @@ public class ReqCUser {
         }
 
         // for remote users.
-        map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
+        map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(chr, attack), chr.getPosition());
         boolean is_steal = attack.skill == OpsSkill.THIEF_STEAL.get();
         for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
             MapleMonster monster = map.getMonsterByOid(entry.getKey());
