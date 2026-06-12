@@ -242,6 +242,10 @@ public class TacosBuff {
         return ret;
     }
 
+    public ArrayList<Buff> getAll() {
+        return this.buffs;
+    }
+
     public boolean remove(int buff_id) {
         for (Buff buff : buffs) {
             if (buff.buff_id == buff_id) {

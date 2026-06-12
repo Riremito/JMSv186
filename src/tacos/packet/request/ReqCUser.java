@@ -965,6 +965,7 @@ public class ReqCUser {
     public static boolean OnUserAttack(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         ParseCUser_Attack attack = ParseCUser_Attack.parse(chr, header, cp);
         attack.setCritical(chr);
+        attack.setBullet(chr);
 
         MapleMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;

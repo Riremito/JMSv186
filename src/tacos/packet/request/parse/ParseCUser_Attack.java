@@ -31,6 +31,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
+import tacos.client.TacosBuff.Buff;
 import tacos.client.TacosCalcDamage;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
@@ -39,6 +40,7 @@ import tacos.constants.TacosConstants;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsSkill;
 
 /**
  *
@@ -56,7 +58,7 @@ public class ParseCUser_Attack {
     public int Y;
     public int SkillLevel;
     public int nMastery;
-    public int nBulletItemID;
+    public int nBulletItemID = 0;
     public int m_nLevel;
     public int FieldKey;
     public int HitKey;
@@ -161,6 +163,42 @@ public class ParseCUser_Attack {
         return true;
     }
 
+    public boolean setBullet(MapleCharacter chr) {
+        if (this.nShootRange0a == 0) {
+            // soul arrow?
+            return false;
+        }
+        for (Buff buff : chr.getBuff().getAll()) {
+            switch (OpsSkill.find(buff.buff_id)) {
+                case HUNTER_SOUL_ARROW_BOW:
+                case CROSSBOWMAN_SOUL_ARROW_CROSSBOW:
+                case WINDBREAKER_SOUL_ARROW_BOW:
+                case WILDHUNTER_SOUL_ARROW_CROSSBOW: {
+                    // soul arrow.
+                    return false;
+                }
+                default: {
+                    break;
+                }
+            }
+        }
+        if (this.pnCashItemPos != 0) {
+            IItem item = chr.getInventory(MapleInventoryType.CASH).getItem(this.pnCashItemPos);
+            if (item != null) {
+                this.nBulletItemID = item.getItemId();
+            }
+            return true;
+        }
+        if (this.ProperBulletPosition != 0) {
+            IItem item = chr.getInventory(MapleInventoryType.USE).getItem(this.ProperBulletPosition);
+            if (item != null) {
+                this.nBulletItemID = item.getItemId();
+            }
+            return true;
+        }
+        return false;
+    }
+
     // BMS CUser::OnAttack
     public static ParseCUser_Attack parse(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         ParseCUser_Attack attack = new ParseCUser_Attack();
@@ -257,18 +295,7 @@ public class ParseCUser_Attack {
         if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
             attack.ProperBulletPosition = cp.Decode2();
             attack.pnCashItemPos = cp.Decode2();
-            attack.nShootRange0a = cp.Decode1(); // nShootRange0a, GetShootRange0 func, is AOE or not, TT/ Avenger = 41, Showdown = 0
-            if (!TacosConstants.is_shadow_meso(attack.nSkillID) /* SOUL ARROW CHECK.*/) {
-                IItem BulletItem;
-                if (0 < attack.pnCashItemPos) {
-                    BulletItem = chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos);
-                } else {
-                    BulletItem = chr.getInventory(MapleInventoryType.USE).getItem(attack.ProperBulletPosition);
-                }
-                if (BulletItem != null) {
-                    attack.nBulletItemID = BulletItem.getItemId();
-                }
-            }
+            attack.nShootRange0a = cp.Decode1();
         }
         for (int i = 0; i < attack.getMobCount(); i++) {
             int nTargetID = cp.Decode4();
