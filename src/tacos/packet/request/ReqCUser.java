@@ -100,7 +100,6 @@ import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
-import tacos.packet.request.parse.ParseCUser_Attack.AttackPair;
 import tacos.packet.request.sub.ReqSub_Admin;
 import tacos.packet.request.sub.ReqSub_FriendRequest;
 import tacos.packet.response.ResCDropPool;
@@ -965,6 +964,7 @@ public class ReqCUser {
     // BMS, CUser::OnAttack
     public static boolean OnUserAttack(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         ParseCUser_Attack attack = ParseCUser_Attack.parse(chr, header, cp);
+        attack.setCritical(chr);
         MapleMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;
         if (is_skill_attack) {
@@ -1003,20 +1003,20 @@ public class ReqCUser {
         // for remote users.
         map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(attack), chr.getPosition());
         boolean is_steal = attack.skill == OpsSkill.THIEF_STEAL.get();
-        for (AttackPair oned : attack.allDamage) {
-            MapleMonster monster = map.getMonsterByOid(oned.objectid);
+        for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
+            MapleMonster monster = map.getMonsterByOid(entry.getKey());
             if (monster == null) {
                 DebugLogger.ErrorLog("attack : err 3.");
                 continue;
             }
             int total_damage = 0;
-            for (OdinPair<Integer, Boolean> eachde : oned.attack) {
-                total_damage += eachde.getLeft();
+            for (Integer damage : entry.getValue()) {
+                total_damage += damage & 0x7FFFFFFF;
                 // pick pocket.
                 if (is_pick_pocket && skill_effect_pick_pocket != null && !is_meso_explosion) {
                     if (skill_effect_pick_pocket.makeChanceResult()) {
                         int maxmeso = skill_effect_pick_pocket.getX();
-                        map.spawnMesoDrop(Math.min((int) Math.max(((double) eachde.getLeft() / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, chr, true, (byte) 0);
+                        map.spawnMesoDrop(Math.min((int) Math.max(((double) (damage & 0x7FFFFFFF) / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, chr, true, (byte) 0);
                     }
                 }
             }

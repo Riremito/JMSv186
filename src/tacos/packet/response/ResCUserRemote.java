@@ -18,12 +18,14 @@
  */
 package tacos.packet.response;
 
+import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import java.util.List;
+import java.util.Map;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -32,10 +34,8 @@ import tacos.packet.response.data.DataCUser;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
 import tacos.constants.TacosConstants;
-import tacos.odin.OdinPair;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.request.parse.ParseCUser_Attack;
-import tacos.packet.request.parse.ParseCUser_Attack.AttackPair;
 
 /**
  *
@@ -69,19 +69,17 @@ public class ResCUserRemote {
             sp.Encode1(attack.nAttackActionType);
             sp.Encode1(attack.nAttackSpeed); // nActionSpeed
             sp.Encode4(attack.nBulletItemID); // nBulletItemID
-            for (AttackPair oned : attack.allDamage) {
-                if (oned.attack != null) {
-                    sp.Encode4(oned.objectid);
-                    sp.Encode1(7);
-                    if (is_hide_damage) {
-                        continue;
-                    }
-                    if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
-                        sp.Encode1(oned.attack.size());
-                    }
-                    for (OdinPair<Integer, Boolean> eachd : oned.attack) {
-                        sp.Encode4(eachd.getLeft() | ((eachd.getRight() ? 1 : 0) << 31));
-                    }
+            for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
+                sp.Encode4(entry.getKey()); // mob object id.
+                sp.Encode1(7);
+                if (is_hide_damage) {
+                    continue;
+                }
+                if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
+                    sp.Encode1(entry.getValue().size()); // hits
+                }
+                for (Integer damage : entry.getValue()) {
+                    sp.Encode4(damage); // damage
                 }
             }
             if (TacosConstants.is_keydown_skill_remote(attack.nSkillID)) {
@@ -110,20 +108,18 @@ public class ResCUserRemote {
         sp.Encode1(attack.nAttackSpeed); // nActionSpeed
         sp.Encode1(attack.nMastery); // nMastery
         sp.Encode4(attack.nBulletItemID); // nBulletItemID
-        for (AttackPair oned : attack.allDamage) {
-            if (oned.attack != null) {
-                sp.Encode4(oned.objectid);
-                sp.Encode1(7);
-                if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
-                    sp.Encode1(oned.attack.size());
-                }
-                for (OdinPair<Integer, Boolean> eachd : oned.attack) {
-                    if (Version.LessOrEqual(Region.JMS, 131) || Version.Equal(Region.KMST, 330)) {
-                        sp.Encode4(eachd.getLeft() | ((eachd.getRight() ? 1 : 0) << 31));
-                    } else {
-                        sp.Encode1(eachd.getRight() ? 1 : 0);
-                        sp.Encode4(eachd.getLeft());
-                    }
+        for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
+            sp.Encode4(entry.getKey());
+            sp.Encode1(7);
+            if (TacosConstants.is_mesp_explosion(attack.nSkillID)) {
+                sp.Encode1(entry.getValue().size());
+            }
+            for (Integer damage : entry.getValue()) {
+                if (Version.LessOrEqual(Region.JMS, 131) || Version.Equal(Region.KMST, 330)) {
+                    sp.Encode4(damage);
+                } else {
+                    sp.Encode1((damage & 0x80000000) != 0 ? 1 : 0); // critical.
+                    sp.Encode4(damage & 0x7FFFFFFF);
                 }
             }
         }

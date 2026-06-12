@@ -20,7 +20,9 @@ package tacos.packet.request.parse;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.SkillFactory;
@@ -30,13 +32,10 @@ import odin.constants.GameConstants;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import tacos.client.TacosCalcDamage;
-import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
 import tacos.constants.TacosConstants;
-import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacketHeader;
@@ -47,22 +46,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ParseCUser_Attack {
 
-    public static class AttackPair {
-
-        public int objectid;
-        public List<OdinPair<Integer, Boolean>> attack;
-
-        public AttackPair(int objectid, List<OdinPair<Integer, Boolean>> attack) {
-            this.objectid = objectid;
-            this.attack = attack;
-        }
-    }
-
-    public int[] randoms;
-    public int rand_size = 7;
-    public int rand_counter = 0;
     public int skill;
-    public List<AttackPair> allDamage;
     public List<Integer> allMeso;
     public Point position;
     public boolean real = true;
@@ -87,6 +71,7 @@ public class ParseCUser_Attack {
     public short ProperBulletPosition;
     public short pnCashItemPos;
     public int nShootRange0a;
+    public HashMap<Integer, ArrayList<Integer>> damages = new HashMap<>();
 
     public ServerPacketHeader getHeader() {
         switch (header) {
@@ -131,12 +116,55 @@ public class ParseCUser_Attack {
         return skill_.getEffect(skillLevel);
     }
 
+    public boolean setCritical(MapleCharacter chr) {
+        int critical_rate = chr.getCriticalRate().get();
+
+        for (Map.Entry<Integer, ArrayList<Integer>> entry : this.damages.entrySet()) {
+            int rand_counter = 0;
+            int[] randoms = chr.getCalcDamage().getRandoms(7);
+
+            int mob_object_id = entry.getKey();
+            MapleMonster monster = chr.getMap().getMonsterByOid(mob_object_id);
+            boolean is_boss = false;
+            if (monster != null) {
+                is_boss = monster.getStats().isBoss();
+            }
+            ArrayList<Integer> damage_list = entry.getValue();
+            for (int i = 0; i < damage_list.size(); i++) {
+                rand_counter++;
+                rand_counter++; // NON ADMIN
+                // SKILL.
+                rand_counter++; // DAMAGE
+                if (Version.PreBB()) {
+                    rand_counter++;
+                }
+                if (chr.getCalcDamage().isNextAttackCritical() || TacosCalcDamage.getRand(randoms[rand_counter++ % 7], 0.0, 100.0) < critical_rate) { // CRITICAL
+                    if (Version.PostBB()) {
+                        rand_counter++; // CRITICAL DAMAGE
+                    }
+                    damage_list.set(i, damage_list.get(i) | 1 << 31); // critical bit.
+                }
+                // BOSS.
+                if (Version.PostBB()) {
+                    if (is_boss) {
+                        rand_counter++;
+                    }
+                }
+                // SHADOW MESO.
+            }
+        }
+
+        if (this.exJablin != 0) {
+            chr.getCalcDamage().setNextAttackCritical(true);
+        }
+
+        return true;
+    }
+
     // BMS CUser::OnAttack
     public static ParseCUser_Attack parse(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         ParseCUser_Attack attack = new ParseCUser_Attack();
-        // attack type
         attack.header = header;
-        // attacker data
         attack.CharacterId = chr.getId();
         attack.m_nLevel = chr.getLevel();
         attack.nSkillID = 0;
@@ -162,9 +190,8 @@ public class ParseCUser_Attack {
             cp.Decode4(); // pDrInfo.dr3
         }
         attack.nSkillID = cp.Decode4();
-        attack.skill = attack.nSkillID; // old
+        attack.skill = attack.nSkillID;
         if (0 < attack.nSkillID) {
-            // skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
             attack.SkillLevel = chr.getSkillLevel(attack.nSkillID);
         }
         // v95 1 byte cd->nCombatOrders
@@ -243,11 +270,7 @@ public class ParseCUser_Attack {
                 }
             }
         }
-        int damage;
-        attack.allDamage = new ArrayList<>();
-        int critical_rate = chr.getCriticalRate().get(); // TODO : fix (postBB NL)
         for (int i = 0; i < attack.getMobCount(); i++) {
-            List<OdinPair<Integer, Boolean>> allDamageNumbers = new ArrayList<>();
             int nTargetID = cp.Decode4();
             // v131 to v186 OK
             cp.Decode1(); // v366->nHitAction
@@ -259,59 +282,29 @@ public class ParseCUser_Attack {
             cp.Decode2(); // Mob Something
             cp.Decode2(); // Mob Something
 
-            MapleMonster monster = chr.getMap().getMonsterByOid(nTargetID);
-            boolean is_boss = false;
-            if (monster != null) {
-                is_boss = monster.getStats().isBoss();
-            }
-            attack.rand_counter = 0;
-            attack.randoms = chr.getCalcDamage().getRandoms(attack.rand_size);
+            ArrayList<Integer> damage_list = new ArrayList<>();
             if (!TacosConstants.is_mesp_explosion(attack.nSkillID)) {
                 cp.Decode2(); // v366->tDelay
                 for (int j = 0; j < attack.getDamagePerMob(); j++) {
-                    attack.rand_counter++;
-                    attack.rand_counter++; // NON ADMIN
-                    // SKILL.
-                    attack.rand_counter++; // DAMAGE
-                    damage = cp.Decode4(); // 366->aDamage[i]
-                    boolean critical = false;
-                    if (Version.PreBB()) {
-                        attack.rand_counter++;
-                    }
-                    if (chr.getCalcDamage().isNextAttackCritical() || TacosCalcDamage.getRand(attack.randoms[attack.rand_counter++ % attack.rand_size], 0.0, 100.0) < critical_rate) { // CRITICAL
-                        critical = true;
-                        if (Version.PostBB()) {
-                            attack.rand_counter++; // CRITICAL DAMAGE
-                        }
-                    }
-
-                    chr.DebugMsg(String.format("%d : %d = " + critical, j, damage));
-                    allDamageNumbers.add(new OdinPair<>(damage, critical));
-                    // BOSS.
-                    if (Version.PostBB()) {
-                        if (is_boss) {
-                            attack.rand_counter++;
-                        }
-                    }
-                    // SHADOW MESO.
+                    int damage = cp.Decode4(); // 366->aDamage[i]
+                    damage_list.add(damage); // add damage.
                 }
             } else {
                 // meso explosion.
                 byte hits = cp.Decode1();
                 for (int j = 0; j < hits; j++) {
-                    damage = cp.Decode4();
-                    allDamageNumbers.add(new OdinPair<>(damage, false));
+                    int damage = cp.Decode4();
+                    damage_list.add(damage); // add damage.
                 }
             }
+
             if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.THMS, 87)) {
                 // nothing
             } else if (ServerConfig.JMS164orLater()) {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
-            attack.allDamage.add(new AttackPair(nTargetID, allDamageNumbers));
-            if (DeveloperMode.DM_CHECK_DAMAGE.get()) {
-                DebugLogger.DebugLog(header.name() + ": damage = " + allDamageNumbers);
-            }
+
+            attack.damages.put(nTargetID, damage_list); // add damage list.
         }
         if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS180orLater()) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
@@ -333,10 +326,6 @@ public class ParseCUser_Attack {
                 attack.allMeso.add(drop_id);
             }
             short tTotFrameDelay = cp.Decode2();
-        }
-
-        if (attack.exJablin != 0) {
-            chr.getCalcDamage().setNextAttackCritical(true);
         }
 
         return attack;
