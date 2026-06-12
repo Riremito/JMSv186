@@ -1049,7 +1049,6 @@ public class ReqCUser {
     }
 
     public static boolean OnUserHit(MapleCharacter chr, ClientPacket cp) {
-
         MapleMap map = chr.getMap();
         ResCUserRemote.UserHitData uhd = new ResCUserRemote.UserHitData();
 
@@ -1208,7 +1207,7 @@ public class ReqCUser {
             }
         }
         Integer magic_guard_rate = 0; // MG SKILL
-        if (magic_guard_rate != null) {
+        if (magic_guard_rate != 0) {
             int mp_damage = (int) (uhd.nDamage / 100.0 * magic_guard_rate);
             if (chr.getStat().getMp() < mp_damage) {
                 mp_damage = chr.getStat().getMp();
@@ -1222,7 +1221,7 @@ public class ReqCUser {
             return true;
         }
         Integer meso_guard_rate = 0; // MESO GUARD SKILL.
-        if (meso_guard_rate != null) {
+        if (meso_guard_rate != 0) {
             int meso_damage = (int) (uhd.nDamage / 100.0 * meso_guard_rate);
             if (chr.getMeso() < meso_damage) {
                 meso_damage = chr.getMeso();

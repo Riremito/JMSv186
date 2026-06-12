@@ -230,7 +230,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     // enter game server.
     protected void sendSetField(MapleCharacter mchr, boolean bCharacterData) {
         if (bCharacterData) {
-            getCalcDamage().setSeed();
+            getCalcDamage().setSeed(getCalcDamage().random(), getCalcDamage().random(), getCalcDamage().random());
         }
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             SendPacket(ResCStage.SetField_JMS_302(mchr, 1, bCharacterData, 0));

@@ -58,7 +58,7 @@ public class ParseCUser_Attack {
         }
     }
 
-    public long[] randoms;
+    public int[] randoms;
     public int rand_size = 7;
     public int rand_counter = 0;
     public int skill;
@@ -285,7 +285,7 @@ public class ParseCUser_Attack {
                         }
                     }
 
-                    //chr.DebugMsg(String.format("%d : %d = " + critical, j, damage));
+                    chr.DebugMsg(String.format("%d : %d = " + critical, j, damage));
                     allDamageNumbers.add(new OdinPair<>(damage, critical));
                     // BOSS.
                     if (Version.PostBB()) {

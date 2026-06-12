@@ -18,64 +18,49 @@
  */
 package tacos.client;
 
-import tacos.debug.DebugLogger;
-
 /**
  *
  * @author Riremito
  */
 public class TacosCalcDamage {
 
-    public int seed_1_init = 0;
-    public int seed_2_init = 0;
-    public int seed_3_init = 0;
-    public int seed_1 = 0;
-    public int seed_2 = 0;
-    public int seed_3 = 0;
+    public int m_s1 = 0; // m_RndGenForCharacter.m_s1
+    public int m_s2 = 0; // m_RndGenForCharacter.m_s2
+    public int m_s3 = 0; // m_RndGenForCharacter.m_s3
 
     // CRand32::CRand32
     public TacosCalcDamage() {
         int time = (int) (System.currentTimeMillis() % 0x100000000L);
-        this.seed_1 = 0x45C82BE5 * time - 0x2D09A4AB;
-        this.seed_2 = 0x45C82BE5 * time - 0x2D09A4AB;
-        this.seed_3 = 0x45C82BE5 * time - 0x2D09A4AB;
+        int rand = 0x45C82BE5 * time - 0x2D09A4AB;
+        this.m_s1 = rand | 0x100000;
+        this.m_s2 = rand | 0x1000;
+        this.m_s3 = rand | 0x100;
     }
 
     // CRand32::Random
     public int random() {
-        int v1 = (this.seed_1 << 12) ^ (this.seed_1 >>> 19) ^ ((short) (this.seed_1 >>> 6) ^ (short) (this.seed_1 << 12)) & 0x1FFF;
-        int v2 = (16 * this.seed_2) ^ (this.seed_2 >>> 25) ^ ((byte) (16 * this.seed_2) ^ (byte) (this.seed_2 >>> 23)) & 0x7F;
-        int v3 = (this.seed_3 >>> 11) ^ (this.seed_3 << 17) ^ ((this.seed_3 >>> 8) ^ (this.seed_3 << 17)) & 0x1FFFFF;
-        this.seed_1 = v1;
-        this.seed_2 = v2;
-        this.seed_3 = v3;
+        int v1 = (this.m_s1 << 12) ^ (this.m_s1 >>> 19) ^ ((this.m_s1 >>> 6) ^ (this.m_s1 << 12)) & 0x1FFF;
+        int v2 = (this.m_s2 << 4) ^ (this.m_s2 >>> 25) ^ ((this.m_s2 << 4) ^ (this.m_s2 >>> 23)) & 0x7F;
+        int v3 = (this.m_s3 >>> 11) ^ (this.m_s3 << 17) ^ ((this.m_s3 >>> 8) ^ (this.m_s3 << 17)) & 0x1FFFFF;
+        this.m_s1 = v1;
+        this.m_s2 = v2;
+        this.m_s3 = v3;
         return v1 ^ v2 ^ v3;
     }
 
     // CalcDamage::SetSeed
-    public void setSeed() {
-        int v1 = random();
-        int v2 = random();
-        int v3 = random();
-        this.seed_1_init = v1;
-        this.seed_2_init = v2;
-        this.seed_3_init = v3;
-        this.seed_1 = v1 | 0x100000;
-        this.seed_2 = v2 | 0x1000;
-        this.seed_3 = v3 | 0x10;
+    public void setSeed(int v1, int v2, int v3) {
+        this.m_s1 = v1 | 0x100000;
+        this.m_s2 = v2 | 0x1000;
+        this.m_s3 = v3 | 0x10;
         setNextAttackCritical(false);
-        //DebugLogger.DebugLog(String.format("setSeed : %08X, %08X, %08X", v1, v2, v3));
     }
 
-    public long[] getRandoms(int size) {
-        long rand_array[] = new long[size];
+    public int[] getRandoms(int size) {
+        int rand_array[] = new int[size];
         for (int i = 0; i < size; i++) {
-            int v1 = this.seed_1;
-            int v2 = this.seed_2;
-            int v3 = this.seed_3;
             int rand = random();
-            rand_array[i] = Integer.toUnsignedLong(rand);
-            //DebugLogger.DebugLog(String.format("seed = %08X, %08X, %08X, ret = %08X", v1, v2, v3, rand));
+            rand_array[i] = rand;
         }
         return rand_array;
     }
@@ -91,13 +76,9 @@ public class TacosCalcDamage {
     }
 
     // teto's code.
-    public static double getRand(long rand, double f0, double f1) {
-        if (f0 == f1) {
-            return f0;
-        }
-        if (f0 < f1) {
-            return f0 + (double) (rand % 10_000_000) * (f1 - f0) / 9_999_999.0;
-        }
-        return f1 + (double) (rand % 10_000_000) * (f0 - f1) / 9_999_999.0;
+    public static double getRand(int rand, double f0, double f1) {
+        double range = Math.abs(f1 - f0);
+        double base = Math.min(f0, f1);
+        return base + (double) (Integer.toUnsignedLong(rand) % 10_000_000) * range / 9_999_999.0;
     }
 }

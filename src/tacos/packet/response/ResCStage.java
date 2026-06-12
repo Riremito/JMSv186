@@ -80,9 +80,9 @@ public class ResCStage {
             sp.Encode2(0); // nNotifierCheck
         }
         if (bCharacterData) {
-            sp.Encode4(chr.getCalcDamage().seed_1_init);
-            sp.Encode4(chr.getCalcDamage().seed_2_init);
-            sp.Encode4(chr.getCalcDamage().seed_3_init);
+            sp.Encode4(chr.getCalcDamage().m_s1);
+            sp.Encode4(chr.getCalcDamage().m_s2);
+            sp.Encode4(chr.getCalcDamage().m_s3);
             // キャラクター情報
             if (Version.GreaterOrEqual(Region.GMS, 126)) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x400000000000L));
@@ -171,9 +171,9 @@ public class ResCStage {
             sp.Encode2(0); // not 0, EncodeStr, EncodeStr x count
             // logged in
             if (bCharacterData) {
-                sp.Encode4(chr.getCalcDamage().seed_1_init); // seed x3
-                sp.Encode4(chr.getCalcDamage().seed_2_init);
-                sp.Encode4(chr.getCalcDamage().seed_3_init);
+                sp.Encode4(chr.getCalcDamage().m_s1); // seed x3
+                sp.Encode4(chr.getCalcDamage().m_s2);
+                sp.Encode4(chr.getCalcDamage().m_s3);
                 long datamask_1 = 0x00444200L | 0x20000000000L; // JMS302
                 if (Version.GreaterOrEqual(Region.JMS, 308)) {
                     datamask_1 = 0x00444200L | 0x80000000000L; // JMS308
@@ -278,5 +278,4 @@ public class ResCStage {
 
         return sp;
     }
-
 }
