@@ -258,7 +258,7 @@ public class ParseCUser_Attack {
             attack.ProperBulletPosition = cp.Decode2();
             attack.pnCashItemPos = cp.Decode2();
             attack.nShootRange0a = cp.Decode1(); // nShootRange0a, GetShootRange0 func, is AOE or not, TT/ Avenger = 41, Showdown = 0
-            if (0 < attack.nShootRange0a && !TacosConstants.is_shadow_meso(attack.nSkillID) /* SOUL ARROW CHECK.*/) {
+            if (!TacosConstants.is_shadow_meso(attack.nSkillID) /* SOUL ARROW CHECK.*/) {
                 IItem BulletItem;
                 if (0 < attack.pnCashItemPos) {
                     BulletItem = chr.getInventory(MapleInventoryType.CASH).getItem(attack.pnCashItemPos);
