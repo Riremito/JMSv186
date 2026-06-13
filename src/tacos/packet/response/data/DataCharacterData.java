@@ -102,10 +102,10 @@ public class DataCharacterData {
         if ((datamask & 124) != 0) {
             data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
         }
-        if ((datamask & 131072) != 0) {
+        if ((datamask & 0x20000) != 0) {
             data.Encode4(chr.getMonsterBookCover());
         }
-        if ((datamask & 65536) != 0) {
+        if ((datamask & 0x10000) != 0) {
             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
         }
         if (Version.GreaterOrEqual(Region.JMS, 308)) {
@@ -562,10 +562,10 @@ public class DataCharacterData {
                 if (Version.PreBB()) {
                     // not in KMS43
                     if (Version.GreaterOrEqual(Region.KMS, 55)) {
-                        if ((datamask & 131072) != 0) {
+                        if ((datamask & 0x20000) != 0) {
                             data.Encode4(chr.getMonsterBookCover());
                         }
-                        if ((datamask & 65536) != 0) {
+                        if ((datamask & 0x10000) != 0) {
                             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                         }
                     }
@@ -713,10 +713,10 @@ public class DataCharacterData {
             case TWMS: {
                 if (Version.PreBB()) {
                     if (Version.GreaterOrEqual(Region.TWMS, 94)) {
-                        if ((datamask & 131072) != 0) {
+                        if ((datamask & 0x20000) != 0) {
                             data.Encode4(chr.getMonsterBookCover());
                         }
-                        if ((datamask & 65536) != 0) {
+                        if ((datamask & 0x10000) != 0) {
                             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                         }
                         if ((datamask & 262144) != 0) {
@@ -801,10 +801,10 @@ public class DataCharacterData {
             }
             case CMS: {
                 if (Version.PreBB()) {
-                    if ((datamask & 131072) != 0) {
+                    if ((datamask & 0x20000) != 0) {
                         data.Encode4(chr.getMonsterBookCover());
                     }
-                    if ((datamask & 65536) != 0) {
+                    if ((datamask & 0x10000) != 0) {
                         data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
                     if ((datamask & 262144) != 0) {
@@ -882,10 +882,10 @@ public class DataCharacterData {
                 break;
             }
             case MSEA: {
-                if ((datamask & 131072) != 0) {
+                if ((datamask & 0x20000) != 0) {
                     data.Encode4(chr.getMonsterBookCover());
                 }
-                if ((datamask & 65536) != 0) {
+                if ((datamask & 0x10000) != 0) {
                     data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
                 if ((datamask & 262144) != 0) {
@@ -1078,10 +1078,10 @@ public class DataCharacterData {
                         data.Encode2(0);
                     }
                 } else if (Version.GreaterOrEqual(Region.GMS, 83)) {
-                    if ((datamask & 131072) != 0) {
+                    if ((datamask & 0x20000) != 0) {
                         data.Encode4(chr.getMonsterBookCover());
                     }
-                    if ((datamask & 65536) != 0) {
+                    if ((datamask & 0x10000) != 0) {
                         data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                     }
                     if ((datamask & 262144) != 0) {
@@ -1099,11 +1099,11 @@ public class DataCharacterData {
                         }
                     }
                 } else {
-                    if ((datamask & 131072) != 0) {
+                    if ((datamask & 0x20000) != 0) {
                         data.Encode4(chr.getMonsterBookCover());
                     }
                     if (Version.GreaterOrEqual(Region.GMS, 68)) {
-                        if ((datamask & 65536) != 0) {
+                        if ((datamask & 0x10000) != 0) {
                             data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                         }
                     }
@@ -1194,10 +1194,10 @@ public class DataCharacterData {
                 break;
             }
             case VMS: {
-                if ((datamask & 131072) != 0) {
+                if ((datamask & 0x20000) != 0) {
                     data.Encode4(chr.getMonsterBookCover());
                 }
-                if ((datamask & 65536) != 0) {
+                if ((datamask & 0x10000) != 0) {
                     data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
                 if ((datamask & 262144) != 0) {
@@ -1212,10 +1212,10 @@ public class DataCharacterData {
                 if ((datamask & 524288) != 0) {
                     data.Encode2(0);
                 }
-                if ((datamask & 131072) != 0) {
+                if ((datamask & 0x20000) != 0) {
                     data.Encode4(chr.getMonsterBookCover());
                 }
-                if ((datamask & 65536) != 0) {
+                if ((datamask & 0x10000) != 0) {
                     data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
                 break;
@@ -1240,10 +1240,10 @@ public class DataCharacterData {
                     break;
                 }
                 // PreBB
-                if ((datamask & 131072) != 0) {
+                if ((datamask & 0x20000) != 0) {
                     data.Encode4(chr.getMonsterBookCover());
                 }
-                if ((datamask & 65536) != 0) {
+                if ((datamask & 0x10000) != 0) {
                     data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
                 }
                 if ((datamask & 262144) != 0) {

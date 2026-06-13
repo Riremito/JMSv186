@@ -29,28 +29,45 @@ import tacos.packet.ServerPacket;
  */
 public class DataCUIUserInfo {
 
-    // CUIUserInfo::SetMultiPetInfo (GMS)
+    // CUIUserInfo::SetMultiPetInfo
+    public static byte[] SetMultiPetInfo_GMS95(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        // GMS does not have first pet checks inside this function.
+        MaplePet pet = chr.getPet(0);
+        data.Encode4(pet.getPetItemId()); // dwTemplateID
+        data.EncodeStr(pet.getName());
+        data.Encode1(pet.getLevel()); // nLevel
+        data.Encode2(pet.getCloseness()); // nTameness
+        data.Encode1(pet.getFullness()); // nRepleteness
+        data.Encode2(pet.getFlags()); // usPetSkill
+        data.Encode4(0); // dwTemplateID
+        data.Encode1(0); // next pet is null.
+        return data.getBytes();
+    }
+
     // CUIUserInfo::SetPetInfo (KMS)
     public static byte[] SetPetInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        //IItem inv_pet = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -114);
         for (int i = 0; i < 4; i++) {
             MaplePet pet = chr.getPet(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
             }
+
             if (Version.PostBB()) {
                 data.Encode4(i);
             }
+
             data.Encode4(pet.getPetItemId()); // dwTemplateID
             data.EncodeStr(pet.getName());
             data.Encode1(pet.getLevel()); // nLevel
-            data.Encode2(pet.getCloseness()); // pet closeness
-            data.Encode1(pet.getFullness()); // pet fullness
-            data.Encode2(pet.getFlags());
-            data.Encode4(/*inv_pet != null ? inv_pet.getItemId() : 0*/0); // nItemID
+            data.Encode2(pet.getCloseness()); // nTameness
+            data.Encode1(pet.getFullness()); // nRepleteness
+            data.Encode2(pet.getFlags()); // usPetSkill
+            data.Encode4(/*inv_pet != null ? inv_pet.getItemId() : 0*/0); // dwTemplateID
         }
 
         return data.getBytes();
@@ -62,9 +79,9 @@ public class DataCUIUserInfo {
         data.Encode4(pet.getPetItemId()); // dwTemplateID
         data.EncodeStr(pet.getName());
         data.Encode1(pet.getLevel()); // nLevel
-        data.Encode2(pet.getCloseness()); // pet closeness
-        data.Encode1(pet.getFullness()); // pet fullness
-        data.Encode2(0);
+        data.Encode2(pet.getCloseness()); // nTameness
+        data.Encode1(pet.getFullness()); // nRepleteness
+        data.Encode2(0); // usPetSkill
         data.Encode4(/*inv_pet != null ? inv_pet.getItemId() : 0*/0); // nItemID
         return data.getBytes();
     }

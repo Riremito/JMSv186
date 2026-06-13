@@ -763,20 +763,21 @@ public class ResCWvsContext {
                 break;
             }
         }
-        sp.Encode4(player.getId());
-        sp.Encode1(player.getLevel());
-        sp.Encode2(player.getJob());
+        sp.Encode4(player.getId()); // dwCharacterId
+        sp.Encode1(player.getLevel()); // nLevel
+        sp.Encode2(player.getJob()); // nJob
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
-            sp.Encode4(player.getFame());
+            sp.Encode4(player.getFame()); // nPOP
         } else {
-            sp.Encode2(player.getFame());
+            sp.Encode2(player.getFame()); // nPOP
         }
 
         if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
-            sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
+            sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // bIsMarried
         }
+
         String sCommunity = "-";
         String sAlliance = "";
         // Guild
@@ -799,28 +800,37 @@ public class ResCWvsContext {
         }
 
         sp.EncodeStr(sCommunity);
+
         if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
             sp.EncodeStr(sAlliance);
         }
+
         // Pre-BB
         if (Version.Between(Region.JMS, 180, 186)) {
             sp.Encode4(0);
             sp.Encode4(0);
         }
+
         if (Version.PostBB()) {
             sp.Encode1(0);
         }
+
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
-        sp.Encode1((player.getPet(0) != null) ? 1 : 0); // pet button clickable
+
+        sp.Encode1((player.getPet(0) != null) ? 1 : 0); // bPetActivated
         if (Version.LessOrEqual(Region.JMS, 131)) {
             // inlined?
             if (player.getPet(0) != null) {
                 sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo_JMS131(player, player.getPet(0)));
             }
+        } else if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            if (player.getPet(0) != null) {
+                sp.EncodeBuffer(DataCUIUserInfo.SetMultiPetInfo_GMS95(player));
+            }
         } else {
-            // CUIUserInfo::SetPetInfo
+            // CUIUserInfo::SetPetInfo, CUIUserInfo::SetMultiPetInfo
             sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo(player));
         }
 
@@ -848,14 +858,19 @@ public class ResCWvsContext {
                 sp.Encode4(wishlist[x]);
             }
         }
-        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
-            // Monster Book (JMS)
-            sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
+
+        if (ServerConfig.JMS147orLater()) {
+            if (Version.GreaterOrEqual(Region.GMS, 93)) {
+                // none.
+            } else {
+                sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
+            }
         }
+
         if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
-            sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
+            sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId()); // nEquipedMedalID
             List<Integer> medalQuests = new ArrayList<>();
             List<MapleQuestStatus> completed = player.getCompletedQuests();
             for (MapleQuestStatus q : completed) {
@@ -872,7 +887,7 @@ public class ResCWvsContext {
                 }
             }
             // JMS v180-v186, v187以降消滅
-            if (Version.PreBB() && (Region.IsJMS() || Version.GreaterOrEqual(Region.GMS, 91))) {
+            if (Version.Between(Region.JMS, 180, 186) || Version.GreaterOrEqual(Region.GMS, 91)) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
