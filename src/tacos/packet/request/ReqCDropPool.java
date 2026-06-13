@@ -120,7 +120,21 @@ public class ReqCDropPool {
             DebugLogger.ErrorLog("PickUp : isPickupBlocked");
             return false;
         }
-        if (useDropItem(chr.getClient(), mapitem.getItemId())) {
+        // monster book.
+        int drop_item_id = mapitem.getItemId();
+        if (GameConstants.isMonsterCard(drop_item_id)) {
+            MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+            // Item.wz/Consume/0238.img/02380000/info/spec/consumeOnPickup = 1
+            if (miip.isConsumeOnPickup(drop_item_id) == 1) {
+                chr.getMonsterBook().addCard(drop_item_id);
+                DebugLogger.InfoLog("PickUp : MonsterCard.");
+                removeDropItem(chr, mapitem);
+                chr.SendPacket(ResWrapper.DropPickUpMessage(drop_item_id, mapitem.getItem().getQuantity()));
+                chr.updateInv();
+                return true;
+            }
+        }
+        if (useDropItem(chr, mapitem.getItemId())) {
             removeDropItem(chr, mapitem);
             DebugLogger.InfoLog("PickUp : useItem");
             return true;
@@ -147,30 +161,29 @@ public class ReqCDropPool {
         chr.getMap().removeMapObject(mapitem);
     }
 
-    public static boolean useDropItem(final MapleClient c, final int id) {
+    public static boolean useDropItem(MapleCharacter chr, int id) {
         if (GameConstants.isUse(id)) {
-            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            final byte consumeval = ii.isConsumeOnPickup(id);
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            byte consumeval = ii.isConsumeOnPickup(id);
             if (consumeval > 0) {
                 if (consumeval == 2) {
-                    if (c.getPlayer().getParty() != null) {
-                        for (final MaplePartyCharacter pc : c.getPlayer().getParty().getMembers()) {
-                            final MapleCharacter chr = c.getPlayer().getMap().getCharacterById(pc.getId());
-                            if (chr != null) {
-                                ii.getItemEffect(id).applyTo(chr);
+                    if (chr.getParty() != null) {
+                        for (MaplePartyCharacter pc : chr.getParty().getMembers()) {
+                            MapleCharacter chr_to = chr.getMap().getCharacterById(pc.getId());
+                            if (chr_to != null) {
+                                ii.getItemEffect(id).applyTo(chr_to);
                             }
                         }
                     } else {
-                        ii.getItemEffect(id).applyTo(c.getPlayer());
+                        ii.getItemEffect(id).applyTo(chr);
                     }
                 } else {
-                    ii.getItemEffect(id).applyTo(c.getPlayer());
+                    ii.getItemEffect(id).applyTo(chr);
                 }
-                c.SendPacket(ResWrapper.DropPickUpMessage(id, (byte) 1));
+                chr.SendPacket(ResWrapper.DropPickUpMessage(id, (byte) 1));
                 return true;
             }
         }
         return false;
     }
-
 }

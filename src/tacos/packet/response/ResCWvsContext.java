@@ -856,7 +856,7 @@ public class ResCWvsContext {
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
-            List<Integer> medalQuests = new ArrayList<Integer>();
+            List<Integer> medalQuests = new ArrayList<>();
             List<MapleQuestStatus> completed = player.getCompletedQuests();
             for (MapleQuestStatus q : completed) {
                 if (q.getQuest().getMedalItem() > 0 && GameConstants.getInventoryType(q.getQuest().getMedalItem()) == MapleInventoryType.EQUIP) {

@@ -97,15 +97,15 @@ public enum OpsUserEffect {
         return UNKNOWN;
     }
 
-    private static void reset() {
-        for (final OpsUserEffect ops : OpsUserEffect.values()) {
-            ops.set(-1);
+    public static void clear() {
+        for (OpsUserEffect ops : values()) {
+            ops.set(UNKNOWN.get());
         }
     }
 
     public static void init() {
         if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 147)) {
-            reset();
+            clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
@@ -118,10 +118,12 @@ public enum OpsUserEffect {
             UserEffect_QuestComplete.set(9);
             UserEffect_IncDecHPEffect.set(10);
             UserEffect_BuffItemEffect.set(11);
+            UserEffect_SquibEffect.set(12);
+            UserEffect_MonsterBookCardGet.set(13);
             return;
         }
-
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
@@ -175,7 +177,7 @@ public enum OpsUserEffect {
         }
 
         if (Version.GreaterOrEqual(Region.JMS, 187)) {
-            reset();
+            clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
@@ -192,6 +194,7 @@ public enum OpsUserEffect {
             return;
         }
         if (Version.GreaterOrEqual(Region.JMS, 186)) {
+            clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
@@ -206,6 +209,7 @@ public enum OpsUserEffect {
             return;
         }
         if (Version.Equal(Region.THMS, 87)) {
+            clear();
             UserEffect_LevelUp.set(0x0);
             UserEffect_SkillUse.set(0x1);
             UserEffect_SkillAffected.set(0x2);

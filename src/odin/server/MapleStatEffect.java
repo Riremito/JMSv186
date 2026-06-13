@@ -410,8 +410,6 @@ public class MapleStatEffect implements Serializable {
         if (expinc != 0) {
             applyto.gainExp(expinc, true, true, false);
             applyto.getClient().SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
-        } else if (GameConstants.isMonsterCard(sourceid)) {
-            applyto.getMonsterBook().addCard(applyto.getClient(), sourceid);
         } else if (isSpiritClaw()) {
             MapleInventory use = applyto.getInventory(MapleInventoryType.USE);
             IItem item;

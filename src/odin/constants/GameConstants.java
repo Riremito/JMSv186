@@ -356,7 +356,7 @@ public class GameConstants {
         return id / 10000 == 210;
     }
 
-    public static boolean isMonsterCard(final int id) {
+    public static boolean isMonsterCard(int id) {
         return id / 10000 == 238;
     }
 

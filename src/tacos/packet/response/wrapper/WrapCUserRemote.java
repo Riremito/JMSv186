@@ -18,7 +18,7 @@
  */
 package tacos.packet.response.wrapper;
 
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.ops.arg.ArgUserEffect;
@@ -30,14 +30,14 @@ import tacos.packet.response.ResCUserRemote;
  */
 public class WrapCUserRemote {
 
-    public static ServerPacket EffectRemote(OpsUserEffect ops, MapleCharacter chr) {
+    public static ServerPacket EffectRemote(OpsUserEffect ops, TacosCharacter chr) {
         ArgUserEffect arg = new ArgUserEffect();
         arg.ops = ops;
         arg.chr = chr;
         return ResCUserRemote.UserEffectRemote(arg);
     }
 
-    public static ServerPacket EffectRemote(OpsUserEffect ops, MapleCharacter chr, int skill_id) {
+    public static ServerPacket EffectRemote(OpsUserEffect ops, TacosCharacter chr, int skill_id) {
         ArgUserEffect arg = new ArgUserEffect();
         arg.ops = ops;
         arg.chr = chr;
@@ -45,7 +45,7 @@ public class WrapCUserRemote {
         return ResCUserRemote.UserEffectRemote(arg);
     }
 
-    public static ServerPacket EffectRemote(OpsUserEffect ops, MapleCharacter chr, int skill_id, boolean skill_on) {
+    public static ServerPacket EffectRemote(OpsUserEffect ops, TacosCharacter chr, int skill_id, boolean skill_on) {
         ArgUserEffect arg = new ArgUserEffect();
         arg.ops = ops;
         arg.chr = chr;

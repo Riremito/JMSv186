@@ -274,7 +274,9 @@ public class ReqCUser_Pet {
         } else {
             if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItemId()) || mapitem.getItemId() / 10000 == 291) {
                 chr.updateInv();
-            } else if (ReqCDropPool.useDropItem(client, mapitem.getItemId())) {
+                return;
+            }
+            if (ReqCDropPool.useDropItem(chr, mapitem.getItemId())) {
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             } else if (MapleInventoryManipulator.checkSpace(client, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
                 MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
@@ -282,5 +284,4 @@ public class ReqCUser_Pet {
             }
         }
     }
-
 }

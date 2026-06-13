@@ -28,7 +28,6 @@ import odin.client.BuddylistEntry;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MonsterBook;
 import odin.client.PlayerStats;
 import odin.client.SkillEntry;
 import odin.client.SkillFactory;
@@ -92,7 +91,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private int viewRangeSq = 1600 * 1600;
     private TacosForcedStat forcedStat = new TacosForcedStat();
     protected TacosKeyLayout keylayout = new TacosKeyLayout();
-    protected MonsterBook monsterbook = null;
     private FreeMarketPortal portal_fm = new FreeMarketPortal();
     private ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
     private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
@@ -202,14 +200,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         } else {
             this.keylayout.remove(key);
         }
-    }
-
-    public MonsterBook getMonsterBook() {
-        return this.monsterbook;
-    }
-
-    public void setMonsterBook(MonsterBook monsterbook) {
-        this.monsterbook = monsterbook;
     }
 
     @Override
@@ -1075,6 +1065,22 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public TacosCriticalRate getCriticalRate() {
         return this.critical_rate;
+    }
+
+    // monster book.
+    private TacosMonsterBook monster_book = new TacosMonsterBook(this);
+    protected int bookCover = 0;
+
+    public TacosMonsterBook getMonsterBook() {
+        return this.monster_book;
+    }
+
+    public void setMonsterBookCover(int bookCover) {
+        this.bookCover = bookCover;
+    }
+
+    public int getMonsterBookCover() {
+        return bookCover;
     }
 
     // unofficial.

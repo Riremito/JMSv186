@@ -117,6 +117,7 @@ import tacos.database.query.DQ_Characters;
 import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Inventoryslot;
 import tacos.database.query.DQ_KeyMap;
+import tacos.database.query.DQ_MonsterBook;
 import tacos.database.query.DQ_Mountdata;
 import tacos.database.query.DQ_Notes;
 import tacos.database.query.DQ_Queststatus;
@@ -142,7 +143,7 @@ public class MapleCharacter extends TacosCharacter {
     private long lastfametime, keydown_skill;
     private byte dojoRecord, fairyExp = 10;
     private int mulung_energy, availableCP, totalCP, hpApUsed;
-    private int bookCover, dojo,
+    private int dojo,
             fallcounter = 0, maplePoint, nexonPoint, chair, points, vpoints,
             linkMid = 0, battleshipHP = 0;
     private Point old = new Point(0, 0);
@@ -327,7 +328,7 @@ public class MapleCharacter extends TacosCharacter {
             pse.close();
 
             if (channelserver) {
-                ret.monsterbook = MonsterBook.loadCards(character_id);
+                DQ_MonsterBook.load(ret);
 
                 ps = con.prepareStatement("SELECT * FROM inventoryslot where characterid = ?");
                 ps.setInt(1, character_id);
@@ -598,6 +599,7 @@ public class MapleCharacter extends TacosCharacter {
         if (storage != null) {
             storage.update();
         }
+        DQ_MonsterBook.save(this);
 
         Connection con = DatabaseConnection.getConnection();
 
@@ -805,7 +807,6 @@ public class MapleCharacter extends TacosCharacter {
             }
             DQ_KeyMap.saveKeys(this);
             mount.saveMount(id);
-            monsterbook.saveCards(id);
 
             deleteWhereCharacterId(con, "DELETE FROM wishlist WHERE characterid = ?");
             for (int i = 0; i < getWishlistSize(); i++) {
@@ -2955,14 +2956,6 @@ public class MapleCharacter extends TacosCharacter {
         return false;
     }
 
-    public void setMonsterBookCover(int bookCover) {
-        this.bookCover = bookCover;
-    }
-
-    public int getMonsterBookCover() {
-        return bookCover;
-    }
-
     public void dropMessage(int type, String message) {
         if (type == -1) {
             client.getSession().write(ResCWvsContext.ScriptProgressMessage(message));
@@ -3850,7 +3843,6 @@ public class MapleCharacter extends TacosCharacter {
         ret.face = face;
         ret.skinColor = skinColor;
         ret.bookCover = bookCover;
-        ret.monsterbook = monsterbook;
         ret.mount = mount;
         ret.gmLevel = gmLevel;
         ret.gender = gender;

@@ -985,7 +985,7 @@ public class MapleItemInformationProvider {
         return lvl;
     }
 
-    public final byte isConsumeOnPickup(final int itemId) {
+    public byte isConsumeOnPickup(int itemId) {
         // 0 = not, 1 = consume on pickup, 2 = consume + party
         if (consumeOnPickupCache.containsKey(itemId)) {
             return consumeOnPickupCache.get(itemId);
