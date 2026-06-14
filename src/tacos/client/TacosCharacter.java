@@ -1040,47 +1040,38 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     // buff.
-    private TacosBuff buff = new TacosBuff(this);
+    private final TacosBuff buff = new TacosBuff(this);
 
     public TacosBuff getBuff() {
         return this.buff;
     }
 
     // cool time.
-    private TacosCoolTime skill_ct = new TacosCoolTime(this);
+    private final TacosCoolTime skill_ct = new TacosCoolTime(this);
 
     public TacosCoolTime getCoolTime() {
         return this.skill_ct;
     }
 
     // rand
-    private TacosCalcDamage calc_damage = new TacosCalcDamage();
+    private final TacosCalcDamage calc_damage = new TacosCalcDamage();
 
     public TacosCalcDamage getCalcDamage() {
         return this.calc_damage;
     }
 
     // critical
-    private TacosCriticalRate critical_rate = new TacosCriticalRate(this);
+    private final TacosCriticalRate critical_rate = new TacosCriticalRate(this);
 
     public TacosCriticalRate getCriticalRate() {
         return this.critical_rate;
     }
 
     // monster book.
-    private TacosMonsterBook monster_book = new TacosMonsterBook(this);
-    protected int bookCover = 0;
+    private final TacosMonsterBook monster_book = new TacosMonsterBook(this);
 
     public TacosMonsterBook getMonsterBook() {
         return this.monster_book;
-    }
-
-    public void setMonsterBookCover(int bookCover) {
-        this.bookCover = bookCover;
-    }
-
-    public int getMonsterBookCover() {
-        return bookCover;
     }
 
     // unofficial.

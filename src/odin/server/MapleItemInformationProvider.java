@@ -915,15 +915,15 @@ public class MapleItemInformationProvider {
         return mobPairs;
     }
 
-    public final int getCardMobId(final int id) {
+    public int getCardMobId(int id) {
         if (id == 0) {
             return 0;
         }
         if (monsterBookID.containsKey(id)) {
             return monsterBookID.get(id);
         }
-        final IMapleData data = getItemData(id);
-        final int monsterid = WzDataTool.getIntPath("info/mob", data, 0);
+        IMapleData data = getItemData(id);
+        int monsterid = WzDataTool.getIntPath("info/mob", data, 0);
 
         if (monsterid == 0) { // Hack.
             return 0;

@@ -68,6 +68,7 @@ import tacos.client.TacosBuff;
 import tacos.client.TacosBuff.Buff;
 import tacos.odin.OdinPair;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosMonsterBook;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
@@ -863,7 +864,8 @@ public class ResCWvsContext {
             if (Version.GreaterOrEqual(Region.GMS, 93)) {
                 // none.
             } else {
-                sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
+                // MonsterBookInfo::Decode
+                sp.EncodeBuffer(MonsterBookInfo_Encode(player.getMonsterBook()));
             }
         }
 
@@ -912,6 +914,18 @@ public class ResCWvsContext {
 
         }
         return sp;
+    }
+
+    // MonsterBookInfo_Encode::Decode
+    public static byte[] MonsterBookInfo_Encode(TacosMonsterBook mb) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(mb.getLevel()); // nLevel
+        data.Encode4(mb.getNormal()); // nNormal
+        data.Encode4(mb.getSpecial()); // nSpecial
+        data.Encode4(mb.getTotal()); // nTotal
+        data.Encode4(mb.getCoverMobID()); // nCoverMobID
+        return data.getBytes();
     }
 
     public static ServerPacket PartyResult(OpsParty ops) {
@@ -1504,7 +1518,7 @@ public class ResCWvsContext {
     public static ServerPacket MonsterBookSetCover(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCover);
 
-        sp.Encode4(chr.getMonsterBookCover());
+        sp.Encode4(chr.getMonsterBook().getCover());
         return sp;
     }
 

@@ -1311,7 +1311,7 @@ public class ReqCUser {
     public static boolean OnUserMonsterBookSetCover(MapleCharacter chr, ClientPacket cp) {
         int nMonsterBookCoverID = cp.Decode4();
 
-        chr.setMonsterBookCover(nMonsterBookCoverID);
+        chr.getMonsterBook().setCover(nMonsterBookCoverID);
         chr.SendPacket(ResCWvsContext.MonsterBookSetCover(chr));
         return true;
     }

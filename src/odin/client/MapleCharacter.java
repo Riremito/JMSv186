@@ -257,6 +257,10 @@ public class MapleCharacter extends TacosCharacter {
         ret.client = client;
         ret.id = character_id;
 
+        if (channelserver) {
+            DQ_MonsterBook.load(ret);
+        }
+
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = null;
         PreparedStatement pse = null;
@@ -282,7 +286,10 @@ public class MapleCharacter extends TacosCharacter {
                         ret.party = party;
                     }
                 }
-                ret.bookCover = rs.getInt("monsterbookcover");
+
+                int cover = rs.getInt("monsterbookcover");
+                ret.getMonsterBook().setCover(cover);
+
                 ret.dojo = rs.getInt("dojo_pts");
                 ret.dojoRecord = rs.getByte("dojoRecord");
                 final String[] pets = rs.getString("pets").split(",");
@@ -328,8 +335,6 @@ public class MapleCharacter extends TacosCharacter {
             pse.close();
 
             if (channelserver) {
-                DQ_MonsterBook.load(ret);
-
                 ps = con.prepareStatement("SELECT * FROM inventoryslot where characterid = ?");
                 ps.setInt(1, character_id);
                 rs = ps.executeQuery();
@@ -656,7 +661,7 @@ public class MapleCharacter extends TacosCharacter {
             }
             ps.setInt(24, party != null ? party.getId() : -1);
             ps.setShort(25, (byte) buddylist.getCapacity());
-            ps.setInt(26, bookCover);
+            ps.setInt(26, getMonsterBook().getCover());
             ps.setInt(27, dojo);
             ps.setInt(28, dojoRecord);
             final StringBuilder petz = new StringBuilder();
@@ -3842,7 +3847,6 @@ public class MapleCharacter extends TacosCharacter {
         ret.hair = hair;
         ret.face = face;
         ret.skinColor = skinColor;
-        ret.bookCover = bookCover;
         ret.mount = mount;
         ret.gmLevel = gmLevel;
         ret.gender = gender;
