@@ -166,7 +166,7 @@ public class TacosReward {
 
             // モンスターカード
             if (GameConstants.isMonsterCard(de.itemId)) {
-                if (chr.getMonsterBook().getLevel(de.itemId) >= 5) {
+                if (chr.getMonsterBook().getCardCount(de.itemId) >= 5) {
                     continue;
                 }
             }

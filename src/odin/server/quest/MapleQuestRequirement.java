@@ -217,7 +217,7 @@ public class MapleQuestRequirement {
                 }
                 return false;
             case mbmin:
-                if (chr.getMonsterBook().getTotalCards() >= intStore) {
+                if (chr.getMonsterBook().getTotal() >= intStore) {
                     return true;
                 }
                 return false;
@@ -225,7 +225,7 @@ public class MapleQuestRequirement {
                 for (OdinPair<Integer, Integer> a : dataStore) {
                     final int cardId = a.getLeft();
                     final int killReq = a.getRight();
-                    if (chr.getMonsterBook().getLevelByCard(cardId) < killReq) {
+                    if (chr.getMonsterBook().getCardCount(cardId) < killReq) {
                         return false;
                     }
                 }

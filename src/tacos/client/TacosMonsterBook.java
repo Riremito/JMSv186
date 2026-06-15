@@ -23,19 +23,13 @@ import java.util.Map;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import tacos.debug.DebugLogger;
-import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 
 /**
  *
  * @author Riremito
  */
 public class TacosMonsterBook {
-    
+
     private final TacosCharacter chr;
     private int nMonsterBookCoverID = 0;
     private final LinkedHashMap<Integer, Integer> cards;
@@ -45,37 +39,37 @@ public class TacosMonsterBook {
     private int nSpecial = 0;
     private int nTotal = 0;
     private int nCoverMobID = 0;
-    
+
     public TacosMonsterBook(TacosCharacter chr) {
         this.chr = chr;
         this.nMonsterBookCoverID = 0;
         this.cards = new LinkedHashMap<>();
     }
-    
+
     public int getLevel() {
         return this.nLevel;
     }
-    
+
     public int getNormal() {
         return this.nNormal;
     }
-    
+
     public int getSpecial() {
         return this.nSpecial;
     }
-    
+
     public int getTotal() {
         return this.nTotal;
     }
-    
+
     public int getCoverMobID() {
         return this.nCoverMobID;
     }
-    
+
     public int getCover() {
         return this.nMonsterBookCoverID;
     }
-    
+
     public boolean setCover(int nMonsterBookCoverID) {
         if (nMonsterBookCoverID != 0) {
             int mob_id = MapleItemInformationProvider.getInstance().getCardMobId(nMonsterBookCoverID);
@@ -85,97 +79,62 @@ public class TacosMonsterBook {
             }
             this.nCoverMobID = mob_id;
         }
-        
+
         this.nMonsterBookCoverID = nMonsterBookCoverID;
         return true;
     }
-    
+
     public LinkedHashMap<Integer, Integer> getCards() {
         return this.cards;
     }
-    
+
     public void update() {
-        this.nSpecial = 0;
+        this.nLevel = 1;
         this.nNormal = 0;
+        this.nSpecial = 0;
+        this.nTotal = this.cards.size();
+
         for (Map.Entry<Integer, Integer> card : this.cards.entrySet()) {
+            if (card.getValue() <= 0) {
+                continue;
+            }
             if (GameConstants.isSpecialCard(card.getKey())) {
-                this.nSpecial += card.getValue();
+                this.nSpecial++;
             } else {
-                this.nNormal += card.getValue();
+                this.nNormal++;
             }
         }
-        this.nTotal = this.nNormal + this.nSpecial;
-        this.nLevel = 8;
-        
-        for (int i = 0; i < 8; i++) {
-            if (this.nTotal <= GameConstants.getBookLevel(i)) {
-                this.nLevel = (i + 1);
+
+        // MonsterBookInfo::GetBookLevel
+        int total_cards = 0;
+        for (int book_level = 1; book_level < 8; book_level++) {
+            total_cards += (book_level * 10);
+            if (this.nTotal <= total_cards) {
                 break;
             }
+            this.nLevel++;
         }
-    }
-    
-    public int getLevel(int cardid) {
-        if (cards.containsKey(cardid)) {
-            return cards.get(cardid);
-        }
-        return 0;
-    }
-    
-    public int getTotalCards() {
-        return nSpecial + nNormal;
-    }
-    
-    public int getLevelByCard(int cardid) {
-        return cards.get(cardid) == null ? 0 : cards.get(cardid);
     }
 
-    // pakcet
-    public byte[] addCardPacket() {
-        ServerPacket data = new ServerPacket();
-        
-        data.Encode2(cards.size());
-        
-        for (Map.Entry<Integer, Integer> all : cards.entrySet()) {
-            data.Encode2(GameConstants.getCardShortId(all.getKey())); // Id
-            data.Encode1(all.getValue()); // Level
+    public int getCardCount(int nCardID) {
+        Integer nCardCount = cards.get(nCardID);
+        if (nCardCount == null) {
+            return 0;
         }
-        
-        return data.getBytes();
+        return nCardCount;
     }
-    
-    public void addCard(int cardid) {
+
+    public boolean addCard(int nCardID) {
         changed = true;
-        this.chr.getMap().broadcastMessage(this.chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, this.chr), false);
-        
-        if (cards.containsKey(cardid)) {
-            final int levels = cards.get(cardid);
-            if (levels >= 5) {
-                this.chr.SendPacket(ResCWvsContext.MonsterBookSetCard(true, cardid, levels));
-            } else {
-                if (GameConstants.isSpecialCard(cardid)) {
-                    nSpecial += 1;
-                } else {
-                    nNormal += 1;
-                }
-                this.chr.SendPacket(ResCWvsContext.MonsterBookSetCard(false, cardid, 5));
-                this.chr.SendPacket(ResWrapper.showGainCard(cardid));
-                this.chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
-                cards.put(cardid, 5);
-                update();
-            }
-            return;
+
+        int nCardCount = getCardCount(nCardID) + 1;
+
+        if (6 <= nCardCount) {
+            return false;
         }
-        if (GameConstants.isSpecialCard(cardid)) {
-            nSpecial += 1;
-        } else {
-            nNormal += 1;
-        }
-        // New card
-        cards.put(cardid, 5);
-        this.chr.SendPacket(ResCWvsContext.MonsterBookSetCard(false, cardid, 5));
-        this.chr.SendPacket(ResWrapper.showGainCard(cardid));
-        this.chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
+
+        this.cards.put(nCardID, nCardCount);
         update();
+        return true;
     }
 }

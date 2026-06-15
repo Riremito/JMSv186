@@ -35,10 +35,6 @@ public class GameConstants {
         return mountexp[level - 1];
     }
 
-    public static int getBookLevel(final int level) {
-        return (int) ((5 * level) * (level + 1));
-    }
-
     public static int getTimelessRequiredEXP(final int level) {
         return 70 + (level * 10);
     }

@@ -106,7 +106,7 @@ public class DataCharacterData {
             data.Encode4(chr.getMonsterBook().getCover());
         }
         if ((datamask & 0x10000) != 0) {
-            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
         }
         if (Version.GreaterOrEqual(Region.JMS, 308)) {
             // JMS308
@@ -566,7 +566,7 @@ public class DataCharacterData {
                             data.Encode4(chr.getMonsterBook().getCover());
                         }
                         if ((datamask & 0x10000) != 0) {
-                            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                         }
                     }
                 }
@@ -717,7 +717,7 @@ public class DataCharacterData {
                             data.Encode4(chr.getMonsterBook().getCover());
                         }
                         if ((datamask & 0x10000) != 0) {
-                            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                         }
                         if ((datamask & 262144) != 0) {
                             data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -805,7 +805,7 @@ public class DataCharacterData {
                         data.Encode4(chr.getMonsterBook().getCover());
                     }
                     if ((datamask & 0x10000) != 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                        data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                     }
                     if ((datamask & 262144) != 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -886,7 +886,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                 }
                 if ((datamask & 262144) != 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -1082,7 +1082,7 @@ public class DataCharacterData {
                         data.Encode4(chr.getMonsterBook().getCover());
                     }
                     if ((datamask & 0x10000) != 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                        data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                     }
                     if ((datamask & 262144) != 0) {
                         data.Encode2(0);
@@ -1104,7 +1104,7 @@ public class DataCharacterData {
                     }
                     if (Version.GreaterOrEqual(Region.GMS, 68)) {
                         if ((datamask & 0x10000) != 0) {
-                            data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                         }
                     }
                     if (Version.GreaterOrEqual(Region.GMS, 65)) {
@@ -1198,7 +1198,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                 }
                 if ((datamask & 262144) != 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -1216,7 +1216,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                 }
                 break;
             }
@@ -1244,7 +1244,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                 }
                 if ((datamask & 262144) != 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -1283,9 +1283,9 @@ public class DataCharacterData {
                     if ((datamask & 0x20000) != 0) {
                         data.Encode4(chr.getMonsterBook().getCover());
                     }
-                    // 0x10000 JMS [addMonsterBookInfo] v165-v194
+                    // 0x10000 JMS [GW_MonsterBookCode_Encode] v165-v194
                     if ((datamask & 0x10000) != 0) {
-                        data.EncodeBuffer(Structure.addMonsterBookInfo(chr));
+                        data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
                     }
                 }
                 if (Version.Equal(Region.JMST, 110)) {
@@ -1323,7 +1323,7 @@ public class DataCharacterData {
                         }
                     }
                 }
-                // v188-v194
+                // v187-v194
                 if (Version.PostBB()) {
                     // 0x200000
                     if ((datamask & 0x200000) != 0 && (chr.getJob() / 100 == 33)) {
@@ -1338,7 +1338,7 @@ public class DataCharacterData {
                             data.Encode2(0);
                         }
                     } else {
-                        // 0x800000
+                        // 0x800000, VisitorQuestLog
                         if ((datamask & 0x800000) != 0) {
                             data.Encode2(0); // not 0, Encode2, Encode2
                         }

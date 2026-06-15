@@ -52,6 +52,7 @@ public class DQ_MonsterBook {
             return false;
         }
 
+        chr.getMonsterBook().update();
         return true;
     }
 

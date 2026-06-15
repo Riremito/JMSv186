@@ -916,7 +916,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    // MonsterBookInfo_Encode::Decode
+    // MonsterBookInfo::Decode
     public static byte[] MonsterBookInfo_Encode(TacosMonsterBook mb) {
         ServerPacket data = new ServerPacket();
 
@@ -1503,14 +1503,15 @@ public class ResCWvsContext {
     // CWvsContext::OnImitatedNPCData
     // CWvsContext::OnLimitedNPCDisableInfo
     // CWvsContext::OnMonsterBookSetCard
-    public static ServerPacket MonsterBookSetCard(boolean full, int cardid, int level) {
+    public static ServerPacket MonsterBookSetCard(boolean is_added, int nCardID, int nCardCount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCard);
 
-        sp.Encode1(full ? 0 : 1);
-        if (!full) {
-            sp.Encode4(cardid);
-            sp.Encode4(level);
+        sp.Encode1(is_added ? 1 : 0);
+        if (is_added) {
+            sp.Encode4(nCardID); // nCardID
+            sp.Encode4(nCardCount); // nCardCount
         }
+
         return sp;
     }
 

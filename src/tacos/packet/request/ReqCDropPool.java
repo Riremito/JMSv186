@@ -36,8 +36,12 @@ import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.WrapCUserLocal;
+import tacos.packet.response.wrapper.WrapCUserRemote;
 
 /**
  *
@@ -126,8 +130,16 @@ public class ReqCDropPool {
             MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
             // Item.wz/Consume/0238.img/02380000/info/spec/consumeOnPickup = 1
             if (miip.isConsumeOnPickup(drop_item_id) == 1) {
-                chr.getMonsterBook().addCard(drop_item_id);
-                DebugLogger.InfoLog("PickUp : MonsterCard.");
+                if (chr.getMonsterBook().addCard(drop_item_id)) {
+                    int nCardID = drop_item_id;
+                    int nCardCount = chr.getMonsterBook().getCardCount(nCardID);
+                    chr.SendPacket(ResCWvsContext.MonsterBookSetCard(true, nCardID, nCardCount));
+                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
+                    chr.SendPacket(ResWrapper.showGainCard(nCardID));
+                    chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, chr), false);
+                } else {
+                    chr.SendPacket(ResCWvsContext.MonsterBookSetCard(false, 0, 0));
+                }
                 removeDropItem(chr, mapitem);
                 chr.SendPacket(ResWrapper.DropPickUpMessage(drop_item_id, mapitem.getItem().getQuantity()));
                 chr.updateInv();

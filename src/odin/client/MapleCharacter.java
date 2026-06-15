@@ -2247,10 +2247,6 @@ public class MapleCharacter extends TacosCharacter {
 
         // レベルアップ時にDBへ反映する
         saveToDB(false, false);
-        //if (map.getForceMove() > 0 && map.getForceMove() <= getLevel()) {
-        //    changeMap(map.getReturnMap(), map.getReturnMap().getPortal(0));
-        //    dropMessage(-1, "You have been expelled from the map.");
-        //}
     }
 
     public void updateMacros(int position, SkillMacro updateMacro) {
