@@ -20,8 +20,8 @@ package tacos.client;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 
 /**
@@ -30,18 +30,15 @@ import tacos.debug.DebugLogger;
  */
 public class TacosMonsterBook {
 
-    private final TacosCharacter chr;
     private int nMonsterBookCoverID = 0;
     private final LinkedHashMap<Integer, Integer> cards;
-    private boolean changed = false;
     private int nLevel = 1;
     private int nNormal = 0;
     private int nSpecial = 0;
     private int nTotal = 0;
     private int nCoverMobID = 0;
 
-    public TacosMonsterBook(TacosCharacter chr) {
-        this.chr = chr;
+    public TacosMonsterBook() {
         this.nMonsterBookCoverID = 0;
         this.cards = new LinkedHashMap<>();
     }
@@ -98,7 +95,8 @@ public class TacosMonsterBook {
             if (card.getValue() <= 0) {
                 continue;
             }
-            if (GameConstants.isSpecialCard(card.getKey())) {
+            // boss monster or not.
+            if (TacosConstants.is_special_monster_card(card.getKey())) {
                 this.nSpecial++;
             } else {
                 this.nNormal++;
@@ -124,17 +122,28 @@ public class TacosMonsterBook {
         return nCardCount;
     }
 
-    public boolean addCard(int nCardID) {
-        changed = true;
+    public boolean add(int nCardID, int quantity) {
+        return TacosMonsterBook.this.add(nCardID, quantity, true);
+    }
 
-        int nCardCount = getCardCount(nCardID) + 1;
-
-        if (6 <= nCardCount) {
+    public boolean add(int nCardID, int quantity, boolean auto_update) {
+        if (!TacosConstants.is_monster_card(nCardID)) {
             return false;
         }
 
+        int nCardCount = getCardCount(nCardID);
+        if (5 <= nCardCount) {
+            return false;
+        }
+
+        nCardCount += quantity;
+        nCardCount = Math.min(nCardCount, 5);
+
         this.cards.put(nCardID, nCardCount);
-        update();
+        if (auto_update) {
+            update();
+        }
+
         return true;
     }
 }

@@ -34,6 +34,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsUserEffect;
@@ -126,11 +127,11 @@ public class ReqCDropPool {
         }
         // monster book.
         int drop_item_id = mapitem.getItemId();
-        if (GameConstants.isMonsterCard(drop_item_id)) {
+        if (TacosConstants.is_monster_card(drop_item_id)) {
             MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
             // Item.wz/Consume/0238.img/02380000/info/spec/consumeOnPickup = 1
             if (miip.isConsumeOnPickup(drop_item_id) == 1) {
-                if (chr.getMonsterBook().addCard(drop_item_id)) {
+                if (chr.getMonsterBook().add(drop_item_id, mapitem.getItem().getQuantity())) {
                     int nCardID = drop_item_id;
                     int nCardCount = chr.getMonsterBook().getCardCount(nCardID);
                     chr.SendPacket(ResCWvsContext.MonsterBookSetCard(true, nCardID, nCardCount));

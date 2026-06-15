@@ -1068,7 +1068,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     // monster book.
-    private final TacosMonsterBook monster_book = new TacosMonsterBook(this);
+    private final TacosMonsterBook monster_book = new TacosMonsterBook();
 
     public TacosMonsterBook getMonsterBook() {
         return this.monster_book;

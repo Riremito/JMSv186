@@ -352,18 +352,6 @@ public class GameConstants {
         return id / 10000 == 210;
     }
 
-    public static boolean isMonsterCard(int id) {
-        return id / 10000 == 238;
-    }
-
-    public static boolean isSpecialCard(final int id) {
-        return id / 1000 >= 2388;
-    }
-
-    public static int getCardShortId(final int id) {
-        return id % 10000;
-    }
-
     public static boolean isGem(final int id) {
         return id >= 4250000 && id <= 4251402;
     }

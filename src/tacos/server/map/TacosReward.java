@@ -36,6 +36,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MonsterDropEntry;
 import odin.server.maps.MapleMap;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.unofficial.CustomMonsterBookDrop;
 import tacos.wz.ServerImg;
@@ -165,8 +166,8 @@ public class TacosReward {
             }
 
             // モンスターカード
-            if (GameConstants.isMonsterCard(de.itemId)) {
-                if (chr.getMonsterBook().getCardCount(de.itemId) >= 5) {
+            if (TacosConstants.is_monster_card(de.itemId)) {
+                if (5 <= chr.getMonsterBook().getCardCount(de.itemId)) {
                     continue;
                 }
             }

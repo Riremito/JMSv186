@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.struct.Structure;
 import tacos.shared.SharedDate;
@@ -106,7 +108,7 @@ public class DataCharacterData {
             data.Encode4(chr.getMonsterBook().getCover());
         }
         if ((datamask & 0x10000) != 0) {
-            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+            data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
         }
         if (Version.GreaterOrEqual(Region.JMS, 308)) {
             // JMS308
@@ -566,7 +568,7 @@ public class DataCharacterData {
                             data.Encode4(chr.getMonsterBook().getCover());
                         }
                         if ((datamask & 0x10000) != 0) {
-                            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                            data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                         }
                     }
                 }
@@ -717,7 +719,7 @@ public class DataCharacterData {
                             data.Encode4(chr.getMonsterBook().getCover());
                         }
                         if ((datamask & 0x10000) != 0) {
-                            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                            data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                         }
                         if ((datamask & 262144) != 0) {
                             data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -805,7 +807,7 @@ public class DataCharacterData {
                         data.Encode4(chr.getMonsterBook().getCover());
                     }
                     if ((datamask & 0x10000) != 0) {
-                        data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                        data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                     }
                     if ((datamask & 262144) != 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -886,7 +888,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                    data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                 }
                 if ((datamask & 262144) != 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -1082,7 +1084,7 @@ public class DataCharacterData {
                         data.Encode4(chr.getMonsterBook().getCover());
                     }
                     if ((datamask & 0x10000) != 0) {
-                        data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                        data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                     }
                     if ((datamask & 262144) != 0) {
                         data.Encode2(0);
@@ -1104,7 +1106,7 @@ public class DataCharacterData {
                     }
                     if (Version.GreaterOrEqual(Region.GMS, 68)) {
                         if ((datamask & 0x10000) != 0) {
-                            data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                            data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                         }
                     }
                     if (Version.GreaterOrEqual(Region.GMS, 65)) {
@@ -1198,7 +1200,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                    data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                 }
                 if ((datamask & 262144) != 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -1216,7 +1218,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                    data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                 }
                 break;
             }
@@ -1244,7 +1246,7 @@ public class DataCharacterData {
                     data.Encode4(chr.getMonsterBook().getCover());
                 }
                 if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                    data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                 }
                 if ((datamask & 262144) != 0) {
                     data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -1285,7 +1287,7 @@ public class DataCharacterData {
                     }
                     // 0x10000 JMS [GW_MonsterBookCode_Encode] v165-v194
                     if ((datamask & 0x10000) != 0) {
-                        data.EncodeBuffer(Structure.GW_MonsterBookCode_Encode(chr));
+                        data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                     }
                 }
                 if (Version.Equal(Region.JMST, 110)) {
@@ -1367,6 +1369,40 @@ public class DataCharacterData {
         if ((datamask & 4194304) != 0) {
             data.Encode2(0);
         }
+        return data.getBytes();
+    }
+
+    public static byte[] GW_MonsterBookCode_Encode(TacosCharacter chr) {
+        return GW_MonsterBookCode_Encode(chr, false);
+    }
+
+    // GW_MonsterBookCode::Decode
+    public static byte[] GW_MonsterBookCode_Encode(TacosCharacter chr, boolean data_shrink) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode1(data_shrink ? 1 : 0);
+        if (!data_shrink) {
+            Map<Integer, Integer> cards = chr.getMonsterBook().getCards();
+
+            data.Encode2(cards.size());
+            for (Map.Entry<Integer, Integer> card : cards.entrySet()) {
+                int card_id_short = card.getKey() % 10000; // item id to card id.
+                data.Encode2(card_id_short);
+                data.Encode1(card.getValue());
+            }
+
+            return data.getBytes();
+        }
+
+        // unknown format, not coded.
+        int card_count = 7; // unk
+        int buffer_size_1 = 1;
+        int buffer_size_2 = 5;
+        data.Encode2(card_count);
+        data.Encode1(buffer_size_1); // buffer size 1
+        data.EncodeBuffer(new byte[]{1 | 2 | 4 | 8 | 16}); // buffer, card id mask, some card can be put in 1 byte.
+        data.Encode1(buffer_size_2); // buffer size 2
+        data.EncodeBuffer(new byte[]{4, 3, 2, 1, 5}); // buffer, nCardCount?
         return data.getBytes();
     }
 }

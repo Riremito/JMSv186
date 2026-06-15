@@ -33,6 +33,19 @@ public class TacosConstants {
     public static final String FAKE_GLOBAL_IP_GMS116 = "8.31.98.52";
     public static final int FAKE_GLOBAL_IP_GMS116_VALUE = 0x34621F08; // 8.31.98.52
 
+    // item.
+    public static boolean is_monster_card(int item_id) {
+        return item_id / 10000 == 238;
+    }
+
+    public static boolean is_special_monster_card(int item_id) {
+        if (!is_monster_card(item_id)) {
+            return false;
+        }
+
+        return 2388000 <= item_id;
+    }
+
     // def
     public static final int DEFAULT_CHARSLOT = 6;
     public static final int DEFAULT_FORCED_RETURN_MAP_ID = 999999999;

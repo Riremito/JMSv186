@@ -3367,8 +3367,16 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean changeChannel(int channel) {
+        return changeChannel(channel, false);
+    }
+
+    public boolean fakeRelog() {
+        return changeChannel(client.getChannelId(), true);
+    }
+
+    public boolean changeChannel(int channel, boolean fake_relog) {
         TacosChannel ch_server = getWorld().getChannelServer(channel);
-        if (ch_server == null || channel == client.getChannelId()) {
+        if (ch_server == null || (channel == client.getChannelId() && !fake_relog)) {
             return false;
         }
 

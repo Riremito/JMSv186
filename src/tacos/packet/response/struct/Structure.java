@@ -9,7 +9,6 @@ import odin.client.inventory.MapleRing;
 import tacos.config.Region;
 import tacos.config.ServerConfig;
 import tacos.config.Version;
-import odin.constants.GameConstants;
 import java.util.List;
 import java.util.Map;
 import odin.server.shops.AbstractPlayerStore;
@@ -416,34 +415,6 @@ public class Structure {
             }
         }
 
-        return data.getBytes();
-    }
-
-    // GW_MonsterBookCode::Decode
-    public static byte[] GW_MonsterBookCode_Encode(MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        boolean unk_flag = false;
-
-        data.Encode1(unk_flag ? 1 : 0);
-        if (!unk_flag) {
-            Map<Integer, Integer> cards = chr.getMonsterBook().getCards();
-            data.Encode2(cards.size());
-            for (Map.Entry<Integer, Integer> card : cards.entrySet()) {
-                data.Encode2(GameConstants.getCardShortId(card.getKey()));
-                data.Encode1(card.getValue());
-            }
-            return data.getBytes();
-        }
-
-        // unknown format.
-        int card_count = 7; // unk
-        int buffer_size_1 = 1;
-        int buffer_size_2 = 5;
-        data.Encode2(card_count);
-        data.Encode1(buffer_size_1); // buffer size 1
-        data.EncodeBuffer(new byte[]{0x01 | 0x02 | 0x04 | 0x08 | 0x10}); // buffer, card id mask?
-        data.Encode1(buffer_size_2); // buffer size 2
-        data.EncodeBuffer(new byte[]{0x04, 0x03, 0x02, 0x01, 0x05}); // buffer, nCardCount?
         return data.getBytes();
     }
 

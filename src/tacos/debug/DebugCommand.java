@@ -55,6 +55,7 @@ import odin.server.life.MobSkill;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
+import tacos.client.TacosMonsterBook;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMobSkill;
@@ -518,6 +519,34 @@ public class DebugCommand {
 
                 map.spawnItemDrop(chr, chr, item, chr.getPosition(), true, true);
                 chr.DebugMsg("drop : " + item_id);
+                return true;
+            }
+            // monster card.
+            case "/monsterbook": {
+                // Item.wz/Consume/0238.img/info/mob
+                IMapleData monster_card_items = WzXML.ITEM.getItemImg(238);
+                // String.wz/MonsterBook.img
+                IMapleData monster_book_mobs = WzXML.STRING.getMonsterBook();
+                if (monster_card_items == null || monster_book_mobs == null) {
+                    return true;
+                }
+
+                TacosMonsterBook monster_book = chr.getMonsterBook();
+
+                for (IMapleData mb_mob : monster_book_mobs.getChildren()) {
+                    int mob_id = Integer.parseInt(mb_mob.getName());
+
+                    for (IMapleData mc_item : monster_card_items.getChildren()) {
+                        if (WzDataTool.getIntPath("info/mob", mc_item, 0) == mob_id) {
+                            int card_item_id = Integer.parseInt(mc_item.getName());
+                            monster_book.add(card_item_id, 5, false);
+                            break;
+                        }
+                    }
+                }
+
+                monster_book.update();
+                chr.fakeRelog();
                 return true;
             }
             // ボス関連
