@@ -62,7 +62,7 @@ public class DQ_MonsterBook {
         }
 
         Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM monsterbook WHERE charid = ?")) {
+        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE charid = ?")) {
             ps.setInt(1, chr.getId());
             ps.execute();
         } catch (SQLException ex) {
@@ -74,13 +74,17 @@ public class DQ_MonsterBook {
             DatabaseConnection.setAuto();
         }
 
+        if (chr.getMonsterBook().getCards().isEmpty()) {
+            return true;
+        }
+
         boolean first = true;
         StringBuilder query = new StringBuilder();
 
         for (Map.Entry<Integer, Integer> all : chr.getMonsterBook().getCards().entrySet()) {
             if (first) {
                 first = false;
-                query.append("INSERT INTO monsterbook VALUES (DEFAULT,");
+                query.append("INSERT INTO " + DB_TABLE_NAME + " VALUES (DEFAULT,");
             } else {
                 query.append(",(DEFAULT,");
             }

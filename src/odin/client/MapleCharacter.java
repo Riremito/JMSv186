@@ -49,7 +49,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
@@ -109,16 +108,9 @@ import odin.server.maps.Event_PyramidSubway;
 import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosCharacter;
-import tacos.database.ops.InvTypeDB;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
-import tacos.database.query.DQ_Buddies;
 import tacos.database.query.DQ_Characters;
-import tacos.database.query.DQ_Inventoryitems;
-import tacos.database.query.DQ_Inventoryslot;
-import tacos.database.query.DQ_KeyMap;
-import tacos.database.query.DQ_MonsterBook;
-import tacos.database.query.DQ_Mountdata;
 import tacos.database.query.DQ_Notes;
 import tacos.database.query.DQ_Queststatus;
 import tacos.debug.DebugLogger;
@@ -178,7 +170,6 @@ public class MapleCharacter extends TacosCharacter {
     private boolean Debugger = false;
     // スクリプト情報
     private boolean Information = true;
-    private int tama = 0;
     // パチンコ
     private int beansRange, beansNum;
     private boolean canSetBeansNum;
@@ -257,9 +248,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.client = client;
         ret.id = character_id;
 
-        if (channelserver) {
-            DQ_MonsterBook.load(ret);
-        }
+        ret.loadData(channelserver);
 
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = null;
@@ -335,33 +324,6 @@ public class MapleCharacter extends TacosCharacter {
             pse.close();
 
             if (channelserver) {
-                ps = con.prepareStatement("SELECT * FROM inventoryslot where characterid = ?");
-                ps.setInt(1, character_id);
-                rs = ps.executeQuery();
-
-                if (!rs.next()) {
-                    throw new RuntimeException("No Inventory slot column found in SQL. [inventoryslot]");
-                } else {
-                    ret.getInventory(MapleInventoryType.EQUIP).setSlotLimit(rs.getByte("equip"));
-                    ret.getInventory(MapleInventoryType.USE).setSlotLimit(rs.getByte("use"));
-                    ret.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setup"));
-                    ret.getInventory(MapleInventoryType.ETC).setSlotLimit(rs.getByte("etc"));
-                    ret.getInventory(MapleInventoryType.CASH).setSlotLimit(rs.getByte("cash"));
-                }
-                ps.close();
-                rs.close();
-
-                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, ret.id).values()) {
-                    if (!WzDataStorage.ITEM.check(mit.getLeft().getItemId())) {
-                        DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
-                        continue;
-                    }
-                    ret.getInventory(mit.getRight()).addFromDB(mit.getLeft());
-                    if (mit.getLeft().getPet() != null) {
-                        ret.pets.add(mit.getLeft().getPet());
-                    }
-                }
-
                 ps = con.prepareStatement("SELECT * FROM accounts WHERE id = ?");
                 ps.setInt(1, ret.accountid);
                 rs = ps.executeQuery();
@@ -465,8 +427,6 @@ public class MapleCharacter extends TacosCharacter {
                 rs.close();
                 ps.close();
 
-                DQ_KeyMap.loadKeyMap(ret);
-
                 ps = con.prepareStatement("SELECT `locationtype`,`map` FROM savedlocations WHERE characterid = ?");
                 ps.setInt(1, character_id);
                 rs = ps.executeQuery();
@@ -487,11 +447,6 @@ public class MapleCharacter extends TacosCharacter {
                 }
                 rs.close();
                 ps.close();
-
-                // 友達リスト読み込み
-                for (BuddylistEntry ble : DQ_Buddies.load(ret)) {
-                    ret.buddylist.put(ble);
-                }
 
                 ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
 
@@ -552,12 +507,6 @@ public class MapleCharacter extends TacosCharacter {
                 rs.close();
 
                 ret.stats.recalcLocalStats(true);
-            } else { // Not channel server
-                for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, ret.id, true).values()) {
-                    if (mit.getRight() == MapleInventoryType.EQUIPPED) {
-                        ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getLeft());
-                    }
-                }
             }
         } catch (SQLException ess) {
             ess.printStackTrace();
@@ -576,35 +525,18 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    public static boolean saveNewCharToDB(MapleCharacter chr) {
-        if (!DQ_Characters.add(chr)) {
+    public boolean saveNewCharToDB() {
+        if (!addNewCharacterData()) {
             return false;
         }
-        if (!DQ_Inventoryslot.add(chr)) {
+        if (!DQ_Queststatus.add(this)) {
             return false;
         }
-        if (!DQ_Inventoryitems.add(InvTypeDB.Inventory, chr.getId(), chr.getAllItems())) {
-            return false;
-        }
-        if (!DQ_Mountdata.add(chr)) {
-            return false;
-        }
-        if (!DQ_KeyMap.add(chr)) {
-            return false;
-        }
-        if (!DQ_Queststatus.add(chr)) {
-            return false;
-        }
-
         return true;
     }
 
-    public void saveToDB(boolean dc, boolean fromcs) {
-        DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
-        if (storage != null) {
-            storage.update();
-        }
-        DQ_MonsterBook.save(this);
+    public void saveToDB(boolean fromcs) {
+        saveData(!fromcs);
 
         Connection con = DatabaseConnection.getConnection();
 
@@ -712,17 +644,6 @@ public class MapleCharacter extends TacosCharacter {
                 }
             }
 
-            deleteWhereCharacterId(con, "DELETE FROM inventoryslot WHERE characterid = ?");
-            ps = con.prepareStatement("INSERT INTO inventoryslot (characterid, `equip`, `use`, `setup`, `etc`, `cash`) VALUES (?, ?, ?, ?, ?, ?)");
-            ps.setInt(1, id);
-            ps.setByte(2, getInventory(MapleInventoryType.EQUIP).getSlotLimit());
-            ps.setByte(3, getInventory(MapleInventoryType.USE).getSlotLimit());
-            ps.setByte(4, getInventory(MapleInventoryType.SETUP).getSlotLimit());
-            ps.setByte(5, getInventory(MapleInventoryType.ETC).getSlotLimit());
-            ps.setByte(6, getInventory(MapleInventoryType.CASH).getSlotLimit());
-            ps.execute();
-            ps.close();
-
             deleteWhereCharacterId(con, "DELETE FROM questinfo WHERE characterid = ?");
             ps = con.prepareStatement("INSERT INTO questinfo (`characterid`, `quest`, `customData`) VALUES (?, ?, ?)");
             ps.setInt(1, id);
@@ -795,9 +716,6 @@ public class MapleCharacter extends TacosCharacter {
             ps.executeUpdate();
             ps.close();
 
-            DQ_Buddies.removePending(this);
-            DQ_Buddies.update(this);
-
             ps = con.prepareStatement("UPDATE accounts SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?");
             ps.setInt(1, nexonPoint);
             ps.setInt(2, maplePoint);
@@ -810,7 +728,6 @@ public class MapleCharacter extends TacosCharacter {
             if (cs != null) {
                 cs.save();
             }
-            DQ_KeyMap.saveKeys(this);
             mount.saveMount(id);
 
             deleteWhereCharacterId(con, "DELETE FROM wishlist WHERE characterid = ?");
@@ -1160,14 +1077,6 @@ public class MapleCharacter extends TacosCharacter {
         return fallcounter;
     }
 
-    public final MapleClient getClient() {
-        return client;
-    }
-
-    public final void setClient(final MapleClient client) {
-        this.client = client;
-    }
-
     public int getHpApUsed() {
         return hpApUsed;
     }
@@ -1325,7 +1234,7 @@ public class MapleCharacter extends TacosCharacter {
             }
         }
         // マップ移動時にDBへ反映する
-        saveToDB(false, false);
+        saveToDB(false);
     }
 
     public void leaveMap() {
@@ -1446,7 +1355,7 @@ public class MapleCharacter extends TacosCharacter {
             baseSkills();
 
             // 転職時にDBへ反映する
-            saveToDB(false, false);
+            saveToDB(false);
         } catch (Exception e) {
         }
     }
@@ -1896,14 +1805,6 @@ public class MapleCharacter extends TacosCharacter {
         meso = val;
     }
 
-    public int getTama() {
-        return tama;
-    }
-
-    public void setTama(int val) {
-        tama = val;
-    }
-
     public final int[] getSavedLocations() {
         return savedLocations;
     }
@@ -2246,7 +2147,7 @@ public class MapleCharacter extends TacosCharacter {
         }
 
         // レベルアップ時にDBへ反映する
-        saveToDB(false, false);
+        saveToDB(false);
     }
 
     public void updateMacros(int position, SkillMacro updateMacro) {
@@ -3385,7 +3286,7 @@ public class MapleCharacter extends TacosCharacter {
         getWorld().addMigratingPlayer(this);
         getChannelServer().getOnlinePlayers().remove(this);
         sendMigrateCommand(ch_server);
-        saveToDB(false, false);
+        saveToDB(false);
         getMap().userLeaveField(this);
         return true;
     }

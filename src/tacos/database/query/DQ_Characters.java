@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import odin.client.PlayerStats;
+import tacos.client.TacosCharacter;
 import tacos.config.DeveloperMode;
 import tacos.server.TacosFriend;
 
@@ -43,7 +44,7 @@ public class DQ_Characters {
 
     public static final String DB_TABLE_NAME = "characters";
 
-    public static boolean add(MapleCharacter chr) {
+    public static boolean add(TacosCharacter chr) {
         if (!DatabaseConnection.setManual()) {
             return false;
         }
@@ -388,5 +389,4 @@ public class DQ_Characters {
 
         return false;
     }
-
 }

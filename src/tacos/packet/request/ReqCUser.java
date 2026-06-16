@@ -807,7 +807,7 @@ public class ReqCUser {
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
         } finally {
-            chr.saveToDB(false, true);
+            chr.saveToDB(true);
         }
     }
 
@@ -817,7 +817,7 @@ public class ReqCUser {
         try {
             chr.sendMigrateCommand(chr.getWorld().getChannelServer(chr.getChannelId()));
         } finally {
-            chr.saveToDB(false, true);
+            chr.saveToDB(true);
         }
     }
 
@@ -847,7 +847,7 @@ public class ReqCUser {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getOnlinePlayers().remove(chr);
         chr.sendMigrateCommand(chr.getWorld().getCashShop());
-        chr.saveToDB(false, false);
+        chr.saveToDB(false);
         LazyDatabase.saveData(chr);
         chr.getMap().userLeaveField(chr);
         return true;
@@ -3229,7 +3229,7 @@ public class ReqCUser {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getChannelServer().getOnlinePlayers().remove(chr);
         chr.sendMigrateCommand(chr.getWorld().getITC());
-        chr.saveToDB(false, false);
+        chr.saveToDB(false);
         LazyDatabase.saveData(chr);
         chr.getMap().userLeaveField(chr);
         return true;

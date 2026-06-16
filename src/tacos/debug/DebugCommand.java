@@ -139,7 +139,7 @@ public class DebugCommand {
                 return true;
             }
             case "/save": {
-                chr.saveToDB(false, false);
+                chr.saveToDB(false);
                 chr.DebugMsg("save : done.");
                 return true;
             }

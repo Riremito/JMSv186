@@ -421,7 +421,7 @@ public class ReqCLogin {
         }
 
         DebugUser.AddStarterSet(chr);
-        MapleCharacter.saveNewCharToDB(chr);
+        chr.saveNewCharToDB();
         client.SendPacket(ResCLogin.CreateNewCharacterResult(chr, true));
         client.addCharacter(chr);
         return true;
@@ -492,7 +492,7 @@ public class ReqCLogin {
         // 選択中のワールドを設定
         client.setSelectedWorld(world);
         client.setSelectedChannel(channel);
-        DQ_Character_slots.setCharacterSlots(client);
+        DQ_Character_slots.load(client);
         client.SendPacket(ResCLogin.SelectWorldResult(client, ResCLogin.LoginResult.SUCCESS));
         return true;
     }

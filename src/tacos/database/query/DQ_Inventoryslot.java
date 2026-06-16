@@ -20,8 +20,10 @@ package tacos.database.query;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import odin.client.MapleCharacter;
+import odin.client.inventory.MapleInventoryType;
+import tacos.client.TacosCharacter;
 import tacos.config.DeveloperMode;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
@@ -34,7 +36,7 @@ public class DQ_Inventoryslot {
 
     public static final String DB_TABLE_NAME = "inventoryslot";
 
-    public static boolean add(MapleCharacter chr) {
+    public static boolean add(TacosCharacter chr) {
         if (!DatabaseConnection.setManual()) {
             return false;
         }
@@ -62,4 +64,50 @@ public class DQ_Inventoryslot {
         return false;
     }
 
+    public static boolean load(TacosCharacter chr) {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
+            ps.setInt(1, chr.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    chr.getInventory(MapleInventoryType.EQUIP).setSlotLimit(rs.getByte("equip"));
+                    chr.getInventory(MapleInventoryType.USE).setSlotLimit(rs.getByte("use"));
+                    chr.getInventory(MapleInventoryType.SETUP).setSlotLimit(rs.getByte("setup"));
+                    chr.getInventory(MapleInventoryType.ETC).setSlotLimit(rs.getByte("etc"));
+                    chr.getInventory(MapleInventoryType.CASH).setSlotLimit(rs.getByte("cash"));
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+        }
+
+        DebugLogger.DBErrorLog(DB_TABLE_NAME, "load");
+        return false;
+    }
+
+    public static boolean save(TacosCharacter chr) {
+        if (!DatabaseConnection.setManual()) {
+            return false;
+        }
+
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `equip` = ?, `use` = ?, `setup` = ?, `etc` = ?, `cash` = ? WHERE `characterid` = ?")) {
+            ps.setInt(1, chr.getInventory(MapleInventoryType.EQUIP).getSlotLimit());
+            ps.setInt(2, chr.getInventory(MapleInventoryType.USE).getSlotLimit());
+            ps.setInt(3, chr.getInventory(MapleInventoryType.SETUP).getSlotLimit());
+            ps.setInt(4, chr.getInventory(MapleInventoryType.ETC).getSlotLimit());
+            ps.setInt(5, chr.getInventory(MapleInventoryType.CASH).getSlotLimit());
+            ps.setInt(6, chr.getId());
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "save");
+            DatabaseConnection.rollback();
+        } finally {
+            DatabaseConnection.commit();
+            DatabaseConnection.setAuto();
+        }
+
+        return false;
+    }
 }

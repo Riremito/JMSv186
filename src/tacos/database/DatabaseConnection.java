@@ -52,7 +52,7 @@ public class DatabaseConnection {
     }
 
     public static boolean setManual() {
-        DebugLogger.DebugLog("setManual");
+        //DebugLogger.DebugLog("setManual");
         try {
             Connection con = connected.get();
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
@@ -65,7 +65,7 @@ public class DatabaseConnection {
     }
 
     public static boolean setAuto() {
-        DebugLogger.DebugLog("setAuto");
+        //DebugLogger.DebugLog("setAuto");
         try {
             Connection con = connected.get();
             con.setAutoCommit(true);
@@ -78,7 +78,7 @@ public class DatabaseConnection {
     }
 
     public static boolean commit() {
-        DebugLogger.DebugLog("commit");
+        //DebugLogger.DebugLog("commit");
         try {
             Connection con = connected.get();
             con.commit();

@@ -90,7 +90,7 @@ public class MapleClient extends TacosClient {
         // save to DB
         if (chr != null) {
             chr.removalTask();
-            chr.saveToDB(true, fromCS);
+            chr.saveToDB(fromCS);
             if (!fromCS) {
                 LazyDatabase.saveData(getPlayer());
             }

@@ -46,7 +46,16 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.constants.TacosConstants;
 import tacos.database.LazyData;
+import tacos.database.ops.InvTypeDB;
+import tacos.database.query.DQ_Buddies;
+import tacos.database.query.DQ_Characters;
+import tacos.database.query.DQ_Inventoryitems;
+import tacos.database.query.DQ_Inventoryslot;
+import tacos.database.query.DQ_KeyMap;
+import tacos.database.query.DQ_MonsterBook;
+import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
+import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsSkill;
@@ -94,7 +103,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private FreeMarketPortal portal_fm = new FreeMarketPortal();
     private ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
     private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
-    protected TacosStorage storage = null;
 
     public void SendPacket(ServerPacket packet) {
         this.client.SendPacket(packet);
@@ -105,6 +113,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         SendPacket(ResCClientSocket.MigrateCommand(server));
         // stop sending/receiving packets.
         this.client.closeSession();
+    }
+
+    public MapleClient getClient() {
+        return this.client;
+    }
+
+    public void setClient(MapleClient client) {
+        this.client = client;
     }
 
     public int getId() {
@@ -420,6 +436,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     protected int meso;
     protected int gashaEXP = 0;
     protected List<MaplePet> pets;
+    protected int tama = 0;
 
     public int getGender() {
         return gender;
@@ -520,6 +537,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getGashaEXP() {
         return this.gashaEXP;
+    }
+
+    public int getTama() {
+        return this.tama;
+    }
+
+    public void setTama(int tama) {
+        this.tama = tama;
     }
 
     // guild
@@ -892,14 +917,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    public TacosStorage getStorage() {
-        if (this.storage == null) {
-            this.storage = new TacosStorage(this);
-            this.storage.load();
-        }
-        return this.storage;
-    }
-
     // skill pet
     protected TacosSkillPet skill_pet = null;
 
@@ -1072,6 +1089,89 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public TacosMonsterBook getMonsterBook() {
         return this.monster_book;
+    }
+
+    protected TacosStorage storage = null;
+
+    public TacosStorage getStorage() {
+        if (this.storage == null) {
+            this.storage = new TacosStorage(this);
+            this.storage.load();
+        }
+        return this.storage;
+    }
+
+    // database.
+    public boolean addNewCharacterData() {
+        if (!DQ_Characters.add(this)) {
+            return false;
+        }
+        if (!DQ_Inventoryslot.add(this)) {
+            return false;
+        }
+        if (!DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems())) {
+            return false;
+        }
+        if (!DQ_Mountdata.add(this)) {
+            return false;
+        }
+        if (!DQ_KeyMap.add(this)) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean loadData(boolean is_channel_server) {
+        // all server.
+        // login server.
+        if (!is_channel_server) {
+            // avatar look.
+            for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
+                if (mit.getRight() == MapleInventoryType.EQUIPPED) {
+                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getLeft());
+                }
+            }
+            return true;
+        }
+        // channel server.
+        // inventory.
+        DQ_Inventoryslot.load(this);
+        for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
+            if (!WzDataStorage.ITEM.check(mit.getLeft().getItemId())) {
+                DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
+                continue;
+            }
+            getInventory(mit.getRight()).addFromDB(mit.getLeft());
+            if (mit.getLeft().getPet() != null) {
+                this.pets.add(mit.getLeft().getPet());
+            }
+        }
+        DQ_KeyMap.loadKeyMap(this);
+        DQ_MonsterBook.load(this);
+        for (BuddylistEntry ble : DQ_Buddies.load(this)) {
+            this.buddylist.put(ble);
+        }
+        return true;
+    }
+
+    public boolean saveData(boolean is_channel_server) {
+        // all server.
+        DQ_Inventoryslot.save(this);
+        DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
+        // cash shop or itc server.
+        if (!is_channel_server) {
+            return true;
+        }
+        // channel server.
+        if (storage != null) {
+            storage.update();
+        }
+
+        DQ_KeyMap.saveKeys(this);
+        DQ_MonsterBook.save(this);
+        DQ_Buddies.removePending(this);
+        DQ_Buddies.update(this);
+        return true;
     }
 
     // unofficial.
