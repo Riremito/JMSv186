@@ -248,7 +248,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.client = client;
         ret.id = character_id;
 
-        ret.loadData(channelserver);
+        ret.loadCharacterData(channelserver);
 
         Connection con = DatabaseConnection.getConnection();
         PreparedStatement ps = null;
@@ -536,7 +536,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void saveToDB(boolean fromcs) {
-        saveData(!fromcs);
+        saveCharacterData(!fromcs);
 
         Connection con = DatabaseConnection.getConnection();
 

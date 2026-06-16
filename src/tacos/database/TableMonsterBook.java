@@ -16,62 +16,59 @@
  *
  *
  */
-package tacos.database.query;
+package tacos.database;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import tacos.client.TacosCharacter;
-import tacos.database.DatabaseConnection;
-import tacos.debug.DebugLogger;
 
 /**
  *
  * @author Riremito
  */
-public class DQ_MonsterBook {
+public class TableMonsterBook extends TacosDB {
 
-    public static final String DB_TABLE_NAME = "monsterbook";
+    public TableMonsterBook() {
+        super("monsterbook");
+    }
 
-    public static boolean load(TacosCharacter chr) {
+    public boolean load(TacosCharacter chr) {
         LinkedHashMap<Integer, Integer> cards = chr.getMonsterBook().getCards();
 
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE charid = ? ORDER BY cardid ASC")) {
+        try (PreparedStatement ps = prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE charid = ? ORDER BY cardid ASC")) {
             ps.setInt(1, chr.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     cards.put(rs.getInt("cardid"), rs.getInt("level"));
                 }
             }
+            chr.getMonsterBook().update();
+            return true;
         } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "load");
-            return false;
+            error();
         }
 
-        chr.getMonsterBook().update();
-        return true;
+        return false;
     }
 
-    public static boolean save(TacosCharacter chr) {
-        if (!DatabaseConnection.setManual()) {
+    public boolean save(TacosCharacter chr) {
+        if (!setManual()) {
             return false;
         }
 
-        Connection con = DatabaseConnection.getConnection();
-        try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE charid = ?")) {
+        try (PreparedStatement ps = prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE charid = ?")) {
             ps.setInt(1, chr.getId());
             ps.execute();
         } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "save 1");
-            DatabaseConnection.rollback();
+            error();
+            rollback();
             return false;
         } finally {
-            DatabaseConnection.commit();
-            DatabaseConnection.setAuto();
+            commit();
+            setAuto();
         }
 
         if (chr.getMonsterBook().getCards().isEmpty()) {
@@ -84,7 +81,7 @@ public class DQ_MonsterBook {
         for (Map.Entry<Integer, Integer> all : chr.getMonsterBook().getCards().entrySet()) {
             if (first) {
                 first = false;
-                query.append("INSERT INTO " + DB_TABLE_NAME + " VALUES (DEFAULT,");
+                query.append("INSERT INTO ").append(DB_TABLE_NAME).append(" VALUES (DEFAULT,");
             } else {
                 query.append(",(DEFAULT,");
             }
@@ -96,12 +93,13 @@ public class DQ_MonsterBook {
             query.append(")");
         }
 
-        try (PreparedStatement ps1 = con.prepareStatement(query.toString())) {
+        try (PreparedStatement ps1 = prepareStatement(query.toString())) {
             ps1.execute();
+            return true;
         } catch (SQLException ex) {
-            DebugLogger.DBErrorLog(DB_TABLE_NAME, "save 2");
+            error();
         }
 
-        return true;
+        return false;
     }
 }

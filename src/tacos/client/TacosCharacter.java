@@ -46,13 +46,13 @@ import tacos.config.Region;
 import tacos.config.Version;
 import tacos.constants.TacosConstants;
 import tacos.database.LazyData;
-import tacos.database.ops.InvTypeDB;
+import tacos.database.InvTypeDB;
+import tacos.database.TacosDB;
 import tacos.database.query.DQ_Buddies;
 import tacos.database.query.DQ_Characters;
 import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Inventoryslot;
 import tacos.database.query.DQ_KeyMap;
-import tacos.database.query.DQ_MonsterBook;
 import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
@@ -1091,6 +1091,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.monster_book;
     }
 
+    // storage.
     protected TacosStorage storage = null;
 
     public TacosStorage getStorage() {
@@ -1121,7 +1122,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return true;
     }
 
-    public boolean loadData(boolean is_channel_server) {
+    public boolean loadCharacterData(boolean is_channel_server) {
         // all server.
         // login server.
         if (!is_channel_server) {
@@ -1147,14 +1148,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         DQ_KeyMap.loadKeyMap(this);
-        DQ_MonsterBook.load(this);
+        TacosDB.MONSTER_BOOK.load(this);
         for (BuddylistEntry ble : DQ_Buddies.load(this)) {
             this.buddylist.put(ble);
         }
         return true;
     }
 
-    public boolean saveData(boolean is_channel_server) {
+    public boolean saveCharacterData(boolean is_channel_server) {
         // all server.
         DQ_Inventoryslot.save(this);
         DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
@@ -1168,7 +1169,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
 
         DQ_KeyMap.saveKeys(this);
-        DQ_MonsterBook.save(this);
+        TacosDB.MONSTER_BOOK.save(this);
         DQ_Buddies.removePending(this);
         DQ_Buddies.update(this);
         return true;

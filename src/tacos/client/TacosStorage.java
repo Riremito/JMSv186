@@ -25,7 +25,7 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import tacos.config.DeveloperMode;
-import tacos.database.ops.InvTypeDB;
+import tacos.database.InvTypeDB;
 import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Storages;
 import tacos.debug.DebugLogger;

@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.database.ops;
+package tacos.database;
 
 /**
  *
@@ -31,5 +31,4 @@ public enum InvTypeDB {
     CashShop,
     ITC,
     UNKNOWN;
-
 }
