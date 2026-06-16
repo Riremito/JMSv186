@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosMonsterBook;
 
 /**
  *
@@ -55,49 +56,36 @@ public class TableMonsterBook extends TacosDB {
     }
 
     public boolean save(TacosCharacter chr) {
+        TacosMonsterBook monster_book = chr.getMonsterBook();
+        if (monster_book.getModifiedCount() == 0) {
+            return true;
+        }
+        monster_book.resetModifiedCount();
+        if (monster_book.getCards().isEmpty()) {
+            return true;
+        }
+
         if (!setManual()) {
             return false;
         }
 
-        try (PreparedStatement ps = prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE charid = ?")) {
-            ps.setInt(1, chr.getId());
+        String card_data = "";
+        for (Map.Entry<Integer, Integer> card : monster_book.getCards().entrySet()) {
+            if (!card_data.isEmpty()) {
+                card_data += ", ";
+            }
+            card_data += "(" + chr.getId() + ", " + card.getKey() + ", " + card.getValue() + ")";
+        }
+
+        try (PreparedStatement ps = prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (charid, cardid, level) VALUES " + card_data + " AS data ON DUPLICATE KEY UPDATE level = data.level")) {
             ps.execute();
+            return true;
         } catch (SQLException ex) {
             error();
             rollback();
-            return false;
         } finally {
             commit();
             setAuto();
-        }
-
-        if (chr.getMonsterBook().getCards().isEmpty()) {
-            return true;
-        }
-
-        boolean first = true;
-        StringBuilder query = new StringBuilder();
-
-        for (Map.Entry<Integer, Integer> all : chr.getMonsterBook().getCards().entrySet()) {
-            if (first) {
-                first = false;
-                query.append("INSERT INTO ").append(DB_TABLE_NAME).append(" VALUES (DEFAULT,");
-            } else {
-                query.append(",(DEFAULT,");
-            }
-            query.append(chr.getId());
-            query.append(",");
-            query.append(all.getKey()); // Card ID
-            query.append(",");
-            query.append(all.getValue()); // Card level
-            query.append(")");
-        }
-
-        try (PreparedStatement ps1 = prepareStatement(query.toString())) {
-            ps1.execute();
-            return true;
-        } catch (SQLException ex) {
-            error();
         }
 
         return false;

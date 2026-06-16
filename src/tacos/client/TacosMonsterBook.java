@@ -37,6 +37,7 @@ public class TacosMonsterBook {
     private int nSpecial = 0;
     private int nTotal = 0;
     private int nCoverMobID = 0;
+    private int modified_count = 0;
 
     public TacosMonsterBook() {
         this.nMonsterBookCoverID = 0;
@@ -144,6 +145,15 @@ public class TacosMonsterBook {
             update();
         }
 
+        this.modified_count++;
         return true;
+    }
+
+    public int getModifiedCount() {
+        return this.modified_count;
+    }
+
+    public void resetModifiedCount() {
+        this.modified_count = 0;
     }
 }

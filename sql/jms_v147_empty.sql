@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: 127.0.0.1:3306
--- 生成日時: 2026-03-21 18:22:27
+-- 生成日時: 2026-06-16 16:27:59
 -- サーバのバージョン： 8.4.7
 -- PHP のバージョン: 8.3.28
 
@@ -1019,7 +1019,8 @@ CREATE TABLE IF NOT EXISTS `monsterbook` (
   `charid` int UNSIGNED NOT NULL DEFAULT '0',
   `cardid` int UNSIGNED NOT NULL DEFAULT '0',
   `level` tinyint UNSIGNED DEFAULT '1',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `charid` (`charid`,`cardid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
