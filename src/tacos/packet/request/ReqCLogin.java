@@ -42,11 +42,10 @@ import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsNewCharacter;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCLogin;
-import tacos.packet.response.ResCLogin.LoginResult;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsLoginResCode;
 import tacos.server.TacosChannel;
-import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.wz.WzXML;
 import tacos.wz.WzDataStorage;
@@ -57,14 +56,8 @@ import tacos.wz.WzDataStorage;
  */
 public class ReqCLogin {
 
-    private TacosLogin login_server;
-
-    public ReqCLogin(TacosLogin login_server) {
-        this.login_server = login_server;
-    }
-
     // CLogin::OnPacket
-    public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_CheckPassword: {
                 // ログイン
@@ -188,7 +181,7 @@ public class ReqCLogin {
     }
 
     // KMS beta to KMS149 and JMS302.
-    public boolean OnCheckPassword(MapleClient client, ClientPacket cp) {
+    public static boolean OnCheckPassword(MapleClient client, ClientPacket cp) {
         // KMS160 or later, JMS308 or later.
         if (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) {
             return OnCheckPassword_KMS160(client, cp);
@@ -211,7 +204,7 @@ public class ReqCLogin {
 
     // after KMS160 and JMS308.
     // around phantom or tempest update.
-    public boolean OnCheckPassword_KMS160(MapleClient client, ClientPacket cp) {
+    public static boolean OnCheckPassword_KMS160(MapleClient client, ClientPacket cp) {
         byte machine_id[] = cp.DecodeBuffer(16);
         int unk1 = cp.Decode4(); // 0
         byte unk2 = cp.Decode1(); // 2
@@ -224,7 +217,7 @@ public class ReqCLogin {
         return checkLogin(client, maple_id, password);
     }
 
-    public boolean OnCreateNewCharacter(MapleClient client, ClientPacket cp) {
+    public static boolean OnCreateNewCharacter(MapleClient client, ClientPacket cp) {
         String character_name;
         byte character_gender = client.getGender();
         int job_type = 0;
@@ -427,7 +420,7 @@ public class ReqCLogin {
         return true;
     }
 
-    public boolean SetDefaultEquip(MapleCharacter newchar, int item_id) {
+    public static boolean SetDefaultEquip(MapleCharacter newchar, int item_id) {
         if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("SetDefaultEquip, item_id = " + item_id);
             return false;
@@ -443,7 +436,7 @@ public class ReqCLogin {
         return true;
     }
 
-    public boolean OnCreateNewCharacterInCS(MapleClient client, ClientPacket cp) {
+    public static boolean OnCreateNewCharacterInCS(MapleClient client, ClientPacket cp) {
         String m_sCheckedName = cp.DecodeStr();
         int m_nCurSelectedRace = cp.Decode4();
         int m_nCurSelectedSubJob = cp.Decode4(); // JMS187
@@ -452,13 +445,13 @@ public class ReqCLogin {
         return false;
     }
 
-    public void OnCheckDuplicatedID(MapleClient client, String character_name) {
+    public static void OnCheckDuplicatedID(MapleClient client, String character_name) {
         boolean isOK = checkCharacterName(character_name);
 
         client.SendPacket(ResCLogin.CheckDuplicatedIDResult(character_name, isOK));
     }
 
-    public boolean OnSelectWorld(MapleClient client, ClientPacket cp) {
+    public static boolean OnSelectWorld(MapleClient client, ClientPacket cp) {
         if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Region.IsKMS() || Region.IsIMS() || Version.GreaterOrEqual(Region.TWMS, 148)) {
             byte unk = cp.Decode1();
         }
@@ -482,7 +475,7 @@ public class ReqCLogin {
 
         // もみじ(1)
         if (world == 1) {
-            client.SendPacket(ResCLogin.SelectWorldResult(client, ResCLogin.LoginResult.TOO_MANY_USERS));
+            client.SendPacket(ResCLogin.SelectWorldResult(client, OpsLoginResCode.LoginResCode_Timeout));
             return false;
         }
         // 強制的にかえで(0)に書き換える
@@ -493,11 +486,11 @@ public class ReqCLogin {
         client.setSelectedWorld(world);
         client.setSelectedChannel(channel);
         DQ_Character_slots.load(client);
-        client.SendPacket(ResCLogin.SelectWorldResult(client, ResCLogin.LoginResult.SUCCESS));
+        client.SendPacket(ResCLogin.SelectWorldResult(client, OpsLoginResCode.LoginResCode_Success));
         return true;
     }
 
-    public boolean OnDeleteCharacter(MapleClient client, ClientPacket cp) {
+    public static boolean OnDeleteCharacter(MapleClient client, ClientPacket cp) {
         // JMS188+
         if (Version.GreaterOrEqual(Region.JMS, 188)) {
             String MapleID = cp.DecodeStr();
@@ -533,12 +526,12 @@ public class ReqCLogin {
     }
 
     // JMS以外必要
-    public void OnCheckUserLimit(MapleClient c, ClientPacket cp) {
+    public static void OnCheckUserLimit(MapleClient client, ClientPacket cp) {
         short world_id = cp.Decode2();
-        c.SendPacket(ResCLogin.CheckUserLimitResult(this.login_server.getWolrdStatus(world_id)));
+        client.SendPacket(ResCLogin.CheckUserLimitResult(client.getLoginServer().getWolrdStatus(world_id)));
     }
 
-    public void OnWorldInfoRequest(MapleClient c) {
+    public static void OnWorldInfoRequest(MapleClient c) {
         for (TacosWorld world : TacosWorld.getWorlds()) {
             c.SendPacket(ResCLogin.WorldInformation(world));
         }
@@ -551,7 +544,7 @@ public class ReqCLogin {
 
     }
 
-    public boolean OnSelectCharacter(MapleClient client, int character_id) {
+    public static boolean OnSelectCharacter(MapleClient client, int character_id) {
         if (!client.checkCharacterId(character_id)) {
             client.loginFailed("OnSelectCharacter");
             return false;
@@ -563,9 +556,9 @@ public class ReqCLogin {
     }
 
     // TODO : move to other class.
-    public final boolean checkLogin(MapleClient client, String maple_id, String password) {
+    public static boolean checkLogin(MapleClient client, String maple_id, String password) {
         if (5 <= client.loginAttempt()) {
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, LoginResult.SYSTEM_ERROR));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_DBFail));
             return false;
         }
         boolean endwith_ = false;
@@ -609,9 +602,9 @@ public class ReqCLogin {
 
     private static long lastUpdate = 0;
 
-    public void registerClient(MapleClient client) {
-        if (this.login_server.isAdminOnly() && !client.isGameMaster()) {
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, ResCLogin.LoginResult.INVALID_ADMIN_IP));
+    public static void registerClient(MapleClient client) {
+        if (client.getLoginServer().isAdminOnly() && !client.isGameMaster()) {
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_ImpossibleIP));
             return;
         }
         if (System.currentTimeMillis() - lastUpdate > 600000) {
@@ -622,16 +615,16 @@ public class ReqCLogin {
             Random rand = new Random();
             long client_key = rand.nextLong();
             client.setClientKey(client_key);
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, ResCLogin.LoginResult.SUCCESS));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_Success));
         } else {
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, ResCLogin.LoginResult.ALREADY_LOGGEDIN));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_AlreadyConnected));
             return;
         }
         // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要
         OnWorldInfoRequest(client);
     }
 
-    public boolean checkCharacterName(final String character_name) {
+    public static boolean checkCharacterName(String character_name) {
         if (character_name.getBytes().length < 2) {
             return false;
         }

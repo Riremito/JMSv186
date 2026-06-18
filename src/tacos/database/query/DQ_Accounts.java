@@ -273,5 +273,4 @@ public class DQ_Accounts {
         updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
         return true;
     }
-
 }

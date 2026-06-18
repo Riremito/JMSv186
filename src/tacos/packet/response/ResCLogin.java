@@ -26,6 +26,7 @@ import tacos.config.Version;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsLoginResCode;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
@@ -42,191 +43,14 @@ import tacos.tools.TacosTools;
  */
 public class ResCLogin {
 
-    // CClientSocket::OnSelectCharacter
-    public static ServerPacket SelectCharacterResult(TacosServer game_server, int character_id) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterResult);
-        sp.Encode1(0);
-        sp.Encode1(0);
-        sp.Encode4(TacosTools.getGameServerIP(game_server.getGlobalIP()));
-        sp.Encode2(game_server.getPort());
-        sp.Encode4(character_id);
-        sp.Encode1(0);
-        sp.Encode4(0);
-
-        if (Version.GreaterOrEqual(Region.GMS, 126)) {
-            sp.Encode1(0);
-            sp.Encode1(0);
-            sp.Encode8(0);
-            sp.Encode1(0);
-            return sp;
-        }
-
-        if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89)) {
-            sp.Encode1(0);
-            sp.Encode8(0);
-            return sp;
-        }
-
-        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.GMS, 111)) {
-            sp.Encode1(0);
-            sp.Encode2(0);
-            sp.Encode2(0);
-        }
-        return sp;
-    }
-
-    public static ServerPacket EnableSPWResult() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EnableSPWResult);
-
-        // ?
-        sp.Encode1(0);
-        sp.Encode1(0);
-        return sp;
-    }
-
-    // v131 - v186 OK
-    public enum LoginResult {
-        SUCCESS(0x00),
-        BLOCKED_MAPLEID_WITH_MESSAGE(0x02), // 青窓BAN
-        BLOCKED_MAPLEID(0x03), // 無条件BAN
-        INVALID_PASSWORD(0x04),
-        UNREGISTERED_MAPLEID(0x05),
-        SYSTEM_ERROR(0x06), // 0x08, 0x09
-        ALREADY_LOGGEDIN(0x07),
-        TOO_MANY_USERS(0x0A),
-        INVALID_ADMIN_IP(0x0D),
-        BLOCKED_IP(0x13),
-        UNKNOWN;
-        /*
-        v131
-        00 : OK
-        01 : Crash
-        02 : 削除又は接続中止になっているアカウントです。 (青窓BAN)
-        03 : 削除又は接続中止になっているアカウントです。 (キノコBAN)
-        04 : パスワードが間違っています。
-        05 : 登録されてないアカウントです。
-        06 : システムのエラーで接続出来ません。
-        07 : 接続中のIDです。
-        08 : システムのエラーで接続出来ません。
-        09 : システムのエラーで接続出来ません。
-        0A : 現在、サーバーへの接続要請が多すぎます。
-        0B : 韓国語
-        0C : なし
-        0D : 現在のIPではマスターログイン出来ません。
-        0E : 韓国語
-        0F : 韓国語
-        10 : Crash
-        11 : 韓国語
-        12 : Crash
-        13 : 臨時遮断IP経由で接続しました。
-        14以上 : Crash
-         */
-        private int value;
-
-        LoginResult(int reason) {
-            value = reason;
-        }
-
-        LoginResult() {
-            value = -1;
-        }
-
-        public int Get() {
-            return value;
-        }
-
-        public static LoginResult Find(int find_val) {
-            for (final LoginResult lr : LoginResult.values()) {
-                if (lr.Get() == find_val) {
-                    return lr;
-                }
-            }
-            return UNKNOWN;
-        }
-    }
-
-// v131
-// CLogin::OnCheckGameGuardUpdatedResult
-    public static ServerPacket CheckGameGuardUpdated(boolean isOK) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_CheckGameGuardUpdatedResult);
-        // 0 = Update Game Guard
-        // 1 = Enable Login Button
-        sp.Encode1(isOK ? 1 : 0);
-        return sp;
-    }
-
-    // v186+
-    // CLogin::OnRecommendWorldMessage
-    public static ServerPacket RecommendWorldMessage() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RecommendWorldMessage);
-        String[] recommendedReasons = {"これはSELECTを押してもワールドがアクティブになるだけです", "ゴミ機能です", "XXXX"};
-        sp.Encode1(recommendedReasons.length);
-        for (int world_id = 0; world_id < recommendedReasons.length; world_id++) {
-            sp.Encode4(world_id);
-            sp.EncodeStr(recommendedReasons[world_id]);
-        }
-        return sp;
-    }
-
-    // CLogin::OnGuestIDLoginResult
-    // CWvsContext::SetAccountInfo
-    public static ServerPacket GuestIDLoginResult(MapleClient c, LoginResult result) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuestIDLoginResult);
-        sp.Encode1(result.Get()); // result code
-        switch (result) {
-            case SUCCESS: {
-                sp.Encode4(c.getId()); // dwAccountId
-                sp.Encode1(c.getGender()); // nGender
-                sp.Encode1(0); // nGradeCode
-                sp.EncodeStr(c.getMapleId()); // sNexonClubID
-                sp.Encode1(0);
-                sp.Encode1(0);
-                sp.Encode8(0); // buf
-                sp.EncodeStr("");
-                sp.EncodeStr("");
-            }
-            default: {
-                break;
-            }
-        }
-        return sp;
-    }
-
-    // CLogin::OnViewAllCharResult
-    public static ServerPacket ViewAllCharResult(MapleClient c, boolean isAlloc) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ViewAllCharResult);
-        List<MapleCharacter> chars = c.loadCharactersFromDB(); // world 0 only (test)
-        sp.Encode1(isAlloc ? 1 : 0);
-
-        if (isAlloc) {
-            sp.Encode4(1); // m_nCountRelatedSvrs
-            sp.Encode4(chars.size()); // m_nCountCharacters
-        } else {
-            sp.Encode1(0); // nWorldID
-            sp.Encode1(chars.size());
-            for (MapleCharacter chr : chars) {
-                sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-                sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-                sp.Encode1(1); // ranking
-                sp.Encode4(chr.getRank()); // all world ranking
-                sp.Encode4(chr.getRankMove());
-                sp.Encode4(chr.getJobRank()); // world ranking
-                sp.Encode4(chr.getJobRankMove());
-            }
-        }
-        return sp;
-    }
-
     public static ServerPacket CheckPasswordResult(MapleClient client, int result) {
-        return CheckPasswordResult(client, LoginResult.Find(result));
+        return CheckPasswordResult(client, OpsLoginResCode.find(result));
     }
 
     // CLogin::OnCheckPasswordResult
-    // CClientSocket::OnCheckPassword
-    // getAuthSuccessRequest, getLoginFailed
-    public static ServerPacket CheckPasswordResult(MapleClient client, LoginResult result) {
+    public static ServerPacket CheckPasswordResult(MapleClient client, OpsLoginResCode result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPasswordResult);
-        sp.Encode1(result.Get()); // result
+        sp.Encode1(result.get()); // result
 
         // EMS v55-v70
         if (Region.IsGMS() || (Region.IsEMS() && Version.PreBB())) {
@@ -240,7 +64,7 @@ public class ResCLogin {
         40 : BAN Blue Message
          */
         switch (result) {
-            case SUCCESS: {
+            case LoginResCode_Success: {
                 {
                     switch (Region.getRegion()) {
                         case KMSB: {
@@ -593,7 +417,7 @@ public class ResCLogin {
                 break;
             }
 
-            case BLOCKED_MAPLEID_WITH_MESSAGE: {
+            case LoginResCode_Blocked: {
                 sp.Encode1(32); // 0x20 and 0x40 are blue message flag
                 break;
             }
@@ -608,22 +432,42 @@ public class ResCLogin {
         return sp;
     }
 
-    public static ServerPacket CreateNewCharacterResult(final MapleCharacter chr, final boolean worked) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CreateNewCharacterResult);
-        sp.Encode1(worked ? 0 : 1);
-        if (worked) {
-            if (Region.check(Region.KMSB)) {
-                sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
-                return sp;
+    // CLogin::OnGuestIDLoginResult
+    public static ServerPacket GuestIDLoginResult(MapleClient client, OpsLoginResCode result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuestIDLoginResult);
+        sp.Encode1(result.get()); // result code
+        switch (result) {
+            case LoginResCode_Success: {
+                sp.Encode4(client.getId()); // dwAccountId
+                sp.Encode1(client.getGender()); // nGender
+                sp.Encode1(0); // nGradeCode
+                sp.EncodeStr(client.getMapleId()); // sNexonClubID
+                sp.Encode1(0);
+                sp.Encode1(0);
+                sp.Encode8(0); // buf
+                sp.EncodeStr("");
+                sp.EncodeStr("");
             }
-            sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+            default: {
+                break;
+            }
         }
         return sp;
     }
 
-    // not tested
-    public static ServerPacket CheckPinCodeResult(final byte mode) {
+    // CLogin::OnAccountInfoResult
+    // CLogin::OnCheckUserLimitResult
+    public static ServerPacket CheckUserLimitResult(int status) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckUserLimitResult);
+
+        sp.Encode2(status);
+        return sp;
+    }
+
+    // CLogin::OnSetAccountResult
+    // CLogin::OnConfirmEULAResult
+    // CLogin::OnCheckPinCodeResult
+    public static ServerPacket CheckPinCodeResult(byte mode) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPinCodeResult);
         /*
         14 : Invalid password
@@ -633,6 +477,35 @@ public class ResCLogin {
         return sp;
     }
 
+    // CLogin::OnUpdatePinCodeResult
+    // CLogin::OnViewAllCharResult
+    public static ServerPacket ViewAllCharResult(MapleClient client, boolean isAlloc) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ViewAllCharResult);
+        List<MapleCharacter> chars = client.loadCharactersFromDB(); // world 0 only (test)
+        sp.Encode1(isAlloc ? 1 : 0);
+
+        if (isAlloc) {
+            sp.Encode4(1); // m_nCountRelatedSvrs
+            sp.Encode4(chars.size()); // m_nCountCharacters
+        } else {
+            sp.Encode1(0); // nWorldID
+            sp.Encode1(chars.size());
+            for (MapleCharacter chr : chars) {
+                sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
+                sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+                sp.Encode1(1); // ranking
+                sp.Encode4(chr.getRank()); // all world ranking
+                sp.Encode4(chr.getRankMove());
+                sp.Encode4(chr.getJobRank()); // world ranking
+                sp.Encode4(chr.getJobRankMove());
+            }
+        }
+
+        return sp;
+    }
+
+    // CLogin::OnSelectCharacterByVACResult
+    // CLogin::OnWorldInformation
     public static ServerPacket WorldInformation(TacosWorld world) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WorldInformation);
 
@@ -694,70 +567,25 @@ public class ResCLogin {
         return sp;
     }
 
-    public static byte[] CharList_TWMS(MapleClient c) {
-        ServerPacket data = new ServerPacket();
-        if (!Version.GreaterOrEqual(Region.TWMS, 148)) {
-            data.Encode4(1000000);
-        }
-        List<MapleCharacter> chars = c.loadCharactersFromDB();
-        int charslots = c.getCharSlots();
-        data.Encode1(chars.size());
-        for (MapleCharacter chr : chars) {
-            data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            data.EncodeBuffer(DataAvatarLook.Encode(chr));
-            if (Version.GreaterOrEqual(Region.TWMS, 121)) {
-                data.Encode1(0);
-            }
-            data.Encode1(1);
-            data.Encode4(chr.getRank());
-            data.Encode4(chr.getRankMove());
-            data.Encode4(chr.getJobRank());
-            data.Encode4(chr.getJobRankMove());
-        }
-
-        if (Version.GreaterOrEqual(Region.TWMS, 148)) {
-            data.Encode1(3);
-            data.Encode1(0);
-            data.Encode4(charslots);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode8(0);
-        } else if (Version.GreaterOrEqual(Region.TWMS, 121)) {
-            data.Encode2(3); // 2nd password state
-            data.Encode8(charslots);
-            data.Encode8(0);
-        } else {
-            // TWMS v94
-            data.Encode1(3);
-            data.Encode1(0);
-            data.Encode4(charslots);
-        }
-        return data.getBytes();
-    }
-
-    // キャラクターセレクト
-    // getCharList
-    // public static ServerPacket getCharList(final boolean secondpw, final List<MapleCharacter> chars, int charslots) {
-    public static ServerPacket SelectWorldResult(MapleClient c, LoginResult result) {
+    // CLogin::OnSelectWorldResult
+    public static ServerPacket SelectWorldResult(MapleClient client, OpsLoginResCode result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectWorldResult);
-        sp.Encode1(result.Get());
-        if (result != LoginResult.SUCCESS) {
+        sp.Encode1(result.get());
+        if (result != OpsLoginResCode.LoginResCode_Success) {
             // error
             return sp;
         }
 
         if (Region.IsTWMS()) {
-            sp.EncodeBuffer(CharList_TWMS(c));
+            sp.EncodeBuffer(CharList_TWMS(client));
             return sp;
         }
         if (Region.IsCMS()) {
-            sp.EncodeBuffer(CharList_CMS(c));
+            sp.EncodeBuffer(CharList_CMS(client));
             return sp;
         }
-        List<MapleCharacter> chars = c.loadCharactersFromDB(true);
-        int charslots = c.getCharSlots();
+        List<MapleCharacter> chars = client.loadCharactersFromDB(true);
+        int charslots = client.getCharSlots();
 
         if (Region.IsJMS()) {
             sp.EncodeStr("");
@@ -964,6 +792,65 @@ public class ResCLogin {
         return sp;
     }
 
+    // CLogin::OnSelectCharacterResult
+    public static ServerPacket SelectCharacterResult(TacosServer game_server, int character_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterResult);
+        sp.Encode1(0);
+        sp.Encode1(0);
+        sp.Encode4(TacosTools.getGameServerIP(game_server.getGlobalIP()));
+        sp.Encode2(game_server.getPort());
+        sp.Encode4(character_id);
+        sp.Encode1(0);
+        sp.Encode4(0);
+
+        if (Version.GreaterOrEqual(Region.GMS, 126)) {
+            sp.Encode1(0);
+            sp.Encode1(0);
+            sp.Encode8(0);
+            sp.Encode1(0);
+            return sp;
+        }
+
+        if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89)) {
+            sp.Encode1(0);
+            sp.Encode8(0);
+            return sp;
+        }
+
+        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            sp.Encode1(0);
+            sp.Encode2(0);
+            sp.Encode2(0);
+        }
+
+        return sp;
+    }
+
+    // CLogin::OnCheckDuplicatedIDResult
+    public static ServerPacket CheckDuplicatedIDResult(String name, boolean isOK) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckDuplicatedIDResult);
+
+        sp.EncodeStr(name);
+        sp.Encode1(isOK ? 0 : 1); // 0 = OK
+        return sp;
+    }
+
+    // CLogin::OnCreateNewCharacterResult
+    public static ServerPacket CreateNewCharacterResult(MapleCharacter chr, boolean worked) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CreateNewCharacterResult);
+        sp.Encode1(worked ? 0 : 1);
+        if (worked) {
+            if (Region.check(Region.KMSB)) {
+                sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
+                return sp;
+            }
+            sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
+            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+        }
+        return sp;
+    }
+
+    // CLogin::OnDeleteCharacterResult
     public static ServerPacket DeleteCharacterResult(int character_id, boolean success) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DeleteCharacterResult);
 
@@ -972,20 +859,69 @@ public class ResCLogin {
         return sp;
     }
 
+    // CLogin::OnCheckGameGuardUpdatedResult
+    public static ServerPacket CheckGameGuardUpdated(boolean isOK) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_CheckGameGuardUpdatedResult);
+        // 0 = Update Game Guard
+        // 1 = Enable Login Button
+        sp.Encode1(isOK ? 1 : 0);
+        return sp;
+    }
+
+    // CLogin::OnEnableSPWResult
+    public static ServerPacket EnableSPWResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EnableSPWResult);
+
+        // ?
+        sp.Encode1(0);
+        sp.Encode1(0);
+        return sp;
+    }
+
     // CLogin::OnLatestConnectedWorld
     public static ServerPacket LatestConnectedWorld() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_LatestConnectedWorld);
+
         sp.Encode4(0); // World ID
         return sp;
     }
 
-    public static byte[] CharList_CMS(MapleClient c) {
+    // CLogin::OnRecommendWorldMessage
+    public static ServerPacket RecommendWorldMessage() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RecommendWorldMessage);
+        String[] recommendedReasons = {"これはSELECTを押してもワールドがアクティブになるだけです", "ゴミ機能です", "XXXX"};
+        sp.Encode1(recommendedReasons.length);
+
+        for (int world_id = 0; world_id < recommendedReasons.length; world_id++) {
+            sp.Encode4(world_id);
+            sp.EncodeStr(recommendedReasons[world_id]);
+        }
+
+        return sp;
+    }
+
+    public static ServerPacket SetMapLogin() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_SetMapLogin);
+
+        // WzXMLの読み込み方法を変更しないと遅延するので、固定値にしておく
+        sp.EncodeStr("MapLogin"); // WzXML.UI.getRandomMapLogin()
+        if (Version.PostBB()) {
+            sp.Encode4(2010121510); // JMS187 : 2010121510 (2010/12/15 10:00)
+        }
+        if (Version.GreaterOrEqual(Region.TWMS, 148)) {
+            sp.Encode1(1);
+        }
+
+        return sp;
+    }
+
+    public static byte[] CharList_CMS(MapleClient client) {
         ServerPacket data = new ServerPacket();
         if (Version.LessOrEqual(Region.CMS, 88)) {
             data.Encode4(1000000);
         }
-        List<MapleCharacter> chars = c.loadCharactersFromDB();
-        int charslots = c.getCharSlots();
+        List<MapleCharacter> chars = client.loadCharactersFromDB();
+        int charslots = client.getCharSlots();
         data.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
@@ -1004,33 +940,46 @@ public class ResCLogin {
         return data.getBytes();
     }
 
-    public static ServerPacket CheckUserLimitResult(int status) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckUserLimitResult);
-
-        sp.Encode2(status);
-        return sp;
-    }
-
-    public static ServerPacket CheckDuplicatedIDResult(String name, boolean isOK) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckDuplicatedIDResult);
-
-        sp.EncodeStr(name);
-        sp.Encode1(isOK ? 0 : 1); // 0 = OK
-        return sp;
-    }
-
-    public static ServerPacket SetMapLogin() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_SetMapLogin);
-
-        // WzXMLの読み込み方法を変更しないと遅延するので、固定値にしておく
-        sp.EncodeStr("MapLogin"); // WzXML.UI.getRandomMapLogin()
-        if (Version.PostBB()) {
-            sp.Encode4(2010121510); // JMS187 : 2010121510 (2010/12/15 10:00)
+    public static byte[] CharList_TWMS(MapleClient client) {
+        ServerPacket data = new ServerPacket();
+        if (!Version.GreaterOrEqual(Region.TWMS, 148)) {
+            data.Encode4(1000000);
         }
+        List<MapleCharacter> chars = client.loadCharactersFromDB();
+        int charslots = client.getCharSlots();
+        data.Encode1(chars.size());
+        for (MapleCharacter chr : chars) {
+            data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
+            data.EncodeBuffer(DataAvatarLook.Encode(chr));
+            if (Version.GreaterOrEqual(Region.TWMS, 121)) {
+                data.Encode1(0);
+            }
+            data.Encode1(1);
+            data.Encode4(chr.getRank());
+            data.Encode4(chr.getRankMove());
+            data.Encode4(chr.getJobRank());
+            data.Encode4(chr.getJobRankMove());
+        }
+
         if (Version.GreaterOrEqual(Region.TWMS, 148)) {
-            sp.Encode1(1);
+            data.Encode1(3);
+            data.Encode1(0);
+            data.Encode4(charslots);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode4(0);
+            data.Encode8(0);
+        } else if (Version.GreaterOrEqual(Region.TWMS, 121)) {
+            data.Encode2(3); // 2nd password state
+            data.Encode8(charslots);
+            data.Encode8(0);
+        } else {
+            // TWMS v94
+            data.Encode1(3);
+            data.Encode1(0);
+            data.Encode4(charslots);
         }
-
-        return sp;
+        return data.getBytes();
     }
 }
