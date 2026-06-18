@@ -37,11 +37,10 @@ import tacos.packet.ops.OpsChangeStat;
 public class DataGW_CharacterStat {
 
     // GW_CharacterStat::Decode
-    // CharStats
     public static byte[] Encode(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode4(chr.getId());
+        data.Encode4(chr.getId()); // dwCharacterID
         data.EncodeBuffer(chr.getName(), Content.CharacterNameLength.getInt());
         data.Encode1(chr.getGender());
         data.Encode1(chr.getSkinColor());

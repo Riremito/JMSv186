@@ -136,6 +136,10 @@ public class ReqCLogin {
                 client.SendPacket(ResCLogin.ViewAllCharResult(client, OpsViewAllChar.VAC_ResCode_Success));
                 return true;
             }
+            case CP_SelectCharacterByVAC: {
+                OnSelectCharacterByVAC(client, cp);
+                return true;
+            }
             case CP_JMS_CheckGameGuardUpdated: {
                 // JMS147 : @0010
                 // ログインボタンの有効化 (GameGuard Update)
@@ -549,8 +553,29 @@ public class ReqCLogin {
             client.loginFailed("OnSelectCharacter");
             return false;
         }
+
         TacosChannel game_server = TacosWorld.find(client.getSelectedWorld()).getChannelServer(client.getSelectedChannel() + 1);
         client.sendSelectCharacterResult(game_server, character_id);
+        client.getLoginServer().getAuthorizedClients().remove(client);
+        return true;
+    }
+
+    public static boolean OnSelectCharacterByVAC(MapleClient client, ClientPacket cp) {
+        int dwCharacterID = cp.Decode4();
+        int wolrd_id = cp.Decode4();
+        String mac_addresses = cp.DecodeStr(); // sMacAddress
+        String hwid = cp.DecodeStr(); // sMacAddressWithHDDSerial
+
+        if (!client.checkCharacterId(dwCharacterID)) {
+            client.loginFailed("OnSelectCharacterByVAC");
+            return false;
+        }
+
+        client.setSelectedWorld(wolrd_id);
+        client.setSelectedChannel(0);
+
+        TacosChannel game_server = TacosWorld.find(client.getSelectedWorld()).getChannelServer(client.getSelectedChannel() + 1);
+        client.sendSelectCharacterByVACResult(game_server, dwCharacterID);
         client.getLoginServer().getAuthorizedClients().remove(client);
         return true;
     }

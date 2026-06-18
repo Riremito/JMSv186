@@ -562,10 +562,9 @@ public class ResCLogin {
                     sp.Encode4(chr.getJobRankMove());
                 }
 
-                if (chars.size() <= 0) {
-                    sp.Encode1(0); // m_bLoginOpt
+                if (Region.check(Region.GMS)) {
+                    sp.Encode1(2); // m_bLoginOpt
                 }
-
                 break;
             }
             case VAC_ResCode_CountRelatedSvrs: {
