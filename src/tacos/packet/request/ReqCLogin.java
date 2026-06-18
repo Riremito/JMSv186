@@ -44,7 +44,8 @@ import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCLogin;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.ops.OpsLoginResCode;
+import tacos.packet.ops.OpsLogin;
+import tacos.packet.ops.OpsViewAllChar;
 import tacos.server.TacosChannel;
 import tacos.server.TacosWorld;
 import tacos.wz.WzXML;
@@ -131,9 +132,8 @@ public class ReqCLogin {
                 return true;
             }
             case CP_ViewAllChar: {
-                // JMS186 : @000A
-                client.SendPacket(ResCLogin.ViewAllCharResult(client, true));
-                client.SendPacket(ResCLogin.ViewAllCharResult(client, false));
+                client.SendPacket(ResCLogin.ViewAllCharResult(client, OpsViewAllChar.VAC_ResCode_CountRelatedSvrs));
+                client.SendPacket(ResCLogin.ViewAllCharResult(client, OpsViewAllChar.VAC_ResCode_Success));
                 return true;
             }
             case CP_JMS_CheckGameGuardUpdated: {
@@ -361,19 +361,19 @@ public class ReqCLogin {
                     || dice_str < 4 || dice_str < 4 || dice_dex < 4 || dice_int < 4 || dice_luk < 4
                     || 12 < dice_str || 12 < dice_dex || 12 < dice_int || 12 < dice_luk) {
                 DebugLogger.DebugLog("dice error");
-                client.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
+                client.SendPacket(ResCLogin.CreateNewCharacterResult(null, OpsLogin.LoginResCode_Unknown));
                 return false;
             }
         }
         // data check
         if (!WzDataStorage.FACE.check(face_id) || !WzDataStorage.HAIR.check(hair_id)) {
             DebugLogger.DebugLog("Character creation error");
-            client.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
+            client.SendPacket(ResCLogin.CreateNewCharacterResult(null, OpsLogin.LoginResCode_Unknown));
             return false;
         }
         // name check
         if (!checkCharacterName(character_name)) {
-            client.SendPacket(ResCLogin.CreateNewCharacterResult(null, false));
+            client.SendPacket(ResCLogin.CreateNewCharacterResult(null, OpsLogin.LoginResCode_InvalidCharacterName));
             return false;
         }
 
@@ -415,7 +415,7 @@ public class ReqCLogin {
 
         DebugUser.AddStarterSet(chr);
         chr.saveNewCharToDB();
-        client.SendPacket(ResCLogin.CreateNewCharacterResult(chr, true));
+        client.SendPacket(ResCLogin.CreateNewCharacterResult(chr, OpsLogin.LoginResCode_Success));
         client.addCharacter(chr);
         return true;
     }
@@ -475,7 +475,7 @@ public class ReqCLogin {
 
         // もみじ(1)
         if (world == 1) {
-            client.SendPacket(ResCLogin.SelectWorldResult(client, OpsLoginResCode.LoginResCode_Timeout));
+            client.SendPacket(ResCLogin.SelectWorldResult(client, OpsLogin.LoginResCode_Timeout));
             return false;
         }
         // 強制的にかえで(0)に書き換える
@@ -486,7 +486,7 @@ public class ReqCLogin {
         client.setSelectedWorld(world);
         client.setSelectedChannel(channel);
         DQ_Character_slots.load(client);
-        client.SendPacket(ResCLogin.SelectWorldResult(client, OpsLoginResCode.LoginResCode_Success));
+        client.SendPacket(ResCLogin.SelectWorldResult(client, OpsLogin.LoginResCode_Success));
         return true;
     }
 
@@ -521,7 +521,7 @@ public class ReqCLogin {
         }
 
         boolean success = DQ_Characters.deleteCharacter(client, character_id);
-        client.SendPacket(ResCLogin.DeleteCharacterResult(character_id, success));
+        client.SendPacket(ResCLogin.DeleteCharacterResult(character_id, success ? OpsLogin.LoginResCode_Success : OpsLogin.LoginResCode_Unknown));
         return success;
     }
 
@@ -558,7 +558,7 @@ public class ReqCLogin {
     // TODO : move to other class.
     public static boolean checkLogin(MapleClient client, String maple_id, String password) {
         if (5 <= client.loginAttempt()) {
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_DBFail));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLogin.LoginResCode_DBFail));
             return false;
         }
         boolean endwith_ = false;
@@ -604,7 +604,7 @@ public class ReqCLogin {
 
     public static void registerClient(MapleClient client) {
         if (client.getLoginServer().isAdminOnly() && !client.isGameMaster()) {
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_ImpossibleIP));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLogin.LoginResCode_ImpossibleIP));
             return;
         }
         if (System.currentTimeMillis() - lastUpdate > 600000) {
@@ -615,9 +615,9 @@ public class ReqCLogin {
             Random rand = new Random();
             long client_key = rand.nextLong();
             client.setClientKey(client_key);
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_Success));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLogin.LoginResCode_Success));
         } else {
-            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLoginResCode.LoginResCode_AlreadyConnected));
+            client.SendPacket(ResCLogin.CheckPasswordResult(client, OpsLogin.LoginResCode_AlreadyConnected));
             return;
         }
         // 2次パスワード要求する場合は入力を待つ必要がある, -1で無視すれば不要

@@ -24,7 +24,7 @@ import tacos.config.Version;
  *
  * @author Riremito
  */
-public enum OpsLoginResCode implements IPacketOps {
+public enum OpsLogin implements IPacketOps {
     LoginResCode_ProcFail(-1),
     LoginResCode_Success(0),
     LoginResCode_TempBlocked(1),
@@ -69,11 +69,11 @@ public enum OpsLoginResCode implements IPacketOps {
 
     private int value;
 
-    OpsLoginResCode(int val) {
+    OpsLogin(int val) {
         this.value = val;
     }
 
-    OpsLoginResCode() {
+    OpsLogin() {
         this.value = -1;
     }
 
@@ -87,8 +87,8 @@ public enum OpsLoginResCode implements IPacketOps {
         this.value = val;
     }
 
-    public static OpsLoginResCode find(int val) {
-        for (OpsLoginResCode ops : values()) {
+    public static OpsLogin find(int val) {
+        for (OpsLogin ops : values()) {
             if (ops.get() == val) {
                 if (val != UNKNOWN.get()) {
                     return ops;
@@ -99,7 +99,7 @@ public enum OpsLoginResCode implements IPacketOps {
     }
 
     public static void clear() {
-        for (OpsLoginResCode ops : values()) {
+        for (OpsLogin ops : values()) {
             ops.set(UNKNOWN.get());
         }
     }

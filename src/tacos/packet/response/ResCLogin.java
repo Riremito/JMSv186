@@ -26,7 +26,9 @@ import tacos.config.Version;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.OpsLoginResCode;
+import tacos.packet.ops.OpsLogin;
+import tacos.packet.ops.OpsPinCodeResCode;
+import tacos.packet.ops.OpsViewAllChar;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCharacterData;
 import tacos.packet.response.data.DataGW_CharacterStat;
@@ -44,13 +46,14 @@ import tacos.tools.TacosTools;
 public class ResCLogin {
 
     public static ServerPacket CheckPasswordResult(MapleClient client, int result) {
-        return CheckPasswordResult(client, OpsLoginResCode.find(result));
+        return CheckPasswordResult(client, OpsLogin.find(result));
     }
 
     // CLogin::OnCheckPasswordResult
-    public static ServerPacket CheckPasswordResult(MapleClient client, OpsLoginResCode result) {
+    public static ServerPacket CheckPasswordResult(MapleClient client, OpsLogin ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPasswordResult);
-        sp.Encode1(result.get()); // result
+
+        sp.Encode1(ops.get()); // ops
 
         // EMS v55-v70
         if (Region.IsGMS() || (Region.IsEMS() && Version.PreBB())) {
@@ -63,7 +66,7 @@ public class ResCLogin {
         20 : BAN Blue Message
         40 : BAN Blue Message
          */
-        switch (result) {
+        switch (ops) {
             case LoginResCode_Success: {
                 {
                     switch (Region.getRegion()) {
@@ -433,29 +436,69 @@ public class ResCLogin {
     }
 
     // CLogin::OnGuestIDLoginResult
-    public static ServerPacket GuestIDLoginResult(MapleClient client, OpsLoginResCode result) {
+    public static ServerPacket GuestIDLoginResult(MapleClient client, OpsLogin ops, int m_nRegStatID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuestIDLoginResult);
-        sp.Encode1(result.get()); // result code
-        switch (result) {
-            case LoginResCode_Success: {
-                sp.Encode4(client.getId()); // dwAccountId
-                sp.Encode1(client.getGender()); // nGender
-                sp.Encode1(0); // nGradeCode
-                sp.EncodeStr(client.getMapleId()); // sNexonClubID
-                sp.Encode1(0);
-                sp.Encode1(0);
-                sp.Encode8(0); // buf
-                sp.EncodeStr("");
-                sp.EncodeStr("");
+
+        sp.Encode1(ops.get()); // ops code
+        sp.Encode1(m_nRegStatID); // m_nRegStatID
+
+        switch (ops) {
+            case LoginResCode_Success:
+            case LoginResCode_NotAdult:
+            case LoginResCode_NotagreedEULA: {
+                if (m_nRegStatID == 0 || m_nRegStatID == 1) {
+                    sp.Encode4(client.getId()); // m_dwAccountId
+                    sp.Encode1(client.getGender()); // m_nGender
+                    sp.Encode1(0); // m_nGradeCode
+                    sp.Encode1(0); // m_nCountryID
+                    sp.Encode1(0); // unused.
+                    sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
+                    sp.Encode1(0); // m_nPurchaseExp
+                    sp.Encode1(0); // m_nChatBlockReason
+                    sp.Encode8(0); // m_dtChatUnblockDate
+                    sp.Encode8(0); // m_dtRegisterDate
+                    sp.Encode4(0); // m_nNumOfCharacter
+                    sp.EncodeStr(""); // m_URLGuestIDRegistration
+                }
             }
             default: {
                 break;
             }
         }
+
         return sp;
     }
 
     // CLogin::OnAccountInfoResult
+    public static ServerPacket AccountInfoResult(MapleClient client, OpsLogin ops) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AccountInfoResult);
+
+        sp.Encode1(ops.get());
+        switch (ops) {
+            case LoginResCode_Success:
+            case LoginResCode_NotAdult:
+            case LoginResCode_NotagreedEULA: {
+                sp.Encode4(client.getId()); // m_dwAccountId
+                sp.Encode1(client.getGender()); // m_nGender
+                sp.Encode1(0); // m_nGradeCode
+                sp.Encode2(0); // m_nSubGradeCode | (m_bTesterAccount << 8)
+                sp.Encode1(0); // m_nCountryID
+                sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
+                sp.Encode1(0); // m_nPurchaseExp
+                sp.Encode1(0); // m_nChatBlockReason
+                sp.Encode8(0); // m_dtChatUnblockDate
+                sp.Encode8(0); // m_dtRegisterDate
+                sp.Encode4(0); // m_nNumOfCharacter
+                sp.Encode8(0); // m_aClientKey
+            }
+            default: {
+                break;
+            }
+        }
+
+        return sp;
+    }
+
     // CLogin::OnCheckUserLimitResult
     public static ServerPacket CheckUserLimitResult(int status) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckUserLimitResult);
@@ -465,39 +508,80 @@ public class ResCLogin {
     }
 
     // CLogin::OnSetAccountResult
+    public static ServerPacket SetAccountResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetAccountResult);
+
+        sp.Encode1(0); // m_nGender
+        sp.Encode1(0);
+        return sp;
+    }
+
     // CLogin::OnConfirmEULAResult
+    public static ServerPacket ConfirmEULAResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ConfirmEULAResult);
+
+        sp.Encode1(0);
+        return sp;
+    }
+
     // CLogin::OnCheckPinCodeResult
-    public static ServerPacket CheckPinCodeResult(byte mode) {
+    public static ServerPacket CheckPinCodeResult(OpsPinCodeResCode ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPinCodeResult);
-        /*
-        14 : Invalid password
-        15 : Second password is incorrect
-         */
-        sp.Encode1(mode);
+
+        sp.Encode1(ops.get());
         return sp;
     }
 
     // CLogin::OnUpdatePinCodeResult
+    public static ServerPacket UpdatePinCodeResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UpdatePinCodeResult);
+
+        sp.Encode1(OpsLogin.LoginResCode_Success.get());
+        sp.Encode4(0);
+        return sp;
+    }
+
     // CLogin::OnViewAllCharResult
-    public static ServerPacket ViewAllCharResult(MapleClient client, boolean isAlloc) {
+    public static ServerPacket ViewAllCharResult(MapleClient client, OpsViewAllChar ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ViewAllCharResult);
         List<MapleCharacter> chars = client.loadCharactersFromDB(); // world 0 only (test)
-        sp.Encode1(isAlloc ? 1 : 0);
 
-        if (isAlloc) {
-            sp.Encode4(1); // m_nCountRelatedSvrs
-            sp.Encode4(chars.size()); // m_nCountCharacters
-        } else {
-            sp.Encode1(0); // nWorldID
-            sp.Encode1(chars.size());
-            for (MapleCharacter chr : chars) {
-                sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-                sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-                sp.Encode1(1); // ranking
-                sp.Encode4(chr.getRank()); // all world ranking
-                sp.Encode4(chr.getRankMove());
-                sp.Encode4(chr.getJobRank()); // world ranking
-                sp.Encode4(chr.getJobRankMove());
+        sp.Encode1(ops.get());
+        switch (ops) {
+            case VAC_ResCode_Success: {
+                sp.Encode1(0); // m_anWorldID
+                sp.Encode1(chars.size()); // m_nCountRelatedSvrs
+                for (MapleCharacter chr : chars) {
+                    sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
+                    sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+                    sp.Encode1(1); // ranking
+                    // m_aRankVAC 16 bytes.
+                    sp.Encode4(chr.getRank()); // all world ranking
+                    sp.Encode4(chr.getRankMove());
+                    sp.Encode4(chr.getJobRank()); // world ranking
+                    sp.Encode4(chr.getJobRankMove());
+                }
+
+                if (chars.size() <= 0) {
+                    sp.Encode1(0); // m_bLoginOpt
+                }
+
+                break;
+            }
+            case VAC_ResCode_CountRelatedSvrs: {
+                sp.Encode4(1); // m_nCountRelatedSvrs
+                sp.Encode4(chars.size()); // m_nCountCharacters
+                break;
+            }
+            case VAC_ResCode_TimedOut:
+            case VAC_ResCode_DBError:
+            case VAC_ResCode_VADDlgAlreadyOn: {
+                sp.Encode1(1);
+                sp.EncodeStr("");
+                break;
+            }
+            default: {
+                break;
             }
         }
 
@@ -505,6 +589,19 @@ public class ResCLogin {
     }
 
     // CLogin::OnSelectCharacterByVACResult
+    public static ServerPacket SelectCharacterByVACResult(TacosServer game_server, int character_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterByVACResult);
+
+        sp.Encode1(0);
+        sp.Encode1(0);
+        sp.Encode4(TacosTools.getGameServerIP(game_server.getGlobalIP())); // sin_addr
+        sp.Encode2(game_server.getPort()); // sin_port
+        sp.Encode4(character_id); // m_dwCharacterId
+        sp.Encode1(0); // bAuthenCode, (m_bPremium << 1)
+        sp.Encode4(0); // m_ulPremiumArgument
+        return sp;
+    }
+
     // CLogin::OnWorldInformation
     public static ServerPacket WorldInformation(TacosWorld world) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WorldInformation);
@@ -568,10 +665,10 @@ public class ResCLogin {
     }
 
     // CLogin::OnSelectWorldResult
-    public static ServerPacket SelectWorldResult(MapleClient client, OpsLoginResCode result) {
+    public static ServerPacket SelectWorldResult(MapleClient client, OpsLogin result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectWorldResult);
         sp.Encode1(result.get());
-        if (result != OpsLoginResCode.LoginResCode_Success) {
+        if (result != OpsLogin.LoginResCode_Success) {
             // error
             return sp;
         }
@@ -830,16 +927,17 @@ public class ResCLogin {
     public static ServerPacket CheckDuplicatedIDResult(String name, boolean isOK) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckDuplicatedIDResult);
 
-        sp.EncodeStr(name);
+        sp.EncodeStr(name); // m_sCheckedName
         sp.Encode1(isOK ? 0 : 1); // 0 = OK
         return sp;
     }
 
     // CLogin::OnCreateNewCharacterResult
-    public static ServerPacket CreateNewCharacterResult(MapleCharacter chr, boolean worked) {
+    public static ServerPacket CreateNewCharacterResult(MapleCharacter chr, OpsLogin ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CreateNewCharacterResult);
-        sp.Encode1(worked ? 0 : 1);
-        if (worked) {
+
+        sp.Encode1(ops.get());
+        if (ops == OpsLogin.LoginResCode_Success) {
             if (Region.check(Region.KMSB)) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
                 return sp;
@@ -847,15 +945,16 @@ public class ResCLogin {
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
         }
+
         return sp;
     }
 
     // CLogin::OnDeleteCharacterResult
-    public static ServerPacket DeleteCharacterResult(int character_id, boolean success) {
+    public static ServerPacket DeleteCharacterResult(int character_id, OpsLogin ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DeleteCharacterResult);
 
         sp.Encode4(character_id);
-        sp.Encode1(success ? 0 : 1);
+        sp.Encode1(ops.get());
         return sp;
     }
 
@@ -872,7 +971,6 @@ public class ResCLogin {
     public static ServerPacket EnableSPWResult() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EnableSPWResult);
 
-        // ?
         sp.Encode1(0);
         sp.Encode1(0);
         return sp;
@@ -882,7 +980,7 @@ public class ResCLogin {
     public static ServerPacket LatestConnectedWorld() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_LatestConnectedWorld);
 
-        sp.Encode4(0); // World ID
+        sp.Encode4(0); // m_nLatestConnectedWorldID
         return sp;
     }
 
@@ -890,11 +988,12 @@ public class ResCLogin {
     public static ServerPacket RecommendWorldMessage() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_RecommendWorldMessage);
         String[] recommendedReasons = {"これはSELECTを押してもワールドがアクティブになるだけです", "ゴミ機能です", "XXXX"};
+
         sp.Encode1(recommendedReasons.length);
 
         for (int world_id = 0; world_id < recommendedReasons.length; world_id++) {
-            sp.Encode4(world_id);
-            sp.EncodeStr(recommendedReasons[world_id]);
+            sp.Encode4(world_id); // nWorldID
+            sp.EncodeStr(recommendedReasons[world_id]); // sMessage
         }
 
         return sp;
@@ -912,6 +1011,23 @@ public class ResCLogin {
             sp.Encode1(1);
         }
 
+        return sp;
+    }
+
+    // CLogin::OnExtraCharInfoResult
+    public static ServerPacket CheckExtraCharInfoResult(MapleClient client) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckExtraCharInfoResult);
+
+        sp.Encode4(client.getId()); // m_dwAccountId
+        sp.Encode1(0);
+        return sp;
+    }
+
+    // CLogin::OnCheckSPWResult
+    public static ServerPacket OnCheckSPWResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckSPWResult);
+
+        sp.Encode1(0); // unused.
         return sp;
     }
 
@@ -937,6 +1053,7 @@ public class ResCLogin {
             data.Encode4(0);
             data.Encode4(0);
         }
+
         return data.getBytes();
     }
 
@@ -980,6 +1097,7 @@ public class ResCLogin {
             data.Encode1(0);
             data.Encode4(charslots);
         }
+
         return data.getBytes();
     }
 }
