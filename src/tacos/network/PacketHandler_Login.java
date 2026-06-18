@@ -19,6 +19,7 @@
 package tacos.network;
 
 import odin.client.MapleClient;
+import org.apache.mina.common.IoSession;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
@@ -34,6 +35,25 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
 
     public PacketHandler_Login(TacosLogin login_server) {
         super(login_server, -1);
+    }
+
+    @Override
+    public void sessionOpened(IoSession session) throws Exception {
+        super.sessionOpened(session);
+        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        if (client != null) {
+            client.getLoginServer().getClients().add(client);
+        }
+    }
+
+    @Override
+    public void sessionClosed(IoSession session) throws Exception {
+        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        if (client != null) {
+            client.getLoginServer().getClients().remove(client);
+            client.getLoginServer().getAuthorizedClients().remove(client);
+        }
+        super.sessionClosed(session);
     }
 
     @Override

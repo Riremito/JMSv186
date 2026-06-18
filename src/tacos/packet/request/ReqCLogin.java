@@ -62,8 +62,8 @@ public class ReqCLogin {
             case CP_CheckPassword: {
                 // ログイン
                 if (OnCheckPassword(client, cp)) {
-                    client.getLoginServer().removeClient(client);
-                    client.getLoginServer().addAuthorizedClient(client);
+                    client.getLoginServer().getClients().remove(client);
+                    client.getLoginServer().getAuthorizedClients().add(client);
                     DebugLogger.InfoLog("[LOGIN MAPLEID] \"" + client.getMapleId() + "\"");
                     if (ContentState.CS_NETCAFE.get()) {
                         client.SendPacket(ResCClientSocket.AuthenMessage());
@@ -551,7 +551,7 @@ public class ReqCLogin {
         }
         TacosChannel game_server = TacosWorld.find(client.getSelectedWorld()).getChannelServer(client.getSelectedChannel() + 1);
         client.sendSelectCharacterResult(game_server, character_id);
-        client.getLoginServer().removeAuthorizedClient(client);
+        client.getLoginServer().getAuthorizedClients().remove(client);
         return true;
     }
 

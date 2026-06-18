@@ -35,9 +35,7 @@ import tacos.packet.response.ResCClientSocket;
 import odin.server.Randomizer;
 import org.apache.mina.common.ExecutorThreadModel;
 import tacos.packet.ClientPacketHeader;
-import tacos.server.TacosLogin;
 import tacos.server.TacosServer;
-import tacos.server.TacosServerType;
 
 /**
  *
@@ -92,7 +90,7 @@ public class PacketHandler extends IoHandlerAdapter {
         return cfg;
     }
 
-    private TacosServer server;
+    protected TacosServer server;
     protected String server_name;
     protected int channel = -1;
 
@@ -118,23 +116,20 @@ public class PacketHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void sessionOpened(final IoSession session) throws Exception {
+    public void sessionOpened(IoSession session) throws Exception {
         log(session, "sessionOpened.");
         if (this.server.isShutdown()) {
             session.close();
             return;
         }
 
-        final byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
-        final byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
+        byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
+        byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
 
         MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true, true);
         MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, true, false);
         MapleClient client = new MapleClient(session);
         client.setServer(this.server);
-        if (this.server.getType() == TacosServerType.LOGIN_SERVER) {
-            ((TacosLogin) this.server).addClient(client);
-        }
 
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
         session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
@@ -146,7 +141,7 @@ public class PacketHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void sessionClosed(final IoSession session) throws Exception {
+    public void sessionClosed(IoSession session) throws Exception {
         log(session, "sessionClosed.");
         MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
@@ -158,22 +153,19 @@ public class PacketHandler extends IoHandlerAdapter {
                     client.setPlayer(null);
                     chr.notityOnlineToFriends(false);
                 }
-                if (this.server.getType() == TacosServerType.LOGIN_SERVER) {
-                    ((TacosLogin) this.server).removeClient(client);
-                    ((TacosLogin) this.server).removeAuthorizedClient(client);
-                }
             } finally {
                 session.close();
                 session.removeAttribute(MapleClient.CLIENT_KEY);
             }
         }
+
         super.sessionClosed(session);
     }
 
     @Override
     public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
         log(session, "sessionIdle.");
-        final MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
 
         if (client != null) {
             client.sendPing();
