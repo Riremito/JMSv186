@@ -39,6 +39,7 @@ import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.TacosChannel;
 import tacos.wz.WzXML;
@@ -54,6 +55,10 @@ public class TestCommand {
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
+            case "/koc164": {
+                chr.SendPacket(ResCWvsContext.KOC_UI_Open());
+                return true;
+            }
             case "/split": {
                 map.getMapSplit().sendInfo(chr);
                 return true;

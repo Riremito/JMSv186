@@ -51,6 +51,7 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_MigrateIn,
     CP_CheckDuplicatedID,
     CP_CreateNewCharacter,
+    CP_JMS_164_KOC_UI_Request,
     CP_CreateNewCharacterInCS,
     CP_DeleteCharacter,
     CP_AliveAck,

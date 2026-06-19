@@ -18,6 +18,7 @@
  */
 package tacos.packet.request;
 
+import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.constants.MapleClientState;
@@ -33,6 +34,7 @@ import odin.handling.world.PartyOperation;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
+import odin.client.PlayerStats;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;
@@ -42,13 +44,19 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
+import tacos.config.Content;
+import tacos.database.query.DQ_Characters;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCashItem;
+import static tacos.packet.request.ReqCLogin.SetDefaultEquip;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
+import tacos.packet.response.ResCUserLocal;
 import tacos.server.TacosWorld;
+import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -81,7 +89,11 @@ public class ReqCClientSocket {
         switch (header) {
             case CP_MigrateIn: {
                 // enter game server, change channel, leave cs/mts.
-                OnMigrateIn(cp, client);
+                OnMigrateIn(client, cp);
+                return true;
+            }
+            case CP_JMS_164_KOC_UI_Request: {
+                OnKOCCreation(client, cp);
                 return true;
             }
             case CP_AliveAck: {
@@ -103,7 +115,7 @@ public class ReqCClientSocket {
         switch (header) {
             case CP_MigrateIn: {
                 // enter mts.
-                OnMigrateIn(cp, client);
+                OnMigrateIn(client, cp);
                 return true;
             }
             case CP_AliveAck: {
@@ -125,7 +137,7 @@ public class ReqCClientSocket {
         switch (header) {
             case CP_MigrateIn: {
                 // enter cashshop.
-                OnMigrateIn(cp, client);
+                OnMigrateIn(client, cp);
                 return true;
             }
             case CP_AliveAck: {
@@ -142,7 +154,7 @@ public class ReqCClientSocket {
         return false;
     }
 
-    public static boolean OnMigrateIn(ClientPacket cp, MapleClient client) {
+    public static boolean OnMigrateIn(MapleClient client, ClientPacket cp) {
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             int unk1 = cp.Decode4();
         }
@@ -319,7 +331,7 @@ public class ReqCClientSocket {
                 //chr.startFairySchedule(false);
                 // 期限切れ
                 //chr.expirationTask();
-                //if (chr.getJob() == 132) {
+                //if (chr_koc.getJob() == 132) {
                 //chr.checkBerserk();
                 //}
                 // internet cafe
@@ -377,4 +389,90 @@ public class ReqCClientSocket {
         return true;
     }
 
+    public static boolean OnKOCCreation(MapleClient client, ClientPacket cp) {
+        ArrayList<Integer> item_ids = new ArrayList<>();
+        String name = cp.DecodeStr();
+        int face_id = cp.Decode4();
+        int hair_id = cp.Decode4();
+        int top_id = cp.Decode4();
+        item_ids.add(top_id);
+        int bottom_id = cp.Decode4();
+        item_ids.add(bottom_id);
+        int shoes_id = cp.Decode4();
+        item_ids.add(shoes_id);
+        int weapon_id = cp.Decode4();
+        item_ids.add(weapon_id);
+
+        // item id checks. TODO : more validation.
+        if (!WzDataStorage.FACE.check(face_id) || !WzDataStorage.HAIR.check(hair_id)) {
+            client.SendPacket(ResCUserLocal.KOC_UI_Response(-1));
+            return false;
+        }
+
+        for (int item_id : item_ids) {
+            if (!WzDataStorage.ITEM.check(item_id)) {
+                client.SendPacket(ResCUserLocal.KOC_UI_Response(-1));
+                return false;
+            }
+        }
+
+        // no character slot.
+        client.loadCharactersFromDB();
+        if (client.getCharSlots() <= client.getCharaterCount()) {
+            client.SendPacket(ResCUserLocal.KOC_UI_Response(2));
+            return false;
+        }
+
+        // name is duplicated.
+        if (DQ_Characters.getIdByName(name) != -1) {
+            client.SendPacket(ResCUserLocal.KOC_UI_Response(1));
+            return false;
+        }
+
+        // invalid name.
+        if (name.getBytes().length < 2 || (Content.CharacterNameLength.getInt() - 1) < name.getBytes().length | WzXML.ETC.isForbiddenName(name)) {
+            client.SendPacket(ResCUserLocal.KOC_UI_Response(3));
+            return true;
+        }
+
+        // create new character.
+        MapleCharacter chr_koc = new MapleCharacter();
+        chr_koc.init_step1();
+        chr_koc.setClient(client);
+        chr_koc.setFace(face_id);
+        chr_koc.setHair(hair_id);
+        chr_koc.setGender(client.getPlayer().getGender()); // same gender.
+        chr_koc.setName(name);
+        chr_koc.setSkinColor(10);
+        chr_koc.setJob(1000);
+
+        PlayerStats stat = chr_koc.getStat();
+        stat.str = 12;
+        stat.dex = 5;
+        stat.int_ = 4;
+        stat.luk = 4;
+        stat.maxhp = 50;
+        stat.hp = 50;
+        stat.maxmp = 50;
+        stat.mp = 50;
+
+        chr_koc.setAccountId(client.getId());
+        chr_koc.setLevel(1);
+        chr_koc.setRemainingAp(0);
+        chr_koc.setFame(0);
+        chr_koc.setExp(0);
+        chr_koc.setMeso(0);
+        chr_koc.setMap(null);
+        chr_koc.setBuddylist(20);
+
+        for (int item_id : item_ids) {
+            SetDefaultEquip(chr_koc, item_id);
+        }
+
+        chr_koc.saveNewCharToDB();
+        client.addCharacter(chr_koc);
+
+        client.SendPacket(ResCUserLocal.KOC_UI_Response(0));
+        return true;
+    }
 }

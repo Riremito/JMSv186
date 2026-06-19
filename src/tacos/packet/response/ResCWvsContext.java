@@ -2391,6 +2391,12 @@ public class ResCWvsContext {
         return sp;
     }
 
+    public static ServerPacket KOC_UI_Open() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_164_KOC_UI_Open);
+
+        return sp;
+    }
+
     public static ServerPacket NotifyJobChange(boolean family, int jobid, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyJobChange);
 

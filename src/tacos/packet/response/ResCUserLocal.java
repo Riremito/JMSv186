@@ -279,6 +279,21 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // JMS164 only. removed in JMS165. KOC Creation UI Test version.
+    public static ServerPacket KOC_UI_Response(int error_code) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_164_KOC_UI_Response);
+
+        /*
+            0  : 騎士団キャラクターが作成されました。\r\nゲーム終了後再接続すると\r\n騎士団キャラクターが選択できます。
+            1  : 既に同名のキャラクターが存在しています。
+            2  : インベントリに空きがありません。ポイントショップにてインベントリ拡張アイテムを購入して下さい。
+            3  : この名前は使用できません。
+            -1 : 原因不明のエラーで騎士団キャラクターの作成に失敗しました。
+         */
+        sp.Encode4(error_code);
+        return sp;
+    }
+
     public static ServerPacket UserHireTutor(boolean summon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHireTutor);
 
