@@ -394,6 +394,12 @@ public class ReqCClientSocket {
         String name = cp.DecodeStr();
         int face_id = cp.Decode4();
         int hair_id = cp.Decode4();
+        int skin_color = 10;
+        if (Region.check(Region.GMS)) {
+            int hair_color = cp.Decode4();
+            hair_id += hair_color;
+            skin_color = cp.Decode4();
+        }
         int top_id = cp.Decode4();
         item_ids.add(top_id);
         int bottom_id = cp.Decode4();
@@ -402,6 +408,7 @@ public class ReqCClientSocket {
         item_ids.add(shoes_id);
         int weapon_id = cp.Decode4();
         item_ids.add(weapon_id);
+        int gender_id = Region.check(Region.GMS) ? cp.Decode4() : client.getPlayer().getGender();
 
         // item id checks. TODO : more validation.
         if (!WzDataStorage.FACE.check(face_id) || !WzDataStorage.HAIR.check(hair_id)) {
@@ -441,9 +448,9 @@ public class ReqCClientSocket {
         chr_koc.setClient(client);
         chr_koc.setFace(face_id);
         chr_koc.setHair(hair_id);
-        chr_koc.setGender(client.getPlayer().getGender()); // same gender.
+        chr_koc.setGender(gender_id);
         chr_koc.setName(name);
-        chr_koc.setSkinColor(10);
+        chr_koc.setSkinColor(skin_color);
         chr_koc.setJob(1000);
 
         PlayerStats stat = chr_koc.getStat();
