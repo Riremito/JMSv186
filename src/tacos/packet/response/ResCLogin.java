@@ -975,6 +975,20 @@ public class ResCLogin {
         return sp;
     }
 
+    public static ServerPacket JMS187_UNK0012() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_187_UNK_0012);
+
+        sp.EncodeStr("unk12");
+        return sp;
+    }
+
+    public static ServerPacket SafetyPasswordResult(boolean is_failed) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_SafetyPasswordResult);
+
+        sp.Encode1(is_failed ? 1 : 0);
+        return sp;
+    }
+
     // CLogin::OnLatestConnectedWorld
     public static ServerPacket LatestConnectedWorld() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_LatestConnectedWorld);
@@ -1013,7 +1027,14 @@ public class ResCLogin {
         return sp;
     }
 
-    // CLogin::OnExtraCharInfoResult
+    public static ServerPacket JMS187_UNK0019() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_187_UNK_0019);
+
+        sp.Encode8(0);
+        return sp;
+    }
+
+    // CLogin::OnExtraCharInfoResult, unused code.
     public static ServerPacket CheckExtraCharInfoResult(MapleClient client) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckExtraCharInfoResult);
 

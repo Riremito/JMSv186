@@ -33,6 +33,7 @@ import odin.handling.world.PartyOperation;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
+import odin.client.inventory.MapleInventoryType;
 import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
@@ -322,7 +323,7 @@ public class ReqCClientSocket {
                 //chr.checkBerserk();
                 //}
                 // internet cafe
-                if (ContentState.CS_NETCAFE.get()) {
+                if (ContentState.CS_NETCAFE.get() || chr.getInventory(MapleInventoryType.CASH).findById(5420007) != null) {
                     chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
                 }
                 // 上部スライドメッセージ
