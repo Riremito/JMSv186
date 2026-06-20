@@ -31,6 +31,7 @@ public class PacketOps {
         OpsDBCHAR.init();
         OpsChangeStat.init();
         OpsSecondaryStat.init();
+        OpsMobStat.init();
         OpsTransferField.init();
         OpsTransferChannel.init();
         OpsBroadcastMsg.init();
@@ -52,5 +53,4 @@ public class PacketOps {
         OpsUI.init();
         OpsMoveAbility.init();
     }
-
 }
