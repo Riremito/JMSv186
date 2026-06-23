@@ -93,7 +93,7 @@ public class TacosBuff {
             return new int[5]; // 20
         }
         // JMS180-186 (Pre-BB)
-        if (Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.KMS, 95) || Version.Equal(Region.THMS, 87)) {
+        if (Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.GMS, 83) || Version.Equal(Region.THMS, 87)) {
             return new int[4]; // 16
         }
         // KMS1 = none or 4.
