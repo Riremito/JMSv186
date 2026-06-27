@@ -62,7 +62,6 @@ import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
-import java.util.HashMap;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUserEffect;
@@ -159,12 +158,10 @@ public class MapleCharacter extends TacosCharacter {
     private MapleParty party;
     private boolean invincible = false, canTalk = true;
     private SkillMacro[] skillMacros = new SkillMacro[5];
-    private transient ScheduledFuture<?> beholderHealingSchedule, beholderBuffSchedule, BerserkSchedule,
-            dragonBloodSchedule, fairySchedule, mapTimeLimitTask, fishing;
+    private transient ScheduledFuture<?> fairySchedule, mapTimeLimitTask, fishing;
     private long nextConsume = 0, pqStartTime = 0;
     private transient Event_PyramidSubway pyramidSubway = null;
     private transient List<Integer> pendingExpiration = null, pendingSkills = null;
-    private transient Map<Integer, Integer> movedMobs = new HashMap<Integer, Integer>();
     private String teleportname = "";
     // デバッグモード
     private boolean Debugger = false;
@@ -177,21 +174,12 @@ public class MapleCharacter extends TacosCharacter {
     private IMaplePlayerShop remoteStore = null;
     // ポータルカウント
     private int portal_count = 1;
-    private int last_skill_up_id = 0;
     // ペット回復薬
     private int pet_auto_hp_item_id = 0;
     private int pet_auto_mp_item_id = 0;
     private int pet_auto_cure_item_id = 0;
     // foothold
     private int foothold_id = 0;
-
-    public int getLastSkillUp() {
-        return last_skill_up_id;
-    }
-
-    public void setLastSkillUp(int skillid) {
-        last_skill_up_id = skillid;
-    }
 
     public int getPortalCount() {
         portal_count += 1;
@@ -3203,10 +3191,6 @@ public class MapleCharacter extends TacosCharacter {
         sendStatChanged(true);
     }
 
-    public Map<Integer, Integer> getMoveMobs() {
-        return movedMobs;
-    }
-
     public int getLinkMid() {
         return linkMid;
     }
@@ -3553,10 +3537,6 @@ public class MapleCharacter extends TacosCharacter {
         }
         TacosScriptNPC.getInstance().dispose(client);
         TacosScriptQuest.getInstance().dispose(client);
-    }
-
-    public void updateTick(int newTick) {
-        return;
     }
 
     public boolean canUseFamilyBuff(MapleFamilyBuffEntry buff) {

@@ -70,11 +70,9 @@ public class ReqCDropPool {
                 short drop_y = cp.Decode2();
                 int object_id = cp.Decode4();
                 // CRC
-
                 if (!OnDropPickUpRequest(chr, object_id)) {
                     chr.sendStatChanged(true);
                 }
-                chr.updateTick(update_time);
                 return true;
             }
             default: {

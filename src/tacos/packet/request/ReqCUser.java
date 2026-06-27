@@ -1742,7 +1742,6 @@ public class ReqCUser {
             flag = cp.Decode4();
         }
 
-        chr.updateTick(time_stamp);
         return OnAbilityUpRequestInternal(chr, flag);
     }
 
@@ -1962,7 +1961,6 @@ public class ReqCUser {
         }
 
         chr.sendStatChanged(true);
-        chr.updateTick(time_stamp);
         return true;
     }
 
@@ -1995,7 +1993,6 @@ public class ReqCUser {
         if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.GMS, 95)) {
         } else {
             int time_stamp_2 = cp.Decode4();
-            chr.updateTick(time_stamp_2);
         }
 
         if (chr.getStat().getHp() <= 0) {
@@ -2015,14 +2012,13 @@ public class ReqCUser {
         int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
 
-        chr.updateTick(time_stamp);
         return OnSkillUpRequestInternal(chr, skill_id);
     }
 
     public static boolean OnSkillUpRequestInternal(MapleCharacter chr, int skill_id) {
         boolean isBeginnerSkill = false;
-        final int remainingSp;
-        chr.setLastSkillUp(skill_id);
+        int remainingSp;
+        chr.getSpUsed().set(skill_id);
         switch (skill_id) {
             case 1000:
             case 1001:

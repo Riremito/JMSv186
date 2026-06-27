@@ -225,7 +225,6 @@ public class ReqCUser_Pet {
         }
 
         Pickup_Pet(chr, mapitem, chr.getPetIndex(pet));
-        chr.updateTick(timestamp);
         return true;
     }
 

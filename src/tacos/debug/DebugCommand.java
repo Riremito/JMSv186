@@ -731,7 +731,7 @@ public class DebugCommand {
                 return true;
             }
             case "/autosp": {
-                int skill_id = chr.getLastSkillUp();
+                int skill_id = chr.getSpUsed().get();
                 if (skill_id != 0) {
                     while (ReqCUser.OnSkillUpRequestInternal(chr, skill_id));
                 }

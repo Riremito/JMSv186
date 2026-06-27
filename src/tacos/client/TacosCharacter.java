@@ -1198,6 +1198,12 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.pet_npc.move(move_path);
     }
 
+    private TacosValue sp_used = new TacosValue();
+
+    public TacosValue getSpUsed() {
+        return this.sp_used;
+    }
+
     // old code.
     public int getMapId() {
         if (this.map != null) {

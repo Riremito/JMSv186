@@ -212,10 +212,7 @@ public class ReqCSummonedPool {
         if (ServerConfig.JMS164orLater()) {
             cp.Decode4();
             cp.Decode4();
-
             int tick = cp.Decode4();
-            chr.updateTick(tick);
-
             cp.Decode4();
             cp.Decode4();
         }
