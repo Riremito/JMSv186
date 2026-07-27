@@ -75,7 +75,7 @@ public class ResCFuncKeyMappedMan {
         if (!keymap_reset) {
             int KEY_MAP_SIZE = 94; // 470
 
-            if (Region.IsKMS()) {
+            if (Region.check(Region.KMS) || Region.check(Region.KMST)) {
                 KEY_MAP_SIZE = 89; // 445
             }
 

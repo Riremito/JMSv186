@@ -47,11 +47,11 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (Region.IsTHMS() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
+        if (ServerConfig.KMS138orLater() || (Region.check(Region.THMS) && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
             // none
-        } else if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.IsBMS() || Region.IsVMS()) {
+        } else if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.check(Region.BMS) || Region.check(Region.VMS)) {
             data.EncodeZeroBytes(8);
-        } else if ((Region.IsJMS() || Region.IsTHMS() || Region.IsGMS() || Region.IsCMS() || Region.IsMSEA() || ((Region.IsTWMS() || Region.IsEMS()) && Version.PreBB()))) {
+        } else if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.THMS) || Region.IsGMS() || Region.check(Region.CMS) || Region.check(Region.MSEA) || ((Region.check(Region.TWMS) || Region.check(Region.EMS)) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -226,7 +226,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
-            if (Region.IsKMS()) {
+            if (Region.check(Region.KMS) || Region.check(Region.KMST)) {
                 if (ServerConfig.KMS119orLater()) {
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.EncodeZeroBytes(21);
@@ -332,19 +332,19 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp()); // nEXP
         data.Encode2(chr.getFame()); // nPOP
 
-        if ((Region.IsJMS() || Region.IsCMS() || Region.IsTHMS() || Region.IsTWMS() || Version.GreaterOrEqual(Region.GMS, 62) || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB()))
+        if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.CMS) || Region.check(Region.THMS) || Region.check(Region.TWMS) || Version.GreaterOrEqual(Region.GMS, 62) || Region.check(Region.MSEA) || (Region.check(Region.EMS) && Version.PostBB()))
                 && ServerConfig.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
-        if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.IsCMS() || Region.IsMSEA() || (Region.IsEMS() && Version.PostBB())) {
+        if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.check(Region.CMS) || Region.check(Region.MSEA) || (Region.check(Region.EMS) && Version.PostBB())) {
             data.Encode8(0);
         }
 
         data.Encode4(chr.getPosMap()); // dwPosMap
         data.Encode1(chr.getPortal()); // nPortal
 
-        if (Region.IsVMS()) {
+        if (Region.check(Region.VMS)) {
             return data.getBytes();
         }
 
@@ -355,12 +355,12 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.IsEMS() && Version.PreBB()) || Region.IsBMS()) {
+        if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.check(Region.EMS) && Version.PreBB()) || Region.check(Region.BMS)) {
             data.Encode4(0);
         }
 
         // KMS 84
-        if (Version.LessOrEqual(Region.KMS, 84) || Region.IsBMS()) {
+        if (Version.LessOrEqual(Region.KMS, 84) || Region.check(Region.BMS)) {
             return data.getBytes();
         }
         // JMS 180, KMS 95
@@ -374,17 +374,17 @@ public class DataGW_CharacterStat {
         }
 
         // KMS, CMS, EMS
-        if (Region.IsKMS() || Region.IsCMS() || Region.IsGMS() || Region.IsEMS() || Region.IsIMS() || Region.IsMSEA()) {
+        if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.CMS) || Region.IsGMS() || Region.check(Region.EMS) || Region.check(Region.IMS) || Region.check(Region.MSEA)) {
             return data.getBytes();
         }
 
-        if (Region.IsTHMS()) {
+        if (Region.check(Region.THMS)) {
             data.Encode4(0);
             return data.getBytes();
         }
 
         // TWMS
-        if (Region.IsTWMS()) {
+        if (Region.check(Region.TWMS)) {
             data.EncodeZeroBytes(25);
             data.Encode1(0);
             data.Encode1(0);

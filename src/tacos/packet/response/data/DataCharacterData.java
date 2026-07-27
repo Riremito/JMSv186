@@ -230,7 +230,7 @@ public class DataCharacterData {
             data.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
         }
         // v165-v194 OK
-        if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73) && !(Region.IsEMS() && Version.getVersion() == 55)) {
+        if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73) && !(Region.check(Region.EMS) && Version.getVersion() == 55)) {
             // 0x100000
             if ((datamask & 1048576) != 0) {
                 data.Encode4(0);
@@ -408,7 +408,7 @@ public class DataCharacterData {
         if (Version.PostBB()) {
             data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
-        if (Region.IsTHMS() || Region.IsVMS()) {
+        if (Region.check(Region.THMS) || Region.check(Region.VMS)) {
             if ((datamask & 0x02) != 0) {
                 data.Encode4(0);
             }
@@ -439,7 +439,7 @@ public class DataCharacterData {
                     // ???
                     data.Encode1(0); // not 0, EncodeStr
                 }
-                if (Region.IsTWMS()) {
+                if (Region.check(Region.TWMS)) {
                     data.Encode8(0);
                 }
             }
@@ -447,7 +447,7 @@ public class DataCharacterData {
         // 0x2 (<< 1) v165-v194
         if ((datamask & 0x02) != 0) {
             data.EncodeBuffer(DataGW_CharacterStat.EncodeMoney(chr));
-            if (Region.IsJMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsTHMS()) {
+            if (Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.TWMS) || Region.check(Region.CMS) || Region.check(Region.THMS)) {
                 data.EncodeBuffer(DataGW_CharacterStat.EncodePachinko(chr));
             }
             if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -1275,7 +1275,7 @@ public class DataCharacterData {
             case JMST:
             default: {
                 // 0x7C JMS, Present v146-v194
-                if (Region.IsJMS()) {
+                if (Region.check(Region.JMS) || Region.check(Region.JMST)) {
                     if ((datamask & 0x7C) != 0) {
                         data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
                     }

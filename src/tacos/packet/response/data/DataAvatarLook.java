@@ -88,7 +88,7 @@ public class DataAvatarLook {
         }
         final IItem cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
-        if (Region.IsBMS() || Region.IsVMS()) {
+        if (Region.check(Region.BMS) || Region.check(Region.VMS)) {
             data.Encode4(0);
             return data.getBytes();
         }
@@ -102,7 +102,7 @@ public class DataAvatarLook {
             }
             return data.getBytes();
         }
-        if (Region.IsKMS()) {
+        if (Region.check(Region.KMS) || Region.check(Region.KMST)) {
             if (Version.PostBB()) {
                 if (Version.GreaterOrEqual(Region.KMS, 160)) {
                     data.Encode4(0);
@@ -136,7 +136,7 @@ public class DataAvatarLook {
         if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(0); // mercedes ear
         }
-        if (Region.IsTHMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Region.check(Region.THMS) || Region.check(Region.TWMS) || Region.check(Region.CMS) || Region.check(Region.MSEA) || Region.check(Region.EMS) || Version.GreaterOrEqual(Region.GMS, 83)) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?

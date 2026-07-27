@@ -42,6 +42,11 @@ public class Version {
 
     // good versions
     public static boolean GreaterOrEqual(Region region, int version) {
+        if (region == Region.GMS && version <= 95) {
+            if (Region.check(Region.GMST)) {
+                return true;
+            }
+        }
         if (Region.check(region)) {
             if (version <= getVersion()) {
                 return true;
@@ -87,5 +92,4 @@ public class Version {
     public static boolean PreBB() {
         return !PostBB();
     }
-
 }

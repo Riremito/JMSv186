@@ -200,6 +200,9 @@ public enum Content {
         if (Version.GreaterOrEqual(Region.JMST, 110)) {
             return true;
         }
+        if (Version.GreaterOrEqual(Region.GMST, 2)) {
+            return true;
+        }
         // no BB
         if (Region.check(Region.BMS)) {
             return false;
@@ -250,7 +253,7 @@ public enum Content {
         if (Region.check(Region.VMS)) {
             return true;
         }
-        if (Region.check(Region.GMS)) {
+        if (Region.check(Region.GMS) || Region.check(Region.GMST)) {
             return true;
         }
         if (Region.check(Region.EMS)) {

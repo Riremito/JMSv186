@@ -29,6 +29,7 @@ public enum Region {
     JMS(3),
     JMST(3),
     CMS(4),
+    GMST(5),
     TWMS(6),
     THMS(7),
     MSEA(7),
@@ -74,15 +75,6 @@ public enum Region {
         return false;
     }
 
-    public static boolean check(Region[] regions) {
-        for (Region r : regions) {
-            if (region == r) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static boolean setRegion(String region_name) {
         switch (region_name) {
             case "KMSB": {
@@ -107,6 +99,10 @@ public enum Region {
             }
             case "CMS": {
                 region = CMS;
+                return true;
+            }
+            case "GMST": {
+                region = GMST;
                 return true;
             }
             case "TWMS": {
@@ -151,48 +147,7 @@ public enum Region {
     }
 
     // TODO : replace
-    public static boolean IsEMS() {
-        return Region.getRegion() == Region.EMS;
-    }
-
-    public static boolean IsKMS() {
-        return Region.check(Region.KMS) || Region.check(Region.KMST);
-    }
-
-    public static boolean IsMSEA() {
-        return Region.getRegion() == Region.MSEA;
-    }
-
-    public static boolean IsCMS() {
-        return Region.getRegion() == Region.CMS;
-    }
-
-    public static boolean IsJMS() {
-        return Region.getRegion() == Region.JMS || Region.getRegion() == Region.JMST;
-    }
-
-    public static boolean IsBMS() {
-        return Region.getRegion() == Region.BMS;
-    }
-
-    public static boolean IsIMS() {
-        return Region.getRegion() == Region.IMS;
-    }
-
-    public static boolean IsTWMS() {
-        return Region.getRegion() == Region.TWMS;
-    }
-
-    public static boolean IsTHMS() {
-        return Region.getRegion() == Region.THMS;
-    }
-
     public static boolean IsGMS() {
-        return Region.getRegion() == Region.GMS;
+        return Region.getRegion() == Region.GMS || Region.getRegion() == Region.GMST;
     }
-
-    public static boolean IsVMS() {
-        return Region.getRegion() == Region.VMS;
-    }
-
 }

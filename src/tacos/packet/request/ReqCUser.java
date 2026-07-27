@@ -1245,9 +1245,9 @@ public class ReqCUser {
     }
 
     public static boolean OnUserChat(MapleCharacter chr, MapleMap map, ClientPacket cp) {
-        int timestamp = (ServerConfig.JMS180orLater() || Region.IsBMS()) ? cp.Decode4() : 0;
+        int timestamp = (ServerConfig.JMS180orLater() || Region.check(Region.BMS)) ? cp.Decode4() : 0;
         String message = cp.DecodeStr();
-        boolean bOnlyBalloon = (ServerConfig.JMS147orLater() || Region.IsBMS()) ? (cp.Decode1() != 0) : false; // skill macro
+        boolean bOnlyBalloon = (ServerConfig.JMS147orLater() || Region.check(Region.BMS)) ? (cp.Decode1() != 0) : false; // skill macro
 
         if (!bOnlyBalloon) {
             // command.
@@ -2658,7 +2658,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserRepairDurabilityAll(MapleCharacter chr, ClientPacket cp) {
-        int npc_id = Region.IsJMS() ? cp.Decode4() : 0;
+        int npc_id = Region.check(Region.JMS) || Region.check(Region.JMST) ? cp.Decode4() : 0;
 
         List<Equip> equips = new ArrayList<>();
         List<Equip> equippeds = new ArrayList<>();
@@ -2707,7 +2707,7 @@ public class ReqCUser {
 
     public static boolean OnUserRepairDurability(MapleCharacter chr, ClientPacket cp) {
         int nPOS = cp.Decode4();
-        int npc_id = Region.IsJMS() ? cp.Decode4() : 0;
+        int npc_id = Region.check(Region.JMS) || Region.check(Region.JMST) ? cp.Decode4() : 0;
 
         MapleInventoryType type = nPOS < 0 ? MapleInventoryType.EQUIPPED : MapleInventoryType.EQUIP;
         Equip equip = (Equip) chr.getInventory(type).getItem((short) nPOS);

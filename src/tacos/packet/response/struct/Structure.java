@@ -302,11 +302,13 @@ public class Structure {
         }
 
         // not in v165, not in v188, but in v194 ???
-        if (Region.IsJMS() && 184 <= Version.getVersion() && Version.getVersion() <= 186) {
+        if (Version.Between(Region.JMS, 184, 186)) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if ((ServerConfig.JMS194orLater() && !Region.IsKMS() && !Region.IsEMS()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Region.check(Region.KMS) || Region.check(Region.KMST) || Version.LessOrEqual(Region.EMS, 76)) {
+            // none
+        } else if ((ServerConfig.JMS194orLater()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
