@@ -145,9 +145,4 @@ public enum Region {
         region = unk;
         return false;
     }
-
-    // TODO : replace
-    public static boolean IsGMS() {
-        return Region.getRegion() == Region.GMS || Region.getRegion() == Region.GMST;
-    }
 }

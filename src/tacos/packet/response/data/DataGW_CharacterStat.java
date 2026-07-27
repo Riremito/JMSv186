@@ -51,7 +51,7 @@ public class DataGW_CharacterStat {
             // none
         } else if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.check(Region.BMS) || Region.check(Region.VMS)) {
             data.EncodeZeroBytes(8);
-        } else if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.THMS) || Region.IsGMS() || Region.check(Region.CMS) || Region.check(Region.MSEA) || ((Region.check(Region.TWMS) || Region.check(Region.EMS)) && Version.PreBB()))) {
+        } else if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.THMS) || Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.CMS) || Region.check(Region.MSEA) || ((Region.check(Region.TWMS) || Region.check(Region.EMS)) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -374,7 +374,7 @@ public class DataGW_CharacterStat {
         }
 
         // KMS, CMS, EMS
-        if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.CMS) || Region.IsGMS() || Region.check(Region.EMS) || Region.check(Region.IMS) || Region.check(Region.MSEA)) {
+        if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.CMS) || Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.EMS) || Region.check(Region.IMS) || Region.check(Region.MSEA)) {
             return data.getBytes();
         }
 

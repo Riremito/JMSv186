@@ -230,11 +230,15 @@ public class DataCharacterData {
             data.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
         }
         // v165-v194 OK
-        if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73) && !(Region.check(Region.EMS) && Version.getVersion() == 55)) {
-            // 0x100000
-            if ((datamask & 1048576) != 0) {
-                data.Encode4(0);
-                data.Encode4(0);
+        if (ServerConfig.JMS165orLater()) {
+            if (Version.LessOrEqual(Region.GMS, 73) || Version.LessOrEqual(Region.EMS, 55)) {
+                // none
+            } else {
+                // 0x100000
+                if ((datamask & 1048576) != 0) {
+                    data.Encode4(0);
+                    data.Encode4(0);
+                }
             }
         }
         // 装備
@@ -424,12 +428,16 @@ public class DataCharacterData {
                     data.Encode1(0);
                 }
                 // 精霊の祝福 v165, v186
-                if (ServerConfig.JMS165orLater() && !(Region.IsGMS() && Version.getVersion() == 73)) {
-                    if (chr.getBlessOfFairyOrigin() != null) {
-                        data.Encode1(1);
-                        data.EncodeStr(chr.getBlessOfFairyOrigin());
+                if (ServerConfig.JMS165orLater()) {
+                    if (Version.LessOrEqual(Region.GMS, 73)) {
+                        // none
                     } else {
-                        data.Encode1(0);
+                        if (chr.getBlessOfFairyOrigin() != null) {
+                            data.Encode1(1);
+                            data.EncodeStr(chr.getBlessOfFairyOrigin());
+                        } else {
+                            data.Encode1(0);
+                        }
                     }
                 }
                 // 祝福系統

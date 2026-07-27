@@ -56,7 +56,7 @@ public class ResCLogin {
         sp.Encode1(ops.get()); // ops
 
         // EMS v55-v70
-        if (Region.IsGMS() || (Region.check(Region.EMS) && Version.PreBB())) {
+        if (Region.check(Region.GMS) || Region.check(Region.GMST) || Version.Between(Region.EMS, 55, 70)) {
             sp.Encode1(0);
             sp.Encode4(0); // unused
         }
@@ -629,7 +629,7 @@ public class ResCLogin {
         } else {
             sp.Encode2(100); // nWorldEventEXP_WSE
             sp.Encode2(100); // nWorldEventDrop_WSE
-            if (Region.check(Region.BMS) || Region.IsGMS()) {
+            if (Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.BMS)) {
                 sp.Encode1(0); // nBlockCharCreation
             }
         }
@@ -829,8 +829,7 @@ public class ResCLogin {
         }
 
         // EMS v55
-        if ((Region.check(Region.EMS) && Version.getVersion() <= 55)
-                || (Region.IsGMS() && Version.getVersion() <= 73)) {
+        if (Version.LessOrEqual(Region.GMS, 73) || Version.LessOrEqual(Region.EMS, 55)) {
             sp.Encode4(charslots); // m_nSlotCount
             return sp;
         }

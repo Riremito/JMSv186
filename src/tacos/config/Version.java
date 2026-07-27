@@ -77,6 +77,11 @@ public class Version {
 
     // pre-bb older versions
     public static boolean LessOrEqual(Region region, int version) {
+        if (region == Region.GMS && version == 95) {
+            if (Region.check(Region.GMST)) {
+                return true;
+            }
+        }
         if (Region.check(region)) {
             if (getVersion() <= version) {
                 return true;

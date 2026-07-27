@@ -44,7 +44,7 @@ public class ResCStage {
     public static ServerPacket SetField(MapleCharacter chr, boolean bCharacterData) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // JMS184orLater
-        if (((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.CMS) || Region.IsGMS()) && ServerConfig.JMS186orLater())
+        if (((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.CMS) || Region.check(Region.GMS) || Region.check(Region.GMST)) && ServerConfig.JMS186orLater())
                 || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
         }
@@ -63,7 +63,7 @@ public class ResCStage {
             sp.Encode1(1); // Supreme/Ibara World
         }
 
-        if (((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.TWMS) || Region.check(Region.THMS) || Region.check(Region.CMS) || Region.check(Region.MSEA) || Region.check(Region.EMS) || Region.IsGMS() || Region.check(Region.IMS)) && ServerConfig.JMS180orLater())
+        if (((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.TWMS) || Region.check(Region.THMS) || Region.check(Region.CMS) || Region.check(Region.MSEA) || Region.check(Region.EMS) || Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.IMS)) && ServerConfig.JMS180orLater())
                 || (Version.GreaterOrEqual(Region.KMS, 101) || Version.GreaterOrEqual(Region.KMST, 330))) {
             sp.Encode4(0); // m_dwOldDriverID
         }
@@ -92,7 +92,7 @@ public class ResCStage {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr));
             }
             // JMS184orLater
-            if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.CMS) || Region.check(Region.TWMS) || Region.IsGMS())
+            if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.CMS) || Region.check(Region.TWMS) || Region.check(Region.GMS) || Region.check(Region.GMST))
                     && ServerConfig.JMS186orLater()) {
                 // ログアウトギフト
                 sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
@@ -113,7 +113,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (Region.check(Region.EMS) || Region.check(Region.TWMS) || Region.IsGMS() || Region.check(Region.VMS) || Region.check(Region.BMS) || Region.check(Region.THMS) || Region.check(Region.MSEA)) {
+            if (Region.check(Region.EMS) || Region.check(Region.TWMS) || Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.VMS) || Region.check(Region.BMS) || Region.check(Region.THMS) || Region.check(Region.MSEA)) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
