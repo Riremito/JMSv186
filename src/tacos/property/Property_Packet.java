@@ -33,8 +33,8 @@ public class Property_Packet {
 
     public static boolean init() {
         int retval = 0;
-        String path_sp = "properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ServerPacket.properties";
-        String path_cp = "properties/packet/" + Region.GetRegionName() + "_v" + Version.getVersion() + "_ClientPacket.properties";
+        String path_sp = "properties/packet/" + Region.getName() + "_v" + Version.getVersion() + "_ServerPacket.properties";
+        String path_cp = "properties/packet/" + Region.getName() + "_v" + Version.getVersion() + "_ClientPacket.properties";
 
         Property pr_sp = new Property(path_sp);
         if (pr_sp.open()) {

@@ -77,7 +77,7 @@ public class Start {
             }
         }
         // default = JMS 147 0
-        DebugLogger.SetupLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
+        DebugLogger.SetupLog(Region.getName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
         // DevLog
         DebugLogger.SetupLog("DEV_LOG");
         DebugLogger.init();

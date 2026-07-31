@@ -33,8 +33,8 @@ public class Property_Java {
 
     public static boolean setPath() {
         // cmd line arguments
-        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Region.GetRegionName() + "_v" + Version.getVersion();
-        path_scripts = System.getProperty("user.dir") + "/scripts/scripts_" + Region.GetRegionName() + "/";
+        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Region.getName() + "_v" + Version.getVersion();
+        path_scripts = System.getProperty("user.dir") + "/scripts/scripts_" + Region.getName() + "/";
 
         if (!(new File(path_scripts)).isDirectory()) {
             path_scripts = System.getProperty("user.dir") + "/scripts/scripts_JMS/";

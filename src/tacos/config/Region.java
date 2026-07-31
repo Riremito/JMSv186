@@ -38,20 +38,12 @@ public enum Region {
     EMS(9),
     BMS(9),
     IMS(1),
-    unk;
+    UNKNOWN(0);
 
-    private int value = 3;
+    private final int value;
 
-    Region(int val) {
-        this.value = val;
-    }
-
-    Region() {
-        this.value = 0;
-    }
-
-    public int get() {
-        return this.value;
+    private Region(int value) {
+        this.value = value;
     }
 
     private static Region region = Region.JMS;
@@ -60,89 +52,27 @@ public enum Region {
         return region;
     }
 
-    public static int getRegionNumber() {
-        return region.get();
+    public static int getNumber() {
+        return region.value;
     }
 
-    public static String GetRegionName() {
-        return "" + region;
+    public static String getName() {
+        return region.name();
     }
 
     public static boolean check(Region r) {
-        if (region == r) {
-            return true;
-        }
-        return false;
+        return region.equals(r);
     }
 
-    public static boolean setRegion(String region_name) {
-        switch (region_name) {
-            case "KMSB": {
-                region = KMSB;
+    public static boolean setRegion(String name) {
+        for (Region r : values()) {
+            if (r.name().equals(name)) {
+                region = r;
                 return true;
-            }
-            case "KMS": {
-                region = KMS;
-                return true;
-            }
-            case "KMST": {
-                region = KMST;
-                return true;
-            }
-            case "JMS": {
-                region = JMS;
-                return true;
-            }
-            case "JMST": {
-                region = JMST;
-                return true;
-            }
-            case "CMS": {
-                region = CMS;
-                return true;
-            }
-            case "GMST": {
-                region = GMST;
-                return true;
-            }
-            case "TWMS": {
-                region = TWMS;
-                return true;
-            }
-            case "THMS": {
-                region = THMS;
-                return true;
-            }
-            case "MSEA": {
-                region = MSEA;
-                return true;
-            }
-            case "VMS": {
-                region = VMS;
-                return true;
-            }
-            case "GMS": {
-                region = GMS;
-                return true;
-            }
-            case "EMS": {
-                region = EMS;
-                return true;
-            }
-            case "BMS": {
-                region = BMS;
-                return true;
-            }
-            case "IMS": {
-                region = IMS;
-                return true;
-            }
-            default: {
-                break;
             }
         }
 
-        region = unk;
+        region = UNKNOWN;
         return false;
     }
 }

@@ -111,7 +111,7 @@ public class DatabaseConnection {
         try {
             Connection con = DatabaseConnection.getConnection();
             DatabaseMetaData dbmd = con.getMetaData();
-            try (ResultSet rs = dbmd.getTables(Region.GetRegionName().toLowerCase() + "_v" + Version.getVersion(), null, "accounts", new String[]{"TABLE"})) {
+            try (ResultSet rs = dbmd.getTables(Region.getName().toLowerCase() + "_v" + Version.getVersion(), null, "accounts", new String[]{"TABLE"})) {
                 if (rs.next()) {
                     DebugLogger.SetupLog("Database");
                     return true;

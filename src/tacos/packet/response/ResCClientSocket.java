@@ -70,7 +70,7 @@ public class ResCClientSocket {
         }
         sp.EncodeBuffer(recvIv);
         sp.EncodeBuffer(sendIv);
-        sp.Encode1(Region.getRegionNumber()); // JMS = 3
+        sp.Encode1(Region.getNumber()); // JMS = 3
 
         /*
             // x64
