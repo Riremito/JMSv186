@@ -38,7 +38,7 @@ public class ResCUIGoldHammer {
             case GoldHammerRes_Success:
             case GoldHammerRes_Fail: {
                 sp.Encode4(0);
-                if (Region.check(Region.JMS)) {
+                if (Region.JMS.check()) {
                     sp.Encode4(equip.getViciousHammer()); // m_nIUC
                 }
                 break;

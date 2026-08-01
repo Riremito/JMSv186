@@ -126,7 +126,7 @@ public class Property_World {
 
         // world info
         channels = conf.getInt("server.channels");
-        if (Region.check(Region.EMS)) {
+        if (Region.EMS.check()) {
             languages = 5;
             channels = 2 * languages;
         }

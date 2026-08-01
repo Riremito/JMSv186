@@ -155,7 +155,7 @@ public enum Content {
     }
 
     private static boolean checkWzSingleFile() {
-        if (Region.check(Region.KMSB)) {
+        if (Region.KMSB.check()) {
             return true;
         }
         if (Version.LessOrEqual(Region.KMS, 1)) {
@@ -190,7 +190,7 @@ public enum Content {
         if (Version.GreaterOrEqual(Region.EMS, 73)) {
             return true;
         }
-        if (Region.check(Region.IMS)) {
+        if (Region.IMS.check()) {
             return true;
         }
         // Test Server
@@ -204,10 +204,10 @@ public enum Content {
             return true;
         }
         // no BB
-        if (Region.check(Region.BMS)) {
+        if (Region.BMS.check()) {
             return false;
         }
-        if (Region.check(Region.VMS)) {
+        if (Region.VMS.check()) {
             return false;
         }
         return false;
@@ -217,14 +217,14 @@ public enum Content {
         if (Version.GreaterOrEqual(Region.TWMS, 94)) {
             return 15;
         }
-        if (Region.check(Region.VMS)) {
+        if (Region.VMS.check()) {
             return 16;
         }
         return 13;
     }
 
     private static int checkPacketHeaderSize() {
-        if (Region.check(Region.KMSB)) {
+        if (Region.KMSB.check()) {
             return 1;
         }
         if (Version.LessOrEqual(Region.KMS, 55)) {
@@ -244,22 +244,22 @@ public enum Content {
         if (Version.LessOrEqual(Region.CMS, 85)) { // not checked
             return true;
         }
-        if (Region.check(Region.THMS)) {
+        if (Region.THMS.check()) {
             return true;
         }
-        if (Region.check(Region.MSEA)) {
+        if (Region.MSEA.check()) {
             return true;
         }
-        if (Region.check(Region.VMS)) {
+        if (Region.VMS.check()) {
             return true;
         }
-        if (Region.check(Region.GMS) || Region.check(Region.GMST)) {
+        if (Region.GMS.check() || Region.GMST.check()) {
             return true;
         }
-        if (Region.check(Region.EMS)) {
+        if (Region.EMS.check()) {
             return true;
         }
-        if (Region.check(Region.BMS)) {
+        if (Region.BMS.check()) {
             return true;
         }
         return false;

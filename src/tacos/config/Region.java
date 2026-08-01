@@ -46,6 +46,10 @@ public enum Region {
         this.value = value;
     }
 
+    public boolean check() {
+        return equals(region);
+    }
+
     private static Region region = Region.JMS;
 
     public static Region getRegion() {
@@ -58,10 +62,6 @@ public enum Region {
 
     public static String getName() {
         return region.name();
-    }
-
-    public static boolean check(Region r) {
-        return region.equals(r);
     }
 
     public static boolean setRegion(String name) {

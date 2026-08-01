@@ -387,7 +387,7 @@ public class DataCharacterData {
     // CharacterInfo
     public static byte[] Encode(MapleCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
-        if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
+        if (Region.KMSB.check() || Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
             data.Encode2((short) datamask); // statmask
         } else {
             data.Encode8(datamask); // statmask
@@ -412,7 +412,7 @@ public class DataCharacterData {
         if (Version.PostBB()) {
             data.Encode1(0); // not 0, Encode1, Encode4(size), EncodeBuffer8, Encode4(size), EncodeBuffer8
         }
-        if (Region.check(Region.THMS) || Region.check(Region.VMS)) {
+        if (Region.THMS.check() || Region.VMS.check()) {
             if ((datamask & 0x02) != 0) {
                 data.Encode4(0);
             }
@@ -420,7 +420,7 @@ public class DataCharacterData {
         if ((datamask & 0x01) != 0) {
             // キャラクター情報
             data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            if (!Region.check(Region.KMSB)) {
+            if (!Region.KMSB.check()) {
                 // 友達リストの上限
                 data.Encode1(chr.getBuddylist().getCapacity());
                 if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -447,7 +447,7 @@ public class DataCharacterData {
                     // ???
                     data.Encode1(0); // not 0, EncodeStr
                 }
-                if (Region.check(Region.TWMS)) {
+                if (Region.TWMS.check()) {
                     data.Encode8(0);
                 }
             }
@@ -455,7 +455,7 @@ public class DataCharacterData {
         // 0x2 (<< 1) v165-v194
         if ((datamask & 0x02) != 0) {
             data.EncodeBuffer(DataGW_CharacterStat.EncodeMoney(chr));
-            if (Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.TWMS) || Region.check(Region.CMS) || Region.check(Region.THMS)) {
+            if (Region.JMS.check() || Region.JMST.check() || Region.TWMS.check() || Region.CMS.check() || Region.THMS.check()) {
                 data.EncodeBuffer(DataGW_CharacterStat.EncodePachinko(chr));
             }
             if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -1283,7 +1283,7 @@ public class DataCharacterData {
             case JMST:
             default: {
                 // 0x7C JMS, Present v146-v194
-                if (Region.check(Region.JMS) || Region.check(Region.JMST)) {
+                if (Region.JMS.check() || Region.JMST.check()) {
                     if ((datamask & 0x7C) != 0) {
                         data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
                     }

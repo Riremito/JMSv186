@@ -210,7 +210,7 @@ public class ReqCUser_Pet {
         short drop_y = cp.Decode2();
         int drop_id = cp.Decode4();
         int drop_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
-        short unk2 = Region.check(Region.KMST) ? 0 : cp.Decode2(); // unk
+        short unk2 = Region.KMST.check() ? 0 : cp.Decode2(); // unk
         // trap
         if ((drop_id % 13) == 0) {
             short pet_x = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();

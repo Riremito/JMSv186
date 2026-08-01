@@ -56,7 +56,7 @@ public class ResCLogin {
         sp.Encode1(ops.get()); // ops
 
         // EMS v55-v70
-        if (Region.check(Region.GMS) || Region.check(Region.GMST) || Version.Between(Region.EMS, 55, 70)) {
+        if (Region.GMS.check() || Region.GMST.check() || Version.Between(Region.EMS, 55, 70)) {
             sp.Encode1(0);
             sp.Encode4(0); // unused
         }
@@ -427,7 +427,7 @@ public class ResCLogin {
             }
             default: {
                 sp.Encode1(0); // no blue message
-                if (Region.check(Region.BMS)) {
+                if (Region.BMS.check()) {
                     sp.Encode4(0);
                 }
                 break;
@@ -563,7 +563,7 @@ public class ResCLogin {
                     sp.Encode4(chr.getJobRankMove());
                 }
 
-                if (Region.check(Region.GMS)) {
+                if (Region.GMS.check()) {
                     sp.Encode1(2); // m_bLoginOpt
                 }
                 break;
@@ -622,21 +622,21 @@ public class ResCLogin {
 
         sp.EncodeStr(world.getName()); // sName
         sp.Encode1(0); // nWorldState
-        sp.EncodeStr(Region.check(Region.BMS) ? "" : world.getEvent()); // sWorldEventDesc
+        sp.EncodeStr(Region.BMS.check() ? "" : world.getEvent()); // sWorldEventDesc
 
         if (Version.LessOrEqual(Region.KMS, 1)) {
 
         } else {
             sp.Encode2(100); // nWorldEventEXP_WSE
             sp.Encode2(100); // nWorldEventDrop_WSE
-            if (Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.BMS)) {
+            if (Region.GMS.check() || Region.GMST.check() || Region.BMS.check()) {
                 sp.Encode1(0); // nBlockCharCreation
             }
         }
 
         // チャンネル数
         sp.Encode1(world.getChannels().size());
-        if (Region.check(Region.CMS)) {
+        if (Region.CMS.check()) {
             sp.Encode4(500); // 0 causes 0 div
         }
         // チャンネル情報
@@ -673,36 +673,36 @@ public class ResCLogin {
             return sp;
         }
 
-        if (Region.check(Region.TWMS)) {
+        if (Region.TWMS.check()) {
             sp.EncodeBuffer(CharList_TWMS(client));
             return sp;
         }
-        if (Region.check(Region.CMS)) {
+        if (Region.CMS.check()) {
             sp.EncodeBuffer(CharList_CMS(client));
             return sp;
         }
         List<MapleCharacter> chars = client.loadCharactersFromDB(true);
         int charslots = client.getCharSlots();
 
-        if (Region.check(Region.JMS) || Region.check(Region.JMST)) {
+        if (Region.JMS.check() || Region.JMST.check()) {
             sp.EncodeStr("");
         }
 
-        if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.KMS, 149) || Region.check(Region.KMST) || Region.check(Region.CMS) || Region.check(Region.IMS)) {
+        if (Region.KMSB.check() || Version.LessOrEqual(Region.KMS, 149) || Region.KMST.check() || Region.CMS.check() || Region.IMS.check()) {
             sp.Encode4(1000000);
         }
 
         // キャラクターの数
         sp.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
-            if (Region.check(Region.KMSB)) {
+            if (Region.KMSB.check()) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
                 continue;
             }
             //Structure.CharEntry(p, chr, true, false);
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-            if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS) || Region.check(Region.EMS) || Region.check(Region.THMS) || Region.check(Region.MSEA))
+            if ((Region.JMS.check() || Region.JMST.check() || Region.KMS.check() || Region.KMST.check() || Region.IMS.check() || Region.EMS.check() || Region.THMS.check() || Region.MSEA.check())
                     && (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84))
                     || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode1(0); // family
@@ -714,7 +714,7 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
-        if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.KMS, 31)) {
+        if (Region.KMSB.check() || Version.LessOrEqual(Region.KMS, 31)) {
             return sp;
         }
 
@@ -773,12 +773,12 @@ public class ResCLogin {
             return sp;
         }
 
-        if (Region.check(Region.BMS)) {
+        if (Region.BMS.check()) {
             sp.Encode4(charslots);
             return sp;
         }
 
-        if (Region.check(Region.MSEA) || Region.check(Region.IMS)) {
+        if (Region.MSEA.check() || Region.IMS.check()) {
             sp.Encode1(2);
             sp.Encode1(0);
             sp.Encode4(charslots);
@@ -786,7 +786,7 @@ public class ResCLogin {
             return sp;
         }
 
-        if (Region.check(Region.THMS)) {
+        if (Region.THMS.check()) {
             sp.Encode1(2); // 2nd password ingored
             sp.Encode1(0);
             sp.Encode4(charslots);
@@ -795,7 +795,7 @@ public class ResCLogin {
             return sp;
         }
 
-        if (Version.Between(Region.JMS, 146, 147) || Region.check(Region.VMS)) {
+        if (Version.Between(Region.JMS, 146, 147) || Region.VMS.check()) {
             sp.Encode1(2); // 2次パス無視
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount
@@ -833,21 +833,21 @@ public class ResCLogin {
             sp.Encode4(charslots); // m_nSlotCount
             return sp;
         }
-        if (Region.check(Region.EMS) && Version.getVersion() <= 70) {
+        if (Region.EMS.check() && Version.getVersion() <= 70) {
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0);
             sp.Encode8(0);
             return sp;
         }
 
-        if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.EMS)) {
+        if (Region.KMS.check() || Region.KMST.check() || Region.EMS.check()) {
             sp.Encode1(2);
             sp.Encode1(0);
             sp.Encode4(charslots); // m_nSlotCount
             if (Version.PostBB()) {
                 sp.Encode4(0); // m_nBuyCharCount
             }
-            if (Region.check(Region.EMS)) {
+            if (Region.EMS.check()) {
                 sp.Encode8(0);
             }
             return sp;
@@ -936,7 +936,7 @@ public class ResCLogin {
 
         sp.Encode1(ops.get());
         if (ops == OpsLogin.LoginResCode_Success) {
-            if (Region.check(Region.KMSB)) {
+            if (Region.KMSB.check()) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
                 return sp;
             }

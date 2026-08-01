@@ -219,7 +219,7 @@ public class TacosChannel extends TacosServer {
             int channel = i + 1;
             int channel_port = Property_World.getPort() + i;
             String channel_name = Property_World.getName() + "-" + channel;
-            int language = Region.check(Region.EMS) ? i % Property_World.getLanguages() : 0;
+            int language = Region.EMS.check() ? i % Property_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.onlines = new OnlinePlayers();
             TacosServer.add(server);
@@ -245,7 +245,7 @@ public class TacosChannel extends TacosServer {
         for (int i = 0; i < Property_Dummy_World.getChannels(); i++) {
             int channel = i + 1;
             String channel_name = Property_Dummy_World.getName() + "-" + channel;
-            int language = Region.check(Region.EMS) ? i % Property_Dummy_World.getLanguages() : 0;
+            int language = Region.EMS.check() ? i % Property_Dummy_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.setWorld(dummy_world);
             dummy_world.addChannel(server);

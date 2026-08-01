@@ -319,7 +319,7 @@ public class ReqCLogin {
             body_part_count--;
             hair_id = cp.Decode4();
             body_part_count--;
-            if ((Region.check(Region.EMS) && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
+            if ((Region.EMS.check() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
                 OpsNewCharacter onc = OpsNewCharacter.find(job_type);
                 if (!OpsNewCharacter.isBadCodedJobs_GMS(onc)) {
                     hair_color = cp.Decode4();
@@ -341,7 +341,7 @@ public class ReqCLogin {
 
             face_id = cp.Decode4();
             hair_id = cp.Decode4();
-            if (Region.check(Region.MSEA) || Region.check(Region.THMS) || Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.EMS) || Region.check(Region.BMS) || Region.check(Region.VMS) || Region.check(Region.BMS)) {
+            if (Region.MSEA.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.BMS.check() || Region.VMS.check() || Region.BMS.check()) {
                 hair_color = cp.Decode4();
                 skin_color = cp.Decode4();
             }
@@ -460,7 +460,7 @@ public class ReqCLogin {
     }
 
     public static boolean OnSelectWorld(MapleClient client, ClientPacket cp) {
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.IMS) || Version.GreaterOrEqual(Region.TWMS, 148)) {
+        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Region.KMS.check() || Region.KMST.check() || Region.IMS.check() || Version.GreaterOrEqual(Region.TWMS, 148)) {
             byte unk = cp.Decode1();
         }
 
@@ -477,7 +477,7 @@ public class ReqCLogin {
         int world = cp.Decode1(); // nWorldID
         int channel = cp.Decode1(); // nChannelID
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 83) || Region.check(Region.IMS) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 83) || Region.IMS.check() || Version.GreaterOrEqual(Region.CMS, 104)) {
             int ip = cp.Decode4(); // S_addr
         }
 
@@ -506,7 +506,7 @@ public class ReqCLogin {
                 // state = 0以外にすると切断されます
             }
         }
-        if (Region.check(Region.KMS) || Region.check(Region.KMST)) {
+        if (Region.KMS.check() || Region.KMST.check()) {
             if (Version.GreaterOrEqual(Region.KMS, 160)) {
                 String secondpw = cp.DecodeStr();
             } else {
@@ -515,10 +515,10 @@ public class ReqCLogin {
             }
         }
 
-        if (Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.EMS)) {
+        if (Region.GMS.check() || Region.GMST.check() || Region.EMS.check()) {
             int unke = cp.Decode4();
         }
-        if (Region.check(Region.THMS) || Region.check(Region.VMS) || Region.check(Region.BMS)) {
+        if (Region.THMS.check() || Region.VMS.check() || Region.BMS.check()) {
             String key = cp.DecodeStr(); // 32 bytes hex or PIC
         }
 

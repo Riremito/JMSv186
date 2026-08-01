@@ -276,7 +276,7 @@ public class ReqCClientSocket {
                 }
 
                 chr.sendSetField(true);
-                if (Region.check(Region.CMS)) {
+                if (Region.CMS.check()) {
                     // CMS causes crash without sending this packet when you use npc talk's avatar change.
                     chr.SendPacket(ResCWvsContext.CharacterCash(chr));
                 }
@@ -289,7 +289,7 @@ public class ReqCClientSocket {
                         chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
                     }
                 }
-                if (Version.LessOrEqual(Region.JMS, 131) || Region.check(Region.BMS)) {
+                if (Version.LessOrEqual(Region.JMS, 131) || Region.BMS.check()) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
@@ -395,7 +395,7 @@ public class ReqCClientSocket {
         int face_id = cp.Decode4();
         int hair_id = cp.Decode4();
         int skin_color = 10;
-        if (Region.check(Region.GMS)) {
+        if (Region.GMS.check()) {
             int hair_color = cp.Decode4();
             hair_id += hair_color;
             skin_color = cp.Decode4();
@@ -408,7 +408,7 @@ public class ReqCClientSocket {
         item_ids.add(shoes_id);
         int weapon_id = cp.Decode4();
         item_ids.add(weapon_id);
-        int gender_id = Region.check(Region.GMS) ? cp.Decode4() : client.getPlayer().getGender();
+        int gender_id = Region.GMS.check() ? cp.Decode4() : client.getPlayer().getGender();
 
         // item id checks. TODO : more validation.
         if (!WzDataStorage.FACE.check(face_id) || !WzDataStorage.HAIR.check(hair_id)) {

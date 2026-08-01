@@ -412,7 +412,7 @@ public class MapleInventoryManipulator {
     }
 
     private static final IItem checkEnhanced(final IItem before, final MapleCharacter chr) {
-        if (Version.LessOrEqual(Region.KMS, 95) || Version.LessOrEqual(Region.JMS, 185) || Region.check(Region.BMS)) {
+        if (Version.LessOrEqual(Region.KMS, 95) || Version.LessOrEqual(Region.JMS, 185) || Region.BMS.check()) {
             return before;
         }
         if (before instanceof Equip) {

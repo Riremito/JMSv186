@@ -306,7 +306,7 @@ public class Structure {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (Region.check(Region.KMS) || Region.check(Region.KMST) || Version.LessOrEqual(Region.EMS, 76)) {
+        if (Region.KMS.check() || Region.KMST.check() || Version.LessOrEqual(Region.EMS, 76)) {
             // none
         } else if ((ServerConfig.JMS194orLater()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr

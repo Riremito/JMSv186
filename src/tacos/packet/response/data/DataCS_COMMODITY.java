@@ -121,7 +121,7 @@ public class DataCS_COMMODITY {
     public static byte[] EncodeModifiedData(CS_COMMODITY ccm) {
         ServerPacket data = new ServerPacket();
 
-        boolean mask4 = ServerConfig.JMS164orLater() || Region.check(Region.VMS) || Region.check(Region.BMS) || Version.GreaterOrEqual(Region.GMS, 84);
+        boolean mask4 = ServerConfig.JMS164orLater() || Region.VMS.check() || Region.BMS.check() || Version.GreaterOrEqual(Region.GMS, 84);
 
         if (mask4) {
             data.Encode4(ccm.dwModifiedFlag);

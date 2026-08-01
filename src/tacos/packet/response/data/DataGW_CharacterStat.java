@@ -47,11 +47,11 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (Region.check(Region.THMS) && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
+        if (ServerConfig.KMS138orLater() || (Region.THMS.check() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
             // none
-        } else if (Region.check(Region.KMSB) || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.check(Region.BMS) || Region.check(Region.VMS)) {
+        } else if (Region.KMSB.check() || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.BMS.check() || Region.VMS.check()) {
             data.EncodeZeroBytes(8);
-        } else if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.THMS) || Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.CMS) || Region.check(Region.MSEA) || ((Region.check(Region.TWMS) || Region.check(Region.EMS)) && Version.PreBB()))) {
+        } else if ((Region.JMS.check() || Region.JMST.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.CMS.check() || Region.MSEA.check() || ((Region.TWMS.check() || Region.EMS.check()) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -226,7 +226,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode4(0);
-            if (Region.check(Region.KMS) || Region.check(Region.KMST)) {
+            if (Region.KMS.check() || Region.KMST.check()) {
                 if (ServerConfig.KMS119orLater()) {
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.EncodeZeroBytes(21);
@@ -332,35 +332,35 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp()); // nEXP
         data.Encode2(chr.getFame()); // nPOP
 
-        if ((Region.check(Region.JMS) || Region.check(Region.JMST) || Region.check(Region.CMS) || Region.check(Region.THMS) || Region.check(Region.TWMS) || Version.GreaterOrEqual(Region.GMS, 62) || Region.check(Region.MSEA) || (Region.check(Region.EMS) && Version.PostBB()))
+        if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.THMS.check() || Region.TWMS.check() || Version.GreaterOrEqual(Region.GMS, 62) || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB()))
                 && ServerConfig.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
-        if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.check(Region.CMS) || Region.check(Region.MSEA) || (Region.check(Region.EMS) && Version.PostBB())) {
+        if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.CMS.check() || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB())) {
             data.Encode8(0);
         }
 
         data.Encode4(chr.getPosMap()); // dwPosMap
         data.Encode1(chr.getPortal()); // nPortal
 
-        if (Region.check(Region.VMS)) {
+        if (Region.VMS.check()) {
             return data.getBytes();
         }
 
-        if (Region.check(Region.KMSB)) {
+        if (Region.KMSB.check()) {
             data.Encode8(0);
             data.Encode4(0);
             data.Encode4(0);
             return data.getBytes();
         }
 
-        if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.check(Region.EMS) && Version.PreBB()) || Region.check(Region.BMS)) {
+        if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.EMS.check() && Version.PreBB()) || Region.BMS.check()) {
             data.Encode4(0);
         }
 
         // KMS 84
-        if (Version.LessOrEqual(Region.KMS, 84) || Region.check(Region.BMS)) {
+        if (Version.LessOrEqual(Region.KMS, 84) || Region.BMS.check()) {
             return data.getBytes();
         }
         // JMS 180, KMS 95
@@ -374,17 +374,17 @@ public class DataGW_CharacterStat {
         }
 
         // KMS, CMS, EMS
-        if (Region.check(Region.KMS) || Region.check(Region.KMST) || Region.check(Region.CMS) || Region.check(Region.GMS) || Region.check(Region.GMST) || Region.check(Region.EMS) || Region.check(Region.IMS) || Region.check(Region.MSEA)) {
+        if (Region.KMS.check() || Region.KMST.check() || Region.CMS.check() || Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.IMS.check() || Region.MSEA.check()) {
             return data.getBytes();
         }
 
-        if (Region.check(Region.THMS)) {
+        if (Region.THMS.check()) {
             data.Encode4(0);
             return data.getBytes();
         }
 
         // TWMS
-        if (Region.check(Region.TWMS)) {
+        if (Region.TWMS.check()) {
             data.EncodeZeroBytes(25);
             data.Encode1(0);
             data.Encode1(0);

@@ -48,7 +48,7 @@ public class SharedExpTable {
             return true;
         }
         // GMS
-        if (Region.check(Region.GMS)) {
+        if (Region.GMS.check()) {
             DebugLogger.InfoLog("exp_table = pre-bb-GMS");
             exp_table = exp_table_old_gms;
             return true;

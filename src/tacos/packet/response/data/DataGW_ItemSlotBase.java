@@ -168,7 +168,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 }
                 // リバース武器
-                if (ServerConfig.JMS164orLater() || Region.check(Region.VMS) || Version.GreaterOrEqual(Region.GMS, 68)) {
+                if (ServerConfig.JMS164orLater() || Region.VMS.check() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
@@ -178,7 +178,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー
-                if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 73) || Region.check(Region.BMS)) {
+                if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 73) || Region.BMS.check()) {
                     if (Version.LessOrEqual(Region.KMS, 92)) {
                         // none
                     } else {
@@ -254,7 +254,7 @@ public class DataGW_ItemSlotBase {
             case 3: {
                 data.EncodeBuffer(RawEncode(item));
                 // GW_ItemSlotPet::RawDecode
-                data.EncodeBuffer(item.getPet().getName(), Region.check(Region.BMS) ? 21 : 13);
+                data.EncodeBuffer(item.getPet().getName(), Region.BMS.check() ? 21 : 13);
                 data.Encode1(item.getPet().getLevel()); // nLevel_CS
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
@@ -268,7 +268,7 @@ public class DataGW_ItemSlotBase {
                 if (Version.LessOrEqual(Region.KMS, 31)) {
                     break;
                 }
-                if (ServerConfig.JMS164orLater() || Region.check(Region.VMS) || Version.GreaterOrEqual(Region.GMS, 68)) {
+                if (ServerConfig.JMS164orLater() || Region.VMS.check() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }

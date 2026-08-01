@@ -162,12 +162,12 @@ public class ResCWvsContext {
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock ? 1 : 0); // CWvsContext->bExclRequestSent
-        if ((Region.check(Region.EMS) && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.Between(Region.TWMS, 74, 93)) {
+        if ((Region.EMS.check() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.Between(Region.TWMS, 74, 93)) {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
         if (Version.PreBB()) {
-            if (Region.check(Region.JMS) || Region.check(Region.JMST)) {
+            if (Region.JMS.check() || Region.JMST.check()) {
                 // Pet
                 if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
                     int v5 = 0; // CVecCtrlUser::AddMovementInfo
@@ -489,7 +489,7 @@ public class ResCWvsContext {
                 sp.Encode4(0);
                 sp.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
                 sp.Encode1(0);
-                if (Region.check(Region.THMS) && Version.getVersion() == 87) {
+                if (Region.THMS.check() && Version.getVersion() == 87) {
                     sp.Encode4(ma.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
                     sp.Encode4(0); // Party Ring Bonus EXP(+%d)
                     sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)

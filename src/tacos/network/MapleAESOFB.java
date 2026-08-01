@@ -112,7 +112,7 @@ public class MapleAESOFB {
         } else {
             try {
                 cipher = Cipher.getInstance("AES");
-                if (Region.check(Region.KMS) || Region.check(Region.KMST)) {
+                if (Region.KMS.check() || Region.KMST.check()) {
                     // none
                 } else {
                     cipher.init(Cipher.ENCRYPT_MODE, skey);
@@ -148,7 +148,7 @@ public class MapleAESOFB {
     public static byte[] oops(byte[] iv) {
         byte[] newIv = new byte[16];
         // TWMS
-        if (Region.check(Region.TWMS)) {
+        if (Region.TWMS.check()) {
             for (int x = 0; x < 4; x++) {
                 funnyShit(funnyBytes[x], iv);
                 System.arraycopy(iv, 0, newIv, 4 * x, 4);
