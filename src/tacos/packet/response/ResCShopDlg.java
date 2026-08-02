@@ -88,7 +88,7 @@ public class ResCShopDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (Config.JMS194orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
                 sp.Encode1(0);
             }
         }
@@ -100,7 +100,7 @@ public class ResCShopDlg {
         sp.Encode4(ds.getNpcId()); // m_dwNpcTemplateID
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (Config.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
+            if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode1(0);
             }
         }
@@ -175,7 +175,7 @@ public class ResCShopDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (Config.JMS194orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
                 sp.Encode1(0);
             }
         }
@@ -187,7 +187,7 @@ public class ResCShopDlg {
         sp.Encode4(sid); // m_dwNpcTemplateID
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (Config.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
+            if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode1(0);
             }
         }

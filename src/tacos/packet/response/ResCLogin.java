@@ -872,7 +872,7 @@ public class ResCLogin {
             sp.Encode2(2);
         }
 
-        if (Config.JMS194orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
             sp.Encode4(charslots);
             sp.Encode4(0); // Character Card
             sp.Encode4(0); // idk

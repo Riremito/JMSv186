@@ -80,7 +80,7 @@ public enum OpsMessage {
             OpsMessage.MS_JMS_Pachinko.set(-1);
             return;
         }
-        if (Config.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 111)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);

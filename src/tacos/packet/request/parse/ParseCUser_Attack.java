@@ -268,7 +268,7 @@ public class ParseCUser_Attack {
             attack.tKeyDown = cp.Decode4();
         }
         attack.BuffKey = cp.Decode1();
-        if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || Config.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 95)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 attack.exJablin = cp.Decode1();
             }

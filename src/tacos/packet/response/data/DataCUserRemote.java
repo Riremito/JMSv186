@@ -48,7 +48,7 @@ public class DataCUserRemote {
             data.Encode1(chr.getLevel());
         }
         data.EncodeStr(chr.getName());
-        if (Config.JMS194orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
             data.EncodeStr("");
         }
         // guild
@@ -88,7 +88,7 @@ public class DataCUserRemote {
         if (Config.JMS164orLater()) {
             data.Encode4(0); //probably charid following
             data.Encode4(0);
-            if (Config.JMS194orLater()) {
+            if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode4(0);

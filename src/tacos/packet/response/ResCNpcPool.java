@@ -69,7 +69,7 @@ public class ResCNpcPool {
         data.Encode2(npc.getRx1()); // m_rgHorz.high
         data.Encode1(show ? 1 : 0); // m_bEnabled
 
-        if (Config.JMS194orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
             data.Encode1(0);
         }
 

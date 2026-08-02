@@ -427,48 +427,4 @@ public class Config {
         }
         return false;
     }
-
-    // near Chaos update
-    public static boolean JMS194orLater() {
-        if (!Version.PostBB()) {
-            return false;
-        }
-
-        switch (Config.REGION) {
-            case JMS: {
-                if (194 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            case JMST: {
-                if (110 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            case KMS: {
-                if (114 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            case KMST: {
-                if (391 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            case EMS: {
-                if (76 <= Version.getVersion()) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
 }

@@ -40,7 +40,7 @@ public class DataCWvsContext {
             // 0 = no data.
             return data.getBytes();
         }
-        if (Config.JMS194orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
             data.Encode4(0);
         }
         data.Encode4(0); // item1?
