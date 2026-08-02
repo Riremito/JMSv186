@@ -2,13 +2,20 @@ package tacos.config;
 
 public class Config {
 
+    // server vesion.
     public static Region REGION = Region.JMS;
+    public static int VERSION = 147;
+    public static int VERSION_SUB = 0;
 
-    public static boolean setRegion(String name) {
+    public static boolean setVersion(String name, int version, int version_sub) {
+        VERSION = version;
+        VERSION_SUB = version_sub;
         REGION = Region.find(name);
+
         if (Region.UNKNOWN.check()) {
             return false;
         }
+
         return true;
     }
 

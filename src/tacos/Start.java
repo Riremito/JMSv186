@@ -61,12 +61,10 @@ public class Start {
             int server_version = Integer.parseInt(args[1]);
             int server_version_sub = Integer.parseInt(args[2]);
 
-            if (!Config.setRegion(server_region)) {
+            if (!Config.setVersion(server_region, server_version, server_version_sub)) {
                 DebugLogger.ErrorLog("Invalid region name.");
                 return;
             }
-
-            Version.setVersion(server_version, server_version_sub);
         } else {
             // Version Selector
             if (args.length == 1 && args[0].equals("vs")) {

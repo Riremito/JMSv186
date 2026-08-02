@@ -24,20 +24,12 @@ package tacos.config;
  */
 public class Version {
 
-    private static int version = 147;
-    private static int version_sub = 0;
-
     public static int getVersion() {
-        return version;
+        return Config.VERSION;
     }
 
     public static int getSubVersion() {
-        return version_sub;
-    }
-
-    public static void setVersion(int ver_main, int ver_sub) {
-        version = ver_main;
-        version_sub = ver_sub;
+        return Config.VERSION_SUB;
     }
 
     // good versions
