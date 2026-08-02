@@ -28,10 +28,6 @@ public class Version {
         return Config.VERSION;
     }
 
-    public static int getSubVersion() {
-        return Config.VERSION_SUB;
-    }
-
     // good versions
     public static boolean GreaterOrEqual(Region region, int version) {
         if (region == Region.GMS && version <= 95) {

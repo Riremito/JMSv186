@@ -21,7 +21,6 @@ package tacos;
 import tacos.config.ClientEdit;
 import tacos.config.CodePage;
 import tacos.config.Content;
-import tacos.config.Version;
 import tacos.property.Property;
 import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
@@ -75,7 +74,7 @@ public class Start {
             }
         }
         // default = JMS 147 0
-        DebugLogger.SetupLog(Config.REGION.getName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
+        DebugLogger.SetupLog(Config.REGION.getName() + " v" + Config.VERSION + "." + Config.VERSION_SUB);
         // DevLog
         DebugLogger.SetupLog("DEV_LOG");
         DebugLogger.init();

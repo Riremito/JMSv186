@@ -27,12 +27,12 @@ import tacos.config.Version;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import tacos.config.Config;
 import tacos.debug.DebugLogger;
 
 /**
@@ -132,7 +132,7 @@ public class MapleAESOFB {
         this.isCP = isOutbound; // ClientPacket
         this.setIv(iv);
 
-        short vesrion = isOutbound ? (short) (0xFFFF - (short) Version.getVersion()) : (short) Version.getVersion();
+        short vesrion = isOutbound ? (short) (0xFFFF - (short) Config.VERSION) : (short) Config.VERSION;
         this.mapleVersion = (short) (((vesrion >> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
     }
 

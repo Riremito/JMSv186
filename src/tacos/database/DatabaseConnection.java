@@ -32,7 +32,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import tacos.config.Config;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 
 /**
@@ -111,7 +110,7 @@ public class DatabaseConnection {
         try {
             Connection con = DatabaseConnection.getConnection();
             DatabaseMetaData dbmd = con.getMetaData();
-            try (ResultSet rs = dbmd.getTables(Config.REGION.getName().toLowerCase() + "_v" + Version.getVersion(), null, "accounts", new String[]{"TABLE"})) {
+            try (ResultSet rs = dbmd.getTables(Config.REGION.getName().toLowerCase() + "_v" + Config.VERSION, null, "accounts", new String[]{"TABLE"})) {
                 if (rs.next()) {
                     DebugLogger.SetupLog("Database");
                     return true;

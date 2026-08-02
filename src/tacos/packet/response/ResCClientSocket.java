@@ -38,33 +38,33 @@ public class ResCClientSocket {
 
         switch (Config.REGION) {
             case KMSB: {
-                sp.Encode2(Version.getVersion());
-                sp.EncodeStr(String.valueOf(Version.getSubVersion()));
+                sp.Encode2(Config.VERSION);
+                sp.EncodeStr(String.valueOf(Config.VERSION_SUB));
                 break;
             }
             case KMS:
             case KMST: {
                 long xor_version = 0;
-                xor_version ^= Version.getVersion();
+                xor_version ^= Config.VERSION;
                 xor_version ^= 1 << 15;
-                xor_version ^= Version.getSubVersion() << 16;
+                xor_version ^= Config.VERSION_SUB << 16;
                 sp.Encode2(291); // magic number
                 sp.EncodeStr(String.valueOf(xor_version));
                 break;
             }
             case VMS: {
-                sp.Encode2(Version.getVersion());
+                sp.Encode2(Config.VERSION);
                 break;
             }
             case IMS: {
-                sp.Encode2(Version.getVersion());
+                sp.Encode2(Config.VERSION);
                 sp.Encode1(0);
-                sp.Encode1(Version.getSubVersion());
+                sp.Encode1(Config.VERSION_SUB);
                 break;
             }
             default: {
-                sp.Encode2(Version.getVersion());
-                sp.EncodeStr(String.valueOf(Version.getSubVersion()));
+                sp.Encode2(Config.VERSION);
+                sp.EncodeStr(String.valueOf(Config.VERSION_SUB));
                 break;
             }
         }

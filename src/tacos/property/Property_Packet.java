@@ -19,7 +19,6 @@
 package tacos.property;
 
 import tacos.config.Config;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacketHeader;
@@ -33,8 +32,8 @@ public class Property_Packet {
 
     public static boolean init() {
         int retval = 0;
-        String path_sp = "properties/packet/" + Config.REGION.getName() + "_v" + Version.getVersion() + "_ServerPacket.properties";
-        String path_cp = "properties/packet/" + Config.REGION.getName() + "_v" + Version.getVersion() + "_ClientPacket.properties";
+        String path_sp = "properties/packet/" + Config.REGION.getName() + "_v" + Config.VERSION + "_ServerPacket.properties";
+        String path_cp = "properties/packet/" + Config.REGION.getName() + "_v" + Config.VERSION + "_ClientPacket.properties";
 
         Property pr_sp = new Property(path_sp);
         if (pr_sp.open()) {

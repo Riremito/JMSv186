@@ -19,7 +19,6 @@
 package tacos.property;
 
 import tacos.config.Config;
-import tacos.config.Version;
 
 /**
  *
@@ -53,7 +52,7 @@ public class Property_Database {
         if (url.isEmpty()) {
             String database_host = conf.get("database.host");
             String database_port = conf.get("database.port");
-            url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + Config.REGION.getName().toLowerCase() + "_v" + Version.getVersion() + "?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=utf8&useSSL=false";
+            url = "jdbc:mysql://" + database_host + ":" + database_port + "/" + Config.REGION.getName().toLowerCase() + "_v" + Config.VERSION + "?createDatabaseIfNotExist=true&autoReconnect=true&characterEncoding=utf8&useSSL=false";
         }
         user = conf.get("database.user");
         password = conf.get("database.password");
