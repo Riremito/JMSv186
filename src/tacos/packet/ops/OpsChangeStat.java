@@ -19,7 +19,6 @@
 package tacos.packet.ops;
 
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 
 /**
@@ -114,7 +113,7 @@ public enum OpsChangeStat {
         }
 
         // JMS131 and 147+ is asme as JMS186
-        if (Config.JMS147orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 48) || Version.GreaterOrEqual(Region.JMS, 147) || Version.GreaterOrEqual(Region.CMS, 63) || Version.GreaterOrEqual(Region.TWMS, 74) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 62) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0)) {
             return;
         }
         // JMS146 only?

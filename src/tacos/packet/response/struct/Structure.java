@@ -7,7 +7,6 @@ import odin.client.MapleQuestStatus;
 import odin.client.SkillEntry;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import java.util.List;
 import java.util.Map;
@@ -268,7 +267,7 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 83)) {
                 data.Encode8(SharedDate.getTimestamp(skill.getValue().expiration));
             }
 

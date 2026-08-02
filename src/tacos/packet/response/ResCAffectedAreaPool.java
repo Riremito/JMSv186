@@ -18,9 +18,10 @@
  */
 package tacos.packet.response;
 
-import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMist;
+import tacos.config.Region;
+import tacos.config.Version;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -51,7 +52,7 @@ public class ResCAffectedAreaPool {
         sp.Encode4(0); // nElemAttr
 
         // not in JMS147-164
-        if (Config.JMS186orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); // nPhase
         }
 
@@ -66,5 +67,4 @@ public class ResCAffectedAreaPool {
         sp.Encode4(mist.getObjectId()); // m_dwID
         return sp;
     }
-
 }

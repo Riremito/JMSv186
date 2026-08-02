@@ -26,7 +26,6 @@ import odin.client.SummonSkillEntry;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -209,7 +208,8 @@ public class ReqCSummonedPool {
             return;
         }
 
-        if (Config.JMS164orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
+) {
             cp.Decode4();
             cp.Decode4();
             int tick = cp.Decode4();
@@ -219,14 +219,16 @@ public class ReqCSummonedPool {
 
         byte animation = cp.Decode1();
 
-        if (Config.JMS164orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
+) {
             cp.Decode4();
             cp.Decode4();
         }
 
         byte numAttacked = cp.Decode1();
 
-        if (Config.JMS164orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
+) {
             cp.Decode2(); // x
             cp.Decode2(); // y
             cp.Decode2(); // x
@@ -242,7 +244,7 @@ public class ReqCSummonedPool {
                 continue;
             }
 
-            if (Config.JMS186orLater()) {
+            if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
                 cp.Decode4(); // MobID
             }
 

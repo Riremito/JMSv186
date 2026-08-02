@@ -19,7 +19,6 @@
 package tacos.packet.ops;
 
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 
 /**

@@ -22,7 +22,6 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -140,7 +139,7 @@ public class DataAvatarLook {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?
-            if (Config.JMS146orLater()) {
+            if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
                 data.Encode8(0); // pet 2 and 3?
             }
         }

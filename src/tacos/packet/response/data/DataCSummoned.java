@@ -21,7 +21,6 @@ package tacos.packet.response.data;
 import odin.client.MapleCharacter;
 import odin.server.maps.MapleSummon;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 
@@ -58,7 +57,7 @@ public class DataCSummoned {
             data.Encode1(0);
         }
 
-        if (Config.JMS186orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
             data.Encode1(is_avater_look ? 1 : 0);
             if (is_avater_look) {
                 data.EncodeBuffer(DataAvatarLook.Encode(chr));

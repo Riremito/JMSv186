@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
@@ -121,12 +120,12 @@ public class ResCMobPool {
             return data.getBytes();
         }
         // JMS146
-        if (Config.JMS146orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
             data.Encode4(0); // nEffectItemID
         }
         // JMS186, GMS95
         // not in KMST330, TWMS125
-        if (Config.JMS165orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 73) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
             data.Encode4(0); // m_nPhase
         }
 
@@ -209,7 +208,7 @@ public class ResCMobPool {
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             // none
-        } else if (Config.JMS186orLater()
+        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)
                 || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
@@ -222,7 +221,7 @@ public class ResCMobPool {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
             sp.Encode1(0);
-        } else if (Config.JMS186orLater()
+        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)
                 || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count

@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import java.util.ArrayList;

@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;

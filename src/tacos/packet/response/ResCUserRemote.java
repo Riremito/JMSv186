@@ -32,7 +32,6 @@ import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
-import tacos.config.Config;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsSkill;
@@ -61,7 +60,8 @@ public class ResCUserRemote {
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
 
-        if (Config.JMS164orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
+) {
             sp.Encode1(attack.m_nLevel); // m_nLevel
         }
 
@@ -118,7 +118,8 @@ public class ResCUserRemote {
             sp.Encode4(attack.tKeyDown);
         }
 
-        if (Config.JMS164orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
+) {
             if (attack.getHeader() == ServerPacketHeader.LP_UserShootAttack) {
                 sp.Encode2(attack.X);
                 sp.Encode2(attack.Y);

@@ -23,7 +23,6 @@ import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.client.TacosCharacter;
@@ -82,7 +81,7 @@ public class DataGW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (Config.JMS186orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 83)) {
             // is_extendsp_job
             if (GameConstants.is_extendsp_job(chr.getJob())) {
                 final int size = chr.getRemainingSpSize();
@@ -333,7 +332,7 @@ public class DataGW_CharacterStat {
         data.Encode2(chr.getFame()); // nPOP
 
         if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.THMS.check() || Region.TWMS.check() || Version.GreaterOrEqual(Region.GMS, 62) || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB()))
-                && Config.JMS146orLater()) {
+                && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
@@ -364,7 +363,7 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
         // JMS 180, KMS 95
-        if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 92)) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.KMS, 92)) {
             data.Encode2(chr.getSubcategory());
         }
 
@@ -399,7 +398,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             // JMS v180-186
-            if (Config.JMS180orLater()) {
+            if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
                 data.Encode4(0);
             }
             return data.getBytes();

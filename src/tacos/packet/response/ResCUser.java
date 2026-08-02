@@ -21,7 +21,6 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import odin.client.inventory.IEquip;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -42,7 +41,7 @@ public class ResCUser {
         sp.Encode1(chr.isGM() ? 1 : 0);
         sp.EncodeStr(message);
 
-        if (Config.JMS146orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
             sp.Encode1(bOnlyBalloon ? 1 : 0); // skill macro
         }
 
@@ -110,7 +109,7 @@ public class ResCUser {
             sp.Encode1(scrollSuccess == IEquip.ScrollResult.CURSE ? 1 : 0);
             sp.Encode1(legendarySpirit ? 1 : 0); // bEnchantSkill
             sp.Encode1(0); // White Scroll
-            if (Config.JMS186orLater()) {
+            if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
                 sp.Encode1(0);
                 sp.Encode4(0); // 2 = 装備のアップグレードに成功しました。
             }

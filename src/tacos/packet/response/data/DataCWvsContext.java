@@ -21,7 +21,6 @@ package tacos.packet.response.data;
 import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import java.util.Collection;
 import tacos.packet.ServerPacket;

@@ -31,7 +31,6 @@ import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedExpTable;
@@ -878,7 +877,8 @@ public class ReqCUser {
             // nothing
         } else {
             // not in JMS147
-            if (Config.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
+            if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
+ || Version.Equal(Region.BMS, 24)) {
                 cp.Decode4();
             }
         }
@@ -1245,9 +1245,9 @@ public class ReqCUser {
     }
 
     public static boolean OnUserChat(MapleCharacter chr, MapleMap map, ClientPacket cp) {
-        int timestamp = (Config.JMS180orLater() || Region.BMS.check()) ? cp.Decode4() : 0;
+        int timestamp = (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
         String message = cp.DecodeStr();
-        boolean bOnlyBalloon = (Config.JMS147orLater() || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
+        boolean bOnlyBalloon = (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 48) || Version.GreaterOrEqual(Region.JMS, 147) || Version.GreaterOrEqual(Region.CMS, 63) || Version.GreaterOrEqual(Region.TWMS, 74) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 62) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
 
         if (!bOnlyBalloon) {
             // command.
@@ -1967,7 +1967,7 @@ public class ReqCUser {
     public static boolean OnUserChangeStatRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp_1 = 0;
 
-        if (Config.JMS180orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
             time_stamp_1 = cp.Decode4();
         }
 

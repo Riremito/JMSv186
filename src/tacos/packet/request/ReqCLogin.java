@@ -27,7 +27,6 @@ import tacos.config.Content;
 import tacos.config.ContentState;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Character_slots;
@@ -242,7 +241,7 @@ public class ReqCLogin {
         if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
             int unk = cp.Decode4();
         }
-        if (Config.JMS165orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 73) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
             if (Version.LessOrEqual(Region.GMS, 73)) {
                 // none
             } else {
@@ -304,7 +303,7 @@ public class ReqCLogin {
                 }
             }
         }
-        if (Config.JMS180orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
             job_dualblade = cp.Decode2(); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
         }
 
@@ -545,7 +544,7 @@ public class ReqCLogin {
         }
         c.SendPacket(ResCLogin.WorldInformation(null));
 
-        if (Config.JMS186orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());
             c.SendPacket(ResCLogin.LatestConnectedWorld());
         }

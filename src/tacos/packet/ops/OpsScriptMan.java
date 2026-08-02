@@ -19,7 +19,6 @@
 package tacos.packet.ops;
 
 import tacos.config.Region;
-import tacos.config.Config;
 import tacos.config.Version;
 
 /**
@@ -97,7 +96,7 @@ public enum OpsScriptMan implements IPacketOps {
         }
         clear();
         // JMS180-194.
-        if (Version.PostBB() || Config.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 84)) {
+        if (Version.PostBB() || Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 84)) {
             SM_SAY.set(0);
             SM_SAYIMAGE.set(1);
             SM_ASKYESNO.set(2);
@@ -147,7 +146,7 @@ public enum OpsScriptMan implements IPacketOps {
             return;
         }
         // JMS146-165.
-        if (Config.JMS146orLater()) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
             SM_ASKTEXT.set(2);
