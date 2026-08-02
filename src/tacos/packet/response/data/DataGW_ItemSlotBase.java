@@ -54,7 +54,7 @@ public class DataGW_ItemSlotBase {
             }
         }
 
-        if (Config.JMS165orEarlier() || Version.LessOrEqual(Region.KMS, 84)) {
+        if (Version.LessOrEqual(Region.KMS, 84) || Version.LessOrEqual(Region.JMS, 165) || Version.LessOrEqual(Region.TWMS, 94) || Version.LessOrEqual(Region.GMS, 73) || Version.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
             data.Encode1(pos);
         } else {
             // v186+
@@ -70,7 +70,7 @@ public class DataGW_ItemSlotBase {
     public static final byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
-        if (Config.JMS165orEarlier() || Version.LessOrEqual(Region.KMS, 84)) {
+        if (Version.LessOrEqual(Region.KMS, 84) || Version.LessOrEqual(Region.JMS, 165) || Version.LessOrEqual(Region.TWMS, 94) || Version.LessOrEqual(Region.GMS, 73) || Version.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
             data.Encode1(0);
         } else {
             // v186+

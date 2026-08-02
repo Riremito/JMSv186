@@ -1,5 +1,27 @@
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
 package tacos.config;
 
+/**
+ *
+ * @author Riremito
+ */
 public class Config {
 
     // server vesion.
@@ -449,56 +471,4 @@ public class Config {
         }
         return false;
     }
-
-    // Knights of Cygnus update
-    // todo : replace to orlater func
-    public static boolean JMS165orEarlier() {
-        if (Version.PostBB()) {
-            return false;
-        }
-
-        switch (Config.REGION) {
-            case JMS: {
-                if (Version.getVersion() <= 165) {
-                    return true;
-                }
-                return false;
-            }
-            case TWMS: {
-                if (Version.getVersion() <= 94) {
-                    return true;
-                }
-                return false;
-            }
-            case GMS: {
-                if (Version.getVersion() <= 73) {
-                    return true;
-                }
-                return false;
-            }
-            case EMS: {
-                if (Version.getVersion() <= 55) {
-                    return true;
-                }
-                return false;
-            }
-            case BMS: {
-                if (Version.getVersion() <= 24) {
-                    return true;
-                }
-                return false;
-            }
-            case VMS: {
-                if (Version.getVersion() <= 35) {
-                    return true;
-                }
-                return false;
-            }
-            default: {
-                break;
-            }
-        }
-        return false;
-    }
-
 }
