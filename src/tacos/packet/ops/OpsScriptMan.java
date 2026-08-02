@@ -19,7 +19,7 @@
 package tacos.packet.ops;
 
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 
 /**
@@ -97,7 +97,7 @@ public enum OpsScriptMan implements IPacketOps {
         }
         clear();
         // JMS180-194.
-        if (Version.PostBB() || ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 84)) {
+        if (Version.PostBB() || Config.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 84)) {
             SM_SAY.set(0);
             SM_SAYIMAGE.set(1);
             SM_ASKYESNO.set(2);
@@ -147,7 +147,7 @@ public enum OpsScriptMan implements IPacketOps {
             return;
         }
         // JMS146-165.
-        if (ServerConfig.JMS146orLater()) {
+        if (Config.JMS146orLater()) {
             SM_SAY.set(0);
             SM_ASKYESNO.set(1);
             SM_ASKTEXT.set(2);

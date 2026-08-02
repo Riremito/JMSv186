@@ -26,7 +26,7 @@ import odin.client.SummonSkillEntry;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -209,7 +209,7 @@ public class ReqCSummonedPool {
             return;
         }
 
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             cp.Decode4();
             cp.Decode4();
             int tick = cp.Decode4();
@@ -219,14 +219,14 @@ public class ReqCSummonedPool {
 
         byte animation = cp.Decode1();
 
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             cp.Decode4();
             cp.Decode4();
         }
 
         byte numAttacked = cp.Decode1();
 
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             cp.Decode2(); // x
             cp.Decode2(); // y
             cp.Decode2(); // x
@@ -242,7 +242,7 @@ public class ReqCSummonedPool {
                 continue;
             }
 
-            if (ServerConfig.JMS186orLater()) {
+            if (Config.JMS186orLater()) {
                 cp.Decode4(); // MobID
             }
 

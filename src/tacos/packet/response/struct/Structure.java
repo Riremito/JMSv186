@@ -7,7 +7,7 @@ import odin.client.MapleQuestStatus;
 import odin.client.SkillEntry;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import java.util.List;
 import java.util.Map;
@@ -268,7 +268,7 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
                 data.Encode8(SharedDate.getTimestamp(skill.getValue().expiration));
             }
 
@@ -291,7 +291,7 @@ public class Structure {
         ServerPacket data = new ServerPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
 
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(0);
         }
 
@@ -308,11 +308,11 @@ public class Structure {
 
         if (Region.KMS.check() || Region.KMST.check() || Version.LessOrEqual(Region.EMS, 76)) {
             // none
-        } else if ((ServerConfig.JMS194orLater()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        } else if ((Config.JMS194orLater()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode2(0);
         }
 
@@ -405,7 +405,7 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }

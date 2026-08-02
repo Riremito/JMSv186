@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -46,13 +46,13 @@ public class ResCScriptMan {
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(smt.get()); // nMsgType
 
-        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
             sp.Encode1(param); // v186+, not used
         }
 
         switch (smt) {
             case SM_SAY: {
-                if (ServerConfig.JMS186orLater()
+                if (Config.JMS186orLater()
                         || Version.GreaterOrEqual(Region.KMS, 95)) {
                     if ((param & 4) > 0) {
                         sp.Encode4(0); // nSpeakerTemplateID

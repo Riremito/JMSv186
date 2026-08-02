@@ -34,7 +34,7 @@ import odin.server.life.MapleMonster;
 import tacos.client.TacosBuff.Buff;
 import tacos.client.TacosCalcDamage;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.constants.TacosConstants;
 import tacos.packet.ClientPacket;
@@ -215,7 +215,7 @@ public class ParseCUser_Attack {
         // DR_Check
         if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
             // ?
-        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
+        } else if (Config.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
@@ -223,7 +223,7 @@ public class ParseCUser_Attack {
         // DR_Check
         if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
             // ?
-        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
+        } else if (Config.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -238,7 +238,7 @@ public class ParseCUser_Attack {
         }
         if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
             // none
-        } else if (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
+        } else if (Config.JMS180orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
             // v95 4 bytes SKILLLEVELDATA::GetCrc
@@ -260,7 +260,7 @@ public class ParseCUser_Attack {
         }
         if (Version.LessOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.GMS, 95)) {
             // ?
-        } else if (ServerConfig.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
+        } else if (Config.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
             cp.Decode4(); // Crc
         }
         attack.tKeyDown = 0;
@@ -268,7 +268,7 @@ public class ParseCUser_Attack {
             attack.tKeyDown = cp.Decode4();
         }
         attack.BuffKey = cp.Decode1();
-        if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || Config.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 95)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 attack.exJablin = cp.Decode1();
             }
@@ -289,7 +289,7 @@ public class ParseCUser_Attack {
         attack.nAttackActionType = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         attack.nAttackSpeed = cp.Decode1();
         attack.tAttackTime = Version.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode4();
-        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 95) || Config.JMS186orLater()) {
             cp.Decode4(); // dwID
         }
         if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
@@ -327,13 +327,13 @@ public class ParseCUser_Attack {
 
             if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.THMS, 87)) {
                 // nothing
-            } else if (ServerConfig.JMS164orLater()) {
+            } else if (Config.JMS164orLater()) {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
 
             attack.damages.put(nTargetID, damage_list); // add damage list.
         }
-        if (Version.GreaterOrEqual(Region.KMS, 65) || ServerConfig.JMS180orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 65) || Config.JMS180orLater()) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode2();
                 cp.Decode2();

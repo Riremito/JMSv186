@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import tacos.config.Region;
+import tacos.config.Config;
 import tacos.config.Version;
 
 /**
@@ -169,7 +169,7 @@ public class VersionSelector {
             String server_region = matcher.group(1);
             int server_version = Integer.parseInt(matcher.group(2));
             int server_version_sub = Integer.parseInt(matcher.group(3));
-            Region.setRegion(server_region);
+            Config.setRegion(server_region);
             Version.setVersion(server_version, server_version_sub);
             return true;
         }

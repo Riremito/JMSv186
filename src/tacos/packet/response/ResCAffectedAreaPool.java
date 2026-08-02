@@ -18,7 +18,7 @@
  */
 package tacos.packet.response;
 
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMist;
 import tacos.packet.ServerPacketHeader;
@@ -51,7 +51,7 @@ public class ResCAffectedAreaPool {
         sp.Encode4(0); // nElemAttr
 
         // not in JMS147-164
-        if (ServerConfig.JMS186orLater()) {
+        if (Config.JMS186orLater()) {
             sp.Encode4(0); // nPhase
         }
 

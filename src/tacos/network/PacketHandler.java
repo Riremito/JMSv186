@@ -21,7 +21,6 @@ package tacos.network;
 import java.util.concurrent.ThreadPoolExecutor;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoHandlerAdapter;
@@ -34,6 +33,7 @@ import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import odin.server.Randomizer;
 import org.apache.mina.common.ExecutorThreadModel;
+import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.server.TacosServer;
 
@@ -54,7 +54,7 @@ public class PacketHandler extends IoHandlerAdapter {
             return cfg;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMSB: {
                 encoder = new PacketEncoder_KMSB();
                 decoder = new PacketDecoder_KMSB();

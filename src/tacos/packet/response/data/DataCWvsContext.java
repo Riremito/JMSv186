@@ -21,7 +21,7 @@ package tacos.packet.response.data;
 import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import java.util.Collection;
 import tacos.packet.ServerPacket;
@@ -40,7 +40,7 @@ public class DataCWvsContext {
             // 0 = no data.
             return data.getBytes();
         }
-        if (ServerConfig.JMS194orLater()) {
+        if (Config.JMS194orLater()) {
             data.Encode4(0);
         }
         data.Encode4(0); // item1?

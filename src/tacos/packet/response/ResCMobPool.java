@@ -20,7 +20,7 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
@@ -121,12 +121,12 @@ public class ResCMobPool {
             return data.getBytes();
         }
         // JMS146
-        if (ServerConfig.JMS146orLater()) {
+        if (Config.JMS146orLater()) {
             data.Encode4(0); // nEffectItemID
         }
         // JMS186, GMS95
         // not in KMST330, TWMS125
-        if (ServerConfig.JMS165orLater()) {
+        if (Config.JMS165orLater()) {
             data.Encode4(0); // m_nPhase
         }
 
@@ -209,7 +209,7 @@ public class ResCMobPool {
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             // none
-        } else if (ServerConfig.JMS186orLater()
+        } else if (Config.JMS186orLater()
                 || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
@@ -222,7 +222,7 @@ public class ResCMobPool {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
             sp.Encode1(0);
-        } else if (ServerConfig.JMS186orLater()
+        } else if (Config.JMS186orLater()
                 || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
@@ -243,7 +243,7 @@ public class ResCMobPool {
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
 
-        if (ServerConfig.JMS194orLater()
+        if (Config.JMS194orLater()
                 || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode4(0);
         }

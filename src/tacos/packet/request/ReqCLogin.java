@@ -27,7 +27,7 @@ import tacos.config.Content;
 import tacos.config.ContentState;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Character_slots;
@@ -242,7 +242,7 @@ public class ReqCLogin {
         if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
             int unk = cp.Decode4();
         }
-        if (ServerConfig.JMS165orLater()) {
+        if (Config.JMS165orLater()) {
             if (Version.LessOrEqual(Region.GMS, 73)) {
                 // none
             } else {
@@ -304,11 +304,11 @@ public class ReqCLogin {
                 }
             }
         }
-        if (ServerConfig.JMS180orLater()) {
+        if (Config.JMS180orLater()) {
             job_dualblade = cp.Decode2(); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
         }
 
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             character_gender = cp.Decode1();
             if (!Version.Equal(Region.KMST, 391)) {
                 skin_color = cp.Decode1();
@@ -545,7 +545,7 @@ public class ReqCLogin {
         }
         c.SendPacket(ResCLogin.WorldInformation(null));
 
-        if (ServerConfig.JMS186orLater()) {
+        if (Config.JMS186orLater()) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());
             c.SendPacket(ResCLogin.LatestConnectedWorld());
         }

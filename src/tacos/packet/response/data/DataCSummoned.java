@@ -21,7 +21,7 @@ package tacos.packet.response.data;
 import odin.client.MapleCharacter;
 import odin.server.maps.MapleSummon;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 
@@ -58,7 +58,7 @@ public class DataCSummoned {
             data.Encode1(0);
         }
 
-        if (ServerConfig.JMS186orLater()) {
+        if (Config.JMS186orLater()) {
             data.Encode1(is_avater_look ? 1 : 0);
             if (is_avater_look) {
                 data.EncodeBuffer(DataAvatarLook.Encode(chr));

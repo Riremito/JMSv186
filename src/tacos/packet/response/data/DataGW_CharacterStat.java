@@ -23,7 +23,7 @@ import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.client.TacosCharacter;
@@ -47,7 +47,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (ServerConfig.KMS138orLater() || (Region.THMS.check() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
+        if (Config.KMS138orLater() || (Region.THMS.check() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
             // none
         } else if (Region.KMSB.check() || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.BMS.check() || Region.VMS.check()) {
             data.EncodeZeroBytes(8);
@@ -82,7 +82,7 @@ public class DataGW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (ServerConfig.JMS186orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.JMS186orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
             // is_extendsp_job
             if (GameConstants.is_extendsp_job(chr.getJob())) {
                 final int size = chr.getRemainingSpSize();
@@ -203,7 +203,7 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);
             data.Encode4(0);
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
@@ -227,7 +227,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             if (Region.KMS.check() || Region.KMST.check()) {
-                if (ServerConfig.KMS119orLater()) {
+                if (Config.KMS119orLater()) {
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.EncodeZeroBytes(21);
                     } else {
@@ -240,7 +240,7 @@ public class DataGW_CharacterStat {
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode1(0);
                     }
-                    if (ServerConfig.KMS138orLater()) {
+                    if (Config.KMS138orLater()) {
                         data.Encode4(0);
                     }
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
@@ -269,7 +269,7 @@ public class DataGW_CharacterStat {
                     }
                     return data.getBytes();
                 }
-                if (ServerConfig.KMS118orLater()) {
+                if (Config.KMS118orLater()) {
                     data.EncodeZeroBytes(10);
                     data.Encode4(0);
                     data.Encode4(0);
@@ -333,7 +333,7 @@ public class DataGW_CharacterStat {
         data.Encode2(chr.getFame()); // nPOP
 
         if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.THMS.check() || Region.TWMS.check() || Version.GreaterOrEqual(Region.GMS, 62) || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB()))
-                && ServerConfig.JMS146orLater()) {
+                && Config.JMS146orLater()) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
@@ -364,7 +364,7 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
         // JMS 180, KMS 95
-        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 92)) {
+        if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 92)) {
             data.Encode2(chr.getSubcategory());
         }
 
@@ -399,7 +399,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             // JMS v180-186
-            if (ServerConfig.JMS180orLater()) {
+            if (Config.JMS180orLater()) {
                 data.Encode4(0);
             }
             return data.getBytes();

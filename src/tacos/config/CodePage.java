@@ -38,7 +38,7 @@ public class CodePage {
             return;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMS:
             case KMST: {
                 codepage = Charset.forName("MS949"); // korean

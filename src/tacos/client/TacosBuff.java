@@ -25,7 +25,7 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.maps.MapleMap;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
@@ -64,7 +64,7 @@ public class TacosBuff {
             return new int[5]; // 20
         }
         // JMS147, TWMS77, THMS87, BMS24
-        if (ServerConfig.JMS146orLater()) {
+        if (Config.JMS146orLater()) {
             return new int[4]; // 16
         }
         if (Version.Equal(Region.KMS, 1)) {

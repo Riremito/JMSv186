@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -69,7 +69,7 @@ public class ResCNpcPool {
         data.Encode2(npc.getRx1()); // m_rgHorz.high
         data.Encode1(show ? 1 : 0); // m_bEnabled
 
-        if (ServerConfig.JMS194orLater()) {
+        if (Config.JMS194orLater()) {
             data.Encode1(0);
         }
 

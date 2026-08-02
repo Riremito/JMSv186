@@ -20,7 +20,7 @@ package tacos.packet.response;
 
 import odin.client.MapleClient;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedDate;
@@ -88,7 +88,7 @@ public class ResCShopDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (ServerConfig.JMS194orLater()) {
+            if (Config.JMS194orLater()) {
                 sp.Encode1(0);
             }
         }
@@ -100,7 +100,7 @@ public class ResCShopDlg {
         sp.Encode4(ds.getNpcId()); // m_dwNpcTemplateID
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
+            if (Config.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode1(0);
             }
         }
@@ -115,16 +115,16 @@ public class ResCShopDlg {
                 sp.Encode1(0); // nDiscountRate
             }
 
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(0); // nTokenItemID
                 sp.Encode4(0); // nTokenPrice
             }
 
-            if (ServerConfig.JMS186orLater()) {
+            if (Config.JMS186orLater()) {
                 sp.Encode4(0); // nItemPeriod
             }
 
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(0); // nLevelLimited
             }
 
@@ -150,7 +150,7 @@ public class ResCShopDlg {
             } else {
                 sp.Encode2(ss.item_quantity); // nQuantity
             }
-            if (ServerConfig.JMS146orLater()) {
+            if (Config.JMS146orLater()) {
                 sp.Encode2(ss.item_slot_max); // nMaxPerSlot
             }
 
@@ -175,7 +175,7 @@ public class ResCShopDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (ServerConfig.JMS194orLater()) {
+            if (Config.JMS194orLater()) {
                 sp.Encode1(0);
             }
         }
@@ -187,7 +187,7 @@ public class ResCShopDlg {
         sp.Encode4(sid); // m_dwNpcTemplateID
 
         if (!Version.GreaterOrEqual(Region.EMS, 89)) {
-            if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
+            if (Config.JMS194orLater() || Version.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode1(0);
             }
         }
@@ -201,16 +201,16 @@ public class ResCShopDlg {
                 sp.Encode1(0); // nDiscountRate
             }
 
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(item.getReqItem()); // nTokenItemID
                 sp.Encode4(item.getReqItemQ()); // nTokenPrice
             }
 
-            if (ServerConfig.JMS186orLater()) {
+            if (Config.JMS186orLater()) {
                 sp.Encode4(0); // nItemPeriod
             }
 
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode4(0); // nLevelLimited
             }
 
@@ -235,7 +235,7 @@ public class ResCShopDlg {
             } else {
                 sp.Encode2(1); // nQuantity
             }
-            if (ServerConfig.JMS146orLater()) {
+            if (Config.JMS146orLater()) {
                 sp.Encode2(ii.getSlotMax(c, item.getItemId())); // nMaxPerSlot
             }
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 131)) {

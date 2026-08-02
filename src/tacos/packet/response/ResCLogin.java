@@ -21,7 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import java.util.List;
 import tacos.packet.ServerPacket;
@@ -69,7 +69,7 @@ public class ResCLogin {
         switch (ops) {
             case LoginResCode_Success: {
                 {
-                    switch (Region.getRegion()) {
+                    switch (Config.REGION) {
                         case KMSB: {
                             int server_id = 0;
                             sp.Encode4(client.getId());
@@ -99,7 +99,7 @@ public class ResCLogin {
                             sp.Encode4(client.getId()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
-                            if (ServerConfig.JMS164orLater()) {
+                            if (Config.JMS164orLater()) {
                                 sp.Encode1(client.isGameMaster() ? 1 : 0);
                             }
                             if (Version.GreaterOrEqual(Region.KMS, 160)) {
@@ -143,7 +143,7 @@ public class ResCLogin {
                             sp.Encode4(client.getId()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
-                            if (ServerConfig.JMS164orLater()) {
+                            if (Config.JMS164orLater()) {
                                 sp.Encode1(client.isGameMaster() ? 1 : 0);
                             }
                             if (Version.GreaterOrEqual(Region.JMS, 308)) {
@@ -169,10 +169,10 @@ public class ResCLogin {
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
                             sp.Encode1(0);
-                            if (ServerConfig.JMS164orLater()) {
+                            if (Config.JMS164orLater()) {
                                 sp.Encode1(0);
                             }
-                            if (ServerConfig.JMS180orLater()) {
+                            if (Config.JMS180orLater()) {
                                 sp.Encode1(0);
                             }
                             // 2次パスワード
@@ -347,7 +347,7 @@ public class ResCLogin {
                             }
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
-                            if (ServerConfig.JMS164orLater()) {
+                            if (Config.JMS164orLater()) {
                                 sp.Encode1(client.isGameMaster() ? 1 : 0);
                             }
                             sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
@@ -655,7 +655,7 @@ public class ResCLogin {
         }
 
         sp.Encode2(0); // m_nBalloonCount
-        if (ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(0);
         }
         if (Version.GreaterOrEqual(Region.EMS, 89)) {
@@ -703,7 +703,7 @@ public class ResCLogin {
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
             if ((Region.JMS.check() || Region.JMST.check() || Region.KMS.check() || Region.KMST.check() || Region.IMS.check() || Region.EMS.check() || Region.THMS.check() || Region.MSEA.check())
-                    && (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84))
+                    && (Config.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84))
                     || Version.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode1(0); // family
             }
@@ -833,7 +833,7 @@ public class ResCLogin {
             sp.Encode4(charslots); // m_nSlotCount
             return sp;
         }
-        if (Region.EMS.check() && Version.getVersion() <= 70) {
+        if (Version.LessOrEqual(Region.EMS, 70)) {
             sp.Encode4(charslots); // m_nSlotCount
             sp.Encode4(0);
             sp.Encode8(0);
@@ -872,7 +872,7 @@ public class ResCLogin {
             sp.Encode2(2);
         }
 
-        if (ServerConfig.JMS194orLater()) {
+        if (Config.JMS194orLater()) {
             sp.Encode4(charslots);
             sp.Encode4(0); // Character Card
             sp.Encode4(0); // idk

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import odin.provider.IMapleData;
 import tacos.config.ContentCustom;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
@@ -121,7 +121,7 @@ public class DataCS_COMMODITY {
     public static byte[] EncodeModifiedData(CS_COMMODITY ccm) {
         ServerPacket data = new ServerPacket();
 
-        boolean mask4 = ServerConfig.JMS164orLater() || Region.VMS.check() || Region.BMS.check() || Version.GreaterOrEqual(Region.GMS, 84);
+        boolean mask4 = Config.JMS164orLater() || Region.VMS.check() || Region.BMS.check() || Version.GreaterOrEqual(Region.GMS, 84);
 
         if (mask4) {
             data.Encode4(ccm.dwModifiedFlag);

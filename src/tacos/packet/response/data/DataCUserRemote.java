@@ -22,7 +22,7 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import odin.handling.world.OdinWorld;
@@ -44,11 +44,11 @@ public class DataCUserRemote {
 
         if (Version.LessOrEqual(Region.KMS, 65)) {
             // nothing
-        } else if (ServerConfig.JMS164orLater()) {
+        } else if (Config.JMS164orLater()) {
             data.Encode1(chr.getLevel());
         }
         data.EncodeStr(chr.getName());
-        if (ServerConfig.JMS194orLater()) {
+        if (Config.JMS194orLater()) {
             data.EncodeStr("");
         }
         // guild
@@ -71,11 +71,11 @@ public class DataCUserRemote {
             data.Encode2(0);
             data.Encode1(0);
         }
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             data.Encode8(0); // buff mask.
         }
         data.Encode8(0); // buff mask.
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             if (Version.GreaterOrEqual(Region.JMS, 187)) {
                 data.Encode4(0); // buff mask.
             }
@@ -85,10 +85,10 @@ public class DataCUserRemote {
         }
         data.EncodeBuffer(DataAvatarLook.Encode(chr));
         data.Encode4(0); //this is CHARID to follow
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             data.Encode4(0); //probably charid following
             data.Encode4(0);
-            if (ServerConfig.JMS194orLater()) {
+            if (Config.JMS194orLater()) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode4(0);

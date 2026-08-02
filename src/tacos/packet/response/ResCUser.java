@@ -21,7 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import odin.client.inventory.IEquip;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -42,7 +42,7 @@ public class ResCUser {
         sp.Encode1(chr.isGM() ? 1 : 0);
         sp.EncodeStr(message);
 
-        if (ServerConfig.JMS146orLater()) {
+        if (Config.JMS146orLater()) {
             sp.Encode1(bOnlyBalloon ? 1 : 0); // skill macro
         }
 
@@ -110,7 +110,7 @@ public class ResCUser {
             sp.Encode1(scrollSuccess == IEquip.ScrollResult.CURSE ? 1 : 0);
             sp.Encode1(legendarySpirit ? 1 : 0); // bEnchantSkill
             sp.Encode1(0); // White Scroll
-            if (ServerConfig.JMS186orLater()) {
+            if (Config.JMS186orLater()) {
                 sp.Encode1(0);
                 sp.Encode4(0); // 2 = 装備のアップグレードに成功しました。
             }

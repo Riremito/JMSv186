@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -36,7 +36,7 @@ public class ResCClientSocket {
     public static ServerPacket getHello(byte[] sendIv, byte[] recvIv) {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMSB: {
                 sp.Encode2(Version.getVersion());
                 sp.EncodeStr(String.valueOf(Version.getSubVersion()));
@@ -70,15 +70,15 @@ public class ResCClientSocket {
         }
         sp.EncodeBuffer(recvIv);
         sp.EncodeBuffer(sendIv);
-        sp.Encode1(Region.getNumber()); // JMS = 3
+        sp.Encode1(Config.REGION.get()); // JMS = 3
 
         /*
             // x64
-            sp.Encode2(ServerConfig.GetVersion());
-            sp.EncodeStr("1:" + ServerConfig.GetSubVersion()); // 1:1
+            sp.Encode2(Config.GetVersion());
+            sp.EncodeStr("1:" + Config.GetSubVersion()); // 1:1
             sp.EncodeBuffer(recvIv);
             sp.EncodeBuffer(sendIv);
-            sp.Encode1(ServerConfig.GetRegionNumber());
+            sp.Encode1(Config.GetRegionNumber());
             sp.Encode1(0);
             sp.Encode1(5);
             sp.Encode1(1);
@@ -96,7 +96,7 @@ public class ResCClientSocket {
         sp.Encode4(TacosTools.getGameServerIP(server.getGlobalIP()));
         sp.Encode2(server.getPort());
 
-        if (Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || ServerConfig.KMS118orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || Config.KMS118orLater() || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
         }
 

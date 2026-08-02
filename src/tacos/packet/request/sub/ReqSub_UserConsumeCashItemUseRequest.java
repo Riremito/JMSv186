@@ -25,7 +25,7 @@ import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
@@ -62,7 +62,7 @@ import tacos.wz.opt.FieldOpt;
 public class ReqSub_UserConsumeCashItemUseRequest {
 
     public static boolean OnUserConsumeCashItemUseRequestInternal(MapleMap map, MapleCharacter chr, ClientPacket cp) {
-        int timestamp = (ServerConfig.JMS180orLater() || Version.Equal(Region.BMS, 24)) ? cp.Decode4() : 0;
+        int timestamp = (Config.JMS180orLater() || Version.Equal(Region.BMS, 24)) ? cp.Decode4() : 0;
         short cash_item_slot = cp.Decode2();
         int cash_item_id = cp.Decode4();
 

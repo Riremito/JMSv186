@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -53,7 +53,7 @@ public class ReqCShopDlg {
             case ShopReq_Buy: {
                 cp.Decode2();
 
-                if (ServerConfig.JMS194orLater()) {
+                if (Config.JMS194orLater()) {
                     cp.Decode1();
                 }
 

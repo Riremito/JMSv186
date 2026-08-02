@@ -22,7 +22,7 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class DebugShop {
         switch (OpsShop.find(shop_req)) {
             case ShopReq_Buy: {
                 short unk1 = cp.Decode2();
-                byte unk2 = (ServerConfig.JMS194orLater() && !Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
+                byte unk2 = (Config.JMS194orLater() && !Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
                 int item_id = cp.Decode4();
                 short quantity = cp.Decode2();
 

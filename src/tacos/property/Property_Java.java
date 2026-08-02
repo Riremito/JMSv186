@@ -19,7 +19,7 @@
 package tacos.property;
 
 import java.io.File;
-import tacos.config.Region;
+import tacos.config.Config;
 import tacos.config.Version;
 
 /**
@@ -33,8 +33,8 @@ public class Property_Java {
 
     public static boolean setPath() {
         // cmd line arguments
-        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Region.getName() + "_v" + Version.getVersion();
-        path_scripts = System.getProperty("user.dir") + "/scripts/scripts_" + Region.getName() + "/";
+        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Config.REGION.getName() + "_v" + Version.getVersion();
+        path_scripts = System.getProperty("user.dir") + "/scripts/scripts_" + Config.REGION.getName() + "/";
 
         if (!(new File(path_scripts)).isDirectory()) {
             path_scripts = System.getProperty("user.dir") + "/scripts/scripts_JMS/";

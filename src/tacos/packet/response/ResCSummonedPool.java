@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import java.util.List;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -39,11 +39,11 @@ public class ResCSummonedPool {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedEnterField);
 
         sp.Encode4(summon.getOwnerId()); // m_dwCharacterId
-        if (ServerConfig.JMS147orLater()) {
+        if (Config.JMS147orLater()) {
             sp.Encode4(summon.getObjectId()); // m_dwSummonedID
         }
         sp.Encode4(summon.getSkill()); // m_nSkillID
-        if (ServerConfig.JMS186orLater()) {
+        if (Config.JMS186orLater()) {
             sp.Encode1(summon.getOwnerLevel() - 1); // m_nCharLevel
         }
 
@@ -86,7 +86,7 @@ public class ResCSummonedPool {
 
         sp.Encode4(summon.getOwnerId());
         sp.Encode4(summon.getSkill());
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             sp.Encode1(level - 1); //? guess
         }
         sp.Encode1(animation);

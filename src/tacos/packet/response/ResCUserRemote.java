@@ -32,7 +32,7 @@ import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import tacos.client.TacosCharacter;
 import tacos.config.ContentCustom;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsSkill;
@@ -61,7 +61,7 @@ public class ResCUserRemote {
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
 
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             sp.Encode1(attack.m_nLevel); // m_nLevel
         }
 
@@ -118,7 +118,7 @@ public class ResCUserRemote {
             sp.Encode4(attack.tKeyDown);
         }
 
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             if (attack.getHeader() == ServerPacketHeader.LP_UserShootAttack) {
                 sp.Encode2(attack.X);
                 sp.Encode2(attack.Y);

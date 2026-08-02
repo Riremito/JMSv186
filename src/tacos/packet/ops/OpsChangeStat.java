@@ -19,7 +19,7 @@
 package tacos.packet.ops;
 
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 
 /**
@@ -114,7 +114,7 @@ public enum OpsChangeStat {
         }
 
         // JMS131 and 147+ is asme as JMS186
-        if (ServerConfig.JMS147orLater()) {
+        if (Config.JMS147orLater()) {
             return;
         }
         // JMS146 only?

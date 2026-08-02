@@ -46,33 +46,24 @@ public enum Region {
         this.value = value;
     }
 
+    public int get() {
+        return this.value;
+    }
+
+    public String getName() {
+        return name();
+    }
+
     public boolean check() {
-        return equals(region);
+        return equals(Config.REGION);
     }
 
-    private static Region region = Region.JMS;
-
-    public static Region getRegion() {
-        return region;
-    }
-
-    public static int getNumber() {
-        return region.value;
-    }
-
-    public static String getName() {
-        return region.name();
-    }
-
-    public static boolean setRegion(String name) {
+    public static Region find(String name) {
         for (Region r : values()) {
             if (r.name().equals(name)) {
-                region = r;
-                return true;
+                return r;
             }
         }
-
-        region = UNKNOWN;
-        return false;
+        return UNKNOWN;
     }
 }

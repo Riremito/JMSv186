@@ -25,7 +25,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedDate;
@@ -219,7 +219,7 @@ public class ResCWvsContext {
                 sp.Encode2(buff.buff_effect);
             }
             sp.Encode4(buff.buff_id);
-            if (ServerConfig.JMS146orLater()) {
+            if (Config.JMS146orLater()) {
                 sp.Encode4(buff.buff_time);
             } else {
                 sp.Encode2(buff.buff_time);
@@ -228,7 +228,7 @@ public class ResCWvsContext {
         if (Version.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode2(0);
         }
-        if (ServerConfig.JMS146orLater()) {
+        if (Config.JMS146orLater()) {
             sp.Encode1(0); // nDefenseAtt
             sp.Encode1(0); // nDefenseState
         }
@@ -370,7 +370,7 @@ public class ResCWvsContext {
         sp.Encode4(skillid);
         sp.Encode4(level);
         sp.Encode4(masterlevel);
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             sp.Encode8(SharedDate.getMagicalExpirationDate());
         }
         sp.Encode1(4);
@@ -424,7 +424,7 @@ public class ResCWvsContext {
                         break;
                     }
                     case PICKUP_MESO: {
-                        if (ServerConfig.JMS164orLater()) {
+                        if (Config.JMS164orLater()) {
                             sp.Encode1(0);
                         }
                         sp.Encode4(ma.Inc_Meso);
@@ -489,7 +489,7 @@ public class ResCWvsContext {
                 sp.Encode4(0);
                 sp.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
                 sp.Encode1(0);
-                if (Region.THMS.check() && Version.getVersion() == 87) {
+                if (Version.Equal(Region.THMS, 87)) {
                     sp.Encode4(ma.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
                     sp.Encode4(0); // Party Ring Bonus EXP(+%d)
                     sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)
@@ -543,7 +543,7 @@ public class ResCWvsContext {
                     sp.Encode4(0);
                     sp.Encode4(0);
                 }
-                if (ServerConfig.JMS194orLater()) {
+                if (Config.JMS194orLater()) {
                     sp.Encode1(0); // 0 or not
                 }
                 break;
@@ -775,7 +775,7 @@ public class ResCWvsContext {
             sp.Encode2(player.getFame()); // nPOP
         }
 
-        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
+        if (Config.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
             sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // bIsMarried
         }
 
@@ -802,7 +802,7 @@ public class ResCWvsContext {
 
         sp.EncodeStr(sCommunity);
 
-        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
+        if (Config.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
             sp.EncodeStr(sAlliance);
         }
 
@@ -860,7 +860,7 @@ public class ResCWvsContext {
             }
         }
 
-        if (ServerConfig.JMS147orLater()) {
+        if (Config.JMS147orLater()) {
             if (Version.GreaterOrEqual(Region.GMS, 93)) {
                 // none.
             } else {
@@ -869,7 +869,7 @@ public class ResCWvsContext {
             }
         }
 
-        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId()); // nEquipedMedalID

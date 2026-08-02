@@ -1,13 +1,23 @@
 package tacos.config;
 
-public class ServerConfig {
+public class Config {
+
+    public static Region REGION = Region.JMS;
+
+    public static boolean setRegion(String name) {
+        REGION = Region.find(name);
+        if (Region.UNKNOWN.check()) {
+            return false;
+        }
+        return true;
+    }
 
     public static boolean JMS146orLater() {
         if (Version.PostBB()) {
             return true;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (146 <= Version.getVersion()) {
                     return true;
@@ -82,7 +92,7 @@ public class ServerConfig {
             return true;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (147 <= Version.getVersion()) {
                     return true;
@@ -146,7 +156,7 @@ public class ServerConfig {
             return true;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (164 <= Version.getVersion()) {
                     return true;
@@ -209,7 +219,7 @@ public class ServerConfig {
             return true;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (165 <= Version.getVersion()) {
                     return true;
@@ -271,7 +281,7 @@ public class ServerConfig {
             return true;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (180 <= Version.getVersion()) {
                     return true;
@@ -333,7 +343,7 @@ public class ServerConfig {
             return true;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (186 <= Version.getVersion()) {
                     return true;
@@ -395,7 +405,7 @@ public class ServerConfig {
             return false;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (194 <= Version.getVersion()) {
                     return true;
@@ -434,7 +444,7 @@ public class ServerConfig {
     }
 
     public static boolean KMS118orLater() {
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMS: {
                 if (118 <= Version.getVersion()) {
                     return true;
@@ -455,7 +465,7 @@ public class ServerConfig {
     }
 
     public static boolean KMS119orLater() {
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMS: {
                 if (119 <= Version.getVersion()) {
                     return true;
@@ -476,7 +486,7 @@ public class ServerConfig {
     }
 
     public static boolean KMS121orLater() {
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMS: {
                 if (121 <= Version.getVersion()) {
                     return true;
@@ -497,7 +507,7 @@ public class ServerConfig {
     }
 
     public static boolean KMS127orLater() {
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMS: {
                 if (127 <= Version.getVersion()) {
                     return true;
@@ -518,7 +528,7 @@ public class ServerConfig {
     }
 
     public static boolean KMS138orLater() {
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case KMS: {
                 if (138 <= Version.getVersion()) {
                     return true;
@@ -545,7 +555,7 @@ public class ServerConfig {
             return false;
         }
 
-        switch (Region.getRegion()) {
+        switch (Config.REGION) {
             case JMS: {
                 if (Version.getVersion() <= 165) {
                     return true;

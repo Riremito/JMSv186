@@ -21,7 +21,6 @@ package tacos;
 import tacos.config.ClientEdit;
 import tacos.config.CodePage;
 import tacos.config.Content;
-import tacos.config.Region;
 import tacos.config.Version;
 import tacos.property.Property;
 import tacos.shared.SharedExpTable;
@@ -37,6 +36,7 @@ import odin.server.RandomRewards;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
+import tacos.config.Config;
 import tacos.database.query.DQ_Characters;
 import tacos.network.MapleAESOFB;
 import tacos.property.Property_World;
@@ -61,7 +61,7 @@ public class Start {
             int server_version = Integer.parseInt(args[1]);
             int server_version_sub = Integer.parseInt(args[2]);
 
-            if (!Region.setRegion(server_region)) {
+            if (!Config.setRegion(server_region)) {
                 DebugLogger.ErrorLog("Invalid region name.");
                 return;
             }
@@ -77,7 +77,7 @@ public class Start {
             }
         }
         // default = JMS 147 0
-        DebugLogger.SetupLog(Region.getName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
+        DebugLogger.SetupLog(Config.REGION.getName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
         // DevLog
         DebugLogger.SetupLog("DEV_LOG");
         DebugLogger.init();

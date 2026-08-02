@@ -32,7 +32,7 @@ import odin.client.inventory.MapleInventory;
 import odin.client.PlayerStats;
 import odin.constants.GameConstants;
 import odin.client.SkillFactory;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import java.awt.Rectangle;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCUserLocal;
@@ -366,7 +366,7 @@ public class InventoryHandler {
 
     public static void UseCashItem(ClientPacket cp, MapleClient client, ClientPacket op) {
         MapleCharacter chr = client.getPlayer();
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.JMS164orLater()) {
             int time = cp.Decode4();
         }
         final short slot = cp.Decode2();

@@ -21,7 +21,7 @@ package tacos.packet.request;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -132,7 +132,7 @@ public class ReqCMobPool {
             // none
             cp.Decode1();
             cp.Decode1();
-        } else if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
+        } else if (Version.GreaterOrEqual(Region.KMS, 95) || Config.JMS186orLater()) {
             cp.Decode4(); // 0
             cp.Decode4(); // 0
         }
@@ -140,14 +140,14 @@ public class ReqCMobPool {
         byte unk2 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
         int unk3 = Version.LessOrEqual(Region.KMS, 43) ? 1 : cp.Decode4(); // 1
 
-        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater() || Version.Equal(Region.BMS, 24)) {
+        if (Version.GreaterOrEqual(Region.KMS, 95) || Config.JMS186orLater() || Version.Equal(Region.BMS, 24)) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
                 DebugLogger.DebugLog("0x00FFDDCC... " + String.format("%08X", ffddcc_1) + " | " + String.format("%08X", ffddcc_2));
             }
         }
-        if (Version.GreaterOrEqual(Region.KMS, 95) || ServerConfig.JMS186orLater()) {
+        if (Version.GreaterOrEqual(Region.KMS, 95) || Config.JMS186orLater()) {
             cp.Decode4();
         }
 

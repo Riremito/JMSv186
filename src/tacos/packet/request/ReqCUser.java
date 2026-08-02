@@ -31,7 +31,7 @@ import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
+import tacos.config.Config;
 import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedExpTable;
@@ -878,7 +878,7 @@ public class ReqCUser {
             // nothing
         } else {
             // not in JMS147
-            if (ServerConfig.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
+            if (Config.JMS164orLater() || Version.Equal(Region.BMS, 24)) {
                 cp.Decode4();
             }
         }
@@ -1245,9 +1245,9 @@ public class ReqCUser {
     }
 
     public static boolean OnUserChat(MapleCharacter chr, MapleMap map, ClientPacket cp) {
-        int timestamp = (ServerConfig.JMS180orLater() || Region.BMS.check()) ? cp.Decode4() : 0;
+        int timestamp = (Config.JMS180orLater() || Region.BMS.check()) ? cp.Decode4() : 0;
         String message = cp.DecodeStr();
-        boolean bOnlyBalloon = (ServerConfig.JMS147orLater() || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
+        boolean bOnlyBalloon = (Config.JMS147orLater() || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
 
         if (!bOnlyBalloon) {
             // command.
@@ -1967,7 +1967,7 @@ public class ReqCUser {
     public static boolean OnUserChangeStatRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp_1 = 0;
 
-        if (ServerConfig.JMS180orLater()) {
+        if (Config.JMS180orLater()) {
             time_stamp_1 = cp.Decode4();
         }
 

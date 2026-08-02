@@ -20,7 +20,6 @@ package tacos.debug;
 
 import odin.client.MapleCharacter;
 import tacos.config.DeveloperMode;
-import tacos.config.Region;
 import tacos.config.Version;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,6 +28,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import odin.provider.IMapleData;
+import tacos.config.Config;
 import tacos.packet.ClientPacket;
 
 /**
@@ -50,7 +50,7 @@ public class DebugLogger {
             }
 
             fw = new FileWriter(LOG_DIR + LOG_FILE_NAME, true);
-            fw.write(("[" + getDateString() + "]" + " Server Reboot - " + Region.getRegion() + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
+            fw.write(("[" + getDateString() + "]" + " Server Reboot - " + Config.REGION + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
             fw.flush();
         } catch (FileNotFoundException ex) {
             ExceptionLog("DebugLogger - open");
