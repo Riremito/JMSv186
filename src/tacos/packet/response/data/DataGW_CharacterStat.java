@@ -47,7 +47,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (Config.KMS138orLater() || (Region.THMS.check() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
+        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || (Region.THMS.check() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
             // none
         } else if (Region.KMSB.check() || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.BMS.check() || Region.VMS.check()) {
             data.EncodeZeroBytes(8);
@@ -203,7 +203,7 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (Config.KMS118orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);
             data.Encode4(0);
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
@@ -227,7 +227,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             if (Region.KMS.check() || Region.KMST.check()) {
-                if (Config.KMS119orLater()) {
+                if (Version.GreaterOrEqual(Region.KMS, 119) || Version.GreaterOrEqual(Region.KMST, 391)) {
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.EncodeZeroBytes(21);
                     } else {
@@ -240,7 +240,7 @@ public class DataGW_CharacterStat {
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode1(0);
                     }
-                    if (Config.KMS138orLater()) {
+                    if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391)) {
                         data.Encode4(0);
                     }
                     if (Version.GreaterOrEqual(Region.KMS, 160)) {
@@ -269,7 +269,7 @@ public class DataGW_CharacterStat {
                     }
                     return data.getBytes();
                 }
-                if (Config.KMS118orLater()) {
+                if (Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391)) {
                     data.EncodeZeroBytes(10);
                     data.Encode4(0);
                     data.Encode4(0);

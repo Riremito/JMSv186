@@ -42,7 +42,7 @@ public class DataAvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
         int demon_something = 0;
-        if (Config.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(demon_something); // demon something
         }
         data.Encode1(0); // ignored byte
@@ -108,11 +108,11 @@ public class DataAvatarLook {
                     data.Encode4(0);
                     data.Encode4(0);
                 }
-                if (Config.KMS138orLater() && !Version.Equal(Region.KMST, 391)) {
+                if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) && !Version.Equal(Region.KMST, 391)) {
                     data.Encode1(0);
                 }
                 data.EncodeZeroBytes(12);
-                if (Config.KMS138orLater()) {
+                if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391)) {
                     if (chr.getJob() / 100 == 31 || chr.getJob() == 3001) {
                         data.Encode4(0);
                     }
