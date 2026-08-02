@@ -168,7 +168,7 @@ public class DataGW_ItemSlotBase {
                 }
                 // リバース武器
                 if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
- || Region.VMS.check() || Version.GreaterOrEqual(Region.GMS, 68)) {
+                        || Region.VMS.check() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
@@ -185,7 +185,7 @@ public class DataGW_ItemSlotBase {
                         data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                     }
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+                if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
                 }
                 if (Version.GreaterOrEqual(Region.GMS, 126)) {
@@ -227,7 +227,7 @@ public class DataGW_ItemSlotBase {
                     data.Encode8(0);
                 }
                 if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
- || Version.GreaterOrEqual(Region.GMS, 68)) {
+                        || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
@@ -243,7 +243,7 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
 
-                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode1(0); // 1 = 赤色アイテム
@@ -270,7 +270,7 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
                 if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
- || Region.VMS.check() || Version.GreaterOrEqual(Region.GMS, 68)) {
+                        || Region.VMS.check() || Version.GreaterOrEqual(Region.GMS, 68)) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }
@@ -326,7 +326,7 @@ public class DataGW_ItemSlotBase {
                     }
                 }
 
-                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110)) {
+                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode2(0);
                     data.Encode2(0);

@@ -107,7 +107,7 @@ public class DataAvatarLook {
                     data.Encode4(0);
                     data.Encode4(0);
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) && !Version.Equal(Region.KMST, 391)) {
+                if (Version.GreaterOrEqual(Region.KMS, 138)) {
                     data.Encode1(0);
                 }
                 data.EncodeZeroBytes(12);
@@ -121,7 +121,7 @@ public class DataAvatarLook {
             }
             return data.getBytes();
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 126)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 126)) {
             if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 126)) {
                 data.Encode4(0);
                 data.Encode4(0);

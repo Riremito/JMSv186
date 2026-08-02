@@ -298,7 +298,7 @@ public class DataCharacterData {
                 data.Encode2(0);
             }
             // カンナ?
-            if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 116)) {
                     for (Item item : equipped) {
                         if (item.getPosition() <= -1500 && item.getPosition() > -1600) {
@@ -406,7 +406,7 @@ public class DataCharacterData {
         if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(0);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 119) || Version.GreaterOrEqual(Region.KMST, 391) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 119) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);
         }
         if (Version.PostBB()) {
@@ -466,7 +466,7 @@ public class DataCharacterData {
         if ((datamask & 0x02000000) != 0) {
             // EMS89 0x8000000 || 0x08
             // GMS126 0x2000000 || 0x08
-            if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) && !Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
             }
         }
@@ -482,7 +482,7 @@ public class DataCharacterData {
         if ((datamask & 0x04) != 0) {
             data.EncodeBuffer(InventoryInfo(chr, datamask));
         }
-        if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             if ((datamask & 0x01000000) != 0) {
                 data.Encode4(0);
             }
@@ -501,7 +501,7 @@ public class DataCharacterData {
                 data.Encode4(0);
             }
         }
-        if (Version.GreaterOrEqual(Region.KMS, 119) || Version.GreaterOrEqual(Region.KMST, 391) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Version.GreaterOrEqual(Region.KMS, 119) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
             if ((datamask & 0x00800000) != 0) {
                 data.Encode1(0);
             }
@@ -626,7 +626,7 @@ public class DataCharacterData {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                     }
                     if ((datamask & 0x4000000) != 0) {
-                        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || Version.Equal(Region.KMST, 391)) {
+                        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391)) {
                             data.Encode2(0);
                         }
                     }
@@ -1298,7 +1298,7 @@ public class DataCharacterData {
                         data.EncodeBuffer(GW_MonsterBookCode_Encode(chr));
                     }
                 }
-                if (Version.Equal(Region.JMST, 110)) {
+                if (Version.GreaterOrEqual(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode2(0);
                     data.Encode4(0);
@@ -1315,8 +1315,7 @@ public class DataCharacterData {
                         }
                     }
                 }
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
-) {
+                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
                     // 0x40000 (GMS 0x80000) [QuestInfoPacket] v165-v194
                     if ((datamask & 0x00040000) != 0) {
                         data.EncodeBuffer(Structure.QuestInfoPacket(chr));
@@ -1344,7 +1343,7 @@ public class DataCharacterData {
                     if ((datamask & 0x400000) != 0) {
                         data.Encode2(0); // not 0, Encode2, EncodeBuffer8
                     }
-                    if (Version.Equal(Region.JMST, 110)) {
+                    if (Version.GreaterOrEqual(Region.JMST, 110)) {
                         if ((datamask & 0x02000000) != 0) {
                             data.Encode2(0);
                         }

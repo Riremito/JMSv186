@@ -60,8 +60,7 @@ public class ResCUserRemote {
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
-) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
             sp.Encode1(attack.m_nLevel); // m_nLevel
         }
 
@@ -105,7 +104,7 @@ public class ResCUserRemote {
                 sp.Encode1(entry.getValue().size()); // hits
             }
             for (Integer damage : entry.getValue()) {
-                if (Version.LessOrEqual(Region.JMS, 147) || Version.Equal(Region.KMST, 330)) {
+                if (Version.LessOrEqual(Region.JMS, 147) || Version.LessOrEqual(Region.KMST, 330)) {
                     sp.Encode4(damage); // damage
                 } else {
                     sp.Encode1((damage & 0x80000000) != 0 ? 1 : 0); // critical.
@@ -118,8 +117,7 @@ public class ResCUserRemote {
             sp.Encode4(attack.tKeyDown);
         }
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
-) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
             if (attack.getHeader() == ServerPacketHeader.LP_UserShootAttack) {
                 sp.Encode2(attack.X);
                 sp.Encode2(attack.Y);

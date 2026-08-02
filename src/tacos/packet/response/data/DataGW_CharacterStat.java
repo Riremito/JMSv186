@@ -202,10 +202,10 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);
             data.Encode4(0);
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
+            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.JMST, 110)) {
                 data.Encode4(0);
             }
             data.Encode4(chr.getPosMap());
@@ -280,7 +280,7 @@ public class DataGW_CharacterStat {
             } else {
                 if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 116)) {
                     data.EncodeZeroBytes(21);
-                } else if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.Equal(Region.JMST, 110)) {
+                } else if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.JMST, 110)) {
                     data.EncodeZeroBytes(12);
                 }
             }
@@ -289,7 +289,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode1(0);
 
-            if (Version.Equal(Region.JMST, 110)) {
+            if (Version.GreaterOrEqual(Region.JMST, 110)) {
                 data.Encode8(0);
                 data.Encode4(0);
                 data.Encode4(0);
@@ -367,7 +367,7 @@ public class DataGW_CharacterStat {
             data.Encode2(chr.getSubcategory());
         }
 
-        if (Version.Equal(Region.KMST, 330)) {
+        if (Version.LessOrEqual(Region.KMST, 330)) {
             data.Encode4(0); // same as JMS187?
             return data.getBytes();
         }
@@ -440,7 +440,7 @@ public class DataGW_CharacterStat {
     public static byte[] EncodeChangeStat(TacosCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) | Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) | Version.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);
@@ -554,7 +554,7 @@ public class DataGW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) != 0) {
-            if (Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());

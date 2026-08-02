@@ -53,7 +53,7 @@ public class DebugShop {
         switch (OpsShop.find(shop_req)) {
             case ShopReq_Buy: {
                 short unk1 = cp.Decode2();
-                byte unk2 = (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) && !Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
+                byte unk2 = (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.Equal(Region.EMS, 76)) ? cp.Decode1() : 0;
                 int item_id = cp.Decode4();
                 short quantity = cp.Decode2();
 
@@ -93,6 +93,7 @@ public class DebugShop {
     public DebugShop() {
         shopStocks = new ArrayList<>();
     }
+
     public DebugShop(int npc_id) {
         this();
         this.npc_id = npc_id;

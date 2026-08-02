@@ -212,17 +212,17 @@ public class ParseCUser_Attack {
         attack.Y = chr.getPosition().y;
         attack.FieldKey = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         // DR_Check
-        if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
+        if (Version.LessOrEqual(Region.KMS, 114) || Version.LessOrEqual(Region.KMST, 330)) {
             // ?
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.Equal(Region.BMS, 24)) {
+        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
         attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
         // DR_Check
-        if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
+        if (Version.LessOrEqual(Region.KMS, 114) || Version.LessOrEqual(Region.KMST, 330)) {
             // ?
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.Equal(Region.BMS, 24)) {
+        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -235,9 +235,9 @@ public class ParseCUser_Attack {
         if (Version.GreaterOrEqual(Region.GMS, 95)) {
             cp.Decode1();
         }
-        if (Version.Equal(Region.KMST, 330) || Version.LessOrEqual(Region.KMS, 114)) {
+        if (Version.LessOrEqual(Region.KMS, 114) || Version.LessOrEqual(Region.KMST, 330)) {
             // none
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.Equal(Region.BMS, 24)) {
+        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
             // v95 4 bytes SKILLLEVELDATA::GetCrc
@@ -254,13 +254,15 @@ public class ParseCUser_Attack {
                 }
             }
         }
-        if (Version.PostBB() && !Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            // none
+        } else if (Version.PostBB()) {
             cp.Decode1();
         }
         if (Version.LessOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.GMS, 95)) {
             // ?
         } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
- || Version.Equal(Region.BMS, 24)) {
+                || Version.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // Crc
         }
         attack.tKeyDown = 0;
@@ -268,18 +270,18 @@ public class ParseCUser_Attack {
             attack.tKeyDown = cp.Decode4();
         }
         attack.BuffKey = cp.Decode1();
-        if (Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.GreaterOrEqual(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 95)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 attack.exJablin = cp.Decode1();
             }
         }
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 165) || Version.Equal(Region.BMS, 24)) {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 165) || Region.BMS.check()) {
             attack.AttackActionKey = cp.Decode1();
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
         }
         if (Version.PostBB()) {
-            if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.JMS, 187)) {
+            if (Version.LessOrEqual(Region.KMST, 330) || Version.Equal(Region.JMS, 187)) {
                 // none
             } else {
                 cp.Decode4(); // JMS188
@@ -325,10 +327,9 @@ public class ParseCUser_Attack {
                 }
             }
 
-            if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.THMS, 87)) {
+            if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.THMS, 87)) {
                 // nothing
-            } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
-) {
+            } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
 

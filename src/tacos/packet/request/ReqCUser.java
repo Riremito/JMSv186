@@ -858,7 +858,7 @@ public class ReqCUser {
         }
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.Equal(Region.BMS, 24)) {
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
         }
@@ -866,7 +866,7 @@ public class ReqCUser {
         cp.Decode1(); // unk
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.Equal(Region.BMS, 24)) {
+        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
             cp.Decode4();
@@ -878,7 +878,7 @@ public class ReqCUser {
         } else {
             // not in JMS147
             if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
- || Version.Equal(Region.BMS, 24)) {
+                    || Version.GreaterOrEqual(Region.BMS, 24)) {
                 cp.Decode4();
             }
         }
@@ -1990,7 +1990,7 @@ public class ReqCUser {
 
         byte unk = cp.Decode1();
 
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.KMST, 330) || Version.GreaterOrEqual(Region.GMS, 95)) {
         } else {
             int time_stamp_2 = cp.Decode4();
         }

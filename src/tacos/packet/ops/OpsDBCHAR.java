@@ -227,13 +227,13 @@ public enum OpsDBCHAR {
         if (Version.GreaterOrEqual(Region.GMS, 61)) {
             return true;
         }
-        if (Version.Equal(Region.BMS, 24)) {
+        if (Version.GreaterOrEqual(Region.BMS, 24)) {
             return true;
         }
-        if (Version.Equal(Region.VMS, 35)) {
+        if (Version.GreaterOrEqual(Region.VMS, 35)) {
             return true;
         }
-        if (Version.Equal(Region.IMS, 1)) {
+        if (Version.GreaterOrEqual(Region.IMS, 1)) {
             return true;
         }
         return false;

@@ -139,7 +139,7 @@ public class ReqCMobPool {
         byte unk2 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
         int unk3 = Version.LessOrEqual(Region.KMS, 43) ? 1 : cp.Decode4(); // 1
 
-        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.Equal(Region.BMS, 24)) {
+        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.BMS, 24)) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
