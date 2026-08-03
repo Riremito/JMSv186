@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -47,7 +47,7 @@ public enum OpsMessage {
     UNKNOWN(-1);
 
     public static void init() {
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);
@@ -60,7 +60,7 @@ public enum OpsMessage {
             OpsMessage.MS_SystemMessage.set(9);
             return;
         }
-        if (Version.LessOrEqual(Region.KMS, 84) || Version.LessOrEqual(Region.GMS, 83)) {
+        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.GMS, 83)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);
@@ -79,7 +79,7 @@ public enum OpsMessage {
             OpsMessage.MS_JMS_Pachinko.set(-1);
             return;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.GMS, 111)) {
             OpsMessage.MS_DropPickUpMessage.set(0);
             OpsMessage.MS_QuestRecordMessage.set(1);
             OpsMessage.MS_CashItemExpireMessage.set(2);

@@ -40,4 +40,62 @@ public class Config {
 
         return true;
     }
+
+    public static boolean PostBB() {
+        return Content.BIGBANG.get();
+    }
+
+    public static boolean PreBB() {
+        return !PostBB();
+    }
+
+    // good versions
+    public static boolean GreaterOrEqual(Region region, int version) {
+        if (region == Region.GMS && version <= 95) {
+            if (Region.GMST.check()) {
+                return true;
+            }
+        }
+        if (region.check()) {
+            if (version <= VERSION) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // pre-bb older versions
+    public static boolean LessOrEqual(Region region, int version) {
+        if (region == Region.GMS && version == 95) {
+            if (Region.GMST.check()) {
+                return true;
+            }
+        }
+        if (region.check()) {
+            if (VERSION <= version) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // bad versions
+    public static boolean Between(Region region, int version_l, int version_r) {
+        if (region.check()) {
+            if (version_l <= VERSION && VERSION <= version_r) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // really bad version
+    public static boolean Equal(Region region, int version) {
+        if (region.check()) {
+            if (VERSION == version) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

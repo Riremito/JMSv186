@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -311,7 +311,7 @@ public enum OpsCashItem implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             CashItemReq_ItemUpgrade.set(52);
             CashItemRes_ItemUpgradeSuccess.set(53);
             CashItemReq_ItemUpgradeFail.set(54);
@@ -327,7 +327,7 @@ public enum OpsCashItem implements IPacketOps {
             CashItemRes_VegaErr_InvalidItem.set(64);
             CashItemRes_VegaFail.set(65);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             CashItemReq_ItemUpgrade.set(57);
             CashItemRes_ItemUpgradeSuccess.set(CashItemReq_ItemUpgrade.get() + 1);
             CashItemReq_ItemUpgradeFail.set(CashItemReq_ItemUpgrade.get() + 2);

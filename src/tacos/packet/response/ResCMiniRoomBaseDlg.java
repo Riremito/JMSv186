@@ -38,9 +38,9 @@ import odin.server.shops.IMaplePlayerShop;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
+import tacos.config.Config;
 import tacos.odin.OdinPair;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.ServerPacketHeader;
 import tacos.wz.WzDataStorage;
 
@@ -126,7 +126,7 @@ public class ResCMiniRoomBaseDlg {
             sp.EncodeBuffer(DataAvatarLook.Encode(chr)); // CMiniRoomBaseDlg::DecodeAvatar
             sp.EncodeStr(chr.getName());
             if (!isEmployer) {
-                if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 95)) {
+                if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 95)) {
                     sp.Encode2(chr.getJob()); // m_anJobCode[i]
                 }
             }
@@ -138,7 +138,7 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode1(0);
             // GW_MiniGameRecord::Decode
             {
-                if (Version.GreaterOrEqual(Region.THMS, 87)) {
+                if (Config.GreaterOrEqual(Region.THMS, 87)) {
                     sp.EncodeZeroBytes(24);
                 } else {
                     sp.EncodeZeroBytes(20);
@@ -235,7 +235,7 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(1);
         sp.EncodeBuffer(DataAvatarLook.Encode(c));
         sp.EncodeStr(c.getName());
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(c.getJob());
         }
         return sp;
@@ -248,7 +248,7 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(slot);
         sp.EncodeBuffer(DataAvatarLook.Encode(c));
         sp.EncodeStr(c.getName());
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(c.getJob());
         }
         return sp;
@@ -304,14 +304,14 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode1(0);
             sp.EncodeBuffer(DataAvatarLook.Encode(trade.getPartner().getChr()));
             sp.EncodeStr(trade.getPartner().getChr().getName());
-            if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+            if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
                 sp.Encode2(trade.getPartner().getChr().getJob());
             }
         }
         sp.Encode1(number);
         sp.EncodeBuffer(DataAvatarLook.Encode(c.getPlayer()));
         sp.EncodeStr(c.getPlayer().getName());
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(c.getPlayer().getJob());
         }
         sp.Encode1(-1);
@@ -452,7 +452,7 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode1(storechr.getLeft());
             sp.EncodeBuffer(DataAvatarLook.Encode(storechr.getRight()));
             sp.EncodeStr(storechr.getRight().getName());
-            if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+            if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
                 sp.Encode2(storechr.getRight().getJob());
             }
         }
@@ -491,7 +491,7 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(slot);
         sp.EncodeBuffer(DataAvatarLook.Encode(chr));
         sp.EncodeStr(chr.getName());
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(chr.getJob());
         }
         return sp;
@@ -519,14 +519,14 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode2(minigame.getVisitorSlot(c.getPlayer()));
         sp.EncodeBuffer(DataAvatarLook.Encode(minigame.getMCOwner()));
         sp.EncodeStr(minigame.getOwnerName());
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(minigame.getMCOwner().getJob());
         }
         for (OdinPair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
             sp.Encode1(visitorz.getLeft());
             sp.EncodeBuffer(DataAvatarLook.Encode(visitorz.getRight()));
             sp.EncodeStr(visitorz.getRight().getName());
-            if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+            if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
                 sp.Encode2(visitorz.getRight().getJob());
             }
         }
@@ -587,14 +587,14 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode2(ips.getVisitorSlot(chr));
         sp.EncodeBuffer(DataAvatarLook.Encode(((MaplePlayerShop) ips).getMCOwner()));
         sp.EncodeStr(ips.getOwnerName());
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(((MaplePlayerShop) ips).getMCOwner().getJob());
         }
         for (final OdinPair<Byte, MapleCharacter> storechr : ips.getVisitors()) {
             sp.Encode1(storechr.getLeft());
             sp.EncodeBuffer(DataAvatarLook.Encode(storechr.getRight()));
             sp.EncodeStr(storechr.getRight().getName());
-            if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+            if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
                 sp.Encode2(storechr.getRight().getJob());
             }
         }
@@ -736,7 +736,7 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(slot);
         sp.EncodeBuffer(DataAvatarLook.Encode(c));
         sp.EncodeStr(c.getName());
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.THMS, 87) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(c.getJob());
         }
         sp.EncodeBuffer(GW_MiniGameRecord_Encode(c, game));
@@ -766,7 +766,7 @@ public class ResCMiniRoomBaseDlg {
         data.Encode4(game.getTies(chr));
         data.Encode4(game.getLosses(chr));
         data.Encode4(game.getScore(chr)); // points
-        if (Version.GreaterOrEqual(Region.THMS, 87)) {
+        if (Config.GreaterOrEqual(Region.THMS, 87)) {
             data.Encode4(0);
         }
         return data.getBytes();

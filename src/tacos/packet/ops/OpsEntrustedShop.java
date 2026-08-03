@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -97,7 +97,7 @@ public enum OpsEntrustedShop implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             EntrustedShopReq_CheckOpenPossible.set(0);
             EntrustedShopRes_OpenPossible.set(7);
             EntrustedShopRes_OpenImpossible_Using.set(8);

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.util.List;
 import java.util.Map;
 import tacos.packet.ServerPacket;
@@ -31,6 +30,7 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataCUser;
 import tacos.client.TacosCharacter;
+import tacos.config.Config;
 import tacos.config.ContentCustom;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
@@ -60,7 +60,7 @@ public class ResCUserRemote {
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             sp.Encode1(attack.m_nLevel); // m_nLevel
         }
 
@@ -71,7 +71,7 @@ public class ResCUserRemote {
         }
 
         OpsSkill skill = OpsSkill.find(attack.nSkillID);
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             if (skill == OpsSkill.SNIPER_STRAFE) {
                 OpsSkill passive_skill = OpsSkill.CROSSBOWMASTER_ULTIMATE_STRAFE;
                 int nPassiveSLV = chr.getSkillLevel(passive_skill);
@@ -84,7 +84,7 @@ public class ResCUserRemote {
 
         sp.Encode1(attack.BuffKey); // bSerialAttack
 
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             sp.Encode1(attack.AttackActionKey);
         } else {
             sp.Encode2(attack.AttackActionKey);
@@ -104,7 +104,7 @@ public class ResCUserRemote {
                 sp.Encode1(entry.getValue().size()); // hits
             }
             for (Integer damage : entry.getValue()) {
-                if (Version.LessOrEqual(Region.JMS, 147) || Version.LessOrEqual(Region.KMST, 330)) {
+                if (Config.LessOrEqual(Region.JMS, 147) || Config.LessOrEqual(Region.KMST, 330)) {
                     sp.Encode4(damage); // damage
                 } else {
                     sp.Encode1((damage & 0x80000000) != 0 ? 1 : 0); // critical.
@@ -117,7 +117,7 @@ public class ResCUserRemote {
             sp.Encode4(attack.tKeyDown);
         }
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             if (attack.getHeader() == ServerPacketHeader.LP_UserShootAttack) {
                 sp.Encode2(attack.X);
                 sp.Encode2(attack.Y);
@@ -135,7 +135,7 @@ public class ResCUserRemote {
         sp.Encode4(skill_id); // nSkillID
         sp.Encode1(skill_level); // skill level
 
-        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
             sp.Encode2(action); // action (2 bytes)
         } else {
             sp.Encode1(action);
@@ -180,7 +180,7 @@ public class ResCUserRemote {
         sp.Encode1(uhd.nAttackIdx);
         sp.Encode4(uhd.nDamage); // internal damage
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0); // critical
         }
 
@@ -188,7 +188,7 @@ public class ResCUserRemote {
             sp.Encode4(uhd.dwTemplateID); // dwTemplateID
             sp.Encode1(uhd.nLeft); // bLeft
 
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode4(0);
                 sp.Encode4(0);
             }
@@ -238,7 +238,7 @@ public class ResCUserRemote {
         sp.Encode4(characterid);
         sp.Encode4(itemid);
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode4(0);
         }
 

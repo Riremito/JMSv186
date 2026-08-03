@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client;
 
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,7 @@ import java.util.List;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
 import odin.provider.IMapleData;
+import tacos.config.Config;
 import tacos.wz.WzDataTool;
 
 public class Skill implements ISkill {
@@ -197,7 +197,7 @@ public class Skill implements ISkill {
         }
         ret.chargeskill = data.getChildByPath("keydown") != null;
 
-        if (Version.PreBB()) {
+        if (Config.PreBB()) {
             for (final IMapleData level : data.getChildByPath("level")) {
                 ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
             }

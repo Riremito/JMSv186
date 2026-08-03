@@ -23,9 +23,9 @@ import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.client.TacosCharacter;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChangeStat;
 
@@ -46,11 +46,11 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getFace());
         data.Encode4(chr.getHair());
 
-        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || (Region.THMS.check() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || (Region.THMS.check() && Config.PostBB()) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.CMS, 88)) {
             // none
-        } else if (Region.KMSB.check() || Version.LessOrEqual(Region.KMS, 95) || Version.LessOrEqual(Region.JMS, 131) || Region.BMS.check() || Region.VMS.check()) {
+        } else if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 131) || Region.BMS.check() || Region.VMS.check()) {
             data.EncodeZeroBytes(8);
-        } else if ((Region.JMS.check() || Region.JMST.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.CMS.check() || Region.MSEA.check() || ((Region.TWMS.check() || Region.EMS.check()) && Version.PreBB()))) {
+        } else if ((Region.JMS.check() || Region.JMST.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.CMS.check() || Region.MSEA.check() || ((Region.TWMS.check() || Region.EMS.check()) && Config.PreBB()))) {
             data.EncodeZeroBytes(24);
         }
 
@@ -65,7 +65,7 @@ public class DataGW_CharacterStat {
         data.Encode2(stat.luk);
 
         // BB前
-        if (Version.PreBB()) {
+        if (Config.PreBB()) {
             data.Encode2(stat.hp);
             data.Encode2(stat.maxhp);
             data.Encode2(stat.mp);
@@ -81,7 +81,7 @@ public class DataGW_CharacterStat {
         data.Encode2(chr.getRemainingAp());
 
         // SP
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 83)) {
             // is_extendsp_job
             if (GameConstants.is_extendsp_job(chr.getJob())) {
                 final int size = chr.getRemainingSpSize();
@@ -90,7 +90,7 @@ public class DataGW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
+                        if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 126)) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));
@@ -104,11 +104,11 @@ public class DataGW_CharacterStat {
             data.Encode2(chr.getRemainingSp());
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode8(0);
         }
 
-        if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(chr.getExp());
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
@@ -147,7 +147,7 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
 
             // CMS
-            if (Version.GreaterOrEqual(Region.CMS, 104)) {
+            if (Config.GreaterOrEqual(Region.CMS, 104)) {
                 return data.getBytes();
             }
 
@@ -160,7 +160,7 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode4(chr.getExp());
             data.Encode4(chr.getFame());
             data.Encode4(chr.getGashaEXP());
@@ -202,15 +202,15 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 118) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);
             data.Encode4(0);
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.JMST, 110)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.JMST, 110)) {
                 data.Encode4(0);
             }
             data.Encode4(chr.getPosMap());
             data.Encode1(chr.getPortal());
-            if (Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Config.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
             }
             data.Encode2(chr.getSubcategory());
@@ -226,8 +226,8 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode4(0);
             if (Region.KMS.check() || Region.KMST.check()) {
-                if (Version.GreaterOrEqual(Region.KMS, 119) || Version.GreaterOrEqual(Region.KMST, 391)) {
-                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
+                if (Config.GreaterOrEqual(Region.KMS, 119) || Config.GreaterOrEqual(Region.KMST, 391)) {
+                    if (Config.GreaterOrEqual(Region.KMS, 160)) {
                         data.EncodeZeroBytes(21);
                     } else {
                         data.EncodeZeroBytes(12);
@@ -236,25 +236,25 @@ public class DataGW_CharacterStat {
                     data.Encode1(0);
                     data.Encode4(0);
                     data.Encode1(0);
-                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
+                    if (Config.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode1(0);
                     }
-                    if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391)) {
+                    if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391)) {
                         data.Encode4(0);
                     }
-                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
+                    if (Config.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode1(0);
                     }
-                    if (Version.GreaterOrEqual(Region.KMS, 148)) {
+                    if (Config.GreaterOrEqual(Region.KMS, 148)) {
                         data.Encode4(0);
                         data.Encode4(0);
                     }
-                    if (Version.GreaterOrEqual(Region.KMS, 160)) {
+                    if (Config.GreaterOrEqual(Region.KMS, 160)) {
                         data.Encode4(0);
                         data.Encode1(0);
                         {
                             int unkloop_count = 6;
-                            if (Version.GreaterOrEqual(Region.KMS, 197)) {
+                            if (Config.GreaterOrEqual(Region.KMS, 197)) {
                                 unkloop_count = 9;
                             }
                             for (int i = 0; i < unkloop_count; i++) {
@@ -268,7 +268,7 @@ public class DataGW_CharacterStat {
                     }
                     return data.getBytes();
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391)) {
+                if (Config.GreaterOrEqual(Region.KMS, 118) || Config.GreaterOrEqual(Region.KMST, 391)) {
                     data.EncodeZeroBytes(10);
                     data.Encode4(0);
                     data.Encode4(0);
@@ -278,9 +278,9 @@ public class DataGW_CharacterStat {
                 }
                 return data.getBytes();
             } else {
-                if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 116)) {
+                if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 116)) {
                     data.EncodeZeroBytes(21);
-                } else if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.JMST, 110)) {
+                } else if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.JMST, 110)) {
                     data.EncodeZeroBytes(12);
                 }
             }
@@ -289,26 +289,26 @@ public class DataGW_CharacterStat {
             data.Encode4(0);
             data.Encode1(0);
 
-            if (Version.GreaterOrEqual(Region.JMST, 110)) {
+            if (Config.GreaterOrEqual(Region.JMST, 110)) {
                 data.Encode8(0);
                 data.Encode4(0);
                 data.Encode4(0);
                 return data.getBytes();
             }
 
-            if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126)) {
+            if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126)) {
                 data.Encode1(0);
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 116)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 116)) {
                 data.Encode4(0);
                 data.Encode1(0);
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111)) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode4(0);
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 116)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 116)) {
                 data.Encode1(0);
                 for (int i = 0; i < 6; i++) {
                     data.Encode4(0);
@@ -316,12 +316,12 @@ public class DataGW_CharacterStat {
                     data.Encode4(0);
                 }
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.EncodeZeroBytes(8);
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 116)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 116)) {
                 data.Encode4(0);
                 data.Encode4(0);
             }
@@ -331,11 +331,11 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp()); // nEXP
         data.Encode2(chr.getFame()); // nPOP
 
-        if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.THMS.check() || Region.TWMS.check() || Version.GreaterOrEqual(Region.GMS, 62) || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB())) && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
+        if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.THMS.check() || Region.TWMS.check() || Config.GreaterOrEqual(Region.GMS, 62) || Region.MSEA.check() || (Region.EMS.check() && Config.PostBB())) && Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
-        if (Version.GreaterOrEqual(Region.TWMS, 121) || Region.CMS.check() || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB())) {
+        if (Config.GreaterOrEqual(Region.TWMS, 121) || Region.CMS.check() || Region.MSEA.check() || (Region.EMS.check() && Config.PostBB())) {
             data.Encode8(0);
         }
 
@@ -353,20 +353,20 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (Version.GreaterOrEqual(Region.GMS, 62) || (Region.EMS.check() && Version.PreBB()) || Region.BMS.check()) {
+        if (Config.GreaterOrEqual(Region.GMS, 62) || (Region.EMS.check() && Config.PreBB()) || Region.BMS.check()) {
             data.Encode4(0);
         }
 
         // KMS 84
-        if (Version.LessOrEqual(Region.KMS, 84) || Region.BMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 84) || Region.BMS.check()) {
             return data.getBytes();
         }
         // JMS 180, KMS 95
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             data.Encode2(chr.getSubcategory());
         }
 
-        if (Version.LessOrEqual(Region.KMST, 330)) {
+        if (Config.LessOrEqual(Region.KMST, 330)) {
             data.Encode4(0); // same as JMS187?
             return data.getBytes();
         }
@@ -392,18 +392,18 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
         // JMS
-        if (Version.PreBB()) {
+        if (Config.PreBB()) {
             data.Encode8(0);
             data.Encode4(0);
             data.Encode4(0);
             // JMS v180-186
-            if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                 data.Encode4(0);
             }
             return data.getBytes();
         }
         // Post BB
-        if (Version.Equal(Region.JMS, 187)) {
+        if (Config.Equal(Region.JMS, 187)) {
             data.Encode4(0);
         }
         // JMS v188+
@@ -416,7 +416,7 @@ public class DataGW_CharacterStat {
     // GW_CharacterStat::DecodeMoney
     public static byte[] EncodeMoney(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode8(chr.getMeso());
         } else {
             data.Encode4(chr.getMeso());
@@ -439,7 +439,7 @@ public class DataGW_CharacterStat {
     public static byte[] EncodeChangeStat(TacosCharacter chr, int statmask) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) | Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) | Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode8(statmask);
         } else {
             data.Encode4(statmask);
@@ -469,7 +469,7 @@ public class DataGW_CharacterStat {
         // Job
         if ((statmask & OpsChangeStat.CS_JOB.get()) != 0) {
             data.Encode2(chr.getJob());
-            if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            if (Config.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode2(0);
             }
         }
@@ -491,7 +491,7 @@ public class DataGW_CharacterStat {
         }
         // HP
         if ((statmask & OpsChangeStat.CS_HP.get()) != 0) {
-            if (Version.PreBB()) {
+            if (Config.PreBB()) {
                 data.Encode2(chr.getStat().getHp());
             } else {
                 data.Encode4(chr.getStat().getHp());
@@ -499,7 +499,7 @@ public class DataGW_CharacterStat {
         }
         // MAXHP
         if ((statmask & OpsChangeStat.CS_MHP.get()) != 0) {
-            if (Version.PreBB()) {
+            if (Config.PreBB()) {
                 data.Encode2(chr.getStat().getMaxHp());
             } else {
                 data.Encode4(chr.getStat().getMaxHp());
@@ -507,7 +507,7 @@ public class DataGW_CharacterStat {
         }
         // MP
         if ((statmask & OpsChangeStat.CS_MP.get()) != 0) {
-            if (Version.PreBB()) {
+            if (Config.PreBB()) {
                 data.Encode2(chr.getStat().getMp());
             } else {
                 data.Encode4(chr.getStat().getMp());
@@ -515,7 +515,7 @@ public class DataGW_CharacterStat {
         }
         // MAXMP
         if ((statmask & OpsChangeStat.CS_MMP.get()) != 0) {
-            if (Version.PreBB()) {
+            if (Config.PreBB()) {
                 data.Encode2(chr.getStat().getMaxMp());
             } else {
                 data.Encode4(chr.getStat().getMaxMp());
@@ -532,7 +532,7 @@ public class DataGW_CharacterStat {
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
                     if (chr.getRemainingSp(i) > 0) {
                         data.Encode1(i + 1);
-                        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 131)) {
+                        if (Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131)) {
                             data.Encode4(chr.getRemainingSp(i));
                         } else {
                             data.Encode1(chr.getRemainingSp(i));
@@ -545,7 +545,7 @@ public class DataGW_CharacterStat {
         }
         // EXP
         if ((statmask & OpsChangeStat.CS_EXP.get()) != 0) {
-            if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            if (Config.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode8(chr.getExp());
             } else {
                 data.Encode4(chr.getExp());
@@ -553,7 +553,7 @@ public class DataGW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) != 0) {
-            if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89)) {
+            if (Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());
@@ -561,7 +561,7 @@ public class DataGW_CharacterStat {
         }
         // Meso
         if ((statmask & OpsChangeStat.CS_MONEY.get()) != 0) {
-            if (Version.GreaterOrEqual(Region.KMS, 197)) {
+            if (Config.GreaterOrEqual(Region.KMS, 197)) {
                 data.Encode8(chr.getMeso());
             } else {
                 data.Encode4(chr.getMeso());

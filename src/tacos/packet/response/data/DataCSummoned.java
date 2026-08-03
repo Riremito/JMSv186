@@ -20,8 +20,8 @@ package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
 import odin.server.maps.MapleSummon;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.ServerPacket;
 
 /**
@@ -53,18 +53,18 @@ public class DataCSummoned {
         data.Encode1(summon.getSummonType().get()); // m_nAssistType
         data.Encode1(animated ? 0 : 1); //nEnterType ENTER_TYPE_DEFAULT, ENTER_TYPE_CREATE_SUMMONED
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             data.Encode1(0);
         }
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             data.Encode1(is_avater_look ? 1 : 0);
             if (is_avater_look) {
                 data.EncodeBuffer(DataAvatarLook.Encode(chr));
             }
         }
 
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             // アクセラレーター<EX-7>
             if (m_nSkillID == 35111002) {
                 int m_nTeslaCoilState = 0;
@@ -77,7 +77,7 @@ public class DataCSummoned {
                 }
             }
             // 鬼神召喚
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 if (m_nSkillID == 42111003) {
                     data.Encode2(summon.getPosition().x + 250);
                     data.Encode2(summon.getPosition().y);

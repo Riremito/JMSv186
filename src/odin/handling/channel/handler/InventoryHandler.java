@@ -49,8 +49,8 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.IMaplePlayerShop;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.odin.OdinPair;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
@@ -367,7 +367,7 @@ public class InventoryHandler {
 
     public static void UseCashItem(ClientPacket cp, MapleClient client, ClientPacket op) {
         MapleCharacter chr = client.getPlayer();
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             int time = cp.Decode4();
         }
         final short slot = cp.Decode2();

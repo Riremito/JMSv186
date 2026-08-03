@@ -20,10 +20,10 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMapItem;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -130,7 +130,7 @@ public class ResCDropPool {
         sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
         sp.Encode1(0);
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode2(0);
         }
 

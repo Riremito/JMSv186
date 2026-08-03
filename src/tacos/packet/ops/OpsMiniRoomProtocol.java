@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -128,7 +128,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             ESP_PutItem.set(29); // アイテム追加
             ESP_BuyItem.set(30);
             ESP_BuyResult.set(31);
@@ -148,7 +148,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             ESP_DeleteBlackList.set(-1);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.PostBB()) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.PostBB()) {
             MRP_Create.set(0);
             MRP_CreateResult.set(1);
             MRP_Invite.set(2);
@@ -221,7 +221,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             MGP_MatchCard.set(66);
             return;
         }
-        if (Version.LessOrEqual(Region.GMS, 83)) {
+        if (Config.LessOrEqual(Region.GMS, 83)) {
             PSP_PutItem.set(22);
             PSP_BuyItem.set(23);
             PSP_BuyResult.set(24);

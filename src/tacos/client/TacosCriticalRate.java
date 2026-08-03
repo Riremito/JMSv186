@@ -21,7 +21,7 @@ package tacos.client;
 import odin.client.ISkill;
 import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
-import tacos.config.Version;
+import tacos.config.Config;
 import tacos.packet.ops.OpsSkill;
 
 /**
@@ -36,7 +36,7 @@ public class TacosCriticalRate {
 
     public TacosCriticalRate(TacosCharacter chr) {
         this.chr = chr;
-        this.base = Version.PostBB() ? 5 : 0;
+        this.base = Config.PostBB() ? 5 : 0;
     }
 
     public int get() {

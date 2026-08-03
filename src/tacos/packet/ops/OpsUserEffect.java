@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -104,7 +104,7 @@ public enum OpsUserEffect {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 147)) {
             clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
@@ -122,7 +122,7 @@ public enum OpsUserEffect {
             UserEffect_MonsterBookCardGet.set(13);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
@@ -176,7 +176,7 @@ public enum OpsUserEffect {
             return;
         }
 
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
@@ -193,7 +193,7 @@ public enum OpsUserEffect {
             UserEffect_QuestComplete.set(12);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
             clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
@@ -208,7 +208,7 @@ public enum OpsUserEffect {
             UserEffect_MonsterBookCardGet.set(14);
             return;
         }
-        if (Version.Equal(Region.THMS, 87)) {
+        if (Config.Equal(Region.THMS, 87)) {
             clear();
             UserEffect_LevelUp.set(0x0);
             UserEffect_SkillUse.set(0x1);

@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -89,12 +89,12 @@ public enum OpsTrunk implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.KMS, 43)) {
+        if (Config.LessOrEqual(Region.KMS, 43)) {
             reset();
             TrunkRes_OpenTrunkDlg.set(19);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -118,7 +118,7 @@ public enum OpsTrunk implements IPacketOps {
             TrunkRes_OpenTrunkDlg.set(21);
             return;
         }
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -140,7 +140,7 @@ public enum OpsTrunk implements IPacketOps {
             return;
         }
 
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -165,7 +165,7 @@ public enum OpsTrunk implements IPacketOps {
             return;
         }
 
-        if (Version.GreaterOrEqual(Region.CMS, 88)) {
+        if (Config.GreaterOrEqual(Region.CMS, 88)) {
             TrunkReq_Close.set(3);
             TrunkReq_GetItem.set(4);
             TrunkReq_PutItem.set(5);

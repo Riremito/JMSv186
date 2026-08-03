@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -84,23 +84,23 @@ public enum OpsMovePathAttr {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.Equal(Region.BMS, 24)) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.Equal(Region.BMS, 24)) {
             MPA_FALLDOWN.set(15);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             MPA_FALLDOWN.set(14);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.GMS, 95)) {
             MPA_FALLDOWN.set(12);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 147)) {
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
             MPA_FALLDOWN.set(15);
             return;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.GreaterOrEqual(Region.GMS, 83)) {
             MPA_FALLDOWN.set(15);
             return;
         }

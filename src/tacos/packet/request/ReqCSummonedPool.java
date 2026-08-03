@@ -26,7 +26,6 @@ import odin.client.SummonSkillEntry;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -41,6 +40,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleSummon;
+import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMoveAbility;
@@ -69,7 +69,7 @@ public class ReqCSummonedPool {
         int m_dwSummonedID = cp.Decode4(); // older version = SkillID
 
         MapleSummon summon = null;
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             for (MapleSummon sms : chr.getSummons().values()) {
                 if (sms.getSkill() == m_dwSummonedID) {
                     summon = sms;
@@ -139,7 +139,7 @@ public class ReqCSummonedPool {
             return;
         }
 
-        if (Version.Equal(Region.KMST, 330)) {
+        if (Config.Equal(Region.KMST, 330)) {
             int tick = cp.Decode4();
             byte animation = cp.Decode1();
             byte numAttacked = cp.Decode1();
@@ -208,7 +208,7 @@ public class ReqCSummonedPool {
             return;
         }
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             cp.Decode4();
             cp.Decode4();
             int tick = cp.Decode4();
@@ -218,14 +218,14 @@ public class ReqCSummonedPool {
 
         byte animation = cp.Decode1();
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             cp.Decode4();
             cp.Decode4();
         }
 
         byte numAttacked = cp.Decode1();
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             cp.Decode2(); // x
             cp.Decode2(); // y
             cp.Decode2(); // x
@@ -241,7 +241,7 @@ public class ReqCSummonedPool {
                 continue;
             }
 
-            if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                 cp.Decode4(); // MobID
             }
 
@@ -259,7 +259,7 @@ public class ReqCSummonedPool {
             allDamage.add(new SummonAttackEntry(mob, damage));
         }
 
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             cp.Decode2(); // X
             cp.Decode2(); // Y
         }

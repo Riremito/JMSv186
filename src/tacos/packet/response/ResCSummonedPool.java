@@ -19,12 +19,12 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.Version;
 import java.util.List;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleSummon;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCSummoned;
 
@@ -38,11 +38,11 @@ public class ResCSummonedPool {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedEnterField);
 
         sp.Encode4(summon.getOwnerId()); // m_dwCharacterId
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 48) || Version.GreaterOrEqual(Region.JMS, 147) || Version.GreaterOrEqual(Region.CMS, 63) || Version.GreaterOrEqual(Region.TWMS, 74) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 62) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0)) {
             sp.Encode4(summon.getObjectId()); // m_dwSummonedID
         }
         sp.Encode4(summon.getSkill()); // m_nSkillID
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode1(summon.getOwnerLevel() - 1); // m_nCharLevel
         }
 
@@ -55,7 +55,7 @@ public class ResCSummonedPool {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedLeaveField);
 
         sp.Encode4(summon.getOwnerId());
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             sp.Encode4(summon.getSkill());
         } else {
             sp.Encode4(summon.getObjectId());
@@ -69,7 +69,7 @@ public class ResCSummonedPool {
 
         sp.Encode4(summon.getOwnerId());
         // very old summon type
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             sp.Encode4(summon.getSkill());
         } else {
             sp.Encode4(summon.getObjectId());
@@ -85,14 +85,14 @@ public class ResCSummonedPool {
 
         sp.Encode4(summon.getOwnerId());
         sp.Encode4(summon.getSkill());
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             sp.Encode1(level - 1); //? guess
         }
         sp.Encode1(animation);
         sp.Encode1(allDamage.size());
         for (final SummonAttackEntry attackEntry : allDamage) {
             sp.Encode4(attackEntry.getMonster().getObjectId()); // oid
-            if (Version.LessOrEqual(Region.JMS, 131)) {
+            if (Config.LessOrEqual(Region.JMS, 131)) {
                 sp.Encode1(6);
             } else {
                 sp.Encode1(7); // who knows

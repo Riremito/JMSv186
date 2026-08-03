@@ -20,10 +20,10 @@ package tacos.packet.request;
 
 import odin.client.MapleClient;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleReactor;
+import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.script.TacosScriptReactor;
 
@@ -43,7 +43,7 @@ public class ReqCReactorPool {
                     return true;
                 }
 
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302)) {
                     int unk = cp.Decode4();
                 }
                 int charPos = cp.Decode4();

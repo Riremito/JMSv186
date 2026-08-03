@@ -26,7 +26,6 @@ import odin.client.MapleQuestStatus;
 import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
 import odin.handling.world.MaplePartyCharacter;
@@ -44,6 +43,7 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
+import tacos.config.Config;
 import tacos.config.Content;
 import tacos.database.query.DQ_Characters;
 import tacos.debug.DebugLogger;
@@ -155,27 +155,27 @@ public class ReqCClientSocket {
     }
 
     public static boolean OnMigrateIn(MapleClient client, ClientPacket cp) {
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             int unk1 = cp.Decode4();
         }
         int character_id = cp.Decode4(); // m_dwCharacterId
-        if (Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 91)) { // 180+
+        if (Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 91)) { // 180+
             byte[] machine_id = cp.DecodeBuffer(16); // MachineId (HWID)
             client.setMachineId(machine_id);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 131)) {
+        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 131)) {
             short unk2 = cp.Decode2(); // 0, GM?
-        } else if (Version.GreaterOrEqual(Region.GMS, 61)) {
+        } else if (Config.GreaterOrEqual(Region.GMS, 61)) {
             byte unk2 = cp.Decode1(); // 1 byte
         }
-        if (Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.GMS, 61)) { // 146+
+        if (Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.GMS, 61)) { // 146+
             byte unk3 = cp.Decode1(); // 0, not in JMS131.
         }
-        if (Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 84)) { // 180+
+        if (Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 84)) { // 180+
             long client_key = cp.Decode8(); // m_aClientKey, jms always sends 0. but GMS supports this.
             client.setClientKey(client_key);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 95)) {
+        if (Config.GreaterOrEqual(Region.KMS, 95)) {
             int unk4 = cp.Decode4(); // not in JMS.
         }
 
@@ -289,7 +289,7 @@ public class ReqCClientSocket {
                         chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
                     }
                 }
-                if (Version.LessOrEqual(Region.JMS, 131) || Region.BMS.check()) {
+                if (Config.LessOrEqual(Region.JMS, 131) || Region.BMS.check()) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));

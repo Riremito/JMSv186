@@ -18,8 +18,8 @@
  */
 package tacos.shared;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 
 /**
@@ -35,14 +35,14 @@ public class SharedExpTable {
 
     public static boolean init() {
         // JMS186, KMS95, CMS75, TWMS121, THMS87, EMS70
-        if (Version.LessOrEqual(Region.JMS, 186)) {
+        if (Config.LessOrEqual(Region.JMS, 186)) {
             exp_table = exp_table_old;
             DebugLogger.InfoLog("exp_table = pre-bb");
             return true;
         }
         // JMS308  : 199 = 1103513235
         // JMS187-302+, TWMS148
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             exp_table = exp_table_new;
             DebugLogger.InfoLog("exp_table = post-bb");
             return true;

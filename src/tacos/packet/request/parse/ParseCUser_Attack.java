@@ -33,8 +33,8 @@ import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import tacos.client.TacosBuff.Buff;
 import tacos.client.TacosCalcDamage;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.constants.TacosConstants;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
@@ -136,17 +136,17 @@ public class ParseCUser_Attack {
                 rand_counter++; // NON ADMIN
                 // SKILL.
                 rand_counter++; // DAMAGE
-                if (Version.PreBB()) {
+                if (Config.PreBB()) {
                     rand_counter++;
                 }
                 if (chr.getCalcDamage().isNextAttackCritical() || TacosCalcDamage.getRand(randoms[rand_counter++ % 7], 0.0, 100.0) < critical_rate) { // CRITICAL
-                    if (Version.PostBB()) {
+                    if (Config.PostBB()) {
                         rand_counter++; // CRITICAL DAMAGE
                     }
                     damage_list.set(i, damage_list.get(i) | 1 << 31); // critical bit.
                 }
                 // BOSS.
-                if (Version.PostBB()) {
+                if (Config.PostBB()) {
                     if (is_boss) {
                         rand_counter++;
                     }
@@ -210,19 +210,19 @@ public class ParseCUser_Attack {
         attack.nBulletItemID = 0;
         attack.X = chr.getPosition().x;
         attack.Y = chr.getPosition().y;
-        attack.FieldKey = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+        attack.FieldKey = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         // DR_Check
-        if (Version.LessOrEqual(Region.KMS, 114) || Version.LessOrEqual(Region.KMST, 330)) {
+        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330)) {
             // none
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.BMS, 24)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr0
             cp.Decode4(); // pDrInfo.dr1
         }
         attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
         // DR_Check
-        if (Version.LessOrEqual(Region.KMS, 114) || Version.LessOrEqual(Region.KMST, 330)) {
+        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330)) {
             // none
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.BMS, 24)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // pDrInfo.dr2
             cp.Decode4(); // pDrInfo.dr3
         }
@@ -232,16 +232,16 @@ public class ParseCUser_Attack {
             attack.SkillLevel = chr.getSkillLevel(attack.nSkillID);
         }
         // v95 1 byte cd->nCombatOrders
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95)) {
             cp.Decode1();
         }
-        if (Version.LessOrEqual(Region.KMS, 114) || Version.LessOrEqual(Region.KMST, 330)) {
+        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330)) {
             // none
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.BMS, 24)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // get_rand of DR_Check
             cp.Decode4(); // Crc32 of DR_Check
             // v95 4 bytes SKILLLEVELDATA::GetCrc
-            if (Version.GreaterOrEqual(Region.GMS, 95)) {
+            if (Config.GreaterOrEqual(Region.GMS, 95)) {
                 cp.Decode4();
                 cp.Decode4();
                 if (attack.header == ClientPacketHeader.CP_UserMagicAttack) {
@@ -254,14 +254,14 @@ public class ParseCUser_Attack {
                 }
             }
         }
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95)) {
             // none
-        } else if (Version.PostBB()) {
+        } else if (Config.PostBB()) {
             cp.Decode1();
         }
-        if (Version.LessOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.LessOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.GMS, 95)) {
             // none
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54) || Version.GreaterOrEqual(Region.BMS, 24)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // Crc
         }
         attack.tKeyDown = 0;
@@ -269,26 +269,26 @@ public class ParseCUser_Attack {
             attack.tKeyDown = cp.Decode4();
         }
         attack.BuffKey = cp.Decode1();
-        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 95) || Version.GreaterOrEqual(Region.EMS, 76)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.EMS, 76)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 attack.exJablin = cp.Decode1();
             }
         }
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 165) || Region.BMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 165) || Region.BMS.check()) {
             attack.AttackActionKey = cp.Decode1();
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
         }
-        if (Version.LessOrEqual(Region.KMST, 330) || Version.Equal(Region.JMS, 187)) {
+        if (Config.LessOrEqual(Region.KMST, 330) || Config.Equal(Region.JMS, 187)) {
             // none
-        } else if (Version.PostBB()) {
+        } else if (Config.PostBB()) {
             cp.Decode4(); // JMS188
         }
         // v95 4 bytes crc
-        attack.nAttackActionType = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+        attack.nAttackActionType = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         attack.nAttackSpeed = cp.Decode1();
-        attack.tAttackTime = Version.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode4();
-        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        attack.tAttackTime = Config.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode4();
+        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             cp.Decode4(); // dwID
         }
         if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
@@ -324,15 +324,15 @@ public class ParseCUser_Attack {
                 }
             }
 
-            if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.THMS, 87)) {
+            if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.THMS, 87)) {
                 // none
-            } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+            } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
                 cp.Decode4(); // CMob::GetCrc(v366->pMob)
             }
 
             attack.damages.put(nTargetID, damage_list); // add damage list.
         }
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode2();
                 cp.Decode2();
@@ -348,7 +348,7 @@ public class ParseCUser_Attack {
             byte bullets = cp.Decode1();
             for (int i = 0; i < bullets; i++) {
                 int drop_id = cp.Decode4();
-                short drop_used = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode2() : cp.Decode1(); // 0 = no damage?
+                short drop_used = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode2() : cp.Decode1(); // 0 = no damage?
                 attack.allMeso.add(drop_id);
             }
             short tTotFrameDelay = cp.Decode2();

@@ -18,7 +18,7 @@
  */
 package tacos.packet.ops;
 
-import tacos.config.Version;
+import tacos.config.Config;
 
 /**
  *
@@ -84,7 +84,7 @@ public enum OpsQuest implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             return;
         }
         // JMS186

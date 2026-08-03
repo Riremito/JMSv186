@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -110,7 +110,7 @@ public enum OpsMobStat implements IPacketOps {
 
     public static void init() {
         // UINT160
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             clear();
         }
     }

@@ -20,7 +20,7 @@ package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
 import odin.client.inventory.MaplePet;
-import tacos.config.Version;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 
 /**
@@ -57,7 +57,7 @@ public class DataCUIUserInfo {
                 break;
             }
 
-            if (Version.PostBB()) {
+            if (Config.PostBB()) {
                 data.Encode4(i);
             }
 

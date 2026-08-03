@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -86,154 +86,154 @@ public enum OpsDBCHAR {
 
     public static boolean init() {
         // never changed.
-        if (Version.GreaterOrEqual(Region.JMS, 308)) {
+        if (Config.GreaterOrEqual(Region.JMS, 308)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
+        if (Config.GreaterOrEqual(Region.JMS, 194)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 180)) {
+        if (Config.GreaterOrEqual(Region.JMS, 180)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 165)) {
+        if (Config.GreaterOrEqual(Region.JMS, 165)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 164)) {
+        if (Config.GreaterOrEqual(Region.JMS, 164)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 147)) {
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 146)) {
+        if (Config.GreaterOrEqual(Region.JMS, 146)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 131)) {
+        if (Config.GreaterOrEqual(Region.JMS, 131)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 183)) {
+        if (Config.GreaterOrEqual(Region.KMS, 183)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 160)) {
+        if (Config.GreaterOrEqual(Region.KMS, 160)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 149)) {
+        if (Config.GreaterOrEqual(Region.KMS, 149)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 148)) {
+        if (Config.GreaterOrEqual(Region.KMS, 148)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 138)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 127)) {
+        if (Config.GreaterOrEqual(Region.KMS, 127)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 121)) {
+        if (Config.GreaterOrEqual(Region.KMS, 121)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 119)) {
+        if (Config.GreaterOrEqual(Region.KMS, 119)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 118)) {
+        if (Config.GreaterOrEqual(Region.KMS, 118)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 114)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 95)) {
+        if (Config.GreaterOrEqual(Region.KMS, 95)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 92)) {
+        if (Config.GreaterOrEqual(Region.KMS, 92)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 84)) {
+        if (Config.GreaterOrEqual(Region.KMS, 84)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 71)) {
+        if (Config.GreaterOrEqual(Region.KMS, 71)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.KMS, 65)) {
+        if (Config.GreaterOrEqual(Region.KMS, 65)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.TWMS, 148)) {
+        if (Config.GreaterOrEqual(Region.TWMS, 148)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.TWMS, 124)) {
+        if (Config.GreaterOrEqual(Region.TWMS, 124)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.CMS, 104)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.CMS, 85)) {
+        if (Config.GreaterOrEqual(Region.CMS, 85)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.THMS, 96)) {
+        if (Config.GreaterOrEqual(Region.THMS, 96)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.THMS, 87)) {
+        if (Config.GreaterOrEqual(Region.THMS, 87)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.MSEA, 102)) {
+        if (Config.GreaterOrEqual(Region.MSEA, 102)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.MSEA, 100)) {
+        if (Config.GreaterOrEqual(Region.MSEA, 100)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.EMS, 76)) {
+        if (Config.GreaterOrEqual(Region.EMS, 76)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.GreaterOrEqual(Region.EMS, 70)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.EMS, 50)) {
+        if (Config.GreaterOrEqual(Region.EMS, 50)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 91)) {
+        if (Config.GreaterOrEqual(Region.GMS, 91)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 84)) {
+        if (Config.GreaterOrEqual(Region.GMS, 84)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.GreaterOrEqual(Region.GMS, 83)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 66)) {
+        if (Config.GreaterOrEqual(Region.GMS, 66)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 65)) {
+        if (Config.GreaterOrEqual(Region.GMS, 65)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 62)) {
+        if (Config.GreaterOrEqual(Region.GMS, 62)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 61)) {
+        if (Config.GreaterOrEqual(Region.GMS, 61)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.GreaterOrEqual(Region.BMS, 24)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.VMS, 35)) {
+        if (Config.GreaterOrEqual(Region.VMS, 35)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.IMS, 1)) {
+        if (Config.GreaterOrEqual(Region.IMS, 1)) {
             return true;
         }
         return false;

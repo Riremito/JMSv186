@@ -22,9 +22,9 @@ import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
-import tacos.config.Version;
 import java.util.ArrayList;
 import odin.server.Randomizer;
+import tacos.config.Config;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -179,8 +179,8 @@ public class DebugJob {
             }
         }
         //maxmp += player_stat.getTotalInt() / 10;
-        maxhp = Math.min(Version.PreBB() ? 30000 : 500000, Math.abs(maxhp));
-        maxmp = Math.min(Version.PreBB() ? 30000 : 500000, Math.abs(maxmp));
+        maxhp = Math.min(Config.PreBB() ? 30000 : 500000, Math.abs(maxhp));
+        maxmp = Math.min(Config.PreBB() ? 30000 : 500000, Math.abs(maxmp));
 
         player_stat.setMaxHp(maxhp);
         player_stat.setMaxMp(maxmp);

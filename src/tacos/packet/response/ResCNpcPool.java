@@ -19,12 +19,12 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.DataAvatarLook;
 import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -68,7 +68,7 @@ public class ResCNpcPool {
         data.Encode2(npc.getRx1()); // m_rgHorz.high
         data.Encode1(show ? 1 : 0); // m_bEnabled
 
-        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
             data.Encode1(0);
         }
 
@@ -102,7 +102,7 @@ public class ResCNpcPool {
         sp.Encode1(nChatIdx);
         sp.Encode1(m_nOneTimeAction);
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode4(0);
         }
 

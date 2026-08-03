@@ -32,7 +32,6 @@ import java.util.concurrent.locks.Lock;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.database.DatabaseConnection;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleBBSThread.MapleBBSReply;
@@ -43,6 +42,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import tacos.config.Config;
 import tacos.database.query.DQ_Notes;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
@@ -776,7 +776,7 @@ public class MapleGuild implements java.io.Serializable {
             data.Encode4(mgc.isOnline() ? 1 : 0);
             data.Encode4(signature);
 
-            if (Version.GreaterOrEqual(Region.JMS, 164)) {
+            if (Config.GreaterOrEqual(Region.JMS, 164)) {
                 data.Encode4(mgc.getAllianceRank());
             }
         }

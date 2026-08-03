@@ -25,7 +25,6 @@ import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
@@ -51,6 +50,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
+import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
 import tacos.wz.opt.FieldOpt;
 
@@ -61,7 +61,7 @@ import tacos.wz.opt.FieldOpt;
 public class ReqSub_UserConsumeCashItemUseRequest {
 
     public static boolean OnUserConsumeCashItemUseRequestInternal(MapleMap map, MapleCharacter chr, ClientPacket cp) {
-        int timestamp = (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
+        int timestamp = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
         short cash_item_slot = cp.Decode2();
         int cash_item_id = cp.Decode4();
 
@@ -248,7 +248,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 5060000: // ネームメーカー
             {
                 short equipped_slot = cp.Decode2();
-                int timestamp = Version.LessOrEqual(Region.JMS, 147) ? cp.Decode4() : 0; // not in JMS302
+                int timestamp = Config.LessOrEqual(Region.JMS, 147) ? cp.Decode4() : 0; // not in JMS302
 
                 if (0 <= equipped_slot) {
                     return false;
@@ -339,7 +339,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             // 拡声器
             case 5071000: {
                 String message = cp.DecodeStr();
-                byte ear = Version.LessOrEqual(Region.KMS, 31) ? 1 : cp.Decode1();
+                byte ear = Config.LessOrEqual(Region.KMS, 31) ? 1 : cp.Decode1();
 
                 ArgBroadcastMsg bma = new ArgBroadcastMsg();
                 bma.bm = OpsBroadcastMsg.BM_SPEAKERWORLD;
@@ -521,7 +521,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 5170000: {
                 MaplePet pet = null;
 
-                if (Version.LessOrEqual(Region.JMS, 147)) {
+                if (Config.LessOrEqual(Region.JMS, 147)) {
                     pet = chr.getPet(0);
                 } else {
                     long pet_uid = cp.Decode8();

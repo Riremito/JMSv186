@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -68,7 +68,7 @@ public enum OpsTransferChannel implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             TC_DONE.set(0);
             TC_GAMESVR_DISCONNECTED.set(1);
             TC_SHOPSVR_DISCONNECTED.set(2);

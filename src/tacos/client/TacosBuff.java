@@ -24,8 +24,8 @@ import odin.client.SkillFactory;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.maps.MapleMap;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ops.OpsSecondaryStat;
@@ -45,28 +45,28 @@ import tacos.wz.opt.FieldOpt;
 public class TacosBuff {
 
     public static int[] getBuffBuffer() {
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             return new int[12]; // 48
         }
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
             return new int[9]; //36
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             return new int[8]; // 32
         }
         // post bb ex.
-        if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.GMS, 95) || Version.Equal(Region.THMS, 96) || Version.Equal(Region.IMS, 1)) {
+        if (Config.Equal(Region.KMST, 330) || Config.Equal(Region.GMS, 95) || Config.Equal(Region.THMS, 96) || Config.Equal(Region.IMS, 1)) {
             return new int[4]; // 16
         }
         // JMS187, CMS88, EMS76
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             return new int[5]; // 20
         }
         // JMS147, TWMS77, THMS87, BMS24
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
             return new int[4]; // 16
         }
-        if (Version.Equal(Region.KMS, 1)) {
+        if (Config.Equal(Region.KMS, 1)) {
             return new int[1]; // 4
         }
         // JMS131, reverse order.
@@ -74,25 +74,25 @@ public class TacosBuff {
     }
 
     public static int[] getMobBuffBuffer() {
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             return new int[12]; // 48
         }
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
             return new int[9]; //36
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             return new int[8]; // 32
         }
         // post bb ex.
-        if (Version.Equal(Region.KMST, 330) || Version.Equal(Region.GMS, 95) || Version.Equal(Region.THMS, 96) || Version.Equal(Region.IMS, 1)) {
+        if (Config.Equal(Region.KMST, 330) || Config.Equal(Region.GMS, 95) || Config.Equal(Region.THMS, 96) || Config.Equal(Region.IMS, 1)) {
             return new int[4]; // 16
         }
         // JMS187-194 (Post-BB)
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             return new int[5]; // 20
         }
         // JMS180-186 (Pre-BB)
-        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 180) || Version.Equal(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 180) || Config.Equal(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83)) {
             return new int[4]; // 16
         }
         // KMS1 = none or 4.

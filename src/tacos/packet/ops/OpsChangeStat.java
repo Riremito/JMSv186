@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -79,7 +79,7 @@ public enum OpsChangeStat {
     }
 
     public static void init() {
-        if (Version.Equal(Region.CMS, 88)) {
+        if (Config.Equal(Region.CMS, 88)) {
             // same as JMS146?
             CS_SKIN.set(1);
             CS_FACE.set(1 << 1);
@@ -105,7 +105,7 @@ public enum OpsChangeStat {
             CS_TEMPEXP.set(1 << 21); // OK. wz data lost exp values?
             return;
         }
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             CS_PETSN2.set(0x00100000);
             CS_PETSN3.set(0x00200000);
             CS_TEMPEXP.set(0x00400000);
@@ -113,11 +113,11 @@ public enum OpsChangeStat {
         }
 
         // JMS131 and 147+ is asme as JMS186
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 48) || Version.GreaterOrEqual(Region.JMS, 147) || Version.GreaterOrEqual(Region.CMS, 63) || Version.GreaterOrEqual(Region.TWMS, 74) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 62) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0)) {
             return;
         }
         // JMS146 only?
-        if (Version.Equal(Region.JMS, 146)) {
+        if (Config.Equal(Region.JMS, 146)) {
             CS_SKIN.set(1);
             CS_FACE.set(1 << 1);
             CS_HAIR.set(1 << 2);

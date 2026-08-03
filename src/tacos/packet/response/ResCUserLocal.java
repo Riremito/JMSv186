@@ -19,8 +19,8 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import tacos.config.Version;
 import tacos.client.TacosCharacter;
+import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -432,7 +432,7 @@ public class ResCUserLocal {
 
         sp.Encode4(skill_id);
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) | Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) | Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(cool_time);
         } else {
             sp.Encode2(cool_time);

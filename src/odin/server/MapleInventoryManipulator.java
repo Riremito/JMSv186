@@ -18,11 +18,11 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.AramiaFireWorks;
+import tacos.config.Config;
 
 public class MapleInventoryManipulator {
 
@@ -412,7 +412,7 @@ public class MapleInventoryManipulator {
     }
 
     private static final IItem checkEnhanced(final IItem before, final MapleCharacter chr) {
-        if (Version.LessOrEqual(Region.KMS, 95) || Version.LessOrEqual(Region.JMS, 185) || Region.BMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 185) || Region.BMS.check()) {
             return before;
         }
         if (before instanceof Equip) {

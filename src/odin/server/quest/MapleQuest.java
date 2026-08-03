@@ -8,13 +8,13 @@ import java.util.Map;
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
+import tacos.config.Config;
 import tacos.script.TacosScriptQuest;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
@@ -126,7 +126,7 @@ public class MapleQuest {
         }
 
         // not in KMS55
-        if (Version.GreaterOrEqual(Region.KMS, 65)) {
+        if (Config.GreaterOrEqual(Region.KMS, 65)) {
             final IMapleData pquestInfo = WzXML.QUEST.getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
                 for (IMapleData d : pquestInfo.getChildByPath("rank")) {

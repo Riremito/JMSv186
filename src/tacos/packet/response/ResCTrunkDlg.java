@@ -21,9 +21,9 @@ package tacos.packet.response;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.util.List;
 import tacos.client.TacosStorage;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsDBCHAR;
@@ -89,7 +89,7 @@ public class ResCTrunkDlg {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(storage.getSlot()); // m_nSlotCount
-        if (Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131)) {
             data.Encode2((short) dbcharFlag);
         } else {
             data.Encode8(dbcharFlag); // dbcharFlag

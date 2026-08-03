@@ -23,7 +23,6 @@ package tacos.network;
 import tacos.config.ClientEdit;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -76,7 +75,7 @@ public class MapleAESOFB {
 
     public static boolean setAesKey() {
         byte aes_key[] = new byte[32]; // filled with 0.
-        if (Version.Equal(Region.GMS, 126)) {
+        if (Config.Equal(Region.GMS, 126)) {
             aes_key[0] = (byte) 0x8B;
             aes_key[4] = (byte) 0x24;
             aes_key[8] = (byte) 0x8B;
@@ -89,7 +88,7 @@ public class MapleAESOFB {
             DebugLogger.InfoLog("aes_key = GMS126");
             return true;
         }
-        if (Version.Equal(Region.GMS, 131)) {
+        if (Config.Equal(Region.GMS, 131)) {
             aes_key[0] = (byte) 0x44;
             aes_key[4] = (byte) 0xB9;
             aes_key[8] = (byte) 0x0F;
@@ -316,7 +315,7 @@ public class MapleAESOFB {
      */
     public boolean checkPacket(byte[] packet) {
         // x64
-        if (Version.GreaterOrEqual(Region.KMS, 373) || Version.GreaterOrEqual(Region.JMS, 414)) {
+        if (Config.GreaterOrEqual(Region.KMS, 373) || Config.GreaterOrEqual(Region.JMS, 414)) {
             // KMS v373
             return true;
         }

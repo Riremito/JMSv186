@@ -25,7 +25,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import odin.handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
@@ -43,6 +42,7 @@ import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObjectType;
+import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
 
@@ -68,8 +68,8 @@ public class ReqCUser_Pet {
 
         MaplePet pet = null;
         // outside CUser
-        if (Version.LessOrEqual(Region.JMS, 147)) {
-            long pet_uid = Version.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
+        if (Config.LessOrEqual(Region.JMS, 147)) {
+            long pet_uid = Config.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
             pet = chr.getPetByUniqueId(pet_uid);
         } else {
             int pet_index = cp.Decode4();
@@ -147,7 +147,7 @@ public class ReqCUser_Pet {
     }
 
     public static boolean OnPetMove(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             byte unk = cp.Decode1();
         }
 
@@ -209,14 +209,14 @@ public class ReqCUser_Pet {
         short drop_x = cp.Decode2();
         short drop_y = cp.Decode2();
         int drop_id = cp.Decode4();
-        int drop_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
+        int drop_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         short unk2 = Region.KMST.check() ? 0 : cp.Decode2(); // unk
         // trap
         if ((drop_id % 13) == 0) {
-            short pet_x = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
-            short pet_y = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
-            int pet_xy_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
-            int drop_xy_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
+            short pet_x = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
+            short pet_y = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
+            int pet_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
+            int drop_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
         MapleMapItem mapitem = (MapleMapItem) chr.getMap().getMapObject(drop_id, MapleMapObjectType.ITEM);

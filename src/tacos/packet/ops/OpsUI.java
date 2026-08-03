@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -100,7 +100,7 @@ public enum OpsUI implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             clear();
             UI_REPAIRDURABILITY.set(33);
             return;

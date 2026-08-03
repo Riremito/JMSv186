@@ -23,7 +23,6 @@ import odin.client.MapleClient;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsCashItemFailReason;
 import tacos.packet.ops.OpsCashItem;
@@ -31,6 +30,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataGW_CashItemInfo;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import odin.server.CashShop;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -51,7 +51,7 @@ public class ResCCashShop {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopQueryCashResult);
         sp.Encode4(chr.getNexonPoint());
         sp.Encode4(chr.getMaplePoint());
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95)) {
             sp.Encode4(0);
         }
         return sp;

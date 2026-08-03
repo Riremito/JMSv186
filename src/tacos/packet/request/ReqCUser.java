@@ -31,7 +31,6 @@ import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import tacos.config.Region;
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
@@ -80,6 +79,7 @@ import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
+import tacos.config.Config;
 import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
 import tacos.debug.DebugCommand;
@@ -272,7 +272,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserChangeSlotPositionRequest: {
-                int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+                int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 byte slot_type = cp.Decode1();
                 short slot_from = cp.Decode2();
                 short slot_to = cp.Decode2();
@@ -367,7 +367,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserPortalScrollUseRequest: {
-                int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+                int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
                 OnUserPortalScrollUseRequest(chr, item_slot, item_id);
@@ -376,7 +376,7 @@ public class ReqCUser {
             case CP_UserUpgradeItemUseRequest:
             case CP_UserHyperUpgradeItemUseRequest:
             case CP_UserItemOptionUpgradeItemUseRequest: {
-                int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+                int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short item_slot = cp.Decode2();
                 short equip_slot = cp.Decode2();
                 OnUserUpgradeItemUseRequest(map, chr, item_slot, equip_slot, 0);
@@ -783,12 +783,12 @@ public class ReqCUser {
     }
 
     public static boolean OnUserTransferFieldRequest(ClientPacket cp, MapleCharacter chr) {
-        boolean isKMS95orLater = Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.KMST, 330) || Region.IMS.check() || Region.MSEA.check(); // not in KMST391
+        boolean isKMS95orLater = Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 330) || Region.IMS.check() || Region.MSEA.check(); // not in KMST391
         short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
         int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
         byte portal_count = cp.Decode1();
         int map_id_to = cp.Decode4(); // -1 = use portal, 0 = revivie, id = /map command.
-        int gms111_checksum = Version.GreaterOrEqual(Region.GMS, 111) ? cp.Decode4() : 0;
+        int gms111_checksum = Config.GreaterOrEqual(Region.GMS, 111) ? cp.Decode4() : 0;
         String portal_name = cp.DecodeStr();
         boolean isPortal = !portal_name.equals("");
         short x = isPortal ? cp.Decode2() : 0;
@@ -833,7 +833,7 @@ public class ReqCUser {
 
     public static boolean OnUserMigrateToCashShopRequest(MapleClient c, MapleCharacter chr) {
         // temporary off
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;
         }
         if (!chr.isAlive()) {
@@ -858,7 +858,7 @@ public class ReqCUser {
         }
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
         }
@@ -866,7 +866,7 @@ public class ReqCUser {
         cp.Decode1(); // unk
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.Between(Region.TWMS, 121, 125) || Version.Between(Region.CMS, 85, 88) || Version.GreaterOrEqual(Region.GMS, 95) || Version.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // -1
             cp.Decode4(); // -1
             cp.Decode4();
@@ -874,11 +874,11 @@ public class ReqCUser {
         }
 
         // not in JMS147
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54) || Version.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4();
         }
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             cp.Decode4();
         }
 
@@ -1051,13 +1051,13 @@ public class ReqCUser {
 
         uhd.dwCharacterID = chr.getId();
 
-        int unk1 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode4() : 0;
-        int time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int unk1 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode4() : 0;
+        int time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         uhd.nAttackIdx = cp.Decode1();
-        byte nMagicElemAttr = Version.LessOrEqual(Region.KMS, 43) ? 0 : cp.Decode1();
+        byte nMagicElemAttr = Config.LessOrEqual(Region.KMS, 43) ? 0 : cp.Decode1();
         uhd.nDamage = cp.Decode4();
-        byte unk3 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
-        byte unk4 = Version.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
+        byte unk3 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
+        byte unk4 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
 
         boolean is_mob_attack = false;
         int mpattack = 0;
@@ -1107,7 +1107,7 @@ public class ReqCUser {
             }
         }
 
-        short unk8 = Version.GreaterOrEqual(Region.JMS, 187) ? cp.Decode1() : 0;
+        short unk8 = Config.GreaterOrEqual(Region.JMS, 187) ? cp.Decode1() : 0;
 
         uhd.nDelta = uhd.nDamage;
         if (!is_mob_attack) {
@@ -1240,9 +1240,9 @@ public class ReqCUser {
     }
 
     public static boolean OnUserChat(MapleCharacter chr, MapleMap map, ClientPacket cp) {
-        int timestamp = (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
+        int timestamp = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
         String message = cp.DecodeStr();
-        boolean bOnlyBalloon = (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 48) || Version.GreaterOrEqual(Region.JMS, 147) || Version.GreaterOrEqual(Region.CMS, 63) || Version.GreaterOrEqual(Region.TWMS, 74) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 62) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
+        boolean bOnlyBalloon = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
 
         if (!bOnlyBalloon) {
             // command.
@@ -1313,8 +1313,8 @@ public class ReqCUser {
 
     public static boolean OnUserSelectNpc(MapleCharacter chr, ClientPacket cp) {
         int m_dwNpcId = cp.Decode4();
-        short x = Version.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode2();
-        short y = Version.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode2();
+        short x = Config.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode2();
+        short y = Config.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode2();
 
         MapleClient client = chr.getClient();
         MapleMap map = chr.getMap();
@@ -1386,7 +1386,7 @@ public class ReqCUser {
     // CUser::OnCharacterInfoRequest
     public static final boolean OnCharacterInfoRequest(ClientPacket cp, MapleCharacter chr, MapleMap map) {
         // CCheatInspector::InspectExclRequestTime
-        final int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        final int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         final int m_dwCharacterId = cp.Decode4();
         final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
 
@@ -1400,9 +1400,9 @@ public class ReqCUser {
     }
 
     public static final boolean OnUserActivatePetRequest(MapleCharacter chr, ClientPacket cp) {
-        int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
-        byte flag = (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131) || Version.PostBB()) ? 1 : cp.Decode1();
+        byte flag = (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131) || Config.PostBB()) ? 1 : cp.Decode1();
 
         chr.spawnPet(item_slot, flag > 0 ? true : false);
         return true;
@@ -1728,10 +1728,10 @@ public class ReqCUser {
 
     public static boolean OnUserAbilityUpRequest(MapleCharacter chr, ClientPacket cp) {
 
-        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         long flag = 0;
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             flag = cp.Decode8();
         } else {
             flag = cp.Decode4();
@@ -1904,7 +1904,7 @@ public class ReqCUser {
         for (int i = 0; i < count; i++) {
             long stat = 0;
             int point = 0;
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
                 stat = cp.Decode8();
             } else {
                 stat = cp.Decode4();
@@ -1962,7 +1962,7 @@ public class ReqCUser {
     public static boolean OnUserChangeStatRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp_1 = 0;
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             time_stamp_1 = cp.Decode4();
         }
 
@@ -1972,7 +1972,7 @@ public class ReqCUser {
 
         update_mask[0] = cp.Decode4();
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             update_mask[1] = cp.Decode4();
         }
 
@@ -1985,7 +1985,7 @@ public class ReqCUser {
 
         byte unk = cp.Decode1();
 
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.KMST, 330) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.GMS, 95)) {
         } else {
             int time_stamp_2 = cp.Decode4();
         }
@@ -2004,7 +2004,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserSkillUpRequest(MapleCharacter chr, ClientPacket cp) {
-        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
 
         return OnSkillUpRequestInternal(chr, skill_id);
@@ -2107,7 +2107,7 @@ public class ReqCUser {
     // CUserLocal::SendSkillUseRequest
     public static boolean OnUserSkillUseRequest(MapleCharacter chr, ClientPacket cp) {
         MapleMap map = chr.getMap();
-        int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int nSkillID = cp.Decode4();
         byte nSLV = cp.Decode1();
 
@@ -2134,7 +2134,7 @@ public class ReqCUser {
                     monster_ids.add(dwMobID);
                     magnets.add(bSuccess);
                 }
-                if (Version.PostBB()) {
+                if (Config.PostBB()) {
                     short unk = cp.Decode2();
                 }
                 byte tDelay = cp.Decode1(); // Left
@@ -2179,7 +2179,7 @@ public class ReqCUser {
         int nSkillID = cp.Decode4();
         byte nSLV = cp.Decode1();
         short action = 0; // m_nOneTimeAction & 0x7FFF | (m_nMoveAction << 15)
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
             action = cp.Decode2();
         } else {
             action = cp.Decode1();
@@ -2201,7 +2201,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserDropMoneyRequest(MapleCharacter chr, ClientPacket cp) {
-        int time_stamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int mesos = cp.Decode4();
 
         if (!chr.isAlive() || (mesos < 10 || 50000 < mesos) || chr.getMeso() < mesos) {
@@ -2215,16 +2215,16 @@ public class ReqCUser {
     }
 
     public static boolean OnUserPortalScriptRequest(MapleCharacter chr, ClientPacket cp) {
-        byte portal_count = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+        byte portal_count = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         String portal_name = cp.DecodeStr();
-        short chr_x = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
-        short chr_y = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
+        short chr_x = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
+        short chr_y = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
 
         return chr.usePortalScript(portal_name);
     }
 
     public static boolean OnUserPortalTeleportRequest(MapleCharacter chr, ClientPacket cp) {
-        byte portal_count = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+        byte portal_count = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         String portal_name = cp.DecodeStr();
         short chr_x = cp.Decode2();
         short chr_y = cp.Decode2();
@@ -2451,7 +2451,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserStatChangeItemUseRequest(MapleCharacter chr, ClientPacket cp) {
-        int timestamp = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
 
@@ -3207,7 +3207,7 @@ public class ReqCUser {
 
     public static boolean OnUserMigrateToITCRequest(MapleClient c, MapleCharacter chr) {
         // temporary off
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;
         }
         if (!chr.isAlive()) {
@@ -3240,7 +3240,7 @@ public class ReqCUser {
         OnUserTempExpUseRequest(chr);
 
         // 兵法書実装前
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             while (OnUserTempExpUseRequest(chr)) {
                 // loop
             }

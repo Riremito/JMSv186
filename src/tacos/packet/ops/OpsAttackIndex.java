@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -63,14 +63,14 @@ public enum OpsAttackIndex implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.GreaterOrEqual(Region.JMS, 147)) {
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
             AttackIndex_Mob_Magic.set(0);
             AttackIndex_Mob_Physical.set(-1);
             AttackIndex_Obstacle.set(-2);
             AttackIndex_Stat.set(-3);
             AttackIndex_Counter.set(-1000);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             AttackIndex_Mob_Magic.set(0);
             AttackIndex_Mob_Physical.set(-1);
             AttackIndex_Counter.set(-2);

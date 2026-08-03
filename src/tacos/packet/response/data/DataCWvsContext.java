@@ -21,8 +21,8 @@ package tacos.packet.response.data;
 import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.util.Collection;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 
 /**
@@ -35,11 +35,11 @@ public class DataCWvsContext {
     public static byte[] LogoutGiftConfig() {
         ServerPacket data = new ServerPacket();
         data.Encode4(0); // something
-        if (Version.GreaterOrEqual(Region.GMS, 126)) {
+        if (Config.GreaterOrEqual(Region.GMS, 126)) {
             // 0 = no data.
             return data.getBytes();
         }
-        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
             data.Encode4(0);
         }
         data.Encode4(0); // item1?

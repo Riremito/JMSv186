@@ -20,8 +20,8 @@ package tacos.tools;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 
@@ -73,7 +73,7 @@ public class TacosTools {
             return GAME_SERVER_IP_VALUE_CACHE;
         }
         // client has to receive correct server ip if client still has ip checks in it.
-        if (Version.GreaterOrEqual(Region.GMS, 116)) {
+        if (Config.GreaterOrEqual(Region.GMS, 116)) {
             // 8.31.98.52, CClientSocket::Connect
             GAME_SERVER_IP_VALUE_CACHE = getIPAddressValue(TacosConstants.FAKE_GLOBAL_IP_GMS116);
             // error

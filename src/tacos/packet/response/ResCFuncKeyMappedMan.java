@@ -21,8 +21,8 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import odin.client.SkillMacro;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.util.Map;
+import tacos.config.Config;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -79,7 +79,7 @@ public class ResCFuncKeyMappedMan {
                 KEY_MAP_SIZE = 89; // 445
             }
 
-            if (Version.PostBB()) {
+            if (Config.PostBB()) {
                 KEY_MAP_SIZE = 126; // 630
             }
 

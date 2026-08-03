@@ -20,9 +20,9 @@ package tacos.packet.response.data;
 
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
+import tacos.config.Config;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.shared.SharedDate;
 import tacos.packet.ServerPacket;
 
@@ -53,7 +53,7 @@ public class DataGW_ItemSlotBase {
             }
         }
 
-        if (Version.LessOrEqual(Region.KMS, 84) || Version.LessOrEqual(Region.JMS, 165) || Version.LessOrEqual(Region.TWMS, 94) || Version.LessOrEqual(Region.GMS, 73) || Version.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.TWMS, 94) || Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
             data.Encode1(pos);
         } else {
             // v186+
@@ -69,7 +69,7 @@ public class DataGW_ItemSlotBase {
     public static final byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.LessOrEqual(Region.KMS, 84) || Version.LessOrEqual(Region.JMS, 165) || Version.LessOrEqual(Region.TWMS, 94) || Version.LessOrEqual(Region.GMS, 73) || Version.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.TWMS, 94) || Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
             data.Encode1(0);
         } else {
             // v186+
@@ -98,7 +98,7 @@ public class DataGW_ItemSlotBase {
         }
 
         // 等級
-        return (byte) ((Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) ? (rank + 16) : (rank + 4));
+        return (byte) ((Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) ? (rank + 16) : (rank + 4));
 
     }
 
@@ -123,12 +123,12 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
 
-                if (Version.GreaterOrEqual(Region.KMS, 197)) {
+                if (Config.GreaterOrEqual(Region.KMS, 197)) {
                     data.EncodeBuffer(EncodeEquip_KMS197(equip, hasUniqueId));
                     break;
                 }
 
-                if (Version.GreaterOrEqual(Region.EMS, 89)) {
+                if (Config.GreaterOrEqual(Region.EMS, 89)) {
                     data.EncodeBuffer(EncodeEquip_EMS89(equip, hasUniqueId));
                     break;
                 }
@@ -152,46 +152,46 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(equip.getJump());
                 data.EncodeStr(equip.getOwner());
 
-                if (Version.LessOrEqual(Region.KMS, 1)) {
+                if (Config.LessOrEqual(Region.KMS, 1)) {
                     break;
                 }
 
-                if (Version.LessOrEqual(Region.KMS, 31)) {
+                if (Config.LessOrEqual(Region.KMS, 31)) {
                     data.Encode2(0);
                     break;
                 }
 
-                if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+                if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode4(equip.getFlag());
                 } else {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 }
                 // リバース武器
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
-                        || Region.VMS.check() || Version.GreaterOrEqual(Region.GMS, 68)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)
+                        || Region.VMS.check() || Config.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
                 }
                 // 耐久度
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 84)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 84)) {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 73) || Region.BMS.check()) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 73) || Region.BMS.check()) {
                     data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+                if (Config.GreaterOrEqual(Region.KMS, 127) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
                 }
-                if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                if (Config.GreaterOrEqual(Region.GMS, 126)) {
                     data.Encode2(0);
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode1(0);
                 }
                 // 潜在能力, 装備強化 (星)
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                     data.Encode1(getPotentialRank(equip)); // option._ZtlSecureTear_nGrade
                     data.Encode1(equip.getEnhance()); // option._ZtlSecureTear_nCHUC
                     data.Encode2(equip.getPotential1()); // option._ZtlSecureTear_nOption1
@@ -200,20 +200,20 @@ public class DataGW_ItemSlotBase {
                     data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
                     data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+                if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
                 }
-                if (Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+                if (Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
                 }
-                if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+                if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
                     data.Encode2(0);
                 }
-                if (Version.GreaterOrEqual(Region.GMS, 126)) {
+                if (Config.GreaterOrEqual(Region.GMS, 126)) {
                     data.Encode2(0);
                 }
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302)) {
                     data.Encode2(0); // v302, Alien Stone
                     data.Encode4(0);
                     data.Encode4(0);
@@ -222,13 +222,13 @@ public class DataGW_ItemSlotBase {
                 if (!hasUniqueId) {
                     data.Encode8(0);
                 }
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54) || Version.GreaterOrEqual(Region.GMS, 68)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
 
                 // CMS
-                if (Version.GreaterOrEqual(Region.CMS, 104)) {
+                if (Config.GreaterOrEqual(Region.CMS, 104)) {
                     data.Encode8(0);
                     data.Encode8(0);
                     data.Encode4(0);
@@ -238,7 +238,7 @@ public class DataGW_ItemSlotBase {
                     break;
                 }
 
-                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode1(0);
                     data.Encode1(0); // 1 = 赤色アイテム
@@ -256,33 +256,33 @@ public class DataGW_ItemSlotBase {
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
                 data.Encode8(SharedDate.getMagicalExpirationDate()); // dateDead
-                if (Version.LessOrEqual(Region.KMS, 1)) {
+                if (Config.LessOrEqual(Region.KMS, 1)) {
                     break;
                 }
                 data.Encode2(0); // nPetAttribute_CS
                 data.Encode2(item.getPet().getFlags()); // usPetSkill_CS
-                if (Version.LessOrEqual(Region.KMS, 31)) {
+                if (Config.LessOrEqual(Region.KMS, 31)) {
                     break;
                 }
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 68) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check()) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 68) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check()) {
                     // 魔法の時間, デンデン専用 (残り時間)
                     data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
                 }
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 83) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                     data.Encode2(0); // nAttribute_CS
                 }
-                if (Version.LessOrEqual(Region.GMS, 95) || Version.LessOrEqual(Region.EMS, 70)) {
+                if (Config.LessOrEqual(Region.GMS, 95) || Config.LessOrEqual(Region.EMS, 70)) {
                     break;
                 }
                 // GMS111, EMS76
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126) || Version.GreaterOrEqual(Region.EMS, 89)) {
+                if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
                     data.Encode4(0);
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 197)) {
+                if (Config.GreaterOrEqual(Region.KMS, 197)) {
                     data.Encode2(0);
                 }
                 break;
@@ -294,12 +294,12 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(item.getQuantity());
                 data.EncodeStr(item.getOwner());
 
-                if (Version.LessOrEqual(Region.KMS, 1)) {
+                if (Config.LessOrEqual(Region.KMS, 1)) {
                     break;
                 }
                 data.Encode2(item.getFlag());
 
-                if (Version.LessOrEqual(Region.KMS, 31)) {
+                if (Config.LessOrEqual(Region.KMS, 31)) {
                     break;
                 }
 
@@ -315,12 +315,12 @@ public class DataGW_ItemSlotBase {
                 }
                 if (item_img_num == 223) {
                     // KMST only
-                    if (Version.Equal(Region.KMST, 391)) {
+                    if (Config.Equal(Region.KMST, 391)) {
                         data.Encode8(0);
                     }
                 }
 
-                if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
                     data.Encode4(0);
                     data.Encode2(0);
                     data.Encode2(0);
@@ -605,7 +605,7 @@ public class DataGW_ItemSlotBase {
 
         data.Encode8(SharedDate.getNoExpirationDate());
 
-        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);
         }
 

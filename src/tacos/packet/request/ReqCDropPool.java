@@ -24,7 +24,6 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.constants.GameConstants;
 import tacos.config.Region;
-import tacos.config.Version;
 import odin.handling.world.MaplePartyCharacter;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
@@ -34,6 +33,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import tacos.config.Config;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
@@ -64,8 +64,8 @@ public class ReqCDropPool {
         switch (header) {
             case CP_DropPickUpRequest: // CWvsContext::SendDropPickUpRequest
             {
-                byte unk1 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
-                int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+                byte unk1 = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+                int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short drop_x = cp.Decode2();
                 short drop_y = cp.Decode2();
                 int object_id = cp.Decode4();

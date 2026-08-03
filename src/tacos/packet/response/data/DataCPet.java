@@ -19,8 +19,8 @@
 package tacos.packet.response.data;
 
 import odin.client.inventory.MaplePet;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.ServerPacket;
 
 /**
@@ -40,7 +40,7 @@ public class DataCPet {
         data.Encode1(pet.getStance());
         data.Encode2(pet.getFh());
 
-        if (Version.GreaterOrEqual(Region.THMS, 96)) {
+        if (Config.GreaterOrEqual(Region.THMS, 96)) {
             data.Encode1(0);
             data.Encode1(0);
         }

@@ -20,13 +20,13 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.client.TacosBuff;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsMobAppear;
@@ -44,7 +44,7 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); // dwMobID
 
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 1)) {
             sp.Encode4(monster.getId());
             sp.EncodeBuffer(CMob_Init(monster));
             return sp;
@@ -53,7 +53,7 @@ public class ResCMobPool {
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(monster.getId());
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
 
@@ -102,13 +102,13 @@ public class ResCMobPool {
         }
 
         // KMS1
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 1)) {
             data.EncodeBuffer(CMob_SetTemporaryStat(monster));
             return data.getBytes();
         }
 
         // KMS31
-        if (Version.LessOrEqual(Region.KMS, 31)) {
+        if (Config.LessOrEqual(Region.KMS, 31)) {
             return data.getBytes();
         }
 
@@ -116,16 +116,16 @@ public class ResCMobPool {
         data.Encode1(monster.getCarnivalTeam()); // m_nTeamForMCarnival
 
         // JMS131
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             return data.getBytes();
         }
         // JMS146
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
             data.Encode4(0); // nEffectItemID
         }
         // JMS186, GMS95
         // not in KMST330, TWMS125
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 73) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 74) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55)) {
             data.Encode4(0); // m_nPhase
         }
 
@@ -154,7 +154,7 @@ public class ResCMobPool {
         sp.Encode1(nLevel); // nLevel, local or not.
 
         // GMS95
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95)) {
             // nLevel != 0 && CClientOptMan::GetOpt & 2
             /*
             data.Encode4(0);
@@ -166,7 +166,7 @@ public class ResCMobPool {
         sp.Encode4(monster.getObjectId()); // dwMobId
 
         if (nLevel != 0) {
-            if (Version.LessOrEqual(Region.KMS, 1)) {
+            if (Config.LessOrEqual(Region.KMS, 1)) {
                 // none
             } else {
                 sp.Encode1(1); // nCalcDamageIndex, 1 = Control normal, 5 = Control none
@@ -174,11 +174,11 @@ public class ResCMobPool {
             // CMobPool::SetLocalMob
             sp.Encode4(monster.getId()); // dwTemplateID
 
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }
 
-            if (Version.LessOrEqual(Region.KMS, 1)) {
+            if (Config.LessOrEqual(Region.KMS, 1)) {
                 // none.
             } else {
                 sp.EncodeBuffer(CMob_SetTemporaryStat(monster));
@@ -206,9 +206,9 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); // dwMobIDs
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             // none
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
         }
@@ -217,10 +217,10 @@ public class ResCMobPool {
         sp.Encode1(bLeft); // bLeft
         sp.Encode4(mob_skill);
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
             sp.Encode1(0);
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
@@ -240,7 +240,7 @@ public class ResCMobPool {
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
 
-        if (Version.GreaterOrEqual(Region.KMS, 95) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)) {
+        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
             sp.Encode4(0);
         }
 

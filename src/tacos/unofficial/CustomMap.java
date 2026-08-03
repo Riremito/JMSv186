@@ -27,8 +27,8 @@ import java.util.List;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
 import tacos.wz.WzDataStorage;
@@ -40,7 +40,7 @@ import tacos.wz.WzDataStorage;
 public class CustomMap {
 
     public static boolean addNPCtoMap(MapleMap map) {
-        if (!Version.GreaterOrEqual(Region.JMS, 186)) {
+        if (!Config.GreaterOrEqual(Region.JMS, 186)) {
             return false;
         }
 

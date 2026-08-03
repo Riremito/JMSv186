@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -153,11 +153,11 @@ public enum OpsParty implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             return;
         }
         clear();
-        if (Version.GreaterOrEqual(Region.JMS, 147)) {
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
             PartyReq_LoadParty.set(0);
             PartyReq_CreateNewParty.set(1);
             PartyReq_WithdrawParty.set(2);

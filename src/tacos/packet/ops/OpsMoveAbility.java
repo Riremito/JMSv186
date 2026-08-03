@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -62,10 +62,10 @@ public enum OpsMoveAbility implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             return;
         }
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             clear();
             MOVEABILITY_STOP.set(0);
             MOVEABILITY_WALK.set(1);

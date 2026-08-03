@@ -20,8 +20,8 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import odin.client.inventory.MaplePet;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -80,10 +80,10 @@ public class ResCUser_Pet {
 
     // showPet
     public static ServerPacket PetActivated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
-        ServerPacket sp = new ServerPacket((transfer_field || Version.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
+        ServerPacket sp = new ServerPacket((transfer_field || Config.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
         sp.Encode4(chr.getId());
 
-        if (Version.Equal(Region.JMS, 147)) {
+        if (Config.Equal(Region.JMS, 147)) {
             sp.Encode1(chr.getPetIndex(pet));
             if (!transfer_field) {
                 sp.Encode1(spawn ? 1 : 0);
@@ -100,7 +100,7 @@ public class ResCUser_Pet {
             return sp;
         }
 
-        if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
             // no data
         } else {
             sp.Encode4(chr.getPetIndex(pet));
@@ -108,7 +108,7 @@ public class ResCUser_Pet {
         sp.Encode1(spawn ? 1 : 0);
 
         if (spawn) {
-            if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
+            if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
                 // no data
             } else {
                 sp.Encode1(0);
@@ -138,7 +138,7 @@ public class ResCUser_Pet {
 
         sp.Encode4(chr.getId());
 
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             sp.Encode1(0);
         } else {
             sp.Encode4(chr.getPetIndex(pet));
@@ -164,7 +164,7 @@ public class ResCUser_Pet {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
         sp.Encode4(chr.getId());
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             sp.Encode1(0); // 0 = success
         } else {
             sp.Encode4(chr.getPetIndex(pet));

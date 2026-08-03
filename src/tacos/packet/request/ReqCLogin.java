@@ -27,7 +27,6 @@ import tacos.config.Content;
 import tacos.config.ContentState;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.database.query.DQ_Accounts;
 import tacos.database.query.DQ_Character_slots;
 import tacos.database.query.DQ_Characters;
@@ -42,6 +41,7 @@ import tacos.packet.ops.OpsNewCharacter;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCLogin;
 import odin.server.MapleItemInformationProvider;
+import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsLogin;
 import tacos.packet.ops.OpsViewAllChar;
@@ -186,7 +186,7 @@ public class ReqCLogin {
     // KMS beta to KMS149 and JMS302.
     public static boolean OnCheckPassword(MapleClient client, ClientPacket cp) {
         // KMS160 or later, JMS308 or later.
-        if (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) {
             return OnCheckPassword_KMS160(client, cp);
         }
         // KMS149 or before, JMS302 or before.
@@ -196,8 +196,8 @@ public class ReqCLogin {
 
         // you can ignore all data after hwid.
         int unk1 = cp.Decode4(); // 0
-        byte unk2 = (Version.GreaterOrEqual(Region.KMS, 31) || Version.GreaterOrEqual(Region.JMS, 131)) ? cp.Decode1() : 2; // old KMS uses 0?
-        byte unk3 = (Version.GreaterOrEqual(Region.JMS, 147)) ? cp.Decode1() : 0; // JMS147
+        byte unk2 = (Config.GreaterOrEqual(Region.KMS, 31) || Config.GreaterOrEqual(Region.JMS, 131)) ? cp.Decode1() : 2; // old KMS uses 0?
+        byte unk3 = (Config.GreaterOrEqual(Region.JMS, 147)) ? cp.Decode1() : 0; // JMS147
         // GMS83, BYTE
         // GMS83, DWORD
 
@@ -211,8 +211,8 @@ public class ReqCLogin {
         byte machine_id[] = cp.DecodeBuffer(16);
         int unk1 = cp.Decode4(); // 0
         byte unk2 = cp.Decode1(); // 2
-        byte unk3 = (Version.GreaterOrEqual(Region.KMS, 160) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
-        byte unk4 = (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
+        byte unk3 = (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
+        byte unk4 = (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
         String maple_id = cp.DecodeStr();
         String password = cp.DecodeStr();
 
@@ -238,10 +238,10 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
-        if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126) || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
             int unk = cp.Decode4();
         }
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 83) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 74) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55)) {
             job_type = cp.Decode4();
             // バージョンによって異なる (左から順番)
             switch (OpsNewCharacter.find(job_type)) {
@@ -298,13 +298,13 @@ public class ReqCLogin {
                     break;
             }
         }
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             job_dualblade = cp.Decode2(); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             character_gender = cp.Decode1();
-            if (!Version.Equal(Region.KMST, 391)) {
+            if (!Config.Equal(Region.KMST, 391)) {
                 skin_color = cp.Decode1();
             }
             int body_part_count = cp.Decode1();
@@ -313,7 +313,7 @@ public class ReqCLogin {
             body_part_count--;
             hair_id = cp.Decode4();
             body_part_count--;
-            if (Version.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
+            if (Config.GreaterOrEqual(Region.GMS, 111)) { // ?_? mercdes OK
                 OpsNewCharacter onc = OpsNewCharacter.find(job_type);
                 if (!OpsNewCharacter.isBadCodedJobs_GMS(onc)) {
                     hair_color = cp.Decode4();
@@ -352,7 +352,7 @@ public class ReqCLogin {
             item_ids.add(equip_weapon);
         }
 
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             is_dice = true;
             dice_str = cp.Decode1();
             dice_dex = cp.Decode1();
@@ -454,11 +454,11 @@ public class ReqCLogin {
     }
 
     public static boolean OnSelectWorld(MapleClient client, ClientPacket cp) {
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.EMS, 89) || Region.KMS.check() || Region.KMST.check() || Region.IMS.check() || Version.GreaterOrEqual(Region.TWMS, 148)) {
+        if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.EMS, 89) || Region.KMS.check() || Region.KMST.check() || Region.IMS.check() || Config.GreaterOrEqual(Region.TWMS, 148)) {
             byte unk = cp.Decode1();
         }
 
-        if (Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.GreaterOrEqual(Region.GMS, 83)) {
             byte m_nGameStartMode = cp.Decode1(); // m_nGameStartMode, always 2?
             if (m_nGameStartMode == 1) {
                 String str = cp.DecodeStr();
@@ -471,7 +471,7 @@ public class ReqCLogin {
         int world = cp.Decode1(); // nWorldID
         int channel = cp.Decode1(); // nChannelID
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 83) || Region.IMS.check() || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 83) || Region.IMS.check() || Config.GreaterOrEqual(Region.CMS, 104)) {
             int ip = cp.Decode4(); // S_addr
         }
 
@@ -494,14 +494,14 @@ public class ReqCLogin {
 
     public static boolean OnDeleteCharacter(MapleClient client, ClientPacket cp) {
         // JMS188+
-        if (Version.GreaterOrEqual(Region.JMS, 188)) {
+        if (Config.GreaterOrEqual(Region.JMS, 188)) {
             String MapleID = cp.DecodeStr();
             if (!MapleID.equals(client.getMapleId())) {
                 // state = 0以外にすると切断されます
             }
         }
         if (Region.KMS.check() || Region.KMST.check()) {
-            if (Version.GreaterOrEqual(Region.KMS, 160)) {
+            if (Config.GreaterOrEqual(Region.KMS, 160)) {
                 String secondpw = cp.DecodeStr();
             } else {
                 byte unk1 = cp.Decode1();
@@ -539,7 +539,7 @@ public class ReqCLogin {
         }
         c.SendPacket(ResCLogin.WorldInformation(null));
 
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             c.SendPacket(ResCLogin.RecommendWorldMessage());
             c.SendPacket(ResCLogin.LatestConnectedWorld());
         }

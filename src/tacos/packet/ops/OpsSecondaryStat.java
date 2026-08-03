@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -229,7 +229,7 @@ public enum OpsSecondaryStat implements IPacketOps {
 
     public static void init() {
         // UINT160
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             clear();
             CTS_PAD.set(0);
             CTS_PDD.set(1);
@@ -368,7 +368,7 @@ public enum OpsSecondaryStat implements IPacketOps {
             return;
         }
         // UINT128
-        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
             clear();
             CTS_PAD.set(0);
             CTS_PDD.set(1);
@@ -496,7 +496,7 @@ public enum OpsSecondaryStat implements IPacketOps {
             return;
         }
         // UINT128
-        if (Version.GreaterOrEqual(Region.JMS, 164)) {
+        if (Config.GreaterOrEqual(Region.JMS, 164)) {
             clear();
             CTS_PAD.set(0);
             CTS_PDD.set(1);
@@ -571,7 +571,7 @@ public enum OpsSecondaryStat implements IPacketOps {
             return;
         }
         // UINT128
-        if (Version.GreaterOrEqual(Region.JMS, 147)) {
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
             clear();
             CTS_PAD.set(0);
             CTS_PDD.set(1);

@@ -23,8 +23,8 @@ package odin.constants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.status.MonsterStatus;
 import java.util.Calendar;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 public class GameConstants {
 
@@ -81,7 +81,7 @@ public class GameConstants {
     }
 
     public static boolean is_extendsp_job(int job_id) {
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             return true;
         }
         // エヴァン
