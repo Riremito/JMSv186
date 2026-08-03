@@ -48,7 +48,7 @@ public class DataGW_CharacterStat {
 
         if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || (Region.THMS.check() && Version.PostBB()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.CMS, 88)) {
             // none
-        } else if (Region.KMSB.check() || Version.LessOrEqual(Region.JMS, 131) || Version.LessOrEqual(Region.KMS, 95) || Region.BMS.check() || Region.VMS.check()) {
+        } else if (Region.KMSB.check() || Version.LessOrEqual(Region.KMS, 95) || Version.LessOrEqual(Region.JMS, 131) || Region.BMS.check() || Region.VMS.check()) {
             data.EncodeZeroBytes(8);
         } else if ((Region.JMS.check() || Region.JMST.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.CMS.check() || Region.MSEA.check() || ((Region.TWMS.check() || Region.EMS.check()) && Version.PreBB()))) {
             data.EncodeZeroBytes(24);
@@ -362,7 +362,7 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
         // JMS 180, KMS 95
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.KMS, 92)) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
             data.Encode2(chr.getSubcategory());
         }
 
@@ -553,7 +553,7 @@ public class DataGW_CharacterStat {
         }
         // 人気度
         if ((statmask & OpsChangeStat.CS_POP.get()) != 0) {
-            if (Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111)) {
+            if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89)) {
                 data.Encode4(chr.getFame());
             } else {
                 data.Encode2(chr.getFame());

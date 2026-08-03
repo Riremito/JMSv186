@@ -269,7 +269,7 @@ public class ParseCUser_Attack {
             attack.tKeyDown = cp.Decode4();
         }
         attack.BuffKey = cp.Decode1();
-        if (Version.GreaterOrEqual(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 187) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 95) || Version.GreaterOrEqual(Region.EMS, 76)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 attack.exJablin = cp.Decode1();
             }
@@ -332,7 +332,7 @@ public class ParseCUser_Attack {
 
             attack.damages.put(nTargetID, damage_list); // add damage list.
         }
-        if (Version.GreaterOrEqual(Region.KMS, 65) || Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 cp.Decode2();
                 cp.Decode2();

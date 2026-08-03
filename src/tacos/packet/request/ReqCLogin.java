@@ -238,7 +238,7 @@ public class ReqCLogin {
         int dice_luk = 0;
 
         character_name = cp.DecodeStr();
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
+        if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126) || Version.GreaterOrEqual(Region.EMS, 89)) {
             int unk = cp.Decode4();
         }
         if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 83) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {

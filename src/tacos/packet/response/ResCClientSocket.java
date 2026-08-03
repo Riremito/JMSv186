@@ -96,7 +96,7 @@ public class ResCClientSocket {
         sp.Encode4(TacosTools.getGameServerIP(server.getGlobalIP()));
         sp.Encode2(server.getPort());
 
-        if (Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 118) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
         }
 

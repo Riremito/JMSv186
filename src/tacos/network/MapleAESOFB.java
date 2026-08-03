@@ -316,7 +316,7 @@ public class MapleAESOFB {
      */
     public boolean checkPacket(byte[] packet) {
         // x64
-        if (Version.GreaterOrEqual(Region.JMS, 414) || Version.GreaterOrEqual(Region.KMS, 373)) {
+        if (Version.GreaterOrEqual(Region.KMS, 373) || Version.GreaterOrEqual(Region.JMS, 414)) {
             // KMS v373
             return true;
         }

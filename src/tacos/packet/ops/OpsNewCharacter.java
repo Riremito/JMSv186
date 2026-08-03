@@ -83,7 +83,7 @@ public enum OpsNewCharacter {
             Aran.set(3);
             Evan.set(4);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89)) {
             CannonShooter.set(1); // v204
             Mercedes.set(5); // v204
             DemonSlayer.set(6); // v205
@@ -95,7 +95,7 @@ public enum OpsNewCharacter {
         if (Version.GreaterOrEqual(Region.TWMS, 148)) {
             Chivalrous.set(10);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
+        if (Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.GMS, 126) || Version.GreaterOrEqual(Region.EMS, 89)) {
             Luminous.set(10); // v308
             Kaizer.set(11); // v308
             AngelicBuster.set(12); // v308
