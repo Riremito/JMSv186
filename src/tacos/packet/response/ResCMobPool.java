@@ -208,8 +208,7 @@ public class ResCMobPool {
 
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             // none
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)
-                || Version.GreaterOrEqual(Region.KMS, 95)) {
+        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode1(0); // bNotForceLandingWhenDiscard
             sp.Encode1(0); // bNotChangeAction
         }
@@ -221,8 +220,7 @@ public class ResCMobPool {
         if (Version.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
             sp.Encode1(0);
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)
-                || Version.GreaterOrEqual(Region.KMS, 95)) {
+        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
@@ -242,8 +240,7 @@ public class ResCMobPool {
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
 
-        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76)
-                || Version.GreaterOrEqual(Region.KMS, 95)) {
+        if (Version.GreaterOrEqual(Region.KMS, 114) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 194) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 76) || Version.GreaterOrEqual(Region.KMS, 95)) {
             sp.Encode4(0);
         }
 

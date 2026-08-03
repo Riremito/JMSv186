@@ -331,8 +331,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp()); // nEXP
         data.Encode2(chr.getFame()); // nPOP
 
-        if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.THMS.check() || Region.TWMS.check() || Version.GreaterOrEqual(Region.GMS, 62) || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB()))
-                && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
+        if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.THMS.check() || Region.TWMS.check() || Version.GreaterOrEqual(Region.GMS, 62) || Region.MSEA.check() || (Region.EMS.check() && Version.PostBB())) && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 

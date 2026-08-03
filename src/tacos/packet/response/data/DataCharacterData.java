@@ -230,15 +230,11 @@ public class DataCharacterData {
             data.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
         }
         // v165-v194 OK
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 73) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
-            if (Version.LessOrEqual(Region.GMS, 73) || Version.LessOrEqual(Region.EMS, 55)) {
-                // none
-            } else {
-                // 0x100000
-                if ((datamask & 1048576) != 0) {
-                    data.Encode4(0);
-                    data.Encode4(0);
-                }
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 83) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+            // 0x100000
+            if ((datamask & 0x100000) != 0) {
+                data.Encode4(0);
+                data.Encode4(0);
             }
         }
         // 装備
@@ -428,16 +424,12 @@ public class DataCharacterData {
                     data.Encode1(0);
                 }
                 // 精霊の祝福 v165, v186
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 73) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
-                    if (Version.LessOrEqual(Region.GMS, 73)) {
-                        // none
+                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 83) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
+                    if (chr.getBlessOfFairyOrigin() != null) {
+                        data.Encode1(1);
+                        data.EncodeStr(chr.getBlessOfFairyOrigin());
                     } else {
-                        if (chr.getBlessOfFairyOrigin() != null) {
-                            data.Encode1(1);
-                            data.EncodeStr(chr.getBlessOfFairyOrigin());
-                        } else {
-                            data.Encode1(0);
-                        }
+                        data.Encode1(0);
                     }
                 }
                 // 祝福系統
@@ -537,7 +529,7 @@ public class DataCharacterData {
         // 0x8000 [addCoolDownInfo] v165-v194
         if ((datamask & 0x8000) != 0) {
             if (Version.LessOrEqual(Region.KMS, 1)) {
-
+                // none
             } else {
                 data.EncodeBuffer(chr.getCoolTime().getBufferForLogin(System.currentTimeMillis()));
             }
@@ -549,7 +541,7 @@ public class DataCharacterData {
         // 0x4000 QuestComplete v165-v194
         if ((datamask & 0x4000) != 0) {
             if (Version.LessOrEqual(Region.KMS, 1)) {
-
+                // none
             } else {
                 data.EncodeBuffer(Structure.addQuestComplete(chr));
             }

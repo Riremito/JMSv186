@@ -178,12 +178,8 @@ public class DataGW_ItemSlotBase {
                     data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
                 }
                 // ビシャスのハンマー
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 73) || Region.BMS.check()) {
-                    if (Version.LessOrEqual(Region.KMS, 92)) {
-                        // none
-                    } else {
-                        data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
-                    }
+                if (Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.GMS, 73) || Region.BMS.check()) {
+                    data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
                 }
                 if (Version.GreaterOrEqual(Region.KMS, 127) || Version.GreaterOrEqual(Region.KMST, 391) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
@@ -226,8 +222,7 @@ public class DataGW_ItemSlotBase {
                 if (!hasUniqueId) {
                     data.Encode8(0);
                 }
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
-                        || Version.GreaterOrEqual(Region.GMS, 68)) {
+                if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54) || Version.GreaterOrEqual(Region.GMS, 68)) {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
@@ -277,7 +272,7 @@ public class DataGW_ItemSlotBase {
                 if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70) || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
                     data.Encode2(0); // nAttribute_CS
                 }
-                if (Version.LessOrEqual(Region.GMS, 95) || Version.LessOrEqual(Region.EMS, 72)) {
+                if (Version.LessOrEqual(Region.GMS, 95) || Version.LessOrEqual(Region.EMS, 70)) {
                     break;
                 }
                 // GMS111, EMS76

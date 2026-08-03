@@ -873,14 +873,9 @@ public class ReqCUser {
             cp.Decode4();
         }
 
-        if (Version.LessOrEqual(Region.KMS, 65)) {
-            // nothing
-        } else {
-            // not in JMS147
-            if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)
-                    || Version.GreaterOrEqual(Region.BMS, 24)) {
-                cp.Decode4();
-            }
+        // not in JMS147
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54) || Version.GreaterOrEqual(Region.BMS, 24)) {
+            cp.Decode4();
         }
 
         if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {

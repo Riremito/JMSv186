@@ -41,9 +41,7 @@ public class DataCUserRemote {
     public static byte[] Init(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.LessOrEqual(Region.KMS, 65)) {
-            // nothing
-        } else if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 65) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.JMS, 164) || Version.GreaterOrEqual(Region.CMS, 73) || Version.GreaterOrEqual(Region.TWMS, 94) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 72) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 54)) {
             data.Encode1(chr.getLevel());
         }
         data.EncodeStr(chr.getName());

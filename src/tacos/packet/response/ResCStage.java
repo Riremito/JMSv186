@@ -43,18 +43,12 @@ public class ResCStage {
     public static ServerPacket SetField(MapleCharacter chr, boolean bCharacterData) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // JMS184orLater
-        if (((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.GMS.check() || Region.GMST.check()) && Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70))
-                || Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.GMS.check() || Region.GMST.check()) && Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) || Version.GreaterOrEqual(Region.EMS, 89)) {
             sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
         }
         // チャンネル
         sp.Encode4(chr.getClient().getChannelId() - 1); // m_nChannelID
-        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391)
-                || ((Region.JMS.check() || Region.JMST.check()) && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35))
-                || Version.GreaterOrEqual(Region.EMS, 89)
-                || Version.GreaterOrEqual(Region.TWMS, 148)
-                || Version.GreaterOrEqual(Region.CMS, 104)
-                || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Version.GreaterOrEqual(Region.KMS, 138) || Version.GreaterOrEqual(Region.KMST, 391) || ((Region.JMS.check() || Region.JMST.check()) && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 47) || Version.GreaterOrEqual(Region.JMS, 146) || Version.GreaterOrEqual(Region.CMS, 62) || Version.GreaterOrEqual(Region.TWMS, 73) || Version.GreaterOrEqual(Region.THMS, 0) || Version.GreaterOrEqual(Region.GMS, 61) || Version.GreaterOrEqual(Region.MSEA, 0) || Version.GreaterOrEqual(Region.EMS, 0) || Version.GreaterOrEqual(Region.BMS, 24) || Version.GreaterOrEqual(Region.VMS, 35)) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode1(0);
         }
 
@@ -62,8 +56,7 @@ public class ResCStage {
             sp.Encode1(1); // Supreme/Ibara World
         }
 
-        if (((Region.JMS.check() || Region.JMST.check() || Region.TWMS.check() || Region.THMS.check() || Region.CMS.check() || Region.MSEA.check() || Region.EMS.check() || Region.GMS.check() || Region.GMST.check() || Region.IMS.check()) && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70))
-                || (Version.GreaterOrEqual(Region.KMS, 101) || Version.GreaterOrEqual(Region.KMST, 330))) {
+        if (((Region.JMS.check() || Region.JMST.check() || Region.TWMS.check() || Region.THMS.check() || Region.CMS.check() || Region.MSEA.check() || Region.EMS.check() || Region.GMS.check() || Region.GMST.check() || Region.IMS.check()) && Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) || (Version.GreaterOrEqual(Region.KMS, 101) || Version.GreaterOrEqual(Region.KMST, 330))) {
             sp.Encode4(0); // m_dwOldDriverID
         }
 
@@ -91,8 +84,7 @@ public class ResCStage {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr));
             }
             // JMS184orLater
-            if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.TWMS.check() || Region.GMS.check() || Region.GMST.check())
-                    && Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
+            if ((Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.TWMS.check() || Region.GMS.check() || Region.GMST.check()) && Version.PostBB() || Version.GreaterOrEqual(Region.JMS, 186) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
                 // ログアウトギフト
                 sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
             }

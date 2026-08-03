@@ -24,10 +24,6 @@ package tacos.config;
  */
 public class Version {
 
-    public static int getVersion() {
-        return Config.VERSION;
-    }
-
     // good versions
     public static boolean GreaterOrEqual(Region region, int version) {
         if (region == Region.GMS && version <= 95) {
@@ -36,7 +32,7 @@ public class Version {
             }
         }
         if (region.check()) {
-            if (version <= getVersion()) {
+            if (version <= Config.VERSION) {
                 return true;
             }
         }
@@ -46,7 +42,7 @@ public class Version {
     // bad versions
     public static boolean Between(Region region, int version_l, int version_r) {
         if (region.check()) {
-            if (version_l <= getVersion() && getVersion() <= version_r) {
+            if (version_l <= Config.VERSION && Config.VERSION <= version_r) {
                 return true;
             }
         }
@@ -56,7 +52,7 @@ public class Version {
     // really bad version
     public static boolean Equal(Region region, int version) {
         if (region.check()) {
-            if (getVersion() == version) {
+            if (Config.VERSION == version) {
                 return true;
             }
         }
@@ -71,7 +67,7 @@ public class Version {
             }
         }
         if (region.check()) {
-            if (getVersion() <= version) {
+            if (Config.VERSION <= version) {
                 return true;
             }
         }

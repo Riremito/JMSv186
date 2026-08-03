@@ -241,66 +241,61 @@ public class ReqCLogin {
         if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
             int unk = cp.Decode4();
         }
-        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 73) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
-            if (Version.LessOrEqual(Region.GMS, 73)) {
-                // none
-            } else {
-                job_type = cp.Decode4();
-
-                // バージョンによって異なる (左から順番)
-                switch (OpsNewCharacter.find(job_type)) {
-                    case KnightsOfCygnus:
-                        skin_color = 10;
-                        job_id = 1000;
-                        break;
-                    case Adventurers:
-                    case DualBlade:
-                    case CannonShooter:
-                        job_id = 0;
-                        break;
-                    case Aran:
-                        skin_color = 11;
-                        job_id = 2000;
-                        break;
-                    case Evan:
-                        job_id = 2001;
-                        break;
-                    case Resistance:
-                        job_id = 3000;
-                        break;
-                    case Mercedes:
-                        skin_color = 12;
-                        job_id = 2002;
-                        break;
-                    case Phantom:
-                        job_id = 2003;
-                        break;
-                    case DemonSlayer:
-                        skin_color = 13;
-                        job_id = 3001;
-                        break;
-                    case Hayato:
-                        job_id = 4001;
-                        break;
-                    case Kanna:
-                        job_id = 4002;
-                        break;
-                    case Chivalrous:
-                        job_id = 0;
-                        break;
-                    case Luminous:
-                        job_id = 2004;
-                        break;
-                    case Kaizer:
-                        job_id = 6000;
-                        break;
-                    case AngelicBuster:
-                        job_id = 6001;
-                        break;
-                    default:
-                        job_id = 0;
-                        break;
-                }
+        if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 67) || Version.GreaterOrEqual(Region.JMS, 165) || Version.GreaterOrEqual(Region.CMS, 74) || Version.GreaterOrEqual(Region.TWMS, 96) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 83) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 55)) {
+            job_type = cp.Decode4();
+            // バージョンによって異なる (左から順番)
+            switch (OpsNewCharacter.find(job_type)) {
+                case KnightsOfCygnus:
+                    skin_color = 10;
+                    job_id = 1000;
+                    break;
+                case Adventurers:
+                case DualBlade:
+                case CannonShooter:
+                    job_id = 0;
+                    break;
+                case Aran:
+                    skin_color = 11;
+                    job_id = 2000;
+                    break;
+                case Evan:
+                    job_id = 2001;
+                    break;
+                case Resistance:
+                    job_id = 3000;
+                    break;
+                case Mercedes:
+                    skin_color = 12;
+                    job_id = 2002;
+                    break;
+                case Phantom:
+                    job_id = 2003;
+                    break;
+                case DemonSlayer:
+                    skin_color = 13;
+                    job_id = 3001;
+                    break;
+                case Hayato:
+                    job_id = 4001;
+                    break;
+                case Kanna:
+                    job_id = 4002;
+                    break;
+                case Chivalrous:
+                    job_id = 0;
+                    break;
+                case Luminous:
+                    job_id = 2004;
+                    break;
+                case Kaizer:
+                    job_id = 6000;
+                    break;
+                case AngelicBuster:
+                    job_id = 6001;
+                    break;
+                default:
+                    job_id = 0;
+                    break;
             }
         }
         if (Version.PostBB() || Version.GreaterOrEqual(Region.KMS, 92) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.CMS, 85) || Version.GreaterOrEqual(Region.TWMS, 121) || Version.GreaterOrEqual(Region.THMS, 87) || Version.GreaterOrEqual(Region.GMS, 91) || Version.GreaterOrEqual(Region.MSEA, 100) || Version.GreaterOrEqual(Region.EMS, 70)) {
