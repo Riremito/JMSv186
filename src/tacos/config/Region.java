@@ -23,15 +23,15 @@ package tacos.config;
  * @author Riremito
  */
 public enum Region {
-    KMSB(1),
-    KMS(1),
-    KMST(2),
-    JMS(3),
-    JMST(3),
-    CMS(4),
+    KMSB(1, "MS949"),
+    KMS(1, "MS949"),
+    KMST(2, "MS949"),
+    JMS(3, "MS932"),
+    JMST(3, "MS932"),
+    CMS(4, "MS936"),
     GMST(5),
-    TWMS(6),
-    THMS(7),
+    TWMS(6, "MS950"),
+    THMS(7, "MS874"),
     MSEA(7),
     VMS(7),
     GMS(8),
@@ -41,9 +41,16 @@ public enum Region {
     UNKNOWN(0);
 
     private final int value;
+    private final String codepage;
 
     private Region(int value) {
         this.value = value;
+        this.codepage = "MS932";
+    }
+
+    private Region(int value, String codepage) {
+        this.value = value;
+        this.codepage = codepage;
     }
 
     public int get() {
@@ -52,6 +59,10 @@ public enum Region {
 
     public String getName() {
         return name();
+    }
+
+    public String getCodepage() {
+        return this.codepage;
     }
 
     public boolean check() {

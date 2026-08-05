@@ -19,7 +19,6 @@
 package tacos;
 
 import tacos.config.ClientEdit;
-import tacos.config.CodePage;
 import tacos.config.Content;
 import tacos.property.Property;
 import tacos.shared.SharedExpTable;
@@ -75,6 +74,7 @@ public class Start {
         }
         // default = JMS 147 0
         DebugLogger.SetupLog(Config.REGION.getName() + " v" + Config.VERSION + "." + Config.VERSION_SUB);
+        DebugLogger.SetupLog("codepage = " + Config.CODEPAGE.name());
         // DevLog
         DebugLogger.SetupLog("DEV_LOG");
         DebugLogger.init();
@@ -100,10 +100,6 @@ public class Start {
         if (!Property.initAll()) {
             return;
         }
-        // set codepage
-        DebugLogger.SetupLog("CODE_PAGE");
-        CodePage.init();
-        DebugLogger.InfoLog("codepage = " + CodePage.getCodePage().name());
         // database
         if (!DatabaseConnection.checkDatabase()) {
             System.exit(0);

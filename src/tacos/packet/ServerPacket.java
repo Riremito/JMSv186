@@ -18,9 +18,9 @@
  */
 package tacos.packet;
 
-import tacos.config.CodePage;
 import tacos.config.Content;
 import java.util.ArrayList;
+import tacos.config.Config;
 
 /**
  *
@@ -120,7 +120,7 @@ public class ServerPacket {
     }
 
     public void EncodeStr(String str) {
-        byte[] b = str.getBytes(CodePage.getCodePage());
+        byte[] b = str.getBytes(Config.CODEPAGE);
         Encode2((short) b.length);
 
         for (int i = 0; i < b.length; i++) {
@@ -159,7 +159,7 @@ public class ServerPacket {
 
     // encode fixed size string.
     public void EncodeBuffer(String str, int size) {
-        byte[] b = str.getBytes(CodePage.getCodePage());
+        byte[] b = str.getBytes(Config.CODEPAGE);
         for (int i = 0; i < b.length; i++) {
             Encode1(b[i]);
         }

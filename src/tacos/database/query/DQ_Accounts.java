@@ -31,7 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
-import tacos.config.CodePage;
+import tacos.config.Config;
 import tacos.tools.TacosTools;
 
 /**
@@ -103,7 +103,7 @@ public class DQ_Accounts {
     public static String getSHA256(String text) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(text.getBytes(CodePage.getCodePage()), 0, text.length());
+            md.update(text.getBytes(Config.CODEPAGE), 0, text.length());
             return TacosTools.DatatoString(md.digest());
         } catch (NoSuchAlgorithmException ex) {
         }

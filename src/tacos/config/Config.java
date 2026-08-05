@@ -18,6 +18,8 @@
  */
 package tacos.config;
 
+import java.nio.charset.Charset;
+
 /**
  *
  * @author Riremito
@@ -28,6 +30,7 @@ public class Config {
     public static Region REGION = Region.JMS;
     public static int VERSION = 147;
     public static int VERSION_SUB = 0;
+    public static Charset CODEPAGE = Charset.forName("MS932"); // Shift-JIS
 
     public static boolean setVersion(String name, int version, int version_sub) {
         VERSION = version;
@@ -38,6 +41,7 @@ public class Config {
             return false;
         }
 
+        CODEPAGE = Charset.forName(DeveloperMode.DM_CODEPAGE_UTF8.get() ? "UTF8" : REGION.getCodepage());
         return true;
     }
 
