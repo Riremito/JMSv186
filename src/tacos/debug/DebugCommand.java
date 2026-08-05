@@ -303,7 +303,7 @@ public class DebugCommand {
                 npc.setCy(chr.getPosition().y);
                 npc.setRx0(chr.getPosition().x - 50);
                 npc.setRx1(chr.getPosition().x + 50);
-                npc.setF(chr.getStance());
+                npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getStance());
                 npc.setFh(chr.getFH());
                 npc.setCustom(true);
                 map.addMapObject(npc);
@@ -317,7 +317,7 @@ public class DebugCommand {
                 pnpc.setCy(chr.getPosition().y);
                 pnpc.setRx0(chr.getPosition().x - 50);
                 pnpc.setRx1(chr.getPosition().x + 50);
-                pnpc.setF(chr.getStance());
+                pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getStance());
                 pnpc.setFh(chr.getFH());
                 map.addMapObject(pnpc);
                 pnpc.sendSpawnData(chr.getClient());

@@ -62,7 +62,7 @@ public class ResCNpcPool {
 
         data.Encode2(npc.getPosition().x); // m_ptPos.x
         data.Encode2(npc.getPosition().y); // m_ptPos.y
-        data.Encode1(npc.getF() == 1 ? 0 : 1); // m_nMoveAction
+        data.Encode1(npc.getF()); // m_nMoveAction
         data.Encode2(npc.getFh()); // Foothold
         data.Encode2(npc.getRx0()); // m_rgHorz.low
         data.Encode2(npc.getRx1()); // m_rgHorz.high
@@ -112,5 +112,4 @@ public class ResCNpcPool {
 
         return sp;
     }
-
 }

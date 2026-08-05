@@ -398,6 +398,7 @@ public class TacosMapData {
             myLife.setPosition(new Point(WzDataTool.getInt(life.getChildByPath("x")), WzDataTool.getInt(life.getChildByPath("y"))));
 
             if (myLife instanceof MapleNPC) {
+                myLife.setF(myLife.getF() == 1 ? 0 : 1); // wz data left right to packet data left right.
                 if (WzDataTool.getIntPath("hide", life, 0) == 1) {
                     myLife.setHide(true);
                     DebugLogger.InfoLog("loadLife : hidden npc, " + npc_id);
