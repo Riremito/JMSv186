@@ -900,7 +900,8 @@ public class DataCharacterData {
                 }
                 break;
             }
-            case GMS: {
+            case GMS:
+            case GMST: {
                 if (Config.GreaterOrEqual(Region.GMS, 126)) {
                     if ((datamask & 0x00020000) != 0) {
                         data.Encode4(0);
@@ -1078,6 +1079,7 @@ public class DataCharacterData {
                         // VisitorQuestLog
                         data.Encode2(0);
                     }
+                    break;
                 } else if (Config.GreaterOrEqual(Region.GMS, 83)) {
                     if ((datamask & 0x20000) != 0) {
                         data.Encode4(chr.getMonsterBook().getCover());
@@ -1099,6 +1101,7 @@ public class DataCharacterData {
                             data.Encode2(0);
                         }
                     }
+                    break;
                 } else {
                     if ((datamask & 0x20000) != 0) {
                         data.Encode4(chr.getMonsterBook().getCover());
