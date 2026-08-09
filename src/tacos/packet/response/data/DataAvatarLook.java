@@ -145,5 +145,4 @@ public class DataAvatarLook {
         }
         return data.getBytes();
     }
-
 }

@@ -41,7 +41,7 @@ import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.request.ReqCUser_SkillPet;
 import tacos.packet.request.Req_MapleTV;
 import tacos.server.TacosServer;
-import tacos.server.map.TacosTask;
+import tacos.task.TacosTask;
 
 /**
  *
@@ -55,7 +55,7 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
 
     @Override
     public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) throws Exception {
-        TacosTask.doTask(client);
+        TacosTask.update(client);
         // socket
         if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
             return ReqCClientSocket.OnPacket(client, header, cp);
