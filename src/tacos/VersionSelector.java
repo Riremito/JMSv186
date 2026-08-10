@@ -41,19 +41,16 @@ public class VersionSelector {
     private static String[] versions
             = {
                 // developing
-                "JMS v147.0",
-                "JMS v164.0",
-                "JMS v186.1",
-                "JMS v194.0",
-                "JMS v302.0",
                 "KMST v330.1",
                 "GMS v95.1",
-                "GMS v83.1",
                 // all list.
                 "KMS v1.1",
+                "KMS v3.1",
                 "KMS v31.1",
                 "KMS v41.1",
                 "KMS v43.1",
+                "KMS v46.1",
+                "KMS v51.2",
                 "KMS v55.1",
                 "KMS v65.1",
                 //"KMS v71.1",
@@ -122,6 +119,7 @@ public class VersionSelector {
                 "GMS v117.1",
                 "GMS v126.1",
                 "GMS v131.1",
+                "GMST v2.1",
                 "EMS v55.1",
                 "EMS v70.1",
                 "EMS v76.2",

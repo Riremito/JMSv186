@@ -152,7 +152,7 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(equip.getJump());
                 data.EncodeStr(equip.getOwner());
 
-                if (Config.LessOrEqual(Region.KMS, 1)) {
+                if (Config.LessOrEqual(Region.KMS, 3)) {
                     break;
                 }
 
@@ -256,7 +256,7 @@ public class DataGW_ItemSlotBase {
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
                 data.Encode8(SharedDate.getMagicalExpirationDate()); // dateDead
-                if (Config.LessOrEqual(Region.KMS, 1)) {
+                if (Config.LessOrEqual(Region.KMS, 3)) {
                     break;
                 }
                 data.Encode2(0); // nPetAttribute_CS
@@ -294,7 +294,7 @@ public class DataGW_ItemSlotBase {
                 data.Encode2(item.getQuantity());
                 data.EncodeStr(item.getOwner());
 
-                if (Config.LessOrEqual(Region.KMS, 1)) {
+                if (Config.LessOrEqual(Region.KMS, 3)) {
                     break;
                 }
                 data.Encode2(item.getFlag());

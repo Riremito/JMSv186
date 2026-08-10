@@ -44,7 +44,7 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); // dwMobID
 
-        if (Config.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             sp.Encode4(monster.getId());
             sp.EncodeBuffer(CMob_Init(monster));
             return sp;
@@ -102,7 +102,7 @@ public class ResCMobPool {
         }
 
         // KMS1
-        if (Config.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             data.EncodeBuffer(CMob_SetTemporaryStat(monster));
             return data.getBytes();
         }
@@ -166,7 +166,7 @@ public class ResCMobPool {
         sp.Encode4(monster.getObjectId()); // dwMobId
 
         if (nLevel != 0) {
-            if (Config.LessOrEqual(Region.KMS, 1)) {
+            if (Config.LessOrEqual(Region.KMS, 3)) {
                 // none
             } else {
                 sp.Encode1(1); // nCalcDamageIndex, 1 = Control normal, 5 = Control none
@@ -178,7 +178,7 @@ public class ResCMobPool {
                 sp.Encode1(0);
             }
 
-            if (Config.LessOrEqual(Region.KMS, 1)) {
+            if (Config.LessOrEqual(Region.KMS, 3)) {
                 // none.
             } else {
                 sp.EncodeBuffer(CMob_SetTemporaryStat(monster));

@@ -623,7 +623,7 @@ public class ResCLogin {
         sp.Encode1(0); // nWorldState
         sp.EncodeStr(Region.BMS.check() ? "" : world.getEvent()); // sWorldEventDesc
 
-        if (Config.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             // none
         } else {
             sp.Encode2(100); // nWorldEventEXP_WSE
@@ -651,6 +651,10 @@ public class ResCLogin {
             if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
             }
+        }
+
+        if (Config.LessOrEqual(Region.KMS, 3)) {
+            return sp;
         }
 
         sp.Encode2(0); // m_nBalloonCount

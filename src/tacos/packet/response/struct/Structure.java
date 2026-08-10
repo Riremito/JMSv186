@@ -350,7 +350,7 @@ public class Structure {
             data.Encode8(ring.getPartnerRingId()); // liPairSN
         }
 
-        if (Config.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             // nothing
         } else {
             // GW_FriendRecord::Decode, 37 bytes.
@@ -393,7 +393,7 @@ public class Structure {
             data.Encode4(mapz[i]);
         }
 
-        if (Config.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             return data.getBytes();
         }
 

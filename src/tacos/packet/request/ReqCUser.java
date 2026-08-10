@@ -1314,8 +1314,8 @@ public class ReqCUser {
 
     public static boolean OnUserSelectNpc(MapleCharacter chr, ClientPacket cp) {
         int m_dwNpcId = cp.Decode4();
-        short x = Config.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode2();
-        short y = Config.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode2();
+        short x = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
+        short y = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
 
         MapleClient client = chr.getClient();
         MapleMap map = chr.getMap();

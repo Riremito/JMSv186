@@ -73,7 +73,7 @@ public class DataAvatarLook {
         }
         data.Encode1(255); // end of visible items
         // masked itens
-        if (Config.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             // nothing
         } else {
             for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {

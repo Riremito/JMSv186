@@ -287,7 +287,7 @@ public class ParseCUser_Attack {
         // v95 4 bytes crc
         attack.nAttackActionType = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         attack.nAttackSpeed = cp.Decode1();
-        attack.tAttackTime = Config.LessOrEqual(Region.KMS, 1) ? 0 : cp.Decode4();
+        attack.tAttackTime = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode4();
         if (Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             cp.Decode4(); // dwID
         }

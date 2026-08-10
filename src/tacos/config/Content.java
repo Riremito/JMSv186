@@ -158,7 +158,7 @@ public enum Content {
         if (Region.KMSB.check()) {
             return true;
         }
-        if (Config.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             return true;
         }
         return false;

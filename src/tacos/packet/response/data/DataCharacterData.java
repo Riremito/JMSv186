@@ -382,9 +382,10 @@ public class DataCharacterData {
     // CharacterInfo
     public static byte[] Encode(MapleCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
-        if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131)) {
+        if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 46) || Config.LessOrEqual(Region.JMS, 131)) {
             data.Encode2((short) datamask); // statmask
         } else {
+            // KMS51
             data.Encode8(datamask); // statmask
         }
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
@@ -527,7 +528,7 @@ public class DataCharacterData {
         }
         // 0x8000 [addCoolDownInfo] v165-v194
         if ((datamask & 0x8000) != 0) {
-            if (Config.LessOrEqual(Region.KMS, 1)) {
+            if (Config.LessOrEqual(Region.KMS, 3)) {
                 // none
             } else {
                 data.EncodeBuffer(chr.getCoolTime().getBufferForLogin(System.currentTimeMillis()));
@@ -542,6 +543,7 @@ public class DataCharacterData {
             if (Config.LessOrEqual(Region.KMS, 1)) {
                 // none
             } else {
+                // KMS3
                 data.EncodeBuffer(Structure.addQuestComplete(chr));
             }
         }
@@ -562,7 +564,7 @@ public class DataCharacterData {
             case KMST: {
                 if (Config.PreBB()) {
                     // not in KMS43
-                    if (Config.GreaterOrEqual(Region.KMS, 55)) {
+                    if (Config.GreaterOrEqual(Region.KMS, 51)) {
                         if ((datamask & 0x20000) != 0) {
                             data.Encode4(chr.getMonsterBook().getCover());
                         }
