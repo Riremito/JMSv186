@@ -670,20 +670,13 @@ public class ResCLogin {
     // CLogin::OnSelectWorldResult
     public static ServerPacket SelectWorldResult(MapleClient client, OpsLogin result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectWorldResult);
+
         sp.Encode1(result.get());
         if (result != OpsLogin.LoginResCode_Success) {
             // error
             return sp;
         }
 
-        if (Region.TWMS.check()) {
-            sp.EncodeBuffer(CharList_TWMS(client));
-            return sp;
-        }
-        if (Region.CMS.check()) {
-            sp.EncodeBuffer(CharList_CMS(client));
-            return sp;
-        }
         List<MapleCharacter> chars = client.loadCharactersFromDB(true);
         int charslots = client.getCharSlots();
 
@@ -691,7 +684,15 @@ public class ResCLogin {
             sp.EncodeStr("");
         }
 
-        if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 149) || Region.KMST.check() || Region.CMS.check() || Region.IMS.check()) {
+        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
+            // KMS160
+            // CMS104
+            // TWMS148
+            // none.
+        } else if (Region.KMSB.check() || Region.KMS.check() || Region.KMST.check() || Region.CMS.check() || Region.TWMS.check() || Region.IMS.check()) {
+            // KMS1-149
+            // CMS85-88
+            // TWMS74-125
             sp.Encode4(1000000);
         }
 
@@ -708,6 +709,9 @@ public class ResCLogin {
             if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                 sp.Encode1(0); // family
             }
+            if (Region.CMS.check()) {
+                continue;
+            }
             sp.Encode1(1); // ranking
             sp.Encode4(chr.getRank()); // all world ranking
             sp.Encode4(chr.getRankMove());
@@ -715,8 +719,48 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRankMove());
         }
 
-        if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 31)) {
-            return sp;
+        switch (Config.REGION) {
+            case KMSB: {
+                return sp;
+            }
+            case KMS: {
+                if (Config.LessOrEqual(Region.KMS, 31)) {
+                    return sp;
+                }
+                break;
+            }
+            case CMS: {
+                // CMS85-88
+                sp.Encode1(3);
+                sp.Encode1(0);
+                sp.Encode4(charslots);
+                sp.Encode4(0); // card
+                if (Config.GreaterOrEqual(Region.CMS, 104)) {
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                }
+                return sp;
+            }
+            case TWMS: {
+                // TWMS74-94
+                sp.Encode1(3);
+                sp.Encode1(0);
+                sp.Encode4(charslots);
+                if (Config.GreaterOrEqual(Region.TWMS, 148)) {
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                    sp.Encode4(0);
+                }
+                if (Config.GreaterOrEqual(Region.TWMS, 121)) {
+                    sp.Encode4(0);
+                    sp.Encode8(0);
+                }
+                return sp;
+            }
+            default: {
+                break;
+            }
         }
 
         if (Config.GreaterOrEqual(Region.KMS, 160)) {
@@ -1049,77 +1093,5 @@ public class ResCLogin {
 
         sp.Encode1(0); // unused.
         return sp;
-    }
-
-    public static byte[] CharList_CMS(MapleClient client) {
-        ServerPacket data = new ServerPacket();
-        if (Config.LessOrEqual(Region.CMS, 88)) {
-            data.Encode4(1000000);
-        }
-        List<MapleCharacter> chars = client.loadCharactersFromDB();
-        int charslots = client.getCharSlots();
-        data.Encode1(chars.size());
-        for (MapleCharacter chr : chars) {
-            data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            data.EncodeBuffer(DataAvatarLook.Encode(chr));
-            data.Encode1(0);
-        }
-        data.Encode1(3);
-        data.Encode1(0);
-        data.Encode4(charslots);
-        data.Encode4(0); // card
-        if (Config.GreaterOrEqual(Region.CMS, 104)) {
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
-        }
-
-        return data.getBytes();
-    }
-
-    public static byte[] CharList_TWMS(MapleClient client) {
-        ServerPacket data = new ServerPacket();
-        if (Config.GreaterOrEqual(Region.TWMS, 148)) {
-            // none
-        } else {
-            data.Encode4(1000000);
-        }
-        List<MapleCharacter> chars = client.loadCharactersFromDB();
-        int charslots = client.getCharSlots();
-        data.Encode1(chars.size());
-        for (MapleCharacter chr : chars) {
-            data.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            data.EncodeBuffer(DataAvatarLook.Encode(chr));
-            if (Config.GreaterOrEqual(Region.TWMS, 121)) {
-                data.Encode1(0);
-            }
-            data.Encode1(1);
-            data.Encode4(chr.getRank());
-            data.Encode4(chr.getRankMove());
-            data.Encode4(chr.getJobRank());
-            data.Encode4(chr.getJobRankMove());
-        }
-
-        if (Config.GreaterOrEqual(Region.TWMS, 148)) {
-            data.Encode1(3);
-            data.Encode1(0);
-            data.Encode4(charslots);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode8(0);
-        } else if (Config.GreaterOrEqual(Region.TWMS, 121)) {
-            data.Encode2(3); // 2nd password state
-            data.Encode8(charslots);
-            data.Encode8(0);
-        } else {
-            // TWMS v94
-            data.Encode1(3);
-            data.Encode1(0);
-            data.Encode4(charslots);
-        }
-
-        return data.getBytes();
     }
 }

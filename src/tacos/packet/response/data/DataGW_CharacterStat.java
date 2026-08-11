@@ -331,7 +331,7 @@ public class DataGW_CharacterStat {
         data.Encode4(chr.getExp()); // nEXP
         data.Encode2(chr.getFame()); // nPOP
 
-        if (Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35) || Config.GreaterOrEqual(Region.EMS, 76)) {
+        if (Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 76)) {
             data.Encode4(chr.getGashaEXP()); // nTempEXP
         }
 
@@ -353,7 +353,7 @@ public class DataGW_CharacterStat {
             return data.getBytes();
         }
 
-        if (Config.GreaterOrEqual(Region.GMS, 62) || (Region.EMS.check() && Config.PreBB()) || Region.BMS.check()) {
+        if (Config.GreaterOrEqual(Region.GMS, 62) || (Region.EMS.check() && Config.PreBB()) || Config.GreaterOrEqual(Region.BMS, 24)) {
             data.Encode4(0);
         }
 

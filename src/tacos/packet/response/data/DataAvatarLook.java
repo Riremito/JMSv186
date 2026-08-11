@@ -37,6 +37,7 @@ public class DataAvatarLook {
     // AvatarLook::Decode, AvatarLook::AvatarLook
     public static byte[] Encode(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
+
         data.Encode1(chr.getGender()); // nGender
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
