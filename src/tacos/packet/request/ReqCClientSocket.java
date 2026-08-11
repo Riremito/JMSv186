@@ -289,7 +289,7 @@ public class ReqCClientSocket {
                         chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
                     }
                 }
-                if (Config.LessOrEqual(Region.JMS, 131) || Region.BMS.check()) {
+                if (Config.LessOrEqual(Region.JMS, 131) || Region.BMS.check() || Region.VMS.check()) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
