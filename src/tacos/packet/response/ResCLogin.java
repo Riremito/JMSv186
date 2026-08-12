@@ -611,7 +611,7 @@ public class ResCLogin {
             sp.Encode1((world != null) ? world.getId() : -1); // nWorldID
         }
 
-        // 終了
+        // world list end.
         if (world == null) {
             if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 116)) {
                 sp.Encode1(0);
@@ -622,7 +622,6 @@ public class ResCLogin {
         sp.EncodeStr(world.getName()); // sName
         sp.Encode1(0); // nWorldState
         sp.EncodeStr(Region.BMS.check() ? "" : world.getEvent()); // sWorldEventDesc
-
         if (Config.LessOrEqual(Region.KMS, 3)) {
             // none
         } else {
@@ -632,19 +631,13 @@ public class ResCLogin {
                 sp.Encode1(0); // nBlockCharCreation
             }
         }
-
-        // チャンネル数
         sp.Encode1(world.getChannels().size());
         if (Region.CMS.check()) {
             sp.Encode4(500); // 0 causes 0 div
         }
-        // チャンネル情報
         for (TacosChannel channel : world.getChannels()) {
-            // チャンネル名
             sp.EncodeStr(channel.getName()); // sName
-            // 接続人数表示
             sp.Encode4(channel.getOnlinePlayers().get().size() * 200); // nUserNo
-            // ワールドID
             sp.Encode1(world.getId()); // nWorldID
             sp.Encode1(channel.getWorld().getId()); // nChannelID
             sp.Encode1(channel.getLanguage()); // bAdultChannel?
@@ -652,11 +645,9 @@ public class ResCLogin {
                 sp.Encode1(0);
             }
         }
-
-        if (Config.LessOrEqual(Region.KMS, 3)) {
+        if (Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131)) {
             return sp;
         }
-
         sp.Encode2(0); // m_nBalloonCount
         if (Config.GreaterOrEqual(Region.KMS, 118) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             sp.Encode4(0);
@@ -664,6 +655,7 @@ public class ResCLogin {
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode4(0);
         }
+
         return sp;
     }
 
@@ -713,14 +705,8 @@ public class ResCLogin {
             sp.Encode4(chr.getJobRank()); // world ranking
             sp.Encode4(chr.getJobRankMove());
         }
-        // character slot
+        // 2nd password.
         if (Config.LessOrEqual(Region.KMS, 31)) {
-            return sp;
-        }
-        if (Config.LessOrEqual(Region.JMS, 131)) {
-            // KMS41?
-            sp.Encode1(3); // charslots
-            sp.Encode1(0);
             return sp;
         }
         if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.EMS, 89)) {
@@ -736,6 +722,10 @@ public class ResCLogin {
         } else {
             sp.Encode1(2);
             sp.Encode1(0);
+        }
+        // character slot.
+        if (Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131)) {
+            return sp;
         }
         sp.Encode4(charslots); // m_nSlotCount
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
