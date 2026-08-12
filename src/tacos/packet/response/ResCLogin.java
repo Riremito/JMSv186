@@ -676,265 +676,100 @@ public class ResCLogin {
             // error
             return sp;
         }
-
         List<MapleCharacter> chars = client.loadCharactersFromDB(true);
         int charslots = client.getCharSlots();
-
         if (Region.JMS.check() || Region.JMST.check()) {
             sp.EncodeStr("");
         }
-
-        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
-            // KMS160
-            // CMS104
-            // TWMS148
-            // none.
-        } else if (Region.KMSB.check() || Region.KMS.check() || Region.KMST.check() || Region.CMS.check() || Region.TWMS.check() || Region.IMS.check()) {
+        if (Region.KMSB.check() || Config.Between(Region.KMS, 1, 149) || Config.Between(Region.KMST, 330, 391) || Config.Between(Region.CMS, 85, 88) || Config.Between(Region.TWMS, 74, 125) || Region.IMS.check()) {
             // KMS1-149
+            // KMST330-391
             // CMS85-88
             // TWMS74-125
+            // IMS1
             sp.Encode4(1000000);
         }
-
-        // キャラクターの数
+        // character list
         sp.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             if (Region.KMSB.check()) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
                 continue;
             }
-            //Structure.CharEntry(p, chr, true, false);
+            // character data
             sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
             sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+            // family
             if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-                sp.Encode1(0); // family
+                sp.Encode1(0);
             }
             if (Region.CMS.check()) {
                 continue;
             }
-            sp.Encode1(1); // ranking
+            // ranking
+            sp.Encode1(1);
             sp.Encode4(chr.getRank()); // all world ranking
             sp.Encode4(chr.getRankMove());
             sp.Encode4(chr.getJobRank()); // world ranking
             sp.Encode4(chr.getJobRankMove());
         }
-
-        switch (Config.REGION) {
-            case KMSB: {
-                return sp;
-            }
-            case KMS: {
-                if (Config.LessOrEqual(Region.KMS, 31)) {
-                    return sp;
-                }
-                break;
-            }
-            case CMS: {
-                // CMS85-88
-                sp.Encode1(3);
-                sp.Encode1(0);
-                sp.Encode4(charslots);
-                sp.Encode4(0); // card
-                if (Config.GreaterOrEqual(Region.CMS, 104)) {
-                    sp.Encode4(0);
-                    sp.Encode4(0);
-                    sp.Encode4(0);
-                }
-                return sp;
-            }
-            case TWMS: {
-                // TWMS74-94
-                sp.Encode1(3);
-                sp.Encode1(0);
-                sp.Encode4(charslots);
-                if (Config.GreaterOrEqual(Region.TWMS, 148)) {
-                    sp.Encode4(0);
-                    sp.Encode4(0);
-                    sp.Encode4(0);
-                }
-                if (Config.GreaterOrEqual(Region.TWMS, 121)) {
-                    sp.Encode4(0);
-                    sp.Encode8(0);
-                }
-                return sp;
-            }
-            default: {
-                break;
-            }
-        }
-
-        if (Config.GreaterOrEqual(Region.KMS, 160)) {
-            sp.Encode1(1); // 2nd password disabled
-            sp.Encode1(0); // 2nd password disabled
-            sp.Encode4(charslots);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            if (Config.GreaterOrEqual(Region.KMS, 169)) {
-                sp.Encode4(0);
-                sp.Encode1(0);
-            }
-            return sp;
-        }
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(2); // 2次パス無視
-            sp.Encode4(charslots);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            if (Config.GreaterOrEqual(Region.JMS, 308)) {
-                sp.Encode4(0);
-                sp.Encode1(0);
-            }
-            return sp;
-        }
-
-        if (Config.GreaterOrEqual(Region.EMS, 89)) {
-            sp.Encode1(1);
-            sp.Encode1(0);
-            sp.Encode4(charslots);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode4(0);
-            sp.Encode1(0);
-            sp.Encode8(0);
-            // job unlock (clickable, not gray out lol)
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            sp.Encode1(1);
-            return sp;
-        }
-
-        if (Region.BMS.check()) {
-            sp.Encode4(charslots);
-            return sp;
-        }
-
-        if (Region.MSEA.check() || Region.IMS.check()) {
-            sp.Encode1(2);
-            sp.Encode1(0);
-            sp.Encode4(charslots);
-            sp.Encode4(0);
-            return sp;
-        }
-
-        if (Region.THMS.check()) {
-            sp.Encode1(2); // 2nd password ingored
-            sp.Encode1(0);
-            sp.Encode4(charslots);
-            sp.Encode4(0);
-            sp.Encode8(0);
-            return sp;
-        }
-
-        if (Config.Between(Region.JMS, 146, 147) || Region.VMS.check()) {
-            sp.Encode1(2); // 2次パス無視
-            sp.Encode1(0);
-            sp.Encode4(charslots); // m_nSlotCount
-            return sp;
-        }
-
-        if (Config.GreaterOrEqual(Region.GMS, 91)) {
-            sp.Encode1(2); // m_bLoginOpt
-            if (Config.GreaterOrEqual(Region.GMS, 111)) {
-                sp.Encode1(0);
-            }
-            sp.Encode4(charslots); // m_nSlotCount
-            sp.Encode4(0); // m_nBuyCharCount
-            if (Config.GreaterOrEqual(Region.GMS, 116)) {
-                sp.Encode4(0);
-                sp.Encode4(0);
-            }
-            if (Config.GreaterOrEqual(Region.GMS, 126)) {
-                sp.Encode4(0);
-                sp.Encode1(0);
-            }
-            return sp;
-        }
-
-        if (Config.GreaterOrEqual(Region.GMS, 83)) {
-            sp.Encode1(2); // m_bLoginOpt
-        }
-        if (Config.GreaterOrEqual(Region.GMS, 82)) {
-            sp.Encode4(charslots); // m_nSlotCount
-            return sp;
-        }
-
-        // EMS v55
-        if (Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55)) {
-            sp.Encode4(charslots); // m_nSlotCount
-            return sp;
-        }
-        if (Config.LessOrEqual(Region.EMS, 70)) {
-            sp.Encode4(charslots); // m_nSlotCount
-            sp.Encode4(0);
-            sp.Encode8(0);
-            return sp;
-        }
-
-        if (Region.KMS.check() || Region.KMST.check() || Region.EMS.check()) {
-            sp.Encode1(2);
-            sp.Encode1(0);
-            sp.Encode4(charslots); // m_nSlotCount
-            if (Config.PostBB()) {
-                sp.Encode4(0); // m_nBuyCharCount
-            }
-            if (Region.EMS.check()) {
-                sp.Encode8(0);
-            }
-            return sp;
-        }
-        // BIGBANG
-        if (Config.Equal(Region.JMS, 187)) {
-            sp.Encode1(2); // 2次パス無視
-            sp.Encode1(0);
-            sp.Encode4(charslots);
-            sp.Encode4(1); // Character Cards
+        // character slot
+        if (Config.LessOrEqual(Region.KMS, 31)) {
             return sp;
         }
         if (Config.LessOrEqual(Region.JMS, 131)) {
+            // KMS41?
             sp.Encode1(3); // charslots
             sp.Encode1(0);
             return sp;
         }
-        // 2次パスワードの利用状態
-        if (Config.PostBB()) {
+        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            sp.Encode1(1); // m_bLoginOpt
+            sp.Encode1(0);
+        } else if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            sp.Encode1(2); // m_bLoginOpt
+        } else if (Config.Between(Region.JMS, 188, 194)) {
+            sp.Encode1(0);
+        } else if (Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74)) {
+            sp.Encode1(3); // m_bLoginOpt
             sp.Encode1(0);
         } else {
-            sp.Encode2(2);
+            sp.Encode1(2);
+            sp.Encode1(0);
+        }
+        sp.Encode4(charslots); // m_nSlotCount
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+            sp.Encode4(0); // m_nBuyCharCount
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            sp.Encode4(0);
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            sp.Encode4(0);
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            sp.Encode4(0);
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            sp.Encode1(0);
+        }
+        if (Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.EMS, 70)) {
+            sp.Encode8(0);
+        }
+        // job unlock.
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
+            for (int i = 0; i < 14; i++) {
+                sp.Encode1(1);
+            }
         }
 
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            sp.Encode4(charslots);
-            sp.Encode4(0); // Character Card
-            sp.Encode4(0); // idk
-            return sp;
-        }
-
-        if (Config.LessOrEqual(Region.JMS, 176)) {
-            sp.Encode4(charslots);
-        } else {
-            sp.Encode8(charslots);
-        }
         return sp;
     }
 
     // CLogin::OnSelectCharacterResult
     public static ServerPacket SelectCharacterResult(TacosServer game_server, int character_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectCharacterResult);
+
         sp.Encode1(0);
         sp.Encode1(0);
         sp.Encode4(TacosTools.getGameServerIP(game_server.getGlobalIP()));
