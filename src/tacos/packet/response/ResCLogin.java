@@ -149,14 +149,16 @@ public class ResCLogin {
                             sp.Encode1(0);
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
-                            sp.Encode1(0);
+                            if (Config.Between(Region.JMS, 131, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
+                                sp.Encode1(0);
+                            }
                             if (Config.Between(Region.JMS, 164, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
                                 sp.Encode1(0);
                             }
                             if (Config.Between(Region.JMS, 180, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
                                 sp.Encode1(0);
                             }
-                            if (Config.GreaterOrEqual(Region.JMS, 187)) {
+                            if (Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.JMST, 110)) {
                                 sp.Encode1(-1); // 2nd password.
                             }
                             if (Config.GreaterOrEqual(Region.JMS, 302)) {
@@ -656,7 +658,7 @@ public class ResCLogin {
             sp.Encode1(0);
         } else if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(2); // m_bLoginOpt
-        } else if (Config.Between(Region.JMS, 188, 194)) {
+        } else if (Config.Between(Region.JMS, 188, 194) || Config.GreaterOrEqual(Region.JMST, 110)) {
             sp.Encode1(0);
         } else if (Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74)) {
             sp.Encode1(3); // m_bLoginOpt
@@ -675,7 +677,7 @@ public class ResCLogin {
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); // m_nBuyCharCount
         }
-        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116) || Config.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode4(0);
         }
         if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116) || Config.GreaterOrEqual(Region.EMS, 89)) {
