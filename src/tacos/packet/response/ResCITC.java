@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import static tacos.packet.ops.OpsITC.ITCRes_GetITCList_Failed;
@@ -32,23 +31,23 @@ import tacos.packet.ops.arg.ArgITCNormalItemResult;
 public class ResCITC {
 
     // CITC::OnChargeParamResult
-    public static final MaplePacket ITCChargeParamResult() {
+    public static ServerPacket ITCChargeParamResult() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCChargeParamResult);
 
-        return sp.get();
+        return sp;
     }
 
     // CITC::OnQueryCashResult
-    public static MaplePacket ITCQueryCashResult(MapleCharacter chr) {
+    public static ServerPacket ITCQueryCashResult(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCQueryCashResult);
 
         sp.Encode4(chr.getNexonPoint()); // nNexonCash (signed)
         sp.Encode4(chr.getMaplePoint()); // nMaplePoint (signed)
-        return sp.get();
+        return sp;
     }
 
     // CITC::OnNormalItemResult
-    public static final MaplePacket ITCNormalItemResult(ArgITCNormalItemResult arg) {
+    public static ServerPacket ITCNormalItemResult(ArgITCNormalItemResult arg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
         sp.Encode1(arg.ops_res.get());
@@ -184,7 +183,6 @@ public class ResCITC {
                 break;
             }
         }
-        return sp.get();
+        return sp;
     }
-
 }

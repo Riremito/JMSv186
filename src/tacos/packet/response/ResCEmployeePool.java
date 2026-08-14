@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.shops.HiredMerchant;
 import tacos.packet.ServerPacketHeader;
@@ -29,29 +28,29 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCEmployeePool {
 
-    public static MaplePacket EmployeeEnterField(HiredMerchant hm) {
+    public static ServerPacket EmployeeEnterField(HiredMerchant hm) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeEnterField);
 
         sp.Encode4(hm.getOwnerId()); // dwEmployerID
         sp.Encode4(hm.getItemId()); // dwTemplateID (Employee NPC Look)
         sp.EncodeBuffer(CEmployee_Init(hm));
         sp.EncodeBuffer(CEmployee_SetBalloon(hm));
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket EmployeeLeaveField(HiredMerchant hm) {
+    public static ServerPacket EmployeeLeaveField(HiredMerchant hm) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeLeaveField);
 
         sp.Encode4(hm.getOwnerId());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket EmployeeMiniRoomBalloon(HiredMerchant hm) {
+    public static ServerPacket EmployeeMiniRoomBalloon(HiredMerchant hm) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeMiniRoomBalloon);
 
         sp.Encode4(hm.getOwnerId());
         sp.EncodeBuffer(CEmployee_SetBalloon(hm));
-        return sp.get();
+        return sp;
     }
 
     private static byte[] CEmployee_Init(HiredMerchant hm) {
@@ -61,7 +60,7 @@ public class ResCEmployeePool {
         data.Encode2(hm.getPosition().y); // m_ptPos.y
         data.Encode2(hm.getFH()); // Foothold
         data.EncodeStr(hm.getOwnerName());
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     private static byte[] CEmployee_SetBalloon(HiredMerchant hm) {
@@ -76,7 +75,7 @@ public class ResCEmployeePool {
             data.Encode1(hm.getSize()); // nCurUsers
             data.Encode1(hm.getMaxSize()); // nMaxUsers
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

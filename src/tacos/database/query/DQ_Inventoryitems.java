@@ -18,7 +18,7 @@
  */
 package tacos.database.query;
 
-import tacos.database.ops.InvTypeDB;
+import tacos.database.InvTypeDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

@@ -25,10 +25,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.ScheduledFuture;
-import odin.client.MapleCharacter;
 
 import tacos.database.DatabaseConnection;
-import tacos.packet.response.ResCWvsContext;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
 
@@ -129,15 +127,6 @@ public class MapleMount {
         this.level = c;
     }
 
-    public void increaseFatigue() {
-        changed = true;
-        this.fatigue++;
-        if (fatigue > 100 && owner.get() != null) {
-            ((MapleCharacter) owner.get()).dispelSkill(1004);
-        }
-        owner.get().getMap().broadcastMessage(ResCWvsContext.updateMount(owner.get(), false));
-    }
-
     public void increaseExp() {
         int e;
         if (level >= 1 && level <= 7) {
@@ -151,5 +140,4 @@ public class MapleMount {
         }
         setExp(exp + e);
     }
-
 }

@@ -23,11 +23,11 @@ package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.network.MaplePacket;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ClientPacket;
+import tacos.packet.ServerPacket;
 
 public class AllianceHandler {
 
@@ -70,7 +70,7 @@ public class AllianceHandler {
         switch (op) {
             case 1: //load... must be in world op
 
-                for (MaplePacket pack : OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), false)) {
+                for (ServerPacket pack : OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), false)) {
                     if (pack != null) {
                         c.getSession().write(pack);
                     }

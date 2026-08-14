@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -97,15 +97,15 @@ public enum OpsUserEffect {
         return UNKNOWN;
     }
 
-    private static void reset() {
-        for (final OpsUserEffect ops : OpsUserEffect.values()) {
-            ops.set(-1);
+    public static void clear() {
+        for (OpsUserEffect ops : values()) {
+            ops.set(UNKNOWN.get());
         }
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 147)) {
-            reset();
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 147)) {
+            clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
@@ -118,10 +118,12 @@ public enum OpsUserEffect {
             UserEffect_QuestComplete.set(9);
             UserEffect_IncDecHPEffect.set(10);
             UserEffect_BuffItemEffect.set(11);
+            UserEffect_SquibEffect.set(12);
+            UserEffect_MonsterBookCardGet.set(13);
             return;
         }
-
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
@@ -173,7 +175,26 @@ public enum OpsUserEffect {
             // 50 : 紫の謎エフェクト
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 186)) {
+
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
+            clear();
+            UserEffect_LevelUp.set(0);
+            UserEffect_SkillUse.set(1);
+            UserEffect_SkillAffected.set(2);
+            UserEffect_SkillAffected_Select.set(3);
+            UserEffect_SkillSpecialAffected.set(4);
+            UserEffect_Quest.set(5);
+            UserEffect_Pet.set(6);
+            UserEffect_SkillSpecial.set(7);
+            UserEffect_ProtectOnDieItemUse.set(8); // 翡翠のお守り
+            // 9 : 経験値お守り
+            UserEffect_PlayPortalSE.set(10);
+            UserEffect_JobChanged.set(11);
+            UserEffect_QuestComplete.set(12);
+            return;
+        }
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            clear();
             UserEffect_LevelUp.set(0);
             UserEffect_SkillUse.set(1);
             UserEffect_SkillAffected.set(2);
@@ -187,7 +208,8 @@ public enum OpsUserEffect {
             UserEffect_MonsterBookCardGet.set(14);
             return;
         }
-        if (Version.Equal(Region.THMS, 87)) {
+        if (Config.Equal(Region.THMS, 87)) {
+            clear();
             UserEffect_LevelUp.set(0x0);
             UserEffect_SkillUse.set(0x1);
             UserEffect_SkillAffected.set(0x2);

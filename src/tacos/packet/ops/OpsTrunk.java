@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -89,12 +89,12 @@ public enum OpsTrunk implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.KMS, 43)) {
+        if (Config.LessOrEqual(Region.KMS, 43)) {
             reset();
             TrunkRes_OpenTrunkDlg.set(19);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -118,7 +118,7 @@ public enum OpsTrunk implements IPacketOps {
             TrunkRes_OpenTrunkDlg.set(21);
             return;
         }
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -140,7 +140,7 @@ public enum OpsTrunk implements IPacketOps {
             return;
         }
 
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             TrunkReq_Load.set(0);
             TrunkReq_Save.set(1);
             TrunkReq_Close.set(2);
@@ -162,6 +162,29 @@ public enum OpsTrunk implements IPacketOps {
             TrunkRes_MoneyUnknown.set(18);
             // unk
             TrunkRes_OpenTrunkDlg.set(20);
+            return;
+        }
+
+        if (Config.GreaterOrEqual(Region.CMS, 88)) {
+            TrunkReq_Close.set(3);
+            TrunkReq_GetItem.set(4);
+            TrunkReq_PutItem.set(5);
+            TrunkReq_SortItem.set(6);
+            TrunkReq_Money.set(7);
+            TrunkReq_CloseDialog.set(8);
+            TrunkRes_GetSuccess.set(9);
+            TrunkRes_GetUnknown.set(10);
+            TrunkRes_GetNoMoney.set(11);
+            TrunkRes_GetHavingOnlyItem.set(12);
+            TrunkRes_PutSuccess.set(13);
+            TrunkRes_PutIncorrectRequest.set(14);
+            TrunkRes_SortItem.set(15);
+            TrunkRes_PutNoMoney.set(16);
+            TrunkRes_PutNoSpace.set(17);
+            TrunkRes_PutUnknown.set(18);
+            TrunkRes_MoneySuccess.set(19);
+            TrunkRes_MoneyUnknown.set(20);
+            TrunkRes_OpenTrunkDlg.set(22);
             return;
         }
 

@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import tacos.config.Region;
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.wz.ids.DWI_Random;
 import java.io.Serializable;
 import odin.server.Randomizer;
+import tacos.config.Config;
 
 public class Equip extends Item implements IEquip, Serializable {
 
@@ -378,10 +378,10 @@ public class Equip extends Item implements IEquip, Serializable {
 
     @Override
     public int getDurability() {
-        return durability;
+        return this.durability;
     }
 
-    public void setDurability(final int dur) {
+    public void setDurability(int dur) {
         this.durability = dur;
     }
 
@@ -462,7 +462,7 @@ public class Equip extends Item implements IEquip, Serializable {
             if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                 // レジェンダリー抽選
                 if (master) {
-                    if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+                    if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
                         if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                             return 4;
                         }

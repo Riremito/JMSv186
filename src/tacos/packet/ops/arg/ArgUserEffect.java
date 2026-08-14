@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops.arg;
 
-import odin.client.MapleCharacter;
 import odin.handling.channel.handler.ItemMakerHandler;
+import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsUserEffect;
 
 /**
@@ -29,7 +29,7 @@ import tacos.packet.ops.OpsUserEffect;
 public class ArgUserEffect {
 
     public OpsUserEffect ops = OpsUserEffect.UNKNOWN;
-    public MapleCharacter chr = null;
+    public TacosCharacter chr = null;
     public int item_id = 0;
     public int item_quantity = 0;
     public int skill_id = 0;

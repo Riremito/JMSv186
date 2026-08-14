@@ -22,11 +22,10 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import tacos.client.TacosCharacter;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 
 /**
@@ -38,11 +37,12 @@ public class DataAvatarLook {
     // AvatarLook::Decode, AvatarLook::AvatarLook
     public static byte[] Encode(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
+
         data.Encode1(chr.getGender()); // nGender
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
         int demon_something = 0;
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 111) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             data.Encode4(demon_something); // demon something
         }
         data.Encode1(0); // ignored byte
@@ -74,7 +74,7 @@ public class DataAvatarLook {
         }
         data.Encode1(255); // end of visible items
         // masked itens
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             // nothing
         } else {
             for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
@@ -83,16 +83,16 @@ public class DataAvatarLook {
             }
             data.Encode1(255); // ending markers
         }
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 116)) {
+        if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 116)) {
             data.Encode1(255); // ending markers
         }
         final IItem cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
-        if (Region.IsBMS() || Region.IsVMS()) {
+        if (Region.BMS.check() || Region.VMS.check()) {
             data.Encode4(0);
-            return data.get().getBytes();
+            return data.getBytes();
         }
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode4(0);
             data.Encode4(0);
             data.Encode1(0);
@@ -100,19 +100,19 @@ public class DataAvatarLook {
             if (demon_something / 100 == 31 || demon_something == 3001) {
                 data.Encode4(0);
             }
-            return data.get().getBytes();
+            return data.getBytes();
         }
-        if (Region.IsKMS()) {
-            if (Version.PostBB()) {
-                if (Version.GreaterOrEqual(Region.KMS, 160)) {
+        if (Region.KMS.check() || Region.KMST.check()) {
+            if (Config.PostBB()) {
+                if (Config.GreaterOrEqual(Region.KMS, 160)) {
                     data.Encode4(0);
                     data.Encode4(0);
                 }
-                if (ServerConfig.KMS138orLater() && !Version.Equal(Region.KMST, 391)) {
+                if (Config.GreaterOrEqual(Region.KMS, 138)) {
                     data.Encode1(0);
                 }
                 data.EncodeZeroBytes(12);
-                if (ServerConfig.KMS138orLater()) {
+                if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391)) {
                     if (chr.getJob() / 100 == 31 || chr.getJob() == 3001) {
                         data.Encode4(0);
                     }
@@ -120,10 +120,10 @@ public class DataAvatarLook {
             } else {
                 data.Encode4(0);
             }
-            return data.get().getBytes();
+            return data.getBytes();
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.GMS, 126)) {
-            if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.GMS, 126)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.GMS, 126)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 126)) {
                 data.Encode4(0);
                 data.Encode4(0);
                 data.Encode1(0);
@@ -131,20 +131,19 @@ public class DataAvatarLook {
             data.EncodeZeroBytes(12);
             // demon something, v9 / 100 == 31 || v9 == 3001, JMS302 0053A2B5
             // data.Encode4(0);
-            return data.get().getBytes();
+            return data.getBytes();
         }
-        if (Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(0); // mercedes ear
         }
-        if (Region.IsTHMS() || Region.IsTWMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Region.THMS.check() || Region.TWMS.check() || Region.CMS.check() || Region.MSEA.check() || Region.EMS.check() || Config.GreaterOrEqual(Region.GMS, 83)) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?
-            if (ServerConfig.JMS146orLater()) {
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
                 data.Encode8(0); // pet 2 and 3?
             }
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
-
 }

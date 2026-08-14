@@ -23,8 +23,6 @@ import odin.client.MapleClient;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Version;
-import tacos.network.MaplePacket;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsCashItemFailReason;
 import tacos.packet.ops.OpsCashItem;
@@ -32,6 +30,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataGW_CashItemInfo;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import odin.server.CashShop;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -41,21 +40,21 @@ import tacos.packet.ServerPacketHeader;
 public class ResCCashShop {
 
     // CCashShop::OnChargeParamResult
-    public static MaplePacket CashShopChargeParamResult(MapleCharacter chr) {
+    public static ServerPacket CashShopChargeParamResult(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopChargeParamResult);
         sp.EncodeStr(chr.getClient().getMapleId()); // nexon id
-        return sp.get();
+        return sp;
     }
 
     // CCashShop::OnQueryCashResult
-    public static MaplePacket CashShopQueryCashResult(MapleCharacter chr) {
+    public static ServerPacket CashShopQueryCashResult(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopQueryCashResult);
         sp.Encode4(chr.getNexonPoint());
         sp.Encode4(chr.getMaplePoint());
-        if (Version.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95)) {
             sp.Encode4(0);
         }
-        return sp.get();
+        return sp;
     }
 
     /*
@@ -93,7 +92,7 @@ public class ResCCashShop {
             }
         }
          */
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static enum BestItemCategory {
@@ -163,14 +162,14 @@ public class ResCCashShop {
             data.Encode4(best_item_item_SN[i]);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // おめでとうございます！ポイントショップのインベントリにのプレゼントをお送りしました。
-    public static MaplePacket presentDialog() {
+    public static ServerPacket presentDialog() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_POINTSHOP_PRESENT_DIALOG);
         // 多分未実装
-        return sp.get();
+        return sp;
     }
 
     public static class CashItemStruct {
@@ -200,12 +199,12 @@ public class ResCCashShop {
 
     }
 
-    public static MaplePacket CashItemResult(OpsCashItem ops, MapleClient c) {
+    public static ServerPacket CashItemResult(OpsCashItem ops, MapleClient c) {
         return CashItemResult(ops, c, null);
     }
 
     // CCashShop::OnCashItemResult
-    public static MaplePacket CashItemResult(OpsCashItem ops, MapleClient c, CashItemStruct cis) {
+    public static ServerPacket CashItemResult(OpsCashItem ops, MapleClient c, CashItemStruct cis) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
         sp.Encode1(ops.get());
@@ -343,52 +342,52 @@ public class ResCCashShop {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CCashShop::OnPurchaseExpChanged
-    public static MaplePacket PurchaseExpChanged() {
+    public static ServerPacket PurchaseExpChanged() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopPurchaseExpChanged);
         sp.Encode1(0); // m_nPurchaseExp
-        return sp.get();
+        return sp;
     }
 
     // CCashShop::OnGiftMateInfoResult
-    public static MaplePacket GiftMateInfoResult() {
+    public static ServerPacket GiftMateInfoResult() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopGiftMateInfoResult);
         // not coded
-        return sp.get();
+        return sp;
     }
 
     // 謎処理
     // -> @00FA [2E] [item_id?]
-    public static MaplePacket ForceRequest(int item_id) {
+    public static ServerPacket ForceRequest(int item_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_POINTSHOP_FORCE_REQUEST);
         sp.Encode4(1); // item list size
         sp.Encode4(item_id); // buffer4
         sp.Encode1(1); // force request or not
-        return sp.get();
+        return sp;
     }
 
     // 騎士団ショッピングのおまけアイテム"アイテム名"をプレゼントしました。インベントリをご確認ください。
-    public static MaplePacket PresentForKOC(int item_id) {
+    public static ServerPacket PresentForKOC(int item_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG);
         sp.Encode4(item_id);
-        return sp.get();
+        return sp;
     }
 
     // フリークーポンの期限の告知
-    public static MaplePacket FreeCouponDialog(boolean has_free_coupon, long free_coupon_date) {
+    public static ServerPacket FreeCouponDialog(boolean has_free_coupon, long free_coupon_date) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_POINTSHOP_FREE_COUPON_DIALOG);
         sp.Encode1(has_free_coupon ? 1 : 0); // enable free coupon
         if (has_free_coupon) {
             sp.Encode8(free_coupon_date);
         }
-        return sp.get();
+        return sp;
     }
 
     // ガシャポンスタンプとお年玉の累積ポイント告知
-    public static MaplePacket GachaponStampAndOtoshidamaDialog() {
+    public static ServerPacket GachaponStampAndOtoshidamaDialog() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_GACHAPON_STAMP_AND_OTOSHIDAMA_DIALOG);
         sp.Encode4(5); // Xポイントで購入
         sp.Encode4(4); // X個のスタンプGET
@@ -396,12 +395,12 @@ public class ResCCashShop {
         sp.Encode4(2); // 累積Xポイント
         sp.Encode4(1); // 入手した個数は計X個
         sp.Encode4(4000426); // item id 4031351 or 4000426
-        return sp.get();
+        return sp;
     }
 
     // CCashShop::OnCheckTransferWorldPossibleResult
     // -> CP_CashShopCashItemRequest, @00FA [31] [FFFFFFFF] [WORLD_ID (4 bytes)]
-    public static MaplePacket CheckTransferWorldPossibleResult() {
+    public static ServerPacket CheckTransferWorldPossibleResult() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCheckTransferWorldPossibleResult);
         sp.Encode4(0); // not used
         sp.Encode1(0); // dialog message
@@ -413,11 +412,11 @@ public class ResCCashShop {
         for (String world : world_list) {
             sp.EncodeStr(world);
         }
-        return sp.get();
+        return sp;
     }
 
     // アバターランダムボックス
-    public static MaplePacket OnCashItemGachaponResult(IItem box_item, IItem item, MapleClient c) {
+    public static ServerPacket OnCashItemGachaponResult(IItem box_item, IItem item, MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemGachaponResult);
 
         sp.Encode1(OpsCashItem.CashItemRes_CashItemGachapon_Done.get());
@@ -430,14 +429,14 @@ public class ResCCashShop {
             sp.Encode1(1); // m_nSelectedItemCount
             sp.Encode1(1); // m_bJackpot, 0 (CashGachaponNormal) or 1 (CashGachaponJackpot)
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket cashItemExpired(int uniqueid) {
+    public static ServerPacket cashItemExpired(int uniqueid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
         sp.Encode1(113); //use to be 5d
         sp.Encode8(uniqueid);
-        return sp.get();
+        return sp;
     }
 }

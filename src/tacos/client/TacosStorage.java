@@ -25,13 +25,13 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import tacos.config.DeveloperMode;
-import tacos.database.ops.InvTypeDB;
+import tacos.database.InvTypeDB;
 import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Storages;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ops.OpsDBCHAR;
-import tacos.wz.ids.DWI_Validation;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -105,7 +105,7 @@ public class TacosStorage {
     }
 
     public boolean setNpcId(int npc_id) {
-        if (!DWI_Validation.isValidNPCID(npc_id)) {
+        if (!WzDataStorage.NPC.check(npc_id)) {
             return false;
         }
         this.npc_id = npc_id;

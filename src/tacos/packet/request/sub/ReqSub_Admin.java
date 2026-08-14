@@ -19,8 +19,6 @@
 package tacos.packet.request.sub;
 
 import odin.client.MapleCharacter;
-import tacos.wz.ids.DWI_Validation;
-import tacos.wz.ids.DWI_LoadXML;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
@@ -29,6 +27,7 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -216,9 +215,9 @@ public class ReqSub_Admin {
     }
 
     private static boolean ChangeJob(MapleCharacter chr, int jobid) {
-        if (!DWI_Validation.isValidJobID(jobid)) {
+        if (!WzDataStorage.JOB.check(jobid)) {
             chr.DebugMsg("Invalid JobID");
-            chr.DebugMsg("Vaild JobID: " + DWI_LoadXML.GetJobIDs());
+            chr.DebugMsg("Vaild JobID: " + WzDataStorage.JOB.getIds());
             return false;
         }
 
@@ -267,7 +266,7 @@ public class ReqSub_Admin {
     }
 
     private static boolean CreateNPC(MapleCharacter chr, int npcid, int x, int y) {
-        if (!DWI_Validation.isValidNPCID(npcid)) {
+        if (!WzDataStorage.NPC.check(npcid)) {
             chr.DebugMsg("Invalid NPCID");
             return false;
         }

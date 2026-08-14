@@ -21,10 +21,9 @@ package tacos.packet.response;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Version;
-import tacos.network.MaplePacket;
 import java.util.List;
 import tacos.client.TacosStorage;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsDBCHAR;
@@ -38,7 +37,7 @@ import tacos.packet.response.data.DataGW_ItemSlotBase;
 public class ResCTrunkDlg {
 
     // CTrunkDlg::OnPacket
-    public static MaplePacket TrunkResult(TacosStorage storage, OpsTrunk ops) {
+    public static ServerPacket TrunkResult(TacosStorage storage, OpsTrunk ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TrunkResult);
 
         sp.Encode1(ops.get());
@@ -73,7 +72,7 @@ public class ResCTrunkDlg {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CTrunkDlg::SetTrunkDlg
@@ -82,7 +81,7 @@ public class ResCTrunkDlg {
 
         data.Encode4(storage.getNpcId()); // m_dwNpcTemplateID
         data.EncodeBuffer(SetGetItems(storage, OpsDBCHAR.DBCHAR_ALL.get()));
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // CTrunkDlg::SetGetItems
@@ -90,7 +89,7 @@ public class ResCTrunkDlg {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(storage.getSlot()); // m_nSlotCount
-        if (Version.LessOrEqual(Region.KMS, 43) || Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131)) {
             data.Encode2((short) dbcharFlag);
         } else {
             data.Encode8(dbcharFlag); // dbcharFlag
@@ -141,7 +140,7 @@ public class ResCTrunkDlg {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

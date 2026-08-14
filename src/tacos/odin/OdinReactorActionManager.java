@@ -31,13 +31,10 @@ import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
-import odin.server.MapleCarnivalFactory;
-import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.ReactorDropEntry;
 import odin.server.maps.MapleReactor;
-import odin.server.life.MapleMonster;
 import tacos.script.TacosScriptReactor;
 
 public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
@@ -146,13 +143,6 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean dispelAllMonsters(int num) {
-        MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
-        if (skil == null) {
-            return false;
-        }
-        for (MapleMonster mons : getMap().getAllMonsters()) {
-            mons.dispelSkill(skil.getSkill());
-        }
         return true;
     }
 }

@@ -1,0 +1,105 @@
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.config;
+
+import java.nio.charset.Charset;
+
+/**
+ *
+ * @author Riremito
+ */
+public class Config {
+
+    // server vesion.
+    public static Region REGION = Region.JMS;
+    public static int VERSION = 147;
+    public static int VERSION_SUB = 0;
+    public static Charset CODEPAGE = Charset.forName("MS932"); // Shift-JIS
+
+    public static boolean setVersion(String name, int version, int version_sub) {
+        VERSION = version;
+        VERSION_SUB = version_sub;
+        REGION = Region.find(name);
+
+        if (Region.UNKNOWN.check()) {
+            return false;
+        }
+
+        CODEPAGE = Charset.forName(DeveloperMode.DM_CODEPAGE_UTF8.get() ? "UTF8" : REGION.getCodepage());
+        return true;
+    }
+
+    public static boolean PostBB() {
+        return Content.BIGBANG.get();
+    }
+
+    public static boolean PreBB() {
+        return !PostBB();
+    }
+
+    // good versions
+    public static boolean GreaterOrEqual(Region region, int version) {
+        if (region == Region.GMS && version <= 95) {
+            if (Region.GMST.check()) {
+                return true;
+            }
+        }
+        if (region.check()) {
+            if (version <= VERSION) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // pre-bb older versions
+    public static boolean LessOrEqual(Region region, int version) {
+        if (region == Region.GMS && version == 95) {
+            if (Region.GMST.check()) {
+                return true;
+            }
+        }
+        if (region.check()) {
+            if (VERSION <= version) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // bad versions
+    public static boolean Between(Region region, int version_l, int version_r) {
+        if (region.check()) {
+            if (version_l <= VERSION && VERSION <= version_r) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // really bad version
+    public static boolean Equal(Region region, int version) {
+        if (region.check()) {
+            if (VERSION == version) {
+                return true;
+            }
+        }
+        return false;
+    }
+}

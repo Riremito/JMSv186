@@ -96,20 +96,20 @@ public enum Content {
         boolean bOK = false;
         // JMS307
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 308)) {
+                || Config.GreaterOrEqual(Region.JMS, 308)) {
             Update_Tempest.set(true);
             bOK = true;
         }
         // JMS300
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 302)) {
+                || Config.GreaterOrEqual(Region.JMS, 302)) {
             Update_Sengoku.set(true);
             bOK = true;
         }
         // JMS200
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 200)
-                || Version.GreaterOrEqual(Region.JMST, 110)) {
+                || Config.GreaterOrEqual(Region.JMS, 200)
+                || Config.GreaterOrEqual(Region.JMST, 110)) {
             Update_Renaissance.set(true);
             bOK = true;
         }
@@ -125,29 +125,29 @@ public enum Content {
         // Pre-BB
         // JMS183 (JMS180)
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 183)) {
+                || Config.GreaterOrEqual(Region.JMS, 183)) {
             Job_DualBlade.set(true);
             bOK = true;
         }
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 183)) {
+                || Config.GreaterOrEqual(Region.JMS, 183)) {
             Job_Evan.set(true);
             bOK = true;
         }
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 173)) {
+                || Config.GreaterOrEqual(Region.JMS, 173)) {
             Job_Aran.set(true);
             bOK = true;
         }
         // JMS165
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 165)) {
+                || Config.GreaterOrEqual(Region.JMS, 165)) {
             Job_KnightsOfCygnus.set(true);
             bOK = true;
         }
         // JMS147
         if (bOK
-                || Version.GreaterOrEqual(Region.JMS, 147)) {
+                || Config.GreaterOrEqual(Region.JMS, 147)) {
             Job_Pirate.set(true);
             bOK = true;
         }
@@ -155,10 +155,10 @@ public enum Content {
     }
 
     private static boolean checkWzSingleFile() {
-        if (Region.check(Region.KMSB)) {
+        if (Region.KMSB.check()) {
             return true;
         }
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             return true;
         }
         return false;
@@ -166,97 +166,100 @@ public enum Content {
 
     // BIGBANG
     private static boolean checkBigBang() {
-        if (Version.GreaterOrEqual(Region.KMS, 101)) {
+        if (Config.GreaterOrEqual(Region.KMS, 101)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 187)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.CMS, 87)) {
+        if (Config.GreaterOrEqual(Region.CMS, 87)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.TWMS, 123)) {
+        if (Config.GreaterOrEqual(Region.TWMS, 123)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.THMS, 90)) {
+        if (Config.GreaterOrEqual(Region.THMS, 90)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.MSEA, 105)) {
+        if (Config.GreaterOrEqual(Region.MSEA, 105)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.GMS, 93)) {
+        if (Config.GreaterOrEqual(Region.GMS, 93)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.EMS, 73)) {
+        if (Config.GreaterOrEqual(Region.EMS, 73)) {
             return true;
         }
-        if (Region.check(Region.IMS)) {
+        if (Region.IMS.check()) {
             return true;
         }
         // Test Server
-        if (Version.GreaterOrEqual(Region.KMST, 317)) {
+        if (Config.GreaterOrEqual(Region.KMST, 317)) {
             return true;
         }
-        if (Version.GreaterOrEqual(Region.JMST, 110)) {
+        if (Config.GreaterOrEqual(Region.JMST, 110)) {
+            return true;
+        }
+        if (Config.GreaterOrEqual(Region.GMST, 2)) {
             return true;
         }
         // no BB
-        if (Region.check(Region.BMS)) {
+        if (Region.BMS.check()) {
             return false;
         }
-        if (Region.check(Region.VMS)) {
+        if (Region.VMS.check()) {
             return false;
         }
         return false;
     }
 
     private static int checkCharacterNameLength() {
-        if (Version.GreaterOrEqual(Region.TWMS, 94)) {
+        if (Config.GreaterOrEqual(Region.TWMS, 94)) {
             return 15;
         }
-        if (Region.check(Region.VMS)) {
+        if (Region.VMS.check()) {
             return 16;
         }
         return 13;
     }
 
     private static int checkPacketHeaderSize() {
-        if (Region.check(Region.KMSB)) {
+        if (Region.KMSB.check()) {
             return 1;
         }
-        if (Version.LessOrEqual(Region.KMS, 55)) {
+        if (Config.LessOrEqual(Region.KMS, 55)) {
             return 1;
         }
         return 2;
     }
 
     private static boolean checkOldIV() {
-        if (Version.LessOrEqual(Region.JMS, 141)) {
+        if (Config.LessOrEqual(Region.JMS, 141)) {
             return true;
         }
         return false;
     }
 
     private static boolean checkCustomEncryption() {
-        if (Version.LessOrEqual(Region.CMS, 85)) { // not checked
+        if (Config.LessOrEqual(Region.CMS, 85)) { // not checked
             return true;
         }
-        if (Region.check(Region.THMS)) {
+        if (Region.THMS.check()) {
             return true;
         }
-        if (Region.check(Region.MSEA)) {
+        if (Region.MSEA.check()) {
             return true;
         }
-        if (Region.check(Region.VMS)) {
+        if (Region.VMS.check()) {
             return true;
         }
-        if (Region.check(Region.GMS)) {
+        if (Region.GMS.check() || Region.GMST.check()) {
             return true;
         }
-        if (Region.check(Region.EMS)) {
+        if (Region.EMS.check()) {
             return true;
         }
-        if (Region.check(Region.BMS)) {
+        if (Region.BMS.check()) {
             return true;
         }
         return false;
@@ -264,10 +267,10 @@ public enum Content {
 
     private static boolean checkPrePotential() {
         // JMS186 or later has different equip data format
-        if (Version.Between(Region.JMS, 184, 185)) {
+        if (Config.Between(Region.JMS, 184, 185)) {
             return true;
         }
-        if (Version.Equal(Region.KMS, 95)) {
+        if (Config.Equal(Region.KMS, 95)) {
             return true;
         }
 

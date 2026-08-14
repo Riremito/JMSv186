@@ -79,6 +79,11 @@ public class ReqCField {
     private static boolean OnContiState(MapleCharacter chr, int map_id) {
 
         switch (map_id) {
+            // Ellinia Station post-BB
+            case 104020110: {
+                chr.SendPacket(ResCField_ContiMove.ContiState(OpsContiMove.CONTI_WAIT));
+                return true;
+            }
             case 101000300: // Ellinia Station >> Orbis
             case 200000111: // Orbis Station >> Ellinia
             {

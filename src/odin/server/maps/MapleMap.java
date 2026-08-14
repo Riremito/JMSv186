@@ -23,7 +23,6 @@ package odin.server.maps;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import odin.client.inventory.IItem;
@@ -32,11 +31,6 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
-import tacos.wz.data.ReactorWz;
-import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.EnterType;
@@ -52,21 +46,22 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.Spawns;
 import odin.server.life.SpawnPoint;
-import odin.tools.StringUtil;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
-import odin.server.MapleSquad;
-import odin.server.SpeedRunner;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
+import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMobLeaveField;
 import tacos.server.map.TacosMap;
+import tacos.server.map.TacosReward;
+import tacos.wz.WzXML;
 
 public final class MapleMap extends TacosMap {
 
-    public MapleMap(int mapid, int channel, int returnMapId, float monsterRate) {
-        super(mapid, channel, returnMapId, monsterRate);
+    public MapleMap(int mapid, int channel) {
+        super(mapid, channel);
     }
 
     @Override
@@ -105,30 +100,17 @@ public final class MapleMap extends TacosMap {
         super.spawnReactor(reactor);
     }
 
-    @Override
-    public int dropFromMonster(MapleCharacter player, MapleMonster monster) {
-        if (monster == null || player == null || monster.dropsDisabled() || player.getPyramidSubway() != null) {
-            return -1;
-        }
-        // clear drops
-        if (getItemsSize() >= 225) {
-            removeDrops();
-        }
-        // drop database, drop monseter book
-        return super.dropFromMonster(player, monster);
-    }
-
-    public final void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean second, byte animation) {
+    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, OpsMobLeaveField animation) {
         killMonster(monster, chr, withDrops, second, animation, 0);
     }
 
-    public final void killMonster(final MapleMonster monster, final MapleCharacter chr, final boolean withDrops, final boolean second, byte animation, final int lastSkill) {
+    public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, OpsMobLeaveField animation, int lastSkill) {
         if ((monster.getId() == 8810122 || monster.getId() == 8810018) && !second) {
             MapTimer.getInstance().schedule(new Runnable() {
 
                 @Override
                 public void run() {
-                    killMonster(monster, chr, true, true, (byte) 1);
+                    killMonster(monster, chr, true, true, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
                     killAllMonsters(true);
                 }
             }, 3000);
@@ -137,12 +119,12 @@ public final class MapleMap extends TacosMap {
         if (monster.getId() == 8820014) { //pb sponge, kills pb(w) first before dying
             killMonster(8820000);
         } else if (monster.getId() == 9300166) { //ariant pq bomb
-            animation = 4; //or is it 3?
+            animation = OpsMobLeaveField.MOBLEAVEFIELD_SWALLOW; //or is it 3?
         }
         spawnedMonstersOnMap.decrementAndGet();
         removeMapObject(monster);
         int dropOwner = monster.killBy(chr, lastSkill);
-        broadcastMessage(ResCMobPool.Kill(monster, animation));
+        broadcastMessage(ResCMobPool.MobLeaveField(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
             final int buffid = monster.getBuffToGive();
@@ -168,119 +150,11 @@ public final class MapleMap extends TacosMap {
                 charactersLock.readLock().unlock();
             }
         }
-        final int mobid = monster.getId();
-        SpeedRunType type = SpeedRunType.NULL;
-        final MapleSquad sqd = getSquadByMap();
-        if (mobid == 8810018) { // Horntail
-            chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！"));
-            if (mapid == 240060200) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Horntail;
-                }
-                if (sqd != null) {
-                    doShrine(true);
-                }
-            }
-        } else if (mobid == 8810122 && mapid == 240060201) { // Horntail
-            chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("To the crew that have finally conquered Chaos Horned Tail after numerous attempts, I salute thee! You are the true heroes of Leafre!!"));
-            if (speedRunStart > 0) {
-                type = SpeedRunType.ChaosHT;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 8500002) {
-            if (mapid == 220080001) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Papulatus;
-                }
-            }
-        } else if (mobid == 9400266 && mapid == 802000111) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Nameless_Magic_Monster;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400265 && mapid == 802000211) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Vergamot;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400270 && mapid == 802000411) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Dunas;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400273 && mapid == 802000611) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Nibergen;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400294 && mapid == 802000711) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Dunas_2;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400296 && mapid == 802000803) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Core_Blaze;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid == 9400289 && mapid == 802000821) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Aufhaven;
-            }
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if ((mobid == 9420549 || mobid == 9420544) && mapid == 551030200) {
-            if (speedRunStart > 0) {
-                if (mobid == 9420549) {
-                    type = SpeedRunType.Scarlion;
-                } else {
-                    type = SpeedRunType.Targa;
-                }
-            }
-            //INSERT HERE: 2095_tokyo
-        } else if (mobid == 8820001) {
-            chr.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！"));
-            if (mapid == 270050100) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Pink_Bean;
-                }
-                if (sqd != null) {
-                    doShrine(true);
-                }
-            }
-        } else if (mobid == 8800002) {
-            if (mapid == 280030000) {
-                if (speedRunStart > 0) {
-                    type = SpeedRunType.Zakum;
-                }
-                if (sqd != null) {
-                    doShrine(true);
-                }
-            }
-        } else if (mobid == 8800102 && mapid == 280030001) {
-            if (speedRunStart > 0) {
-                type = SpeedRunType.Chaos_Zakum;
-            }
 
-            if (sqd != null) {
-                doShrine(true);
-            }
-        } else if (mobid >= 8800003 && mobid <= 8800010) {
+        sendExpedition(chr, monster);
+
+        int mobid = monster.getId();
+        if (mobid >= 8800003 && mobid <= 8800010) {
             boolean makeZakReal = true;
             final Collection<MapleMonster> monsters = getAllMonsters();
 
@@ -322,16 +196,6 @@ public final class MapleMap extends TacosMap {
                 }
             }
         }
-        if (type != SpeedRunType.NULL) {
-            if (speedRunStart > 0 && speedRunLeader.length() > 0) {
-                long endTime = System.currentTimeMillis();
-                String time = StringUtil.getReadableMillis(speedRunStart, endTime);
-                broadcastMessage(ResWrapper.BroadCastMsgEvent(speedRunLeader + "'s squad has taken " + time + " to defeat " + type + "!"));
-                getRankAndAdd(speedRunLeader, time, type, (endTime - speedRunStart), (sqd == null ? null : sqd.getMembers()));
-                endSpeedRun();
-            }
-
-        }
         if (mobid == 8820008) { //wipe out statues and respawn
             for (final MapleMapObject mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
@@ -347,18 +211,14 @@ public final class MapleMap extends TacosMap {
                 }
             }
         }
-        if (withDrops) {
-            MapleCharacter drop = null;
-            if (dropOwner <= 0) {
-                drop = chr;
-            } else {
-                drop = getCharacterById(dropOwner);
-                if (drop == null) {
-                    drop = chr;
-                }
-            }
-            dropFromMonster(drop, monster);
+        if (!withDrops) {
+            return;
         }
+        MapleCharacter killer = getCharacterById(dropOwner); // highest damage player
+        if (killer == null) {
+            killer = chr;
+        }
+        TacosReward.getReward(killer, monster);
     }
 
     public final void spawnMonster_sSack(final MapleMonster mob, final Point pos, final int spawnType) {
@@ -369,6 +229,10 @@ public final class MapleMap extends TacosMap {
 
     public final void spawnMonsterOnGroundBelow(final MapleMonster mob, final Point pos) {
         spawnMonster_sSack(mob, pos, -2);
+    }
+
+    public void spawnMonsterOnGroundBelow(MapleMonster mob, Point pos, int type) {
+        spawnMonster_sSack(mob, pos, type);
     }
 
     public final int spawnMonsterWithEffectBelow(final MapleMonster mob, final Point pos, final int effect) {
@@ -401,7 +265,7 @@ public final class MapleMap extends TacosMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(ResCField.stopClock());
+            broadcastMessage(ResCField.DestroyClock());
         }
     }
 
@@ -426,7 +290,7 @@ public final class MapleMap extends TacosMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(ResCField.stopClock());
+            broadcastMessage(ResCField.DestroyClock());
         }
     }
 
@@ -439,7 +303,7 @@ public final class MapleMap extends TacosMap {
 
     public void spawnMist(MapleMist mist, int duration, boolean fake) {
         addMapObject(mist);
-        spawnRangedMapObject(mist, ResCAffectedAreaPool.spawnMist(mist));
+        spawnRangedMapObject(mist, ResCAffectedAreaPool.AffectedAreaCreated(mist));
 
         final MapTimer tMan = MapTimer.getInstance();
         final ScheduledFuture<?> poisonSchedule;
@@ -481,7 +345,7 @@ public final class MapleMap extends TacosMap {
 
             @Override
             public void run() {
-                broadcastMessage(ResCAffectedAreaPool.removeMist(mist));
+                broadcastMessage(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
                 removeMapObject(mist);
                 if (poisonSchedule != null) {
                     poisonSchedule.cancel(false);
@@ -507,18 +371,18 @@ public final class MapleMap extends TacosMap {
         addMapObject(drop);
         spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
         broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, dropper.getPosition())); // enable pick up for new players
-        if (!everlast) {
+        if (!getEverlast()) {
             drop.registerExpire(120000);
             activateItemReactors(drop, owner.getClient());
         }
     }
 
-    public final void talkMonster(final String msg, final int itemId, final int objectid) {
+    public void talkMonster(String msg, int itemId, MapleMonster monster) {
         if (itemId > 0) {
             startMapEffect(msg, itemId, false);
         }
-        broadcastMessage(ResCMobPool.talkMonster(objectid, itemId, msg)); //5120035
-        broadcastMessage(ResCMobPool.removeTalkMonster(objectid));
+        broadcastMessage(ResCMobPool.MobEscortStopSay(monster, itemId, msg)); // 5120035
+        broadcastMessage(ResCMobPool.MobEscortReturnBefore(monster));
     }
 
     public final void startMapEffect(final String msg, final int itemId) {
@@ -559,7 +423,7 @@ public final class MapleMap extends TacosMap {
         startMapEffect(msg, itemId, true);
     }
 
-    public final void broadcastMessageClone(final MapleCharacter source, final MaplePacket packet) {
+    public void broadcastMessageClone(MapleCharacter source, ServerPacket packet) {
         int clone_delay = 1000;
         MapTimer.getInstance().schedule(new Runnable() {
             @Override
@@ -569,7 +433,7 @@ public final class MapleMap extends TacosMap {
         }, clone_delay);
     }
 
-    public final void broadcastMessageDelayed(MapleCharacter source, MaplePacket packet) {
+    public final void broadcastMessageDelayed(MapleCharacter source, ServerPacket packet) {
         int delay = 1000;
         MapTimer.getInstance().schedule(new Runnable() {
             @Override
@@ -606,10 +470,6 @@ public final class MapleMap extends TacosMap {
         @Override
         public void run() {
             if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId(), mapitem.getType())) {
-                if (mapitem.isPickedUp()) {
-                    reactor.setTimerActive(false);
-                    return;
-                }
                 mapitem.expire(MapleMap.this);
                 reactor.hitReactor(c);
                 reactor.setTimerActive(false);
@@ -670,46 +530,9 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public void getRankAndAdd(String leader, String time, SpeedRunType type, long timz, Collection<String> squad) {
-        try {
-            //Pair<String, Map<Integer, String>>
-            StringBuilder rett = new StringBuilder();
-            if (squad != null) {
-                for (String chr : squad) {
-                    rett.append(chr);
-                    rett.append(",");
-                }
-            }
-            String z = rett.toString();
-            if (squad != null) {
-                z = z.substring(0, z.length() - 1);
-            }
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("INSERT INTO speedruns(`type`, `leader`, `timestring`, `time`, `members`) VALUES (?,?,?,?,?)");
-            ps.setString(1, type.name());
-            ps.setString(2, leader);
-            ps.setString(3, time);
-            ps.setLong(4, timz);
-            ps.setString(5, z);
-            ps.executeUpdate();
-            ps.close();
-
-            if (SpeedRunner.getInstance().getSpeedRunData(type) == null) { //great, we just add it
-                SpeedRunner.getInstance().addSpeedRunData(type, SpeedRunner.getInstance().addSpeedRunData(new StringBuilder("#rThese are the speedrun times for " + type + ".#k\r\n\r\n"), new HashMap<Integer, String>(), z, leader, 1, time));
-            } else {
-                //i wish we had a way to get the rank
-                //TODO revamp
-                SpeedRunner.getInstance().removeSpeedRunData(type);
-                SpeedRunner.getInstance().loadSpeedRunData(type);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public final boolean makeCarnivalSpawn(final int team, final MapleMonster newMons, final int num) {
         MonsterPoint ret = null;
-        for (MonsterPoint mp : nodes.getMonsterPoints()) {
+        for (MonsterPoint mp : getNodeInfo().getMonsterPoints()) {
             if (mp.team == team || mp.team == -1) {
                 final Point newpos = calcPointBelow(new Point(mp.x, mp.y));
                 newpos.y -= 1;
@@ -747,7 +570,7 @@ public final class MapleMap extends TacosMap {
         }
         Point guardz = null;
         final List<MapleReactor> react = getAllReactors();
-        for (OdinPair<Point, Integer> guard : nodes.getGuardians()) {
+        for (OdinPair<Point, Integer> guard : getNodeInfo().getGuardians()) {
             if (guard.getRight() == team || guard.getRight() == -1) {
                 boolean found = false;
                 for (MapleReactor r : react) {
@@ -763,7 +586,7 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (guardz != null) {
-            final MapleReactorStats stats = ReactorWz.get().getReactor(9980000 + team);
+            final MapleReactorStats stats = WzXML.REACTOR.getReactor(9980000 + team);
             final MapleReactor my = new MapleReactor(stats, 9980000 + team);
             stats.setFacingDirection((byte) 0); //always
             my.setPosition(guardz);
@@ -781,5 +604,4 @@ public final class MapleMap extends TacosMap {
         }
         return guardz != null;
     }
-
 }

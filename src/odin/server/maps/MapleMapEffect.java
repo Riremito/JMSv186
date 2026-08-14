@@ -20,10 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
-import odin.client.MapleClient;
-import tacos.network.MaplePacket;
+import odin.client.MapleCharacter;
+import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCField;
-import tacos.packet.response.wrapper.ResWrapper;
 
 public class MapleMapEffect {
 
@@ -49,15 +48,15 @@ public class MapleMapEffect {
         return this.jukebox;
     }
 
-    public MaplePacket makeDestroyData() { //jukebox doesn't REALLY have a destroy, but 0 stops all music
-        return jukebox ? ResCField.PlayJukeBox(0, "") : ResWrapper.removeMapEffect();
+    public ServerPacket makeDestroyData() { //jukebox doesn't REALLY have a destroy, but 0 stops all music
+        return jukebox ? ResCField.PlayJukeBox(0, "") : ResCField.BlowWeather(null, 0, false);
     }
 
-    public MaplePacket makeStartData() {
+    public ServerPacket makeStartData() {
         return jukebox ? ResCField.PlayJukeBox(itemId, msg) : ResCField.BlowWeather(msg, itemId, active);
     }
 
-    public void sendStartData(MapleClient c) {
-        c.getSession().write(makeStartData());
+    public void sendStartData(MapleCharacter chr) {
+        chr.SendPacket(makeStartData());
     }
 }

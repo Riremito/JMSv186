@@ -26,14 +26,15 @@ import odin.client.MapleCharacter;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.server.MapleSquad;
-import odin.server.maps.MapleMapFactory;
+import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
-import tacos.constants.TacosConstants;
-import tacos.network.MaplePacket;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.network.PacketHandler_Game;
+import tacos.packet.ServerPacket;
 import tacos.property.Property_Dummy_World;
+import tacos.server.map.MasterMonster;
+import tacos.unofficial.CustomMap;
 
 /**
  *
@@ -44,7 +45,6 @@ public class TacosChannel extends TacosServer {
     private TacosWorld world = null;
     private int channel;
     private int language = 0;
-    private MapleMapFactory mapFactory = null;
     private OnlinePlayers onlines;
     private String serverMessage;
     private int expRate;
@@ -56,7 +56,6 @@ public class TacosChannel extends TacosServer {
         setType(TacosServerType.GAME_SERVER);
         this.channel = channel; // from 1.
         this.language = language; // EMS
-        this.mapFactory = new MapleMapFactory();
     }
 
     @Override
@@ -70,13 +69,13 @@ public class TacosChannel extends TacosServer {
         super.shutdown();
     }
 
-    public void broadcastPacket(MaplePacket packet) {
+    public void broadcastPacket(ServerPacket packet) {
         for (MapleCharacter player : getOnlinePlayers().get()) {
             player.SendPacket(packet);
         }
     }
 
-    public void broadcastMegaphonePacket(MaplePacket packet) {
+    public void broadcastMegaphonePacket(ServerPacket packet) {
         for (MapleCharacter player : getOnlinePlayers().get()) {
             if (!player.getSmega()) {
                 continue;
@@ -101,8 +100,27 @@ public class TacosChannel extends TacosServer {
         return this.language;
     }
 
-    public MapleMapFactory getMapFactory() {
-        return this.mapFactory;
+    // map.
+    private Map<Integer, MapleMap> maps = new HashMap<>();
+
+    public MapleMap findMap(int map_id) {
+        MapleMap map = this.maps.get(map_id);
+        if (map != null) {
+            return map;
+        }
+
+        map = new MapleMap(map_id, this.channel);
+        if (!map.loadData()) {
+            return null;
+        }
+        // custom npc.
+        CustomMap.addNPCtoMap(map);
+        // master monster.
+        MasterMonster.addAreaBossSpawn(map);
+        map.loadMonsterRate(true);
+
+        this.maps.put(map_id, map);
+        return map;
     }
 
     public OnlinePlayers getOnlinePlayers() {
@@ -201,12 +219,11 @@ public class TacosChannel extends TacosServer {
             int channel = i + 1;
             int channel_port = Property_World.getPort() + i;
             String channel_name = Property_World.getName() + "-" + channel;
-            int language = Region.check(Region.EMS) ? i % Property_World.getLanguages() : 0;
+            int language = Region.EMS.check() ? i % Property_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
-            server.mapFactory.setChannel(channel);
             server.onlines = new OnlinePlayers();
             TacosServer.add(server);
-            server.run(TacosConstants.SERVER_GLOBAL_IP, channel_port, new PacketHandler_Game(server, channel));
+            server.run(Property_World.getIP(), channel_port, new PacketHandler_Game(server, channel));
             server.setWorld(world);
             world.addChannel(server);
             // property
@@ -228,7 +245,7 @@ public class TacosChannel extends TacosServer {
         for (int i = 0; i < Property_Dummy_World.getChannels(); i++) {
             int channel = i + 1;
             String channel_name = Property_Dummy_World.getName() + "-" + channel;
-            int language = Region.check(Region.EMS) ? i % Property_Dummy_World.getLanguages() : 0;
+            int language = Region.EMS.check() ? i % Property_Dummy_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.setWorld(dummy_world);
             dummy_world.addChannel(server);

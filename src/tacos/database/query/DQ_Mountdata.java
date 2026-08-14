@@ -21,7 +21,7 @@ package tacos.database.query;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 
@@ -33,7 +33,7 @@ public class DQ_Mountdata {
 
     public static final String DB_TABLE_NAME = "mountdata";
 
-    public static boolean add(MapleCharacter chr) {
+    public static boolean add(TacosCharacter chr) {
         if (!DatabaseConnection.setManual()) {
             return false;
         }

@@ -18,38 +18,60 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
+import tacos.config.Region;
+
 /**
  *
  * @author Riremito
  */
-public enum OpsMoveAbility {
+public enum OpsMoveAbility implements IPacketOps {
     MOVEABILITY_STOP(0),
     MOVEABILITY_WALK(1),
     MOVEABILITY_WALK_RANDOM(2),
     MOVEABILITY_JUMP(3),
     MOVEABILITY_FLY(4),
     MOVEABILITY_FLY_RANDOM(5),
-    MOVEABILITY_ESCORT(6);
+    MOVEABILITY_ESCORT(6),
+    UNKNOWN;
 
-    int value;
+    private int value;
 
     OpsMoveAbility(int val) {
-        value = val;
+        this.value = val;
     }
 
     OpsMoveAbility() {
-        value = -1;
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
     }
 
+    @Override
     public void set(int val) {
-        value = val;
+        this.value = val;
+    }
+
+    public static void clear() {
+        for (OpsMoveAbility ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
     }
 
     public static void init() {
-        // SummonMovementType
+        if (Config.PostBB()) {
+            return;
+        }
+        if (Config.LessOrEqual(Region.JMS, 147)) {
+            clear();
+            MOVEABILITY_STOP.set(0);
+            MOVEABILITY_WALK.set(1);
+            MOVEABILITY_JUMP.set(2);
+            MOVEABILITY_FLY.set(3);
+            MOVEABILITY_FLY_RANDOM.set(4);
+        }
     }
 }

@@ -20,7 +20,6 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
 import java.util.Map;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChatGroup;
@@ -30,6 +29,8 @@ import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.Ops_Whisper;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import odin.server.maps.MapleNodes;
+import tacos.client.TacosCharacter;
+import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
 import tacos.server.TacosServerType;
 import tacos.server.map.TacosMap;
@@ -40,47 +41,118 @@ import tacos.server.map.TacosMap;
  */
 public class ResCField {
 
-    public static MaplePacket TransferFieldReqIgnored(OpsTransferField ops) {
+    public static ServerPacket TransferFieldReqIgnored(OpsTransferField ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferFieldReqIgnored);
 
         sp.Encode1(ops.get());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket TransferChannelReqIgnored(OpsTransferChannel ops) {
+    public static ServerPacket TransferChannelReqIgnored(OpsTransferChannel ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TransferChannelReqIgnored);
 
         sp.Encode1(ops.get());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket MobSummonItemUseResult(boolean result) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
+    // CField::OnFieldSpecificData
+    public static ServerPacket FieldSpecificData(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
+        int map_id = chr.getMapId();
 
-        sp.Encode1(result ? 1 : 0);
-        return sp.get();
+        // no data.
+        // CField_ShowaBath::DecodeFieldSpecificData
+        // CField_Tutorial::DecodeFieldSpecificData
+        if (TacosConstants.is_bath(map_id)) {
+            return sp;
+        }
+
+        // 1 byte extra data.
+        // CField_Coconut::DecodeFieldSpecificData
+        if (TacosConstants.is_coconut(map_id)) {
+            sp.Encode1(chr.getCoconutTeam());
+            return sp;
+        }
+        // CField_Battlefield::DecodeFieldSpecificData
+        // CField_MonsterCarnival::DecodeFieldSpecificData
+        // CField_MonsterCarnivalRevive::DecodeFieldSpecificData
+        return sp;
     }
 
-    public static MaplePacket PlayJukeBox(int item_id, String name) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayJukeBox);
-
-        sp.Encode4(item_id);
-        sp.EncodeStr(name);
-        return sp.get();
-    }
-
-    public static MaplePacket GroupMessage(OpsChatGroup ops, String name, String message) {
+    public static ServerPacket GroupMessage(OpsChatGroup ops, String name, String message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GroupMessage);
 
         sp.Encode1(ops.get());
         sp.EncodeStr(name);
         sp.EncodeStr(message);
-        return sp.get();
+        return sp;
     }
 
-    // environmentChange, musicChange, showEffect, playSound
-    // ShowBossHP, trembleEffect
-    public static MaplePacket FieldEffect(ArgFieldEffect st) {
+    public static ServerPacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
+
+        sp.Encode1(req_res.get() | loc_whis.get());
+        switch (req_res) {
+            case WP_Result: {
+                if (loc_whis == Ops_Whisper.WP_Whisper) {
+                    sp.EncodeStr(name_to);
+                    sp.Encode1((chr_to != null) ? 1 : 0); // found or not found
+                    break;
+                }
+                if (loc_whis == Ops_Whisper.WP_Location) {
+                    sp.EncodeStr(name_to);
+                    // not found
+                    if (chr_to == null) {
+                        sp.Encode1(OpsLocationResult.LR_None.get());
+                        sp.Encode4(0);
+                        break;
+                    }
+                    // cs & itc
+                    if (chr_to.getServerType() == TacosServerType.ITC_SERVER || chr_to.getServerType() == TacosServerType.CASHSHOP_SERVER) {
+                        sp.Encode1(OpsLocationResult.LR_ShopSvr.get());
+                        sp.Encode4(0);
+                        break;
+                    }
+                    // same channel
+                    if (chr_to.getChannelId() == chr_from.getChannelId()) {
+                        sp.Encode1(OpsLocationResult.LR_GameSvr.get());
+                        sp.Encode4(chr_to.getPosMap());
+                        break;
+                    }
+                    // different channel
+                    sp.Encode1(OpsLocationResult.LR_OtherChannel.get());
+                    sp.Encode4(chr_to.getClient().getChannelId());
+                    break;
+                }
+                break;
+            }
+            case WP_Receive: {
+                if (loc_whis == Ops_Whisper.WP_Whisper) {
+                    sp.EncodeStr(chr_from.getName()); // sender name
+                    sp.Encode1(chr_from.getChannelId() - 1); // sender channel
+                    sp.Encode1(0); // admin?
+                    sp.EncodeStr(message); // sender message
+                    break;
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+        // 9  (0x09) = 0x01 | 0x08
+        // 72 (0x48) = 0x08 | 0x40
+        return sp;
+    }
+
+    public static ServerPacket MobSummonItemUseResult(boolean result) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSummonItemUseResult);
+
+        sp.Encode1(result ? 1 : 0);
+        return sp;
+    }
+
+    public static ServerPacket FieldEffect(ArgFieldEffect st) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldEffect);
         sp.Encode1(st.flag.get());
         switch (st.flag) {
@@ -139,70 +211,18 @@ public class ResCField {
                 break;
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket showOXQuiz(int questionSet, int questionId, boolean askQuestion) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
+    public static ServerPacket FieldObstacleOnOff(String env, int mode) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
 
-        sp.Encode1(askQuestion ? 1 : 0);
-        sp.Encode1(questionSet);
-        sp.Encode2(questionId);
-        return sp.get();
+        sp.EncodeStr(env);
+        sp.Encode4(mode);
+        return sp;
     }
 
-    public static MaplePacket showChaosHorntailShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket showChaosZakumShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket stopClock() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
-
-        return sp.get();
-    }
-
-    public static MaplePacket showHorntailShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket showZakumShrine(boolean spawned, int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
-
-        sp.Encode1(spawned ? 1 : 0);
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket showEquipEffect() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
-
-        return sp.get();
-    }
-
-    public static MaplePacket showEquipEffect(int team) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldSpecificData);
-
-        sp.Encode2(team);
-        return sp.get();
-    }
-
-    public static final MaplePacket getUpdateEnvironment(TacosMap map) {
+    public static ServerPacket FieldObstacleOnOffStatus(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOffStatus);
 
         sp.Encode4(map.getEnvironment().size());
@@ -210,94 +230,11 @@ public class ResCField {
             sp.EncodeStr(mp.getKey());
             sp.Encode4(mp.getValue());
         }
-        return sp.get();
-    }
-
-    public static MaplePacket environmentMove(String env, int mode) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldObstacleOnOff);
-
-        sp.EncodeStr(env);
-        sp.Encode4(mode);
-        return sp.get();
-    }
-
-    public static MaplePacket getClockTime(int hour, int min, int sec) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
-
-        sp.Encode1(1); // station clock
-        sp.Encode1(hour);
-        sp.Encode1(min);
-        sp.Encode1(sec);
-        return sp.get();
-    }
-
-    public static MaplePacket getClock(int time) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
-
-        sp.Encode1(2); // timer
-        sp.Encode4(time);
-        return sp.get();
-    }
-
-    public static MaplePacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
-
-        sp.Encode1(req_res.get() | loc_whis.get());
-        switch (req_res) {
-            case WP_Result: {
-                if (loc_whis == Ops_Whisper.WP_Whisper) {
-                    sp.EncodeStr(name_to);
-                    sp.Encode1((chr_to != null) ? 1 : 0); // found or not found
-                    break;
-                }
-                if (loc_whis == Ops_Whisper.WP_Location) {
-                    sp.EncodeStr(name_to);
-                    // not found
-                    if (chr_to == null) {
-                        sp.Encode1(OpsLocationResult.LR_None.get());
-                        sp.Encode4(0);
-                        break;
-                    }
-                    // cs & itc
-                    if (chr_to.getServerType() == TacosServerType.ITC_SERVER || chr_to.getServerType() == TacosServerType.CASHSHOP_SERVER) {
-                        sp.Encode1(OpsLocationResult.LR_ShopSvr.get());
-                        sp.Encode4(0);
-                        break;
-                    }
-                    // same channel
-                    if (chr_to.getChannelId() == chr_from.getChannelId()) {
-                        sp.Encode1(OpsLocationResult.LR_GameSvr.get());
-                        sp.Encode4(chr_to.getPosMap());
-                        break;
-                    }
-                    // different channel
-                    sp.Encode1(OpsLocationResult.LR_OtherChannel.get());
-                    sp.Encode4(chr_to.getClient().getChannelId());
-                    break;
-                }
-                break;
-            }
-            case WP_Receive: {
-                if (loc_whis == Ops_Whisper.WP_Whisper) {
-                    sp.EncodeStr(chr_from.getName()); // sender name
-                    sp.Encode1(chr_from.getChannelId() - 1); // sender channel
-                    sp.Encode1(0); // admin?
-                    sp.EncodeStr(message); // sender message
-                    break;
-                }
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-        // 9  (0x09) = 0x01 | 0x08
-        // 72 (0x48) = 0x08 | 0x40
-        return sp.get();
+        return sp;
     }
 
     // CField::OnBlowWeather
-    public static MaplePacket BlowWeather(String msg, int itemid, boolean active) {
+    public static ServerPacket BlowWeather(String msg, int itemid, boolean active) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BlowWeather);
 
         sp.Encode4(active ? itemid : 0);
@@ -305,14 +242,70 @@ public class ResCField {
             sp.EncodeStr(msg);
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket getMovingPlatforms(TacosMap map) {
+    public static ServerPacket PlayJukeBox(int item_id, String name) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PlayJukeBox);
+
+        sp.Encode4(item_id);
+        sp.EncodeStr(name);
+        return sp;
+    }
+
+    public static ServerPacket AdminResult(int value) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
+
+        sp.Encode1(value);
+        sp.EncodeZeroBytes(17);
+        return sp;
+    }
+
+    public static ServerPacket Quiz(int questionSet, int questionId, boolean askQuestion) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Quiz);
+
+        sp.Encode1(askQuestion ? 1 : 0);
+        sp.Encode1(questionSet);
+        sp.Encode2(questionId);
+        return sp;
+    }
+
+    public static ServerPacket Desc() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
+
+        sp.Encode1(0);
+        return sp;
+    }
+
+    public static ServerPacket Clock(int hour, int min, int sec) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
+
+        sp.Encode1(1); // station clock
+        sp.Encode1(hour);
+        sp.Encode1(min);
+        sp.Encode1(sec);
+        return sp;
+    }
+
+    public static ServerPacket Clock(int time) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Clock);
+
+        sp.Encode1(2); // timer
+        sp.Encode4(time);
+        return sp;
+    }
+
+    public static ServerPacket DestroyClock() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DestroyClock);
+
+        return sp;
+    }
+
+    public static ServerPacket FootHoldInfo(TacosMap map) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FootHoldInfo);
 
-        sp.Encode4(map.getPlatforms().size());
-        for (MapleNodes.MaplePlatform mp : map.getPlatforms()) {
+        sp.Encode4(map.getNodeInfo().getPlatforms().size());
+        for (MapleNodes.MaplePlatform mp : map.getNodeInfo().getPlatforms()) {
             sp.EncodeStr(mp.name);
             sp.Encode4(mp.start);
             sp.Encode4(mp.SN.size());
@@ -328,22 +321,39 @@ public class ResCField {
             sp.Encode4(mp.y1);
             sp.Encode2(mp.r);
         }
-        return sp.get();
+
+        return sp;
     }
 
-    public static MaplePacket showEventInstructions() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Desc);
+    public static ServerPacket HontaleTimer(boolean spawned, int time_minute) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontaleTimer);
 
-        sp.Encode1(0);
-        return sp.get();
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode1(time_minute); // minute
+        return sp;
     }
 
-    public static MaplePacket GameMaster_Func(int value) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AdminResult);
+    public static ServerPacket ChaosZakumTimer(boolean spawned, int time_second) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChaosZakumTimer);
 
-        sp.Encode1(value);
-        sp.EncodeZeroBytes(17);
-        return sp.get();
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time_second);
+        return sp;
     }
 
+    public static ServerPacket HontailTimer(boolean spawned, int time_second) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_HontailTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time_second);
+        return sp;
+    }
+
+    public static ServerPacket ZakumTimer(boolean spawned, int time_second) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ZakumTimer);
+
+        sp.Encode1(spawned ? 1 : 0);
+        sp.Encode4(time_second);
+        return sp;
+    }
 }

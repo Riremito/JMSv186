@@ -20,15 +20,14 @@ package tacos.packet.response.data;
 
 import java.util.ArrayList;
 import odin.provider.IMapleData;
-import odin.provider.MapleDataTool;
+import tacos.config.Config;
 import tacos.config.ContentCustom;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCommodity;
-import tacos.wz.data.EtcWz;
+import tacos.wz.WzDataTool;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -47,7 +46,7 @@ public class DataCS_COMMODITY {
             data.EncodeBuffer(EncodeModifiedData(onsale));
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     private static ArrayList<CS_COMMODITY> ONSALE_LIST = null;
@@ -62,10 +61,10 @@ public class DataCS_COMMODITY {
             return ONSALE_LIST;
         }
         // remove all onsale items.
-        for (IMapleData field : EtcWz.get().getCommodity().getChildren()) {
-            int nItemId = MapleDataTool.getIntConvert("ItemId", field, 0);
-            int nSN = MapleDataTool.getIntConvert("SN", field, 0);
-            int bOnSale = MapleDataTool.getIntConvert("OnSale", field, 0);
+        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
+            int nItemId = WzDataTool.getIntPath("ItemId", field, 0);
+            int nSN = WzDataTool.getIntPath("SN", field, 0);
+            int bOnSale = WzDataTool.getIntPath("OnSale", field, 0);
             /*
             if (nItemId / 1000000 == 1) {
                 continue;
@@ -121,7 +120,8 @@ public class DataCS_COMMODITY {
     public static byte[] EncodeModifiedData(CS_COMMODITY ccm) {
         ServerPacket data = new ServerPacket();
 
-        boolean mask4 = ServerConfig.JMS164orLater() || Region.IsVMS() || Region.IsBMS() || Version.GreaterOrEqual(Region.GMS, 84);
+        boolean mask4 = Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)
+ || Region.VMS.check() || Region.BMS.check() || Config.GreaterOrEqual(Region.GMS, 84);
 
         if (mask4) {
             data.Encode4(ccm.dwModifiedFlag);
@@ -205,7 +205,7 @@ public class DataCS_COMMODITY {
         }
 
         if (!mask4) {
-            return data.get().getBytes();
+            return data.getBytes();
         }
 
         // 0x10000
@@ -216,7 +216,7 @@ public class DataCS_COMMODITY {
             }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

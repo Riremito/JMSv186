@@ -32,8 +32,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCField_Coconut {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -48,7 +48,7 @@ public class ReqCField_Coconut {
             case CP_CoconutHit: {
                 short nTarget = cp.Decode2(); // not checked.
                 short nDelay = cp.Decode2(); // delay?
-                OnCoconutHit(c, nTarget, nDelay);
+                OnCoconutHit(chr, nTarget, nDelay);
                 return true;
             }
             default: {
@@ -139,52 +139,45 @@ public class ReqCField_Coconut {
 
     }
 
-    private static void OnCoconutHit(MapleClient c, short nTarget, short nDelay) {
-        MapleCoconut map = null;
-        if (map == null) {
+    private static void OnCoconutHit(MapleCharacter chr, short nTarget, short nDelay) {
+        MapleCoconut coconut_map = null;
+        if (coconut_map == null) {
             return;
         }
-        //System.out.println("Coconut1");
-        MapleCoconuts nut = map.getCoconut(nTarget);
+        MapleCoconuts nut = coconut_map.getCoconut(nTarget);
         if (nut == null || !nut.isHittable()) {
             return;
         }
         if (System.currentTimeMillis() < nut.getHitTime()) {
             return;
         }
-        //System.out.println("Coconut2");
         if (nut.getHits() > 2 && Math.random() < 0.4 && !nut.isStopped()) {
-            //System.out.println("Coconut3-1");
             nut.setHittable(false);
-            if (Math.random() < 0.01 && map.getStopped() > 0) {
+            if (Math.random() < 0.01 && coconut_map.getStopped() > 0) {
                 nut.setStopped(true);
-                map.stopCoconut();
-                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
+                coconut_map.stopCoconut();
+                chr.getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
                 return;
             }
-            nut.resetHits(); // For next event (without restarts)
-            //System.out.println("Coconut4");
-            if (Math.random() < 0.05 && map.getBombings() > 0) {
-                //System.out.println("Coconut5-1");
-                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 2));
-                map.bombCoconut();
-            } else if (map.getFalling() > 0) {
-                //System.out.println("Coconut5-2");
-                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 3));
-                map.fallCoconut();
-                if (c.getPlayer().getCoconutTeam() == 0) {
-                    map.addMapleScore();
-                    c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(c.getPlayer().getName() + " of Team Maple knocks down a coconut."));
+            nut.resetHits();
+            if (Math.random() < 0.05 && coconut_map.getBombings() > 0) {
+                chr.getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 2));
+                coconut_map.bombCoconut();
+            } else if (coconut_map.getFalling() > 0) {
+                chr.getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 3));
+                coconut_map.fallCoconut();
+                if (chr.getCoconutTeam() == 0) {
+                    coconut_map.addMapleScore();
+                    chr.getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(chr.getName() + " of Team Maple knocks down a coconut."));
                 } else {
-                    map.addStoryScore();
-                    c.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(c.getPlayer().getName() + " of Team Story knocks down a coconut."));
+                    coconut_map.addStoryScore();
+                    chr.getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(chr.getName() + " of Team Story knocks down a coconut."));
                 }
-                c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.CoconutScore(map.getCoconutScore()));
+                chr.getMap().broadcastMessage(ResCField_Coconut.CoconutScore(coconut_map.getCoconutScore()));
             }
         } else {
-            //System.out.println("Coconut3-2");
             nut.hit();
-            c.getPlayer().getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
+            chr.getMap().broadcastMessage(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
         }
     }
 }

@@ -20,7 +20,6 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.handling.channel.handler.PlayerHandler;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
@@ -31,8 +30,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class Req_Farm {
 
-    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient client) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -44,11 +43,11 @@ public class Req_Farm {
 
         switch (header) {
             case CP_JMS_FarmEnter: {
-                PlayerHandler.ChangeMap(c, 809100000);
+                chr.changeMap(809100000);
                 return true;
             }
             case CP_JMS_FarmLeave: {
-                PlayerHandler.ChangeMap(c, 100000000); // test
+                chr.changeMap(100000000); // test
                 return true;
             }
             default: {

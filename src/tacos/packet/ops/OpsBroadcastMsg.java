@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -96,7 +96,7 @@ public enum OpsBroadcastMsg {
     }
 
     public static void init() {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             // 9 world (test)
             BM_HEARTSPEAKER.set(15);
             BM_SKULLSPEAKER.set(16);

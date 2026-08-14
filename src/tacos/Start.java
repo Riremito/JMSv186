@@ -19,11 +19,7 @@
 package tacos;
 
 import tacos.config.ClientEdit;
-import tacos.config.CodePage;
 import tacos.config.Content;
-import tacos.config.DeveloperMode;
-import tacos.config.Region;
-import tacos.config.Version;
 import tacos.property.Property;
 import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
@@ -35,10 +31,10 @@ import tacos.debug.DebugLogger;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.server.MTSStorage;
 import odin.server.RandomRewards;
-import odin.server.SpeedRunner;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
+import tacos.config.Config;
 import tacos.database.query.DQ_Characters;
 import tacos.network.MapleAESOFB;
 import tacos.property.Property_World;
@@ -48,7 +44,6 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosITC;
 import tacos.server.TacosWorld;
-import test.ToolMan;
 
 /**
  *
@@ -57,27 +52,35 @@ import test.ToolMan;
 public class Start {
 
     public final static void main(final String args[]) {
-        // default = JMS186.1
         // set region & version
-        DebugLogger.SetupLog("VERSION");
         if (3 <= args.length) {
+            DebugLogger.SetupLog("SET_VERSION");
             String server_region = args[0];
             int server_version = Integer.parseInt(args[1]);
             int server_version_sub = Integer.parseInt(args[2]);
 
-            if (!Region.setRegion(server_region)) {
+            if (!Config.setVersion(server_region, server_version, server_version_sub)) {
                 DebugLogger.ErrorLog("Invalid region name.");
                 return;
             }
-
-            Version.setVersion(server_version, server_version_sub);
+        } else {
+            // Version Selector
+            if (args.length == 1 && args[0].equals("vs")) {
+                VersionSelector.open();
+            }
+            if (args.length == 0) {
+                VersionSelector.autoConfig();
+            }
         }
-        DebugLogger.InfoLog(Region.GetRegionName() + " v" + Version.getVersion() + "." + Version.getSubVersion());
+        // default = JMS 147 0
+        DebugLogger.SetupLog(Config.REGION.getName() + " v" + Config.VERSION + "." + Config.VERSION_SUB);
+        DebugLogger.SetupLog("codepage = " + Config.CODEPAGE.name());
         // DevLog
         DebugLogger.SetupLog("DEV_LOG");
         DebugLogger.init();
         // TODO : debug config
         // AES
+        DebugLogger.SetupLog("AES_KEY");
         MapleAESOFB.setAesKey();
         // update content flags
         DebugLogger.SetupLog("FLAG_CONTENT");
@@ -97,30 +100,25 @@ public class Start {
         if (!Property.initAll()) {
             return;
         }
-        //Debug.InfoLog("wz_xml directory : " + Property_Java.getDir_WzXml());
-        //Debug.InfoLog("scripts directory : " + Property_Java.getDir_Scripts());
-        // set codepage
-        DebugLogger.SetupLog("CODEPAGE");
-        CodePage.init();
         // database
-        DQ_Accounts.resetLoginState();
-        // 管理画面
-        if (DeveloperMode.DM_ADMIN_TOOL.get()) {
-            DebugLogger.SetupLog("admin tool is opened.");
-            ToolMan.Open();
+        if (!DatabaseConnection.checkDatabase()) {
+            System.exit(0);
         }
-
+        DQ_Accounts.resetLoginState();
         OdinWorld.init();
 
-        WorldTimer.getInstance().start();
         EtcTimer.getInstance().start();
         MapTimer.getInstance().start();
         MobTimer.getInstance().start();
         CloneTimer.getInstance().start();
         EventTimer.getInstance().start();
-        BuffTimer.getInstance().start();
-        PingTimer.getInstance().start();
 
+        /*
+        DebugLogger.SetupLog("INFO");
+        DebugLogger.InfoLog("wz_xml : " + Property_Java.getDir_WzXml());
+        DebugLogger.InfoLog("scripts : " + Property_Java.getDir_Scripts());
+         */
+        DebugLogger.SetupLog("RUN");
         // ?_?
         ByteBuffer.setUseDirectBuffers(false);
         ByteBuffer.setAllocator(new SimpleByteBufferAllocator());
@@ -135,19 +133,11 @@ public class Start {
         TacosCashShop.init();
         // itc server
         TacosITC.init();
-        // map updates
-        TacosWorld.find(0).registerRespawn(); // TODO : fix
 
         RandomRewards.getInstance();
         MapleGuildRanking.getInstance().getRank();
         MapleFamilyBuff.getBuffEntry();
         MTSStorage.load();
-
-        try {
-            SpeedRunner.getInstance().loadSpeedRuns();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         DQ_Characters.updateRanking();
 
@@ -164,10 +154,8 @@ public class Start {
                         DatabaseConnection.closeAll();
                     } catch (SQLException ex) {
                     }
-                    WorldTimer.getInstance().stop();
                     MapTimer.getInstance().stop();
                     MobTimer.getInstance().stop();
-                    BuffTimer.getInstance().stop();
                     CloneTimer.getInstance().stop();
                     EventTimer.getInstance().stop();
                     EtcTimer.getInstance().stop();
@@ -178,5 +166,4 @@ public class Start {
         DebugLogger.SetupLog("DONE!");
         return;
     }
-
 }

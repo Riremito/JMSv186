@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleBBSThread;
@@ -22,10 +21,9 @@ import odin.handling.world.guild.MapleGuildAlliance;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.handling.world.guild.MapleGuildSummary;
 import java.util.Collection;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
-import tacos.packet.response.ResCUIMessenger;
-import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.TacosWorld;
@@ -40,13 +38,12 @@ public class OdinWorld extends TacosWorld {
         OdinWorld.Guild.lock.toString();
         OdinWorld.Alliance.lock.toString();
         OdinWorld.Family.lock.toString();
-        OdinWorld.Messenger.getMessenger(0);
         OdinWorld.Party.getParty(0);
     }
 
     public static class Party {
 
-        private static Map<Integer, MapleParty> parties = new HashMap<Integer, MapleParty>();
+        private static Map<Integer, MapleParty> parties = new HashMap<>();
         private static final AtomicInteger runningPartyId = new AtomicInteger();
 
         static {
@@ -115,7 +112,7 @@ public class OdinWorld extends TacosWorld {
                     } else {
                         chr.setParty(party);
                     }
-                    chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                    chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), party, operation, target));
                 }
             }
             switch (operation) {
@@ -123,7 +120,7 @@ public class OdinWorld extends TacosWorld {
                 case EXPEL: {
                     MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target.getName(), false);
                     if (chr != null) {
-                        chr.getClient().getSession().write(ResCWvsContext.updateParty(chr.getClient().getChannelId(), party, operation, target));
+                        chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), party, operation, target));
                         chr.setParty(null);
                     }
                     break;
@@ -147,151 +144,9 @@ public class OdinWorld extends TacosWorld {
         }
     }
 
-    public static class Messenger {
-
-        private static Map<Integer, MapleMessenger> messengers = new HashMap<Integer, MapleMessenger>();
-        private static final AtomicInteger runningMessengerId = new AtomicInteger();
-
-        static {
-            runningMessengerId.set(1);
-        }
-
-        public static MapleMessenger createMessenger(MapleMessengerCharacter chrfor) {
-            int messengerid = runningMessengerId.getAndIncrement();
-            MapleMessenger messenger = new MapleMessenger(messengerid, chrfor);
-            messengers.put(messenger.getId(), messenger);
-            return messenger;
-        }
-
-        public static void declineChat(String target, String namefrom) {
-            MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target, false);
-            if (chr != null) {
-                MapleMessenger messenger = chr.getMessenger();
-                if (messenger != null) {
-                    chr.getClient().getSession().write(ResCUIMessenger.messengerNote(namefrom, 5, 0));
-                }
-            }
-        }
-
-        public static MapleMessenger getMessenger(int messengerid) {
-            return messengers.get(messengerid);
-        }
-
-        public static void leaveMessenger(int messengerid, MapleMessengerCharacter target) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            int position = messenger.getPositionByName(target.getName());
-            messenger.removeMember(target);
-
-            for (MapleMessengerCharacter mmc : messenger.getMembers()) {
-                if (mmc != null) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(mmc.getName());
-                    if (chr != null) {
-                        chr.getClient().getSession().write(ResCUIMessenger.removeMessengerPlayer(position));
-                    }
-                }
-            }
-        }
-
-        public static void silentLeaveMessenger(int messengerid, MapleMessengerCharacter target) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            messenger.silentRemoveMember(target);
-        }
-
-        public static void silentJoinMessenger(int messengerid, MapleMessengerCharacter target) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            messenger.silentAddMember(target);
-        }
-
-        public static void updateMessenger(int messengerid, String namefrom, int fromchannel) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            int position = messenger.getPositionByName(namefrom);
-
-            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
-                if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                    if (chr != null) {
-                        MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(namefrom, false);
-                        chr.SendPacket(ResCUIMessenger.updateMessengerPlayer(namefrom, from, position, fromchannel - 1));
-                    }
-                }
-            }
-        }
-
-        public static void joinMessenger(int messengerid, MapleMessengerCharacter target, String from, int fromchannel) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-            messenger.addMember(target);
-            int position = messenger.getPositionByName(target.getName());
-            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
-                if (messengerchar != null) {
-                    int mposition = messenger.getPositionByName(messengerchar.getName());
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                    if (chr != null) {
-                        if (!messengerchar.getName().equals(from)) {
-                            MapleCharacter fromCh = TacosWorld.find(0).findOnlinePlayer(from);
-                            chr.SendPacket(ResCUIMessenger.addMessengerPlayer(from, fromCh, position, fromchannel - 1));
-                            fromCh.SendPacket(ResCUIMessenger.addMessengerPlayer(chr.getName(), chr, mposition, messengerchar.getChannel() - 1));
-                        } else {
-                            chr.SendPacket(ResCUIMessenger.joinMessenger(mposition));
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void messengerChat(int messengerid, String chattext, String namefrom) {
-            MapleMessenger messenger = getMessenger(messengerid);
-            if (messenger == null) {
-                throw new IllegalArgumentException("No messenger with the specified messengerid exists");
-            }
-
-            for (MapleMessengerCharacter messengerchar : messenger.getMembers()) {
-                if (messengerchar != null && !messengerchar.getName().equals(namefrom)) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                    if (chr != null) {
-                        chr.SendPacket(ResCUIMessenger.messengerChat(chattext));
-                    }
-                } //Whisp Monitor Code
-                else if (messengerchar != null) {
-                    MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(messengerchar.getName(), false);
-                }
-                //
-            }
-        }
-
-        public static void messengerInvite(String sender, int messengerid, String target, int fromchannel, boolean gm) {
-            if (TacosWorld.find(0).findOnlinePlayer(target, false) != null) {
-                MapleCharacter from = TacosWorld.find(0).findOnlinePlayer(sender, false);
-                MapleCharacter targeter = TacosWorld.find(0).findOnlinePlayer(target, false);
-                if (targeter != null && targeter.getMessenger() == null) {
-                    if (!targeter.isGM() || gm) {
-                        targeter.SendPacket(ResCUIMessenger.messengerInvite(sender, messengerid));
-                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 1));
-                    } else {
-                        from.SendPacket(ResCUIMessenger.messengerNote(target, 4, 0));
-                    }
-                } else {
-                    from.SendPacket(ResCUIMessenger.messengerChat(sender + " : " + target + " is already using Maple Messenger"));
-                }
-            }
-
-        }
-    }
-
     public static class Guild {
 
-        private static final Map<Integer, MapleGuild> guilds = new LinkedHashMap<Integer, MapleGuild>();
+        private static final Map<Integer, MapleGuild> guilds = new LinkedHashMap<>();
         private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
         static {
@@ -356,7 +211,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void guildPacket(int gid, MaplePacket message) {
+        public static void guildPacket(int gid, ServerPacket message) {
             MapleGuild g = getGuild(gid);
             if (g != null) {
                 g.broadcast(message);
@@ -580,16 +435,12 @@ public class OdinWorld extends TacosWorld {
                 mc.setAllianceRank((byte) alliancerank);
                 mc.saveGuildStatus();
             }
-            if (bDifferentGuild) {
-                mc.getMap().broadcastMessage(mc, ResCUserPool.UserLeaveField(cid), false);
-                mc.getMap().broadcastMessage(mc, ResCUserPool.UserEnterField(mc), false);
-            }
         }
     }
 
     public static class Broadcast {
 
-        public static void sendGuildPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
+        public static void sendGuildPacket(int targetIds, ServerPacket packet, int exception, int guildid) {
             if (targetIds == exception) {
                 return;
             }
@@ -599,7 +450,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void sendFamilyPacket(int targetIds, MaplePacket packet, int exception, int guildid) {
+        public static void sendFamilyPacket(int targetIds, ServerPacket packet, int exception, int guildid) {
             if (targetIds == exception) {
                 return;
             }
@@ -612,7 +463,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Alliance {
 
-        private static final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<Integer, MapleGuildAlliance>();
+        private static final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<>();
         private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
         static {
@@ -732,7 +583,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void sendGuild(final MaplePacket packet, final int exceptionId, final int allianceid) {
+        public static void sendGuild(ServerPacket packet, final int exceptionId, final int allianceid) {
             final MapleGuildAlliance alliance = getAlliance(allianceid);
             if (alliance != null) {
                 for (int i = 0; i < alliance.getNoGuilds(); i++) {
@@ -837,8 +688,8 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static List<MaplePacket> getAllianceInfo(final int allianceid, final boolean start) {
-            List<MaplePacket> ret = new ArrayList<MaplePacket>();
+        public static List<ServerPacket> getAllianceInfo(final int allianceid, final boolean start) {
+            List<ServerPacket> ret = new ArrayList<>();
             final MapleGuildAlliance alliance = getAlliance(allianceid);
             if (alliance != null) {
                 if (start) {
@@ -865,7 +716,7 @@ public class OdinWorld extends TacosWorld {
 
     public static class Family {
 
-        private static final Map<Integer, MapleFamily> families = new LinkedHashMap<Integer, MapleFamily>();
+        private static final Map<Integer, MapleFamily> families = new LinkedHashMap<>();
         private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
         static {
@@ -949,7 +800,7 @@ public class OdinWorld extends TacosWorld {
             }
         }
 
-        public static void familyPacket(int gid, MaplePacket message, int cid) {
+        public static void familyPacket(int gid, ServerPacket message, int cid) {
             MapleFamily f = getFamily(gid);
             if (f != null) {
                 f.broadcast(message, -1, f.getMFC(cid).getPedigree());

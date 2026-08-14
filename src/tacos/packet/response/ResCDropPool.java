@@ -15,18 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.config.Region;
-import tacos.config.Version;
-import tacos.network.MaplePacket;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMapItem;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -94,7 +91,7 @@ public class ResCDropPool {
 
     // CDropPool::OnDropEnterField
     // dropItemFromMapObject
-    public static MaplePacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom, int mobid) {
+    public static ServerPacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom, int mobid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropEnterField);
 
         sp.Encode1(et.get());
@@ -133,17 +130,17 @@ public class ResCDropPool {
         sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
         sp.Encode1(0);
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode2(0);
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CDropPool::OnDropLeaveField
     // removeItemFromMap
     // explodeDrop
-    public static MaplePacket DropLeaveField(MapleMapItem drop, LeaveType lt, MapleCharacter chr, int pet_slot) {
+    public static ServerPacket DropLeaveField(MapleMapItem drop, LeaveType lt, MapleCharacter chr, int pet_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropLeaveField);
 
         sp.Encode1(lt.get());
@@ -174,18 +171,18 @@ public class ResCDropPool {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto) {
+    public static ServerPacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto) {
         return DropEnterField(drop, et, dropto, null, 0);
     }
 
-    public static MaplePacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom) {
+    public static ServerPacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom) {
         return DropEnterField(drop, et, dropto, dropfrom, 0);
     }
 
-    public static MaplePacket DropLeaveField(MapleMapItem drop, LeaveType lt) {
+    public static ServerPacket DropLeaveField(MapleMapItem drop, LeaveType lt) {
         return DropLeaveField(drop, lt, null, 0);
     }
 }

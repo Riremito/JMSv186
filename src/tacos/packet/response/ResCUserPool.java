@@ -19,9 +19,8 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCUserRemote;
@@ -33,26 +32,26 @@ import tacos.packet.response.data.DataCUserRemote;
 public class ResCUserPool {
 
     // CUserPool::OnUserEnterField
-    public static MaplePacket UserEnterField(MapleCharacter chr) {
+    public static ServerPacket UserEnterField(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEnterField);
 
         sp.Encode4(chr.getId());
 
-        if (Version.Equal(Region.JMS, 147)) {
+        if (Config.Equal(Region.JMS, 147)) {
             sp.EncodeBuffer(DataCUserRemote.Init_JMS147(chr));
-        } else if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        } else if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.EncodeBuffer(DataCUserRemote.Init_JMS302(chr));
         } else {
             sp.EncodeBuffer(DataCUserRemote.Init(chr));
         }
-        return sp.get();
+        return sp;
     }
 
     // CUserPool::OnUserLeaveField
-    public static MaplePacket UserLeaveField(int player_id) {
+    public static ServerPacket UserLeaveField(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserLeaveField);
-        sp.Encode4(player_id);
-        return sp.get();
-    }
 
+        sp.Encode4(chr.getId());
+        return sp;
+    }
 }

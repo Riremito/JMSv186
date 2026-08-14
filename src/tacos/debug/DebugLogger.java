@@ -20,14 +20,14 @@ package tacos.debug;
 
 import odin.client.MapleCharacter;
 import tacos.config.DeveloperMode;
-import tacos.config.Region;
-import tacos.config.Version;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import odin.provider.IMapleData;
+import tacos.config.Config;
 import tacos.packet.ClientPacket;
 
 /**
@@ -49,7 +49,7 @@ public class DebugLogger {
             }
 
             fw = new FileWriter(LOG_DIR + LOG_FILE_NAME, true);
-            fw.write(("[" + getDateString() + "]" + " Server Reboot - " + Region.getRegion() + " " + Version.getVersion() + "." + Version.getSubVersion() + "\r\n"));
+            fw.write(("[" + getDateString() + "]" + " Server Reboot - " + Config.REGION + " " + Config.VERSION + "." + Config.VERSION_SUB + "\r\n"));
             fw.flush();
         } catch (FileNotFoundException ex) {
             ExceptionLog("DebugLogger - open");
@@ -153,6 +153,25 @@ public class DebugLogger {
         return true;
     }
 
+    public static boolean XmlDataLog(IMapleData data, String text) {
+        if (!DeveloperMode.DM_LOG_WZ.get()) {
+            return false;
+        }
+        String data_path = "null";
+
+        if (data != null) {
+            data_path = data.getName();
+            IMapleData parent_data = (IMapleData) data.getParent();
+            while (parent_data != null) {
+                data_path = parent_data.getName() + "/" + data_path;
+                parent_data = (IMapleData) parent_data.getParent();
+            }
+        }
+
+        Log("WZDATA", data_path + " : " + text);
+        return true;
+    }
+
     public static boolean ScriptLog(String log_text) {
         if (!DeveloperMode.DM_LOG_SCRIPT.get()) {
             return false;
@@ -187,7 +206,6 @@ public class DebugLogger {
     }
 
     public static long getThreadId() {
-        return Thread.currentThread().getId();
+        return Thread.currentThread().threadId();
     }
-
 }

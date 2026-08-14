@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleDoor;
 import tacos.packet.ServerPacketHeader;
@@ -29,9 +28,26 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCTownPortalPool {
 
-    // spawnPortal
+    public static ServerPacket TownPortalCreated(MapleDoor door, boolean isTown) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalCreated);
+
+        sp.Encode1(isTown ? 1 : 0);
+        sp.Encode4(door.getOwnerId());
+        sp.Encode2((short) door.getPosition().x);
+        sp.Encode2((short) door.getPosition().y);
+        return sp;
+    }
+
+    public static ServerPacket TownPortalRemoved(MapleDoor door) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalRemoved);
+
+        sp.Encode1(1);
+        sp.Encode4(door.getOwnerId());
+        return sp;
+    }
+
     // CWvsContext::OnTownPortal
-    public static MaplePacket setMysticDoorInfo(MapleDoor door) {
+    public static ServerPacket setMysticDoorInfo(MapleDoor door) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortal);
 
         if (door == null) {
@@ -45,42 +61,10 @@ public class ResCTownPortalPool {
             sp.Encode2((short) door.getLink().getPosition().y);
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket resetMysticDoorInfo() {
+    public static ServerPacket resetMysticDoorInfo() {
         return setMysticDoorInfo(null);
     }
-
-    // spawnDoor
-    public static final MaplePacket spawnDoor(MapleDoor door, boolean isTown) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalCreated);
-        sp.Encode1(isTown ? 1 : 0);
-        sp.Encode4(door.getOwnerId());
-        sp.Encode2((short) door.getPosition().x);
-        sp.Encode2((short) door.getPosition().y);
-        return sp.get();
-    }
-
-    // removeDoor
-    public static MaplePacket removeDoor(MapleDoor door) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalRemoved);
-        sp.Encode1(1);
-        sp.Encode4(door.getOwnerId());
-        return sp.get();
-    }
-
-    // partyPortal
-    public static MaplePacket partyPortal(MapleDoor door) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-        sp.Encode1(40);
-        sp.Encode1(door.getTownPortal().getMysticDoorId()); // number
-        sp.Encode4(door.getMapId());
-        sp.Encode4(door.getLink().getMapId());
-        sp.Encode4(door.getSkillId());
-        sp.Encode2((short) door.getLink().getPosition().x);
-        sp.Encode2((short) door.getLink().getPosition().y);
-        return sp.get();
-    }
-
 }

@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -83,7 +83,7 @@ public enum OpsShop implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
@@ -102,7 +102,7 @@ public enum OpsShop implements IPacketOps {
             ShopRes_RechargeUnknown.set(11);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 131)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131)) {
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
@@ -128,13 +128,12 @@ public enum OpsShop implements IPacketOps {
             ShopRes_LimitLevel_More.set(17);
             return;
         }
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
+        if (Config.GreaterOrEqual(Region.JMS, 194)) {
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);
             ShopReq_Close.set(3);
             ShopRes_BuySuccess.set(0);
-            // ?_?
             ShopRes_BuyNoStock.set(2);
             ShopRes_BuyNoMoney.set(3);
             ShopRes_BuyUnknown.set(4);
@@ -158,7 +157,27 @@ public enum OpsShop implements IPacketOps {
             ShopRes_ServerMsg.set(24);
             return;
         }
-        if (Version.LessOrEqual(Region.GMS, 91)) {
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
+            ShopReq_Buy.set(0);
+            ShopReq_Sell.set(1);
+            ShopReq_Recharge.set(2);
+            ShopReq_Close.set(3);
+            ShopRes_BuySuccess.set(0);
+            ShopRes_BuyNoStock.set(1);
+            ShopRes_BuyNoMoney.set(2);
+            ShopRes_BuyUnknown.set(3);
+            ShopRes_SellSuccess.set(4);
+            ShopRes_SellNoStock.set(5);
+            ShopRes_SellIncorrectRequest.set(6);
+            ShopRes_SellUnkonwn.set(7);
+            ShopRes_RechargeSuccess.set(8);
+            ShopRes_RechargeNoStock.set(9);
+            ShopRes_RechargeNoMoney.set(10);
+            ShopRes_RechargeIncorrectRequest.set(11);
+            ShopRes_RechargeUnknown.set(12);
+            return;
+        }
+        if (Config.LessOrEqual(Region.GMS, 91)) {
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);

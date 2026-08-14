@@ -18,22 +18,22 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
  * @author Riremito
  */
 public enum OpsEntrustedShop implements IPacketOps {
-    EntrustedShopReq_CheckOpenPossible,
+    EntrustedShopReq_CheckOpenPossible(0),
     EntrustedShopReq_Create,
     EntrustedShopReq_Save,
     EntrustedShopReq_CloseProcess,
     EntrustedShopReq_FindShopByEmployerName,
     EntrustedShopReq_CheckIfClosed,
     EntrustedShopReq_GetPos,
-    EntrustedShopRes_OpenPossible,
+    EntrustedShopRes_OpenPossible(7),
     EntrustedShopRes_OpenImpossible_Using,
     EntrustedShopRes_OpenImpossible_Stored,
     EntrustedShopRes_OpenImpossible_AnotherCharacter,
@@ -97,7 +97,7 @@ public enum OpsEntrustedShop implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             EntrustedShopReq_CheckOpenPossible.set(0);
             EntrustedShopRes_OpenPossible.set(7);
             EntrustedShopRes_OpenImpossible_Using.set(8);

@@ -18,10 +18,10 @@
  */
 package tacos.packet.response;
 
-import tacos.config.ServerConfig;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMist;
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -32,7 +32,7 @@ public class ResCAffectedAreaPool {
 
     // CAffectedAreaPool::OnAffectedAreaCreated
     // CAffectedArea::MakeEnterFieldPacket
-    public static MaplePacket spawnMist(MapleMist mist) {
+    public static ServerPacket AffectedAreaCreated(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaCreated);
 
         sp.Encode4(mist.getObjectId()); // m_dwID
@@ -52,20 +52,19 @@ public class ResCAffectedAreaPool {
         sp.Encode4(0); // nElemAttr
 
         // not in JMS147-164
-        if (ServerConfig.JMS186orLater()) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); // nPhase
         }
 
-        return sp.get();
+        return sp;
     }
 
     // CAffectedAreaPool::OnAffectedAreaRemoved
     // CAffectedArea::MakeLeaveFieldPacket
-    public static MaplePacket removeMist(MapleMist mist) {
+    public static ServerPacket AffectedAreaRemoved(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaRemoved);
 
         sp.Encode4(mist.getObjectId()); // m_dwID
-        return sp.get();
+        return sp;
     }
-
 }

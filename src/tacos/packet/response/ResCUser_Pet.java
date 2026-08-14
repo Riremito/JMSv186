@@ -20,9 +20,8 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import odin.client.inventory.MaplePet;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
-import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -80,28 +79,28 @@ public class ResCUser_Pet {
     }
 
     // showPet
-    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
-        ServerPacket sp = new ServerPacket((transfer_field || Version.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
+    public static ServerPacket PetActivated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
+        ServerPacket sp = new ServerPacket((transfer_field || Config.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
         sp.Encode4(chr.getId());
 
-        if (Version.Equal(Region.JMS, 147)) {
+        if (Config.Equal(Region.JMS, 147)) {
             sp.Encode1(chr.getPetIndex(pet));
             if (!transfer_field) {
                 sp.Encode1(spawn ? 1 : 0);
             }
             if (!spawn) {
                 sp.Encode1(msg.get());
-                return sp.get();
+                return sp;
             }
             sp.Encode1(0);
             sp.EncodeBuffer(DataCPet.Init(pet));
             if (transfer_field) {
                 sp.Encode2(0);
             }
-            return sp.get();
+            return sp;
         }
 
-        if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
+        if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
             // no data
         } else {
             sp.Encode4(chr.getPetIndex(pet));
@@ -109,7 +108,7 @@ public class ResCUser_Pet {
         sp.Encode1(spawn ? 1 : 0);
 
         if (spawn) {
-            if (Version.LessOrEqual(Region.KMS, 31) || Version.LessOrEqual(Region.JMS, 131)) {
+            if (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131)) {
                 // no data
             } else {
                 sp.Encode1(0);
@@ -119,75 +118,74 @@ public class ResCUser_Pet {
             sp.Encode1(msg.get());
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket Activated(MapleCharacter chr, MaplePet pet) {
-        return Activated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
+    public static ServerPacket Activated(MapleCharacter chr, MaplePet pet) {
+        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
     }
 
-    public static MaplePacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
-        return Activated(chr, pet, false, msg, false);
+    public static ServerPacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
+        return PetActivated(chr, pet, false, msg, false);
     }
 
-    public static MaplePacket TransferField(MapleCharacter chr, MaplePet pet) {
-        return Activated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
+    public static ServerPacket TransferField(MapleCharacter chr, MaplePet pet) {
+        return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
-    public static final MaplePacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
+    public static ServerPacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetMove);
 
         sp.Encode4(chr.getId());
 
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             sp.Encode1(0);
         } else {
             sp.Encode4(chr.getPetIndex(pet));
         }
 
         sp.EncodeBuffer(data.get());
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket petChat(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
+    public static ServerPacket PetAction(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetAction);
+
         sp.Encode4(chr.getId());
         sp.Encode4(pet_index);
         sp.Encode1(nType);
         sp.Encode1(nAction);
         sp.EncodeStr(pet_message);
         // post BB may have extra 1 bytes
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket PetNameChanged(MapleCharacter chr, MaplePet pet, String pet_name) {
+    public static ServerPacket PetNameChanged(MapleCharacter chr, MaplePet pet, String pet_name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
         sp.Encode4(chr.getId());
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             sp.Encode1(0); // 0 = success
         } else {
             sp.Encode4(chr.getPetIndex(pet));
         }
         sp.EncodeStr(pet_name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket commandResponse(final int cid, final byte command, final int slot, final boolean success, final boolean food) {
+    public static ServerPacket PetActionCommand(int cid, byte command, int slot, boolean success, boolean food) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActionCommand);
 
         sp.Encode4(cid);
         sp.Encode4(slot);
         sp.Encode1(command == 1 ? 1 : 0);
         sp.Encode1(command);
-
         if (command == 1) {
             sp.Encode1(0);
         } else {
             sp.Encode2(success ? 1 : 0);
         }
-
-        return sp.get();
+        return sp;
     }
 
 }

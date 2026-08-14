@@ -19,7 +19,6 @@
 package tacos.server;
 
 import tacos.property.Property_Shop;
-import tacos.constants.TacosConstants;
 import tacos.network.PacketHandler_CashShop;
 
 /**
@@ -54,7 +53,7 @@ public class TacosCashShop extends TacosServer {
     public static boolean init() {
         TacosCashShop server = new TacosCashShop("CashShop");
         TacosServer.add(server);
-        server.run(TacosConstants.SERVER_GLOBAL_IP, Property_Shop.getPort(), new PacketHandler_CashShop(server));
+        server.run(Property_Shop.getIP(), Property_Shop.getPort(), new PacketHandler_CashShop(server));
         server.world_id = 0;
         TacosWorld.find(server.world_id).setCashShop(server);
         return true;

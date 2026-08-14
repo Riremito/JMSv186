@@ -28,6 +28,5 @@ import tacos.packet.ClientPacketHeader;
  */
 public interface IPacketHandler {
 
-    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception;
-
+    public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) throws Exception;
 }

@@ -23,6 +23,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import tacos.packet.ServerPacket;
 
 /**
  *
@@ -36,12 +37,12 @@ public class PacketEncoder_KMS implements ProtocolEncoder {
 
         // raw packet
         if (aes_enc == null) {
-            peo.write(ByteBuffer.wrap(((MaplePacket) o).getBytes()));
+            peo.write(ByteBuffer.wrap(((ServerPacket) o).getBytes()));
             return;
         }
 
         // packet encryption
-        final byte[] raw_server_packet = ((MaplePacket) o).getBytes();
+        final byte[] raw_server_packet = ((ServerPacket) o).getBytes();
         final byte[] header = aes_enc.getPacketHeader(raw_server_packet.length); // 4 bytes
         final byte[] packet = raw_server_packet.clone();
 

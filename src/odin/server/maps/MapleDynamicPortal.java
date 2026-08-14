@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package odin.server.maps;
 
@@ -24,6 +22,7 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import java.awt.Point;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
+import tacos.server.map.TacosPortal;
 
 /**
  *
@@ -52,17 +51,17 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
     // test
     public final void warp(MapleCharacter chr) {
         int map_id_from = chr.getPosMap();
-        MapleMap map_to = chr.getChannelServer().getMapFactory().getMap(map_id);
+        MapleMap map_to = chr.findMap(map_id);
         MapleDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
 
+        /*
         if (dynamic_portal_to != null) {
-            // dynamic portal is there
-            // currently not working, because SetField does not have xy coordinates
             chr.changeMapDynamicPortal(map_to, dynamic_portal_to.getPosition());
-        } else {
-            // no dynamic portal
-            chr.changeMapDynamicPortal(map_to, map_to.getPortal(0).getPosition());
         }
+         */
+        // no dynamic portal
+        TacosPortal spawn_point = map_to.getPortal(0);
+        chr.changeMapInternal(map_to, spawn_point.getPosition(), spawn_point);
     }
 
     public int getItemID() {
@@ -75,7 +74,7 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
 
     // do not use spawn data
     public final void sendSpawnPacket(final MapleClient client) {
-        client.SendPacket(Res_JMS_CInstancePortalPool.CreatePinkBeanEventPortal(this));
+        client.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(this));
     }
 
     @Override

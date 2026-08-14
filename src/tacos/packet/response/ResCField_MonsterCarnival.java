@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.MapleCarnivalParty;
 import tacos.packet.ServerPacketHeader;
@@ -30,7 +29,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCField_MonsterCarnival {
 
-    public static MaplePacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
+    public static ServerPacket CPUpdate(boolean party, int curCP, int totalCP, int team) {
         // ?_?
         ServerPacket sp = new ServerPacket((party) ? ServerPacketHeader.LP_MCarnivalTeamCP : ServerPacketHeader.LP_MCarnivalPersonalCP);
 
@@ -40,22 +39,22 @@ public class ResCField_MonsterCarnival {
 
         sp.Encode2(curCP);
         sp.Encode2(totalCP);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket playerSummoned(String name, int tab, int number) {
+    public static ServerPacket MCarnivalResultSuccess(String name, int tab, int number) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalResultSuccess);
 
         sp.Encode1(tab);
         sp.Encode1(number);
         sp.EncodeStr(name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket startMonsterCarnival(final MapleCharacter chr, final int enemyavailable, final int enemytotal) {
+    public static ServerPacket MCarnivalEnter(MapleCharacter chr, int enemyavailable, int enemytotal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalEnter);
 
-        final MapleCarnivalParty friendly = chr.getCarnivalParty();
+        MapleCarnivalParty friendly = chr.getCarnivalParty();
         sp.Encode1(friendly.getTeam());
         sp.Encode2(chr.getAvailableCP());
         sp.Encode2(chr.getTotalCP());
@@ -65,17 +64,16 @@ public class ResCField_MonsterCarnival {
         sp.Encode2(enemytotal);
         sp.Encode8(0);
         sp.Encode2(0);
-        return sp.get();
+        return sp;
     }
 
     //CPQ
-    public static MaplePacket playerDiedMessage(String name, int lostCP, int team) {
+    public static ServerPacket MCarnivalDeath(String name, int lostCP, int team) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalDeath);
 
         sp.Encode1(team); //team
         sp.EncodeStr(name);
         sp.Encode1(lostCP);
-        return sp.get();
+        return sp;
     }
-
 }

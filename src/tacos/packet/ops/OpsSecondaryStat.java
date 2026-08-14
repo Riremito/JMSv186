@@ -18,132 +18,626 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 
 /**
  *
  * @author Riremito
  */
-public enum OpsSecondaryStat {
-    // JMS v186
-    // 0, 0x00000001
-    CTS_PAD(0, 0),
-    // 0, 0x00000002
-    CTS_PDD(0, 1),
-    // 0, 0x0000004
-    CTS_MAD(0, 2),
-    // 0, 0x00000008
-    CTS_MDD(0, 3),
-    // 0, 0x00000010
-    CTS_ACC(0, 4),
-    // 0, 0x00000020
-    CTS_EVA(0, 5),
-    // 0, 0x00000040
-    CTS_Craft(0, 6),
-    // 0, 0x00000080
-    CTS_Speed(0, 7),
-    // 0, 0x00000100
-    CTS_Jump(0, 8),
-    // 0, 0x00000200
-    CTS_MagicGuard(0, 9),
-    // 0, 0x00000400
-    CTS_DarkSight(0, 10),
-    // 0, 0x00000800
-    CTS_Booster(0, 11),
-    // 0, 0x00001000
-    CTS_PowerGuard(0, 12),
-    // 0, 0x00002000
-    CTS_MaxHP(0, 13),
-    // 0, 0x00004000
-    CTS_MaxMP(0, 14),
-    // 0, 0x00008000
-    CTS_Invincible(0, 15),
-    // 0, 0x00010000
-    CTS_SoulArrow(0, 16),
-    // 0, 0x00200000
-    CTS_ComboCounter(0, 21),
-    // 0, 0x02000000
-    CTS_MesoUp(0, 25),
-    // 0, 0x04000000
-    CTS_ShadowPartner(0, 26),
-    // 0, 0x08000000
-    CTS_PickPocket(0, 27), // odin puppet
-    // 0, 0x10000000
-    CTS_MesoGuard(0, 28),
-    // 1, 0x00000001
-    CTS_Thaw(1, 0),
-    // 1, 0x00000002
-    CTS_Curse(1, 1),
-    // 1, 0x00000004
-    CTS_Regen(1, 2),
-    // 1, 0x00000008
-    CTS_BasicStatUp(1, 3),
-    // 1, 0x00000010
-    CTS_Stance(1, 4),
-    // 1, 0x00000020
-    CTS_SharpEyes(1, 5),
-    // 1, 0x00000040
-    CTS_ManaReflection(1, 6),
-    // 1, 0x00000100
-    CTS_SpiritJavelin(1, 8),
-    // 1, 0x00000200
-    CTS_Infinity(1, 9),
-    // 1, 0x00000400
-    CTS_Holyshield(1, 10),
-    // 1, 0x00000800
-    CTS_HamString(1, 11),
-    // 1, 0x00001000
-    CTS_Blind(1, 12),
-    // 1, 0x00002000
-    CTS_Concentration(1, 13),
-    //CTS_BanMap(1, 13),
-    //CTS_MaxLevelBuff(1, 14),
-    //CTS_Barrier(1, 15),
-    //CTS_DojangShield(1, 16),
-    //CTS_ReverseInput(1, 17),
-    // 2, 0x00000000
-    // 3, 0x00000000
-    // 4, 0x00000000
-    UNKNOWN(0, -1);
+public enum OpsSecondaryStat implements IPacketOps {
+    CTS_PAD(0),
+    CTS_PDD(1),
+    CTS_MAD(2),
+    CTS_MDD(3),
+    CTS_ACC(4),
+    CTS_EVA(5),
+    CTS_Craft(6),
+    CTS_Speed(7),
+    CTS_Jump(8),
+    CTS_MagicGuard(9),
+    CTS_DarkSight(10), // JMS146-186
+    CTS_Booster(11),
+    CTS_PowerGuard(12),
+    CTS_MaxHP(13),
+    CTS_MaxMP(14),
+    CTS_Invincible(15),
+    CTS_SoulArrow(16),
+    CTS_Stun(17),
+    CTS_Poison(18), // JMS146-186
+    CTS_Seal(19),
+    CTS_Darkness(20),
+    CTS_ComboCounter(21),
+    CTS_WeaponCharge(22),
+    CTS_DragonBlood(23),
+    CTS_HolySymbol(24),
+    CTS_MesoUp(25),
+    CTS_ShadowPartner(26),
+    CTS_PickPocket(27),
+    CTS_MesoGuard(28),
+    CTS_Thaw(29),
+    CTS_Weakness(30),
+    CTS_Curse(31),
+    CTS_Slow(32),
+    CTS_Morph(33),
+    CTS_Regen(34),
+    CTS_BasicStatUp(35),
+    CTS_Stance(36),
+    CTS_SharpEyes(37),
+    CTS_ManaReflection(38),
+    CTS_Attract(39), // JMS146-186
+    CTS_SpiritJavelin(40),
+    CTS_Infinity(41),
+    CTS_Holyshield(42),
+    CTS_HamString(43),
+    CTS_Blind(44),
+    CTS_Concentration(45),
+    CTS_BanMap(46),
+    CTS_MaxLevelBuff(47), // JMS186
+    CTS_MesoUpByItem(48),
+    CTS_Ghost(49),
+    CTS_Barrier(50),
+    CTS_ReverseInput(51),
+    CTS_ItemUpByItem(52),
+    CTS_RespectPImmune(53),
+    CTS_RespectMImmune(54),
+    CTS_DefenseAtt(55),
+    CTS_DefenseState(56),
+    CTS_IncEffectHPPotion(57),
+    CTS_IncEffectMPPotion(58),
+    CTS_DojangBerserk(59),
+    CTS_DojangInvincible(60),
+    CTS_Spark(61),
+    CTS_DojangShield(62),
+    CTS_SoulMasterFinal(63),
+    CTS_WindBreakerFinal(64),
+    CTS_ElementalReset(65),
+    CTS_WindWalk(66),
+    CTS_EventRate(67),
+    CTS_ComboAbilityBuff(68),
+    CTS_ComboDrain(69),
+    CTS_ComboBarrier(70),
+    CTS_BodyPressure(71),
+    CTS_SmartKnockback(72),
+    CTS_RepeatEffect(73),
+    CTS_ExpBuffRate(74),
+    CTS_StopPortion(75),
+    CTS_StopMotion(76),
+    CTS_Fear(77),
+    CTS_EvanSlow(78),
+    CTS_MagicShield(79),
+    CTS_MagicResistance(80),
+    CTS_SoulStone(81),
+    CTS_Flying(82),
+    CTS_Frozen(83),
+    CTS_AssistCharge(84),
+    CTS_Enrage(85),
+    CTS_SuddenDeath(86),
+    CTS_NotDamaged(87),
+    CTS_FinalCut(88),
+    CTS_ThornsEffect(89),
+    CTS_SwallowAttackDamage(90),
+    CTS_MorewildDamageUp(91),
+    CTS_Mine(92),
+    CTS_EMHP(93),
+    CTS_EMMP(94),
+    CTS_EPAD(95),
+    CTS_EPDD(96),
+    CTS_EMDD(97),
+    CTS_Guard(98),
+    CTS_SafetyDamage(99),
+    CTS_SafetyAbsorb(100),
+    CTS_Cyclone(101),
+    CTS_SwallowCritical(102),
+    CTS_SwallowMaxMP(103),
+    CTS_SwallowDefence(104),
+    CTS_SwallowEvasion(105),
+    CTS_Conversion(106),
+    CTS_Revive(107),
+    CTS_Sneak(108),
+    CTS_Mechanic(109),
+    CTS_Aura(110),
+    CTS_DarkAura(111),
+    CTS_BlueAura(112),
+    CTS_YellowAura(113),
+    CTS_SuperBody(114),
+    CTS_MorewildMaxHP(115),
+    CTS_Dice(116),
+    CTS_BlessingArmor(117),
+    CTS_DamR(118),
+    CTS_TeleportMasteryOn(119),
+    CTS_CombatOrders(120),
+    CTS_Beholder(121),
+    CTS_EnergyCharged(122, TwoStateType.EXPIRE_LAST),
+    CTS_Dash_Speed(123, TwoStateType.EXPIRE_LAST),
+    CTS_Dash_Jump(124, TwoStateType.EXPIRE_LAST),
+    CTS_RideVehicle(125, TwoStateType.RIDING),
+    CTS_PartyBooster(126, TwoStateType.EXPIRE_CURRENT),
+    CTS_GuidedBullet(127, TwoStateType.GUIDED_BULLET),
+    CTS_Undead(128, TwoStateType.EXPIRE_LAST),
+    CTS_SummonBomb(129, TwoStateType.NO_EXPIRE), // overflow in GMS95.
+    CTS_SwallowBuff, // CTS_SwallowAttackDamage | CTS_SwallowDefence | CTS_SwallowCritical | CTS_SwallowMaxMP | CTS_SwallowEvasion
+    UNKNOWN;
 
-    private int order;
-    private int mask;
+    private int value;
+    private TwoStateType two_state;
 
-    OpsSecondaryStat(int order, int mask) {
-        this.order = order;
-        this.mask = mask;
+    OpsSecondaryStat(int value) {
+        this.value = value;
+        this.two_state = TwoStateType.NOT_TWO_STATE;
+    }
+
+    OpsSecondaryStat(int value, TwoStateType two_state) {
+        this.value = value;
+        this.two_state = two_state;
     }
 
     OpsSecondaryStat() {
-        mask = -1;
+        this.value = -1;
+        this.two_state = TwoStateType.NOT_TWO_STATE;
     }
 
-    public void set(int order, int mask) {
-        this.order = order;
-        this.mask = mask;
-    }
-
+    @Override
     public int get() {
-        return mask;
+        return this.value;
     }
 
-    public int getN() {
-        return order;
+    public static enum TwoStateType {
+        NOT_TWO_STATE,
+        RIDING,
+        NO_EXPIRE,
+        EXPIRE_CURRENT,
+        EXPIRE_LAST,
+        GUIDED_BULLET;
+    }
+
+    public boolean isTwoState() {
+        return this.two_state != TwoStateType.NOT_TWO_STATE;
+    }
+
+    public TwoStateType getTwoState() {
+        return this.two_state;
+    }
+
+    @Override
+    public void set(int value) {
+        this.value = value;
+    }
+
+    public int getNl() {
+        return this.value / 32;
+    }
+
+    public int getNr() {
+        return 1 << (this.value % 32);
+    }
+
+    public static OpsSecondaryStat find(int val) {
+        for (final OpsSecondaryStat ops : OpsSecondaryStat.values()) {
+            if (ops.get() == val) {
+                return ops;
+            }
+        }
+        return UNKNOWN;
+    }
+
+    public static void clear() {
+        for (OpsSecondaryStat ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+        // UINT160
+        if (Config.GreaterOrEqual(Region.JMS, 187)) {
+            clear();
+            CTS_PAD.set(0);
+            CTS_PDD.set(1);
+            CTS_MAD.set(2);
+            CTS_MDD.set(3);
+            CTS_ACC.set(4);
+            CTS_EVA.set(5);
+            CTS_Craft.set(6);
+            CTS_Speed.set(7);
+            CTS_Jump.set(8);
+            CTS_MagicGuard.set(9);
+            CTS_DarkSight.set(10);
+            CTS_Booster.set(11);
+            CTS_PowerGuard.set(12);
+            CTS_MaxHP.set(13);
+            CTS_MaxMP.set(14);
+            CTS_Invincible.set(15);
+            CTS_SoulArrow.set(16);
+            CTS_Stun.set(17);
+            CTS_Poison.set(18);
+            CTS_Seal.set(19);
+            CTS_Darkness.set(20);
+            CTS_ComboCounter.set(21);
+            CTS_WeaponCharge.set(22);
+            CTS_DragonBlood.set(23);
+            CTS_HolySymbol.set(24);
+            CTS_MesoUp.set(25);
+            CTS_ShadowPartner.set(26);
+            CTS_PickPocket.set(27);
+            CTS_MesoGuard.set(28);
+            CTS_Thaw.set(29);
+            CTS_Weakness.set(30);
+            CTS_Curse.set(31);
+            CTS_Slow.set(32);
+            CTS_Morph.set(33);
+            CTS_Regen.set(34);
+            CTS_BasicStatUp.set(35);
+            CTS_Stance.set(36);
+            CTS_SharpEyes.set(37);
+            CTS_ManaReflection.set(38);
+            CTS_Attract.set(39);
+            CTS_SpiritJavelin.set(40);
+            CTS_Infinity.set(41);
+            CTS_Holyshield.set(42);
+            CTS_HamString.set(43);
+            CTS_Blind.set(44);
+            CTS_Concentration.set(45);
+            CTS_BanMap.set(46);
+            CTS_MaxLevelBuff.set(47);
+            CTS_MesoUpByItem.set(48);
+            CTS_Ghost.set(49);
+            CTS_Barrier.set(50);
+            CTS_ReverseInput.set(51); // OK
+            /*
+            CTS_ItemUpByItem.set(0);
+            CTS_RespectPImmune.set(0);
+            CTS_RespectMImmune.set(0);
+            CTS_DefenseAtt.set(0);
+            CTS_DefenseState.set(0);
+            CTS_IncEffectHPPotion.set(0);
+            CTS_IncEffectMPPotion.set(0);
+             */
+            CTS_DojangBerserk.set(57); // -2
+            CTS_DojangInvincible.set(58);
+            CTS_Spark.set(59);
+            CTS_DojangShield.set(60);
+            CTS_SoulMasterFinal.set(61);
+            CTS_WindBreakerFinal.set(62);
+            CTS_ElementalReset.set(63);
+            CTS_WindWalk.set(64);
+            CTS_EventRate.set(65);
+            CTS_ComboAbilityBuff.set(66);
+            CTS_ComboDrain.set(67);
+            CTS_ComboBarrier.set(68);
+            CTS_BodyPressure.set(69);
+            CTS_SmartKnockback.set(70);
+            CTS_RepeatEffect.set(71);
+            CTS_ExpBuffRate.set(72);
+            CTS_StopPortion.set(73);
+            CTS_StopMotion.set(74);
+            CTS_Fear.set(75);
+            CTS_EvanSlow.set(76);
+            CTS_MagicShield.set(77);
+            CTS_MagicResistance.set(78);
+            CTS_SoulStone.set(79);
+            CTS_Flying.set(80);
+            CTS_Frozen.set(81);
+            CTS_AssistCharge.set(82);
+            CTS_Enrage.set(83);
+            CTS_SuddenDeath.set(84);
+            CTS_NotDamaged.set(85);
+            CTS_FinalCut.set(86);
+            CTS_ThornsEffect.set(87);
+            CTS_SwallowAttackDamage.set(88);
+            CTS_MorewildDamageUp.set(89);
+            CTS_Mine.set(90);
+            CTS_EMHP.set(91);
+            CTS_EMMP.set(92);
+            CTS_EPAD.set(93);
+            CTS_EPDD.set(94);
+            CTS_EMDD.set(95);
+            CTS_Guard.set(96);
+            CTS_SafetyDamage.set(97);
+            CTS_SafetyAbsorb.set(98);
+            CTS_Cyclone.set(99);
+            CTS_SwallowCritical.set(100);
+            CTS_SwallowMaxMP.set(101);
+            CTS_SwallowDefence.set(102);
+            CTS_SwallowEvasion.set(103);
+            CTS_Conversion.set(104);
+            CTS_Revive.set(105);
+            CTS_Sneak.set(106);
+            CTS_Mechanic.set(107);
+            CTS_Aura.set(108);
+            CTS_DarkAura.set(109);
+            CTS_BlueAura.set(110);
+            CTS_YellowAura.set(111);
+            CTS_SuperBody.set(112);
+            CTS_MorewildMaxHP.set(113);
+            CTS_Dice.set(114);
+            CTS_BlessingArmor.set(115);
+            CTS_DamR.set(116);
+            CTS_TeleportMasteryOn.set(117);
+            CTS_CombatOrders.set(118);
+            CTS_Beholder.set(119);
+            // 120
+            // 121
+            // 122
+            CTS_EnergyCharged.set(123);
+            CTS_Dash_Speed.set(124);
+            CTS_Dash_Jump.set(125);
+            CTS_RideVehicle.set(126);
+            CTS_PartyBooster.set(127);
+            CTS_GuidedBullet.set(128);
+            // 129 = battle mage aura.
             return;
         }
-        if (ServerConfig.JMS194orLater()) {
-            // fix
+        // UINT128
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            clear();
+            CTS_PAD.set(0);
+            CTS_PDD.set(1);
+            CTS_MAD.set(2);
+            CTS_MDD.set(3);
+            CTS_ACC.set(4);
+            CTS_EVA.set(5);
+            CTS_Craft.set(6);
+            CTS_Speed.set(7);
+            CTS_Jump.set(8);
+            CTS_MagicGuard.set(9);
+            CTS_DarkSight.set(10);
+            CTS_Booster.set(11);
+            CTS_PowerGuard.set(12);
+            CTS_MaxHP.set(13);
+            CTS_MaxMP.set(14);
+            CTS_Invincible.set(15);
+            CTS_SoulArrow.set(16);
+            CTS_Stun.set(17);
+            CTS_Poison.set(18);
+            CTS_Seal.set(19);
+            CTS_Darkness.set(20);
+            CTS_ComboCounter.set(21);
+            CTS_WeaponCharge.set(22);
+            CTS_DragonBlood.set(23);
+            CTS_HolySymbol.set(24);
+            CTS_MesoUp.set(25);
+            CTS_ShadowPartner.set(26);
+            CTS_PickPocket.set(27);
+            CTS_MesoGuard.set(28);
+            CTS_Thaw.set(29);
+            CTS_Weakness.set(30);
+            CTS_Curse.set(31);
+            CTS_Slow.set(32);
+            CTS_Morph.set(33);
+            CTS_Regen.set(34);
+            CTS_BasicStatUp.set(35);
+            CTS_Stance.set(36);
+            CTS_SharpEyes.set(37);
+            CTS_ManaReflection.set(38);
+            CTS_Attract.set(39);
+            CTS_SpiritJavelin.set(40);
+            CTS_Infinity.set(41);
+            CTS_Holyshield.set(42);
+            CTS_HamString.set(43);
+            CTS_Blind.set(44);
+            CTS_Concentration.set(45);
+            CTS_BanMap.set(46);
+            CTS_MaxLevelBuff.set(47);
+            CTS_MesoUpByItem.set(48);
+            CTS_Ghost.set(49);
+            CTS_Barrier.set(50);
+            CTS_ReverseInput.set(51); // OK
+            /*
+            CTS_ItemUpByItem.set(0);
+            CTS_RespectPImmune.set(0);
+            CTS_RespectMImmune.set(0);
+            CTS_DefenseAtt.set(0);
+            CTS_DefenseState.set(0);
+            CTS_IncEffectHPPotion.set(0);
+            CTS_IncEffectMPPotion.set(0);
+             */
+            CTS_DojangBerserk.set(57); // -2
+            CTS_DojangInvincible.set(58);
+            CTS_Spark.set(59);
+            CTS_DojangShield.set(60);
+            CTS_SoulMasterFinal.set(61);
+            CTS_WindBreakerFinal.set(62);
+            CTS_ElementalReset.set(63);
+            CTS_WindWalk.set(64);
+            CTS_EventRate.set(65);
+            CTS_ComboAbilityBuff.set(66);
+            CTS_ComboDrain.set(67);
+            CTS_ComboBarrier.set(68);
+            CTS_BodyPressure.set(69);
+            CTS_SmartKnockback.set(70);
+            CTS_RepeatEffect.set(71);
+            CTS_ExpBuffRate.set(72);
+            CTS_StopPortion.set(73);
+            CTS_StopMotion.set(74);
+            CTS_Fear.set(75);
+            CTS_EvanSlow.set(76);
+            CTS_MagicShield.set(77);
+            CTS_MagicResistance.set(78);
+            CTS_SoulStone.set(79);
+            CTS_Flying.set(80);
+            CTS_Frozen.set(81);
+            CTS_AssistCharge.set(82);
+            CTS_Enrage.set(83);
+            CTS_SuddenDeath.set(84);
+            CTS_NotDamaged.set(85);
+            CTS_FinalCut.set(86);
+            CTS_ThornsEffect.set(87);
+            CTS_SwallowAttackDamage.set(88);
+            CTS_MorewildDamageUp.set(89);
+            CTS_Mine.set(90);
+            CTS_EMHP.set(91);
+            CTS_EMMP.set(92);
+            CTS_EPAD.set(93);
+            CTS_EPDD.set(94);
+            CTS_EMDD.set(95);
+            CTS_Guard.set(96);
+            CTS_SafetyDamage.set(97);
+            CTS_SafetyAbsorb.set(98);
+            CTS_Cyclone.set(99);
+            CTS_SwallowCritical.set(100);
+            CTS_SwallowMaxMP.set(101);
+            CTS_SwallowDefence.set(102);
+            CTS_SwallowEvasion.set(103);
+            CTS_Conversion.set(104);
+            CTS_Revive.set(105);
+            CTS_Sneak.set(106); // OK
+            //
+            CTS_DarkAura.set(109);
+            CTS_BlueAura.set(110);
+            CTS_YellowAura.set(111); // broken?
+            //
+            CTS_EnergyCharged.set(113); // OK
+            CTS_Dash_Speed.set(114);
+            CTS_Dash_Jump.set(115);
+            CTS_RideVehicle.set(116);
+            CTS_PartyBooster.set(117);
+            CTS_GuidedBullet.set(118);
+            // 119 last.
             return;
         }
-
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            // fixs
+        // UINT128
+        if (Config.GreaterOrEqual(Region.JMS, 164)) {
+            clear();
+            CTS_PAD.set(0);
+            CTS_PDD.set(1);
+            CTS_MAD.set(2);
+            CTS_MDD.set(3);
+            CTS_ACC.set(4);
+            CTS_EVA.set(5);
+            CTS_Craft.set(6);
+            CTS_Speed.set(7);
+            CTS_Jump.set(8);
+            CTS_MagicGuard.set(9);
+            CTS_DarkSight.set(10);
+            CTS_Booster.set(11);
+            CTS_PowerGuard.set(12);
+            CTS_MaxHP.set(13);
+            CTS_MaxMP.set(14);
+            CTS_Invincible.set(15);
+            CTS_SoulArrow.set(16);
+            CTS_Stun.set(17);
+            CTS_Poison.set(18);
+            CTS_Seal.set(19);
+            CTS_Darkness.set(20);
+            CTS_ComboCounter.set(21);
+            CTS_WeaponCharge.set(22);
+            CTS_DragonBlood.set(23);
+            CTS_HolySymbol.set(24);
+            CTS_MesoUp.set(25);
+            CTS_ShadowPartner.set(26);
+            CTS_PickPocket.set(27);
+            CTS_MesoGuard.set(28);
+            CTS_Thaw.set(29);
+            CTS_Weakness.set(30);
+            CTS_Curse.set(31);
+            CTS_Slow.set(32);
+            CTS_Morph.set(33);
+            CTS_Regen.set(34);
+            CTS_BasicStatUp.set(35);
+            CTS_Stance.set(36);
+            CTS_SharpEyes.set(37);
+            CTS_ManaReflection.set(38);
+            CTS_Attract.set(39);
+            CTS_SpiritJavelin.set(40);
+            CTS_Infinity.set(41);
+            CTS_Holyshield.set(42);
+            CTS_HamString.set(43);
+            CTS_Blind.set(44);
+            CTS_Concentration.set(45);
+            CTS_BanMap.set(46);
+            CTS_MaxLevelBuff.set(47);
+            CTS_MesoUpByItem.set(48);
+            CTS_Ghost.set(49);
+            CTS_Barrier.set(50);
+            CTS_ReverseInput.set(51); // OK
+            //
+            CTS_DojangBerserk.set(57);
+            CTS_DojangInvincible.set(58);
+            CTS_Spark.set(59);
+            CTS_DojangShield.set(60);
+            CTS_SoulMasterFinal.set(61);
+            CTS_WindBreakerFinal.set(62);
+            CTS_ElementalReset.set(63);
+            CTS_WindWalk.set(64); // OK
+            // 65
+            // 66
+            CTS_EnergyCharged.set(67); // OK
+            CTS_Dash_Speed.set(68);
+            CTS_Dash_Jump.set(69);
+            CTS_RideVehicle.set(70);
+            CTS_PartyBooster.set(71);
+            CTS_GuidedBullet.set(72);
+            // 73
+            return;
+        }
+        // UINT128
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
+            clear();
+            CTS_PAD.set(0);
+            CTS_PDD.set(1);
+            CTS_MAD.set(2);
+            CTS_MDD.set(3);
+            CTS_ACC.set(4);
+            CTS_EVA.set(5);
+            CTS_Craft.set(6);
+            CTS_Speed.set(7);
+            CTS_Jump.set(8);
+            CTS_MagicGuard.set(9);
+            CTS_DarkSight.set(10);
+            CTS_Booster.set(11);
+            CTS_PowerGuard.set(12);
+            CTS_MaxHP.set(13);
+            CTS_MaxMP.set(14);
+            CTS_Invincible.set(15);
+            CTS_SoulArrow.set(16);
+            CTS_Stun.set(17);
+            CTS_Poison.set(18);
+            CTS_Seal.set(19);
+            CTS_Darkness.set(20);
+            CTS_ComboCounter.set(21);
+            CTS_WeaponCharge.set(22);
+            CTS_DragonBlood.set(23);
+            CTS_HolySymbol.set(24);
+            CTS_MesoUp.set(25);
+            CTS_ShadowPartner.set(26);
+            CTS_PickPocket.set(27);
+            CTS_MesoGuard.set(28);
+            CTS_Thaw.set(29);
+            CTS_Weakness.set(30);
+            CTS_Curse.set(31);
+            CTS_Slow.set(32);
+            CTS_Morph.set(33);
+            CTS_Regen.set(34);
+            CTS_BasicStatUp.set(35);
+            CTS_Stance.set(36);
+            CTS_SharpEyes.set(37);
+            CTS_ManaReflection.set(38);
+            CTS_Attract.set(39);
+            CTS_SpiritJavelin.set(40);
+            CTS_Infinity.set(41);
+            CTS_Holyshield.set(42);
+            CTS_HamString.set(43);
+            CTS_Blind.set(44);
+            CTS_Concentration.set(45);
+            CTS_BanMap.set(46);
+            CTS_MaxLevelBuff.set(47);
+            CTS_MesoUpByItem.set(48);
+            CTS_Ghost.set(49);
+            CTS_Barrier.set(50);
+            CTS_ReverseInput.set(51); // OK
+            // 52
+            // 53
+            // 54
+            // 55
+            // 56
+            // 57
+            // 58
+            CTS_EnergyCharged.set(59);
+            CTS_Dash_Speed.set(60);
+            CTS_Dash_Jump.set(61);
+            CTS_RideVehicle.set(62);
+            CTS_PartyBooster.set(63);
+            CTS_GuidedBullet.set(64);
             return;
         }
     }

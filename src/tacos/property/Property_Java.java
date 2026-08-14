@@ -19,6 +19,7 @@
 package tacos.property;
 
 import java.io.File;
+import tacos.config.Config;
 
 /**
  *
@@ -31,11 +32,11 @@ public class Property_Java {
 
     public static boolean setPath() {
         // cmd line arguments
-        path_wz_xml = System.getProperty("riresaba.path.wz");
-        path_scripts = System.getProperty("riresaba.path.script");
+        path_wz_xml = System.getProperty("user.dir") + "/wz_xml/xml_" + Config.REGION.getName() + "_v" + Config.VERSION;
+        path_scripts = System.getProperty("user.dir") + "/scripts/scripts_" + Config.REGION.getName() + "/";
 
         if (!(new File(path_scripts)).isDirectory()) {
-            path_scripts = "scripts/scripts_JMS/";
+            path_scripts = System.getProperty("user.dir") + "/scripts/scripts_JMS/";
         }
         return true;
     }
@@ -44,8 +45,11 @@ public class Property_Java {
         return path_wz_xml;
     }
 
+    public static String getDir_WzXml_BMS8() {
+        return System.getProperty("user.dir") + "/wz_xml/xml_BMS_v8";
+    }
+
     public static String getDir_Scripts() {
         return path_scripts;
     }
-
 }

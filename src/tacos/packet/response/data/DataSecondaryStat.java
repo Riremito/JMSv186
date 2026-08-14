@@ -19,14 +19,7 @@
 package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
-import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
-import java.util.ArrayList;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsSecondaryStat;
-import odin.server.MapleStatEffect;
-import tacos.odin.OdinPair;
 
 /**
  *
@@ -40,7 +33,7 @@ public class DataSecondaryStat {
         data.EncodeZeroBytes(16);
         data.Encode1(0);
         data.Encode1(0);
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] EncodeForRemote_JMS302(MapleCharacter chr) {
@@ -49,76 +42,6 @@ public class DataSecondaryStat {
         data.Encode1(0);
         data.Encode1(0);
         data.Encode1(0);
-        return data.get().getBytes();
-    }
-
-    // SecondaryStat::DecodeForLocal
-    public static byte[] EncodeForLocal(MapleStatEffect mse) {
-        ServerPacket data = new ServerPacket();
-        int skill_id = mse.getSourceId();
-        int buff_time = mse.getDuration();
-        int[] buff_mask = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-        // test
-        ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
-        for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
-            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
-        }
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
-            data.Encode4(buff_mask[8]);
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            data.Encode4(buff_mask[7]);
-            data.Encode4(buff_mask[6]);
-            data.Encode4(buff_mask[5]);
-        }
-        // JMS v187+
-        if (Version.PostBB()) {
-            if (!Region.IsIMS() && !Region.IsTHMS() && !Version.Equal(Region.KMST, 330)) {
-                data.Encode4(buff_mask[4]);
-            }
-        }
-        if (ServerConfig.JMS146orLater()) {
-            data.Encode4(buff_mask[3]);
-            data.Encode4(buff_mask[2]);
-        }
-        if (ServerConfig.JMS146orLater()) {
-            data.Encode4(buff_mask[1]); // シャープアイズ等
-            data.Encode4(buff_mask[0]); // ブースター等
-        } else {
-            // JMS v131
-            data.Encode4(buff_mask[0]);
-            data.Encode4(buff_mask[1]);
-        }
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 32; j++) {
-                if ((buff_mask[i] & (1 << j)) > 0) {
-                    int effect = 0;
-                    for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
-                        if (pss.getLeft().getN() == i && pss.getLeft().get() == j) {
-                            effect = pss.getRight();
-                        }
-                    }
-                    if (Region.IsTHMS() && Version.PostBB()) {
-                        data.Encode4(effect);
-                    } else {
-                        data.Encode2(effect);
-                    }
-                    data.Encode4(mse.isSkill() ? skill_id : -skill_id);
-                    if (ServerConfig.JMS146orLater()) {
-                        data.Encode4(buff_time);
-                    } else {
-                        data.Encode2(buff_time);
-                    }
-                }
-            }
-        }
-        if (ServerConfig.JMS146orLater()) {
-            data.Encode1(0);
-            data.Encode1(0);
-        }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.TWMS, 148)) {
-            data.Encode1(0);
-        }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

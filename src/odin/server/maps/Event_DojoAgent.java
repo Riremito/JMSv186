@@ -23,12 +23,12 @@ package odin.server.maps;
 import java.awt.Point;
 
 import odin.client.MapleCharacter;
-import tacos.network.MaplePacket;
 import odin.handling.world.MaplePartyCharacter;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MapleLifeFactory;
+import tacos.packet.ServerPacket;
 
 public class Event_DojoAgent {
 
@@ -41,7 +41,7 @@ public class Event_DojoAgent {
         final int stage = 1;
         final int mapid = baseAgentMapId + (stage * 100);
         for (int i = mapid; i < mapid + 15; i++) {
-            final MapleMap map = player.getChannelServer().getMapFactory().getMap(i);
+            final MapleMap map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMap(map, map.getPortal(0));
@@ -65,13 +65,13 @@ public class Event_DojoAgent {
             player.modifyCSPoints(1, 40, true);
         }
         if (currentmap >= 970032700 && currentmap <= 970032800) {
-            map = player.getChannelServer().getMapFactory().getMap(baseAgentMapId);
+            map = player.findMap(baseAgentMapId);
             player.changeMap(map, map.getPortal(0));
             return true;
         }
         final int nextmapid = baseAgentMapId + ((thisStage + 1) * 100);
         for (int i = nextmapid; i < nextmapid + 7; i++) {
-            map = player.getChannelServer().getMapFactory().getMap(i);
+            map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMap(map, map.getPortal(0));
@@ -92,7 +92,7 @@ public class Event_DojoAgent {
         for (int x = 0; x < 15; x++) { //15 maps each stage
             boolean canenterr = true;
             for (int i = 1; i < 39; i++) { //only 32 stages, but 38 maps
-                MapleMap map = player.getChannelServer().getMapFactory().getMap(925020000 + 100 * i + x);
+                MapleMap map = player.findMap(925020000 + 100 * i + x);
                 if (map.getCharactersSize() > 0) {
                     canenterr = false;
                     break;
@@ -106,7 +106,7 @@ public class Event_DojoAgent {
                 break;
             }
         }
-        final MapleMap map = player.getChannelServer().getMapFactory().getMap(mapid);
+        final MapleMap map = player.findMap(mapid);
         final MapleMap mapidd = player.getMap();
         if (canenter) {
             if (party && player.getParty() != null) {
@@ -124,7 +124,7 @@ public class Event_DojoAgent {
         return canenter;
     }
 
-    public static MaplePacket Mulung_Pts(int recv, int total) {
+    public static ServerPacket Mulung_Pts(int recv, int total) {
         // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
         return ResWrapper.showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
     }
@@ -163,7 +163,7 @@ public class Event_DojoAgent {
 
             }
             if (currentmap.getId() >= 925023800 && currentmap.getId() <= 925023814) {
-                final MapleMap map = player.getChannelServer().getMapFactory().getMap(925020003);
+                final MapleMap map = player.findMap(925020003);
 
                 if (player.getParty() != null) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
@@ -181,7 +181,7 @@ public class Event_DojoAgent {
             }
 
             //final int nextmapid = 925020000 + ((thisStage + 1) * 100);
-            final MapleMap map = player.getChannelServer().getMapFactory().getMap(currentmap.getId() + 100);
+            final MapleMap map = player.findMap(currentmap.getId() + 100);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 if (player.getParty() != null) {
@@ -199,7 +199,7 @@ public class Event_DojoAgent {
             } else { //wtf, find a new map
                 int basemap = currentmap.getId() / 100 * 100 + 100;
                 for (int x = 0; x < 15; x++) {
-                    MapleMap mapz = player.getChannelServer().getMapFactory().getMap(basemap + x);
+                    MapleMap mapz = player.findMap(basemap + x);
                     if (mapz.getCharactersSize() == 0) {
                         clearMap(mapz, false);
                         if (player.getParty() != null) {

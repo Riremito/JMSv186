@@ -23,176 +23,58 @@ package tacos.config;
  * @author Riremito
  */
 public enum Region {
-    KMSB(1),
-    KMS(1),
-    KMST(2),
-    JMS(3),
-    JMST(3),
-    CMS(4),
-    TWMS(6),
-    THMS(7),
+    KMSB(1, "MS949"),
+    KMS(1, "MS949"),
+    KMST(2, "MS949"),
+    JMS(3, "MS932"),
+    JMST(3, "MS932"),
+    CMS(4, "MS936"),
+    GMST(5),
+    TWMS(6, "MS950"),
+    THMS(7, "MS874"),
     MSEA(7),
     VMS(7),
     GMS(8),
     EMS(9),
     BMS(9),
     IMS(1),
-    unk;
+    UNKNOWN(0);
 
-    private int value = 3;
+    private final int value;
+    private final String codepage;
 
-    Region(int val) {
-        this.value = val;
+    private Region(int value) {
+        this.value = value;
+        this.codepage = "MS932";
     }
 
-    Region() {
-        this.value = 0;
+    private Region(int value, String codepage) {
+        this.value = value;
+        this.codepage = codepage;
     }
 
     public int get() {
         return this.value;
     }
 
-    private static Region region = Region.JMS;
-
-    public static Region getRegion() {
-        return region;
+    public String getName() {
+        return name();
     }
 
-    public static int getRegionNumber() {
-        return region.get();
+    public String getCodepage() {
+        return this.codepage;
     }
 
-    public static String GetRegionName() {
-        return "" + region;
+    public boolean check() {
+        return equals(Config.REGION);
     }
 
-    public static boolean check(Region r) {
-        if (region == r) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean check(Region[] regions) {
-        for (Region r : regions) {
-            if (region == r) {
-                return true;
+    public static Region find(String name) {
+        for (Region r : values()) {
+            if (r.name().equals(name)) {
+                return r;
             }
         }
-        return false;
+        return UNKNOWN;
     }
-
-    public static boolean setRegion(String region_name) {
-        switch (region_name) {
-            case "KMSB": {
-                region = KMSB;
-                return true;
-            }
-            case "KMS": {
-                region = KMS;
-                return true;
-            }
-            case "KMST": {
-                region = KMST;
-                return true;
-            }
-            case "JMS": {
-                region = JMS;
-                return true;
-            }
-            case "JMST": {
-                region = JMST;
-                return true;
-            }
-            case "CMS": {
-                region = CMS;
-                return true;
-            }
-            case "TWMS": {
-                region = TWMS;
-                return true;
-            }
-            case "THMS": {
-                region = THMS;
-                return true;
-            }
-            case "MSEA": {
-                region = MSEA;
-                return true;
-            }
-            case "VMS": {
-                region = VMS;
-                return true;
-            }
-            case "GMS": {
-                region = GMS;
-                return true;
-            }
-            case "EMS": {
-                region = EMS;
-                return true;
-            }
-            case "BMS": {
-                region = BMS;
-                return true;
-            }
-            case "IMS": {
-                region = IMS;
-                return true;
-            }
-            default: {
-                break;
-            }
-        }
-
-        region = unk;
-        return false;
-    }
-
-    // TODO : replace
-    public static boolean IsEMS() {
-        return Region.getRegion() == Region.EMS;
-    }
-
-    public static boolean IsKMS() {
-        return Region.check(Region.KMS) || Region.check(Region.KMST);
-    }
-
-    public static boolean IsMSEA() {
-        return Region.getRegion() == Region.MSEA;
-    }
-
-    public static boolean IsCMS() {
-        return Region.getRegion() == Region.CMS;
-    }
-
-    public static boolean IsJMS() {
-        return Region.getRegion() == Region.JMS || Region.getRegion() == Region.JMST;
-    }
-
-    public static boolean IsBMS() {
-        return Region.getRegion() == Region.BMS;
-    }
-
-    public static boolean IsIMS() {
-        return Region.getRegion() == Region.IMS;
-    }
-
-    public static boolean IsTWMS() {
-        return Region.getRegion() == Region.TWMS;
-    }
-
-    public static boolean IsTHMS() {
-        return Region.getRegion() == Region.THMS;
-    }
-
-    public static boolean IsGMS() {
-        return Region.getRegion() == Region.GMS;
-    }
-
-    public static boolean IsVMS() {
-        return Region.getRegion() == Region.VMS;
-    }
-
 }

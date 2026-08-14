@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
@@ -28,10 +27,8 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCMapLoadable {
 
-    // 0x0083 @0083, 画面の位置をキャラクターを中心とした場所に変更, 背景リロードしてるかも?
-    public static MaplePacket ReloadMap() {
-        ServerPacket p = new ServerPacket(ServerPacketHeader.LP_ClearBackgroundEffect);
-        return p.get();
+    public static ServerPacket ClearBackgroundEffect() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ClearBackgroundEffect);
+        return sp;
     }
-
 }

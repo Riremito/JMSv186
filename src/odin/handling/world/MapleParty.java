@@ -20,16 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MapleParty implements Serializable {
+public class MapleParty {
 
-    private static final long serialVersionUID = 9179541993413738569L;
     private MaplePartyCharacter leader;
-    private List<MaplePartyCharacter> members = new LinkedList<MaplePartyCharacter>();
+    private List<MaplePartyCharacter> members = new LinkedList<>();
     private int id;
 
     public MapleParty(int id, MaplePartyCharacter chrfor) {
@@ -73,7 +71,7 @@ public class MapleParty implements Serializable {
     }
 
     public Collection<MaplePartyCharacter> getMembers() {
-        return new LinkedList<MaplePartyCharacter>(members);
+        return new LinkedList<>(members);
     }
 
     public int getId() {
@@ -90,31 +88,5 @@ public class MapleParty implements Serializable {
 
     public void setLeader(MaplePartyCharacter nLeader) {
         leader = nLeader;
-    }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + id;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final MapleParty other = (MapleParty) obj;
-        if (id != other.id) {
-            return false;
-        }
-        return true;
     }
 }

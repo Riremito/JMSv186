@@ -24,8 +24,6 @@ import java.awt.Point;
 import odin.client.inventory.IItem;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.EnterType;
 import tacos.packet.response.ResCDropPool.LeaveType;
@@ -39,7 +37,6 @@ public class MapleMapItem extends AbstractMapleMapObject {
     protected byte type;
     protected boolean pickedUp = false, playerDrop, randDrop = false;
     protected long nextExpiry = 0, nextFFA = 0;
-    private ReentrantLock lock = new ReentrantLock();
 
     public MapleMapItem(IItem item, Point position, MapleMapObject dropper, MapleCharacter owner, byte type, boolean playerDrop) {
         setPosition(position);
@@ -114,24 +111,12 @@ public class MapleMapItem extends AbstractMapleMapObject {
         return playerDrop;
     }
 
-    public final boolean isPickedUp() {
-        return pickedUp;
-    }
-
-    public void setPickedUp(final boolean pickedUp) {
-        this.pickedUp = pickedUp;
-    }
-
     public byte getDropType() {
         return type;
     }
 
     public void setDropType(byte z) {
         this.type = z;
-    }
-
-    public final boolean isRandDrop() {
-        return randDrop;
     }
 
     @Override
@@ -151,32 +136,24 @@ public class MapleMapItem extends AbstractMapleMapObject {
         client.SendPacket(ResCDropPool.DropLeaveField(this, LeaveType.NO_ANIMATION));
     }
 
-    public Lock getLock() {
-        return lock;
+    private long time = 0;
+
+    public long getTime() {
+        return this.time;
     }
 
     public void registerExpire(final long time) {
-        nextExpiry = System.currentTimeMillis() + time;
+        this.time = System.currentTimeMillis();
+        nextExpiry = this.time + time;
     }
 
     public void registerFFA(final long time) {
         nextFFA = System.currentTimeMillis() + time;
     }
 
-    public boolean shouldExpire() {
-        return !pickedUp && nextExpiry > 0 && nextExpiry < System.currentTimeMillis();
-    }
-
-    public boolean shouldFFA() {
-        return !pickedUp && type < 2 && nextFFA > 0 && nextFFA < System.currentTimeMillis();
-    }
-
     public void expire(TacosMap map) {
         pickedUp = true;
         map.broadcastMessage(ResCDropPool.DropLeaveField(this, LeaveType.EXPIRED));
         map.removeMapObject(this);
-        if (randDrop) {
-            map.spawnRandDrop();
-        }
     }
 }

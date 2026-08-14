@@ -1,20 +1,19 @@
 package odin.server;
 
-import tacos.wz.data.EtcWz;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import odin.provider.MapleDataTool;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
+import tacos.wz.WzDataTool;
+import tacos.wz.WzXML;
 
 public class ItemMakerFactory {
 
     private final static ItemMakerFactory instance = new ItemMakerFactory();
-    protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<Integer, ItemMakerCreateEntry>();
-    protected Map<Integer, GemCreateEntry> gemCache = new HashMap<Integer, GemCreateEntry>();
+    protected Map<Integer, ItemMakerCreateEntry> createCache = new HashMap<>();
+    protected Map<Integer, GemCreateEntry> gemCache = new HashMap<>();
 
     public static ItemMakerFactory getInstance() {
         // DO ItemMakerFactory.getInstance() on ChannelServer startup.
@@ -26,7 +25,7 @@ public class ItemMakerFactory {
         // 0 = Item upgrade crystals
         // 1 / 2/ 4/ 8 = Item creation
 
-        if (EtcWz.get().getItemMake() == null) {
+        if (WzXML.ETC.getItemMake() == null) {
             return;
         }
 
@@ -35,15 +34,15 @@ public class ItemMakerFactory {
         GemCreateEntry ret;
         ItemMakerCreateEntry imt;
 
-        for (IMapleData dataType : EtcWz.get().getItemMake().getChildren()) {
+        for (IMapleData dataType : WzXML.ETC.getItemMake().getChildren()) {
             int type = Integer.parseInt(dataType.getName());
             switch (type) {
                 case 0: { // Caching of gem
                     for (IMapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = MapleDataTool.getInt("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) MapleDataTool.getInt("reqSkillLevel", itemFolder, 0);
-                        cost = MapleDataTool.getInt("meso", itemFolder, 0);
-                        quantity = MapleDataTool.getInt("itemNum", itemFolder, 0);
+                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
+                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
+                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
+                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
 //			totalupgrades = MapleDataTool.getInt("tuc", itemFolder, 0); // Gem is always 0
 
                         ret = new GemCreateEntry(cost, reqLevel, reqMakerLevel, quantity);
@@ -51,10 +50,10 @@ public class ItemMakerFactory {
                         for (IMapleData rewardNRecipe : itemFolder.getChildren()) {
                             for (IMapleData ind : rewardNRecipe.getChildren()) {
                                 if (rewardNRecipe.getName().equals("randomReward")) {
-                                    ret.addRandomReward(MapleDataTool.getInt("item", ind, 0), MapleDataTool.getInt("prob", ind, 0));
+                                    ret.addRandomReward(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("prob", ind, 0));
 // MapleDataTool.getInt("itemNum", ind, 0)
                                 } else if (rewardNRecipe.getName().equals("recipe")) {
-                                    ret.addReqRecipe(MapleDataTool.getInt("item", ind, 0), MapleDataTool.getInt("count", ind, 0));
+                                    ret.addReqRecipe(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
                                 }
                             }
                         }
@@ -68,19 +67,19 @@ public class ItemMakerFactory {
                 case 8: // Thief
                 case 16: { // Pirate
                     for (IMapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = MapleDataTool.getInt("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) MapleDataTool.getInt("reqSkillLevel", itemFolder, 0);
-                        cost = MapleDataTool.getInt("meso", itemFolder, 0);
-                        quantity = MapleDataTool.getInt("itemNum", itemFolder, 0);
-                        totalupgrades = (byte) MapleDataTool.getInt("tuc", itemFolder, 0);
-                        stimulator = MapleDataTool.getInt("catalyst", itemFolder, 0);
+                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
+                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
+                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
+                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
+                        totalupgrades = (byte) WzDataTool.getIntPath("tuc", itemFolder, 0);
+                        stimulator = WzDataTool.getIntPath("catalyst", itemFolder, 0);
 
                         imt = new ItemMakerCreateEntry(cost, reqLevel, reqMakerLevel, quantity, totalupgrades, stimulator);
 
                         for (IMapleData Recipe : itemFolder.getChildren()) {
                             for (IMapleData ind : Recipe.getChildren()) {
                                 if (Recipe.getName().equals("recipe")) {
-                                    imt.addReqItem(MapleDataTool.getInt("item", ind, 0), MapleDataTool.getInt("count", ind, 0));
+                                    imt.addReqItem(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
                                 }
                             }
                         }

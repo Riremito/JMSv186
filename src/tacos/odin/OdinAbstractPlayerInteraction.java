@@ -118,9 +118,7 @@ public abstract class OdinAbstractPlayerInteraction {
         if (portal != 0 && map == client.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.getSession().write(ResCUserLocal.Teleport((byte) portal)); //until we get packet for far movement, this will do
-                client.getPlayer().checkFollow();
-                client.getPlayer().getMap().movePlayer(client.getPlayer(), portalPos);
+                client.getSession().write(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
@@ -142,9 +140,7 @@ public abstract class OdinAbstractPlayerInteraction {
         if (map == client.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.getPlayer().checkFollow();
-                client.getSession().write(ResCUserLocal.Teleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
-                client.getPlayer().getMap().movePlayer(client.getPlayer(), new Point(client.getPlayer().getMap().getPortal(portal).getPosition()));
+                client.getSession().write(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
@@ -169,7 +165,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     private MapleMap getWarpMap(final int map) {
-        return this.client.getChannelServer().getMapFactory().getMap(map);
+        return getPlayer().findMap(map);
     }
 
     public final MapleMap getMap() {
@@ -337,11 +333,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void removeNpc(final int mapid, final int npcId) {
-        client.getChannelServer().getMapFactory().getMap(mapid).removeNpc(npcId);
+        getPlayer().findMap(mapid).removeNpc(npcId);
     }
 
     public final void forceStartReactor(final int mapid, final int id) {
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -354,7 +350,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void destroyReactor(final int mapid, final int id) {
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -367,7 +363,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void hitReactor(final int mapid, final int id) {
-        MapleMap map = client.getChannelServer().getMapFactory().getMap(mapid);
+        MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
         for (final MapleMapObject remo : map.getAllReactors()) {
@@ -461,7 +457,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void changeMusic(final String songName) {
-        getPlayer().getMap().broadcastMessage(ResWrapper.musicChange(songName));
+        getPlayer().getMap().setChangeBGM(songName);
     }
 
     // npc/9201006.js
@@ -720,12 +716,11 @@ public abstract class OdinAbstractPlayerInteraction {
         client.getSession().write(ResWrapper.getStatusMsg(id));
     }
 
-    public final void cancelItem(final int id) {
-        client.getPlayer().cancelEffect(MapleItemInformationProvider.getInstance().getItemEffect(id), false, -1);
+    public void cancelItem(int id) {
     }
 
-    public final int getMorphState() {
-        return client.getPlayer().getMorphState();
+    public int getMorphState() {
+        return 0;
     }
 
     public final void removeAll(final int id) {
@@ -780,7 +775,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getMonsterCount(final int mapid) {
-        return client.getChannelServer().getMapFactory().getMap(mapid).getNumMonsters();
+        return getPlayer().findMap(mapid).getNumMonsters();
     }
 
     public final void teachSkill(final int id, final byte level, final byte masterlevel) {
@@ -798,12 +793,12 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void dojo_getUp() {
         client.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
         client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
-        client.SendPacket(ResCUserLocal.Teleport((byte) 6));
+        client.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
     }
 
     // Oribs PQ, 920010700
     public void instantwarp(int map_id, int porta_id) {
-        client.SendPacket(ResCUserLocal.Teleport((byte) porta_id));
+        client.SendPacket(ResCUserLocal.UserTeleport((byte) porta_id));
     }
 
     public final boolean dojoAgent_NextMap(final boolean dojo, final boolean fromresting) {
@@ -845,23 +840,23 @@ public abstract class OdinAbstractPlayerInteraction {
         if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.summonMessage(msg));
+        client.getSession().write(ResCUserLocal.UserTutorMsg(msg));
     }
 
     public final void summonMsg(final int type) {
         if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.summonMessage(type));
+        client.getSession().write(ResCUserLocal.UserTutorMsg(type));
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
-        client.SendPacket(ResCUserLocal.BalloonMsg(msg, width, height));
+        client.SendPacket(ResCUserLocal.UserBalloonMsg(msg, width, height));
     }
 
     public final void playerSummonHint(final boolean summon) {
         client.getPlayer().setHasSummon(summon);
-        client.getSession().write(ResCUserLocal.summonHelper(summon));
+        client.getSession().write(ResCUserLocal.UserHireTutor(summon));
     }
 
     public final String getInfoQuest(final int id) {
@@ -901,12 +896,12 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void EarnTitleMsg(final String data) {
-        client.getSession().write(ResCWvsContext.getTopMsg(data));
+        client.getSession().write(ResCWvsContext.ScriptProgressMessage(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {
-        client.getSession().write(ResCUserLocal.IntroDisableUI(enabled));
-        client.getSession().write(ResCUserLocal.IntroLock(enabled));
+        client.getSession().write(ResCUserLocal.SetStandAloneMode(enabled));
+        client.getSession().write(ResCUserLocal.SetDirectionMode(enabled));
     }
 
     public MapleInventoryType getInvType(int i) {
@@ -986,6 +981,10 @@ public abstract class OdinAbstractPlayerInteraction {
         spawnMonster(id, 1, new Point(x, y));
     }
 
+    public void spawnBossAtNPC(int id, int x, int y, int type) {
+        getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), new Point(x, y), type);
+    }
+
     // multiple monsters, remote location
     public void spawnMonster(int id, int qty, int x, int y) {
         spawnMonster(id, qty, new Point(x, y));
@@ -1016,7 +1015,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public int getPlayerCount(int mapid) {
-        return client.getChannelServer().getMapFactory().getMap(mapid).getCharactersSize();
+        return getPlayer().findMap(mapid).getCharactersSize();
     }
 
     public void playerMessage(String message) {
@@ -1030,5 +1029,4 @@ public abstract class OdinAbstractPlayerInteraction {
     public OdinEventInstanceManager getDisconnected(String event) {
         return null;
     }
-
 }

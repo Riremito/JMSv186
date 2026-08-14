@@ -42,14 +42,14 @@ public class MapleNodes {
     private int nodeStart = -1, nodeEnd = -1, mapid;
     private boolean firstHighest = true;
 
-    public MapleNodes(final int mapid) {
-        nodes = new LinkedHashMap<Integer, MapleNodeInfo>();
-        areas = new ArrayList<Rectangle>();
-        platforms = new ArrayList<MaplePlatform>();
-        skillIds = new ArrayList<Integer>();
-        monsterPoints = new ArrayList<MonsterPoint>();
-        mobsToSpawn = new ArrayList<OdinPair<Integer, Integer>>();
-        guardiansToSpawn = new ArrayList<OdinPair<Point, Integer>>();
+    public MapleNodes(int mapid) {
+        nodes = new LinkedHashMap<>();
+        areas = new ArrayList<>();
+        platforms = new ArrayList<>();
+        skillIds = new ArrayList<>();
+        monsterPoints = new ArrayList<>();
+        mobsToSpawn = new ArrayList<>();
+        guardiansToSpawn = new ArrayList<>();
         this.mapid = mapid;
     }
 
@@ -76,16 +76,15 @@ public class MapleNodes {
         }
     }
 
-    public void addNode(final MapleNodeInfo mni) {
+    public void addNode(MapleNodeInfo mni) {
         this.nodes.put(mni.key, mni);
     }
 
     public Collection<MapleNodeInfo> getNodes() {
-
-        return new ArrayList<MapleNodeInfo>(nodes.values());
+        return new ArrayList<>(nodes.values());
     }
 
-    public MapleNodeInfo getNode(final int index) {
+    public MapleNodeInfo getNode(int index) {
         int i = 1;
         for (MapleNodeInfo x : getNodes()) {
             if (i == index) {
@@ -96,19 +95,12 @@ public class MapleNodes {
         return null;
     }
 
-    private int getNextNode(final MapleNodeInfo mni) {
+    private int getNextNode(MapleNodeInfo mni) {
         if (mni == null) {
             return -1;
         }
+
         addNode(mni);
-        // output part
-        /*StringBuilder b = new StringBuilder(mapid + " added key " + mni.key + ". edges: ");
-        for (int i : mni.edge) {
-        b.append(i + ", ");
-        }
-        System.out.println(b.toString());
-        FileoutputUtil.log(FileoutputUtil.PacketEx_Log, b.toString());*/
-        // output part end
 
         int ret = -1;
         for (int i : mni.edge) {
@@ -119,7 +111,6 @@ public class MapleNodes {
                     } else {
                         firstHighest = false;
                         ret = Math.max(ret, i);
-                        //two ways for stage 5 to get to end, thats highest ->lowest, and lowest -> highest(doesn't work)
                         break;
                     }
                 } else {
@@ -134,24 +125,26 @@ public class MapleNodes {
         if (nodes.size() <= 0 || nodeStart < 0) {
             return;
         }
-        Map<Integer, MapleNodeInfo> unsortedNodes = new HashMap<Integer, MapleNodeInfo>(nodes);
-        final int nodeSize = unsortedNodes.size();
+
+        Map<Integer, MapleNodeInfo> unsortedNodes = new HashMap<>(nodes);
+        int nodeSize = unsortedNodes.size();
         nodes.clear();
         int nextNode = getNextNode(unsortedNodes.get(nodeStart));
+
         while (nodes.size() != nodeSize && nextNode >= 0) {
             nextNode = getNextNode(unsortedNodes.get(nextNode));
         }
     }
 
-    public final void addMapleArea(final Rectangle rec) {
+    public void addMapleArea(final Rectangle rec) {
         areas.add(rec);
     }
 
-    public final List<Rectangle> getAreas() {
-        return new ArrayList<Rectangle>(areas);
+    public List<Rectangle> getAreas() {
+        return new ArrayList<>(areas);
     }
 
-    public final Rectangle getArea(final int index) {
+    public Rectangle getArea(final int index) {
         return getAreas().get(index);
     }
 
@@ -174,12 +167,12 @@ public class MapleNodes {
         }
     }
 
-    public final void addPlatform(final MaplePlatform mp) {
+    public void addPlatform(MaplePlatform mp) {
         this.platforms.add(mp);
     }
 
-    public final List<MaplePlatform> getPlatforms() {
-        return new ArrayList<MaplePlatform>(platforms);
+    public List<MaplePlatform> getPlatforms() {
+        return new ArrayList<>(platforms);
     }
 
     public static class MonsterPoint {
@@ -195,35 +188,35 @@ public class MapleNodes {
         }
     }
 
-    public final List<MonsterPoint> getMonsterPoints() {
+    public List<MonsterPoint> getMonsterPoints() {
         return monsterPoints;
     }
 
-    public final void addMonsterPoint(int x, int y, int fh, int cy, int team) {
+    public void addMonsterPoint(int x, int y, int fh, int cy, int team) {
         this.monsterPoints.add(new MonsterPoint(x, y, fh, cy, team));
     }
 
-    public final void addMobSpawn(int mobId, int spendCP) {
-        this.mobsToSpawn.add(new OdinPair<Integer, Integer>(mobId, spendCP));
+    public void addMobSpawn(int mobId, int spendCP) {
+        this.mobsToSpawn.add(new OdinPair<>(mobId, spendCP));
     }
 
-    public final List<OdinPair<Integer, Integer>> getMobsToSpawn() {
+    public List<OdinPair<Integer, Integer>> getMobsToSpawn() {
         return mobsToSpawn;
     }
 
-    public final void addGuardianSpawn(Point guardian, int team) {
-        this.guardiansToSpawn.add(new OdinPair<Point, Integer>(guardian, team));
+    public void addGuardianSpawn(Point guardian, int team) {
+        this.guardiansToSpawn.add(new OdinPair<>(guardian, team));
     }
 
-    public final List<OdinPair<Point, Integer>> getGuardians() {
+    public List<OdinPair<Point, Integer>> getGuardians() {
         return guardiansToSpawn;
     }
 
-    public final List<Integer> getSkillIds() {
+    public List<Integer> getSkillIds() {
         return skillIds;
     }
 
-    public final void addSkillId(int z) {
+    public void addSkillId(int z) {
         this.skillIds.add(z);
     }
 }

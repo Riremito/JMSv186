@@ -27,11 +27,11 @@ import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.SkillFactory;
-import tacos.network.MaplePacket;
 import tacos.packet.response.ResCAffectedAreaPool;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
+import tacos.packet.ServerPacket;
 
 public class MapleMist extends AbstractMapleMapObject {
 
@@ -137,18 +137,18 @@ public class MapleMist extends AbstractMapleMapObject {
     public void setPosition(Point position) {
     }
 
-    public MaplePacket fakeSpawnData(int level) {
-        return ResCAffectedAreaPool.spawnMist(this);
+    public ServerPacket fakeSpawnData(int level) {
+        return ResCAffectedAreaPool.AffectedAreaCreated(this);
     }
 
     @Override
     public void sendSpawnData(final MapleClient c) {
-        c.SendPacket(ResCAffectedAreaPool.spawnMist(this));
+        c.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(this));
     }
 
     @Override
     public void sendDestroyData(final MapleClient c) {
-        c.SendPacket(ResCAffectedAreaPool.removeMist(this));
+        c.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(this));
     }
 
     public boolean makeChanceResult() {

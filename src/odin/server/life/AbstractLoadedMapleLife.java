@@ -24,7 +24,7 @@ import odin.server.maps.AbstractAnimatedMapleMapObject;
 
 public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapObject {
 
-    private final int id;
+    private int id;
     private int f;
     private boolean hide;
     private int fh, originFh;
@@ -105,5 +105,9 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

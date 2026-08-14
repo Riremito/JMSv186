@@ -27,8 +27,6 @@ import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
 import java.sql.Connection;
 import tacos.database.DatabaseConnection;
-import tacos.network.MaplePacket;
-import odin.constants.ServerConstants;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -42,11 +40,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tacos.packet.response.wrapper.WrapCITC;
 import tacos.odin.OdinPair;
+import tacos.packet.ServerPacket;
+import tacos.server.TacosITC;
 
 public class MTSStorage {
     //stores all carts all mts items, updates every hour
 
-    private static final long serialVersionUID = 231541893513228L;
     private long lastUpdate = System.currentTimeMillis();
     private final Map<Integer, MTSCart> idToCart;
     private final AtomicInteger packageId;
@@ -283,7 +282,7 @@ public class MTSStorage {
         return ret;
     }
 
-    public final MaplePacket getCurrentMTS(final MTSCart cart) {
+    public final ServerPacket getCurrentMTS(final MTSCart cart) {
         mutex.readLock().lock();
         try {
             if (cart.getTab() == 1) { //buyNow
@@ -298,7 +297,7 @@ public class MTSStorage {
         }
     }
 
-    public final MaplePacket getCurrentNotYetSold(final MTSCart cart) {
+    public ServerPacket getCurrentNotYetSold(final MTSCart cart) {
         mutex.readLock().lock();
         try {
             final List<MTSItemInfo> nys = new ArrayList<MTSItemInfo>();
@@ -318,7 +317,7 @@ public class MTSStorage {
         }
     }
 
-    public final MaplePacket getCurrentTransfer(final MTSCart cart, final boolean changed) {
+    public ServerPacket getCurrentTransfer(final MTSCart cart, final boolean changed) {
         return WrapCITC.getTransferInventory(cart.getInventory(), changed);
     }
 
@@ -390,7 +389,7 @@ public class MTSStorage {
         }
 
         public int getTaxes() {
-            return ServerConstants.MTS_BASE + (int) (price * ServerConstants.MTS_TAX / 100);
+            return TacosITC.MTS_BASE + (int) (price * TacosITC.MTS_TAX / 100);
         }
 
         public int getId() {

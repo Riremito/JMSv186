@@ -24,7 +24,6 @@ import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.constants.GameConstants;
 import tacos.config.Region;
-import tacos.config.Version;
 import odin.handling.world.MaplePartyCharacter;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
@@ -34,10 +33,16 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import tacos.config.Config;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.wrapper.WrapCUserLocal;
+import tacos.packet.response.wrapper.WrapCUserRemote;
 
 /**
  *
@@ -59,17 +64,15 @@ public class ReqCDropPool {
         switch (header) {
             case CP_DropPickUpRequest: // CWvsContext::SendDropPickUpRequest
             {
-                byte unk1 = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
-                int update_time = Version.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+                byte unk1 = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
+                int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short drop_x = cp.Decode2();
                 short drop_y = cp.Decode2();
                 int object_id = cp.Decode4();
                 // CRC
-
                 if (!OnDropPickUpRequest(chr, object_id)) {
                     chr.sendStatChanged(true);
                 }
-                chr.updateTick(update_time);
                 return true;
             }
             default: {
@@ -87,10 +90,6 @@ public class ReqCDropPool {
             return false;
         }
         MapleMapItem mapitem = (MapleMapItem) object;
-        if (mapitem.isPickedUp()) {
-            DebugLogger.ErrorLog("PickUp : isPickedUp");
-            return false;
-        }
         if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
             DebugLogger.ErrorLog("PickUp : getOwner");
             return false;
@@ -124,7 +123,29 @@ public class ReqCDropPool {
             DebugLogger.ErrorLog("PickUp : isPickupBlocked");
             return false;
         }
-        if (useDropItem(chr.getClient(), mapitem.getItemId())) {
+        // monster book.
+        int drop_item_id = mapitem.getItemId();
+        if (TacosConstants.is_monster_card(drop_item_id)) {
+            MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+            // Item.wz/Consume/0238.img/02380000/info/spec/consumeOnPickup = 1
+            if (miip.isConsumeOnPickup(drop_item_id) == 1) {
+                if (chr.getMonsterBook().add(drop_item_id, mapitem.getItem().getQuantity())) {
+                    int nCardID = drop_item_id;
+                    int nCardCount = chr.getMonsterBook().getCardCount(nCardID);
+                    chr.SendPacket(ResCWvsContext.MonsterBookSetCard(true, nCardID, nCardCount));
+                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
+                    chr.SendPacket(ResWrapper.showGainCard(nCardID));
+                    chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, chr), false);
+                } else {
+                    chr.SendPacket(ResCWvsContext.MonsterBookSetCard(false, 0, 0));
+                }
+                removeDropItem(chr, mapitem);
+                chr.SendPacket(ResWrapper.DropPickUpMessage(drop_item_id, mapitem.getItem().getQuantity()));
+                chr.updateInv();
+                return true;
+            }
+        }
+        if (useDropItem(chr, mapitem.getItemId())) {
             removeDropItem(chr, mapitem);
             DebugLogger.InfoLog("PickUp : useItem");
             return true;
@@ -147,38 +168,33 @@ public class ReqCDropPool {
     }
 
     public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem, boolean is_pet, int pet_index) {
-        mapitem.setPickedUp(true);
         chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? ResCDropPool.LeaveType.PICK_UP_PET : ResCDropPool.LeaveType.PICK_UP, chr, pet_index), mapitem.getPosition());
         chr.getMap().removeMapObject(mapitem);
-        if (mapitem.isRandDrop()) {
-            chr.getMap().spawnRandDrop();
-        }
     }
 
-    public static boolean useDropItem(final MapleClient c, final int id) {
+    public static boolean useDropItem(MapleCharacter chr, int id) {
         if (GameConstants.isUse(id)) {
-            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            final byte consumeval = ii.isConsumeOnPickup(id);
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            byte consumeval = ii.isConsumeOnPickup(id);
             if (consumeval > 0) {
                 if (consumeval == 2) {
-                    if (c.getPlayer().getParty() != null) {
-                        for (final MaplePartyCharacter pc : c.getPlayer().getParty().getMembers()) {
-                            final MapleCharacter chr = c.getPlayer().getMap().getCharacterById(pc.getId());
-                            if (chr != null) {
-                                ii.getItemEffect(id).applyTo(chr);
+                    if (chr.getParty() != null) {
+                        for (MaplePartyCharacter pc : chr.getParty().getMembers()) {
+                            MapleCharacter chr_to = chr.getMap().getCharacterById(pc.getId());
+                            if (chr_to != null) {
+                                ii.getItemEffect(id).applyTo(chr_to);
                             }
                         }
                     } else {
-                        ii.getItemEffect(id).applyTo(c.getPlayer());
+                        ii.getItemEffect(id).applyTo(chr);
                     }
                 } else {
-                    ii.getItemEffect(id).applyTo(c.getPlayer());
+                    ii.getItemEffect(id).applyTo(chr);
                 }
-                c.SendPacket(ResWrapper.DropPickUpMessage(id, (byte) 1));
+                chr.SendPacket(ResWrapper.DropPickUpMessage(id, (byte) 1));
                 return true;
             }
         }
         return false;
     }
-
 }

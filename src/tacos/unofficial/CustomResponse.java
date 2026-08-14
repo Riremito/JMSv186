@@ -20,7 +20,6 @@ package tacos.unofficial;
 
 import odin.client.MapleClient;
 import tacos.property.Property_Login;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
@@ -40,28 +39,27 @@ public class CustomResponse {
         return true;
     }
 
-    public static MaplePacket GetWzHash(String wz_name) {
+    public static ServerPacket GetWzHash(String wz_name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_WZ_HASH);
 
         sp.EncodeStr(wz_name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket GetMemoryHash(int address, int size) {
+    public static ServerPacket GetMemoryHash(int address, int size) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_MEMORY_SCAN);
 
         sp.Encode4(address);
         sp.Encode4(size);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket SetPatch(int address, byte[] memory) {
+    public static ServerPacket SetPatch(int address, byte[] memory) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CUSTOM_CLIENT_PATCH);
 
         sp.Encode4(address);
         sp.Encode4(memory.length);
         sp.EncodeBuffer(memory);
-        return sp.get();
+        return sp;
     }
-
 }

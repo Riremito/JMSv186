@@ -24,7 +24,6 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.shared.SharedDate;
-import tacos.wz.ids.DWI_Validation;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import tacos.packet.ClientPacket;
@@ -34,6 +33,7 @@ import odin.server.CashItemFactory;
 import odin.server.CashItemInfo;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacketHeader;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -444,7 +444,7 @@ public class ReqCCashShop {
                 CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
                 IItem item = chr.getCashInventory().toItem(cashitem);
 
-                if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && DWI_Validation.isValidItemID(item.getItemId())) {
+                if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && WzDataStorage.ITEM.check(item.getItemId())) {
                     chr.getCashInventory().addToInventory(item);
                     items_cash.add(item); // リストへ追加
                 } else {
@@ -491,7 +491,7 @@ public class ReqCCashShop {
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
         IItem item = chr.getCashInventory().toItem(cashitem);
 
-        if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && DWI_Validation.isValidItemID(item.getItemId())) {
+        if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && WzDataStorage.ITEM.check(item.getItemId())) {
             chr.getCashInventory().removeFromInventory(box_item);
             chr.getCashInventory().addToInventory(item);
             c.SendPacket(ResCCashShop.OnCashItemGachaponResult(box_item, item, c));

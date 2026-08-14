@@ -25,16 +25,12 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
 import tacos.config.Region;
-import tacos.config.Version;
-import tacos.wz.data.ItemWz;
 import tacos.debug.DebugLogger;
 import odin.handling.world.MaplePartyCharacter;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -43,12 +39,12 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
+import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -72,8 +68,8 @@ public class ReqCUser_Pet {
 
         MaplePet pet = null;
         // outside CUser
-        if (Version.LessOrEqual(Region.JMS, 147)) {
-            long pet_uid = Version.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
+        if (Config.LessOrEqual(Region.JMS, 147)) {
+            long pet_uid = Config.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
             pet = chr.getPetByUniqueId(pet_uid);
         } else {
             int pet_index = cp.Decode4();
@@ -151,7 +147,7 @@ public class ReqCUser_Pet {
     }
 
     public static boolean OnPetMove(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             byte unk = cp.Decode1();
         }
 
@@ -161,15 +157,6 @@ public class ReqCUser_Pet {
         }
 
         map.broadcastMessage(chr, ResCUser_Pet.PetMove(chr, pet, move_path), false);
-
-        // NPC Pet test.
-        if (chr.getNPCPet()) {
-            for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
-                MapleNPC npc = chr.getMap().getNPCByOid(mmo.getObjectId());
-                move_path.update(npc);
-                map.broadcastMessageDelayed(chr, ResCNpcPool.NpcMove(npc, -1, -1, move_path));
-            }
-        }
         return true;
     }
 
@@ -178,7 +165,7 @@ public class ReqCUser_Pet {
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
 
-        map.broadcastMessage(chr, ResCUser_Pet.petChat(chr, chr.getPetIndex(pet), nType, nAction, pet_message), false);
+        map.broadcastMessage(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), false);
         return true;
     }
 
@@ -195,7 +182,7 @@ public class ReqCUser_Pet {
         //slea.skip(5);
         cp.DecodeBuffer(5); // ?_?
         final byte command = cp.Decode1();
-        final PetCommand petCommand = ItemWz.get().getPetCommand(pet.getPetItemId(), (int) command);
+        final PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
@@ -213,7 +200,7 @@ public class ReqCUser_Pet {
                 chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
-        chr.getMap().broadcastMessage(chr, ResCUser_Pet.commandResponse(chr.getId(), command, petIndex, success, false), true);
+        chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetActionCommand(chr.getId(), command, petIndex, success, false), true);
     }
 
     public static boolean OnPetDropPickUpRequest(MapleCharacter chr, MaplePet pet, ClientPacket cp) {
@@ -222,14 +209,14 @@ public class ReqCUser_Pet {
         short drop_x = cp.Decode2();
         short drop_y = cp.Decode2();
         int drop_id = cp.Decode4();
-        int drop_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
-        short unk2 = cp.Decode2(); // unk
+        int drop_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
+        short unk2 = Region.KMST.check() ? 0 : cp.Decode2(); // unk
         // trap
         if ((drop_id % 13) == 0) {
-            short pet_x = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
-            short pet_y = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
-            int pet_xy_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
-            int drop_xy_CRC = Version.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
+            short pet_x = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
+            short pet_y = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode2();
+            int pet_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
+            int drop_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
         MapleMapItem mapitem = (MapleMapItem) chr.getMap().getMapObject(drop_id, MapleMapObjectType.ITEM);
@@ -238,7 +225,6 @@ public class ReqCUser_Pet {
         }
 
         Pickup_Pet(chr, mapitem, chr.getPetIndex(pet));
-        chr.updateTick(timestamp);
         return true;
     }
 
@@ -253,12 +239,7 @@ public class ReqCUser_Pet {
     }
 
     public static void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {
-        final Lock lock = mapitem.getLock();
-        MapleClient c = chr.getClient();
-        if (mapitem.isPickedUp()) {
-            chr.updateInv();
-            return;
-        }
+        MapleClient client = chr.getClient();
         if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
@@ -292,13 +273,14 @@ public class ReqCUser_Pet {
         } else {
             if (MapleItemInformationProvider.getInstance().isPickupBlocked(mapitem.getItemId()) || mapitem.getItemId() / 10000 == 291) {
                 chr.updateInv();
-            } else if (ReqCDropPool.useDropItem(c, mapitem.getItemId())) {
+                return;
+            }
+            if (ReqCDropPool.useDropItem(chr, mapitem.getItemId())) {
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
-            } else if (MapleInventoryManipulator.checkSpace(c, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-                MapleInventoryManipulator.addFromDrop(c, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
+            } else if (MapleInventoryManipulator.checkSpace(client, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             }
         }
     }
-
 }

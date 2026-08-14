@@ -18,68 +18,98 @@
  */
 package tacos.packet.ops;
 
-import tacos.config.Region;
-import tacos.config.Version;
+import tacos.config.Config;
 
 /**
  *
  * @author Riremito
  */
-public enum OpsQuest {
-    QuestReq_LostItem,
-    QuestReq_AcceptQuest,
-    QuestReq_CompleteQuest,
-    QuestReq_ResignQuest,
-    QuestReq_OpeningScript,
-    QuestReq_CompleteScript,
-    QuestRes_Start_QuestTimer,
-    QuestRes_End_QuestTimer,
-    QuestRes_Start_TimeKeepQuestTimer,
-    QuestRes_End_TimeKeepQuestTimer,
-    QuestRes_Act_Success,
-    QuestRes_Act_Failed_Unknown,
-    QuestRes_Act_Failed_Inventory,
-    QuestRes_Act_Failed_Meso,
-    QuestRes_Act_Failed_Pet,
-    QuestRes_Act_Failed_Equipped,
-    QuestRes_Act_Failed_OnlyItem,
-    QuestRes_Act_Failed_TimeOver,
-    QuestRes_Act_Reset_QuestTimer,
-    UNKNOWN(-1);
+public enum OpsQuest implements IPacketOps {
+    QuestReq_LostItem(0),
+    QuestReq_AcceptQuest(1),
+    QuestReq_CompleteQuest(2),
+    QuestReq_ResignQuest(3),
+    QuestReq_OpeningScript(4),
+    QuestReq_CompleteScript(5),
+    QuestRes_Start_QuestTimer(6),
+    QuestRes_End_QuestTimer(7),
+    QuestRes_Start_TimeKeepQuestTimer(8),
+    QuestRes_End_TimeKeepQuestTimer(9),
+    QuestRes_Act_Success(10),
+    QuestRes_Act_Failed_Unknown(11),
+    QuestRes_Act_Failed_Inventory(12),
+    QuestRes_Act_Failed_Meso(13),
+    QuestRes_Act_Failed_Pet(14),
+    QuestRes_Act_Failed_Equipped(15),
+    QuestRes_Act_Failed_OnlyItem(16),
+    QuestRes_Act_Failed_TimeOver(17),
+    QuestRes_Act_Reset_QuestTimer(18),
+    UNKNOWN;
 
     private int value;
 
-    OpsQuest(int v) {
-        value = v;
+    OpsQuest(int val) {
+        this.value = val;
     }
 
     OpsQuest() {
-        value = -1;
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
     }
 
-    public void set(int v) {
-        this.value = v;
+    @Override
+    public void set(int val) {
+        this.value = val;
     }
 
-    public static OpsQuest find(int v) {
-        for (final OpsQuest o : OpsQuest.values()) {
-            if (o.get() == v) {
-                return o;
+    public static OpsQuest find(int val) {
+        for (OpsQuest ops : values()) {
+            if (ops.get() == val) {
+                if (val != UNKNOWN.get()) {
+                    return ops;
+                }
             }
         }
-
         return UNKNOWN;
     }
 
-    public static void init() {
-        // JMS186
-        QuestRes_Act_Success.set(8);
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            QuestRes_Act_Success.set(10);
+    public static void clear() {
+        for (OpsQuest ops : values()) {
+            ops.set(UNKNOWN.get());
         }
+    }
+
+    public static void init() {
+        if (Config.PostBB()) {
+            return;
+        }
+        // JMS186
+        clear();
+        QuestRes_Act_Success.set(8);
+        /*
+        QuestReq_LostItem.set(0);
+        QuestReq_AcceptQuest.set(1);
+        QuestReq_CompleteQuest.set(2);
+        QuestReq_ResignQuest.set(3);
+        QuestReq_OpeningScript.set(4);
+        QuestReq_CompleteScript.set(5);
+        QuestRes_Start_QuestTimer.set(6);
+        QuestRes_End_QuestTimer.set(7);
+        QuestRes_Start_TimeKeepQuestTimer.set(8);
+        QuestRes_End_TimeKeepQuestTimer.set(9);
+        QuestRes_Act_Success.set(10);
+        QuestRes_Act_Failed_Unknown.set(11);
+        QuestRes_Act_Failed_Inventory.set(12);
+        QuestRes_Act_Failed_Meso.set(13);
+        QuestRes_Act_Failed_Pet.set(14);
+        QuestRes_Act_Failed_Equipped.set(15);
+        QuestRes_Act_Failed_OnlyItem.set(16);
+        QuestRes_Act_Failed_TimeOver.set(17);
+        QuestRes_Act_Reset_QuestTimer.set(18);
+         */
     }
 }

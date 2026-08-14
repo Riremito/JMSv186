@@ -25,17 +25,12 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IEquip;
-import odin.client.inventory.MapleWeaponType;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
-
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -43,39 +38,34 @@ import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleStatEffect;
-import odin.server.StructPotentialItem;
-import odin.server.StructSetItem;
-import odin.server.StructSetItem.SetItem;
 
-public class PlayerStats implements Serializable {
+public class PlayerStats {
 
-    private static final long serialVersionUID = -679541993413738569L;
-    private transient WeakReference<MapleCharacter> chr;
-    private Map<Integer, Integer> setHandling = new HashMap<Integer, Integer>();
-    private List<Equip> durabilityHandling = new ArrayList<Equip>(), equipLevelHandling = new ArrayList<Equip>();
-    private transient float shouldHealHP, shouldHealMP;
+    private WeakReference<MapleCharacter> chr;
+    private Map<Integer, Integer> setHandling = new HashMap<>();
+    private List<Equip> durabilityHandling = new ArrayList<>(), equipLevelHandling = new ArrayList<>();
+    private float shouldHealHP, shouldHealMP;
     public int str, dex, luk, int_, hp, maxhp, mp, maxmp;
-    private transient short passive_sharpeye_percent, localmaxhp, localmaxmp;
-    private transient byte passive_mastery, passive_sharpeye_rate;
-    private transient int localstr, localdex, localluk, localint_;
-    private transient int magic, watk, hands, accuracy;
-    public transient boolean equippedWelcomeBackRing, equippedFairy, hasMeso, hasItem, hasVac, hasClone, hasPartyBonus, Berserk = false, isRecalc = false;
-    public transient int equipmentBonusExp, expMod, dropMod, cashMod, levelBonus;
-    public transient double expBuff, dropBuff, mesoBuff, cashBuff;
+    private short localmaxhp, localmaxmp;
+    private byte passive_mastery = 0;
+    private int localstr, localdex, localluk, localint_;
+    private int magic, watk, hands, accuracy;
+    public boolean equippedWelcomeBackRing, equippedFairy, hasMeso, hasItem, hasVac, hasClone, hasPartyBonus, Berserk = false, isRecalc = false;
+    public int equipmentBonusExp, expMod, dropMod, cashMod, levelBonus;
+    public double expBuff, dropBuff, mesoBuff, cashBuff;
     //restore/recovery are separate variables because i dont know jack shit what it even does
     //same with incMesoProp/incRewardProp for now
-    public transient double dam_r, bossdam_r;
-    public transient int recoverHP, recoverMP, mpconReduce, incMesoProp, incRewardProp, DAMreflect, DAMreflect_rate, mpRestore,
+    public double dam_r, bossdam_r;
+    public int recoverHP, recoverMP, mpconReduce, incMesoProp, incRewardProp, DAMreflect, DAMreflect_rate, mpRestore,
             hpRecover, hpRecoverProp, mpRecover, mpRecoverProp, RecoveryUP, incAllskill;
-    private transient float speedMod, jumpMod, localmaxbasedamage;
+    private float speedMod, jumpMod;
     // Elemental properties
-    public transient int def, element_ice, element_fire, element_light, element_psn;
+    public int def, element_ice, element_fire, element_light, element_psn;
     public ReentrantLock lock = new ReentrantLock(); //we're getting concurrentmodificationexceptions, but would this slow things down?
 
     public PlayerStats(final MapleCharacter chr) {
         // TODO, move str/dex/int etc here -_-
-        this.chr = new WeakReference<MapleCharacter>(chr);
+        this.chr = new WeakReference<>(chr);
     }
 
     //POTENTIALS:
@@ -231,10 +221,6 @@ public class PlayerStats implements Serializable {
         return hands;
     }
 
-    public final float getCurrentMaxBaseDamage() {
-        return localmaxbasedamage;
-    }
-
     public void recalcLocalStats() {
         recalcLocalStats(false);
     }
@@ -272,7 +258,6 @@ public class PlayerStats implements Serializable {
         } else if (chra.getJob() == 400 || (chra.getJob() >= 410 && chra.getJob() <= 412) || (chra.getJob() >= 1400 && chra.getJob() <= 1412)) {
             watk = 30; //stars
         }
-        StructPotentialItem pot;
         dam_r = 0.0;
         bossdam_r = 0.0;
         expBuff = 100.0;
@@ -385,92 +370,11 @@ public class PlayerStats implements Serializable {
                 setHandling.put(set, value); //id of Set, number of items to go with the set
             }
             if (equip.getHidden() > 1) {
-                int[] potentials = {equip.getPotential1(), equip.getPotential2(), equip.getPotential3()};
-                for (int i : potentials) {
-                    if (i > 0) {
-                        pot = ii.getPotentialInfo(i).get(ii.getReqLevel(equip.getItemId()) / 10);
-                        if (pot != null) {
-                            localstr += pot.incSTR;
-                            localdex += pot.incDEX;
-                            localint_ += pot.incINT;
-                            localluk += pot.incLUK;
-                            localmaxhp += pot.incMHP;
-                            localmaxmp += pot.incMMP;
-                            watk += pot.incPAD;
-                            magic += pot.incINT + pot.incMAD;
-                            speed += pot.incSpeed;
-                            jump += pot.incJump;
-                            accuracy += pot.incACC;
-                            incAllskill += pot.incAllskill;
-                            percent_hp += pot.incMHPr;
-                            percent_mp += pot.incMMPr;
-                            percent_str += pot.incSTRr;
-                            percent_dex += pot.incDEXr;
-                            percent_int += pot.incINTr;
-                            percent_luk += pot.incLUKr;
-                            percent_acc += pot.incACCr;
-                            percent_atk += pot.incPADr;
-                            percent_matk += pot.incMADr;
-                            added_sharpeye_rate += pot.incCr;
-                            added_sharpeye_dmg += pot.incCr;
-                            if (!pot.boss) {
-                                dam_r = (double) Math.max(pot.incDAMr, dam_r);
-                            } else {
-                                bossdam_r = (double) Math.max(pot.incDAMr, bossdam_r); //SET, not add
-                            }
-                            recoverHP += pot.RecoveryHP;
-                            recoverMP += pot.RecoveryMP;
-                            RecoveryUP += pot.RecoveryUP;
-                            if (pot.HP > 0) {
-                                hpRecover += pot.HP;
-                                hpRecoverProp += pot.prop;
-                            }
-                            if (pot.MP > 0) {
-                                mpRecover += pot.MP;
-                                mpRecoverProp += pot.prop;
-                            }
-                            mpconReduce += pot.mpconReduce;
-                            incMesoProp += pot.incMesoProp;
-                            incRewardProp += pot.incRewardProp;
-                            if (pot.DAMreflect > 0) {
-                                DAMreflect += pot.DAMreflect;
-                                DAMreflect_rate += pot.prop;
-                            }
-                            mpRestore += pot.mpRestore;
-                            if (!first_login && pot.skillID > 0) {
-                                chra.changeSkillLevel_Skip(SkillFactory.getSkill(getSkillByJob(pot.skillID, chra.getJob())), (byte) 1, (byte) 1);
-                            }
-                        }
-                    }
-                }
                 if (equip.getDurability() > 0) {
                     durabilityHandling.add((Equip) equip);
                 }
                 if (canEquipLevel && GameConstants.getMaxLevel(equip.getItemId()) > 0 && (GameConstants.getStatFromWeapon(equip.getItemId()) == null ? (equip.getEquipLevel() <= GameConstants.getMaxLevel(equip.getItemId())) : (equip.getEquipLevel() < GameConstants.getMaxLevel(equip.getItemId())))) {
                     equipLevelHandling.add((Equip) equip);
-                }
-            }
-        }
-        final Iterator<Entry<Integer, Integer>> iter = setHandling.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Entry<Integer, Integer> entry = iter.next();
-            final StructSetItem set = ii.getSetItem(entry.getKey());
-            if (set != null) {
-                final Map<Integer, SetItem> itemz = set.getItems();
-                for (Entry<Integer, SetItem> ent : itemz.entrySet()) {
-                    if (ent.getKey() <= entry.getValue()) {
-                        SetItem se = ent.getValue();
-                        localstr += se.incSTR;
-                        localdex += se.incDEX;
-                        localint_ += se.incINT;
-                        localluk += se.incLUK;
-                        watk += se.incPAD;
-                        magic += se.incINT + se.incMAD;
-                        speed += se.incSpeed;
-                        accuracy += se.incACC;
-                        localmaxhp_ += se.incMHP;
-                        localmaxmp_ += se.incMMP;
-                    }
                 }
             }
         }
@@ -542,51 +446,6 @@ public class PlayerStats implements Serializable {
         localmaxmp_ += (percent_mp * localmaxmp_) / 100f;
         magic = Math.min(magic, 1999); //buffs can make it higher
 
-        Integer buff = chra.getBuffedValue(MapleBuffStat.MAPLE_WARRIOR);
-        if (buff != null) {
-            final double d = buff.doubleValue() / 100.0;
-            localstr += d * str; //base only
-            localdex += d * dex;
-            localluk += d * luk;
-
-            final int before = localint_;
-            localint_ += d * int_;
-            magic += localint_ - before;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ECHO_OF_HERO);
-        if (buff != null) {
-            final double d = buff.doubleValue() / 100.0;
-            watk += (int) (watk * d);
-            magic += (int) (magic * d);
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ARAN_COMBO);
-        if (buff != null) {
-            watk += buff.intValue() / 10;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MAXHP);
-        if (buff != null) {
-            localmaxhp_ += (buff.doubleValue() / 100.0) * localmaxhp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.CONVERSION);
-        if (buff != null) {
-            localmaxhp_ += (buff.doubleValue() / 100.0) * localmaxhp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MAXMP);
-        if (buff != null) {
-            localmaxmp_ += (buff.doubleValue() / 100.0) * localmaxmp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MP_BUFF);
-        if (buff != null) {
-            localmaxmp_ += (buff.doubleValue() / 100.0) * localmaxmp_;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ENHANCED_MAXHP);
-        if (buff != null) {
-            localmaxhp_ += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ENHANCED_MAXMP);
-        if (buff != null) {
-            localmaxmp_ += buff.intValue();
-        }
         switch (chra.getJob()) {
             case 322: { // Crossbowman
                 final ISkill expert = SkillFactory.getSkill(3220004);
@@ -662,120 +521,10 @@ public class PlayerStats implements Serializable {
             magic += blessoffairy.getEffect(boflevel).getY();
             accuracy += blessoffairy.getEffect(boflevel).getX();
         }
-        buff = chra.getBuffedValue(MapleBuffStat.EXPRATE);
-        if (buff != null) {
-            expBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DROP_RATE);
-        if (buff != null) {
-            dropBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ACASH_RATE);
-        if (buff != null) {
-            cashBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MESO_RATE);
-        if (buff != null) {
-            mesoBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MESOUP);
-        if (buff != null) {
-            mesoBuff *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ACC);
-        if (buff != null) {
-            accuracy += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.WATK);
-        if (buff != null) {
-            watk += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.ENHANCED_WATK);
-        if (buff != null) {
-            watk += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.MATK);
-        if (buff != null) {
-            magic += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.SPEED);
-        if (buff != null) {
-            speed += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.JUMP);
-        if (buff != null) {
-            jump += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DASH_SPEED);
-        if (buff != null) {
-            speed += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DASH_JUMP);
-        if (buff != null) {
-            jump += buff.intValue();
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.DAMAGE_BUFF);
-        if (buff != null) {
-            dam_r += buff.doubleValue();
-            bossdam_r += buff.doubleValue();
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.FINAL_CUT);
-        if (buff != null) {
-            dam_r *= buff.doubleValue() / 100.0;
-            bossdam_r *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.OWL_SPIRIT);
-        if (buff != null) {
-            dam_r *= buff.doubleValue() / 100.0;
-            bossdam_r *= buff.doubleValue() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.BERSERK_FURY);
-        if (buff != null) {
-            dam_r *= 2.0;
-            bossdam_r *= 2.0;
-        }
         final ISkill bx = SkillFactory.getSkill(1320006);
         if (chra.getSkillLevel(bx) > 0) {
             dam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
             bossdam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.PYRAMID_PQ);
-        if (buff != null) {
-            final MapleStatEffect eff = chra.getStatForBuff(MapleBuffStat.PYRAMID_PQ);
-            dam_r *= eff.getBerserk() / 100.0;
-            bossdam_r *= eff.getBerserk() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.WK_CHARGE);
-        if (buff != null) {
-            final MapleStatEffect eff = chra.getStatForBuff(MapleBuffStat.WK_CHARGE);
-            dam_r *= eff.getDamage() / 100.0;
-            bossdam_r *= eff.getDamage() / 100.0;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.LIGHTNING_CHARGE);
-        if (buff != null) {
-            final MapleStatEffect eff = chra.getStatForBuff(MapleBuffStat.LIGHTNING_CHARGE);
-            dam_r *= eff.getDamage() / 100.0;
-            bossdam_r *= eff.getDamage() / 100.0;
-        }
-        buff = chra.getBuffedSkill_X(MapleBuffStat.THORNS);
-        if (buff != null) {
-            added_sharpeye_rate += buff.intValue();
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.THORNS);
-        if (buff != null) {
-            added_sharpeye_dmg += buff.intValue() - 100;
-        }
-        buff = chra.getBuffedSkill_X(MapleBuffStat.SHARP_EYES);
-        if (buff != null) {
-            added_sharpeye_rate += buff.intValue();
-        }
-        buff = chra.getBuffedSkill_Y(MapleBuffStat.SHARP_EYES);
-        if (buff != null) {
-            added_sharpeye_dmg += buff.intValue() - 100;
-        }
-        buff = chra.getBuffedValue(MapleBuffStat.CRITICAL_RATE_BUFF);
-        if (buff != null) {
-            added_sharpeye_rate += buff.intValue();
         }
         if (speed > 140) {
             speed = 140;
@@ -785,37 +534,17 @@ public class PlayerStats implements Serializable {
         }
         speedMod = speed / 100.0f;
         jumpMod = jump / 100.0f;
-        Integer mount = chra.getBuffedValue(MapleBuffStat.MONSTER_RIDING);
-        if (mount != null) {
-            jumpMod = 1.23f;
-            switch (mount.intValue()) {
-                case 1:
-                    speedMod = 1.5f;
-                    break;
-                case 2:
-                    speedMod = 1.7f;
-                    break;
-                case 3:
-                    speedMod = 1.8f;
-                    break;
-                default:
-                    System.err.println("Unhandeled monster riding level, Speedmod = " + speedMod + "");
-            }
-        }
         hands = this.localdex + this.localint_ + this.localluk;
 
         localmaxhp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxhp_)));
         localmaxmp = (short) Math.min(30000, Math.abs(Math.max(-30000, localmaxmp_)));
 
-        CalcPassive_SharpEye(chra, added_sharpeye_rate, added_sharpeye_dmg);
-        CalcPassive_Mastery(chra);
         if (first_login) {
             chra.silentEnforceMaxHpMp();
         } else {
             chra.enforceMaxHpMp();
         }
 
-        localmaxbasedamage = calculateMaxBaseDamage(watk);
         if (oldmaxhp != 0 && oldmaxhp != localmaxhp) {
             chra.updatePartyMemberHP();
         }
@@ -830,7 +559,7 @@ public class PlayerStats implements Serializable {
     public boolean checkEquipLevels(final MapleCharacter chr, int gain) {
         boolean changed = false;
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        List<Equip> all = new ArrayList<Equip>(equipLevelHandling);
+        List<Equip> all = new ArrayList<>(equipLevelHandling);
         for (Equip eq : all) {
             int lvlz = eq.getEquipLevel();
             eq.setItemEXP(eq.getItemEXP() + gain);
@@ -848,7 +577,7 @@ public class PlayerStats implements Serializable {
                         if (ins != null && ins.containsKey(lvlz + i)) {
                             for (Integer z : ins.get(lvlz + i)) {
                                 if (Math.random() < 0.1) { //10% chance dood
-                                    final ISkill skil = SkillFactory.getSkill(z.intValue());
+                                    final ISkill skil = SkillFactory.getSkill(z);
                                     if (skil != null && skil.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(skil) < chr.getMasterLevel(skil)) { //dont go over masterlevel :D
                                         chr.changeSkillLevel(skil, (byte) (chr.getSkillLevel(skil) + 1), chr.getMasterLevel(skil));
                                     }
@@ -859,7 +588,7 @@ public class PlayerStats implements Serializable {
                 }
                 changed = true;
             }
-            chr.forceReAddItem(eq.copy(), MapleInventoryType.EQUIPPED);
+            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eq.copy()));
         }
         if (changed) {
             chr.equipChanged();
@@ -876,7 +605,7 @@ public class PlayerStats implements Serializable {
                 item.setDurability(0);
             }
         }
-        List<Equip> all = new ArrayList<Equip>(durabilityHandling);
+        List<Equip> all = new ArrayList<>(durabilityHandling);
         for (Equip eqq : all) {
             if (eqq.getDurability() == 0) { //> 0 went to negative
                 if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
@@ -887,248 +616,16 @@ public class PlayerStats implements Serializable {
                 durabilityHandling.remove(eqq);
                 final short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
                 MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
-                chr.getClient().getSession().write(ResWrapper.updateSpecialItemUse(eqq, (byte) 1, pos));
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, eqq));
             } else {
-                chr.forceReAddItem(eqq.copy(), MapleInventoryType.EQUIPPED);
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eqq.copy()));
             }
         }
         return true;
     }
 
-    private final void CalcPassive_Mastery(final MapleCharacter player) {
-        if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11) == null) {
-            passive_mastery = 0;
-            return;
-        }
-        final int skil;
-        switch (GameConstants.getWeaponType(player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11).getItemId())) {
-            case BOW:
-                skil = GameConstants.isKOC(player.getJob()) ? 13100000 : (GameConstants.isResist(player.getJob()) ? 33100000 : 3100000);
-                break;
-            case CLAW:
-                skil = 4100000;
-                break;
-            case KATARA:
-            case DAGGER:
-                skil = player.getJob() >= 430 && player.getJob() <= 434 ? 4300000 : 4200000;
-                break;
-            case CROSSBOW:
-                skil = 3200000;
-                break;
-            case AXE1H:
-            case AXE2H:
-                skil = 1100001;
-                break;
-            case SWORD1H:
-            case SWORD2H:
-                skil = GameConstants.isKOC(player.getJob()) ? 11100000 : (player.getJob() > 112 ? 1200000 : 1100000); //hero/pally
-                break;
-            case BLUNT1H:
-            case BLUNT2H:
-                skil = 1200001;
-                break;
-            case POLE_ARM:
-                skil = GameConstants.isAran(player.getJob()) ? 21100000 : 1300001;
-                break;
-            case SPEAR:
-                skil = 1300000;
-                break;
-            case KNUCKLE:
-                skil = GameConstants.isKOC(player.getJob()) ? 15100001 : 5100001;
-                break;
-            case GUN:
-                skil = GameConstants.isResist(player.getJob()) ? 35100000 : 5200000;
-                break;
-            case STAFF:
-                skil = 32100006;
-                break;
-            default:
-                passive_mastery = 0;
-                return;
-
-        }
-        if (player.getSkillLevel(skil) <= 0) {
-            passive_mastery = 0;
-            return;
-        }
-        passive_mastery = (byte) ((player.getSkillLevel(skil) / 2) + (player.getSkillLevel(skil) % 2)); //after bb, simpler?
-    }
-
-    private final void CalcPassive_SharpEye(final MapleCharacter player, final int added_sharpeye_rate, final int added_sharpeye_dmg) {
-        switch (player.getJob()) { // Apply passive Critical bonus
-            case 410:
-            case 411:
-            case 412: { // Assasin/ Hermit / NL
-                final ISkill critSkill = SkillFactory.getSkill(4100001);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) (critSkill.getEffect(critlevel).getDamage() - 100 + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) (critSkill.getEffect(critlevel).getProb() + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-            case 1410:
-            case 1411:
-            case 1412: { // Night Walker
-                final ISkill critSkill = SkillFactory.getSkill(14100001);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) (critSkill.getEffect(critlevel).getDamage() - 100 + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) (critSkill.getEffect(critlevel).getProb() + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-            case 511:
-            case 512: { // Buccaner, Viper
-                final ISkill critSkill = SkillFactory.getSkill(5110000);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) (critSkill.getEffect(critlevel).getDamage() - 100 + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) (critSkill.getEffect(critlevel).getProb() + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-            case 1511:
-            case 1512: {
-                final ISkill critSkill = SkillFactory.getSkill(15110000);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) (critSkill.getEffect(critlevel).getDamage() - 100 + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) (critSkill.getEffect(critlevel).getProb() + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-            case 2111:
-            case 2112: { // Aran, TODO : only applies when there's > 10 combo
-                final ISkill critSkill = SkillFactory.getSkill(21110000);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) ((critSkill.getEffect(critlevel).getX() * critSkill.getEffect(critlevel).getDamage()) + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) ((critSkill.getEffect(critlevel).getX() * critSkill.getEffect(critlevel).getY()) + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-            case 300:
-            case 310:
-            case 311:
-            case 312:
-            case 320:
-            case 321:
-            case 322: { // Bowman
-                final ISkill critSkill = SkillFactory.getSkill(3000001);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) (critSkill.getEffect(critlevel).getDamage() - 100 + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) (critSkill.getEffect(critlevel).getProb() + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-            case 1300:
-            case 1310:
-            case 1311:
-            case 1312: { // Bowman
-                final ISkill critSkill = SkillFactory.getSkill(13000000);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) (critSkill.getEffect(critlevel).getDamage() - 100 + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) (critSkill.getEffect(critlevel).getProb() + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-            case 2214:
-            case 2215:
-            case 2216:
-            case 2217:
-            case 2218: { //Evan
-                final ISkill critSkill = SkillFactory.getSkill(22140000);
-                final int critlevel = player.getSkillLevel(critSkill);
-                if (critlevel > 0) {
-                    this.passive_sharpeye_percent = (short) (critSkill.getEffect(critlevel).getDamage() - 100 + added_sharpeye_dmg);
-                    this.passive_sharpeye_rate = (byte) (critSkill.getEffect(critlevel).getProb() + added_sharpeye_rate);
-                    return;
-                }
-                break;
-            }
-        }
-        this.passive_sharpeye_percent = (short) added_sharpeye_dmg;
-        this.passive_sharpeye_rate = (byte) added_sharpeye_rate;
-    }
-
-    public final short passive_sharpeye_percent() {
-        return passive_sharpeye_percent;
-    }
-
-    public final byte passive_sharpeye_rate() {
-        return passive_sharpeye_rate;
-    }
-
     public final byte passive_mastery() {
         return passive_mastery; //* 5 + 10 for mastery %
-    }
-
-    public final float calculateMaxBaseDamage(final int watk) {
-        final MapleCharacter chra = chr.get();
-        if (chra == null) {
-            return 0;
-        }
-        float maxbasedamage;
-        if (watk == 0) {
-            maxbasedamage = 1;
-        } else {
-            final IItem weapon_item = chra.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
-            final int job = chra.getJob();
-            final MapleWeaponType weapon = weapon_item == null ? MapleWeaponType.NOT_A_WEAPON : GameConstants.getWeaponType(weapon_item.getItemId());
-            int mainstat, secondarystat;
-
-            switch (weapon) {
-                case BOW:
-                case CROSSBOW:
-                    mainstat = localdex;
-                    secondarystat = localstr;
-                    break;
-                case CLAW:
-                case DAGGER:
-                case KATARA:
-                    if ((job >= 400 && job <= 434) || (job >= 1400 && job <= 1412)) {
-                        mainstat = localluk;
-                        secondarystat = localdex + localstr;
-                    } else { // Non Thieves
-                        mainstat = localstr;
-                        secondarystat = localdex;
-                    }
-                    break;
-                case KNUCKLE:
-                    mainstat = localstr;
-                    secondarystat = localdex;
-                    break;
-                case GUN:
-                    mainstat = localdex;
-                    secondarystat = localstr;
-                    break;
-                case NOT_A_WEAPON:
-                    if ((job >= 500 && job <= 522) || (job >= 1500 && job <= 1512) || (job >= 3500 && job <= 3512)) {
-                        mainstat = localstr;
-                        secondarystat = localdex;
-                    } else {
-                        mainstat = 0;
-                        secondarystat = 0;
-                    }
-                    break;
-                default:
-                    mainstat = localstr;
-                    secondarystat = localdex;
-                    break;
-            }
-            maxbasedamage = ((weapon.getMaxDamageMultiplier() * mainstat) + secondarystat) * watk / 100;
-        }
-        return maxbasedamage;
     }
 
     public final void relocHeal() {

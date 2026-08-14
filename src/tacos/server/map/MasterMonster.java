@@ -24,7 +24,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.SpawnPointAreaBoss;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
-import tacos.wz.ids.DWI_Validation;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -76,10 +76,8 @@ public class MasterMonster {
             case 250010304: {
                 mobtime = 2100;
                 monsterid = 7220000;
-                // メッセージ探し中
-                //msg = "Tae Roon appeared with a loud growl.";
-                // 適当
-                msg = "唸り声と共にタイルンが現れました。";
+                // OK
+                msg = "低音の口笛音とともにタイルンが現れました。";
                 pos1 = new Point(-210, 33);
                 pos2 = new Point(-234, 393);
                 pos3 = new Point(-654, 33);
@@ -122,9 +120,8 @@ public class MasterMonster {
             case 107000300: {
                 mobtime = 1800;
                 monsterid = 6220000;
-                //msg = "The huge crocodile Dale has come out from the swamp.";
-                // 適当
-                msg = "沼から巨大ワニのダイルが出てきました。";
+                // OK
+                msg = "ダイルが出ました。";
                 pos1 = new Point(710, 118);
                 pos2 = new Point(95, 119);
                 pos3 = new Point(-535, 120);
@@ -134,10 +131,8 @@ public class MasterMonster {
             case 100040105: {
                 mobtime = 1800;
                 monsterid = 5220002;
-                //msg = "The blue fog became darker when Faust appeared.";
-                // msg = "パウストが出ました。";
-                // 日本語のテキストがおかしいので適当に翻訳
-                msg = "青い霧が暗くなりパウストが現れました。";
+                // OK
+                msg = "パウストが出ました。";
                 pos1 = new Point(1000, 278);
                 pos2 = new Point(557, 278);
                 pos3 = new Point(95, 278);
@@ -146,10 +141,8 @@ public class MasterMonster {
             case 100040106: {
                 mobtime = 1800;
                 monsterid = 5220002;
-                //msg = "The blue fog became darker when Faust appeared.";
-                //msg = "パウストが出ました。";
-                // 日本語のテキストがおかしいので適当に翻訳
-                msg = "青い霧が暗くなりパウストが現れました。";
+                // OK
+                msg = "パウストが出ました。";
                 pos1 = new Point(1000, 278);
                 pos2 = new Point(557, 278);
                 pos3 = new Point(95, 278);
@@ -238,7 +231,7 @@ public class MasterMonster {
             }
         }
 
-        if (!DWI_Validation.isValidMobID(monsterid)) {
+        if (!WzDataStorage.MOB.check(monsterid)) {
             DebugLogger.ErrorLog("Invalid Mob ID = " + monsterid);
             return false;
         }

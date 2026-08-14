@@ -57,7 +57,6 @@ import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.MapleCarnivalChallenge;
-import java.util.HashMap;
 import odin.handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import tacos.packet.ops.OpsFieldEffect;
@@ -73,12 +72,12 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleShop;
 import odin.server.MapleShopItem;
 import odin.server.MapleStatEffect;
-import odin.server.SpeedRunner;
-import odin.server.maps.SpeedRunType;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
 import tacos.client.TacosStorage;
+import tacos.packet.ops.OpsRPS;
 import tacos.packet.ops.OpsTrunk;
+import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCTrunkDlg;
 import tacos.script.TacosScriptNPC;
@@ -481,7 +480,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public int gainGachaponItem(int id, int quantity) {
-        return gainGachaponItem(id, quantity, client.getPlayer().getMap().getStreetName() + " - " + client.getPlayer().getMap().getMapName());
+        return gainGachaponItem(id, quantity, "");
     }
 
     public int gainGachaponItem(int id, int quantity, final String msg) {
@@ -681,7 +680,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (ret) {
             final MapleMap map = client.getPlayer().getMap();
 
-            map.broadcastMessage(ResCField.getClock(minutes * 60));
+            map.broadcastMessage(ResCField.Clock(minutes * 60));
             map.broadcastMessage(ResWrapper.BroadCastMsgNotice(client.getPlayer().getName() + startText));
         } else {
             squad.clear();
@@ -941,7 +940,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void sendRepairWindow() {
-        client.getSession().write(ResCUserLocal.sendRepairWindow(npc));
+        client.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, npc));
     }
 
     public final int getDojoPoints() {
@@ -1034,19 +1033,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public OdinPair<String, Map<Integer, String>> getSpeedRun(String typ) {
-        final SpeedRunType type = SpeedRunType.valueOf(typ);
-        if (SpeedRunner.getInstance().getSpeedRunData(type) != null) {
-            return SpeedRunner.getInstance().getSpeedRunData(type);
-        }
-        return new OdinPair<String, Map<Integer, String>>("", new HashMap<Integer, String>());
+        return null;
     }
 
     public boolean getSR(OdinPair<String, Map<Integer, String>> ma, int sel) {
-        if (ma.getRight().get(sel) == null || ma.getRight().get(sel).length() <= 0) {
-            dispose();
-            return false;
-        }
-        sendOk(ma.getRight().get(sel));
+        sendOk("removed.");
         return true;
     }
 
@@ -1252,8 +1243,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         return MapleInventoryManipulator.drop(client, inv, (short) slot, (short) quantity, true);
     }
 
-    public final void sendRPS() {
-        client.getSession().write(ResCRPSGameDlg.getRPSMode((byte) 8, -1, -1, -1));
+    public void sendRPS() {
+        client.SendPacket(ResCRPSGameDlg.RPSGame(OpsRPS.RPSRes_Open, 0, 0, this.npc));
     }
 
     public final void setQuestRecord(Object ch, final int questid, final String data) {
@@ -1291,16 +1282,16 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                     sendNPCText(getPlayer().getName() + " and " + chr.getName() + ", I wish you two all the best on your AsteriaSEA journey together!", 9201002);
                     getMap().startExtendedMapEffect("You may now kiss the bride, " + getPlayer().getName() + "!", 5120006);
                     if (chr.getGuildId() > 0) {
-                        OdinWorld.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.sendMarriage(false, chr.getName()));
+                        OdinWorld.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.NotifyWedding(false, chr.getName()));
                     }
                     if (chr.getFamilyId() > 0) {
-                        OdinWorld.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), chr.getId());
+                        OdinWorld.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), chr.getId());
                     }
                     if (getPlayer().getGuildId() > 0) {
-                        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.sendMarriage(false, getPlayer().getName()));
+                        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.NotifyWedding(false, getPlayer().getName()));
                     }
                     if (getPlayer().getFamilyId() > 0) {
-                        OdinWorld.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.sendMarriage(true, chr.getName()), getPlayer().getId());
+                        OdinWorld.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), getPlayer().getId());
                     }
                 }
             }

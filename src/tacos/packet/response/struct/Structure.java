@@ -3,41 +3,19 @@ package tacos.packet.response.struct;
 import tacos.packet.ServerPacket;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleCoolDownValueHolder;
 import odin.client.MapleQuestStatus;
 import odin.client.SkillEntry;
 import odin.client.inventory.MapleRing;
-import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
-import odin.constants.GameConstants;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import odin.server.life.MapleMonster;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
-import odin.tools.KoreanDateUtil;
+import tacos.config.Config;
 import tacos.odin.OdinPair;
+import tacos.shared.SharedDate;
 
 public class Structure {
-
-    // Login Server
-    public static final byte[] addExpirationTime(final long time) {
-        ServerPacket data = new ServerPacket();
-        data.Encode1(0);
-        data.Encode2(1408);
-        if (time != -1) {
-            data.Encode4(KoreanDateUtil.getItemTimestamp(time));
-            data.Encode1(1);
-        } else {
-            data.Encode4(400967355);
-            data.Encode1(2);
-        }
-        return data.get().getBytes();
-    }
 
     public static boolean is_ignore_master_level_for_common(int skill_id) {
         // JMS v302
@@ -82,11 +60,11 @@ public class Structure {
 
     public static boolean is_skill_need_master_level(int skill_id) {
         // JMS v302
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return is_skill_need_master_level_302(skill_id);
         }
         // JMS v188-v194
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             return is_skill_need_master_level_188(skill_id);
         }
         // JMS under 186
@@ -276,10 +254,10 @@ public class Structure {
         return false;
     }
 
-    public static final byte[] addSkillInfo(final MapleCharacter chr) {
+    public static byte[] addSkillInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(1);
         }
         final Map<ISkill, SkillEntry> skills = chr.getSkills();
@@ -289,46 +267,30 @@ public class Structure {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.GMS, 83)) {
-                data.EncodeBuffer(addExpirationTime(skill.getValue().expiration));
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 83)) {
+                data.Encode8(SharedDate.getTimestamp(skill.getValue().expiration));
             }
 
             if (is_skill_need_master_level(skill.getKey().getId())) {
                 data.Encode4(skill.getValue().masterlevel);
             }
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 if (skill.getKey().getId() == 40020002 || skill.getKey().getId() == 80000004) {
                     data.Encode4(0);
                 }
             }
-            if (Version.GreaterOrEqual(Region.KMS, 197)) {
-                data.Encode2(0);
-            }
         }
-        return data.get().getBytes();
-    }
-
-    public static final byte[] addCoolDownInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        final List<MapleCoolDownValueHolder> cd = chr.getCooldowns();
-
-        data.Encode2(cd.size());
-        for (final MapleCoolDownValueHolder cooling : cd) {
-            data.Encode4(cooling.skillId);
-            if (Version.GreaterOrEqual(Region.JMS, 302) | Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-                data.Encode4((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
-            } else {
-                data.Encode2((int) (cooling.length + cooling.startTime - System.currentTimeMillis()) / 1000);
-            }
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
+            data.Encode2(0);
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static byte[] addQuestInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
 
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode1(0);
         }
 
@@ -339,42 +301,38 @@ public class Structure {
         }
 
         // not in v165, not in v188, but in v194 ???
-        if (Region.IsJMS() && 184 <= Version.getVersion() && Version.getVersion() <= 186) {
+        if (Config.Between(Region.JMS, 184, 186)) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if ((ServerConfig.JMS194orLater() && !Region.IsKMS() && !Region.IsEMS()) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode2(0); // not 0, EncodeStr, EncodeStr
         }
 
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             data.Encode2(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static byte[] addQuestComplete(final MapleCharacter chr) {
+    public static byte[] addQuestComplete(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(0);
         }
 
-        final List<MapleQuestStatus> completed = chr.getCompletedQuests();
-        int time;
-        data.Encode2(completed.size());
-        for (final MapleQuestStatus q : completed) {
-            data.Encode2(q.getQuest().getId());
-            time = KoreanDateUtil.getQuestTimestamp(q.getCompletionTime());
-            data.Encode4(time); // maybe start time? no effect.
-            data.Encode4(time); // completion time
+        data.Encode2(chr.getCompletedQuests().size());
+        for (MapleQuestStatus mqs : chr.getCompletedQuests()) {
+            data.Encode2(mqs.getQuest().getId());
+            data.Encode8(SharedDate.getTimestamp(mqs.getCompletionTime()));
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 148) || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode2(0);
         }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // v165, v186
@@ -384,37 +342,48 @@ public class Structure {
         List<MapleRing> cRing = aRing.getLeft();
 
         data.Encode2(cRing.size());
+        // GW_CoupleRecord::Decode, 33 bytes.
         for (MapleRing ring : cRing) {
-            // 33 bytes
-            data.Encode4(ring.getPartnerChrId());
-            data.EncodeBuffer(ring.getPartnerName(), 13);
-            data.Encode8(ring.getRingId());
-            data.Encode8(ring.getPartnerRingId());
+            data.Encode4(ring.getPartnerChrId()); // dwPairCharacterID
+            data.EncodeBuffer(ring.getPartnerName(), 13); // sPairCharacterName
+            data.Encode8(ring.getRingId()); // liSN
+            data.Encode8(ring.getPartnerRingId()); // liPairSN
         }
 
-        if (Version.LessOrEqual(Region.KMS, 1)) {
+        if (Config.LessOrEqual(Region.KMS, 3)) {
             // nothing
         } else {
+            // GW_FriendRecord::Decode, 37 bytes.
             List<MapleRing> fRing = aRing.getRight();
             data.Encode2(fRing.size());
             for (MapleRing ring : fRing) {
-                // 37 bytes
-                data.Encode4(ring.getPartnerChrId());
-                data.EncodeBuffer(ring.getPartnerName(), 13);
-                data.Encode8(ring.getRingId());
-                data.Encode8(ring.getPartnerRingId());
-                data.Encode4(ring.getItemId());
+                data.Encode4(ring.getPartnerChrId()); // dwPairCharacterID
+                data.EncodeBuffer(ring.getPartnerName(), 13); // sPairCharacterName
+                data.Encode8(ring.getRingId()); // liSN
+                data.Encode8(ring.getPartnerRingId()); // liPairSN
+                data.Encode4(ring.getItemId()); // dwFriendItemID
             }
         }
 
-        if (Version.LessOrEqual(Region.KMS, 41)) {
+        if (Config.LessOrEqual(Region.KMS, 41)) {
             // nothing
         } else {
-            data.Encode2(0);
-            // if not 0, 48 bytes
+            int married = 0;
+            data.Encode2(married);
+            // GW_MarriageRecord::Decode, 48 bytes.
+            for (int i = 0; i < married; i++) {
+                data.Encode4(0); // dwMarriageNo
+                data.Encode4(0); // dwGroomID
+                data.Encode4(0); // dwBrideID
+                data.Encode2(0); // usStatus
+                data.Encode4(0); // nGroomItemID
+                data.Encode4(0); // nBrideItemID
+                data.EncodeBuffer("", 13); // sGroomName
+                data.EncodeBuffer("", 13); // sBrideName
+            }
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] addRocksInfo(final MapleCharacter chr) {
@@ -424,8 +393,8 @@ public class Structure {
             data.Encode4(mapz[i]);
         }
 
-        if (Version.LessOrEqual(Region.KMS, 1)) {
-            return data.get().getBytes();
+        if (Config.LessOrEqual(Region.KMS, 3)) {
+            return data.getBytes();
         }
 
         final int[] map = chr.getRocks();
@@ -433,36 +402,19 @@ public class Structure {
             data.Encode4(map[i]);
         }
 
-        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
         }
 
-        if (Version.GreaterOrEqual(Region.EMS, 73) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.EMS, 73) || Config.GreaterOrEqual(Region.GMS, 111)) {
             for (int i = 0; i < 13; i++) {
                 data.Encode4(999999999);
             }
         }
 
-        return data.get().getBytes();
-    }
-
-    public static final byte[] addMonsterBookInfo(final MapleCharacter chr) {
-        ServerPacket data = new ServerPacket();
-        data.Encode1(0);
-        // [chr.getMonsterBook().addCardPacket]
-        {
-            Map<Integer, Integer> cards = chr.getMonsterBook().getCards();
-            data.Encode2(cards.size());
-            for (Map.Entry<Integer, Integer> all : cards.entrySet()) {
-                // ID
-                data.Encode2(GameConstants.getCardShortId(all.getKey()));
-                // 登録枚数
-                data.Encode1(all.getValue());
-            }
-        }
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
@@ -474,121 +426,7 @@ public class Structure {
             data.Encode2(q.getKey());
             data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }
-        return data.get().getBytes();
-    }
-
-    // addMonsterStatus
-    public static final byte[] MonsterStatus(MapleMonster life) {
-        ServerPacket data = new ServerPacket();
-
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            data.Encode4(0);
-            data.Encode4(0);
-            data.Encode4(0);
-        }
-        if (Version.PostBB()) {
-            if (!Version.Equal(Region.KMST, 330) && !Version.LessOrEqual(Region.GMS, 95)) {
-                data.Encode4(0);
-            }
-        }
-
-        if (Version.LessOrEqual(Region.JMS, 131)) {
-            if (life.getStati().size() <= 1) {
-                life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
-            }
-        } else {
-            if (life.getStati().size() <= 0) {
-                life.addEmpty(); //not done yet lulz ok so we add it now for the lulz
-            }
-        }
-        if (ServerConfig.JMS164orLater()) {
-            data.Encode8(getSpecialLongMask(life.getStati().keySet()));
-        }
-
-        data.Encode8(getLongMask_NoRef(life.getStati().keySet()));
-
-        // ?_?
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
-            data.Encode1(0);
-            data.Encode1(0);
-            data.Encode1(0);
-            return data.get().getBytes();
-        }
-
-        boolean ignore_imm = false;
-        for (MonsterStatusEffect buff : life.getStati().values()) {
-            if (buff.getStati() == MonsterStatus.MAGIC_DAMAGE_REFLECT || buff.getStati() == MonsterStatus.WEAPON_DAMAGE_REFLECT) {
-                ignore_imm = true;
-                break;
-            }
-        }
-        for (MonsterStatusEffect buff : life.getStati().values()) {
-            if (buff.getStati() != MonsterStatus.MAGIC_DAMAGE_REFLECT && buff.getStati() != MonsterStatus.WEAPON_DAMAGE_REFLECT) {
-                if (ignore_imm) {
-                    if (buff.getStati() == MonsterStatus.MAGIC_IMMUNITY || buff.getStati() == MonsterStatus.WEAPON_IMMUNITY) {
-                        continue;
-                    }
-                }
-                data.Encode2(buff.getX().shortValue());
-                if (buff.getStati() != MonsterStatus.SUMMON) {
-                    if (buff.getMobSkill() != null) {
-                        data.Encode2(buff.getMobSkill().getSkillId());
-                        data.Encode2(buff.getMobSkill().getSkillLevel());
-                    } else if (buff.getSkill() > 0) {
-                        data.Encode4(buff.getSkill());
-                    }
-                    data.Encode2(buff.getStati().isEmpty() ? 0 : 1);
-                }
-            }
-        }
-
-        //wh spawn - 15 zeroes instead of 16, then 98 F4 56 A6 C7 C9 01 28, then 7 zeroes
-        return data.get().getBytes();
-    }
-
-    public static long getSpecialLongMask(Collection<MonsterStatus> statups) {
-        long mask = 0;
-        for (MonsterStatus statup : statups) {
-            if (statup.isFirst()) {
-                mask |= statup.getValue();
-            }
-        }
-        return mask;
-    }
-
-    public static long getLongMask(Collection<MonsterStatus> statups) {
-        long mask = 0;
-        for (MonsterStatus statup : statups) {
-            if (!statup.isFirst()) {
-                mask |= statup.getValue();
-            }
-        }
-        return mask;
-    }
-
-    public static long getLongMask_NoRef(Collection<MonsterStatus> statups) {
-        long mask = 0;
-        boolean ignore_imm = false;
-        for (MonsterStatus statup : statups) {
-            if (statup == MonsterStatus.MAGIC_DAMAGE_REFLECT || statup == MonsterStatus.WEAPON_DAMAGE_REFLECT) {
-                ignore_imm = true;
-                break;
-            }
-        }
-        for (MonsterStatus statup : statups) {
-            if (statup != MonsterStatus.MAGIC_DAMAGE_REFLECT && statup != MonsterStatus.WEAPON_DAMAGE_REFLECT) {
-                if (ignore_imm) {
-                    if (statup == MonsterStatus.MAGIC_IMMUNITY || statup == MonsterStatus.WEAPON_IMMUNITY) {
-                        continue;
-                    }
-                }
-
-                if (!statup.isFirst()) {
-                    mask |= statup.getValue();
-                }
-            }
-        }
-        return mask;
+        return data.getBytes();
     }
 
     // addAnnounceBox
@@ -601,7 +439,7 @@ public class Structure {
             data.Encode1(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
     // addInteraction
@@ -621,6 +459,6 @@ public class Structure {
             data.Encode1(shop.isOpen() ? 0 : 1);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

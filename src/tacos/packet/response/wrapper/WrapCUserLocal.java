@@ -19,7 +19,7 @@
 package tacos.packet.response.wrapper;
 
 import odin.handling.channel.handler.ItemMakerHandler;
-import tacos.network.MaplePacket;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.response.ResCUserLocal;
@@ -30,35 +30,35 @@ import tacos.packet.response.ResCUserLocal;
  */
 public class WrapCUserLocal {
 
-    public static MaplePacket EffectLocal(OpsUserEffect ops) {
+    public static ServerPacket EffectLocal(OpsUserEffect ops) {
         ArgUserEffect arg = new ArgUserEffect();
         arg.ops = ops;
-        return ResCUserLocal.EffectLocal(arg);
+        return ResCUserLocal.UserEffectLocal(arg);
     }
 
-    public static MaplePacket EffectLocal(OpsUserEffect ops, int skill_id) {
+    public static ServerPacket EffectLocal(OpsUserEffect ops, int skill_id) {
         ArgUserEffect arg = new ArgUserEffect();
         arg.ops = ops;
         arg.skill_id = skill_id;
-        return ResCUserLocal.EffectLocal(arg);
+        return ResCUserLocal.UserEffectLocal(arg);
     }
 
-    public static MaplePacket EffectLocal(OpsUserEffect ops, int skill_id, boolean skill_on) {
+    public static ServerPacket EffectLocal(OpsUserEffect ops, int skill_id, boolean skill_on) {
         ArgUserEffect arg = new ArgUserEffect();
         arg.ops = ops;
         arg.skill_id = skill_id;
         arg.skill_on = skill_on;
-        return ResCUserLocal.EffectLocal(arg);
+        return ResCUserLocal.UserEffectLocal(arg);
     }
 
-    public static final MaplePacket EffectLocal(OpsUserEffect ops, ItemMakerHandler.ItemMakerResult imr) {
+    public static ServerPacket EffectLocal(OpsUserEffect ops, ItemMakerHandler.ItemMakerResult imr) {
         ArgUserEffect arg = new ArgUserEffect();
         arg.ops = ops;
         arg.imr = imr;
-        return ResCUserLocal.EffectLocal(arg);
+        return ResCUserLocal.UserEffectLocal(arg);
     }
 
-    public static MaplePacket getShowItemGain(int itemId, short quantity, boolean inChat) {
+    public static ServerPacket getShowItemGain(int itemId, short quantity, boolean inChat) {
         // ?_?
         if (inChat) {
             // maybe wrong packet header
@@ -66,7 +66,7 @@ public class WrapCUserLocal {
             arg.ops = OpsUserEffect.UserEffect_Quest;
             arg.item_id = itemId;
             arg.item_quantity = quantity;
-            return ResCUserLocal.EffectLocal(arg);
+            return ResCUserLocal.UserEffectLocal(arg);
         }
         // SHOW_STATUS_INFO -> LP_Message
         return ResWrapper.DropPickUpMessage(itemId, quantity);

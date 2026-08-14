@@ -19,6 +19,7 @@
 package tacos.network;
 
 import odin.client.MapleClient;
+import org.apache.mina.common.IoSession;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
@@ -32,25 +33,40 @@ import tacos.server.TacosLogin;
  */
 public class PacketHandler_Login extends PacketHandler implements IPacketHandler {
 
-    private ReqCLogin rCLogin;
-
     public PacketHandler_Login(TacosLogin login_server) {
         super(login_server, -1);
-        rCLogin = new ReqCLogin(login_server);
     }
 
     @Override
-    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
+    public void sessionOpened(IoSession session) throws Exception {
+        super.sessionOpened(session);
+        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        if (client != null) {
+            client.getLoginServer().getClients().add(client);
+        }
+    }
+
+    @Override
+    public void sessionClosed(IoSession session) throws Exception {
+        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        if (client != null) {
+            client.getLoginServer().getClients().remove(client);
+            client.getLoginServer().getAuthorizedClients().remove(client);
+        }
+        super.sessionClosed(session);
+    }
+
+    @Override
+    public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) throws Exception {
         if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
-            if (ReqCClientSocket.OnPacket_Login(c, header, cp)) {
+            if (ReqCClientSocket.OnPacket_Login(client, header, cp)) {
                 return true;
             }
-            return rCLogin.OnPacket(c, header, cp);
+            return ReqCLogin.OnPacket(client, header, cp);
         }
         if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
-            return ReqCUser.OnPacket_Login(c, header, cp);
+            return ReqCUser.OnPacket_Login(client, header, cp);
         }
         return false;
     }
-
 }

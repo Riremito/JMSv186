@@ -18,10 +18,9 @@
  */
 package tacos.packet.response;
 
-import tacos.network.MaplePacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleDragon;
+import tacos.client.TacosDragon;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -30,31 +29,34 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCUser_Dragon {
 
-    public static MaplePacket moveDragon(MapleDragon dragon, ParseCMovePath data) {
+    // CDragon::OnCreated
+    public static ServerPacket DragonEnterField(TacosDragon dragon) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonEnterField);
+
+        sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
+        sp.Encode4(dragon.getX()); // m_ptPos.x
+        sp.Encode4(dragon.getY()); // m_ptPos.y
+        sp.Encode1(dragon.getMoveAction()); // m_nMoveAction
+        sp.Encode2(0); // unused
+        sp.Encode2(dragon.getJobCode()); // m_nJobCode
+        return sp;
+    }
+
+    // CDragon::OnMove
+    public static ServerPacket DragonMove(TacosDragon dragon, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonMove);
-        sp.Encode4(dragon.getOwner());
+
+        sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
         sp.EncodeBuffer(data.get());
-        return sp.get();
+        return sp;
     }
 
     // not coded in GMS v95, but KMST v2.1029 removes dragon when you change other job.
-    public static MaplePacket removeDragon(MapleDragon dragon) {
+    public static ServerPacket DragonLeaveField(TacosDragon dragon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonLeaveField);
 
-        sp.Encode4(dragon.getOwner());
-        return sp.get();
-    }
-
-    public static MaplePacket spawnDragon(MapleDragon dragon) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DragonEnterField);
-
-        sp.Encode4(dragon.getOwner());
-        sp.Encode4(dragon.getPosition().x);
-        sp.Encode4(dragon.getPosition().y);
-        sp.Encode1(dragon.getStance()); // move action (left, right)
-        sp.Encode2(0); // not used
-        sp.Encode2(dragon.getJobId());
-        return sp.get();
+        sp.Encode4(dragon.getOwnerId()); // m_dwCharacterId
+        return sp;
     }
 
 }

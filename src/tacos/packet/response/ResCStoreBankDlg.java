@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import odin.client.inventory.IItem;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacket;
 import odin.server.MerchItemPackage;
 import tacos.packet.ServerPacketHeader;
@@ -31,7 +30,7 @@ import tacos.packet.response.data.DataGW_ItemSlotBase;
  */
 public class ResCStoreBankDlg {
 
-    public static final MaplePacket merchItemStore(final byte op) {
+    public static ServerPacket merchItemStore(final byte op) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         // [28 01] [22 01] - Invalid Asiasoft Passport
@@ -46,17 +45,17 @@ public class ResCStoreBankDlg {
                 break;
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket merchItem_Message(final byte op) {
+    public static ServerPacket merchItem_Message(final byte op) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
         sp.Encode1(op);
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket sendHiredMerchantMessage(final byte type) {
+    public static ServerPacket sendHiredMerchantMessage(final byte type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
         // 07 = send title box
@@ -65,10 +64,10 @@ public class ResCStoreBankDlg {
         // 0B = You cannot open it now.
         // 0F = Please retrieve your items from Fredrick.
         sp.Encode1(type);
-        return sp.get();
+        return sp;
     }
 
-    public static final MaplePacket merchItemStore_ItemData(final MerchItemPackage pack) {
+    public static ServerPacket merchItemStore_ItemData(final MerchItemPackage pack) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         sp.Encode1(35);
@@ -82,7 +81,7 @@ public class ResCStoreBankDlg {
             sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
         }
         sp.EncodeZeroBytes(3);
-        return sp.get();
+        return sp;
     }
 
 }

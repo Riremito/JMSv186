@@ -43,8 +43,8 @@ public class TacosScript {
 
     protected Map<MapleClient, OdinNPCConversationManager> cms = new WeakHashMap<>();
 
-    public OdinNPCConversationManager getCM(MapleClient c) {
-        return cms.get(c);
+    public OdinNPCConversationManager getCM(MapleClient client) {
+        return cms.get(client);
     }
 
     protected Map<String, OdinEventManager> ems = new HashMap<>();
@@ -121,5 +121,4 @@ public class TacosScript {
     public void clearScripts() {
         this.script_cache.clear();
     }
-
 }

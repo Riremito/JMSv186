@@ -31,7 +31,7 @@ public class MapleFootholdTree {
     private MapleFootholdTree ne = null;
     private MapleFootholdTree sw = null;
     private MapleFootholdTree se = null;
-    private List<MapleFoothold> footholds = new LinkedList<MapleFoothold>();
+    private List<MapleFoothold> footholds = new LinkedList<>();
     private Point p1;
     private Point p2;
     private Point center;
@@ -174,25 +174,24 @@ public class MapleFootholdTree {
         return false;
     }
 
-    public final MapleFoothold findBelow(final Point p) {
-        final List<MapleFoothold> relevants = getRelevants(p);
-        // find fhs with matching x coordinates
-        final List<MapleFoothold> xMatches = new LinkedList<MapleFoothold>();
-        for (final MapleFoothold fh : relevants) {
+    public MapleFoothold findBelow(Point p) {
+        List<MapleFoothold> relevants = getRelevants(p);
+        List<MapleFoothold> xMatches = new LinkedList<>();
+        for (MapleFoothold fh : relevants) {
             if (fh.getX1() <= p.x && fh.getX2() >= p.x) {
                 xMatches.add(fh);
             }
         }
         Collections.sort(xMatches);
-        for (final MapleFoothold fh : xMatches) {
+        for (MapleFoothold fh : xMatches) {
             if (!fh.isWall() && fh.getY1() != fh.getY2()) {
                 int calcY;
-                final double s1 = Math.abs(fh.getY2() - fh.getY1());
-                final double s2 = Math.abs(fh.getX2() - fh.getX1());
-                final double s4 = Math.abs(p.x - fh.getX1());
-                final double alpha = Math.atan(s2 / s1);
-                final double beta = Math.atan(s1 / s2);
-                final double s5 = Math.cos(alpha) * (s4 / Math.cos(beta));
+                double s1 = Math.abs(fh.getY2() - fh.getY1());
+                double s2 = Math.abs(fh.getX2() - fh.getX1());
+                double s4 = Math.abs(p.x - fh.getX1());
+                double alpha = Math.atan(s2 / s1);
+                double beta = Math.atan(s1 / s2);
+                double s5 = Math.cos(alpha) * (s4 / Math.cos(beta));
                 if (fh.getY2() < fh.getY1()) {
                     calcY = fh.getY1() - (int) s5;
                 } else {

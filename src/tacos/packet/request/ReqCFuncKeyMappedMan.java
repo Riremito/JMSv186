@@ -21,8 +21,8 @@ package tacos.packet.request;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.SkillMacro;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
@@ -95,7 +95,7 @@ public class ReqCFuncKeyMappedMan {
             case FuncKeyMapped_PetConsumeHPItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoHPItem(item_id);
-                if (Version.LessOrEqual(Region.JMS, 131)) {
+                if (Config.LessOrEqual(Region.JMS, 131)) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
@@ -105,7 +105,7 @@ public class ReqCFuncKeyMappedMan {
             case FuncKeyMapped_PetConsumeMPItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoMPItem(item_id);
-                if (Version.LessOrEqual(Region.JMS, 131)) {
+                if (Config.LessOrEqual(Region.JMS, 131)) {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
@@ -115,7 +115,7 @@ public class ReqCFuncKeyMappedMan {
             case FuncKeyMapped_JMS_PetConsumeCureItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoCureItem(item_id);
-                if (Version.LessOrEqual(Region.JMS, 131)) {
+                if (Config.LessOrEqual(Region.JMS, 131)) {
                     // nothing
                 } else {
                     chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));

@@ -132,6 +132,11 @@ public class TacosClient extends BaseClient {
         closeSession();
     }
 
+    public void sendSelectCharacterByVACResult(TacosServer game_server, int character_id) {
+        SendPacket(ResCLogin.SelectCharacterByVACResult(game_server, character_id));
+        closeSession();
+    }
+
     public int getId() {
         return this.id;
     }

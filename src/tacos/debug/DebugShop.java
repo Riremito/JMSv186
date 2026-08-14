@@ -22,12 +22,7 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 import odin.constants.GameConstants;
-import tacos.wz.data.ItemWz;
-import tacos.wz.ids.DWI_LoadXML;
-import tacos.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.ClientPacket;
@@ -37,6 +32,9 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.provider.IMapleData;
+import tacos.config.Config;
+import tacos.wz.WzXML;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -55,7 +53,7 @@ public class DebugShop {
         switch (OpsShop.find(shop_req)) {
             case ShopReq_Buy: {
                 short unk1 = cp.Decode2();
-                byte unk2 = (ServerConfig.JMS194orLater() && !Version.GreaterOrEqual(Region.EMS, 89)) ? cp.Decode1() : 0;
+                byte unk2 = (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.Equal(Region.EMS, 76)) ? cp.Decode1() : 0;
                 int item_id = cp.Decode4();
                 short quantity = cp.Decode2();
 
@@ -96,6 +94,11 @@ public class DebugShop {
         shopStocks = new ArrayList<>();
     }
 
+    public DebugShop(int npc_id) {
+        this();
+        this.npc_id = npc_id;
+    }
+
     public int getNpcId() {
         return this.npc_id;
     }
@@ -106,7 +109,7 @@ public class DebugShop {
 
     public boolean start(MapleCharacter chr) {
         chr.DebugMsg("DebugShop : started.");
-        if (0 < this.shopStocks.size()) {
+        if (!this.shopStocks.isEmpty()) {
             if (GameConstants.isRechargable(this.shopStocks.get(0).item_id)) {
                 List<ShopStock> old_shopStocks = shopStocks;
                 shopStocks = new ArrayList<>();
@@ -126,7 +129,7 @@ public class DebugShop {
     }
 
     public boolean addItem(int item_id) {
-        if (!DWI_Validation.isValidItemID(item_id)) {
+        if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
             return false;
         }
@@ -152,7 +155,7 @@ public class DebugShop {
     }
 
     public boolean addItem(int item_id, int item_price, int item_quantity, int item_slot_max) {
-        if (!DWI_Validation.isValidItemID(item_id)) {
+        if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("DebugShop : addItem, invalid item id = " + item_id);
             return false;
         }
@@ -167,7 +170,7 @@ public class DebugShop {
     }
 
     public boolean addItemRecharge(int item_id, int item_recharge_price) {
-        if (!DWI_Validation.isValidItemID(item_id)) {
+        if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("DebugShop : addItemRecharge, invalid item id = " + item_id);
             return false;
         }
@@ -190,7 +193,7 @@ public class DebugShop {
     public boolean setRechargeAll(int item_recharge_price) {
         int item_sub_types[] = {207, 233};
         for (int item_sub_type : item_sub_types) {
-            IMapleData md_item_sub_type = ItemWz.get().getItemImg(item_sub_type);
+            IMapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
             if (md_item_sub_type != null) {
                 for (IMapleData md_item : md_item_sub_type.getChildren()) {
                     int item_id = Integer.parseInt(md_item.getName());
@@ -203,7 +206,7 @@ public class DebugShop {
 
     public boolean setItemTest(int item_sub_type) {
         int item_count = 0;
-        IMapleData md_item_sub_type = ItemWz.get().getItemImg(item_sub_type);
+        IMapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
         if (md_item_sub_type != null) {
             for (IMapleData md_item : md_item_sub_type.getChildren()) {
                 int item_id = Integer.parseInt(md_item.getName());
@@ -218,7 +221,7 @@ public class DebugShop {
 
     public boolean setRandomItems(int count) {
         for (int i = 0; i < count; i++) {
-            this.addItem(DWI_LoadXML.getItem().getRandom());
+            this.addItem(WzDataStorage.ITEM.getRandom());
         }
         return true;
     }
@@ -294,8 +297,13 @@ public class DebugShop {
             quantity = (int) item.getQuantity();
         }
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-        int item_price = is_recharge_item ? (int) (miip.getWholePrice(item.getItemId()) / (double) miip.getSlotMax(chr.getClient(), item.getItemId())) : (int) miip.getPrice(item.getItemId());
-        item_price *= quantity;
+        int item_price = miip.getWholePrice(item.getItemId());
+        if (is_recharge_item) {
+            double unit_price = miip.getPrice(item.getItemId());
+            item_price += (int) (unit_price * miip.getSlotMax(chr.getClient(), item.getItemId()));
+        } else {
+            item_price *= quantity;
+        }
         if (item_price < 0) {
             item_price = 0;
             DebugLogger.ErrorLog("item price set to 0 : " + item_id + " (" + quantity + ")");
@@ -353,5 +361,4 @@ public class DebugShop {
         public int item_recharge_price = 0;
         public int item_slot_max = 1;
     }
-
 }

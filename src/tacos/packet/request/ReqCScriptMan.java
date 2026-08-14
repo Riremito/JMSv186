@@ -21,9 +21,12 @@ package tacos.packet.request;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.debug.DebugLogger;
-import odin.handling.channel.handler.NPCHandler;
+import tacos.debug.DebugMan;
+import tacos.odin.OdinNPCConversationManager;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsScriptMan;
+import tacos.script.TacosScriptNPC;
+import tacos.script.TacosScriptQuest;
 
 /**
  *
@@ -31,93 +34,131 @@ import tacos.packet.ops.OpsScriptMan;
  */
 public class ReqCScriptMan {
 
-    public static boolean OnScriptMessageAnswer(ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnScriptMessageAnswer(MapleCharacter chr, ClientPacket cp) {
+        int nMsgType = cp.Decode1();
+        int action = cp.Decode1();
 
-        byte cm_type = cp.Decode1();
-        byte action = cp.Decode1();
+        int m_nSelect = -1;
+        String m_sInputStr_Result = null;
 
-        OpsScriptMan type = OpsScriptMan.find(cm_type);
-
-        switch (type) {
-            case SM_SAY: {
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
-                return true;
-            }
-            case SM_ASKYESNO: {
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
-                return true;
-            }
-            case SM_SAYIMAGE: {
-                break;
-            }
-            case SM_ASKTEXT: {
-                String text = cp.DecodeStr();
-                NPCHandler.NPCMoreTalk(c, type, action, -1, text);
-                return true;
-            }
-            case SM_ASKNUMBER: {
-                break;
-            }
-            case SM_ASKMENU: {
-                if (action != 0) {
-                    int m_nSelect = cp.Decode4();
-                    NPCHandler.NPCMoreTalk(c, type, action, m_nSelect, null);
-                    return true;
+        OpsScriptMan ops = OpsScriptMan.find(nMsgType);
+        if (action != 0) { // JMS is always 1, CMS104 is not 1.
+            switch (ops) {
+                case SM_ASKMENU: {
+                    m_nSelect = cp.Decode4(); // m_nSelect
+                    break;
                 }
-
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
-                return true;
-            }
-            case SM_ASKQUIZ: {
-                break;
-            }
-            case SM_ASKSPEEDQUIZ: {
-                break;
-            }
-            case SM_ASKAVATAR: {
-                if (action != 0) {
-                    byte m_nAvatarIndex = cp.Decode1();
-                    NPCHandler.NPCMoreTalk(c, type, action, m_nAvatarIndex, null);
-                    return true;
+                case SM_ASKTEXT: {
+                    m_sInputStr_Result = cp.DecodeStr(); // m_sInputStr_Result
+                    break;
                 }
-
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
-                return true;
-            }
-            case SM_ASKMEMBERSHOPAVATAR: {
-                break;
-            }
-            case SM_ASKPET: {
-                break;
-            }
-            case SM_ASKPETALL: {
-                break;
-            }
-            case SM_ASKACCEPT: {
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
-                return true;
-            }
-            case SM_ASKBOXTEXT: {
-                break;
-            }
-            case SM_ASKSLIDEMENU: {
-                if (action != 0) {
-                    int SelectResult = cp.Decode4();
-                    NPCHandler.NPCMoreTalk(c, type, action, SelectResult, null);
-                    return true;
+                case SM_ASKAVATAR: {
+                    m_nSelect = (int) cp.Decode1(); // m_nAvatarIndex
+                    break;
                 }
-
-                NPCHandler.NPCMoreTalk(c, type, action, -1, null);
-                return true;
-            }
-            default: {
-                break;
+                case SM_ASKSLIDEMENU: {
+                    m_nSelect = cp.Decode4(); // m_nCurrentMoveInfo
+                    break;
+                }
+                default: {
+                    break;
+                }
             }
         }
 
-        DebugLogger.ErrorLog("OnScriptMessageAnswer not coded.");
-        //NPCHandler.NPCMoreTalk(c, cp); // test
+        // java coding.
+        if (chr.getDebugMan() != null) {
+            return DebugMan.OnScriptMessageAnswer(chr, ops, nMsgType, action, m_nSelect);
+        }
+
+        // js coding.
+        return OnOdinScript(chr, nMsgType, action, m_nSelect, m_sInputStr_Result);
+    }
+
+    public static boolean OnOdinScript(MapleCharacter chr, int nMsgType, int action, int m_nSelect, String m_sInputStr_Result) {
+        MapleClient client = chr.getClient();
+        boolean is_npc_talk = false;
+        boolean is_quest_start = false;
+        boolean is_quest_end = false;
+        OdinNPCConversationManager cm = TacosScriptNPC.getInstance().getCM(client); // check npc talk script.
+
+        if (cm != null) {
+            is_npc_talk = true;
+        }
+
+        if (!is_npc_talk) {
+            cm = TacosScriptQuest.getInstance().getCM(client); // check quest script.
+            if (cm != null) {
+                if (cm.getType() == 0) {
+                    is_quest_start = true;
+                }
+                if (cm.getType() == 1) {
+                    is_quest_end = true;
+                }
+            }
+        }
+
+        if (cm == null || (!is_npc_talk && !is_quest_start && !is_quest_end)) {
+            DebugLogger.ErrorLog("OnOdinScript : not found.");
+            return false;
+        }
+
+        if (chr.getConversation() == 0) {
+            DebugLogger.ErrorLog("OnOdinScript : getConversation = 0.");
+            return false;
+        }
+
+        if (cm.getLastMsg() != nMsgType) {
+            DebugLogger.ErrorLog("OnOdinScript : getLastMsg.");
+            return false;
+        }
+        cm.setLastMsg(-1);
+
+        // i cannot understand what odin script handling wanted to do.
+        OpsScriptMan ops = OpsScriptMan.find(nMsgType);
+        switch (ops) {
+            case SM_SAY:
+            case SM_SAYIMAGE:
+            case SM_ASKYESNO:
+            case SM_ASKMENU:
+            case SM_ASKAVATAR:
+            case SM_ASKACCEPT:
+            case SM_ASKSLIDEMENU: {
+                break;
+            }
+            case SM_ASKTEXT: {
+                cm.setGetText(m_sInputStr_Result);
+                if (action == 0) {
+                    cm.dispose();
+                    return true;
+                }
+                break;
+            }
+            default: {
+                DebugLogger.ErrorLog("OnOdinScript : not coded, nMsgType = " + nMsgType);
+                return false;
+            }
+        }
+
+        if (action == -1 || m_nSelect <= -2) {
+            cm.dispose();
+            return true;
+        }
+
+        if (is_npc_talk) {
+            TacosScriptNPC.getInstance().action(client, action, nMsgType, m_nSelect);
+            return true;
+        }
+        if (is_quest_start) {
+            TacosScriptQuest.getInstance().startQuest(client, action, nMsgType, m_nSelect);
+            return true;
+        }
+        if (is_quest_end) {
+            TacosScriptQuest.getInstance().endQuest(client, action, nMsgType, m_nSelect);
+            return true;
+        }
+
+        cm.dispose();
         return false;
     }
 }

@@ -23,7 +23,6 @@ import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMapleTV;
 import tacos.packet.response.data.DataAvatarLook;
-import tacos.network.MaplePacket;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -32,7 +31,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCMapleTVMan {
 
-    public static MaplePacket MapleTVUpdateMessage(byte nFlag, int m_nMessageType, MapleCharacter chr_from, List<String> messages, MapleCharacter chr_to) {
+    public static ServerPacket MapleTVUpdateMessage(byte nFlag, int m_nMessageType, MapleCharacter chr_from, List<String> messages, MapleCharacter chr_to) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVUpdateMessage);
 
         if (chr_to == null) {
@@ -55,16 +54,16 @@ public class ResCMapleTVMan {
             sp.EncodeBuffer(DataAvatarLook.Encode(chr_to));
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket MapleTVClearMessage() {
+    public static ServerPacket MapleTVClearMessage() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVClearMessage);
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket MapleTVSendMessageResult(OpsMapleTV ops) {
+    public static ServerPacket MapleTVSendMessageResult(OpsMapleTV ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVSendMessageResult);
         boolean isOK = ops == OpsMapleTV.MapleTVResCode_Success; // fail with error message
 
@@ -72,14 +71,13 @@ public class ResCMapleTVMan {
         if (!isOK) {
             sp.Encode1(ops.get());
         }
-        return sp.get();
+        return sp;
     }
 
     // unused
-    public static MaplePacket BroadSetFlashChangeEvent() {
+    public static ServerPacket BroadSetFlashChangeEvent() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BroadSetFlashChangeEvent);
 
-        return sp.get();
+        return sp;
     }
-
 }

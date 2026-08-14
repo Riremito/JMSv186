@@ -24,19 +24,25 @@ package tacos.property;
  */
 public class Property_Shop {
 
+    private static String ip = "127.0.0.1";
     private static int port = 8596;
+
+    public static String getIP() {
+        return ip;
+    }
 
     public static int getPort() {
         return port;
     }
 
     public static boolean init() {
-        Property conf = new Property("properties/shop.properties");
+        Property conf = new Property("properties/tacos.properties");
         if (!conf.open()) {
             return false;
         }
 
-        port = conf.getInt("server.port");
+        ip = conf.get("ip");
+        port = conf.getInt("port.cashshop");
         return true;
     }
 }

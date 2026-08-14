@@ -18,9 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 
 /**
  *
@@ -75,7 +74,7 @@ public enum OpsNewCharacter {
     }
 
     public static void init() {
-        if (Version.PostBB()) {
+        if (Config.PostBB()) {
             // JMS v188, 左上から右下に向かって連番 (デュアルブレイドは除外)
             Resistance.set(0);
             Adventurers.set(1);
@@ -84,7 +83,7 @@ public enum OpsNewCharacter {
             Aran.set(3);
             Evan.set(4);
         }
-        if (ServerConfig.KMS138orLater() || Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             CannonShooter.set(1); // v204
             Mercedes.set(5); // v204
             DemonSlayer.set(6); // v205
@@ -93,10 +92,10 @@ public enum OpsNewCharacter {
             Kanna.set(9); // v302
             // v314以降全部作成可能
         }
-        if (Version.GreaterOrEqual(Region.TWMS, 148)) {
+        if (Config.GreaterOrEqual(Region.TWMS, 148)) {
             Chivalrous.set(10);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 308) || Version.GreaterOrEqual(Region.KMS, 169) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.GMS, 126)) {
+        if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
             Luminous.set(10); // v308
             Kaizer.set(11); // v308
             AngelicBuster.set(12); // v308

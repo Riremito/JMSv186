@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import odin.server.maps.MapleMap;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.packet.response.ResCNpcPool;
@@ -30,18 +29,9 @@ public class PlayerNPC extends MapleNPC {
 
     private MapleCharacter player = null;
 
-    public PlayerNPC(MapleCharacter player, int npc, MapleMap map) {
-        super(npc, player.getName());
-    }
-
-    public void update(MapleCharacter player) {
+    public PlayerNPC(int npc_id, MapleCharacter player) {
+        super(npc_id, player.getName());
         this.player = player;
-        setPosition(player.getPosition());
-        setCy(player.getPosition().y);
-        setRx0(player.getPosition().x - 50);
-        setRx1(player.getPosition().x + 50);
-        setF(player.getStance());
-        setFh(player.getFH());
     }
 
     public MapleCharacter getCharacter() {

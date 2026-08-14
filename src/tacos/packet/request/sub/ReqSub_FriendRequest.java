@@ -21,8 +21,8 @@ package tacos.packet.request.sub;
 import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
 import odin.client.MapleCharacter;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsFriend;
@@ -50,7 +50,7 @@ public class ReqSub_FriendRequest {
             }
             case FriendReq_SetFriend: {
                 String friend_name = cp.DecodeStr();
-                String friend_tag = (Version.LessOrEqual(Region.KMS, 55) || Version.LessOrEqual(Region.JMS, 147)) ? "" : cp.DecodeStr(); // KMS65, JMS164
+                String friend_tag = (Config.LessOrEqual(Region.KMS, 55) || Config.LessOrEqual(Region.JMS, 147)) ? "" : cp.DecodeStr(); // KMS65, JMS164
 
                 if (12 < friend_name.length() || 16 < friend_tag.length()) {
                     chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_Unknown));

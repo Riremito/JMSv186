@@ -6,22 +6,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import odin.tools.FileoutputUtil;
-
 public abstract class Timer {
-
-    public static class WorldTimer extends Timer {
-
-        private static WorldTimer instance = new WorldTimer();
-
-        private WorldTimer() {
-            name = "Worldtimer";
-        }
-
-        public static WorldTimer getInstance() {
-            return instance;
-        }
-    }
 
     public static class MapTimer extends Timer {
 
@@ -32,19 +17,6 @@ public abstract class Timer {
         }
 
         public static MapTimer getInstance() {
-            return instance;
-        }
-    }
-
-    public static class BuffTimer extends Timer {
-
-        private static BuffTimer instance = new BuffTimer();
-
-        private BuffTimer() {
-            name = "Bufftimer";
-        }
-
-        public static BuffTimer getInstance() {
             return instance;
         }
     }
@@ -101,29 +73,15 @@ public abstract class Timer {
         }
     }
 
-    public static class PingTimer extends Timer {
-
-        private static PingTimer instance = new PingTimer();
-
-        private PingTimer() {
-            name = "Pingtimer";
-        }
-
-        public static PingTimer getInstance() {
-            return instance;
-        }
-    }
-
     private ScheduledThreadPoolExecutor ses;
-    protected String file, name;
+    protected String name;
 
     public void start() {
         if (ses != null && !ses.isShutdown() && !ses.isTerminated()) {
             return;
         }
-        file = "Log_" + name + "_Except.rtf";
-        final String tname = name + Randomizer.nextInt(); //just to randomize it. nothing too big
-        final ThreadFactory thread = new ThreadFactory() {
+        String tname = name + Randomizer.nextInt(); //just to randomize it. nothing too big
+        ThreadFactory thread = new ThreadFactory() {
 
             private final AtomicInteger threadNumber = new AtomicInteger(1);
 
@@ -152,45 +110,20 @@ public abstract class Timer {
         if (ses == null) {
             return null;
         }
-        return ses.scheduleAtFixedRate(new LoggingSaveRunnable(r, file), delay, repeatTime, TimeUnit.MILLISECONDS);
+        return ses.scheduleAtFixedRate(r, delay, repeatTime, TimeUnit.MILLISECONDS);
     }
 
     public ScheduledFuture<?> register(Runnable r, long repeatTime) {
         if (ses == null) {
             return null;
         }
-        return ses.scheduleAtFixedRate(new LoggingSaveRunnable(r, file), 0, repeatTime, TimeUnit.MILLISECONDS);
+        return ses.scheduleAtFixedRate(r, 0, repeatTime, TimeUnit.MILLISECONDS);
     }
 
     public ScheduledFuture<?> schedule(Runnable r, long delay) {
         if (ses == null) {
             return null;
         }
-        return ses.schedule(new LoggingSaveRunnable(r, file), delay, TimeUnit.MILLISECONDS);
-    }
-
-    public ScheduledFuture<?> scheduleAtTimestamp(Runnable r, long timestamp) {
-        return schedule(r, timestamp - System.currentTimeMillis());
-    }
-
-    private static class LoggingSaveRunnable implements Runnable {
-
-        Runnable r;
-        String file;
-
-        public LoggingSaveRunnable(final Runnable r, final String file) {
-            this.r = r;
-            this.file = file;
-        }
-
-        @Override
-        public void run() {
-            try {
-                r.run();
-            } catch (Throwable t) {
-                FileoutputUtil.outputFileError(file, t);
-                //t.printStackTrace(); //mostly this gives un-needed errors... that take up a lot of space
-            }
-        }
+        return ses.schedule(r, delay, TimeUnit.MILLISECONDS);
     }
 }

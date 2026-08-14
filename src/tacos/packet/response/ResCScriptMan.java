@@ -15,17 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package tacos.packet.response;
 
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
-import tacos.network.MaplePacket;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsScriptMan;
@@ -39,24 +35,23 @@ public class ResCScriptMan {
     // CScriptMan::OnPacket
     // CScriptMan::OnScriptMessage
     // getNPCTalk, getMapSelection, getNPCTalkStyle, getNPCTalkNum, getNPCTalkText, getEvanTutorial
-    public static MaplePacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next) {
+    public static ServerPacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next) {
         return ScriptMessage(npcid, smt, param, text, prev, next, null);
     }
 
-    public static MaplePacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next, ArrayList<Integer> ids) {
+    public static ServerPacket ScriptMessage(int npcid, OpsScriptMan smt, byte param, String text, boolean prev, boolean next, ArrayList<Integer> ids) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptMessage);
         sp.Encode1(4); // nSpeakerTypeID, not used
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(smt.get()); // nMsgType
 
-        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode1(param); // v186+, not used
         }
 
         switch (smt) {
             case SM_SAY: {
-                if (ServerConfig.JMS186orLater()
-                        || Version.GreaterOrEqual(Region.KMS, 95)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                     if ((param & 4) > 0) {
                         sp.Encode4(0); // nSpeakerTemplateID
                     }
@@ -84,9 +79,9 @@ public class ResCScriptMan {
             }
             case SM_ASKNUMBER: {
                 sp.EncodeStr(text);
-                //p.Encode4(0);
-                //p.Encode4(0);
-                //p.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
+                sp.Encode4(0);
                 break;
             }
             case SM_ASKMENU: {
@@ -114,7 +109,7 @@ public class ResCScriptMan {
                         sp.Encode4(id);
                     }
                 }
-                if (Version.GreaterOrEqual(Region.CMS, 104)) {
+                if (Config.GreaterOrEqual(Region.CMS, 88)) {
                     sp.Encode4(0);
                 }
                 break;
@@ -147,10 +142,11 @@ public class ResCScriptMan {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getEvanTutorial(String data) {
+    // TODO : fix
+    public static ServerPacket getEvanTutorial(String data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptMessage);
 
         sp.Encode4(8);
@@ -159,7 +155,6 @@ public class ResCScriptMan {
         sp.Encode1(1);
         sp.Encode1(1);
         sp.EncodeStr(data);
-        return sp.get();
+        return sp;
     }
-
 }

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package tacos.packet.response.data;
 
@@ -37,6 +35,6 @@ public class DataGW_WildHunterInfo {
             data.Encode4(0);
         }
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 }

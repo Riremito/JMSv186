@@ -20,13 +20,13 @@ package tacos.packet.request.parse;
 
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMovePathAttr;
 import odin.server.life.AbstractLoadedMapleLife;
 import odin.server.maps.AnimatedMapleMapObject;
+import tacos.config.Config;
 
 /**
  *
@@ -65,38 +65,62 @@ public class ParseCMovePath {
         life.setFH(move_end_foothold_id);
     }
 
+    public int getX() {
+        return move_end.x;
+    }
+
+    public int getY() {
+        return move_end.y;
+    }
+
+    public int getMoveAction() {
+        return this.move_end_action;
+    }
+
+    public int getFootHoldId() {
+        return this.move_end_foothold_id;
+    }
+
     private int getTailDataSize(ClientPacket cp) {
-        // ignore bytes : last Encode1 + unknown bytes (Post-BB)
         switch (cp.getHeader()) {
             case CP_UserMove: {
-                if (Version.LessOrEqual(Region.KMS, 31)) {
+                if (Config.LessOrEqual(Region.KMS, 31)) {
                     return (1 + 9);
                 }
-                return (1 + 17); // KMS65, JMS164-302
+                // KMS65, JMS131-302
+                return (1 + 1 * 9 + 2 * 4); // 1 + 17
             }
             case CP_NpcMove:
             case CP_DragonMove:
             case CP_SummonedMove:
-            case CP_PetMove: {
-                return (1 + 2 * 4); // JMS186-194
+            case CP_PetMove:
+            case CP_SkillPetMove:
+            case CP_FoxManMove: {
+                // JMS147-194
+                return (1 + 2 * 4); // 1 + 8
             }
             case CP_MobMove: {
-                if (Version.LessOrEqual(Region.KMS, 31)) {
+                if (Config.LessOrEqual(Region.KMS, 31)) {
                     return 1;
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 114)) {
-                    return 17;
-                }
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302)) {
+                    // JMS302
                     return (1 + 54);
                 }
-                if (Version.PostBB() && !Version.Equal(Region.KMST, 330) && !Version.LessOrEqual(Region.GMS, 95)) {
-                    return (1 + 24); // JMS187+
+                if (Config.GreaterOrEqual(Region.JMS, 194)) {
+                    // JMS194
+                    return (1 + 24);
                 }
-                if (Version.GreaterOrEqual(Region.KMS, 95) || Version.Equal(Region.KMST, 330) || Version.GreaterOrEqual(Region.JMS, 180) || Version.GreaterOrEqual(Region.GMS, 95)) {
-                    return (1 + 2 * 4 + 1 * 4 + 4); // KMS95, JMS180-186
+                if (Config.PostBB()) {
+                    // JMS187, JMS188
+                    return (1 + 2 * 4 + 1 * 4 + 4); // 1 + 16
                 }
-                return (1 + 2 * 4); // KMS65, JMS131-165
+                if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 180)) {
+                    // JMS180
+                    return (1 + 2 * 4 + 1 * 4 + 4); // 1 + 16
+                }
+                // KMS65, JMS131-165
+                return (1 + 2 * 4); // 1 + 8
             }
             default: {
                 DebugLogger.ErrorLog("ParseCMovePath : invalid header.");
@@ -122,7 +146,7 @@ public class ParseCMovePath {
         int offset_end_action = 0;
         final int tail_data_size = getTailDataSize(cp); // for only mob.
 
-        if (Version.LessOrEqual(Region.KMS, 65) || Version.LessOrEqual(Region.JMS, 165) || Version.LessOrEqual(Region.GMS, 83)) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.GMS, 83) || Region.BMS.check()) {
             // JMS131-165
             offset_end_x = data.length - 13 - tail_data_size;
             offset_end_fh = data.length - 5 - tail_data_size;

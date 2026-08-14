@@ -26,11 +26,13 @@ import java.util.List;
  *
  * @author Matze
  */
-public interface IMapleDataDirectoryEntry extends IMapleDataEntry {
+public interface IMapleDataDirectoryEntry extends IMapleDataEntity {
 
     public List<IMapleDataDirectoryEntry> getSubDirectories();
 
-    public List<IMapleDataFileEntry> getFiles();
+    public IMapleDataDirectoryEntry getSubDirectory(String path);
 
-    public IMapleDataEntry getEntry(String name);
+    public List<IMapleDataEntity> getFiles();
+
+    public IMapleDataEntity getEntry(String name);
 }

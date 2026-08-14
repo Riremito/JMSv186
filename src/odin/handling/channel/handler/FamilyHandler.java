@@ -22,17 +22,15 @@ package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
-import java.util.List;
 import tacos.packet.response.ResCWvsContext;
-import odin.server.maps.FieldLimitType;
 import tacos.database.query.DQ_Notes;
 import tacos.packet.ClientPacket;
+import tacos.wz.opt.FieldOpt;
 
 public class FamilyHandler {
 
@@ -61,13 +59,13 @@ public class FamilyHandler {
         switch (type) {
             case 0: //teleport: need add check for if not a safe place
                 victim = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-                if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
+                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                     success = false;
                 } else if (victim == null || (victim.isGM() && !c.getPlayer().isGM())) {
                     c.getPlayer().dropMessage(1, "Invalid name or you are not on the same channel.");
                     success = false;
-                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
+                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
                     c.getPlayer().changeMap(victim.getMap(), victim.getMap().getPortal(0));
                 } else {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
@@ -76,33 +74,20 @@ public class FamilyHandler {
                 break;
             case 1: // TODO give a check to the player being forced somewhere else..
                 victim = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-                if (FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
+                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(c.getPlayer().getMap().getFieldLimit()) || !c.getPlayer().isAlive()) {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                 } else if (victim == null || (victim.isGM() && !c.getPlayer().isGM())) {
                     c.getPlayer().dropMessage(1, "Invalid name or you are not on the same channel.");
                 } else if (victim.getTeleportName().length() > 0) {
                     c.getPlayer().dropMessage(1, "Another character has requested to summon this character. Please try again later.");
-                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
-                    victim.getClient().getSession().write(ResCWvsContext.familySummonRequest(c.getPlayer().getName(), c.getPlayer().getMap().getMapName()));
+                } else if (victim.getFamilyId() == c.getPlayer().getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != c.getPlayer().getId()) {
+                    victim.getClient().getSession().write(ResCWvsContext.familySummonRequest(c.getPlayer().getName(), "MAP_NAME"));
                     victim.setTeleportName(c.getPlayer().getName());
                 } else {
                     c.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                 }
                 return; //RETURN not break
             case 4: // 6 family members in pedigree online Drop Rate & Exp Rate + 100% 30 minutes
-                final MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
-                List<MapleFamilyCharacter> chrs = fam.getMFC(c.getPlayer().getId()).getOnlineJuniors(fam);
-                if (chrs.size() < 7) {
-                    success = false;
-                } else {
-                    for (MapleFamilyCharacter chrz : chrs) {
-                        MapleCharacter chrr = c.getWorld().findOnlinePlayerById(chrz.getId());
-                        if (chrr != null) {
-                            entry.applyTo(chrr);
-                        }
-                        //chrr.getClient().getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                    }
-                }
                 break;
 
             case 2: // drop rate + 50% 15 min
@@ -111,24 +96,9 @@ public class FamilyHandler {
             case 6: // exp rate + 100% 15 min
             case 7: // drop rate + 100% 30 min
             case 8: // exp rate + 100% 30 min
-                //c.getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                entry.applyTo(c.getPlayer());
                 break;
             case 9: // drop rate + 100% party 30 min
             case 10: // exp rate + 100% party 30 min
-                entry.applyTo(c.getPlayer());
-                //c.getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                if (c.getPlayer().getParty() != null) {
-                    for (MaplePartyCharacter mpc : c.getPlayer().getParty().getMembers()) {
-                        if (mpc.getId() != c.getPlayer().getId()) {
-                            MapleCharacter chr = c.getPlayer().getMap().getCharacterById(mpc.getId());
-                            if (chr != null) {
-                                entry.applyTo(chr);
-                                //chr.getClient().getSession().write(FamilyPacket.familyBuff(entry.type, type, entry.effect, entry.duration*60000));
-                            }
-                        }
-                    }
-                }
                 break;
         }
         if (success) { //again
@@ -182,8 +152,8 @@ public class FamilyHandler {
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
         MapleCharacter tt = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-        if (c.getPlayer().getFamilyId() > 0 && tt != null && tt.getFamilyId() == c.getPlayer().getFamilyId() && !FieldLimitType.VipRock.check(tt.getMap().getFieldLimit())
-                && !FieldLimitType.VipRock.check(c.getPlayer().getMap().getFieldLimit()) && c.getPlayer().isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
+        if (c.getPlayer().getFamilyId() > 0 && tt != null && tt.getFamilyId() == c.getPlayer().getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(tt.getMap().getFieldLimit())
+                && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(c.getPlayer().getMap().getFieldLimit()) && c.getPlayer().isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
                 && c.getPlayer().getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep) {
             //whew lots of checks
             boolean accepted = cp.Decode1() > 0;

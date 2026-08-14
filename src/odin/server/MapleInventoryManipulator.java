@@ -13,17 +13,16 @@ import odin.client.inventory.InventoryException;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.PlayerStats;
-import odin.client.MapleBuffStat;
 import odin.client.inventory.MaplePet;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.AramiaFireWorks;
+import tacos.config.Config;
 
 public class MapleInventoryManipulator {
 
@@ -413,7 +412,7 @@ public class MapleInventoryManipulator {
     }
 
     private static final IItem checkEnhanced(final IItem before, final MapleCharacter chr) {
-        if (Version.LessOrEqual(Region.KMS, 95) || Version.LessOrEqual(Region.JMS, 185)) {
+        if (Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 185) || Region.BMS.check()) {
             return before;
         }
         if (before instanceof Equip) {
@@ -562,7 +561,7 @@ public class MapleInventoryManipulator {
         }
 
         final Map<String, Integer> stats = ii.getEquipStats(source.getItemId());
-        if (dst < -999 && !GameConstants.isEvanDragonItem(source.getItemId())) {
+        if (dst < -999 && !GameConstants.isEvanDragonItem(source.getItemId()) && dst != -1400) {
             chr.updateInv();
             return;
         } else if (dst >= -999 && dst < -99 && stats.get("cash") == 0) {
@@ -681,23 +680,6 @@ public class MapleInventoryManipulator {
             target.setPosition(src);
             chr.getInventory(MapleInventoryType.EQUIP).addFromDB(target);
         }
-        if (GameConstants.isWeapon(source.getItemId())) {
-            if (chr.getBuffedValue(MapleBuffStat.BOOSTER) != null) {
-                chr.cancelBuffStats(MapleBuffStat.BOOSTER);
-            }
-            if (chr.getBuffedValue(MapleBuffStat.SPIRIT_CLAW) != null) {
-                chr.cancelBuffStats(MapleBuffStat.SPIRIT_CLAW);
-            }
-            if (chr.getBuffedValue(MapleBuffStat.SOULARROW) != null) {
-                chr.cancelBuffStats(MapleBuffStat.SOULARROW);
-            }
-            if (chr.getBuffedValue(MapleBuffStat.WK_CHARGE) != null) {
-                chr.cancelBuffStats(MapleBuffStat.WK_CHARGE);
-            }
-            if (chr.getBuffedValue(MapleBuffStat.LIGHTNING_CHARGE) != null) {
-                chr.cancelBuffStats(MapleBuffStat.LIGHTNING_CHARGE);
-            }
-        }
         if (source.getItemId() == 1122017) {
             chr.startFairySchedule(true, true);
         }
@@ -726,21 +708,6 @@ public class MapleInventoryManipulator {
         if (target != null) {
             target.setPosition(src);
             c.getPlayer().getInventory(MapleInventoryType.EQUIPPED).addFromDB(target);
-        }
-
-        if (GameConstants.isWeapon(source.getItemId())) {
-            if (c.getPlayer().getBuffedValue(MapleBuffStat.BOOSTER) != null) {
-                c.getPlayer().cancelBuffStats(MapleBuffStat.BOOSTER);
-            }
-            if (c.getPlayer().getBuffedValue(MapleBuffStat.SPIRIT_CLAW) != null) {
-                c.getPlayer().cancelBuffStats(MapleBuffStat.SPIRIT_CLAW);
-            }
-            if (c.getPlayer().getBuffedValue(MapleBuffStat.SOULARROW) != null) {
-                c.getPlayer().cancelBuffStats(MapleBuffStat.SOULARROW);
-            }
-            if (c.getPlayer().getBuffedValue(MapleBuffStat.WK_CHARGE) != null) {
-                c.getPlayer().cancelBuffStats(MapleBuffStat.WK_CHARGE);
-            }
         }
         if (source.getItemId() == 1122017) {
             c.getPlayer().cancelFairySchedule(true);

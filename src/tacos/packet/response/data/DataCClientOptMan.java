@@ -31,7 +31,7 @@ public class DataCClientOptMan {
         ServerPacket data = new ServerPacket();
 
         data.Encode2(0); // not 0, Encode4, Encode4
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
 }

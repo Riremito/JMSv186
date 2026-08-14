@@ -18,21 +18,16 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleBuffStat;
 import odin.client.MapleCharacter;
-import odin.client.MapleDisease;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 import odin.constants.GameConstants;
 import tacos.shared.SharedDate;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
 import odin.handling.channel.MapleGuildRanking;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
@@ -58,23 +53,29 @@ import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.ops.OpsMapTransfer;
 import tacos.packet.ops.arg.ArgFriend;
 import tacos.packet.ops.arg.ArgMessage;
-import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
 import tacos.packet.response.data.DataCUIUserInfo;
 import tacos.packet.response.data.DataCWvsContext;
-import tacos.packet.response.data.DataSecondaryStat;
 import tacos.packet.response.data.DataGW_CharacterStat;
 import tacos.packet.response.data.DataGW_ItemSlotBase;
 import tacos.packet.response.struct.InvOp;
-import tacos.packet.response.struct.TestHelper;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleStatEffect;
+import odin.server.maps.MapleDoor;
+import tacos.client.TacosBuff;
+import tacos.client.TacosBuff.Buff;
 import tacos.odin.OdinPair;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosMonsterBook;
+import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
+import tacos.packet.ops.OpsGivePopularity;
+import tacos.packet.ops.OpsMarriage;
+import tacos.packet.ops.OpsParty;
+import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.DataAvatarLook;
 import tacos.packet.response.data.DataForcedStat;
+import tacos.server.map.TacosPortal;
 
 /**
  *
@@ -83,12 +84,12 @@ import tacos.packet.response.data.DataForcedStat;
 public class ResCWvsContext {
 
     // CWvsContext::OnInventoryOperation
-    public static MaplePacket InventoryOperation(boolean unlock, InvOp io) {
+    public static ServerPacket InventoryOperation(boolean unlock, InvOp io) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryOperation);
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
 
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.Equal(Region.KMST, 391) || Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0); // unused
         }
 
@@ -142,29 +143,37 @@ public class ResCWvsContext {
                 sp.Encode1(0); // for CUserLocal::SetSecondaryStatChangedPoint
             }
         }
-        return sp.get();
+        return sp;
     }
 
     // CWvsContext::OnInventoryGrow
+    public static ServerPacket InventoryGrow(byte invType, byte newSlots) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryGrow);
+
+        sp.Encode1(invType);
+        sp.Encode1(newSlots);
+        return sp;
+    }
+
     // CWvsContext::OnStatChanged
-    public static final MaplePacket StatChanged(TacosCharacter chr, boolean unlock, int statmask) {
+    public static ServerPacket StatChanged(TacosCharacter chr, boolean unlock, int statmask) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
         // 0 = lock   -> do not clear lock flag
         // 1 = unlock -> clear lock flag
         sp.Encode1(unlock ? 1 : 0); // CWvsContext->bExclRequestSent
-        if ((Region.IsEMS() && !Version.GreaterOrEqual(Region.EMS, 89)) || Version.Between(Region.TWMS, 74, 93)) {
+        if (Config.Between(Region.EMS, 55, 76) || Config.Between(Region.TWMS, 74, 93)) {
             sp.Encode1(0); // EMS v55
         }
         sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
-        if (Version.PreBB()) {
-            if (Region.IsJMS()) {
+        if (Config.PreBB()) {
+            if (Region.JMS.check() || Region.JMST.check()) {
                 // Pet
-                if ((statmask & OpsChangeStat.CS_PETSN.get()) > 0) {
+                if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
                     int v5 = 0; // CVecCtrlUser::AddMovementInfo
                     sp.Encode1(v5);
                 }
             }
-            if (Version.GreaterOrEqual(Region.GMS, 91)) {
+            if (Config.GreaterOrEqual(Region.GMS, 91)) {
                 sp.Encode1(0); // not 0 -> Encode1
             }
         } else {
@@ -172,96 +181,236 @@ public class ResCWvsContext {
             sp.Encode1(0); // not 0 -> Encode1
             sp.Encode1(0); // not 0 -> Encode4, Encode4
         }
-        return sp.get();
+        return sp;
     }
 
     // CWvsContext::OnTemporaryStatSet
-    public static final MaplePacket TemporaryStatSet(MapleStatEffect effect) {
+    public static ServerPacket TemporaryStatSet(TacosCharacter chr, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-        sp.EncodeBuffer(DataSecondaryStat.EncodeForLocal(effect));
+
+        boolean is_swallow_buff = false;
+        boolean is_dice = false;
+        boolean is_blessing_armor = false;
+        // SecondaryStat::DecodeForLocal
+        int[] buff_mask = TacosBuff.getBuffBuffer();
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
+            if (buff.ops == OpsSecondaryStat.CTS_Dice) {
+                is_dice = true;
+            }
+            if (buff.ops == OpsSecondaryStat.CTS_BlessingArmor) {
+                is_blessing_armor = true;
+            }
+            if (buff.ops == OpsSecondaryStat.CTS_SwallowAttackDamage || buff.ops == OpsSecondaryStat.CTS_SwallowDefence || buff.ops == OpsSecondaryStat.CTS_SwallowCritical || buff.ops == OpsSecondaryStat.CTS_SwallowMaxMP || buff.ops == OpsSecondaryStat.CTS_SwallowEvasion) {
+                is_swallow_buff = true;
+            }
+        }
+        for (int index = 0; index < buff_mask.length; index++) {
+            sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
+        }
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            if (buff.ops.isTwoState()) {
+                continue;
+            }
+            if (Config.GreaterOrEqual(Region.THMS, 96)) {
+                sp.Encode4(buff.buff_effect);
+            } else {
+                sp.Encode2(buff.buff_effect);
+            }
+            sp.Encode4(buff.buff_id);
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
+                sp.Encode4(buff.buff_time);
+            } else {
+                sp.Encode2(buff.buff_time);
+            }
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
+            sp.Encode2(0);
+        }
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
+            sp.Encode1(0); // nDefenseAtt
+            sp.Encode1(0); // nDefenseState
+        }
+        // JMS187, GMS95
+        if (Config.PostBB()) {
+            // CTS_SwallowBuff
+            if (is_swallow_buff) {
+                sp.Encode1(0);
+            }
+            // CTS_Dice
+            if (is_dice) {
+                for (int i = 0; i < 22; i++) {
+                    sp.Encode4(0);
+                }
+            }
+            // CTS_BlessingArmor
+            if (is_blessing_armor) {
+                sp.Encode4(0);
+            }
+        }
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            if (!buff.ops.isTwoState()) {
+                continue;
+            }
+            // TemporaryStatBase<long>::DecodeForClient
+            switch (buff.ops.getTwoState()) {
+                case RIDING: {
+                    sp.Encode4(chr.getMount() != null ? chr.getMount().getItemId() : 0); // m_value
+                    sp.Encode4(1); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
+                    break;
+                }
+                case NO_EXPIRE: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
+                    break;
+                }
+                case EXPIRE_LAST: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
+                    sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
+                    break;
+                }
+                case EXPIRE_CURRENT: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime -> m_tCurrentTime
+                    sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
+                    break;
+                }
+                case GUIDED_BULLET: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
+                    sp.Encode4(0); // m_dwMobID
+                    break;
+                }
+                default: {
+                    sp.Encode4(buff.buff_effect); // m_value
+                    sp.Encode4(buff.buff_effect_2); // m_reason
+                    sp.Encode1(0); // DecodeTime
+                    sp.Encode4(0); // DecodeTime
+                    break;
+                }
+            }
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148)) {
+            sp.Encode1(0);
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
+            sp.Encode4(0);
+            sp.Encode4(0);
+        }
+        // DecodeForLocal - end.
         sp.Encode2(0); // delay
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+            sp.Encode1(0);
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
         sp.Encode1(0); // CUserLocal::SetSecondaryStatChangedPoint
-        return sp.get();
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
+            sp.Encode4(0);
+        }
+        return sp;
     }
 
-    public static MaplePacket cancelBuff(List<MapleBuffStat> statups, MapleStatEffect mse) {
+    // CWvsContext::OnTemporaryStatReset
+    public static ServerPacket TemporaryStatReset(TacosCharacter chr, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
-        int buff_mask[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-        ArrayList<OdinPair<OpsSecondaryStat, Integer>> pss_array = mse.getOss();
-        for (OdinPair<OpsSecondaryStat, Integer> pss : pss_array) {
-            buff_mask[pss.getLeft().getN()] |= (1 << pss.getLeft().get());
+
+        int[] buff_mask = TacosBuff.getBuffBuffer();
+        for (Buff buff : chr.getBuff().getCTS(buff_id)) {
+            buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
         }
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
-            sp.Encode4(buff_mask[8]);
+        for (int index = 0; index < buff_mask.length; index++) {
+            sp.Encode4(buff_mask[buff_mask.length - 1 - index]);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104)) {
-            sp.Encode4(buff_mask[7]);
-            sp.Encode4(buff_mask[6]);
-            sp.Encode4(buff_mask[5]);
-        }
-        // JMS v187+
-        if (Version.PostBB()) {
-            if (!Region.IsIMS() && !Region.IsTHMS() && !Version.Equal(Region.KMST, 330)) {
-                sp.Encode4(buff_mask[4]);
-            }
-        }
-        if (ServerConfig.JMS146orLater()) {
-            sp.Encode4(buff_mask[3]);
-            sp.Encode4(buff_mask[2]);
-        }
-        if (ServerConfig.JMS146orLater()) {
-            sp.Encode4(buff_mask[1]);
-            sp.Encode4(buff_mask[0]);
-        } else {
-            // JMS v131
-            sp.Encode4(buff_mask[0]);
-            sp.Encode4(buff_mask[1]);
-        }
+
         sp.Encode1(0);
-        return sp.get();
+        return sp;
     }
 
     // CWvsContext::OnForcedStatSet
-    public static MaplePacket ForcedStatSet(TacosCharacter chr) {
+    public static ServerPacket ForcedStatSet(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatSet);
 
         sp.EncodeBuffer(DataForcedStat.Encode(chr));
-        return sp.get();
+        return sp;
     }
 
     // CWvsContext::OnForcedStatReset
-    public static final MaplePacket ForcedStatReset() {
+    public static ServerPacket ForcedStatReset() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatReset);
-        return sp.get();
+        return sp;
     }
 
     // CWvsContext::OnChangeSkillRecordResult
-    public static final MaplePacket updateSkill(int skillid, int level, int masterlevel, long expiration) {
+    public static ServerPacket ChangeSkillRecordResult(int skillid, int level, int masterlevel, long expiration) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ChangeSkillRecordResult);
         sp.Encode1(1);
-        if (Version.GreaterOrEqual(Region.JMS, 302) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+            sp.Encode1(0);
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
         sp.Encode2(1);
         sp.Encode4(skillid);
         sp.Encode4(level);
         sp.Encode4(masterlevel);
-        if (ServerConfig.JMS164orLater()) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             sp.Encode8(SharedDate.getMagicalExpirationDate());
         }
         sp.Encode1(4);
-        return sp.get();
+        return sp;
     }
 
-    // warpper
-    public static MaplePacket giveBuff(int buffid, int bufflength, List<OdinPair<MapleBuffStat, Integer>> statups, MapleStatEffect effect) {
-        return TemporaryStatSet(effect);
+    // CWvsContext::OnSkillUseResult
+    public static ServerPacket SkillUseResult() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillUseResult);
+
+        sp.Encode1(0); // unused.
+        return sp;
     }
 
-    public static final MaplePacket Message(ArgMessage ma) {
+    // CWvsContext::OnGivePopularityResult
+    public static ServerPacket GivePopularityResult(OpsGivePopularity ops, TacosCharacter chr, boolean is_up, TacosCharacter target) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
+
+        sp.Encode1(ops.get());
+        switch (ops) {
+            case GivePopularityRes_Success: {
+                sp.EncodeStr(target.getName());
+                sp.Encode1(is_up ? 1 : 0);
+                sp.Encode4(target.getFame());
+                break;
+            }
+            case GivePopularityRes_Notify: {
+                sp.EncodeStr(chr.getName());
+                sp.Encode1(is_up ? 1 : 0);
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return sp;
+    }
+
+    // CWvsContext::OnMessage
+    public static ServerPacket Message(ArgMessage ma) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Message);
         sp.Encode1(ma.mt.get());
         switch (ma.mt) {
@@ -274,11 +423,11 @@ public class ResCWvsContext {
                         break;
                     }
                     case PICKUP_MESO: {
-                        if (ServerConfig.JMS164orLater()) {
+                        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
                             sp.Encode1(0);
                         }
                         sp.Encode4(ma.Inc_Meso);
-                        if (Version.LessOrEqual(Region.JMS, 131)) {
+                        if (Config.LessOrEqual(Region.JMS, 131)) {
                             sp.Encode2(0); // Internet cafe bonus
                         } else {
                             sp.Encode4(0);
@@ -317,7 +466,7 @@ public class ResCWvsContext {
                         break;
                     }
                     case QUEST_COMPLETE: {
-                        sp.Encode8(System.currentTimeMillis());
+                        sp.Encode8(SharedDate.getTimestamp());
                         break;
                     }
                     default: {
@@ -339,12 +488,12 @@ public class ResCWvsContext {
                 sp.Encode4(0);
                 sp.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
                 sp.Encode1(0);
-                if (Region.IsTHMS() && Version.getVersion() == 87) {
+                if (Config.Equal(Region.THMS, 87)) {
                     sp.Encode4(ma.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
                     sp.Encode4(0); // Party Ring Bonus EXP(+%d)
                     sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)
                     sp.Encode4(0); // Rainbow Week Bonus EXP(+%d)
-                } else if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                } else if (Config.GreaterOrEqual(Region.GMS, 111)) {
                     sp.Encode4(0);
                 } else {
                     sp.Encode4(ma.Inc_EXP_WeddingBonus); // 結婚ボーナス経験値
@@ -362,13 +511,13 @@ public class ResCWvsContext {
                 sp.Encode4(0); // not used
                 sp.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
 
-                if (Version.Equal(Region.GMS, 95)) {
+                if (Config.Equal(Region.GMS, 95)) {
                     sp.Encode4(0);
                     sp.Encode4(0);
                     break;
                 }
 
-                if (Version.GreaterOrEqual(Region.GMS, 111)) {
+                if (Config.GreaterOrEqual(Region.GMS, 111)) {
                     sp.Encode1(0);
                     sp.Encode4(0);
                     sp.Encode4(0);
@@ -384,7 +533,7 @@ public class ResCWvsContext {
                     break;
                 }
 
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode4(0);
                     sp.Encode4(0);
                     sp.Encode4(0);
@@ -393,7 +542,7 @@ public class ResCWvsContext {
                     sp.Encode4(0);
                     sp.Encode4(0);
                 }
-                if (ServerConfig.JMS194orLater()) {
+                if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
                     sp.Encode1(0); // 0 or not
                 }
                 break;
@@ -412,7 +561,7 @@ public class ResCWvsContext {
             // showMesoGain
             case MS_IncMoneyMessage: {
                 sp.Encode4(ma.Inc_Meso);
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode4(-1); // 別の数値だとメッセージ非表示
                 }
                 break;
@@ -459,26 +608,153 @@ public class ResCWvsContext {
                 break;
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket GatherItemResult(byte type) {
+    // CWvsContext::OnMemoResult
+    public static ServerPacket MemoResult(ResultSet notes, int count) throws SQLException {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MemoResult);
+
+        sp.Encode1(3);
+        sp.Encode1(count);
+        for (int i = 0; i < count; i++) {
+            sp.Encode4(notes.getInt("id"));
+            sp.EncodeStr(notes.getString("from"));
+            sp.EncodeStr(notes.getString("message"));
+            sp.Encode8(SharedDate.getTimestamp(notes.getLong("timestamp")));
+            sp.Encode1(notes.getInt("gift"));
+            notes.next();
+        }
+        return sp;
+    }
+
+    // CWvsContext::OnMapTransferResult
+    public static ServerPacket MapTransferResult(MapleCharacter chr, OpsMapTransfer ops_res, boolean vip) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapTransferResult);
+
+        sp.Encode1(ops_res.get());
+        sp.Encode1(vip ? 1 : 0);
+
+        switch (ops_res) {
+            case MapTransferRes_DeleteList:
+            case MapTransferRes_RegisterList: {
+                int map_list[] = vip ? chr.getRocks() : chr.getRegRocks();
+                for (int map_id : map_list) {
+                    sp.Encode4(map_id);
+                }
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return sp;
+    }
+
+    // CWvsContext::OnAntiMacroResult
+    // CWvsContext::OnClaimResult
+    // CWvsContext::OnSetClaimSvrAvailableTime
+    // CWvsContext::OnClaimSvrStatusChanged
+    //CWvsContext::OnSetTamingMobInfo
+    public static ServerPacket SetTamingMobInfo(TacosCharacter chr, boolean levelup) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetTamingMobInfo);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(chr.getMount().getLevel());
+        sp.Encode4(chr.getMount().getExp());
+        sp.Encode4(chr.getMount().getFatigue());
+        sp.Encode1(levelup ? 1 : 0);
+        return sp;
+    }
+
+    // CWvsContext::OnQuestClear
+    public static ServerPacket QuestClear(int usQuestID) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_QuestClear);
+
+        sp.Encode2(usQuestID);
+        return sp;
+    }
+
+    // CWvsContext::OnEntrustedShopCheckResult
+    public static ServerPacket EntrustedShopCheckResult(OpsEntrustedShop ops) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EntrustedShopCheckResult);
+
+        sp.Encode1(ops.get());
+
+        switch (ops) {
+            case EntrustedShopRes_OpenImpossible_Using: {
+                sp.Encode4(910000018); // used last 3 numbers to decide FreeMarket room.
+                sp.Encode1(0); // channel
+                break;
+            }
+            case EntrustedShopReq_SetMiniMapColor: {
+                // may be res...
+                sp.Encode4(123);
+                break;
+            }
+            case EntrustedShopReq_RenameResult: {
+                // may be res...
+                sp.Encode1(1); // 0 = fail, 1 = success.
+                break;
+            }
+            case EntrustedShopRes_GetPosResult: {
+                // client sends change channel packet after this.
+                sp.Encode4(0);
+                sp.Encode1(0); // channel
+                break;
+            }
+            case EntrustedShopRes_Enter: {
+                // client sends enter shop packet after this.
+                sp.Encode4(123); // own shop id.
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return sp;
+    }
+
+    // CWvsContext::OnSkillLearnItemResult
+    public static ServerPacket SkillLearnItemResult(MapleCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillLearnItemResult);
+
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.PostBB()) {
+            sp.Encode1(1); // bOnExclRequest
+        }
+
+        sp.Encode4(chr.getId());
+        sp.Encode1(bIsMaterbook ? 1 : 0); // bIsMaterbook
+        sp.Encode4(0); // not used
+        sp.Encode4(0); // not used
+        sp.Encode1(bUsed ? 1 : 0); // bUsed[0]
+        sp.Encode1(bSucceed ? 1 : 0); // bSucceed
+        return sp;
+    }
+
+    // CWvsContext::OnSkillResetItemResult
+    // CWvsContext::OnGatherItemResult
+    public static ServerPacket GatherItemResult(byte nTI) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GatherItemResult);
 
         sp.Encode1(0); // unused
-        sp.Encode1(type);
-        return sp.get();
+        sp.Encode1(nTI);
+        return sp;
     }
 
-    public static MaplePacket SortItemResult(byte type) {
+    // CWvsContext::OnSortItemResult
+    public static ServerPacket SortItemResult(byte nTI) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SortItemResult);
 
         sp.Encode1(0); // unused
-        sp.Encode1(type);
-        return sp.get();
+        sp.Encode1(nTI);
+        return sp;
     }
 
-    public static final MaplePacket CharacterInfo(MapleCharacter player, boolean isSelf) {
+    // CWvsContext::OnCharacterInfo
+    public static ServerPacket CharacterInfo(MapleCharacter player, boolean isSelf) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CharacterInfo);
         boolean pet_summoned = false;
         for (final MaplePet pet : player.getPets()) {
@@ -487,20 +763,21 @@ public class ResCWvsContext {
                 break;
             }
         }
-        sp.Encode4(player.getId());
-        sp.Encode1(player.getLevel());
-        sp.Encode2(player.getJob());
+        sp.Encode4(player.getId()); // dwCharacterId
+        sp.Encode1(player.getLevel()); // nLevel
+        sp.Encode2(player.getJob()); // nJob
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
-            sp.Encode4(player.getFame());
+            sp.Encode4(player.getFame()); // nPOP
         } else {
-            sp.Encode2(player.getFame());
+            sp.Encode2(player.getFame()); // nPOP
         }
 
-        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
-            sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // heart red or gray
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.GMS, 61)) {
+            sp.Encode1(player.getMarriageId() > 0 ? 1 : 0); // bIsMarried
         }
+
         String sCommunity = "-";
         String sAlliance = "";
         // Guild
@@ -518,33 +795,42 @@ public class ResCWvsContext {
             }
         }
 
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
 
         sp.EncodeStr(sCommunity);
-        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
+
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.GMS, 61)) {
             sp.EncodeStr(sAlliance);
         }
+
         // Pre-BB
-        if (Version.Between(Region.JMS, 180, 186)) {
+        if (Config.Between(Region.JMS, 180, 186)) {
             sp.Encode4(0);
             sp.Encode4(0);
         }
-        if (Version.PostBB()) {
+
+        if (Config.PostBB()) {
             sp.Encode1(0);
         }
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
         }
-        sp.Encode1((player.getPet(0) != null) ? 1 : 0); // pet button clickable
-        if (Version.LessOrEqual(Region.JMS, 131)) {
+
+        sp.Encode1((player.getPet(0) != null) ? 1 : 0); // bPetActivated
+        if (Config.LessOrEqual(Region.JMS, 131)) {
             // inlined?
             if (player.getPet(0) != null) {
                 sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo_JMS131(player, player.getPet(0)));
             }
+        } else if (Config.GreaterOrEqual(Region.GMS, 95)) {
+            if (player.getPet(0) != null) {
+                sp.EncodeBuffer(DataCUIUserInfo.SetMultiPetInfo_GMS95(player));
+            }
         } else {
-            // CUIUserInfo::SetPetInfo
+            // CUIUserInfo::SetPetInfo, CUIUserInfo::SetMultiPetInfo
             sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo(player));
         }
 
@@ -572,15 +858,21 @@ public class ResCWvsContext {
                 sp.Encode4(wishlist[x]);
             }
         }
-        if (ServerConfig.JMS147orLater() || Version.GreaterOrEqual(Region.GMS, 61)) {
-            // Monster Book (JMS)
-            sp.EncodeBuffer(player.getMonsterBook().MonsterBookInfo(player.getMonsterBookCover()));
+
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0)) {
+            if (Config.GreaterOrEqual(Region.GMS, 93)) {
+                // none.
+            } else {
+                // MonsterBookInfo::Decode
+                sp.EncodeBuffer(MonsterBookInfo_Encode(player.getMonsterBook()));
+            }
         }
-        if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
+
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             // MedalAchievementInfo::Decode
             IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
-            sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId());
-            List<Integer> medalQuests = new ArrayList<Integer>();
+            sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId()); // nEquipedMedalID
+            List<Integer> medalQuests = new ArrayList<>();
             List<MapleQuestStatus> completed = player.getCompletedQuests();
             for (MapleQuestStatus q : completed) {
                 if (q.getQuest().getMedalItem() > 0 && GameConstants.getInventoryType(q.getQuest().getMedalItem()) == MapleInventoryType.EQUIP) {
@@ -591,12 +883,12 @@ public class ResCWvsContext {
             sp.Encode2(medalQuests.size());
             for (int x : medalQuests) {
                 sp.Encode2(x);
-                if (Version.GreaterOrEqual(Region.JMS, 302)) {
+                if (Config.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode8(0);
                 }
             }
             // JMS v180-v186, v187以降消滅
-            if (Version.PreBB() && (Region.IsJMS() || Version.GreaterOrEqual(Region.GMS, 91))) {
+            if (Config.Between(Region.JMS, 180, 186) || Config.GreaterOrEqual(Region.GMS, 91)) {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
@@ -605,7 +897,7 @@ public class ResCWvsContext {
                 }
             }
 
-            if (Version.GreaterOrEqual(Region.JMS, 302)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 sp.Encode1(0);
                 sp.Encode1(0);
                 sp.Encode1(0);
@@ -620,11 +912,370 @@ public class ResCWvsContext {
             }
 
         }
-        return sp.get();
+        return sp;
     }
 
+    // MonsterBookInfo::Decode
+    public static byte[] MonsterBookInfo_Encode(TacosMonsterBook mb) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(mb.getLevel()); // nLevel
+        data.Encode4(mb.getNormal()); // nNormal
+        data.Encode4(mb.getSpecial()); // nSpecial
+        data.Encode4(mb.getTotal()); // nTotal
+        data.Encode4(mb.getCoverMobID()); // nCoverMobID
+        return data.getBytes();
+    }
+
+    public static ServerPacket PartyResult(OpsParty ops) {
+        return PartyResult(ops, null);
+    }
+
+    // CWvsContext::OnPartyResult
+    public static ServerPacket PartyResult(OpsParty ops, MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
+
+        MapleParty party = chr.getParty();
+        int forChannel = chr.getChannelId();
+        sp.Encode1(ops.get());
+
+        switch (ops) {
+            case PartyReq_InviteParty: {
+                sp.Encode4(party.getId());
+                sp.EncodeStr(chr.getName());
+                sp.Encode4(chr.getLevel());
+                if (Config.GreaterOrEqual(Region.JMS, 186)) {
+                    sp.Encode4(chr.getJob());
+                }
+                sp.Encode1(0); // auto join.
+                break;
+            }
+            case PartyRes_LoadParty_Done: {
+                sp.Encode4(party.getId());
+                sp.EncodeBuffer(addPartyStatus(forChannel, party, true));
+                break;
+            }
+            case PartyRes_CreateNewParty_Done: {
+                sp.Encode4(party.getId());
+                sp.Encode4(999999999);
+                sp.Encode4(999999999);
+                sp.Encode8(0);
+                break;
+            }
+            case PartyRes_CreateNewParty_AlreayJoined: {
+                break;
+            }
+            case PartyRes_CreateNewParty_Beginner: {
+                break;
+            }
+            case PartyRes_CreateNewParty_Unknown: {
+                break;
+            }
+            case PartyRes_WithdrawParty_Done: {
+                break;
+            }
+            case PartyRes_WithdrawParty_NotJoined: {
+                break;
+            }
+            case PartyRes_WithdrawParty_Unknown: {
+                break;
+            }
+            case PartyRes_JoinParty_Done: {
+                break;
+            }
+            case PartyRes_JoinParty_Done2: {
+                break;
+            }
+            case PartyRes_JoinParty_AlreadyJoined: {
+                break;
+            }
+            case PartyRes_JoinParty_AlreadyFull: {
+                break;
+            }
+            case PartyRes_JoinParty_OverDesiredSize: {
+                break;
+            }
+            case PartyRes_JoinParty_UnknownUser: {
+                break;
+            }
+            case PartyRes_JoinParty_Unknown: {
+                break;
+            }
+            case PartyRes_InviteParty_Sent: {
+                sp.EncodeStr(chr.getName());
+                break;
+            }
+            case PartyRes_InviteParty_BlockedUser: {
+                sp.EncodeStr(chr.getName());
+                break;
+            }
+            case PartyRes_InviteParty_AlreadyInvited: {
+                break;
+            }
+            case PartyRes_InviteParty_AlreadyInvitedByInviter: {
+                break;
+            }
+            case PartyRes_InviteParty_Rejected: {
+                break;
+            }
+            case PartyRes_InviteParty_Accepted: {
+                break;
+            }
+            case PartyRes_KickParty_Done: {
+                break;
+            }
+            case PartyRes_KickParty_FieldLimit: {
+                break;
+            }
+            case PartyRes_KickParty_Unknown: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_Done: {
+                sp.Encode4(chr.getId());
+                sp.Encode1(1); // dc or not.
+                break;
+            }
+            case PartyRes_ChangePartyBoss_NotSameField: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_NoMemberInSameField: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_NotSameChannel: {
+                break;
+            }
+            case PartyRes_ChangePartyBoss_Unknown: {
+                break;
+            }
+            case PartyRes_AdminCannotCreate: {
+                break;
+            }
+            case PartyRes_AdminCannotInvite: {
+                break;
+            }
+            case PartyRes_UserMigration: {
+                break;
+            }
+            case PartyRes_ChangeLevelOrJob: {
+                break;
+            }
+            case PartyRes_SuccessToSelectPQReward: {
+                break;
+            }
+            case PartyRes_FailToSelectPQReward: {
+                break;
+            }
+            case PartyRes_ReceivePQReward: {
+                break;
+            }
+            case PartyRes_FailToRequestPQReward: {
+                break;
+            }
+            case PartyRes_CanNotInThisField: {
+                break;
+            }
+            case PartyRes_ServerMsg: {
+                break;
+            }
+            case PartyInfo_TownPortalChanged: {
+                List<MapleDoor> doors = chr.getDoors();
+                MapleDoor door = doors.isEmpty() ? null : doors.get(0);
+                TacosPortal door_portal = (door != null) ? door.getTownPortal() : null;
+
+                sp.Encode1(door_portal != null ? door_portal.getMysticDoorId() : 0); // number
+                sp.Encode4((door != null) ? door.getMapId() : 0);
+                sp.Encode4((door != null) ? door.getLink().getMapId() : 0);
+                sp.Encode4((door != null) ? door.getSkillId() : 0);
+                sp.Encode2((door != null) ? door.getLink().getPosition().x : 0);
+                sp.Encode2((door != null) ? door.getLink().getPosition().y : 0);
+                break;
+            }
+            case PartyInfo_OpenGate: {
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        return sp;
+    }
+
+    // PARTYDATA::Decode
+    private static byte[] addPartyStatus(int forchannel, MapleParty party, boolean leaving) {
+        ServerPacket data = new ServerPacket();
+
+        List<MaplePartyCharacter> partymembers = new ArrayList<>(party.getMembers());
+        while (partymembers.size() < 6) {
+            partymembers.add(new MaplePartyCharacter());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getId());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.EncodeBuffer(partychar.getName(), 13);
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getJobId());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getLevel());
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.isOnline() ? partychar.getChannel() - 1 : -2);
+        }
+        data.Encode4(party.getLeader().getId());
+        for (MaplePartyCharacter partychar : partymembers) {
+            data.Encode4(partychar.getChannel() == forchannel ? partychar.getMapid() : 0);
+        }
+        for (MaplePartyCharacter partychar : partymembers) {
+            if (partychar.getChannel() == forchannel && !leaving) {
+                data.Encode4(partychar.getDoorTown());
+                data.Encode4(partychar.getDoorTarget());
+                data.Encode4(partychar.getDoorSkill());
+                data.Encode4(partychar.getDoorPosition().x);
+                data.Encode4(partychar.getDoorPosition().y);
+            } else {
+                data.Encode4(leaving ? 999999999 : 0);
+                data.Encode8(leaving ? 999999999 : 0);
+                data.Encode8(leaving ? -1 : 0);
+            }
+        }
+
+        return data.getBytes();
+    }
+
+    public static ServerPacket PartyResult(int forChannel, MapleParty party, PartyOperation op, MaplePartyCharacter target) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
+
+        switch (op) {
+            case DISBAND:
+            case EXPEL:
+            case LEAVE:
+                sp.Encode1(12);
+                sp.Encode4(party.getId());
+                sp.Encode4(target.getId());
+                sp.Encode1(op == PartyOperation.DISBAND ? 0 : 1);
+                if (op == PartyOperation.DISBAND) {
+                    sp.Encode4(target.getId());
+                } else {
+                    sp.Encode1(op == PartyOperation.EXPEL ? 1 : 0);
+                    sp.EncodeStr(target.getName());
+                    sp.EncodeBuffer(addPartyStatus(forChannel, party, op == PartyOperation.LEAVE));
+                }
+                break;
+            case JOIN:
+                sp.Encode1(15);
+                sp.Encode4(party.getId());
+                sp.EncodeStr(target.getName());
+                sp.EncodeBuffer(addPartyStatus(forChannel, party, false));
+                break;
+            case SILENT_UPDATE:
+            case LOG_ONOFF:
+                sp.Encode1(7);
+                sp.Encode4(party.getId());
+                sp.EncodeBuffer(addPartyStatus(forChannel, party, op == PartyOperation.LOG_ONOFF));
+                break;
+            case CHANGE_LEADER:
+            case CHANGE_LEADER_DC:
+                sp.Encode1(31); //test
+                sp.Encode4(target.getId());
+                sp.Encode1(op == PartyOperation.CHANGE_LEADER_DC ? 1 : 0);
+                break;
+            //1D = expel function not available in this map.
+        }
+        return sp;
+    }
+
+    // CWvsContext::OnFriendResult
+    public static ServerPacket FriendResult(ArgFriend frs) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FriendResult);
+        sp.Encode1(frs.flag.get());
+        switch (frs.flag) {
+            case FriendRes_LoadFriend_Done:
+            case FriendRes_SetFriend_Done:
+            case FriendRes_DeleteFriend_Done: {
+                sp.EncodeBuffer(DataCWvsContext.CFriend_Reset(frs.chr));
+                break;
+            }
+            case FriendRes_NotifyChange_FriendInfo: {
+                break;
+            }
+            case FriendRes_Invite: {
+                sp.Encode4(frs.friend_id); // dwFriendID
+                sp.EncodeStr(frs.friend_name);
+                sp.Encode4(frs.friend_level); // nLevel
+                sp.Encode4(frs.friend_job); // nJobCode
+                // CWvsContext::CFriend::Insert, 39 bytes
+                sp.Encode4(frs.friend_id);
+                sp.EncodeBuffer(frs.friend_name, 13);
+                sp.Encode1(0);
+                sp.Encode4(frs.friend_channel == -1 ? -1 : frs.friend_channel - 1); // please add channel
+                sp.EncodeBuffer(frs.friend_tag, 17);
+                // 1 byte
+                sp.Encode1(1);
+                break;
+            }
+            case FriendRes_SetFriend_FullMe: {
+                // none
+                break;
+            }
+            case FriendRes_SetFriend_FullOther: {
+                // none
+                break;
+            }
+            case FriendRes_SetFriend_AlreadySet: {
+                break;
+            }
+            case FriendRes_SetFriend_Master: {
+                break;
+            }
+            case FriendRes_SetFriend_UnknownUser: {
+                // none
+                break;
+            }
+            case FriendRes_SetFriend_Unknown: {
+                break;
+            }
+            case FriendRes_AcceptFriend_Unknown: {
+                break;
+            }
+            case FriendRes_DeleteFriend_Unknown: {
+                break;
+            }
+            case FriendRes_Notify: {
+                sp.Encode4(frs.friend_id);
+                sp.Encode1(0);
+                sp.Encode4(frs.friend_channel);
+                break;
+            }
+            case FriendRes_IncMaxCount_Done: {
+                sp.Encode1(frs.nFriendMax);
+                break;
+            }
+            case FriendRes_IncMaxCount_Unknown: {
+                break;
+            }
+            case FriendRes_PleaseWait: {
+                break;
+            }
+            default: {
+                DebugLogger.ErrorLog("FriendResult not coded : " + frs.flag);
+                break;
+            }
+        }
+
+        return sp;
+    }
+
+    // CWvsContext::OnExpedtionResult
+    // CWvsContext::OnFriendResult
+    // CWvsContext::OnGuildResult
+    // CWvsContext::OnAllianceResult
+    // CWvsContext::OnTownPortal
+    // CWvsContext::OnOpenGate
     // CWvsContext::OnBroadcastMsg
-    public static MaplePacket BroadcastMsg(ArgBroadcastMsg bma) {
+    public static ServerPacket BroadcastMsg(ArgBroadcastMsg bma) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BroadcastMsg);
         sp.Encode1(bma.bm.get());
 
@@ -709,49 +1360,99 @@ public class ResCWvsContext {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket MemoResult(ResultSet notes, int count) throws SQLException {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MemoResult);
+    // CWvsContext::OnIncubatorResult
+    public static ServerPacket IncubatorResult(int itemId, short quantity, int itemId2, short quantity2) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_IncubatorResult);
 
-        sp.Encode1(3);
-        sp.Encode1(count);
-        for (int i = 0; i < count; i++) {
-            sp.Encode4(notes.getInt("id"));
-            sp.EncodeStr(notes.getString("from"));
-            sp.EncodeStr(notes.getString("message"));
-            sp.Encode8(TestHelper.getKoreanTimestamp(notes.getLong("timestamp")));
-            sp.Encode1(notes.getInt("gift"));
-            notes.next();
+        sp.Encode4(itemId);
+        sp.Encode2(quantity);
+        sp.Encode4(5060003);
+        sp.Encode4(itemId2);
+        sp.Encode4(quantity2);
+        return sp;
+    }
+
+    // CWvsContext::OnShopScannerResult
+    public static ServerPacket ShopScannerResult(OpsShopScanner ops) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopScannerResult);
+
+        sp.Encode1(ops.get());
+        switch (ops) {
+            case ShopScannerRes_SearchResult: {
+                sp.Encode4(4000000); // item id
+                sp.Encode4(1); // 0 -> fail
+                sp.EncodeStr("マノ");
+                sp.Encode4(18); // shop id or other channel FM num
+                sp.EncodeStr("デンデンのカラ売ります");
+                sp.Encode4(200); // 数量
+                sp.Encode4(1); // バンドル
+                sp.Encode4(500); // 価格
+                sp.Encode4(910000018); // map id
+                sp.Encode1(1); // channel
+                sp.Encode1(0);
+                break;
+            }
+            case ShopScannerRes_LoadHotListResult: {
+                int hotlist[] = {4000000, 4000016, 4000019};
+                sp.Encode1(hotlist.length);
+                for (int item_id : hotlist) {
+                    sp.Encode4(item_id);
+                }
+                break;
+            }
+            default: {
+                break;
+            }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket fishingUpdate(byte type, int id) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_BoardUpdate);
-        sp.Encode1(type);
-        sp.Encode4(id);
-        return sp.get();
+    // CWvsContext::OnShopLinkResult
+    // CWvsContext::OnMarriageRequest
+    public static ServerPacket MarriageRequest(String name, int cid) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageRequest);
+
+        sp.Encode1(0); //mode, 0 = engage, 1 = cancel, 2 = answer.. etc
+        sp.EncodeStr(name); // name
+        sp.Encode4(cid); // playerid
+        return sp;
     }
 
-    public static MaplePacket getTopMsg(String msg) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptProgressMessage);
-        sp.EncodeStr(msg);
-        return sp.get();
-    }
+    // CWvsContext::OnMarriageResult
+    public static ServerPacket MarriageResult(OpsMarriage ops, int item_id, MapleCharacter male, MapleCharacter female) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageResult);
 
-    public static MaplePacket MapTransferResult(MapleCharacter chr, OpsMapTransfer ops_res, boolean vip) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapTransferResult);
-        sp.Encode1(ops_res.get());
-        sp.Encode1(vip ? 1 : 0);
-
-        switch (ops_res) {
-            case MapTransferRes_DeleteList:
-            case MapTransferRes_RegisterList: {
-                int map_list[] = vip ? chr.getRocks() : chr.getRegRocks();
-                for (int map_id : map_list) {
-                    sp.Encode4(map_id);
+        sp.Encode1(ops.get()); // 1103 custom quest
+        switch (ops) {
+            case MarriageRes_Engaged:
+            case MarriageRes_Married: {
+                // GW_MarriageRecord::Decode, 48 bytes.
+                {
+                    sp.Encode4(0); // dwMarriageNo
+                    sp.Encode4(male.getId()); // dwGroomID
+                    sp.Encode4(female.getId()); // dwBrideID
+                    sp.Encode2(1); // usStatus
+                    sp.Encode4(item_id); // nGroomItemID
+                    sp.Encode4(item_id); // nBrideItemID
+                    sp.EncodeBuffer(male.getName(), 13); // sGroomName
+                    sp.EncodeBuffer(female.getName(), 13); // sBrideName
+                }
+                break;
+            }
+            case MarriageRes_ShowInvitation: {
+                sp.EncodeStr("");
+                sp.EncodeStr("");
+                sp.Encode2(0);
+                break;
+            }
+            case MarriageRes_Unknown: {
+                boolean is_msg = false;
+                sp.Encode1(is_msg ? 1 : 0);
+                if (is_msg) {
+                    sp.EncodeStr("");
                 }
                 break;
             }
@@ -760,307 +1461,209 @@ public class ResCWvsContext {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket cancelDebuff(long mask, boolean first) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
+    // CWvsContext::OnWeddingGiftResult
+    // CWvsContext::OnNotifyMarriedPartnerMapTransfer
+    // CWvsContext::OnCashPetFoodResult
+    // CWvsContext::OnSetWeekEventMessage
+    public static ServerPacket SetWeekEventMessage(String text) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetWeekEventMessage);
 
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            sp.EncodeZeroBytes(4);
+        sp.Encode1(-1);
+        sp.EncodeStr(text);
+        return sp;
+    }
+
+    // パチンコ情報の更新
+    public static ServerPacket PachinkoResult(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoResult);
+        // 12 bytes
+        {
+            sp.Encode4(chr.getId()); // キャラクターID (実質不要)
+            sp.Encode4(chr.getTama()); // アイテム欄の玉の数に反映される値
+            sp.Encode4(0); // 用途不明
         }
-        sp.Encode8(first ? mask : 0);
-        sp.Encode8(first ? 0 : mask);
-        sp.Encode1(1);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket cancelHoming() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatReset);
+    public static ServerPacket fishingUpdate(byte type, int id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_BoardUpdate);
 
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            sp.EncodeZeroBytes(4);
-        }
-        sp.Encode8(MapleBuffStat.HOMING_BEACON.getValue());
-        sp.Encode8(0);
-        return sp.get();
+        sp.Encode1(type);
+        sp.Encode4(id);
+        return sp;
     }
 
-    public static MaplePacket updateMount(TacosCharacter chr, boolean levelup) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetTamingMobInfo);
-
-        sp.Encode4(chr.getId());
-        sp.Encode4(chr.getMount().getLevel());
-        sp.Encode4(chr.getMount().getExp());
-        sp.Encode4(chr.getMount().getFatigue());
-        sp.Encode1(levelup ? 1 : 0);
-        return sp.get();
-    }
-
-    public static MaplePacket mountInfo(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetTamingMobInfo);
-
-        sp.Encode4(chr.getId());
-        sp.Encode1(1);
-        sp.Encode4(chr.getMount().getLevel());
-        sp.Encode4(chr.getMount().getExp());
-        sp.Encode4(chr.getMount().getFatigue());
-        return sp.get();
-    }
-
-    public static MaplePacket giveDebuff(final List<OdinPair<MapleDisease, Integer>> statups, int skillid, int level, int duration) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.EncodeBuffer(ResCUserRemote.writeLongDiseaseMask(statups));
-        for (OdinPair<MapleDisease, Integer> statup : statups) {
-            sp.Encode2(statup.getRight().shortValue());
-            sp.Encode2(skillid);
-            sp.Encode2(level);
-            sp.Encode4(duration);
-        }
-        sp.Encode2(0); // ??? wk charges have 600 here o.o
-        sp.Encode2(900); //Delay
-        sp.Encode1(1);
-        return sp.get();
-    }
-
-    public static MaplePacket givePirate(List<OdinPair<MapleBuffStat, Integer>> statups, int duration, int skillid) {
-        final boolean infusion = skillid == 5121009 || skillid == 15111005;
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
-        sp.Encode2(0);
-        for (OdinPair<MapleBuffStat, Integer> stat : statups) {
-            sp.Encode4(stat.getRight().intValue());
-            sp.Encode8(skillid);
-            sp.EncodeZeroBytes(infusion ? 6 : 1);
-            sp.Encode2(duration);
-        }
-        sp.Encode2(infusion ? 600 : 0);
-        if (!infusion) {
-            sp.Encode1(1); //does this only come in dash?
-        }
-        return sp.get();
-    }
-
-    public static MaplePacket giveMount(int buffid, int skillid, List<OdinPair<MapleBuffStat, Integer>> statups) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.EncodeBuffer(ResCUserRemote.writeLongMask(statups));
-        sp.Encode2(0);
-        sp.Encode4(buffid); // 1902000 saddle
-        sp.Encode4(skillid); // skillid
-        sp.Encode4(0); // Server tick value
-        sp.Encode2(0);
-        sp.Encode1(0);
-        sp.Encode1(2); // Total buffed times
-        return sp.get();
-    }
-
-    public static MaplePacket giveEnergyChargeTest(int bar, int bufflength) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        sp.Encode8(MapleBuffStat.ENERGY_CHARGE.getValue());
-        sp.Encode8(0);
-        sp.Encode2(0);
-        sp.Encode4(0);
-        sp.Encode4(1555445060); //?
-        sp.Encode2(0);
-        sp.Encode4(Math.min(bar, 10000)); // 0 = no bar, 10000 = full bar
-        sp.Encode8(0); //skillid, but its 0 here
-        sp.Encode1(0);
-        sp.Encode4(bar >= 10000 ? bufflength : 0); //short - bufflength...50
-        return sp.get();
-    }
-
-    public static MaplePacket giveHoming(int skillid, int mobid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
-
-        if (Version.GreaterOrEqual(Region.JMS, 194)) {
-            sp.EncodeZeroBytes(4);
-        }
-        sp.Encode8(MapleBuffStat.HOMING_BEACON.getValue());
-        sp.Encode8(0);
-        sp.Encode2(0);
-        sp.Encode4(1);
-        sp.Encode8(skillid);
-        sp.Encode1(0);
-        sp.Encode4(mobid);
-        sp.Encode2(0);
-        return sp.get();
-    }
-
-    public static MaplePacket partyStatusMessage(int message) {
-        /*	* 10: A beginner can't create a party.
-         * 1/11/14/19: Your request for a party didn't work due to an unexpected error.
-         * 13: You have yet to join a party.
-         * 16: Already have joined a party.
-         * 17: The party you're trying to join is already in full capacity.
-         * 19: Unable to find the requested character in this channel.*/
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        sp.Encode1(message);
-        return sp.get();
-    }
-
-    public static MaplePacket partyStatusMessage(int message, String charname) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        sp.Encode1(message); // 23: 'Char' have denied request to the party.
-        sp.EncodeStr(charname);
-        return sp.get();
-    }
-
-    public static MaplePacket updateParty(int forChannel, MapleParty party, PartyOperation op, MaplePartyCharacter target) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        switch (op) {
-            case DISBAND:
-            case EXPEL:
-            case LEAVE:
-                sp.Encode1(12);
-                sp.Encode4(party.getId());
-                sp.Encode4(target.getId());
-                sp.Encode1(op == PartyOperation.DISBAND ? 0 : 1);
-                if (op == PartyOperation.DISBAND) {
-                    sp.Encode4(target.getId());
-                } else {
-                    sp.Encode1(op == PartyOperation.EXPEL ? 1 : 0);
-                    sp.EncodeStr(target.getName());
-                    sp.EncodeBuffer(addPartyStatus(forChannel, party, op == PartyOperation.LEAVE));
-                }
-                break;
-            case JOIN:
-                sp.Encode1(15);
-                sp.Encode4(party.getId());
-                sp.EncodeStr(target.getName());
-                sp.EncodeBuffer(addPartyStatus(forChannel, party, false));
-                break;
-            case SILENT_UPDATE:
-            case LOG_ONOFF:
-                sp.Encode1(7);
-                sp.Encode4(party.getId());
-                sp.EncodeBuffer(addPartyStatus(forChannel, party, op == PartyOperation.LOG_ONOFF));
-                break;
-            case CHANGE_LEADER:
-            case CHANGE_LEADER_DC:
-                sp.Encode1(31); //test
-                sp.Encode4(target.getId());
-                sp.Encode1(op == PartyOperation.CHANGE_LEADER_DC ? 1 : 0);
-                break;
-            //1D = expel function not available in this map.
-        }
-        return sp.get();
-    }
-
-    public static MaplePacket partyInvite(MapleCharacter from) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        sp.Encode1(4);
-        sp.Encode4(from.getParty().getId());
-        sp.EncodeStr(from.getName());
-        sp.Encode4(from.getLevel());
-        sp.Encode4(from.getJob());
-        sp.Encode1(0);
-        return sp.get();
-    }
-
-    public static MaplePacket partyCreated(int partyid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
-
-        sp.Encode1(8);
-        sp.Encode4(partyid);
-        sp.Encode4(999999999);
-        sp.Encode4(999999999);
-        sp.Encode8(0);
-        return sp.get();
-    }
-
-    private static byte[] addPartyStatus(int forchannel, MapleParty party, boolean leaving) {
-        ServerPacket data = new ServerPacket();
-
-        List<MaplePartyCharacter> partymembers = new ArrayList<>(party.getMembers());
-        while (partymembers.size() < 6) {
-            partymembers.add(new MaplePartyCharacter());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.Encode4(partychar.getId());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.EncodeBuffer(partychar.getName(), 13);
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.Encode4(partychar.getJobId());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.Encode4(partychar.getLevel());
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.isOnline()) {
-                data.Encode4(partychar.getChannel() - 1);
-            } else {
-                data.Encode4(-2);
-            }
-        }
-        data.Encode4(party.getLeader().getId());
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.getChannel() == forchannel) {
-                data.Encode4(partychar.getMapid());
-            } else {
-                data.Encode4(0);
-            }
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.getChannel() == forchannel && !leaving) {
-                data.Encode4(partychar.getDoorTown());
-                data.Encode4(partychar.getDoorTarget());
-                data.Encode4(partychar.getDoorSkill());
-                data.Encode4(partychar.getDoorPosition().x);
-                data.Encode4(partychar.getDoorPosition().y);
-            } else {
-                data.Encode4(leaving ? 999999999 : 0);
-                data.Encode8(leaving ? 999999999 : 0);
-                data.Encode8(leaving ? -1 : 0);
-            }
-        }
-
-        return data.get().getBytes();
-    }
-
-    public static MaplePacket changeCover(int cardid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCover);
-        sp.Encode4(cardid);
-        return sp.get();
-    }
-
-    public static MaplePacket addCard(boolean full, int cardid, int level) {
+    // CWvsContext::OnSetPotionDiscountRate
+    // CWvsContext::OnBridleMobCatchFail
+    // CWvsContext::OnImitatedNPCResult
+    // CWvsContext::OnImitatedNPCData
+    // CWvsContext::OnLimitedNPCDisableInfo
+    // CWvsContext::OnMonsterBookSetCard
+    public static ServerPacket MonsterBookSetCard(boolean is_added, int nCardID, int nCardCount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCard);
-        sp.Encode1(full ? 0 : 1);
-        if (!full) {
-            sp.Encode4(cardid);
-            sp.Encode4(level);
+
+        sp.Encode1(is_added ? 1 : 0);
+        if (is_added) {
+            sp.Encode4(nCardID); // nCardID
+            sp.Encode4(nCardCount); // nCardCount
         }
-        return sp.get();
+
+        return sp;
     }
 
-    public static MaplePacket guildNotice(int gid, String notice) {
+    // CWvsContext::OnMonsterBookSetCover
+    public static ServerPacket MonsterBookSetCover(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCover);
+
+        sp.Encode4(chr.getMonsterBook().getCover());
+        return sp;
+    }
+
+    // CWvsContext::OnHourChanged
+    // CWvsContext::OnMiniMapOnOff
+    public static ServerPacket MiniMapOnOff() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniMapOnOff);
+
+        sp.Encode1(0); // m_bMiniMapOnOff
+        return sp;
+    }
+
+    // CWvsContext::OnConsultAuthkeyUpdate
+    // CWvsContext::OnClassCompetitionAuthkeyUpdate
+    // CWvsContext::OnWebBoardAuthkeyUpdate
+    // CWvsContext::OnSessionValue
+    // CWvsContext::OnPartyValue
+    // CWvsContext::OnFieldSetVariable
+    public static ServerPacket sendString(final int type, String object, final String amount) {
+        ServerPacketHeader header = ServerPacketHeader.UNKNOWN;
+
+        switch (type) {
+            case 1:
+                header = ServerPacketHeader.LP_SessionValue;
+                break;
+            case 2:
+                header = ServerPacketHeader.LP_PartyValue;
+                break;
+            case 3:
+                header = ServerPacketHeader.LP_FieldSetVariable;
+                break;
+            default: {
+                break;
+            }
+        }
+
+        ServerPacket sp = new ServerPacket(header);
+
+        sp.EncodeStr(object); //massacre_hit, massacre_cool, massacre_miss, massacre_party, massacre_laststage, massacre_skill
+        sp.EncodeStr(amount);
+        return sp;
+    }
+
+    // CWvsContext::OnBonusExpRateChanged
+    public static ServerPacket BonusExpRateChanged(int type, int percent) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BonusExpRateChanged);
+
+        sp.Encode2(21); // 0x15
+        sp.Encode4(0); // idk
+        sp.Encode2(0); // idk
+        sp.Encode2(percent); // percent
+        sp.Encode2(0); // idk
+        return sp;
+    }
+
+    // CWvsContext::OnFamilyChartResult
+    // CWvsContext::OnFamilyInfoResult
+    // CWvsContext::OnFamilyResult
+    // CWvsContext::OnFamilyJoinRequest
+    // CWvsContext::OnFamilyJoinAccepted
+    // CWvsContext::OnFamilyPrivilegeList
+    // CWvsContext::OnFamilyFamousPointIncResult
+    // CWvsContext::OnFamilyNotifyLoginOrLogout
+    // CWvsContext::OnFamilySetPrivilege
+    // CWvsContext::OnFamilySummonRequest
+    // CWvsContext::OnNotifyLevelUp
+    // CWvsContext::OnNotifyWedding
+    // CWvsContext::OnNotifyJobChange
+    public static ServerPacket AvatarMegaphoneUpdateMessage(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneUpdateMessage);
+
+        sp.Encode4(itemId);
+        sp.EncodeStr(chr.getName());
+        sp.EncodeStr(message);
+        sp.Encode4(channel - 1); // channel
+        sp.Encode1(ear ? 1 : 0);
+        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+        return sp;
+    }
+
+    // CWvsContext::OnSuccessInUsegachaponBox
+    public static ServerPacket SuccessInUseGachaponBox(int box_item_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SuccessInUseGachaponBox);
+        sp.Encode4(box_item_id);
+        return sp;
+    }
+
+    // CWvsContext::OnNewYearCardRes
+    // CWvsContext::OnRandomMorphRes
+    // CWvsContext::OnCancelNameChangebyOther
+    // CWvsContext::OnSetBuyEquipExt
+    // CWvsContext::OnSetPassenserRequest
+    public static ServerPacket SetPassenserRequest(TacosCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPassenserRequest);
+
+        sp.Encode4(chr.getId()); // nPassenserID
+        return sp;
+    }
+
+    // CWvsContext::OnScriptProgressMessage
+    public static ServerPacket ScriptProgressMessage(String msg) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ScriptProgressMessage);
+
+        sp.EncodeStr(msg);
+        return sp;
+    }
+
+    // CWvsContext::OnDataCRCCheckFailed
+    // CWvsContext::OnCakePieEventResult
+    // CWvsContext::OnUpdateGMBoard
+    // CWvsContext::OnShowSlotMessage
+    // CWvsContext::OnWildHunterInfo
+    // CWvsContext::OnAccountMoreInfo
+    // CWvsContext::OnFindFirend
+    // CWvsContext::OnStageChange
+    // CWvsContext::OnDragonBallBox
+    // CWvsContext::OnAskWhetherUsePamsSong
+    // CWvsContext::OnTransferChannel
+    // CWvsContext::OnDisallowedDeliveryQuestList
+    public static ServerPacket CharacterCash(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CMS_CharacterCash);
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(chr.getMaplePoint());
+        return sp;
+    }
+
+    public static ServerPacket guildNotice(int gid, String notice) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(68);
         sp.Encode4(gid);
         sp.EncodeStr(notice);
-        return sp.get();
+        return sp;
     }
 
     //someone leaving, mode == 0x2c for leaving, 0x2f for expelled
-    public static MaplePacket memberLeft(MapleGuildCharacter mgc, boolean bExpelled) {
+    public static ServerPacket memberLeft(MapleGuildCharacter mgc, boolean bExpelled) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(bExpelled ? 47 : 44);
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
         sp.EncodeStr(mgc.getName());
-        return sp.get();
+        return sp;
     }
 
     private static byte[] getGuildInfo(MapleGuild guild) {
@@ -1083,10 +1686,10 @@ public class ResCWvsContext {
         data.Encode4(guild.getGP());
         data.Encode4(guild.getAllianceId() > 0 ? guild.getAllianceId() : 0);
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static MaplePacket changeAlliance(MapleGuildAlliance alliance, final boolean in) {
+    public static ServerPacket changeAlliance(MapleGuildAlliance alliance, final boolean in) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(1);
@@ -1112,10 +1715,10 @@ public class ResCWvsContext {
                 sp.Encode1(in ? mgc.getAllianceRank() : 0);
             }
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket guildMemberLevelJobUpdate(MapleGuildCharacter mgc) {
+    public static ServerPacket guildMemberLevelJobUpdate(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(60);
@@ -1123,10 +1726,10 @@ public class ResCWvsContext {
         sp.Encode4(mgc.getId());
         sp.Encode4(mgc.getLevel());
         sp.Encode4(mgc.getJobId());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket allianceMemberOnline(int alliance, int gid, int id, boolean online) {
+    public static ServerPacket allianceMemberOnline(int alliance, int gid, int id, boolean online) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(14);
@@ -1134,10 +1737,10 @@ public class ResCWvsContext {
         sp.Encode4(gid);
         sp.Encode4(id);
         sp.Encode1(online ? 1 : 0);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, final boolean add) {
+    public static ServerPacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, final boolean add) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(4);
@@ -1149,18 +1752,18 @@ public class ResCWvsContext {
             sp.Encode4(mgc.getId());
             sp.Encode1(add ? mgc.getAllianceRank() : 0);
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket disbandAlliance(int alliance) {
+    public static ServerPacket disbandAlliance(int alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(29);
         sp.Encode4(alliance);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket newGuildMember(MapleGuildCharacter mgc) {
+    public static ServerPacket newGuildMember(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(39);
@@ -1173,26 +1776,26 @@ public class ResCWvsContext {
         sp.Encode4(mgc.isOnline() ? 1 : 0); //should always be 1 too
         sp.Encode4(1); //? could be guild signature, but doesn't seem to matter
         sp.Encode4(mgc.getAllianceRank()); //should always 3
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket updateAllianceRank(int allianceid, MapleGuildCharacter mgc) {
+    public static ServerPacket updateAllianceRank(int allianceid, MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(27);
         sp.Encode4(allianceid);
         sp.Encode4(mgc.getId());
         sp.Encode4(mgc.getAllianceRank());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getGuildAlliance(MapleGuildAlliance alliance) {
+    public static ServerPacket getGuildAlliance(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(13);
         if (alliance == null) {
             sp.Encode4(0);
-            return sp.get();
+            return sp;
         }
         final int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
@@ -1207,30 +1810,30 @@ public class ResCWvsContext {
         for (MapleGuild gg : g) {
             sp.EncodeBuffer(getGuildInfo(gg));
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket guildMemberOnline(int gid, int cid, boolean bOnline) {
+    public static ServerPacket guildMemberOnline(int gid, int cid, boolean bOnline) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(61);
         sp.Encode4(gid);
         sp.Encode4(cid);
         sp.Encode1(bOnline ? 1 : 0);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket changeAllianceLeader(int allianceid, int newLeader, int oldLeader) {
+    public static ServerPacket changeAllianceLeader(int allianceid, int newLeader, int oldLeader) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(2);
         sp.Encode4(allianceid);
         sp.Encode4(oldLeader);
         sp.Encode4(newLeader);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket showGuildRanks(int npcid, List<MapleGuildRanking.GuildRankingInfo> all) {
+    public static ServerPacket showGuildRanks(int npcid, List<MapleGuildRanking.GuildRankingInfo> all) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(73);
@@ -1244,38 +1847,38 @@ public class ResCWvsContext {
             sp.Encode4(info.getLogoBg());
             sp.Encode4(info.getLogoBgColor());
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket denyGuildInvitation(String charname) {
+    public static ServerPacket denyGuildInvitation(String charname) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(55);
         sp.EncodeStr(charname);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket showGuildInfo(MapleCharacter c) {
+    public static ServerPacket showGuildInfo(MapleCharacter c) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(26); //signature for showing guild info
         if (c == null || c.getMGC() == null) {
             //show empty guild (used for leaving, expelled)
             sp.Encode1(0);
-            return sp.get();
+            return sp;
         }
         MapleGuild g = OdinWorld.Guild.getGuild(c.getGuildId());
         if (g == null) {
             //failed to read from DB - don't show a guild
             sp.Encode1(0);
-            return sp.get();
+            return sp;
         }
         sp.Encode1(1); //bInGuild
         sp.EncodeBuffer(getGuildInfo(g));
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket guildEmblemChange(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
+    public static ServerPacket guildEmblemChange(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(66);
@@ -1284,7 +1887,7 @@ public class ResCWvsContext {
         sp.Encode1(bgcolor);
         sp.Encode2(logo);
         sp.Encode1(logocolor);
-        return sp.get();
+        return sp;
     }
 
     private static byte[] addAllianceInfo(MapleGuildAlliance alliance) {
@@ -1305,19 +1908,19 @@ public class ResCWvsContext {
         data.Encode4(alliance.getCapacity()); // ????
         data.EncodeStr(alliance.getNotice());
 
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static MaplePacket guildDisband(int gid) {
+    public static ServerPacket guildDisband(int gid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(50);
         sp.Encode4(gid);
         sp.Encode1(1);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getAllianceInfo(MapleGuildAlliance alliance) {
+    public static ServerPacket getAllianceInfo(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(12);
@@ -1325,20 +1928,20 @@ public class ResCWvsContext {
         if (alliance != null) {
             sp.EncodeBuffer(addAllianceInfo(alliance));
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket updateAllianceLeader(int allianceid, int newLeader, int oldLeader) {
+    public static ServerPacket updateAllianceLeader(int allianceid, int newLeader, int oldLeader) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(25);
         sp.Encode4(allianceid);
         sp.Encode4(oldLeader);
         sp.Encode4(newLeader);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket addGuildToAlliance(MapleGuildAlliance alliance, MapleGuild newGuild) {
+    public static ServerPacket addGuildToAlliance(MapleGuildAlliance alliance, MapleGuild newGuild) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(18);
@@ -1346,10 +1949,10 @@ public class ResCWvsContext {
         sp.Encode4(newGuild.getId()); //???
         sp.EncodeBuffer(getGuildInfo(newGuild));
         sp.Encode1(0); //???
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket updateAlliance(MapleGuildCharacter mgc, int allianceid) {
+    public static ServerPacket updateAlliance(MapleGuildCharacter mgc, int allianceid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(24);
@@ -1358,10 +1961,10 @@ public class ResCWvsContext {
         sp.Encode4(mgc.getId());
         sp.Encode4(mgc.getLevel());
         sp.Encode4(mgc.getJobId());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket sendAllianceInvite(String allianceName, MapleCharacter inviter) {
+    public static ServerPacket sendAllianceInvite(String allianceName, MapleCharacter inviter) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(3);
@@ -1369,7 +1972,7 @@ public class ResCWvsContext {
         sp.EncodeStr(inviter.getName());
         //alliance invite did NOT change
         sp.EncodeStr(allianceName);
-        return sp.get();
+        return sp;
     }
 
     private static byte[] addThread(MapleBBSThread rs) {
@@ -1378,19 +1981,19 @@ public class ResCWvsContext {
         data.Encode4(rs.localthreadID);
         data.Encode4(rs.ownerID);
         data.EncodeStr(rs.name);
-        data.Encode8(TestHelper.getKoreanTimestamp(rs.timestamp));
+        data.Encode8(SharedDate.getTimestamp(rs.timestamp));
         data.Encode4(rs.icon);
         data.Encode4(rs.getReplyCount());
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static MaplePacket showThread(MapleBBSThread thread) {
+    public static ServerPacket showThread(MapleBBSThread thread) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(7);
         sp.Encode4(thread.localthreadID);
         sp.Encode4(thread.ownerID);
-        sp.Encode8(TestHelper.getKoreanTimestamp(thread.timestamp));
+        sp.Encode8(SharedDate.getTimestamp(thread.timestamp));
         sp.EncodeStr(thread.name);
         sp.EncodeStr(thread.text);
         sp.Encode4(thread.icon);
@@ -1398,20 +2001,20 @@ public class ResCWvsContext {
         for (MapleBBSThread.MapleBBSReply reply : thread.replies.values()) {
             sp.Encode4(reply.replyid);
             sp.Encode4(reply.ownerID);
-            sp.Encode8(TestHelper.getKoreanTimestamp(reply.timestamp));
+            sp.Encode8(SharedDate.getTimestamp(reply.timestamp));
             sp.EncodeStr(reply.content);
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket BBSThreadList(final List<MapleBBSThread> bbs, int start) {
+    public static ServerPacket BBSThreadList(final List<MapleBBSThread> bbs, int start) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(6);
         if (bbs == null) {
             sp.Encode1(0);
             sp.Encode8(0);
-            return sp.get();
+            return sp;
         }
         int threadCount = bbs.size();
         MapleBBSThread notice = null;
@@ -1441,10 +2044,10 @@ public class ResCWvsContext {
         for (int i = 0; i < pages; i++) {
             sp.EncodeBuffer(addThread(bbs.get(start + i + ret))); //because 0 = notice
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket createGuildAlliance(MapleGuildAlliance alliance) {
+    public static ServerPacket createGuildAlliance(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(15);
@@ -1461,10 +2064,10 @@ public class ResCWvsContext {
         for (MapleGuild gg : g) {
             sp.EncodeBuffer(getGuildInfo(gg));
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket rankTitleChange(int gid, String[] ranks) {
+    public static ServerPacket rankTitleChange(int gid, String[] ranks) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(62);
@@ -1472,53 +2075,53 @@ public class ResCWvsContext {
         for (String r : ranks) {
             sp.EncodeStr(r);
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket genericGuildMessage(byte code) {
+    public static ServerPacket genericGuildMessage(byte code) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(code);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket removeGuildFromAlliance(MapleGuildAlliance alliance, MapleGuild expelledGuild, boolean expelled) {
+    public static ServerPacket removeGuildFromAlliance(MapleGuildAlliance alliance, MapleGuild expelledGuild, boolean expelled) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(16);
         sp.EncodeBuffer(addAllianceInfo(alliance));
         sp.EncodeBuffer(getGuildInfo(expelledGuild));
         sp.Encode1(expelled ? 1 : 0); //1 = expelled, 0 = left
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket guildCapacityChange(int gid, int capacity) {
+    public static ServerPacket guildCapacityChange(int gid, int capacity) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(58);
         sp.Encode4(gid);
         sp.Encode1(capacity);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket updateGP(int gid, int GP) {
+    public static ServerPacket updateGP(int gid, int GP) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(72);
         sp.Encode4(gid);
         sp.Encode4(GP);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getAllianceUpdate(MapleGuildAlliance alliance) {
+    public static ServerPacket getAllianceUpdate(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(23);
         sp.EncodeBuffer(addAllianceInfo(alliance));
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket guildInvite(int gid, String charName, int levelFrom, int jobFrom) {
+    public static ServerPacket guildInvite(int gid, String charName, int levelFrom, int jobFrom) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(5);
@@ -1526,53 +2129,53 @@ public class ResCWvsContext {
         sp.EncodeStr(charName);
         sp.Encode4(levelFrom);
         sp.Encode4(jobFrom);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket changeRank(MapleGuildCharacter mgc) {
+    public static ServerPacket changeRank(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(64);
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
         sp.Encode1(mgc.getGuildRank());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket changeAllianceRank(int allianceid, MapleGuildCharacter player) {
+    public static ServerPacket changeAllianceRank(int allianceid, MapleGuildCharacter player) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(5);
         sp.Encode4(allianceid);
         sp.Encode4(player.getId());
         sp.Encode4(player.getAllianceRank());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket sendFamilyJoinResponse(boolean accepted, String added) {
+    public static ServerPacket sendFamilyJoinResponse(boolean accepted, String added) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinRequestResult);
 
         sp.Encode1(accepted ? 1 : 0);
         sp.EncodeStr(added);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket changeRep(int r) {
+    public static ServerPacket changeRep(int r) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyFamousPointIncResult);
 
         sp.Encode4(r);
         sp.Encode4(0);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket sendFamilyInvite(int cid, int otherLevel, int otherJob, String inviter) {
+    public static ServerPacket sendFamilyInvite(int cid, int otherLevel, int otherJob, String inviter) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinRequest);
 
         sp.Encode4(cid); //the inviter
         sp.Encode4(otherLevel);
         sp.Encode4(otherJob);
         sp.EncodeStr(inviter);
-        return sp.get();
+        return sp;
     }
 
     public static byte[] addFamilyCharInfo(MapleFamilyCharacter ldr) {
@@ -1589,30 +2192,30 @@ public class ResCWvsContext {
         data.Encode4(ldr.getTotalRep()); //then recorded rep to sensen
         data.Encode8(Math.max(ldr.getChannel(), 0)); //channel->time online
         data.EncodeStr(ldr.getName());
-        return data.get().getBytes();
+        return data.getBytes();
     }
 
-    public static MaplePacket familyLoggedIn(boolean online, String name) {
+    public static ServerPacket familyLoggedIn(boolean online, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyNotifyLoginOrLogout);
 
         sp.Encode1(online ? 1 : 0);
         sp.EncodeStr(name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket familySummonRequest(String name, String mapname) {
+    public static ServerPacket familySummonRequest(String name, String mapname) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilySummonRequest);
 
         sp.EncodeStr(name);
         sp.EncodeStr(mapname);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket cancelFamilyBuff() {
+    public static ServerPacket cancelFamilyBuff() {
         return familyBuff(0, 0, 0, 0);
     }
 
-    public static MaplePacket getFamilyData() {
+    public static ServerPacket getFamilyData() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyPrivilegeList);
 
         List<MapleFamilyBuff.MapleFamilyBuffEntry> entries = MapleFamilyBuff.getBuffEntry();
@@ -1624,10 +2227,10 @@ public class ResCWvsContext {
             sp.EncodeStr(entry.name);
             sp.EncodeStr(entry.desc);
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket familyBuff(int type, int buffnr, int amount, int time) {
+    public static ServerPacket familyBuff(int type, int buffnr, int amount, int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilySetPrivilege);
 
         sp.Encode1(type);
@@ -1639,10 +2242,10 @@ public class ResCWvsContext {
             sp.Encode1(0);
             sp.Encode4(time);
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getFamilyPedigree(MapleCharacter chr) {
+    public static ServerPacket getFamilyPedigree(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
         sp.Encode4(chr.getId());
@@ -1742,10 +2345,10 @@ public class ResCWvsContext {
             sp.Encode4(ii.getRight()); //times used
         }
         sp.Encode2(2);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getFamilyInfo(MapleCharacter chr) {
+    public static ServerPacket getFamilyInfo(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyInfoResult);
 
         sp.Encode4(chr.getCurrentRep()); //rep
@@ -1768,408 +2371,45 @@ public class ResCWvsContext {
             sp.Encode4(ii.getLeft()); //buffid
             sp.Encode4(ii.getRight()); //times used
         }
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getSeniorMessage(String name) {
+    public static ServerPacket getSeniorMessage(String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyJoinAccepted);
 
         sp.EncodeStr(name);
-        return sp.get();
+        return sp;
     }
 
-    // CWvsContext::OnFriendResult
-    public static MaplePacket FriendResult(ArgFriend frs) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FriendResult);
-        sp.Encode1(frs.flag.get());
-        switch (frs.flag) {
-            case FriendRes_LoadFriend_Done:
-            case FriendRes_SetFriend_Done:
-            case FriendRes_DeleteFriend_Done: {
-                sp.EncodeBuffer(DataCWvsContext.CFriend_Reset(frs.chr));
-                break;
-            }
-            case FriendRes_NotifyChange_FriendInfo: {
-                break;
-            }
-            case FriendRes_Invite: {
-                sp.Encode4(frs.friend_id); // dwFriendID
-                sp.EncodeStr(frs.friend_name);
-                sp.Encode4(frs.friend_level); // nLevel
-                sp.Encode4(frs.friend_job); // nJobCode
-                // CWvsContext::CFriend::Insert, 39 bytes
-                sp.Encode4(frs.friend_id);
-                sp.EncodeBuffer(frs.friend_name, 13);
-                sp.Encode1(0);
-                sp.Encode4(frs.friend_channel == -1 ? -1 : frs.friend_channel - 1); // please add channel
-                sp.EncodeBuffer(frs.friend_tag, 17);
-                // 1 byte
-                sp.Encode1(1);
-                break;
-            }
-            case FriendRes_SetFriend_FullMe: {
-                // none
-                break;
-            }
-            case FriendRes_SetFriend_FullOther: {
-                // none
-                break;
-            }
-            case FriendRes_SetFriend_AlreadySet: {
-                break;
-            }
-            case FriendRes_SetFriend_Master: {
-                break;
-            }
-            case FriendRes_SetFriend_UnknownUser: {
-                // none
-                break;
-            }
-            case FriendRes_SetFriend_Unknown: {
-                break;
-            }
-            case FriendRes_AcceptFriend_Unknown: {
-                break;
-            }
-            case FriendRes_DeleteFriend_Unknown: {
-                break;
-            }
-            case FriendRes_Notify: {
-                sp.Encode4(frs.friend_id);
-                sp.Encode1(0);
-                sp.Encode4(frs.friend_channel);
-                break;
-            }
-            case FriendRes_IncMaxCount_Done: {
-                sp.Encode1(frs.nFriendMax);
-                break;
-            }
-            case FriendRes_IncMaxCount_Unknown: {
-                break;
-            }
-            case FriendRes_PleaseWait: {
-                break;
-            }
-            default: {
-                DebugLogger.ErrorLog("FriendResult not coded : " + frs.flag);
-                break;
-            }
-        }
-
-        return sp.get();
-    }
-
-    public static MaplePacket ShopScannerResult(OpsShopScanner ops) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ShopScannerResult);
-
-        sp.Encode1(ops.get());
-        switch (ops) {
-            case ShopScannerRes_SearchResult: {
-                sp.Encode4(4000000); // item id
-                sp.Encode4(1); // 0 -> fail
-                sp.EncodeStr("マノ");
-                sp.Encode4(18); // shop id or other channel FM num
-                sp.EncodeStr("デンデンのカラ売ります");
-                sp.Encode4(200); // 数量
-                sp.Encode4(1); // バンドル
-                sp.Encode4(500); // 価格
-                sp.Encode4(910000018); // map id
-                sp.Encode1(1); // channel
-                sp.Encode1(0);
-                break;
-            }
-            case ShopScannerRes_LoadHotListResult: {
-                int hotlist[] = {4000000, 4000016, 4000019};
-                sp.Encode1(hotlist.length);
-                for (int item_id : hotlist) {
-                    sp.Encode4(item_id);
-                }
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-        return sp.get();
-    }
-
-    public static MaplePacket EntrustedShopCheckResult(OpsEntrustedShop ops_res) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EntrustedShopCheckResult);
-
-        sp.Encode1(ops_res.get());
-
-        switch (ops_res) {
-            case EntrustedShopRes_OpenImpossible_Using: {
-                sp.Encode4(910000018); // used last 3 numbers to decide FreeMarket room.
-                sp.Encode1(0); // channel
-                break;
-            }
-            case EntrustedShopReq_SetMiniMapColor: {
-                // may be res...
-                sp.Encode4(123);
-                break;
-            }
-            case EntrustedShopReq_RenameResult: {
-                // may be res...
-                sp.Encode1(1); // 0 = fail, 1 = success.
-                break;
-            }
-            case EntrustedShopRes_GetPosResult: {
-                // client sends change channel packet after this.
-                sp.Encode4(0);
-                sp.Encode1(0); // channel
-                break;
-            }
-            case EntrustedShopRes_Enter: {
-                // client sends enter shop packet after this.
-                sp.Encode4(123); // own shop id.
-                break;
-            }
-            default: {
-                break;
-            }
-        }
-
-        return sp.get();
-    }
-
-    public static MaplePacket SkillLearnItemResult(MapleCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillLearnItemResult);
-
-        if (Version.GreaterOrEqual(Region.JMS, 186) || Version.PostBB()) {
-            sp.Encode1(1); // bOnExclRequest
-        }
-
-        sp.Encode4(chr.getId());
-        sp.Encode1(bIsMaterbook ? 1 : 0); // bIsMaterbook
-        sp.Encode4(0); // not used
-        sp.Encode4(0); // not used
-        sp.Encode1(bUsed ? 1 : 0); // bUsed[0]
-        sp.Encode1(bSucceed ? 1 : 0); // bSucceed
-        return sp.get();
-    }
-
-    public static final MaplePacket getSlotUpdate(byte invType, byte newSlots) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryGrow);
-
-        sp.Encode1(invType);
-        sp.Encode1(newSlots);
-        return sp.get();
-    }
-
-    public static MaplePacket followRequest(int chrid) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetPassenserRequest);
-
-        sp.Encode4(chrid);
-        return sp.get();
-    }
-
-    public static MaplePacket SuccessInUseGachaponBox(int box_item_id) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SuccessInUseGachaponBox);
-        sp.Encode4(box_item_id);
-        return sp.get();
-    }
-
-    public static MaplePacket sendLevelup(boolean family, int level, String name) {
+    public static ServerPacket NotifyLevelUp(boolean family, int level, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyLevelUp);
 
         sp.Encode1(family ? 1 : 2);
         sp.Encode4(level);
         sp.EncodeStr(name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket sendJobup(boolean family, int jobid, String name) {
+    public static ServerPacket KOC_UI_Open() {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_164_KOC_UI_Open);
+
+        return sp;
+    }
+
+    public static ServerPacket NotifyJobChange(boolean family, int jobid, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyJobChange);
 
         sp.Encode1(family ? 1 : 0);
         sp.Encode4(jobid); //or is this a short
         sp.EncodeStr(name);
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket sendMarriage(boolean family, String name) {
+    public static ServerPacket NotifyWedding(boolean family, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NotifyWedding);
 
         sp.Encode1(family ? 1 : 0);
         sp.EncodeStr(name);
-        return sp.get();
+        return sp;
     }
-
-    public static MaplePacket giveFameResponse(int mode, String charname, int newfame) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
-
-        sp.Encode1(0);
-        sp.EncodeStr(charname);
-        sp.Encode1(mode);
-        sp.Encode2(newfame);
-        sp.Encode2(0);
-        return sp.get();
-    }
-
-    public static MaplePacket giveFameErrorResponse(int status) {
-        /*	* 0: ok, use giveFameResponse<br>
-         * 1: the username is incorrectly entered<br>
-         * 2: users under level 15 are unable to toggle with fame.<br>
-         * 3: can't raise or drop fame anymore today.<br>
-         * 4: can't raise or drop fame for this character for this month anymore.<br>
-         * 5: received fame, use receiveFame()<br>
-         * 6: level of fame neither has been raised nor dropped due to an unexpected error*/
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
-
-        sp.Encode1(status);
-        return sp.get();
-    }
-
-    public static MaplePacket receiveFame(int mode, String charnameFrom) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GivePopularityResult);
-
-        sp.Encode1(5);
-        sp.EncodeStr(charnameFrom);
-        sp.Encode1(mode);
-        return sp.get();
-    }
-
-    public static MaplePacket sendEngagement(final byte msg, final int item, final MapleCharacter male, final MapleCharacter female) {
-        // 0B = Engagement has been concluded.
-        // 0D = The engagement is cancelled.
-        // 0E = The divorce is concluded.
-        // 10 = The marriage reservation has been successsfully made.
-        // 12 = Wrong character name
-        // 13 = The party in not in the same map.
-        // 14 = Your inventory is full. Please empty your E.T.C window.
-        // 15 = The person's inventory is full.
-        // 16 = The person cannot be of the same gender.
-        // 17 = You are already engaged.
-        // 18 = The person is already engaged.
-        // 19 = You are already married.
-        // 1A = The person is already married.
-        // 1B = You are not allowed to propose.
-        // 1C = The person is not allowed to be proposed to.
-        // 1D = Unfortunately, the one who proposed to you has cancelled his proprosal.
-        // 1E = The person had declined the proposal with thanks.
-        // 1F = The reservation has been cancelled. Try again later.
-        // 20 = You cannot cancel the wedding after reservation.
-        // 22 = The invitation card is ineffective.
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageResult);
-
-        sp.Encode1(msg); // 1103 custom quest
-        switch (msg) {
-            case 11: {
-                sp.Encode4(0); // ringid or uniqueid
-                sp.Encode4(male.getId());
-                sp.Encode4(female.getId());
-                sp.Encode2(1); //always
-                sp.Encode4(item);
-                sp.Encode4(item); // wtf?repeat?
-                sp.EncodeBuffer(male.getName(), 13);
-                sp.EncodeBuffer(female.getName(), 13);
-                break;
-            }
-        }
-        return sp.get();
-    }
-
-    public static MaplePacket sendEngagementRequest(String name, int cid) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageRequest);
-
-        sp.Encode1(0); //mode, 0 = engage, 1 = cancel, 2 = answer.. etc
-        sp.EncodeStr(name); // name
-        sp.Encode4(cid); // playerid
-        return sp.get();
-    }
-
-    public static MaplePacket getPeanutResult(int itemId, short quantity, int itemId2, short quantity2) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_IncubatorResult);
-
-        sp.Encode4(itemId);
-        sp.Encode2(quantity);
-        sp.Encode4(5060003);
-        sp.Encode4(itemId2);
-        sp.Encode4(quantity2);
-        return sp.get();
-    }
-
-    public static MaplePacket SetWeekEventMessage(String text) {
-        // not in KMS31
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetWeekEventMessage);
-        sp.Encode1(-1);
-        sp.EncodeStr(text);
-        return sp.get();
-    }
-
-    public static MaplePacket getShowQuestCompletion(int id) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_QuestClear);
-
-        sp.Encode2(id);
-        return sp.get();
-    }
-
-    public static MaplePacket getAvatarMega(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneUpdateMessage);
-
-        sp.Encode4(itemId);
-        sp.EncodeStr(chr.getName());
-        sp.EncodeStr(message);
-        sp.Encode4(channel - 1); // channel
-        sp.Encode1(ear ? 1 : 0);
-        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
-        return sp.get();
-    }
-
-    public static MaplePacket fairyPendantMessage(int type, int percent) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BonusExpRateChanged);
-
-        sp.Encode2(21); // 0x15
-        sp.Encode4(0); // idk
-        sp.Encode2(0); // idk
-        sp.Encode2(percent); // percent
-        sp.Encode2(0); // idk
-        return sp.get();
-    }
-
-    public static final MaplePacket sendString(final int type, String object, final String amount) {
-        ServerPacketHeader header = ServerPacketHeader.UNKNOWN;
-
-        switch (type) {
-            case 1:
-                header = ServerPacketHeader.LP_SessionValue;
-                break;
-            case 2:
-                header = ServerPacketHeader.LP_PartyValue;
-                break;
-            case 3:
-                header = ServerPacketHeader.LP_FieldSetVariable;
-                break;
-            default: {
-                break;
-            }
-        }
-
-        ServerPacket sp = new ServerPacket(header);
-
-        sp.EncodeStr(object); //massacre_hit, massacre_cool, massacre_miss, massacre_party, massacre_laststage, massacre_skill
-        sp.EncodeStr(amount);
-        return sp.get();
-    }
-
-    // 0x005E @005E 00, ミニマップ点滅, 再読み込みかも?
-    public static MaplePacket ReloadMiniMap() {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniMapOnOff);
-        sp.Encode1((byte) 0);
-        return sp.get();
-    }
-
-    // パチンコ情報の更新
-    public static MaplePacket PachinkoResult(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoResult);
-        // 12 bytes
-        {
-            sp.Encode4(chr.getId()); // キャラクターID (実質不要)
-            sp.Encode4(chr.getTama()); // アイテム欄の玉の数に反映される値
-            sp.Encode4(0); // 用途不明
-        }
-        return sp.get();
-    }
-
 }

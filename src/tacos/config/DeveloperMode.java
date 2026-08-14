@@ -29,7 +29,7 @@ public enum DeveloperMode {
     DM_FIRST_MAP_ID(0),
     DM_ERROR_MAP_ID(800000000),
     DM_CHECK_DAMAGE,
-    DM_SKILL_COOL_TIME(3000),
+    DM_SKILL_COOL_TIME(3),
     DM_LOG_DEV,
     DM_LOG_DEBUG,
     DM_LOG_INFO(true),

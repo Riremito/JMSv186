@@ -21,9 +21,8 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import odin.client.SkillMacro;
 import tacos.config.Region;
-import tacos.config.Version;
-import tacos.network.MaplePacket;
 import java.util.Map;
+import tacos.config.Config;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -40,7 +39,7 @@ public class ResCFuncKeyMappedMan {
         @017D : LP_PetConsumeItemInit
         @017E : LP_PetConsumeMPItemInit
      */
-    public static MaplePacket getMacros(MapleCharacter chr) {
+    public static ServerPacket getMacros(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MacroSysDataInit);
 
         SkillMacro[] macros = chr.getMacros();
@@ -65,10 +64,10 @@ public class ResCFuncKeyMappedMan {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket FuncKeyMappedInit(MapleCharacter chr, boolean keymap_reset) {
+    public static ServerPacket FuncKeyMappedInit(MapleCharacter chr, boolean keymap_reset) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FuncKeyMappedInit);
 
         sp.Encode1(keymap_reset ? 1 : 0);
@@ -76,11 +75,11 @@ public class ResCFuncKeyMappedMan {
         if (!keymap_reset) {
             int KEY_MAP_SIZE = 94; // 470
 
-            if (Region.IsKMS()) {
+            if (Region.KMS.check() || Region.KMST.check()) {
                 KEY_MAP_SIZE = 89; // 445
             }
 
-            if (Version.PostBB()) {
+            if (Config.PostBB()) {
                 KEY_MAP_SIZE = 126; // 630
             }
 
@@ -97,31 +96,31 @@ public class ResCFuncKeyMappedMan {
             }
         }
 
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getPetAutoHPMP_JMS_v131(MapleCharacter chr) {
+    public static ServerPacket getPetAutoHPMP_JMS_v131(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeItemInit);
         sp.Encode4(chr.getPetAutoHPItem());
         sp.Encode4(chr.getPetAutoMPItem());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getPetAutoHP(MapleCharacter chr) {
+    public static ServerPacket getPetAutoHP(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeItemInit);
         sp.Encode4(chr.getPetAutoHPItem());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getPetAutoMP(MapleCharacter chr) {
+    public static ServerPacket getPetAutoMP(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeMPItemInit);
         sp.Encode4(chr.getPetAutoMPItem());
-        return sp.get();
+        return sp;
     }
 
-    public static MaplePacket getPetAutoCure(MapleCharacter chr) {
+    public static ServerPacket getPetAutoCure(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PetConsumeCureItemInit);
         sp.Encode4(chr.getPetAutoCureItem());
-        return sp.get();
+        return sp;
     }
 }

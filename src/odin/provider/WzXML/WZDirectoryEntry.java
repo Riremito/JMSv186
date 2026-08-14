@@ -26,15 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import odin.provider.IMapleDataEntity;
-import odin.provider.IMapleDataEntry;
 import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataFileEntry;
 
 public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntry {
 
     private List<IMapleDataDirectoryEntry> subdirs = new ArrayList<>();
-    private List<IMapleDataFileEntry> files = new ArrayList<>();
-    private Map<String, IMapleDataEntry> entries = new HashMap<>();
+    private List<IMapleDataEntity> files = new ArrayList<>();
+    private Map<String, IMapleDataEntity> entries = new HashMap<>();
 
     public WZDirectoryEntry(String name, int size, int checksum, IMapleDataEntity parent) {
         super(name, size, checksum, parent);
@@ -49,7 +47,7 @@ public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntr
         entries.put(dir.getName(), dir);
     }
 
-    public void addFile(IMapleDataFileEntry fileEntry) {
+    public void addFile(IMapleDataEntity fileEntry) {
         files.add(fileEntry);
         entries.put(fileEntry.getName(), fileEntry);
     }
@@ -60,12 +58,23 @@ public class WZDirectoryEntry extends WZEntry implements IMapleDataDirectoryEntr
     }
 
     @Override
-    public List<IMapleDataFileEntry> getFiles() {
+    public IMapleDataDirectoryEntry getSubDirectory(String path) {
+        for (IMapleDataDirectoryEntry mde : this.subdirs) {
+            if (mde.getName().equals(path)) {
+                return mde;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public List<IMapleDataEntity> getFiles() {
         return Collections.unmodifiableList(files);
     }
 
     @Override
-    public IMapleDataEntry getEntry(String name) {
+    public IMapleDataEntity getEntry(String name) {
         return entries.get(name);
     }
 }

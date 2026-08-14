@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -84,7 +84,7 @@ public enum OpsMREnterResult implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.LessOrEqual(Region.JMS, 147)) {
+        if (Config.LessOrEqual(Region.JMS, 147)) {
             return;
         }
     }

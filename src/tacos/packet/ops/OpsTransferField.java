@@ -18,8 +18,8 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 
 /**
  *
@@ -72,7 +72,7 @@ public enum OpsTransferField implements IPacketOps {
     }
 
     public static void init() {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             TF_DONE.set(0);
             TF_DISABLED_PORTAL.set(1);
             TF_NOT_CONNECTED_AREA.set(2);

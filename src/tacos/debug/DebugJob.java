@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *
- * You should not develop private server for your business.
- * You should not ban anyone who tries hacking in private server.
  */
 package tacos.debug;
 
@@ -24,10 +22,10 @@ import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
-import tacos.config.Version;
-import tacos.wz.ids.DWI_Validation;
 import java.util.ArrayList;
 import odin.server.Randomizer;
+import tacos.config.Config;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -181,8 +179,8 @@ public class DebugJob {
             }
         }
         //maxmp += player_stat.getTotalInt() / 10;
-        maxhp = Math.min(Version.PreBB() ? 30000 : 500000, Math.abs(maxhp));
-        maxmp = Math.min(Version.PreBB() ? 30000 : 500000, Math.abs(maxmp));
+        maxhp = Math.min(Config.PreBB() ? 30000 : 500000, Math.abs(maxhp));
+        maxmp = Math.min(Config.PreBB() ? 30000 : 500000, Math.abs(maxmp));
 
         player_stat.setMaxHp(maxhp);
         player_stat.setMaxMp(maxmp);
@@ -306,7 +304,7 @@ public class DebugJob {
     public static boolean DefStat(MapleCharacter chr, int job_id, int level) {
         ResetStat(chr);
 
-        if (!DWI_Validation.isValidJobID(job_id)) {
+        if (!WzDataStorage.JOB.check(job_id)) {
             return false;
         }
         int next_level = 1;
@@ -390,7 +388,7 @@ public class DebugJob {
     public static boolean AllSkill(MapleCharacter chr, boolean reset) {
         int job_id = chr.getJob();
 
-        if (!DWI_Validation.isValidJobID(job_id)) {
+        if (!WzDataStorage.JOB.check(job_id)) {
             return false;
         }
 
@@ -414,7 +412,7 @@ public class DebugJob {
             // 4次転職
             case 2: {
                 job_id -= 1;
-                if (!DWI_Validation.isValidJobID(job_id)) {
+                if (!WzDataStorage.JOB.check(job_id)) {
                     return false;
                 }
                 job_list.add(job_id);
@@ -422,7 +420,7 @@ public class DebugJob {
             // 3次転職
             case 1: {
                 job_id -= 1;
-                if (!DWI_Validation.isValidJobID(job_id)) {
+                if (!WzDataStorage.JOB.check(job_id)) {
                     return false;
                 }
                 job_list.add(job_id);
@@ -431,7 +429,7 @@ public class DebugJob {
                 // 2次転職
                 if ((job_id % 100) != 0) {
                     job_id -= job_id % 100;
-                    if (!DWI_Validation.isValidJobID(job_id)) {
+                    if (!WzDataStorage.JOB.check(job_id)) {
                         return false;
                     }
                     job_list.add(job_id);

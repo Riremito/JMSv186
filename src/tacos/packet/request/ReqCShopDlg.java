@@ -20,12 +20,13 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import tacos.config.ServerConfig;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsShop;
 import odin.server.MapleShop;
+import tacos.config.Config;
+import tacos.config.Region;
 
 /**
  *
@@ -53,7 +54,7 @@ public class ReqCShopDlg {
             case ShopReq_Buy: {
                 cp.Decode2();
 
-                if (ServerConfig.JMS194orLater()) {
+                if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
                     cp.Decode1();
                 }
 
@@ -88,5 +89,4 @@ public class ReqCShopDlg {
 
         return false;
     }
-
 }

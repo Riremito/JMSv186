@@ -21,18 +21,16 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import tacos.config.Region;
-import tacos.config.ServerConfig;
-import tacos.config.Version;
 import odin.constants.GameConstants;
-import odin.constants.ServerConstants;
-import tacos.network.MaplePacket;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.data.DataCClientOptMan;
 import tacos.packet.response.data.DataCWvsContext;
 import tacos.packet.response.data.DataCharacterData;
-import tacos.packet.response.struct.TestHelper;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.DataCS_COMMODITY;
+import tacos.server.TacosITC;
+import tacos.shared.SharedDate;
 
 /**
  *
@@ -42,82 +40,67 @@ import tacos.packet.response.data.DataCS_COMMODITY;
 public class ResCStage {
 
     // CStage::OnSetField
-    public static final MaplePacket SetField(MapleCharacter chr, boolean bCharacterData) {
+    public static ServerPacket SetField(MapleCharacter chr, boolean bCharacterData) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
-        // JMS184orLater
-        if (((Region.IsJMS() || Region.IsCMS() || Region.IsGMS()) && ServerConfig.JMS186orLater())
-                || Version.GreaterOrEqual(Region.EMS, 89)) {
+
+        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
         }
-        // チャンネル
         sp.Encode4(chr.getClient().getChannelId() - 1); // m_nChannelID
-        if (ServerConfig.KMS138orLater()
-                || (Region.IsJMS() && ServerConfig.JMS146orLater())
-                || Version.GreaterOrEqual(Region.EMS, 89)
-                || Version.GreaterOrEqual(Region.TWMS, 148)
-                || Version.GreaterOrEqual(Region.CMS, 104)
-                || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
         }
-
-        if (Version.GreaterOrEqual(Region.EMS, 89)) {
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(1); // Supreme/Ibara World
         }
-
-        if (((Region.IsJMS() || Region.IsTWMS() || Region.IsTHMS() || Region.IsCMS() || Region.IsMSEA() || Region.IsEMS() || Region.IsGMS() || Region.IsIMS()) && ServerConfig.JMS180orLater())
-                || (Region.IsKMS() && Version.PostBB())) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); // m_dwOldDriverID
         }
-
         sp.Encode1(chr.getPortalCount()); // sNotifierMessage?
-        if (Region.IsCMS()) {
+        if (Region.CMS.check()) {
             sp.Encode1(0);
         }
-        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 76)) {
             sp.Encode4(0);
         }
         sp.Encode1(bCharacterData ? 1 : 0); // bCharacterData, 1 = all data, 0 = map change
-        if (ServerConfig.JMS146orLater()) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 55) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
             sp.Encode2(0); // nNotifierCheck
         }
         if (bCharacterData) {
-            // [chr.CRand().connectData(mplew);]
-            {
-                sp.Encode4(0);
-                sp.Encode4(0);
-                sp.Encode4(0);
-            }
+            sp.Encode4(chr.getCalcDamage().m_s1);
+            sp.Encode4(chr.getCalcDamage().m_s2);
+            sp.Encode4(chr.getCalcDamage().m_s3);
             // キャラクター情報
-            if (Version.GreaterOrEqual(Region.GMS, 126)) {
+            if (Config.GreaterOrEqual(Region.GMS, 126)) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x400000000000L));
-            } else if (Version.GreaterOrEqual(Region.GMS, 111)) {
+            } else if (Config.GreaterOrEqual(Region.GMS, 111)) {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x200000000L));
             } else {
                 sp.EncodeBuffer(DataCharacterData.Encode(chr));
             }
             // JMS184orLater
-            if ((Region.IsJMS() || Region.IsCMS() || Region.IsTWMS() || Region.IsGMS())
-                    && ServerConfig.JMS186orLater()) {
+            if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 91)) {
                 // ログアウトギフト
                 sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
             }
         } else {
-            if (ServerConfig.JMS180orLater() || Version.GreaterOrEqual(Region.KMS, 84) || Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                 sp.Encode1(0); // clear stat, call CWvsContext::OnRevive
             }
             // KMS118 only
-            if (Version.Equal(Region.KMS, 118)) {
+            if (Config.Equal(Region.KMS, 118)) {
                 sp.Encode1(0);
             }
             sp.Encode4(chr.getPosMap()); // dwPosMap
             sp.Encode1(chr.getPortal()); // nPortal
-            if (Version.PreBB()) {
+            if (Config.PreBB()) {
                 sp.Encode2(chr.getStat().getHp()); // nHP_CS
             } else {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (Region.IsEMS() || Region.IsTWMS() || Region.IsGMS() || Region.IsVMS() || Region.IsBMS() || Region.IsTHMS() || Region.IsMSEA()) {
+            if (Region.TWMS.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.MSEA.check() || Region.EMS.check() || Region.BMS.check() || Region.VMS.check()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
@@ -127,37 +110,37 @@ public class ResCStage {
             }
         }
 
-        if (Version.LessOrEqual(Region.KMS, 31)) {
-            return sp.get();
+        if (Config.LessOrEqual(Region.KMS, 31)) {
+            return sp;
         }
 
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
         // サーバーの時間?
-        sp.Encode8(TestHelper.getTime(System.currentTimeMillis())); // ftServer
-        if (ServerConfig.JMS194orLater() || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        sp.Encode8(SharedDate.getTimestamp()); // ftServer
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 76)) {
             sp.Encode4(100); // nMobStatAdjustRate
         }
-        if (ServerConfig.KMS119orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 119) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
         }
         // KMS169 OK
-        if (ServerConfig.KMS127orLater() || Version.Equal(Region.JMST, 110) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 127) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
         }
         // not in KMS169
-        if (Version.GreaterOrEqual(Region.KMS, 197) || Version.GreaterOrEqual(Region.EMS, 89) || Version.GreaterOrEqual(Region.TWMS, 148) || Version.GreaterOrEqual(Region.CMS, 104) || Version.GreaterOrEqual(Region.GMS, 126)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(0);
         }
-        if (Version.GreaterOrEqual(Region.KMS, 197)) {
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
             sp.Encode1(0);
         }
-        return sp.get();
+        return sp;
     }
 
     // 分割版
-    public static final MaplePacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, long datamask_2) {
+    public static ServerPacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, long datamask_2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
@@ -175,11 +158,11 @@ public class ResCStage {
             sp.Encode2(0); // not 0, EncodeStr, EncodeStr x count
             // logged in
             if (bCharacterData) {
-                sp.Encode4(0); // seed x3
-                sp.Encode4(0);
-                sp.Encode4(0);
+                sp.Encode4(chr.getCalcDamage().m_s1); // seed x3
+                sp.Encode4(chr.getCalcDamage().m_s2);
+                sp.Encode4(chr.getCalcDamage().m_s3);
                 long datamask_1 = 0x00444200L | 0x20000000000L; // JMS302
-                if (Version.GreaterOrEqual(Region.JMS, 308)) {
+                if (Config.GreaterOrEqual(Region.JMS, 308)) {
                     datamask_1 = 0x00444200L | 0x80000000000L; // JMS308
                 }
                 sp.EncodeBuffer(DataCharacterData.Encode_302_1(chr, -1 & ~(datamask_1))); // Quest除外
@@ -192,77 +175,73 @@ public class ResCStage {
                 sp.Encode1(0); // not 0, 0059E9C0
             }
             sp.Encode1(0);
-            return sp.get();
+            return sp;
         }
 
         // sub
         if (part == 2) {
             // 008AAA80
             sp.EncodeBuffer(DataCharacterData.Encode_302_2(chr, datamask_2));
-            sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+            sp.Encode8(SharedDate.getTimestamp());
             sp.Encode4(100); // nMobStatAdjustRate
-            if (Version.GreaterOrEqual(Region.JMS, 308)) {
+            if (Config.GreaterOrEqual(Region.JMS, 308)) {
                 sp.Encode1(0);
             }
             sp.Encode1(0);
             sp.Encode1(GameConstants.is_extendsp_job(chr.getJob()) ? 1 : 0);
-            if (Version.GreaterOrEqual(Region.JMS, 308)) {
+            if (Config.GreaterOrEqual(Region.JMS, 308)) {
                 sp.Encode1(0);
             }
-            return sp.get();
+            return sp;
         }
 
         // Err
-        return sp.get();
+        return sp;
     }
 
     // CStage::OnSetITC
-    public static final MaplePacket SetITC(final MapleCharacter chr) {
+    public static ServerPacket SetITC(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetITC);
         sp.EncodeBuffer(DataCharacterData.Encode(chr));
         // CITC::LoadData
         {
             sp.EncodeStr(chr.getClient().getMapleId());
-            sp.Encode4(ServerConstants.MTS_MESO); // m_nRegisterFeeMeso
-            sp.Encode4(ServerConstants.MTS_TAX); // m_nCommissionRate
-            sp.Encode4(ServerConstants.MTS_BASE); // m_nCommissionBase
+            sp.Encode4(TacosITC.MTS_MESO); // m_nRegisterFeeMeso
+            sp.Encode4(TacosITC.MTS_TAX); // m_nCommissionRate
+            sp.Encode4(TacosITC.MTS_BASE); // m_nCommissionBase
             sp.Encode4(24); // m_nAuctionDurationMin
             sp.Encode4(168); // m_nAuctionDurationMax
-            if (ServerConfig.JMS146orLater()) {
-                sp.Encode8(TestHelper.getTime(System.currentTimeMillis()));
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
+                sp.Encode8(SharedDate.getTimestamp());
             }
         }
-        return sp.get();
+        return sp;
     }
 
     // CStage::OnSetCashShop
-    public static MaplePacket SetCashShop(MapleClient c) {
+    public static ServerPacket SetCashShop(MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetCashShop);
         sp.EncodeBuffer(DataCharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
-            if (Region.IsEMS() || Region.IsGMS() || Region.IsBMS()) {
-                sp.Encode1(1); // EMS v55
+            if (Region.GMS.check() || Region.EMS.check() || Region.BMS.check()) {
+                sp.Encode1(1); // EMS55
             }
-            if (!(Region.IsVMS() || Region.IsTHMS() || Region.IsMSEA())) {
+            // not asia soft.
+            if (!(Region.MSEA.check() || Region.THMS.check() || Region.VMS.check())) {
                 sp.EncodeStr(c.getMapleId());
             }
-            if (Region.IsEMS()) {
-                sp.Encode1(0); // EMS v55
+            if (Region.EMS.check()) {
+                sp.Encode1(0); // EMS55
             }
             // CWvsContext::SetSaleInfo
             {
-                if (Region.IsGMS() || Region.IsBMS()) {
-                    sp.Encode4(0);
-                }
-
-                if (Version.PostBB() || Version.GreaterOrEqual(Region.TWMS, 121)) {
-                    if (Region.IsJMS() || Region.IsTWMS() || Region.IsEMS()) {
-                        sp.Encode4(0); // NotSaleCount
-                    }
+                if (Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.EMS, 73)
+                        || Region.GMS.check() || Region.BMS.check()) {
+                    sp.Encode4(0); // NotSaleCount
                 }
                 sp.EncodeBuffer(DataCS_COMMODITY.SetSaleInfo());
-                if (ServerConfig.JMS180orLater() && !Region.IsEMS()) { // X EMS v55
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) && !Region.EMS.check() && !Region.GMS.check()) { // X EMS v55
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }
                 sp.EncodeBuffer(ResCCashShop.getDiscountRates());
@@ -270,21 +249,20 @@ public class ResCStage {
             sp.EncodeBuffer(ResCCashShop.getBestItems(), 1080);
             sp.Encode2(0); // CCashShop::DecodeStock
             sp.Encode2(0); // CCashShop::DecodeLimitGoods
-            if (Version.GreaterOrEqual(Region.GMS, 83)) {
+            if (Config.GreaterOrEqual(Region.GMS, 83)) {
                 sp.Encode2(0);
             }
         }
         sp.Encode1(0); // m_bEventOn
 
-        if (Region.IsIMS()) {
+        if (Region.IMS.check()) {
             sp.Encode1(0);
         }
-
         // m_nHighestCharacterLevelInThisAccount
-        if (Region.IsGMS()) {
+        if (Region.GMS.check()) {
             sp.Encode4(0);
         }
-        return sp.get();
-    }
 
+        return sp;
+    }
 }

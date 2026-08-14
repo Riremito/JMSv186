@@ -18,12 +18,12 @@
  */
 package tacos.network;
 
-import tacos.config.Version;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import tacos.config.Config;
 
 /**
  *
@@ -44,7 +44,7 @@ public class PacketDecoder_KMSB extends CumulativeProtocolDecoder {
             return false;
         }
         int header_version = ((byte) (bb.get() ^ key[2] & 0xFF) | (((byte) (bb.get() ^ key[3])) << 8) & 0xFF00) & 0xFFFF;
-        if (Version.getVersion() != header_version) {
+        if (Config.VERSION != header_version) {
             DebugLogger.ErrorLog("doDecode_KMSB dc.");
             is.close();
             return false;

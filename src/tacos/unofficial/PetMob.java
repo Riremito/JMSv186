@@ -1,0 +1,91 @@
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.unofficial;
+
+import odin.server.life.MapleLifeFactory;
+import odin.server.life.MapleMonster;
+import tacos.client.TacosCharacter;
+import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMobAppear;
+import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.request.parse.ParseCMovePath;
+import tacos.packet.response.ResCMobPool;
+import tacos.wz.WzDataStorage;
+
+/**
+ *
+ * @author Riremito
+ */
+public class PetMob implements IPetEx {
+
+    private TacosCharacter character;
+    private MapleMonster monster = null;
+
+    public PetMob(TacosCharacter character) {
+        this.character = character;
+    }
+
+    @Override
+    public void SendPacket(ServerPacket packet) {
+        this.character.getMap().broadcastMessage(packet);
+    }
+
+    @Override
+    public boolean spawn(int id) {
+        remove();
+
+        if (!WzDataStorage.MOB.check(id)) {
+            return false;
+        }
+
+        this.monster = MapleLifeFactory.getMonster(id);
+        this.monster.setPosition(this.character.getPosition());
+        this.monster.setFH(this.character.getFH());
+        this.monster.setOriginFh(this.character.getFH());
+        this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
+        SendPacket(ResCMobPool.MobEnterField(this.monster));
+        this.monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
+        return true;
+    }
+
+    @Override
+    public boolean remove() {
+        if (this.monster == null) {
+            return false;
+        }
+
+        SendPacket(ResCMobPool.MobLeaveField(this.monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
+        this.monster = null;
+        return true;
+    }
+
+    @Override
+    public boolean move(ParseCMovePath move_path) {
+        if (this.monster == null) {
+            return false;
+        }
+
+        boolean is_left = (move_path.getMoveAction() & 1) != 0;
+        move_path.update(this.monster);
+        this.monster.setOriginFh(move_path.getFootHoldId());
+
+        SendPacket(ResCMobPool.MobMove(this.monster, false, is_left ? 1 : 0, 0, move_path));
+        return true;
+    }
+}

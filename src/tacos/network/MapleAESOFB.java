@@ -23,16 +23,16 @@ package tacos.network;
 import tacos.config.ClientEdit;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.config.Version;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import tacos.config.Config;
+import tacos.debug.DebugLogger;
 
 /**
  * Provides a class for encrypting MapleStory packets with AES OFB encryption.
@@ -75,7 +75,7 @@ public class MapleAESOFB {
 
     public static boolean setAesKey() {
         byte aes_key[] = new byte[32]; // filled with 0.
-        if (Version.Equal(Region.GMS, 126)) {
+        if (Config.Equal(Region.GMS, 126)) {
             aes_key[0] = (byte) 0x8B;
             aes_key[4] = (byte) 0x24;
             aes_key[8] = (byte) 0x8B;
@@ -85,9 +85,10 @@ public class MapleAESOFB {
             aes_key[24] = (byte) 0x08;
             aes_key[28] = (byte) 0xB0;
             skey = new SecretKeySpec(aes_key, "AES");
+            DebugLogger.InfoLog("aes_key = GMS126");
             return true;
         }
-        if (Version.Equal(Region.GMS, 131)) {
+        if (Config.Equal(Region.GMS, 131)) {
             aes_key[0] = (byte) 0x44;
             aes_key[4] = (byte) 0xB9;
             aes_key[8] = (byte) 0x0F;
@@ -97,8 +98,10 @@ public class MapleAESOFB {
             aes_key[24] = (byte) 0x38;
             aes_key[28] = (byte) 0xAE;
             skey = new SecretKeySpec(aes_key, "AES");
+            DebugLogger.InfoLog("aes_key = GMS131");
             return true;
         }
+        DebugLogger.InfoLog("aes_key = default");
         return false;
     }
 
@@ -108,7 +111,9 @@ public class MapleAESOFB {
         } else {
             try {
                 cipher = Cipher.getInstance("AES");
-                if (!Region.IsKMS()) {
+                if (Region.KMS.check() || Region.KMST.check()) {
+                    // none
+                } else {
                     cipher.init(Cipher.ENCRYPT_MODE, skey);
                 }
                 // Thank you for reading code!
@@ -126,7 +131,7 @@ public class MapleAESOFB {
         this.isCP = isOutbound; // ClientPacket
         this.setIv(iv);
 
-        short vesrion = isOutbound ? (short) (0xFFFF - (short) Version.getVersion()) : (short) Version.getVersion();
+        short vesrion = isOutbound ? (short) (0xFFFF - (short) Config.VERSION) : (short) Config.VERSION;
         this.mapleVersion = (short) (((vesrion >> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
     }
 
@@ -142,7 +147,7 @@ public class MapleAESOFB {
     public static byte[] oops(byte[] iv) {
         byte[] newIv = new byte[16];
         // TWMS
-        if (Region.IsTWMS()) {
+        if (Region.TWMS.check()) {
             for (int x = 0; x < 4; x++) {
                 funnyShit(funnyBytes[x], iv);
                 System.arraycopy(iv, 0, newIv, 4 * x, 4);
@@ -310,7 +315,7 @@ public class MapleAESOFB {
      */
     public boolean checkPacket(byte[] packet) {
         // x64
-        if (Region.IsJMS() && 414 <= Version.getVersion()) {
+        if (Config.GreaterOrEqual(Region.KMS, 373) || Config.GreaterOrEqual(Region.JMS, 414)) {
             // KMS v373
             return true;
         }

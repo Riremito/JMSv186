@@ -18,7 +18,7 @@
  */
 package tacos.packet;
 
-import tacos.config.CodePage;
+import tacos.config.Config;
 import tacos.config.Content;
 
 /**
@@ -116,7 +116,7 @@ public class ClientPacket {
             buffer[i] = Decode1();
         }
 
-        return new String(buffer, CodePage.getCodePage());
+        return new String(buffer, Config.CODEPAGE);
     }
 
     /*
@@ -147,5 +147,4 @@ public class ClientPacket {
     public int getRemainingSize() {
         return packet.length - this.decoded;
     }
-
 }

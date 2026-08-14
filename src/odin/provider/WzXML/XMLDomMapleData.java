@@ -27,17 +27,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import odin.tools.FileoutputUtil;
 import odin.provider.IMapleDataEntity;
 import odin.provider.IMapleData;
 
@@ -85,7 +82,6 @@ public class XMLDomMapleData implements IMapleData {
                         break;
                     }
                 } catch (NullPointerException e) {
-                    FileoutputUtil.outputFileError(FileoutputUtil.PacketEx_Log, e); //ugh.
                 }
             }
             if (!foundChild) {
@@ -118,16 +114,16 @@ public class XMLDomMapleData implements IMapleData {
         final MapleDataType type = getType();
         switch (type) {
             case DOUBLE: {
-                return Double.parseDouble(attributes.getNamedItem("value").getNodeValue());
+                return Double.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case FLOAT: {
-                return Float.parseFloat(attributes.getNamedItem("value").getNodeValue());
+                return Float.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case INT: {
-                return Integer.parseInt(attributes.getNamedItem("value").getNodeValue());
+                return Integer.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case SHORT: {
-                return Short.parseShort(attributes.getNamedItem("value").getNodeValue());
+                return Short.valueOf(attributes.getNamedItem("value").getNodeValue());
             }
             case STRING:
             case UOL: {
@@ -136,8 +132,8 @@ public class XMLDomMapleData implements IMapleData {
             case VECTOR: {
                 return new Point(Integer.parseInt(attributes.getNamedItem("x").getNodeValue()), Integer.parseInt(attributes.getNamedItem("y").getNodeValue()));
             }
-            case CANVAS: {
-                return new FileStoredPngMapleCanvas(Integer.parseInt(attributes.getNamedItem("width").getNodeValue()), Integer.parseInt(attributes.getNamedItem("height").getNodeValue()), new File(imageDataDir, getName() + ".png"));
+            default: {
+                break;
             }
         }
         return null;

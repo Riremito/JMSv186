@@ -19,12 +19,13 @@
 package tacos.debug;
 
 import odin.client.MapleCharacter;
+import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.DeveloperMode;
-import tacos.wz.ids.DWI_Validation;
 import odin.server.MapleItemInformationProvider;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -38,7 +39,7 @@ public class DebugUser {
     }
 
     public static boolean AddItem(MapleCharacter chr, int itemid, int count) {
-        if (!DWI_Validation.isValidItemID(itemid)) {
+        if (!WzDataStorage.ITEM.check(itemid)) {
             return false;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -50,7 +51,14 @@ public class DebugUser {
         switch (itemid / 1000000) {
             case 1: {
                 MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIP);
-                equip.addItem(ii.getEquipById(itemid));
+                // 耐久装備テスト
+                Equip item = (Equip) ii.getEquipById(itemid);
+                int dur = item.getDurability();
+                if (0 < dur) {
+                    dur /= 2;
+                    item.setDurability(dur);
+                }
+                equip.addItem(item);
                 break;
             }
             case 2: {
@@ -92,6 +100,10 @@ public class DebugUser {
         {
             AddItem(chr, 1902000); // うり坊
             AddItem(chr, 1912000); // 鞍
+            AddItem(chr, 1472112); // 耐久装備
+            AddItem(chr, 1452101); // 耐久装備
+            AddItem(chr, 1032077); // 耐久装備
+            AddItem(chr, 1032078); // 耐久装備
             AddItem(chr, 1302064); // メイプルグローリーソード
             AddItem(chr, 1402039); // メイプルソールロヘン
             AddItem(chr, 1312032); // メイプルスチールアックス
@@ -158,7 +170,7 @@ public class DebugUser {
             AddItem(chr, 2190000);      // マクロ探知機
             AddItem(chr, 2210000);      // メイプルキノコの像
             AddItem(chr, 2230000);      // 
-            AddItem(chr, 2240000);      // 指輪
+            AddItem(chr, 2240004);      // 指輪
             AddItem(chr, 2241000);      // 
             AddItem(chr, 2242004);      // 
             AddItem(chr, 2260000);      // 
@@ -220,6 +232,8 @@ public class DebugUser {
             AddItem(chr, 4006001, 100); // 召喚の石
             AddItem(chr, 4080000);      // 五目並べセット
             AddItem(chr, 4080100);      // 神経衰弱セット
+            AddItem(chr, 4220021);
+            AddItem(chr, 4031838, 100);
         }
         // ポイントアイテム
         {

@@ -33,8 +33,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCNpcPool {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -55,7 +55,7 @@ public class ReqCNpcPool {
                 byte nChatIdx = cp.Decode1();
                 byte m_nOneTimeAction = cp.Decode1();
 
-                ParseCMovePath move_path = move_path = new ParseCMovePath();
+                ParseCMovePath move_path = new ParseCMovePath();
                 if (move_path.Decode(cp)) {
                     move_path.update(npc);
                 } else {
@@ -72,5 +72,4 @@ public class ReqCNpcPool {
 
         return false;
     }
-
 }

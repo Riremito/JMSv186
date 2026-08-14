@@ -43,12 +43,12 @@ public class MapleSquad {
     }
 
     public MapleMap getBeginMap() {
-        return this.leader.get().getChannelServer().getMapFactory().getMap(beginMapId);
+        return this.leader.get().findMap(beginMapId);
     }
 
     public void clear() {
         if (removal != null) {
-            getBeginMap().broadcastMessage(ResCField.stopClock());
+            getBeginMap().broadcastMessage(ResCField.DestroyClock());
             removal.cancel(false);
             removal = null;
         }

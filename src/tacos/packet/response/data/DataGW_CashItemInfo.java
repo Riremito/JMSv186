@@ -42,7 +42,7 @@ public class DataGW_CashItemInfo {
         data.EncodeBuffer(item.getOwner(), 13);
         data.Encode8(SharedDate.getMagicalExpirationDate());
         data.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
-        return data.get().getBytes();
+        return data.getBytes();
 
     }
 }

@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.client.MapleClient;
-import tacos.packet.response.ResCNpcPool;
 import odin.server.MapleShopFactory;
 import odin.server.maps.MapleMapObjectType;
 
@@ -30,40 +29,33 @@ public class MapleNPC extends AbstractLoadedMapleLife {
     private String name = "MISSINGNO";
     private boolean custom = false;
 
-    public MapleNPC(final int id, final String name) {
-        super(id);
+    public MapleNPC(int npc_id, String name) {
+        super(npc_id);
         this.name = name;
     }
 
-    public final boolean hasShop() {
+    public boolean hasShop() {
         return MapleShopFactory.getInstance().getShopForNPC(getId()) != null;
     }
 
-    public final void sendShop(final MapleClient c) {
+    public void sendShop(MapleClient c) {
         MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(c);
     }
 
     @Override
-    public void sendSpawnData(final MapleClient client) {
-        if (getId() >= 9901000) {
-            return;
-        } else {
-            client.SendPacket(ResCNpcPool.NpcEnterField(this, true));
-            //client.getSession().write(MaplePacketCreator.spawnNPCRequestController(this, true));
-        }
+    public void sendSpawnData(MapleClient client) {
     }
 
     @Override
-    public final void sendDestroyData(final MapleClient client) {
-        client.SendPacket(ResCNpcPool.NpcLeaveField(this));
+    public void sendDestroyData(MapleClient client) {
     }
 
     @Override
-    public final MapleMapObjectType getType() {
+    public MapleMapObjectType getType() {
         return MapleMapObjectType.NPC;
     }
 
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
@@ -71,11 +63,11 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         this.name = n;
     }
 
-    public final boolean isCustom() {
+    public boolean isCustom() {
         return custom;
     }
 
-    public final void setCustom(final boolean custom) {
+    public void setCustom(boolean custom) {
         this.custom = custom;
     }
 }

@@ -25,10 +25,13 @@ package tacos.packet.ops;
 public class PacketOps {
 
     public static void initAll() {
+        OpsAttackIndex.init();
+        OpsCashItem.init();
         OpsNewCharacter.init();
         OpsDBCHAR.init();
         OpsChangeStat.init();
         OpsSecondaryStat.init();
+        OpsMobStat.init();
         OpsTransferField.init();
         OpsTransferChannel.init();
         OpsBroadcastMsg.init();
@@ -47,6 +50,7 @@ public class PacketOps {
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
         OpsITC.init();
+        OpsUI.init();
+        OpsMoveAbility.init();
     }
-
 }

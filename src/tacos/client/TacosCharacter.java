@@ -18,39 +18,55 @@
  */
 package tacos.client;
 
-import java.lang.ref.WeakReference;
+import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
+import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
-import odin.client.MonsterBook;
 import odin.client.PlayerStats;
+import odin.client.SkillEntry;
+import odin.client.SkillFactory;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
-import odin.handling.world.MapleMessenger;
-import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapFactory;
 import odin.server.maps.MapleMapObjectType;
+import tacos.config.Config;
 import tacos.config.Region;
-import tacos.config.Version;
 import tacos.constants.TacosConstants;
 import tacos.database.LazyData;
+import tacos.database.InvTypeDB;
+import tacos.database.TacosDB;
+import tacos.database.query.DQ_Buddies;
+import tacos.database.query.DQ_Characters;
+import tacos.database.query.DQ_Inventoryitems;
+import tacos.database.query.DQ_Inventoryslot;
+import tacos.database.query.DQ_KeyMap;
+import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
-import tacos.network.MaplePacket;
+import tacos.odin.OdinPair;
+import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMovePathAttr;
+import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsTransferField;
+import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCClientSocket;
+import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCStage;
+import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import tacos.script.portal.ArdentmillPortal;
@@ -60,6 +76,11 @@ import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
+import tacos.unofficial.PetCharacter;
+import tacos.unofficial.PetMob;
+import tacos.unofficial.PetNPC;
+import tacos.wz.ids.DWI_Dafault;
+import tacos.wz.WzDataStorage;
 
 /**
  *
@@ -79,13 +100,11 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     private int viewRangeSq = 1600 * 1600;
     private TacosForcedStat forcedStat = new TacosForcedStat();
     protected TacosKeyLayout keylayout = new TacosKeyLayout();
-    protected MonsterBook monsterbook = null;
     private FreeMarketPortal portal_fm = new FreeMarketPortal();
     private ArdentmillPortal portal_ardentmill = new ArdentmillPortal();
     private ArrayList<LazyData> lazy_data_list = new ArrayList<>();
-    protected TacosStorage storage = null;
 
-    public void SendPacket(MaplePacket packet) {
+    public void SendPacket(ServerPacket packet) {
         this.client.SendPacket(packet);
     }
 
@@ -94,6 +113,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         SendPacket(ResCClientSocket.MigrateCommand(server));
         // stop sending/receiving packets.
         this.client.closeSession();
+    }
+
+    public MapleClient getClient() {
+        return this.client;
+    }
+
+    public void setClient(MapleClient client) {
+        this.client = client;
     }
 
     public int getId() {
@@ -114,6 +141,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public TacosChannel getChannelServer() {
         return this.client.getChannelServer();
+    }
+
+    public MapleMap findMap(int map_id) {
+        return getChannelServer().findMap(map_id);
     }
 
     public int getWorldId() {
@@ -187,14 +218,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
-    public MonsterBook getMonsterBook() {
-        return this.monsterbook;
-    }
-
-    public void setMonsterBook(MonsterBook monsterbook) {
-        this.monsterbook = monsterbook;
-    }
-
     @Override
     public MapleMapObjectType getType() {
         return MapleMapObjectType.PLAYER;
@@ -212,7 +235,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     // enter game server.
     protected void sendSetField(MapleCharacter mchr, boolean bCharacterData) {
-        if (Version.GreaterOrEqual(Region.JMS, 302)) {
+        if (bCharacterData) {
+            getCalcDamage().setSeed(getCalcDamage().random(), getCalcDamage().random(), getCalcDamage().random());
+        }
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             SendPacket(ResCStage.SetField_JMS_302(mchr, 1, bCharacterData, 0));
             SendPacket(ResCStage.SetField_JMS_302(mchr, 2, bCharacterData, -1));
             return;
@@ -260,8 +286,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void updateMapById(int map_id, int portal_id) {
-        MapleMapFactory mapFactory = getChannelServer().getMapFactory();
-        MapleMap map_to = mapFactory.getMap(map_id);
+        MapleMap map_to = findMap(map_id);
 
         if (map_to != null) {
             int forced_return_map_id = map_to.getForcedReturnId();
@@ -270,7 +295,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         if (map_to == null) {
-            map_to = mapFactory.getMap(TacosConstants.DEFAULT_RETURN_MAP_ID); // return to default map.
+            map_to = findMap(TacosConstants.DEFAULT_RETURN_MAP_ID); // return to default map.
             DebugLogger.ErrorLog("updateMapById : invalid map = " + map_id);
         }
         TacosPortal portal_to = map_to.getPortal(portal_id);
@@ -331,9 +356,35 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             return false;
         }
         // direct map change.
-        map_to = getChannelServer().getMapFactory().getMap(map_id_to);
+        map_to = findMap(map_id_to);
         changeMap(map_to, map_to.getPortal(0));
         return true;
+    }
+
+    public boolean changeMap(int map_id) {
+        MapleMap map_to = findMap(map_id);
+        if (map_to != null) {
+            TacosPortal portal_to = map_to.getPortal(0);
+            if (portal_to != null) {
+                changeMap(map_to, portal_to);
+                return true;
+            }
+        }
+        SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+        return false;
+    }
+
+    public boolean changeMapWithCoordinate(int map_id, int x, int y) {
+        MapleMap map_to = findMap(map_id);
+        if (map_to != null) {
+            TacosPortal portal_to = map_to.findClosestSpawnpoint(new Point(x, y));
+            if (portal_to != null) {
+                changeMap(map_to, portal_to);
+                return true;
+            }
+        }
+        SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+        return false;
     }
 
     public void changeMap(MapleMap to, TacosPortal pto) {
@@ -385,6 +436,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     protected int meso;
     protected int gashaEXP = 0;
     protected List<MaplePet> pets;
+    protected int tama = 0;
 
     public int getGender() {
         return gender;
@@ -412,6 +464,17 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getJob() {
         return this.job;
+    }
+
+    public void setJob(int job) {
+        if (!WzDataStorage.JOB.check(job)) {
+            DebugLogger.ErrorLog("Invalid job id : " + job);
+            this.job = DWI_Dafault.JOB;
+            return;
+        }
+        this.job = job;
+        setSkillPet();
+        setDragon();
     }
 
     public PlayerStats getStat() {
@@ -474,6 +537,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public int getGashaEXP() {
         return this.gashaEXP;
+    }
+
+    public int getTama() {
+        return this.tama;
+    }
+
+    public void setTama(int tama) {
+        this.tama = tama;
     }
 
     // guild
@@ -560,6 +631,29 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setSubcategory(int subcategory) {
         this.subcategory = subcategory;
+    }
+
+    protected Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
+
+    public int getSkillLevel(OpsSkill ops) {
+        ISkill skill = SkillFactory.getSkill(ops.get());
+        if (skill == null) {
+            return 0;
+        }
+        SkillEntry ret = this.skills.get(skill);
+
+        int skill_level = Math.min(skill.getMaxLevel(), ret.skillevel + (skill.isBeginnerSkill() ? 0 : stats.incAllskill));
+        return skill_level;
+    }
+
+    public OpsSkill getFakeSkill() {
+        if (0 < getSkillLevel(OpsSkill.NIGHTLORD_FAKE)) {
+            return OpsSkill.NIGHTLORD_FAKE;
+        }
+        if (0 < getSkillLevel(OpsSkill.SHADOWER_FAKE)) {
+            return OpsSkill.SHADOWER_FAKE;
+        }
+        return OpsSkill.UNKNOWN;
     }
 
     protected MapleMount mount = null;
@@ -685,23 +779,9 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void equipChanged() {
-        this.map.broadcastMessage(this, ResCUserRemote.AvatarModified(this, 1), false);
-
+        this.map.broadcastMessage(this, ResCUserRemote.UserAvatarModified(this, 1), false);
+        getWorld().avatarMessenger(this);
         this.stats.recalcLocalStats();
-        if (getMessenger() != null) {
-            OdinWorld.Messenger.updateMessenger(getMessenger().getId(), getName(), this.client.getChannelId());
-        }
-
-        if (isCloning()) {
-            cloneUpdate();
-            this.map.broadcastMessageClone(getClone(), ResCUserRemote.AvatarModified(getClone(), 1));
-        }
-    }
-
-    protected MapleMessenger messenger;
-
-    public MapleMessenger getMessenger() {
-        return this.messenger;
     }
 
     protected int accountid;
@@ -734,10 +814,6 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public boolean isAdmin() {
         return gmLevel >= 5;
-    }
-
-    public void setMessenger(MapleMessenger messenger) {
-        this.messenger = messenger;
     }
 
     // debug
@@ -841,6 +917,183 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
     }
 
+    // skill pet
+    protected TacosSkillPet skill_pet = null;
+
+    public TacosSkillPet getSkillPet() {
+        return this.skill_pet;
+    }
+
+    public boolean setSkillPet() {
+        if (this.skill_pet != null) {
+            return false;
+        }
+        if (TacosConstants.is_kanna(getJob())) {
+            this.skill_pet = new TacosSkillPet(this, TacosConstants.KANNA_SKILL_PET_ID);
+            return true;
+        }
+        return false;
+    }
+
+    protected TacosDragon dragon = null;
+
+    public TacosDragon getDragon() {
+        return this.dragon;
+    }
+
+    public boolean setDragon() {
+        if (this.dragon != null) {
+            if (TacosConstants.is_evan(getJob(), true)) {
+                this.dragon.setJobCode(this);
+                this.map.broadcastMessage(ResCUser_Dragon.DragonEnterField(this.dragon));
+                return true;
+            }
+            this.dragon = null;
+            return false;
+        }
+        if (TacosConstants.is_evan(getJob(), true)) {
+            this.dragon = new TacosDragon(this);
+            return true;
+        }
+        return false;
+    }
+
+    // coconut
+    private int coconutteam = 0;
+
+    public int getCoconutTeam() {
+        return this.coconutteam;
+    }
+
+    public void setCoconutTeam(int coconutteam) {
+        this.coconutteam = coconutteam;
+    }
+
+    // aran
+    private int m_nCombo = 0;
+    private long m_tLastSetCombo = 0;
+
+    public boolean sendIncCombo() {
+        long time = System.currentTimeMillis();
+        if (this.m_tLastSetCombo == 0 || (this.m_tLastSetCombo + 3500) < time) {
+            this.m_nCombo = 0;
+        }
+        this.m_tLastSetCombo = System.currentTimeMillis();
+        this.m_nCombo++;
+
+        SendPacket(ResCUserLocal.IncCombo(this));
+
+        int combo_level = this.m_nCombo / 10;
+        if (this.m_nCombo % 10 == 0 && 1 <= combo_level && combo_level <= 10) {
+            if (combo_level <= ((MapleCharacter) this).getSkillLevel(OpsSkill.ARAN_COMBO_ABILITY.get())) {
+                // buff.
+            }
+        }
+        return true;
+    }
+
+    public int getCombo() {
+        return this.m_nCombo;
+    }
+
+    // effect item.
+    protected int nEffectItemID = 0;
+
+    public int getActiveEffectItem() {
+        return this.nEffectItemID;
+    }
+
+    public void setActiveEffectItem(int nEffectItemID) {
+        this.nEffectItemID = nEffectItemID;
+    }
+
+    // follow system.
+    private int m_dwDriverID = 0;
+    private int m_dwPassenserID = 0; // typo?
+
+    public int getDriver() {
+        return this.m_dwDriverID;
+    }
+
+    public void setDriver(int m_dwDriverID) {
+        this.m_dwDriverID = m_dwDriverID;
+    }
+
+    public int getPassenger() {
+        return this.m_dwPassenserID;
+    }
+
+    public void setPassenger(int m_dwPassenserID) {
+        this.m_dwPassenserID = m_dwPassenserID;
+    }
+
+    // RPS game.
+    private int m_nCntStraightVictories = 0;
+
+    public int getCntStraightVictories() {
+        return this.m_nCntStraightVictories;
+    }
+
+    public void setCntStraightVictories(int m_nCntStraightVictories) {
+        this.m_nCntStraightVictories = m_nCntStraightVictories;
+    }
+
+    // update.
+    private long time = 0;
+
+    public boolean updateTime(long time, long interval) {
+        if (this.time == 0) {
+            this.time = time;
+            return false;
+        }
+
+        long delta = time - this.time;
+        if (interval <= delta) {
+            this.time = time;
+            return true;
+        }
+
+        return false;
+    }
+
+    // buff.
+    private final TacosBuff buff = new TacosBuff(this);
+
+    public TacosBuff getBuff() {
+        return this.buff;
+    }
+
+    // cool time.
+    private final TacosCoolTime skill_ct = new TacosCoolTime(this);
+
+    public TacosCoolTime getCoolTime() {
+        return this.skill_ct;
+    }
+
+    // rand
+    private final TacosCalcDamage calc_damage = new TacosCalcDamage();
+
+    public TacosCalcDamage getCalcDamage() {
+        return this.calc_damage;
+    }
+
+    // critical
+    private final TacosCriticalRate critical_rate = new TacosCriticalRate(this);
+
+    public TacosCriticalRate getCriticalRate() {
+        return this.critical_rate;
+    }
+
+    // monster book.
+    private final TacosMonsterBook monster_book = new TacosMonsterBook();
+
+    public TacosMonsterBook getMonsterBook() {
+        return this.monster_book;
+    }
+
+    // storage.
+    protected TacosStorage storage = null;
+
     public TacosStorage getStorage() {
         if (this.storage == null) {
             this.storage = new TacosStorage(this);
@@ -849,42 +1102,106 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.storage;
     }
 
-    // clone
-    protected boolean clone = false;
-    protected boolean cloning = false;
-    protected transient WeakReference<MapleCharacter>[] clones;
-    protected MapleCharacter clone_parent = null;
-
-    public boolean isClone() {
-        return this.clone;
-    }
-
-    public void setClone(boolean c) {
-        this.clone = c;
-    }
-
-    public boolean isCloning() {
-        return this.cloning;
-    }
-
-    public WeakReference<MapleCharacter>[] getClones() {
-        return this.clones;
-    }
-
-    public MapleCharacter getClone() {
-        return this.clones[0].get();
-    }
-
-    public boolean cloneUpdate() {
-        if (this.clone) {
+    // database.
+    public boolean addNewCharacterData() {
+        if (!DQ_Characters.add(this)) {
             return false;
         }
-
-        this.clones[0].get().getInventory(MapleInventoryType.EQUIPPED).resetForClone();
-        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
-            this.clones[0].get().getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
+        if (!DQ_Inventoryslot.add(this)) {
+            return false;
+        }
+        if (!DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems())) {
+            return false;
+        }
+        if (!DQ_Mountdata.add(this)) {
+            return false;
+        }
+        if (!DQ_KeyMap.add(this)) {
+            return false;
         }
         return true;
+    }
+
+    public boolean loadCharacterData(boolean is_channel_server) {
+        // all server.
+        // login server.
+        if (!is_channel_server) {
+            // avatar look.
+            for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
+                if (mit.getRight() == MapleInventoryType.EQUIPPED) {
+                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getLeft());
+                }
+            }
+            return true;
+        }
+        // channel server.
+        // inventory.
+        DQ_Inventoryslot.load(this);
+        for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
+            if (!WzDataStorage.ITEM.check(mit.getLeft().getItemId())) {
+                DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
+                continue;
+            }
+            getInventory(mit.getRight()).addFromDB(mit.getLeft());
+            if (mit.getLeft().getPet() != null) {
+                this.pets.add(mit.getLeft().getPet());
+            }
+        }
+        DQ_KeyMap.loadKeyMap(this);
+        TacosDB.MONSTER_BOOK.load(this);
+        for (BuddylistEntry ble : DQ_Buddies.load(this)) {
+            this.buddylist.put(ble);
+        }
+        return true;
+    }
+
+    public boolean saveCharacterData(boolean is_channel_server) {
+        // all server.
+        DQ_Inventoryslot.save(this);
+        DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
+        // cash shop or itc server.
+        if (!is_channel_server) {
+            return true;
+        }
+        // channel server.
+        if (storage != null) {
+            storage.update();
+        }
+
+        DQ_KeyMap.saveKeys(this);
+        TacosDB.MONSTER_BOOK.save(this);
+        DQ_Buddies.removePending(this);
+        DQ_Buddies.update(this);
+        return true;
+    }
+
+    // unofficial.
+    private PetCharacter pet_player = new PetCharacter(this);
+    private PetMob pet_mob = new PetMob(this);
+    private PetNPC pet_npc = new PetNPC(this);
+
+    public PetCharacter getPetCharacter() {
+        return this.pet_player;
+    }
+
+    public PetMob getPetMob() {
+        return this.pet_mob;
+    }
+
+    public PetNPC getPetNPC() {
+        return this.pet_npc;
+    }
+
+    public void movePetEx(ParseCMovePath move_path) {
+        this.pet_player.move(move_path);
+        this.pet_mob.move(move_path);
+        this.pet_npc.move(move_path);
+    }
+
+    private TacosValue sp_used = new TacosValue();
+
+    public TacosValue getSpUsed() {
+        return this.sp_used;
     }
 
     // old code.

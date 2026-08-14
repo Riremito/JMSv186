@@ -23,16 +23,17 @@ package tacos.packet;
  * @author Riremito
  */
 public enum ClientPacketHeader implements IPacketHeader {
-    // do not change the order of this list.
-    // if you want to add new header, please add it between BEGIN and END tags.
+    /*
+        DON'T CHANGE THE ORDER OF THIS LIST.
+     */
     CP_BEGIN_SOCKET,
-    CP_CheckPassword, // LOGIN_PASSWORD
-    CP_Check2ndPassword, // v188 test
-    CP_Check2ndPassword_cancel, // v188 test
+    CP_CheckPassword,
+    CP_Check2ndPassword,
+    CP_Check2ndPassword_cancel,
     CP_GuestIDLogin,
     CP_AccountInfoRequest,
-    CP_WorldInfoRequest, // SERVERLIST_REQUEST
-    CP_SelectWorld, // CHARLIST_REQUEST
+    CP_WorldInfoRequest,
+    CP_SelectWorld,
     CP_CheckUserLimit,
     CP_ConfirmEULA,
     CP_SetGender,
@@ -46,16 +47,17 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_CheckNameChangePossible,
     CP_RegisterNewCharacter,
     CP_CheckTransferWorldPossible,
-    CP_SelectCharacter, // CHAR_SELECT
-    CP_MigrateIn, // PLAYER_LOGGEDIN
-    CP_CheckDuplicatedID, // CHECK_CHAR_NAME
-    CP_CreateNewCharacter, // CREATE_CHAR
+    CP_SelectCharacter,
+    CP_MigrateIn,
+    CP_CheckDuplicatedID,
+    CP_CreateNewCharacter,
+    CP_JMS_164_KOC_UI_Request,
     CP_CreateNewCharacterInCS,
-    CP_DeleteCharacter, // DELETE_CHAR
+    CP_DeleteCharacter,
     CP_AliveAck,
     CP_ExceptionLog,
     CP_SecurityPacket,
-    CP_JMS_CheckGameGuardUpdated, // JMS v131 (GG)
+    CP_JMS_CheckGameGuardUpdated,
     CP_EnableSPWRequest,
     CP_CheckSPWRequest,
     CP_EnableSPWRequestByACV,
@@ -69,36 +71,36 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_CreateNewCharacter_Ex,
     CP_JMS_MapLogin,
     CP_JMS_SafetyPassword,
-    CP_JMS_GetMapLogin, // 名称不明, ログイン画面に到達
+    CP_JMS_GetMapLogin,
     CP_END_SOCKET,
     CP_BEGIN_USER,
-    CP_UserTransferFieldRequest, // CHANGE_MAP
-    CP_UserTransferChannelRequest, // CHANGE_CHANNEL
-    CP_UserMigrateToCashShopRequest, // ENTER_CASH_SHOP
-    CP_UserMove, // MOVE_PLAYER
-    CP_UserSitRequest, // CANCEL_CHAIR
-    CP_UserPortableChairSitRequest, // USE_CHAIR
-    CP_UserMeleeAttack, // CLOSE_RANGE_ATTACK
-    CP_UserShootAttack, // RANGED_ATTACK
-    CP_UserMagicAttack, // MAGIC_ATTACK
+    CP_UserTransferFieldRequest,
+    CP_UserTransferChannelRequest,
+    CP_UserMigrateToCashShopRequest,
+    CP_UserMove,
+    CP_UserSitRequest,
+    CP_UserPortableChairSitRequest,
+    CP_UserMeleeAttack,
+    CP_UserShootAttack,
+    CP_UserMagicAttack,
     CP_UserBodyAttack,
     CP_UserMovingShootAttackPrepare,
-    CP_UserHit, // TAKE_DAMAGE
+    CP_UserHit,
     CP_UserAttackUser,
-    CP_UserChat, // GENERAL_CHAT
+    CP_UserChat,
     CP_UserADBoardClose,
-    CP_UserEmotion, // FACE_EXPRESSION
-    CP_UserActivateEffectItem, // USE_ITEMEFFECT
+    CP_UserEmotion,
+    CP_UserActivateEffectItem,
     CP_UserUpgradeTombEffect,
     CP_UserHP,
     CP_Premium,
     CP_UserBanMapByMob,
     CP_UserMonsterBookSetCover,
-    CP_UserSelectNpc, // NPC_TALK
+    CP_UserSelectNpc,
     CP_UserRemoteShopOpenRequest,
-    CP_UserScriptMessageAnswer, // NPC_TALK_MORE
-    CP_UserShopRequest, // NPC_SHOP
-    CP_UserTrunkRequest, // STORAGE
+    CP_UserScriptMessageAnswer,
+    CP_UserShopRequest,
+    CP_UserTrunkRequest,
     CP_UserEntrustedShopRequest,
     CP_UserStoreBankRequest,
     CP_UserParcelRequest,
@@ -108,50 +110,50 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_AdminShopRequest,
     CP_UserGatherItemRequest,
     CP_UserSortItemRequest,
-    CP_UserChangeSlotPositionRequest, // ITEM_MOVE
-    CP_UserStatChangeItemUseRequest, // USE_ITEM
-    CP_UserStatChangeItemCancelRequest, // CANCEL_ITEM_EFFECT
+    CP_UserChangeSlotPositionRequest,
+    CP_UserStatChangeItemUseRequest,
+    CP_UserStatChangeItemCancelRequest,
     CP_UserStatChangeByPortableChairRequest,
-    CP_UserMobSummonItemUseRequest, // USE_SUMMON_BAG
-    CP_UserPetFoodItemUseRequest, // PET_FOOD
-    CP_UserTamingMobFoodItemUseRequest, // USE_MOUNT_FOOD
+    CP_UserMobSummonItemUseRequest,
+    CP_UserPetFoodItemUseRequest,
+    CP_UserTamingMobFoodItemUseRequest,
     CP_UserScriptItemUseRequest,
-    CP_UserConsumeCashItemUseRequest, // USE_CASH_ITEM
+    CP_UserConsumeCashItemUseRequest,
     CP_UserDestroyPetItemRequest,
-    CP_UserBridleItemUseRequest, // USE_CATCH_ITEM
-    CP_UserSkillLearnItemUseRequest, // USE_SKILL_BOOK
+    CP_UserBridleItemUseRequest,
+    CP_UserSkillLearnItemUseRequest,
     CP_UserSkillResetItemUseRequest,
     CP_JMS_MONSTERBOOK_SET,
-    CP_UserShopScannerItemUseRequest, // USE_OWL_MINERVA
-    CP_UserMapTransferItemUseRequest, // USE_TELE_ROCK
-    CP_UserPortalScrollUseRequest, // USE_RETURN_SCROLL
-    CP_UserUpgradeItemUseRequest, // USE_UPGRADE_SCROLL
+    CP_UserShopScannerItemUseRequest,
+    CP_UserMapTransferItemUseRequest,
+    CP_UserPortalScrollUseRequest,
+    CP_UserUpgradeItemUseRequest,
     CP_UserHyperUpgradeItemUseRequest,
     CP_UserItemOptionUpgradeItemUseRequest,
     CP_UserUIOpenItemUseRequest,
     CP_UserItemReleaseRequest,
-    CP_UserAbilityUpRequest, // DISTRIBUTE_AP
+    CP_UserAbilityUpRequest,
     CP_UserAbilityMassUpRequest,
-    CP_UserChangeStatRequest, // HEAL_OVER_TIME
+    CP_UserChangeStatRequest,
     CP_UserChangeStatRequestByItemOption,
-    CP_UserSkillUpRequest, // DISTRIBUTE_SP
-    CP_UserSkillUseRequest, // SPECIAL_MOVE
-    CP_UserSkillCancelRequest, // CANCEL_BUFF
-    CP_UserSkillPrepareRequest, // SKILL_EFFECT
-    CP_UserDropMoneyRequest, // MESO_DROP
-    CP_UserGivePopularityRequest, // GIVE_FAME
+    CP_UserSkillUpRequest,
+    CP_UserSkillUseRequest,
+    CP_UserSkillCancelRequest,
+    CP_UserSkillPrepareRequest,
+    CP_UserDropMoneyRequest,
+    CP_UserGivePopularityRequest,
     CP_UserPartyRequest,
-    CP_UserCharacterInfoRequest, // CHAR_INFO_REQUEST
-    CP_UserActivatePetRequest, // SPAWN_PET
-    CP_UserTemporaryStatUpdateRequest, // CANCEL_DEBUFF
-    CP_UserPortalScriptRequest, // CHANGE_MAP_SPECIAL
-    CP_UserPortalTeleportRequest, // USE_INNER_PORTAL
-    CP_UserMapTransferRequest, // TROCK_ADD_MAP
+    CP_UserCharacterInfoRequest,
+    CP_UserActivatePetRequest,
+    CP_UserTemporaryStatUpdateRequest,
+    CP_UserPortalScriptRequest,
+    CP_UserPortalTeleportRequest,
+    CP_UserMapTransferRequest,
     CP_UserAntiMacroItemUseRequest,
     CP_UserAntiMacroSkillUseRequest,
     CP_UserAntiMacroQuestionResult,
     CP_UserClaimRequest,
-    CP_UserQuestRequest, // QUEST_ACTION
+    CP_UserQuestRequest,
     CP_UserCalcDamageStatSetRequest,
     CP_UserThrowGrenade,
     CP_UserMacroSysDataModified,
@@ -172,8 +174,8 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_UserRequestPQReward,
     CP_SetPassenserResult,
     CP_BroadcastMsg,
-    CP_GroupMessage, // PARTYCHAT
-    CP_Whisper, // WHISPER
+    CP_GroupMessage,
+    CP_Whisper,
     CP_CoupleMessage,
     CP_Messenger,
     CP_MiniRoom,
@@ -218,7 +220,7 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_UserMigrateToITCRequest,
     CP_UserExpUpItemUseRequest,
     CP_UserTempExpUseRequest,
-    CP_JMS_JUKEBOX, // ItemID 2150001
+    CP_JMS_JUKEBOX,
     CP_NewYearCardRequest,
     CP_RandomMorphRequest,
     CP_CashItemGachaponRequest,
@@ -236,13 +238,20 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_UserDragonBallBoxRequest,
     CP_UserDragonBallSummonRequest,
     CP_BEGIN_PET,
-    CP_PetMove, // MOVE_PET
+    CP_PetMove,
     CP_PetAction,
     CP_PetInteractionRequest,
     CP_PetDropPickUpRequest,
     CP_PetStatChangeItemUseRequest,
     CP_PetUpdateExceptionListRequest,
     CP_END_PET,
+    CP_BEGIN_SKILLPET,
+    CP_SkillPetMove,
+    CP_SkillPetAction,
+    CP_SkillPetState,
+    CP_SkillPetDropPickUpRequest,
+    CP_SkillPetUpdateExceptionListRequest,
+    CP_END_SKILLPET,
     CP_BEGIN_SUMMONED,
     CP_SummonedMove,
     CP_SummonedAttack,
@@ -253,6 +262,14 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_BEGIN_DRAGON,
     CP_DragonMove,
     CP_END_DRAGON,
+    CP_BEGIN_ANDROID,
+    CP_AndroidMove,
+    CP_AndroidActionSet,
+    CP_END_ANDROID,
+    CP_BEGIN_FOXMAN,
+    CP_FoxManMove,
+    CP_FoxManActionSetUseRequest,
+    CP_END_FOXMAN,
     CP_QuickslotKeyMappedModified,
     CP_PassiveskillInfoUpdate,
     CP_UpdateScreenSetting,
@@ -266,8 +283,8 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_BEGIN_FIELD,
     CP_BEGIN_LIFEPOOL,
     CP_BEGIN_MOB,
-    CP_MobMove, // MOVE_LIFE
-    CP_MobApplyCtrl, // AUTO_AGGRO
+    CP_MobMove,
+    CP_MobApplyCtrl,
     CP_MobDropPickUpRequest,
     CP_MobHitByObstacle,
     CP_MobHitByMob,
@@ -303,7 +320,7 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_BEGIN_MONSTER_CARNIVAL_FIELD,
     CP_MCarnivalRequest,
     CP_END_MONSTER_CARNIVAL_FIELD,
-    CP_CONTISTATE, // 船の状態取得
+    CP_CONTISTATE,
     CP_BEGIN_PARTY_MATCH,
     CP_INVITE_PARTY_MATCH,
     CP_CANCEL_INVITE_PARTY_MATCH,
@@ -363,30 +380,15 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_END_CHARACTERSALE,
     CP_LogoutGiftSelect,
     CP_NO,
-    GM_COMMAND_MAPLETV, // Super Megaphone Exploitのパケット
-    // old header names
-    SOLOMON, // 名称不明
-    CYGNUS_SUMMON, // 名称不明
-    UPDATE_QUEST, // 不明
-    QUEST_ITEM, // 不明
-    USE_ITEM_QUEST, // 多分Quest Value Addition Exploitのパケット
-    // ヘッダに対応する処理の名前を定義
-    // 独自仕様
+    // custom packets.
     CP_CUSTOM_,
     CP_CUSTOM_WZ_HASH,
     CP_CUSTOM_MEMORY_SCAN,
-    // v414.1 test
-    //CP_TEST1(0x66),
-    //CP_TEST2(0xA3),
     UNKNOWN;
 
     private int value;
 
-    private ClientPacketHeader(int value) {
-        this.value = value;
-    }
-
-    private ClientPacketHeader() {
+    ClientPacketHeader() {
         this.value = -1;
     }
 
@@ -409,13 +411,10 @@ public enum ClientPacketHeader implements IPacketHeader {
         return UNKNOWN;
     }
 
-    // enum range check by ordinal number
     public boolean between(ClientPacketHeader cp_begin, ClientPacketHeader cp_end) {
-        // use enum ordinal number for checking header range.
         if (cp_begin.ordinal() <= ordinal() && ordinal() <= cp_end.ordinal()) {
             return true;
         }
         return false;
     }
-
 }
