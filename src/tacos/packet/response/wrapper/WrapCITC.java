@@ -32,27 +32,6 @@ import tacos.shared.SharedDate;
  */
 public class WrapCITC {
 
-    public static ServerPacket addToCartMessage(boolean fail, boolean remove) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
-
-        if (remove) {
-            if (fail) {
-                sp.Encode1(44);
-                sp.Encode4(-1);
-            } else {
-                sp.Encode1(43);
-            }
-        } else {
-            if (fail) {
-                sp.Encode1(42);
-                sp.Encode4(-1);
-            } else {
-                sp.Encode1(41);
-            }
-        }
-        return sp;
-    }
-
     public static ServerPacket sendMTS(final List<MTSStorage.MTSItemInfo> items, final int tab, final int type, final int page, final int pages) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
@@ -86,15 +65,6 @@ public class WrapCITC {
         return data.getBytes();
     }
 
-    public static ServerPacket getMTSWantedListingOver(final int nx, final int items) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
-
-        sp.Encode1(61);
-        sp.Encode4(nx);
-        sp.Encode4(items);
-        return sp;
-    }
-
     public static ServerPacket getTransferInventory(final List<IItem> items, final boolean changed) {
         final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
@@ -111,15 +81,6 @@ public class WrapCITC {
         }
         sp.Encode4(-47 + i - 1);
         sp.Encode1(changed ? 1 : 0);
-        return sp;
-    }
-
-    public static ServerPacket getMTSConfirmTransfer(final int quantity, final int pos) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
-
-        sp.Encode1(39);
-        sp.Encode4(quantity);
-        sp.Encode4(pos);
         return sp;
     }
 

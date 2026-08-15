@@ -19,6 +19,7 @@
 package tacos.packet.response.builder;
 
 import lombok.Builder;
+import odin.client.inventory.IItem;
 import tacos.packet.ops.OpsITC;
 
 /**
@@ -29,4 +30,5 @@ import tacos.packet.ops.OpsITC;
 public class PB_ITC {
 
     public OpsITC fail_reason;
+    public IItem item;
 }

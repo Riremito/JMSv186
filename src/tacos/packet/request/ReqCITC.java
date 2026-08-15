@@ -28,7 +28,6 @@ import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsITC;
 import static tacos.packet.ops.OpsITC.ITCReq_RegisterSaleEntry;
 import tacos.packet.response.ResCITC;
-import tacos.packet.response.wrapper.WrapCITC;
 import odin.server.MTSCart;
 import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
@@ -194,7 +193,11 @@ public class ReqCITC {
                     chr.addPet(item_.getPet());
                 }
                 cart.removeFromInventory(item);
-                chr.SendPacket(WrapCITC.getMTSConfirmTransfer(item_.getQuantity(), pos));
+
+                PB_ITC pb = PB_ITC.builder()
+                        .item(item_)
+                        .build();
+                chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_MoveITCPurchaseItemLtoS_Done, pb));
                 sendMTSPackets(cart, client, true);
                 return true;
             }
@@ -202,9 +205,9 @@ public class ReqCITC {
                 int unk1 = cp.Decode4();
 
                 if (MTSStorage.getInstance().checkCart(unk1, chr.getId()) && cart.addToCart(unk1)) {
-                    chr.SendPacket(WrapCITC.addToCartMessage(false, false));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_SetZzim_Done));
                 } else {
-                    chr.SendPacket(WrapCITC.addToCartMessage(true, false));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_SetZzim_Failed));
                 }
                 return true;
             }
@@ -213,9 +216,9 @@ public class ReqCITC {
 
                 if (cart.getCart().contains(unk1)) {
                     cart.removeFromCart(unk1);
-                    chr.SendPacket(WrapCITC.addToCartMessage(false, true));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_DeleteZzim_Done));
                 } else {
-                    chr.SendPacket(WrapCITC.addToCartMessage(true, true));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_DeleteZzim_Failed));
                 }
                 return true;
             }
@@ -342,7 +345,7 @@ public class ReqCITC {
 
     public static void MTSUpdate(MTSCart cart, MapleClient client) {
         client.getPlayer().modifyCSPoints(1, MTSStorage.getInstance().getCart(client.getPlayer().getId()).getSetOwedNX(), false);
-        client.SendPacket(WrapCITC.getMTSWantedListingOver(0, 0));
+        client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetNotifyCancelWishResult));
         doMTSPackets(cart, client);
     }
 

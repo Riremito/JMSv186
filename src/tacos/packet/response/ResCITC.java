@@ -51,6 +51,7 @@ public class ResCITC {
         return ITCNormalItemResult(ops, null);
     }
 
+    // CITC::OnNormalItemResult
     public static ServerPacket ITCNormalItemResult(OpsITC ops, PB_ITC pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
@@ -112,6 +113,8 @@ public class ResCITC {
                 break;
             }
             case ITCRes_MoveITCPurchaseItemLtoS_Done: {
+                sp.Encode4(pb.item.getItemId() / 1000000); // nTab
+                sp.Encode4(pb.item.getPosition()); // nPos
                 break;
             }
             case ITCRes_MoveITCPurchaseItemLtoS_Failed: {
@@ -178,6 +181,8 @@ public class ResCITC {
                 break;
             }
             case ITCRes_GetNotifyCancelWishResult: {
+                sp.Encode4(0);
+                sp.Encode4(0);
                 break;
             }
             case ITCRes_GetSuccessBidInfoResult: {
