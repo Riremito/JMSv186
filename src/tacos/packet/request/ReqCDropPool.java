@@ -39,10 +39,11 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 
 /**
  *
@@ -133,9 +134,14 @@ public class ReqCDropPool {
                     int nCardID = drop_item_id;
                     int nCardCount = chr.getMonsterBook().getCardCount(nCardID);
                     chr.SendPacket(ResCWvsContext.MonsterBookSetCard(true, nCardID, nCardCount));
-                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
+
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .player(chr)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
+                    chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), false);
+
                     chr.SendPacket(ResWrapper.showGainCard(nCardID));
-                    chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, chr), false);
                 } else {
                     chr.SendPacket(ResCWvsContext.MonsterBookSetCard(false, 0, 0));
                 }

@@ -33,11 +33,12 @@ import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.provider.IMapleData;
+import tacos.packet.ops.OpsUserEffect;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.WzDataTool;
 
 public class MapleQuestAction {
@@ -101,15 +102,15 @@ public class MapleQuestAction {
         return false;
     }
 
-    public void runStart(MapleCharacter client, Integer extSelection) {
+    public void runStart(MapleCharacter chr, Integer extSelection) {
         MapleQuestStatus status;
         switch (type) {
             case exp:
-                status = client.getQuest(quest);
+                status = chr.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                client.gainExp(WzDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(client.getLevel()), true, true, true);
+                chr.gainExp(WzDataTool.getInt(data, 0) * GameConstants.getExpRate_Quest(chr.getLevel()), true, true, true);
                 break;
             case item:
                 // first check for randomness in item selection
@@ -117,7 +118,7 @@ public class MapleQuestAction {
                 IMapleData prop;
                 for (IMapleData iEntry : data.getChildren()) {
                     prop = iEntry.getChildByPath("prop");
-                    if (prop != null && WzDataTool.getInt(prop) != -1 && canGetItem(iEntry, client)) {
+                    if (prop != null && WzDataTool.getInt(prop) != -1 && canGetItem(iEntry, chr)) {
                         for (int i = 0; i < WzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
                             props.put(props.size(), WzDataTool.getInt(iEntry.getChildByPath("id")));
                         }
@@ -129,7 +130,7 @@ public class MapleQuestAction {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
                 for (IMapleData iEntry : data.getChildren()) {
-                    if (!canGetItem(iEntry, client)) {
+                    if (!canGetItem(iEntry, chr)) {
                         continue;
                     }
                     final int id = WzDataTool.getInt(iEntry.getChildByPath("id"), -1);
@@ -145,42 +146,52 @@ public class MapleQuestAction {
                     final short count = (short) WzDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         try {
-                            MapleInventoryManipulator.removeById(client.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
+                            MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
                         } catch (InventoryException ie) {
                             // it's better to catch this here so we'll atleast try to remove the other items
                             System.err.println("[h4x] Completing a quest without meeting the requirements" + ie);
                         }
-                        client.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
+
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .item_id(id)
+                                .item_quantity(count)
+                                .build();
+                        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
                     } else { // add items
                         final int period = WzDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440; //im guessing.
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
                         if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                             final String msg = "You have attained title <" + name + ">";
-                            client.dropMessage(-1, msg);
-                            client.dropMessage(5, msg);
+                            chr.dropMessage(-1, msg);
+                            chr.dropMessage(5, msg);
                         }
-                        MapleInventoryManipulator.addById(client.getClient(), id, count, "", null, period);
-                        client.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
+                        MapleInventoryManipulator.addById(chr.getClient(), id, count, "", null, period);
+
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .item_id(id)
+                                .item_quantity(count)
+                                .build();
+                        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
                     }
                 }
                 break;
             case nextQuest:
-                status = client.getQuest(quest);
+                status = chr.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                client.getClient().getSession().write(ResCUserLocal.UserQuestResult(quest.getId(), status.getNpc(), WzDataTool.getInt(data)));
+                chr.getClient().getSession().write(ResCUserLocal.UserQuestResult(quest.getId(), status.getNpc(), WzDataTool.getInt(data)));
                 break;
             case money:
-                status = client.getQuest(quest);
+                status = chr.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                client.gainMeso(WzDataTool.getInt(data, 0), true, false, true);
+                chr.gainMeso(WzDataTool.getInt(data, 0), true, false, true);
                 break;
             case quest:
                 for (IMapleData qEntry : data) {
-                    client.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(WzDataTool.getInt(qEntry.getChildByPath("id"))),
+                    chr.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(WzDataTool.getInt(qEntry.getChildByPath("id"))),
                             (byte) WzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
@@ -193,27 +204,27 @@ public class MapleQuestAction {
                     final ISkill skillObject = SkillFactory.getSkill(skillid);
 
                     for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
-                        if (skillObject.isBeginnerSkill() || client.getJob() == WzDataTool.getInt(applicableJob)) {
-                            client.changeSkillLevel(skillObject,
-                                    (byte) Math.max(skillLevel, client.getSkillLevel(skillObject)),
-                                    (byte) Math.max(masterLevel, client.getMasterLevel(skillObject)));
+                        if (skillObject.isBeginnerSkill() || chr.getJob() == WzDataTool.getInt(applicableJob)) {
+                            chr.changeSkillLevel(skillObject,
+                                    (byte) Math.max(skillLevel, chr.getSkillLevel(skillObject)),
+                                    (byte) Math.max(masterLevel, chr.getMasterLevel(skillObject)));
                             break;
                         }
                     }
                 }
                 break;
             case pop:
-                status = client.getQuest(quest);
+                status = chr.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
                 final int fameGain = WzDataTool.getInt(data, 0);
-                client.addFame(fameGain);
-                client.sendStatChanged();
-                client.SendPacket(ResWrapper.getShowFameGain(fameGain));
+                chr.addFame(fameGain);
+                chr.sendStatChanged();
+                chr.SendPacket(ResWrapper.getShowFameGain(fameGain));
                 break;
             case buffItemID:
-                status = client.getQuest(quest);
+                status = chr.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
@@ -221,7 +232,7 @@ public class MapleQuestAction {
                 if (tobuff == -1) {
                     break;
                 }
-                MapleItemInformationProvider.getInstance().getItemEffect(tobuff).applyTo(client);
+                MapleItemInformationProvider.getInstance().getItemEffect(tobuff).applyTo(chr);
                 break;
             case infoNumber: {
 //		System.out.println("quest : "+MapleDataTool.getInt(data, 0)+"");
@@ -229,7 +240,7 @@ public class MapleQuestAction {
                 break;
             }
             case sp: {
-                status = client.getQuest(quest);
+                status = chr.getQuest(quest);
                 if (status.getForfeited() > 0) {
                     break;
                 }
@@ -239,17 +250,17 @@ public class MapleQuestAction {
                         int finalJob = 0;
                         for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
                             final int job_val = WzDataTool.getInt(jEntry, 0);
-                            if (client.getJob() >= job_val && job_val > finalJob) {
+                            if (chr.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;
                             }
                         }
                         if (finalJob == 0) {
-                            client.gainSP(sp_val);
+                            chr.gainSP(sp_val);
                         } else {
-                            client.gainSP(sp_val, GameConstants.getSkillBook(finalJob));
+                            chr.gainSP(sp_val, GameConstants.getSkillBook(finalJob));
                         }
                     } else {
-                        client.gainSP(sp_val);
+                        chr.gainSP(sp_val);
                     }
                 }
                 break;
@@ -397,7 +408,12 @@ public class MapleQuestAction {
                     final short count = (short) WzDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
                         MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
-                        chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
+
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .item_id(id)
+                                .item_quantity(count)
+                                .build();
+                        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
                     } else { // add items
                         final int period = WzDataTool.getInt(iEntry.getChildByPath("period"), 0) / 1440;
                         final String name = MapleItemInformationProvider.getInstance().getName(id);
@@ -407,7 +423,12 @@ public class MapleQuestAction {
                             chr.dropMessage(5, msg);
                         }
                         MapleInventoryManipulator.addById(chr.getClient(), id, count, "", null, period);
-                        chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, count, true));
+
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .item_id(id)
+                                .item_quantity(count)
+                                .build();
+                        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
                     }
                 }
                 break;

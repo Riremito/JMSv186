@@ -35,7 +35,6 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.wrapper.WrapCUserLocal;
 import odin.server.ItemMakerFactory;
 import odin.server.ItemMakerFactory.GemCreateEntry;
 import odin.server.ItemMakerFactory.ItemMakerCreateEntry;
@@ -43,6 +42,8 @@ import odin.server.Randomizer;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleInventoryManipulator;
 import tacos.odin.OdinPair;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.builder.PB_UserEffect;
 
 public class ItemMakerHandler {
 
@@ -158,8 +159,10 @@ public class ItemMakerHandler {
 
                     chr.gainMeso(-gem.getCost(), false);
                     MapleInventoryManipulator.addById(c, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
-
-                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
                     chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
                     return true;
                 }
@@ -194,8 +197,10 @@ public class ItemMakerHandler {
                     } else {
                         MapleInventoryManipulator.addById(c, toCreate, (byte) 1); // Gem is always 1
                     }
-
-                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
                     chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
                     return true;
                 }
@@ -252,7 +257,10 @@ public class ItemMakerHandler {
                     }
 
                     MapleInventoryManipulator.addbyItem(c, toGive);
-                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
                     chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
                 }
                 return true;
@@ -266,8 +274,10 @@ public class ItemMakerHandler {
                 }
                 MapleInventoryManipulator.addById(c, getCreateCrystal(etc), (short) 1);
                 MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, etc, 100, false, false);
-
-                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                PB_UserEffect pb = PB_UserEffect.builder()
+                        .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
+                        .build();
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
                 chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
 
                 return true;
@@ -290,8 +300,10 @@ public class ItemMakerHandler {
                     MapleInventoryManipulator.addById(c, toGive[0], (byte) toGive[1]);
                     MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.EQUIP, (short) slot, (byte) 1, false);
                 }
-
-                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemMaker, ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS));
+                PB_UserEffect pb = PB_UserEffect.builder()
+                        .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
+                        .build();
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
                 chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
                 return true;
             }

@@ -10,11 +10,12 @@ import odin.client.MapleQuestStatus;
 import tacos.config.Region;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.config.Config;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptQuest;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
@@ -230,8 +231,11 @@ public class MapleQuest {
                 a.runEnd(chr, selection);
             }
 
-            chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
-            chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .player(chr)
+                    .build();
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_QuestComplete));
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_QuestComplete, pb), false);
         }
     }
 

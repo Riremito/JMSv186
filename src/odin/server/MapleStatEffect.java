@@ -23,8 +23,6 @@ import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCTownPortalPool;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
@@ -34,6 +32,9 @@ import odin.server.maps.MapleSummon;
 import tacos.odin.OdinPair;
 import odin.provider.IMapleData;
 import tacos.packet.ops.OpsMoveAbility;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.WzDataTool;
 
 public class MapleStatEffect implements Serializable {
@@ -409,7 +410,7 @@ public class MapleStatEffect implements Serializable {
 
         if (expinc != 0) {
             applyto.gainExp(expinc, true, true, false);
-            applyto.getClient().SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+            applyto.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
         } else if (isSpiritClaw()) {
             MapleInventory use = applyto.getInventory(MapleInventoryType.USE);
             IItem item;
@@ -528,8 +529,12 @@ public class MapleStatEffect implements Serializable {
                 }
                 for (MapleCharacter chr : awarded) {
                     applyTo(applyfrom, chr, false, null, newDuration);
-                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, sourceid));
-                    chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, chr, sourceid), false);
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .player(chr)
+                            .skill_id(sourceid)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
+                    chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), false);
                 }
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
@@ -542,8 +547,13 @@ public class MapleStatEffect implements Serializable {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);
-                        affected.getClient().SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, sourceid));
-                        affected.getMap().broadcastMessage(affected, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, affected, sourceid), false);
+
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .player(affected)
+                                .skill_id(sourceid)
+                                .build();
+                        affected.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
+                        affected.getMap().broadcastMessage(affected, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), false);
                     }
                     if (isTimeLeap()) {
                         affected.getCoolTime().timeLeap();

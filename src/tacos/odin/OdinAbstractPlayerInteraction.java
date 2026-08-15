@@ -57,8 +57,8 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosChannel;
@@ -452,7 +452,12 @@ public abstract class OdinAbstractPlayerInteraction {
         } else {
             MapleInventoryManipulator.removeById(cg, GameConstants.getInventoryType(id), id, -quantity, true, false);
         }
-        cg.getSession().write(WrapCUserLocal.getShowItemGain(id, quantity, true));
+
+        PB_UserEffect pb = PB_UserEffect.builder()
+                .item_id(id)
+                .item_quantity(quantity)
+                .build();
+        cg.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         return item_info;
     }
 
@@ -611,7 +616,12 @@ public abstract class OdinAbstractPlayerInteraction {
             } else {
                 MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, -quantity, true, false);
             }
-            chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, quantity, true));
+
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .item_id(id)
+                    .item_quantity(quantity)
+                    .build();
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         }
     }
 
@@ -695,7 +705,12 @@ public abstract class OdinAbstractPlayerInteraction {
             final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
                 MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(id), id, possesed, true, false);
-                chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, (short) -possesed, true));
+
+                PB_UserEffect pb = PB_UserEffect.builder()
+                        .item_id(id)
+                        .item_quantity(-possesed)
+                        .build();
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
             }
         }
     }
@@ -792,7 +807,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void dojo_getUp() {
         client.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
-        client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
         client.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
     }
 

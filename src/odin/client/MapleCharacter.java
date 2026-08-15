@@ -80,8 +80,6 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
@@ -120,6 +118,7 @@ import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_SkillPet;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
@@ -1336,7 +1335,11 @@ public class MapleCharacter extends TacosCharacter {
             stats.setMp((short) maxmp);
             stats.recalcLocalStats();
             sendStatChanged();
-            map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_JobChanged, this), false);
+
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .player(this)
+                    .build();
+            map.broadcastMessage(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_JobChanged, pb), false);
             silentPartyUpdate();
             guildUpdate();
             familyUpdate();
@@ -2063,7 +2066,11 @@ public class MapleCharacter extends TacosCharacter {
         stats.setHp((short) maxhp);
         stats.setMp((short) maxmp);
         sendStatChanged();
-        map.broadcastMessage(this, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_LevelUp, this), false);
+
+        PB_UserEffect pb = PB_UserEffect.builder()
+                .player(this)
+                .build();
+        map.broadcastMessage(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_LevelUp, pb), false);
         stats.recalcLocalStats();
         silentPartyUpdate();
         guildUpdate();
@@ -3002,7 +3009,12 @@ public class MapleCharacter extends TacosCharacter {
 
         if (possessed > 0) {
             MapleInventoryManipulator.removeById(getClient(), type, id, possessed, true, false);
-            getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, (short) -possessed, true));
+
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .item_id(id)
+                    .item_quantity(-possessed)
+                    .build();
+            SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         }
         /*if (type == MapleInventoryType.EQUIP) { //check equipped
         type = MapleInventoryType.EQUIPPED;

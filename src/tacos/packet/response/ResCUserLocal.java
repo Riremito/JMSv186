@@ -24,11 +24,11 @@ import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.packet.response.data.RD_CUser;
 
 /**
@@ -45,6 +45,7 @@ public class ResCUserLocal {
         if (!is_cancel) {
             sp.Encode2(id); // sit
         }
+
         return sp;
     }
 
@@ -55,27 +56,32 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserEffectLocal(ArgUserEffect arg) {
+    public static ServerPacket UserEffectLocal(OpsUserEffect ops) {
+        return UserEffectLocal(ops, null);
+    }
+
+    public static ServerPacket UserEffectLocal(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.EncodeBuffer(EffectData(arg));
+        sp.EncodeBuffer(EffectData(ops, pb));
         return sp;
     }
 
-    public static byte[] EffectData(ArgUserEffect arg) {
+    // CUser::OnEffect
+    public static byte[] EffectData(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode1(arg.ops.get());
+        data.Encode1(ops.get());
 
-        switch (arg.ops) {
+        switch (ops) {
             case UserEffect_SkillUse: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 data.Encode1(1);
-                data.Encode1(arg.skill_on ? 0 : 1);
+                data.Encode1(pb.skill_on ? 0 : 1);
                 break;
             }
             case UserEffect_SkillAffected: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 data.Encode1(1);
                 break;
             }
@@ -83,8 +89,8 @@ public class ResCUserLocal {
                 int count = 1;
                 data.Encode1(count); // loop count
                 if (0 < count) {
-                    data.Encode4(arg.item_id);
-                    data.Encode4(arg.item_quantity);
+                    data.Encode4(pb.item_id);
+                    data.Encode4(pb.item_quantity);
                 } else {
                     // this part has never used, wz data does not exist.
                     data.EncodeStr(""); // unk
@@ -93,21 +99,21 @@ public class ResCUserLocal {
                 break;
             }
             case UserEffect_SkillSpecial: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 break;
             }
             case UserEffect_BuffItemEffect: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 break;
             }
             case UserEffect_ItemMaker: {
-                data.Encode4(arg.imr.get());
+                data.Encode4(pb.maker.get());
             }
             default: {
                 break;
             }
         }
-        // todo
+
         return data.getBytes();
     }
 

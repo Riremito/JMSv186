@@ -31,52 +31,52 @@ import tacos.packet.response.data.RD_AvatarLook;
 public class ResCUIMessenger {
 
     // CUIMessenger::OnPacket
-    public static ServerPacket Messenger(OpsMessenger ops, PB_Messenger pd) {
+    public static ServerPacket Messenger(OpsMessenger ops, PB_Messenger pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Messenger);
 
         sp.Encode1(ops.get());
 
         switch (ops) {
             case MSMP_Enter: {
-                sp.Encode1(pd.player_index); // nIdx
-                sp.EncodeBuffer(RD_AvatarLook.Encode(pd.player));
-                sp.EncodeStr(pd.player.getName()); //sID
-                sp.Encode1(pd.player.getChannelId() - 1); // nChannelID
-                sp.Encode1(pd.is_new ? 1 : 0); // bNew
+                sp.Encode1(pb.player_index); // nIdx
+                sp.EncodeBuffer(RD_AvatarLook.Encode(pb.player));
+                sp.EncodeStr(pb.player.getName()); //sID
+                sp.Encode1(pb.player.getChannelId() - 1); // nChannelID
+                sp.Encode1(pb.is_new ? 1 : 0); // bNew
                 break;
             }
             case MSMP_SelfEnterResult: {
-                sp.Encode1(pd.player_index); // nIdx
+                sp.Encode1(pb.player_index); // nIdx
                 break;
             }
             case MSMP_Leave: {
-                sp.Encode1(pd.player_index); // nIdx
+                sp.Encode1(pb.player_index); // nIdx
                 break;
             }
             case MSMP_Invite: {
-                sp.EncodeStr(pd.inviter_name); // sCharacterName
-                sp.Encode1(pd.inviter_channel_id); // m_nChannelID
-                sp.Encode4(pd.messenger_id); // m_dwSN
+                sp.EncodeStr(pb.inviter_name); // sCharacterName
+                sp.Encode1(pb.inviter_channel_id); // m_nChannelID
+                sp.Encode4(pb.messenger_id); // m_dwSN
                 sp.Encode1(0);
                 break;
             }
             case MSMP_InviteResult: {
-                sp.EncodeStr(pd.invitee_name); // text
-                sp.Encode1(pd.is_found ? 1 : 0); // found or not.
+                sp.EncodeStr(pb.invitee_name); // text
+                sp.Encode1(pb.is_found ? 1 : 0); // found or not.
                 break;
             }
             case MSMP_Blocked: {
-                sp.EncodeStr(pd.invitee_name); // text
-                sp.Encode1(pd.is_auto_blocked ? 1 : 0); // auto block or manual block.
+                sp.EncodeStr(pb.invitee_name); // text
+                sp.Encode1(pb.is_auto_blocked ? 1 : 0); // auto block or manual block.
                 break;
             }
             case MSMP_Chat: {
-                sp.EncodeStr(pd.message); // text
+                sp.EncodeStr(pb.message); // text
                 break;
             }
             case MSMP_Avatar: {
-                sp.Encode1(pd.player_index); // nIdx
-                sp.EncodeBuffer(RD_AvatarLook.Encode(pd.player));
+                sp.Encode1(pb.player_index); // nIdx
+                sp.EncodeBuffer(RD_AvatarLook.Encode(pb.player));
                 break;
             }
             case MSMP_Migrated: {

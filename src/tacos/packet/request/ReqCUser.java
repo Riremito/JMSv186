@@ -103,13 +103,11 @@ import tacos.packet.request.sub.ReqSub_Admin;
 import tacos.packet.request.sub.ReqSub_FriendRequest;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
-import tacos.task.TacosTask;
 import tacos.shared.TacosShared;
 import tacos.task.CharacterTask;
 import tacos.wz.WzXML;
@@ -440,7 +438,7 @@ public class ReqCUser {
             }
             case CP_UserPortalScriptRequest: {
                 // play portal SE before character tries entering portal.
-                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
                 if (!OnUserPortalScriptRequest(chr, cp)) {
                     chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
                 }
@@ -477,7 +475,12 @@ public class ReqCUser {
                 int reward = InventoryHandler.UseTreasureChest(chr, slot, item_id);
                 if (reward != 0) {
                     chr.SendPacket(ResCWvsContext.SuccessInUseGachaponBox(item_id));
-                    chr.SendPacket(WrapCUserLocal.getShowItemGain(reward, (short) 1, true));
+
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .item_id(reward)
+                            .item_quantity(1)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
                 } else {
                     chr.sendStatChanged(true);
                 }
@@ -2336,8 +2339,12 @@ public class ReqCUser {
                 int m_dwNpcTemplateID = cp.Decode4();
 
                 TacosScriptQuest.getInstance().endQuest(client, m_dwNpcTemplateID, uQuestID, false);
-                chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_QuestComplete));
-                map.broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_QuestComplete, chr), false);
+
+                PB_UserEffect pb = PB_UserEffect.builder()
+                        .player(chr)
+                        .build();
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_QuestComplete));
+                map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_QuestComplete, pb), false);
                 return true;
             }
             default: {

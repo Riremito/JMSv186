@@ -34,10 +34,11 @@ import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.builder.PB_UserEffect;
 
 public class PlayerStats {
 
@@ -592,8 +593,12 @@ public class PlayerStats {
         }
         if (changed) {
             chr.equipChanged();
-            chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
-            chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, chr), false);
+
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .player(chr)
+                    .build();
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), false);
         }
         return changed;
     }

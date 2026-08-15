@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,23 +16,23 @@
  *
  *
  */
-package tacos.packet.ops.arg;
+package tacos.packet.response.builder;
 
+import lombok.Builder;
 import odin.handling.channel.handler.ItemMakerHandler;
 import tacos.client.TacosCharacter;
-import tacos.packet.ops.OpsUserEffect;
 
 /**
  *
  * @author Riremito
  */
-public class ArgUserEffect {
+@Builder
+public class PB_UserEffect {
 
-    public OpsUserEffect ops = OpsUserEffect.UNKNOWN;
-    public TacosCharacter chr = null;
-    public int item_id = 0;
-    public int item_quantity = 0;
-    public int skill_id = 0;
-    public boolean skill_on = true;
-    public ItemMakerHandler.ItemMakerResult imr;
+    public TacosCharacter player;
+    public int item_id;
+    public int item_quantity;
+    public int skill_id;
+    public boolean skill_on;
+    public ItemMakerHandler.ItemMakerResult maker;
 }

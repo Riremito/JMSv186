@@ -27,8 +27,10 @@ import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsRPS;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCRPSGameDlg;
-import tacos.packet.response.wrapper.WrapCUserLocal;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.builder.PB_UserEffect;
 
 /**
  *
@@ -113,7 +115,12 @@ public class ReqCRPSGameDlg {
                 if (10 <= chr.getCntStraightVictories()) {
                     int item_id = 4031341;
                     MapleInventoryManipulator.addById(client, item_id, (short) 1, "", null, 0);
-                    chr.SendPacket(WrapCUserLocal.getShowItemGain(item_id, (short) 1, true));
+
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .item_id(item_id)
+                            .item_quantity(1)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
                 }
                 // reward 4031332
                 return true;
@@ -132,7 +139,12 @@ public class ReqCRPSGameDlg {
                 if (1 <= chr.getCntStraightVictories()) {
                     int item_id = 4031332 + (chr.getCntStraightVictories() - 1);
                     MapleInventoryManipulator.addById(client, item_id, (short) 1, "", null, 0);
-                    chr.SendPacket(WrapCUserLocal.getShowItemGain(item_id, (short) 1, true));
+
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .item_id(item_id)
+                            .item_quantity(1)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
                     chr.setCntStraightVictories(0);
                 }
                 return true;

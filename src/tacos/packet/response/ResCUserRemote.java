@@ -25,7 +25,6 @@ import tacos.config.Region;
 import java.util.List;
 import java.util.Map;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_CUser;
@@ -35,7 +34,9 @@ import tacos.config.ContentCustom;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
+import tacos.packet.response.builder.PB_UserEffect;
 
 /**
  *
@@ -268,12 +269,11 @@ public class ResCUserRemote {
         return sp;
     }
 
-    // CUser::OnEffect
-    public static ServerPacket UserEffectRemote(ArgUserEffect arg) {
+    public static ServerPacket UserEffectRemote(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
-        sp.Encode4(arg.chr.getId());
-        sp.EncodeBuffer(ResCUserLocal.EffectData(arg));
+        sp.Encode4(pb.player.getId());
+        sp.EncodeBuffer(ResCUserLocal.EffectData(ops, pb));
         return sp;
     }
 

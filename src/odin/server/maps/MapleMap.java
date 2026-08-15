@@ -38,8 +38,6 @@ import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
@@ -54,6 +52,9 @@ import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
@@ -139,10 +140,18 @@ public final class MapleMap extends TacosMap {
                         switch (monster.getId()) {
                             case 8810018:
                             case 8810122:
-                            case 8820001:
-                                mc.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_BuffItemEffect, buffid)); // HT nine spirit
-                                broadcastMessage(mc, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, mc, buffid), false); // HT nine spirit
+                            case 8820001: {
+                                PB_UserEffect pb = PB_UserEffect.builder()
+                                        .player(mc)
+                                        .skill_id(buffid)
+                                        .build();
+                                mc.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_BuffItemEffect, pb));
+                                broadcastMessage(mc, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, pb), false);
                                 break;
+                            }
+                            default: {
+                                break;
+                            }
                         }
                     }
                 }
