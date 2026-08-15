@@ -18,6 +18,8 @@
  */
 package tacos.packet.request;
 
+import java.util.ArrayList;
+import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.MapleClient;
 import odin.client.inventory.IItem;
@@ -33,6 +35,7 @@ import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.response.builder.PB_ITC;
+import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.TacosITC;
 
 /**
@@ -165,7 +168,7 @@ public class ReqCITC {
             case ITCReq_MoveITCPurchaseItemLtoS: {
                 // 8
                 int unk1 = cp.Decode4();
-                int id = Integer.MAX_VALUE - unk1; // fake id
+                int id = unk1; // fake id
                 if (id >= cart.getInventory().size()) {
                     sendMTSPackets(cart, client, true);
                     return true;
@@ -193,6 +196,7 @@ public class ReqCITC {
                     chr.addPet(item_.getPet());
                 }
                 cart.removeFromInventory(item);
+                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.getByType(item_.getType()), item_));
 
                 PB_ITC pb = PB_ITC.builder()
                         .item(item_)
@@ -350,9 +354,25 @@ public class ReqCITC {
     }
 
     private static void sendMTSPackets(MTSCart cart, MapleClient client, boolean changed) {
-        client.SendPacket(MTSStorage.getInstance().getCurrentMTS(cart));
-        client.SendPacket(MTSStorage.getInstance().getCurrentNotYetSold(cart));
-        client.SendPacket(MTSStorage.getInstance().getCurrentTransfer(cart, changed));
+        List<MTSStorage.MTSItemInfo> mts_items;
+        switch (cart.getTab()) {
+            case 1: {
+                mts_items = MTSStorage.getInstance().getBuyNow(cart.getType(), cart.getPage());
+                break;
+            }
+            case 4: {
+                mts_items = MTSStorage.getInstance().getCartItems(cart);
+                break;
+            }
+            default: {
+                mts_items = new ArrayList<>();
+                break;
+            }
+        }
+
+        client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetITCList_Done, PB_ITC.builder().mts_cart(cart).mts_items(mts_items).unlock(changed).build()));
+        client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetUserPurchaseItem_Done, PB_ITC.builder().items(cart.getInventory()).unlock(changed).build()));
+        client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetUserSaleItem_Done, PB_ITC.builder().mts_items(MTSStorage.getInstance().getCurrentNotYetSold(cart)).build()));
         client.SendPacket(ResCITC.ITCQueryCashResult(client.getPlayer()));
         MTSStorage.getInstance().checkExpirations();
     }

@@ -18,8 +18,11 @@
  */
 package tacos.packet.response.builder;
 
+import java.util.List;
 import lombok.Builder;
 import odin.client.inventory.IItem;
+import odin.server.MTSCart;
+import odin.server.MTSStorage;
 import tacos.packet.ops.OpsITC;
 
 /**
@@ -31,4 +34,8 @@ public class PB_ITC {
 
     public OpsITC fail_reason;
     public IItem item;
+    public List<IItem> items;
+    public boolean unlock;
+    public List<MTSStorage.MTSItemInfo> mts_items;
+    public MTSCart mts_cart;
 }

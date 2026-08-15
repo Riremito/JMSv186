@@ -27,7 +27,6 @@ import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
 import java.sql.Connection;
 import tacos.database.DatabaseConnection;
-import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,16 +34,15 @@ import java.util.ArrayList;
 import java.util.List;
 import tacos.odin.OdinPair;
 
-public class MTSCart implements Serializable {
+public class MTSCart {
 
-    private static final long serialVersionUID = 231541893513373578L;
     private int characterId, tab = 1, type = 0, page = 0;
     //tab; 1 = buy now, 2 = wanted, 3 = auction, 4 = cart
     //type = inventorytype; 0 = anything
     //page = whatever
-    private List<IItem> transfer = new ArrayList<IItem>();
-    private List<Integer> cart = new ArrayList<Integer>();
-    private List<Integer> notYetSold = new ArrayList<Integer>(10);
+    private List<IItem> transfer = new ArrayList<>();
+    private List<Integer> cart = new ArrayList<>();
+    private List<Integer> notYetSold = new ArrayList<>(10);
     private int owedNX = 0;
 
     public MTSCart(int characterId) throws SQLException {
@@ -115,10 +113,10 @@ public class MTSCart implements Serializable {
     }
 
     public void save() throws SQLException {
-        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
+        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (IItem item : getInventory()) {
-            itemsWithType.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+            itemsWithType.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
         ItemLoader.MTS_TRANSFER.saveItems(itemsWithType, characterId);
