@@ -171,7 +171,7 @@ public class ResCWvsContext {
                     sp.Encode1(v5);
                 }
             }
-            if (Config.GreaterOrEqual(Region.GMS, 91)) {
+            if (Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.EMS, 70)) {
                 sp.Encode1(0); // not 0 -> Encode1
             }
         } else {

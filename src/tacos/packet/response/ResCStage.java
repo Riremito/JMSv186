@@ -19,14 +19,12 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.data.RD_CharacterData;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.RD_CS_COMMODITY;
 import tacos.packet.response.data.RD_CStage;
 import tacos.server.TacosITC;
 import tacos.shared.SharedDate;
@@ -218,50 +216,11 @@ public class ResCStage {
     }
 
     // CStage::OnSetCashShop
-    public static ServerPacket SetCashShop(MapleClient c) {
+    public static ServerPacket SetCashShop(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetCashShop);
-        sp.EncodeBuffer(RD_CharacterData.Encode(c.getPlayer()));
-        // CCashShop::LoadData
-        {
-            if (Region.GMS.check() || Region.EMS.check() || Region.BMS.check()) {
-                sp.Encode1(1); // EMS55
-            }
-            // not asia soft.
-            if (!(Region.MSEA.check() || Region.THMS.check() || Region.VMS.check())) {
-                sp.EncodeStr(c.getMapleId());
-            }
-            if (Region.EMS.check()) {
-                sp.Encode1(0); // EMS55
-            }
-            // CWvsContext::SetSaleInfo
-            {
-                if (Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.EMS, 73)
-                        || Region.GMS.check() || Region.BMS.check()) {
-                    sp.Encode4(0); // NotSaleCount
-                }
-                sp.EncodeBuffer(RD_CS_COMMODITY.CWvsContext_SetSaleInfo());
-                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) && !Region.EMS.check() && !Region.GMS.check()) { // X EMS v55
-                    sp.Encode2(0); // non 0, Decode4, DecodeStr
-                }
-                sp.EncodeBuffer(ResCCashShop.getDiscountRates());
-            }
-            sp.EncodeBuffer(ResCCashShop.getBestItems(), 1080);
-            sp.Encode2(0); // CCashShop::DecodeStock
-            sp.Encode2(0); // CCashShop::DecodeLimitGoods
-            if (Config.GreaterOrEqual(Region.GMS, 83)) {
-                sp.Encode2(0);
-            }
-        }
-        sp.Encode1(0); // m_bEventOn
 
-        if (Region.IMS.check()) {
-            sp.Encode1(0);
-        }
-        // m_nHighestCharacterLevelInThisAccount
-        if (Region.GMS.check()) {
-            sp.Encode4(0);
-        }
-
+        sp.EncodeBuffer(RD_CharacterData.Encode(chr));
+        sp.EncodeBuffer(RD_CStage.CCashShop_CCashShop(chr));
         return sp;
     }
 }

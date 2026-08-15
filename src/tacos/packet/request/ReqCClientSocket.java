@@ -374,7 +374,7 @@ public class ReqCClientSocket {
                 // enter cs.
                 world.getCashShop().getOnlinePlayers().add(transfer);
                 transfer.notityOnlineToFriends(true);
-                transfer.SendPacket(ResCStage.SetCashShop(client));
+                transfer.SendPacket(ResCStage.SetCashShop(transfer));
                 transfer.SendPacket(ResCCashShop.CashShopQueryCashResult(transfer));
                 transfer.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, client));
                 ReqCCashShop.updateFreeCouponDate(transfer);

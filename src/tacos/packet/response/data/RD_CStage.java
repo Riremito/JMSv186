@@ -19,10 +19,12 @@
 package tacos.packet.response.data;
 
 import java.util.Map;
+import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
+import tacos.packet.response.ResCCashShop;
 
 /**
  *
@@ -112,6 +114,66 @@ public class RD_CStage {
         data.EncodeBuffer(new byte[]{1 | 2 | 4 | 8 | 16}); // buffer, card id mask, some card can be put in 1 byte.
         data.Encode1(buffer_size_2); // buffer size 2
         data.EncodeBuffer(new byte[]{4, 3, 2, 1, 5}); // buffer, nCardCount?
+        return data.getBytes();
+    }
+
+    // CCashShop::CCashShop
+    public static byte[] CCashShop_CCashShop(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(RD_CStage.CCashShop_LoadData(chr));
+        data.Encode1(0); // m_bEventOn
+        if (Config.GreaterOrEqual(Region.GMS, 62)) {
+            data.Encode4(0); // m_nHighestCharacterLevelInThisAccount
+        }
+        if (Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.IMS, 1)) {
+            data.Encode1(0);
+        }
+
+        return data.getBytes();
+    }
+
+    // CCashShop::LoadData
+    public static byte[] CCashShop_LoadData(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        if (Region.GMS.check() || Region.EMS.check() || Region.BMS.check()) {
+            data.Encode1(1); // m_bCashShopAuthorized
+        }
+        // not asia soft.
+        if (!(Region.MSEA.check() || Region.THMS.check() || Region.VMS.check())) {
+            data.EncodeStr(chr.getClient().getMapleId());
+        }
+        if (Config.GreaterOrEqual(Region.EMS, 55)) {
+            data.Encode1(0);
+        }
+        data.EncodeBuffer(CWvsContext_SetSaleInfo());
+        data.EncodeBuffer(ResCCashShop.getBestItems(), 1080);
+        data.Encode2(0); // CCashShop::DecodeStock
+        data.Encode2(0); // CCashShop::DecodeLimitGoods
+        if (Config.GreaterOrEqual(Region.GMS, 72)) {
+            data.Encode2(0); // CCashShop::DecodeZeroGoods
+        }
+
+        return data.getBytes();
+    }
+
+    // CWvsContext::SetSaleInfo
+    public static byte[] CWvsContext_SetSaleInfo() {
+        ServerPacket data = new ServerPacket();
+
+        if (Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 70, 76) || Config.GreaterOrEqual(Region.BMS, 24)) {
+            data.Encode4(0); // NotSaleCount
+        }
+        data.EncodeBuffer(RD_CS_COMMODITY.CWvsContext_SetSaleInfo()); // 2 bytes.
+        if (Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)) {
+            data.Encode2(0); // non 0, Decode4, DecodeStr
+        }
+        data.EncodeBuffer(ResCCashShop.getDiscountRates()); // 1 byte.
+        if (Config.GreaterOrEqual(Region.EMS, 89)) {
+            data.Encode4(0);
+        }
+
         return data.getBytes();
     }
 }

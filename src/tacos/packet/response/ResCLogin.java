@@ -251,7 +251,7 @@ public class ResCLogin {
                             sp.Encode1(client.isGameMaster() ? 4 : 0); // m_nGradeCode
                             if (Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.GMST, 2)) {
                                 sp.Encode2(client.isGameMaster() ? 1 : 0); // Admin F1
-                            } else {
+                            } else if (Config.GreaterOrEqual(Region.GMS, 72)) {
                                 sp.Encode1(client.isGameMaster() ? 0x80 : 0); // Admin F1
                             }
                             if (Config.GreaterOrEqual(Region.GMS, 126)) {
@@ -656,14 +656,14 @@ public class ResCLogin {
         if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(1); // m_bLoginOpt
             sp.Encode1(0);
-        } else if (Config.GreaterOrEqual(Region.JMS, 302)) {
+        } else if (Config.GreaterOrEqual(Region.JMS, 302) || Config.Between(Region.GMS, 83, 95)) {
             sp.Encode1(2); // m_bLoginOpt
         } else if (Config.Between(Region.JMS, 188, 194) || Config.GreaterOrEqual(Region.JMST, 110)) {
             sp.Encode1(0);
         } else if (Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74)) {
             sp.Encode1(3); // m_bLoginOpt
             sp.Encode1(0);
-        } else if (Config.Between(Region.EMS, 55, 70)) {
+        } else if (Config.Between(Region.GMS, 61, 73) || Config.Between(Region.EMS, 55, 70)) {
             // none.
         } else {
             sp.Encode1(2);
@@ -674,7 +674,7 @@ public class ResCLogin {
             return sp;
         }
         sp.Encode4(charslots); // m_nSlotCount
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); // m_nBuyCharCount
         }
         if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116) || Config.GreaterOrEqual(Region.EMS, 89)) {
