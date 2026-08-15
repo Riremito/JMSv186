@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.packet.builder;
+package tacos.packet.response.builder;
 
 import lombok.Builder;
 import tacos.client.TacosCharacter;
@@ -26,7 +26,7 @@ import tacos.client.TacosCharacter;
  * @author Riremito
  */
 @Builder
-public class MessengerData {
+public class PB_Messenger {
 
     public int player_index;
     public TacosCharacter player;

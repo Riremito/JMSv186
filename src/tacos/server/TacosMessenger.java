@@ -21,7 +21,7 @@ package tacos.server;
 import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
-import tacos.packet.builder.MessengerData;
+import tacos.packet.response.builder.PB_Messenger;
 import tacos.packet.ops.OpsMessenger;
 import tacos.packet.response.ResCUIMessenger;
 
@@ -111,7 +111,7 @@ public class TacosMessenger {
             return false;
         }
 
-        MessengerData pd_self = MessengerData.builder()
+        PB_Messenger pd_self = PB_Messenger.builder()
                 .player_index(this.getIndex(player))
                 .build();
 
@@ -121,7 +121,7 @@ public class TacosMessenger {
                 continue;
             }
 
-            MessengerData pd_enter = MessengerData.builder()
+            PB_Messenger pd_enter = PB_Messenger.builder()
                     .player_index(this.getIndex(player_in))
                     .player(player_in)
                     .is_new(false)
@@ -130,7 +130,7 @@ public class TacosMessenger {
             player.SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Enter, pd_enter));
         }
 
-        MessengerData pd_enter = MessengerData.builder()
+        PB_Messenger pd_enter = PB_Messenger.builder()
                 .player_index(this.getIndex(player))
                 .player(player)
                 .is_new(true)
@@ -140,7 +140,7 @@ public class TacosMessenger {
     }
 
     public boolean leave(TacosCharacter player) {
-        MessengerData pd = MessengerData.builder()
+        PB_Messenger pd = PB_Messenger.builder()
                 .player_index(this.getIndex(player))
                 .build();
         SendPacket(ResCUIMessenger.Messenger(OpsMessenger.MSMP_Leave, pd), null);
@@ -162,7 +162,7 @@ public class TacosMessenger {
             }
         }
 
-        MessengerData pd_result = MessengerData.builder()
+        PB_Messenger pd_result = PB_Messenger.builder()
                 .invitee_name(invitee_name)
                 .is_found((invitee != null))
                 .build();
@@ -172,7 +172,7 @@ public class TacosMessenger {
             return false;
         }
 
-        MessengerData pd_invite = MessengerData.builder()
+        PB_Messenger pd_invite = PB_Messenger.builder()
                 .inviter_name(player.getName())
                 .inviter_channel_id(player.getChannelId() - 1)
                 .messenger_id(this.id)
@@ -183,7 +183,7 @@ public class TacosMessenger {
     }
 
     public boolean blocked(String name, boolean blocked) {
-        MessengerData pd = MessengerData.builder()
+        PB_Messenger pd = PB_Messenger.builder()
                 .invitee_name(name)
                 .is_auto_blocked(blocked)
                 .build();
@@ -193,7 +193,7 @@ public class TacosMessenger {
     }
 
     public boolean chat(TacosCharacter player, String message) {
-        MessengerData pd = MessengerData.builder()
+        PB_Messenger pd = PB_Messenger.builder()
                 .message(message)
                 .build();
 
@@ -202,7 +202,7 @@ public class TacosMessenger {
     }
 
     public boolean avatar(TacosCharacter player) {
-        MessengerData pd = MessengerData.builder()
+        PB_Messenger pd = PB_Messenger.builder()
                 .player_index(this.getIndex(player))
                 .player(player)
                 .build();
