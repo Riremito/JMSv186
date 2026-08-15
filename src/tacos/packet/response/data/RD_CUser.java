@@ -21,24 +21,52 @@ package tacos.packet.response.data;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.config.Region;
 import odin.constants.GameConstants;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
-import tacos.packet.ServerPacket;
-import tacos.packet.response.struct.Structure;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
 import tacos.config.Config;
+import tacos.config.Region;
+import tacos.packet.ServerPacket;
+import tacos.packet.response.struct.Structure;
 
 /**
  *
  * @author Riremito
  */
-public class DataCUserRemote {
+public class RD_CUser {
+
+    // CUser::OnEmotion
+    public static byte[] Emotion(int expression) {
+        ServerPacket data = new ServerPacket();
+        data.Encode4(expression);
+        data.Encode4(-1);
+        data.Encode1(0);
+        return data.getBytes();
+    }
+
+    // CPet::Init
+    public static byte[] CPet_Init(MaplePet pet) {
+        ServerPacket data = new ServerPacket();
+        data.Encode4(pet.getPetItemId());
+        data.EncodeStr(pet.getName());
+        data.Encode8(pet.getUniqueId());
+        data.Encode2(pet.getPosition().x);
+        data.Encode2(pet.getPosition().y);
+        data.Encode1(pet.getStance());
+        data.Encode2(pet.getFh());
+
+        if (Config.GreaterOrEqual(Region.THMS, 96)) {
+            data.Encode1(0);
+            data.Encode1(0);
+        }
+
+        return data.getBytes();
+    }
 
     // CUserRemote::Init
-    public static byte[] Init(MapleCharacter chr) {
+    public static byte[] CUserRemote_Init(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
@@ -80,7 +108,7 @@ public class DataCUserRemote {
             data.Encode1(0);
             data.Encode2(chr.getJob());
         }
-        data.EncodeBuffer(DataAvatarLook.Encode(chr));
+        data.EncodeBuffer(RD_AvatarLook.Encode(chr));
         data.Encode4(0); //this is CHARID to follow
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             data.Encode4(0); //probably charid following
@@ -137,23 +165,23 @@ public class DataCUserRemote {
         return data.getBytes();
     }
 
-    public static byte[] Init_JMS147(MapleCharacter chr) {
+    public static byte[] CUserRemote_Init_JMS147(MapleCharacter chr) {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
             guild = OdinWorld.Guild.getGuild(chr.getGuildId());
         }
         ServerPacket data = new ServerPacket();
-        // CUserRemote::Init
+
         data.EncodeStr(chr.getName());
         data.EncodeStr((guild != null) ? guild.getName() : "");
         data.Encode2((guild != null) ? guild.getLogoBG() : 0);
         data.Encode1((guild != null) ? guild.getLogoBGColor() : 0);
         data.Encode2((guild != null) ? guild.getLogo() : 0);
         data.Encode1((guild != null) ? guild.getLogoColor() : 0);
-        data.EncodeBuffer(DataSecondaryStat.EncodeForRemote_JMS147(chr));
+        data.EncodeBuffer(RD_CUser.SecondaryStat_EncodeForRemote_JMS147(chr));
         data.Encode2(0);
-        data.EncodeBuffer(DataAvatarLook.Encode(chr));
+        data.EncodeBuffer(RD_AvatarLook.Encode(chr));
         data.Encode4(0); // m_dwDriverID
         data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
@@ -167,7 +195,7 @@ public class DataCUserRemote {
             if (pet == null) {
                 break;
             }
-            data.EncodeBuffer(DataCPet.Init(pet));
+            data.EncodeBuffer(RD_CUser.CPet_Init(pet));
         }
         data.Encode4(chr.getMount().getLevel()); // m_nTamingMobLevel
         data.Encode4(chr.getMount().getExp()); // m_nTamingMobExp
@@ -210,17 +238,19 @@ public class DataCUserRemote {
             data.Encode4(chr.getMarriageItemId()); // m_nWeddingRingID
         }
         data.Encode1(chr.getEffectMask()); // m_nDelayedEffectFlag
+
         return data.getBytes();
     }
 
-    public static byte[] Init_JMS302(MapleCharacter chr) {
+    public static byte[] CUserRemote_Init_JMS302(MapleCharacter chr) {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
             guild = OdinWorld.Guild.getGuild(chr.getGuildId());
         }
+
         ServerPacket data = new ServerPacket();
-        // CUserRemote::Init
+
         data.Encode1(chr.getLevel());
         data.EncodeStr(chr.getName());
         data.EncodeStr("");
@@ -233,10 +263,10 @@ public class DataCUserRemote {
         data.Encode4(0);
         data.Encode1(0);
         data.Encode1(0);
-        data.EncodeBuffer(DataSecondaryStat.EncodeForRemote_JMS302(chr));
+        data.EncodeBuffer(RD_CUser.SecondaryStat_EncodeForRemote_JMS302(chr));
         data.Encode2(0);
         data.Encode2(0);
-        data.EncodeBuffer(DataAvatarLook.Encode(chr));
+        data.EncodeBuffer(RD_AvatarLook.Encode(chr));
         data.Encode4(0); // m_dwDriverID
         data.Encode4(0); // m_dwPassenserID
         // sub_D0E280
@@ -271,7 +301,7 @@ public class DataCUserRemote {
                 break;
             }
             data.Encode4(0);
-            data.EncodeBuffer(DataCPet.Init(pet));
+            data.EncodeBuffer(RD_CUser.CPet_Init(pet));
         }
 
         int unk_count = 0;
@@ -329,8 +359,29 @@ public class DataCUserRemote {
                 data.Encode4(0); // delay
             }
         }
+
         data.Encode4(0);
         data.Encode4(0);
+        return data.getBytes();
+    }
+
+    // SecondaryStat::DecodeForRemote
+    public static byte[] SecondaryStat_EncodeForRemote_JMS147(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeZeroBytes(16);
+        data.Encode1(0);
+        data.Encode1(0);
+        return data.getBytes();
+    }
+
+    public static byte[] SecondaryStat_EncodeForRemote_JMS302(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeZeroBytes(32);
+        data.Encode1(0);
+        data.Encode1(0);
+        data.Encode1(0);
         return data.getBytes();
     }
 }

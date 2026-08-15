@@ -26,7 +26,7 @@ import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleSummon;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.DataCSummoned;
+import tacos.packet.response.data.RD_CSummoned;
 
 /**
  *
@@ -47,7 +47,7 @@ public class ResCSummonedPool {
         }
 
         sp.Encode1(summon.getSkillLevel()); // m_nSLV
-        sp.EncodeBuffer(DataCSummoned.Init(summon, animated));
+        sp.EncodeBuffer(RD_CSummoned.Init(summon, animated));
         return sp;
     }
 

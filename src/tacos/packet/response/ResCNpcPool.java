@@ -21,7 +21,7 @@ package tacos.packet.response;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.data.DataAvatarLook;
+import tacos.packet.response.data.RD_AvatarLook;
 import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
 import tacos.config.Config;
@@ -41,7 +41,7 @@ public class ResCNpcPool {
         if (number_of_npcs != 0) {
             sp.Encode4(npc.getId()); // dwTemplateID
             sp.EncodeStr(npc.getName()); // sName
-            sp.EncodeBuffer(DataAvatarLook.Encode(npc.getCharacter())); // AvatarLook::Decode
+            sp.EncodeBuffer(RD_AvatarLook.Encode(npc.getCharacter())); // AvatarLook::Decode
         }
 
         return sp;

@@ -24,11 +24,10 @@ import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.data.DataCClientOptMan;
-import tacos.packet.response.data.DataCWvsContext;
-import tacos.packet.response.data.DataCharacterData;
+import tacos.packet.response.data.RD_CharacterData;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.DataCS_COMMODITY;
+import tacos.packet.response.data.RD_CS_COMMODITY;
+import tacos.packet.response.data.RD_CStage;
 import tacos.server.TacosITC;
 import tacos.shared.SharedDate;
 
@@ -44,7 +43,7 @@ public class ResCStage {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
 
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.EMS, 89)) {
-            sp.EncodeBuffer(DataCClientOptMan.EncodeOpt()); // 2 bytes
+            sp.EncodeBuffer(RD_CStage.ClientOptMan_EncodeOpt()); // 2 bytes
         }
         sp.Encode4(chr.getClient().getChannelId() - 1); // m_nChannelID
         if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
@@ -73,16 +72,16 @@ public class ResCStage {
             sp.Encode4(chr.getCalcDamage().m_s3);
             // キャラクター情報
             if (Config.GreaterOrEqual(Region.GMS, 126)) {
-                sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x400000000000L));
+                sp.EncodeBuffer(RD_CharacterData.Encode(chr, -1L & ~0x400000000000L));
             } else if (Config.GreaterOrEqual(Region.GMS, 111)) {
-                sp.EncodeBuffer(DataCharacterData.Encode(chr, -1L & ~0x200000000L));
+                sp.EncodeBuffer(RD_CharacterData.Encode(chr, -1L & ~0x200000000L));
             } else {
-                sp.EncodeBuffer(DataCharacterData.Encode(chr));
+                sp.EncodeBuffer(RD_CharacterData.Encode(chr));
             }
             // JMS184orLater
             if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 91)) {
                 // ログアウトギフト
-                sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
+                sp.EncodeBuffer(RD_CStage.CWvsContext_OnSetLogoutGiftConfig());
             }
         } else {
             if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
@@ -147,7 +146,7 @@ public class ResCStage {
         // main
         if (part == 1) {
             // 008ABA10
-            sp.EncodeBuffer(DataCClientOptMan.EncodeOpt());
+            sp.EncodeBuffer(RD_CStage.ClientOptMan_EncodeOpt());
             sp.Encode4(chr.getClient().getChannelId() - 1);
             sp.Encode1(0);
             sp.Encode1(0);
@@ -165,8 +164,8 @@ public class ResCStage {
                 if (Config.GreaterOrEqual(Region.JMS, 308)) {
                     datamask_1 = 0x00444200L | 0x80000000000L; // JMS308
                 }
-                sp.EncodeBuffer(DataCharacterData.Encode_302_1(chr, -1 & ~(datamask_1))); // Quest除外
-                sp.EncodeBuffer(DataCWvsContext.LogoutGiftConfig());
+                sp.EncodeBuffer(RD_CharacterData.Encode_302_1(chr, -1 & ~(datamask_1))); // Quest除外
+                sp.EncodeBuffer(RD_CStage.CWvsContext_OnSetLogoutGiftConfig());
             } else {
                 sp.Encode1(0);
                 sp.Encode4(chr.getPosMap());
@@ -181,7 +180,7 @@ public class ResCStage {
         // sub
         if (part == 2) {
             // 008AAA80
-            sp.EncodeBuffer(DataCharacterData.Encode_302_2(chr, datamask_2));
+            sp.EncodeBuffer(RD_CharacterData.Encode_302_2(chr, datamask_2));
             sp.Encode8(SharedDate.getTimestamp());
             sp.Encode4(100); // nMobStatAdjustRate
             if (Config.GreaterOrEqual(Region.JMS, 308)) {
@@ -202,7 +201,7 @@ public class ResCStage {
     // CStage::OnSetITC
     public static ServerPacket SetITC(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetITC);
-        sp.EncodeBuffer(DataCharacterData.Encode(chr));
+        sp.EncodeBuffer(RD_CharacterData.Encode(chr));
         // CITC::LoadData
         {
             sp.EncodeStr(chr.getClient().getMapleId());
@@ -221,7 +220,7 @@ public class ResCStage {
     // CStage::OnSetCashShop
     public static ServerPacket SetCashShop(MapleClient c) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetCashShop);
-        sp.EncodeBuffer(DataCharacterData.Encode(c.getPlayer()));
+        sp.EncodeBuffer(RD_CharacterData.Encode(c.getPlayer()));
         // CCashShop::LoadData
         {
             if (Region.GMS.check() || Region.EMS.check() || Region.BMS.check()) {
@@ -240,7 +239,7 @@ public class ResCStage {
                         || Region.GMS.check() || Region.BMS.check()) {
                     sp.Encode4(0); // NotSaleCount
                 }
-                sp.EncodeBuffer(DataCS_COMMODITY.SetSaleInfo());
+                sp.EncodeBuffer(RD_CS_COMMODITY.CWvsContext_SetSaleInfo());
                 if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) && !Region.EMS.check() && !Region.GMS.check()) { // X EMS v55
                     sp.Encode2(0); // non 0, Decode4, DecodeStr
                 }

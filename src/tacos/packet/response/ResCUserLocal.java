@@ -29,7 +29,7 @@ import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.data.DataCUser;
+import tacos.packet.response.data.RD_CUser;
 
 /**
  *
@@ -51,7 +51,7 @@ public class ResCUserLocal {
     public static ServerPacket UserEmotionLocal(MapleCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotionLocal);
 
-        sp.EncodeBuffer(DataCUser.Emotion(expression));
+        sp.EncodeBuffer(RD_CUser.Emotion(expression));
         return sp;
     }
 

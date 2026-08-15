@@ -22,7 +22,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.builder.MessengerData;
 import tacos.packet.ops.OpsMessenger;
-import tacos.packet.response.data.DataAvatarLook;
+import tacos.packet.response.data.RD_AvatarLook;
 
 /**
  *
@@ -39,7 +39,7 @@ public class ResCUIMessenger {
         switch (ops) {
             case MSMP_Enter: {
                 sp.Encode1(pd.player_index); // nIdx
-                sp.EncodeBuffer(DataAvatarLook.Encode(pd.player));
+                sp.EncodeBuffer(RD_AvatarLook.Encode(pd.player));
                 sp.EncodeStr(pd.player.getName()); //sID
                 sp.Encode1(pd.player.getChannelId() - 1); // nChannelID
                 sp.Encode1(pd.is_new ? 1 : 0); // bNew
@@ -76,7 +76,7 @@ public class ResCUIMessenger {
             }
             case MSMP_Avatar: {
                 sp.Encode1(pd.player_index); // nIdx
-                sp.EncodeBuffer(DataAvatarLook.Encode(pd.player));
+                sp.EncodeBuffer(RD_AvatarLook.Encode(pd.player));
                 break;
             }
             case MSMP_Migrated: {

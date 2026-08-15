@@ -25,7 +25,7 @@ import tacos.config.Region;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.DataCPet;
+import tacos.packet.response.data.RD_CUser;
 
 /**
  *
@@ -93,7 +93,7 @@ public class ResCUser_Pet {
                 return sp;
             }
             sp.Encode1(0);
-            sp.EncodeBuffer(DataCPet.Init(pet));
+            sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
             if (transfer_field) {
                 sp.Encode2(0);
             }
@@ -113,7 +113,7 @@ public class ResCUser_Pet {
             } else {
                 sp.Encode1(0);
             }
-            sp.EncodeBuffer(DataCPet.Init(pet));
+            sp.EncodeBuffer(RD_CUser.CPet_Init(pet));
         } else {
             sp.Encode1(msg.get());
         }
@@ -187,5 +187,4 @@ public class ResCUser_Pet {
         }
         return sp;
     }
-
 }

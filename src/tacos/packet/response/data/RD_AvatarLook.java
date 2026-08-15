@@ -32,7 +32,7 @@ import tacos.packet.ServerPacket;
  *
  * @author Riremito
  */
-public class DataAvatarLook {
+public class RD_AvatarLook {
 
     // AvatarLook::Decode, AvatarLook::AvatarLook
     public static byte[] Encode(TacosCharacter chr) {

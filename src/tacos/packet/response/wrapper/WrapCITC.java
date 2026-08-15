@@ -26,7 +26,7 @@ import tacos.packet.ops.arg.ArgITCNormalItemResult;
 import tacos.packet.response.ResCITC;
 import odin.server.MTSStorage;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.DataGW_ItemSlotBase;
+import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import tacos.shared.SharedDate;
 
 /**
@@ -99,7 +99,7 @@ public class WrapCITC {
     public static byte[] addMTSItemInfo(MTSStorage.MTSItemInfo item) {
         ServerPacket data = new ServerPacket();
 
-        data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item.getItem()));
+        data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item.getItem()));
         data.Encode4(item.getId()); //id
         data.Encode4(item.getTaxes()); //this + below = price
         data.Encode4(item.getPrice()); //price
@@ -127,7 +127,7 @@ public class WrapCITC {
         sp.Encode4(items.size());
         int i = 0;
         for (IItem item : items) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             sp.Encode4(Integer.MAX_VALUE - i); //fake ID
             sp.Encode4(110);
             sp.Encode4(1011); //fake

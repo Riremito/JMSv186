@@ -55,10 +55,9 @@ import tacos.packet.ops.arg.ArgFriend;
 import tacos.packet.ops.arg.ArgMessage;
 import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.request.sub.ReqSub_UserConsumeCashItemUseRequest;
-import tacos.packet.response.data.DataCUIUserInfo;
-import tacos.packet.response.data.DataCWvsContext;
-import tacos.packet.response.data.DataGW_CharacterStat;
-import tacos.packet.response.data.DataGW_ItemSlotBase;
+import tacos.packet.response.data.RD_CWvsContext;
+import tacos.packet.response.data.RD_CharacterStat;
+import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import tacos.packet.response.struct.InvOp;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleDoor;
@@ -73,8 +72,7 @@ import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsSecondaryStat;
-import tacos.packet.response.data.DataAvatarLook;
-import tacos.packet.response.data.DataForcedStat;
+import tacos.packet.response.data.RD_AvatarLook;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -102,7 +100,7 @@ public class ResCWvsContext {
                     case 0: {
                         sp.Encode1(v.type.getType());
                         sp.Encode2(v.item.getPosition());
-                        sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(v.item));
+                        sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(v.item));
                         break;
                     }
                     // update
@@ -164,7 +162,7 @@ public class ResCWvsContext {
         if (Config.Between(Region.EMS, 55, 76) || Config.Between(Region.TWMS, 74, 93)) {
             sp.Encode1(0); // EMS v55
         }
-        sp.EncodeBuffer(DataGW_CharacterStat.EncodeChangeStat(chr, statmask));
+        sp.EncodeBuffer(RD_CharacterStat.EncodeChangeStat(chr, statmask));
         if (Config.PreBB()) {
             if (Region.JMS.check() || Region.JMST.check()) {
                 // Pet
@@ -345,13 +343,14 @@ public class ResCWvsContext {
     public static ServerPacket ForcedStatSet(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatSet);
 
-        sp.EncodeBuffer(DataForcedStat.Encode(chr));
+        sp.EncodeBuffer(RD_CWvsContext.ForcedStat_Encode(chr));
         return sp;
     }
 
     // CWvsContext::OnForcedStatReset
     public static ServerPacket ForcedStatReset() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ForcedStatReset);
+
         return sp;
     }
 
@@ -823,15 +822,15 @@ public class ResCWvsContext {
         if (Config.LessOrEqual(Region.JMS, 131)) {
             // inlined?
             if (player.getPet(0) != null) {
-                sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo_JMS131(player, player.getPet(0)));
+                sp.EncodeBuffer(RD_CWvsContext.CUIUserInfo_SetPetInfo_JMS131(player, player.getPet(0)));
             }
         } else if (Config.GreaterOrEqual(Region.GMS, 95)) {
             if (player.getPet(0) != null) {
-                sp.EncodeBuffer(DataCUIUserInfo.SetMultiPetInfo_GMS95(player));
+                sp.EncodeBuffer(RD_CWvsContext.CUIUserInfo_SetMultiPetInfo_GMS95(player));
             }
         } else {
             // CUIUserInfo::SetPetInfo, CUIUserInfo::SetMultiPetInfo
-            sp.EncodeBuffer(DataCUIUserInfo.SetPetInfo(player));
+            sp.EncodeBuffer(RD_CWvsContext.CUIUserInfo_SetPetInfo(player));
         }
 
         // CUIUserInfo::SetTamingMobInfo
@@ -1195,7 +1194,7 @@ public class ResCWvsContext {
             case FriendRes_LoadFriend_Done:
             case FriendRes_SetFriend_Done:
             case FriendRes_DeleteFriend_Done: {
-                sp.EncodeBuffer(DataCWvsContext.CFriend_Reset(frs.chr));
+                sp.EncodeBuffer(RD_CWvsContext.CFriend_Reset(frs.chr));
                 break;
             }
             case FriendRes_NotifyChange_FriendInfo: {
@@ -1329,7 +1328,7 @@ public class ResCWvsContext {
                 sp.Encode1(bma.ear);
                 sp.Encode1(show_item ? 1 : 0);
                 if (show_item) {
-                    sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(bma.item));
+                    sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(bma.item));
                 }
                 break;
             }
@@ -1352,7 +1351,7 @@ public class ResCWvsContext {
                 String text = bma.chr.getName() + " : " + bma.message;
                 sp.EncodeStr(text);
                 sp.Encode4(bma.gashapon_type); // 緑 (0) or 茶色 (-1)
-                sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(bma.item));
+                sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(bma.item));
                 break;
             }
             default: {
@@ -1595,7 +1594,7 @@ public class ResCWvsContext {
         sp.EncodeStr(message);
         sp.Encode4(channel - 1); // channel
         sp.Encode1(ear ? 1 : 0);
-        sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+        sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
         return sp;
     }
 

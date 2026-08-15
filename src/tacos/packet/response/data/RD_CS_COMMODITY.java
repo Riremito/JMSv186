@@ -33,17 +33,17 @@ import tacos.wz.WzXML;
  *
  * @author Riremito
  */
-public class DataCS_COMMODITY {
+public class RD_CS_COMMODITY {
 
     // CWvsContext::SetSaleInfo
-    public static byte[] SetSaleInfo() {
+    public static byte[] CWvsContext_SetSaleInfo() {
         ServerPacket data = new ServerPacket();
 
         ArrayList<CS_COMMODITY> onsales = getOnSale();
         data.Encode2(onsales.size()); // count
         for (CS_COMMODITY onsale : onsales) {
             data.Encode4(onsale.nSN);
-            data.EncodeBuffer(EncodeModifiedData(onsale));
+            data.EncodeBuffer(CS_COMMODITY_EncodeModifiedData(onsale));
         }
 
         return data.getBytes();
@@ -117,11 +117,10 @@ public class DataCS_COMMODITY {
     }
 
     // CS_COMMODITY::DecodeModifiedData
-    public static byte[] EncodeModifiedData(CS_COMMODITY ccm) {
+    public static byte[] CS_COMMODITY_EncodeModifiedData(CS_COMMODITY ccm) {
         ServerPacket data = new ServerPacket();
 
-        boolean mask4 = Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)
- || Region.VMS.check() || Region.BMS.check() || Config.GreaterOrEqual(Region.GMS, 84);
+        boolean mask4 = Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check() || Region.BMS.check() || Config.GreaterOrEqual(Region.GMS, 84);
 
         if (mask4) {
             data.Encode4(ccm.dwModifiedFlag);
@@ -218,5 +217,4 @@ public class DataCS_COMMODITY {
 
         return data.getBytes();
     }
-
 }

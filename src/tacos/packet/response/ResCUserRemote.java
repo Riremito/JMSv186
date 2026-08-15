@@ -27,8 +27,8 @@ import java.util.Map;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.data.DataAvatarLook;
-import tacos.packet.response.data.DataCUser;
+import tacos.packet.response.data.RD_AvatarLook;
+import tacos.packet.response.data.RD_CUser;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.ContentCustom;
@@ -218,7 +218,7 @@ public class ResCUserRemote {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotion);
 
         sp.Encode4(chr.getId()); // remote
-        sp.EncodeBuffer(DataCUser.Emotion(expression));
+        sp.EncodeBuffer(RD_CUser.Emotion(expression));
         return sp;
     }
 
@@ -253,7 +253,7 @@ public class ResCUserRemote {
         sp.Encode1(flag);
 
         if ((flag & 0x01) != 0) {
-            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+            sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
         }
         if ((flag & 0x02) != 0) {
             sp.Encode1(0); // nSpeed_CS

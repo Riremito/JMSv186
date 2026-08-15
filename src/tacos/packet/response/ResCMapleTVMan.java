@@ -22,7 +22,7 @@ import odin.client.MapleCharacter;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMapleTV;
-import tacos.packet.response.data.DataAvatarLook;
+import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -40,7 +40,7 @@ public class ResCMapleTVMan {
 
         sp.Encode1(nFlag); // nFlag
         sp.Encode1(m_nMessageType); // m_nMessageType
-        sp.EncodeBuffer(DataAvatarLook.Encode(chr_from));
+        sp.EncodeBuffer(RD_AvatarLook.Encode(chr_from));
         sp.EncodeStr(chr_from.getName());
         sp.EncodeStr((chr_to != null) ? chr_to.getName() : "");
         sp.EncodeStr(messages.get(0));
@@ -51,7 +51,7 @@ public class ResCMapleTVMan {
         sp.Encode4(1337); // m_nTotalWaitTimes
 
         if ((nFlag & 2) != 0) {
-            sp.EncodeBuffer(DataAvatarLook.Encode(chr_to));
+            sp.EncodeBuffer(RD_AvatarLook.Encode(chr_to));
         }
 
         return sp;

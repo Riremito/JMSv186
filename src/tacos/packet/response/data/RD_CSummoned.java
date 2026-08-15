@@ -28,7 +28,7 @@ import tacos.packet.ServerPacket;
  *
  * @author Riremito
  */
-public class DataCSummoned {
+public class RD_CSummoned {
 
     // CSummoned::Init
     public static byte[] Init(MapleSummon summon, boolean animated) {
@@ -60,7 +60,7 @@ public class DataCSummoned {
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             data.Encode1(is_avater_look ? 1 : 0);
             if (is_avater_look) {
-                data.EncodeBuffer(DataAvatarLook.Encode(chr));
+                data.EncodeBuffer(RD_AvatarLook.Encode(chr));
             }
         }
 

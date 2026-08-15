@@ -28,7 +28,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsDBCHAR;
 import tacos.packet.ops.OpsTrunk;
-import tacos.packet.response.data.DataGW_ItemSlotBase;
+import tacos.packet.response.data.RD_GW_ItemSlotBase;
 
 /**
  *
@@ -104,7 +104,7 @@ public class ResCTrunkDlg {
             List<IItem> items = storage.filterItems(MapleInventoryType.EQUIP);
             data.Encode1(items.size()); // nCount
             for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x08, Consume
@@ -112,7 +112,7 @@ public class ResCTrunkDlg {
             List<IItem> items = storage.filterItems(MapleInventoryType.USE);
             data.Encode1(items.size()); // nCount
             for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x10, Install
@@ -120,7 +120,7 @@ public class ResCTrunkDlg {
             List<IItem> items = storage.filterItems(MapleInventoryType.SETUP);
             data.Encode1(items.size()); // nCount
             for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x20, Etc
@@ -128,7 +128,7 @@ public class ResCTrunkDlg {
             List<IItem> items = storage.filterItems(MapleInventoryType.ETC);
             data.Encode1(items.size()); // nCount
             for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x40, Cash
@@ -136,7 +136,7 @@ public class ResCTrunkDlg {
             List<IItem> items = storage.filterItems(MapleInventoryType.CASH);
             data.Encode1(items.size()); // nCount
             for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
 

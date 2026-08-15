@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import tacos.packet.ops.OpsCashItemFailReason;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.data.DataGW_CashItemInfo;
-import tacos.packet.response.data.DataGW_ItemSlotBase;
+import tacos.packet.response.data.RD_CCashShop;
+import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import odin.server.CashShop;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
@@ -215,7 +215,7 @@ public class ResCCashShop {
 
                 sp.Encode2(csi.getItemsSize()); // cash item count
                 for (IItem item : csi.getInventory()) {
-                    sp.EncodeBuffer(DataGW_CashItemInfo.Encode(item, c));
+                    sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, c));
                 }
                 sp.Encode2(c.getPlayer().getStorage().getSlot()); // m_nTrunkCount
                 sp.Encode2(c.getCharSlots()); // m_nCharacterSlotCount
@@ -233,7 +233,7 @@ public class ResCCashShop {
             // CCashShop::OnCashItemResBuyDone
             case CashItemRes_Buy_Done:
             case CashItemRes_FreeCashItem_Done: {
-                sp.EncodeBuffer(DataGW_CashItemInfo.Encode(cis.item, c));
+                sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, c));
                 break;
             }
             // CCashShop::OnCashItemResBuyFailed
@@ -248,7 +248,7 @@ public class ResCCashShop {
                 if (0 < cash_item_count) {
                     // buffer 55 bytes
                     for (IItem item : cis.coupon_items_cash) {
-                        sp.EncodeBuffer(DataGW_CashItemInfo.Encode(item, c));
+                        sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, c));
                     }
                 }
                 sp.Encode4(cis.coupon_maple_point);
@@ -293,7 +293,7 @@ public class ResCCashShop {
             // CCashShop::OnCashItemResMoveLtoSDone
             case CashItemRes_MoveLtoS_Done: {
                 sp.Encode2(cis.item.getPosition()); // 2 bytes 固定
-                sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(cis.item));
+                sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(cis.item));
                 break;
             }
             // CCashShop::OnCashItemResMoveLtoSFailed
@@ -303,7 +303,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResMoveStoLDone
             case CashItemRes_MoveStoL_Done: {
-                sp.EncodeBuffer(DataGW_CashItemInfo.Encode(cis.item, c));
+                sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(cis.item, c));
                 break;
             }
             // CCashShop::OnCashItemResMoveStoLFailed
@@ -422,7 +422,7 @@ public class ResCCashShop {
         sp.Encode1(OpsCashItem.CashItemRes_CashItemGachapon_Done.get());
         sp.Encode8(box_item.getUniqueId());
         sp.Encode4(0); // nNumber
-        sp.EncodeBuffer(DataGW_CashItemInfo.Encode(item, c));
+        sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, c));
         // CUICashItemGachapon::OnCashItemGachaponResult
         {
             sp.Encode4(item.getItemId()); // m_nSelectedItemID

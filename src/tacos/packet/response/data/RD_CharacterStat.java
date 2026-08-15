@@ -33,7 +33,7 @@ import tacos.packet.ops.OpsChangeStat;
  *
  * @author Riremito
  */
-public class DataGW_CharacterStat {
+public class RD_CharacterStat {
 
     // GW_CharacterStat::Decode
     public static byte[] Encode(MapleCharacter chr) {

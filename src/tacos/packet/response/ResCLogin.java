@@ -28,9 +28,9 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsLogin;
 import tacos.packet.ops.OpsPinCodeResCode;
 import tacos.packet.ops.OpsViewAllChar;
-import tacos.packet.response.data.DataAvatarLook;
-import tacos.packet.response.data.DataCharacterData;
-import tacos.packet.response.data.DataGW_CharacterStat;
+import tacos.packet.response.data.RD_AvatarLook;
+import tacos.packet.response.data.RD_CharacterData;
+import tacos.packet.response.data.RD_CharacterStat;
 import tacos.property.Property_World;
 import tacos.server.TacosChannel;
 import tacos.server.TacosServer;
@@ -496,8 +496,8 @@ public class ResCLogin {
                 sp.Encode1(0); // m_anWorldID
                 sp.Encode1(chars.size()); // m_nCountRelatedSvrs
                 for (MapleCharacter chr : chars) {
-                    sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-                    sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+                    sp.EncodeBuffer(RD_CharacterStat.Encode(chr));
+                    sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
                     sp.Encode1(1); // ranking
                     // m_aRankVAC 16 bytes.
                     sp.Encode4(chr.getRank()); // all world ranking
@@ -629,12 +629,12 @@ public class ResCLogin {
         sp.Encode1(chars.size());
         for (MapleCharacter chr : chars) {
             if (Region.KMSB.check()) {
-                sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
+                sp.EncodeBuffer(RD_CharacterData.Encode(chr, 1));
                 continue;
             }
             // character data
-            sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+            sp.EncodeBuffer(RD_CharacterStat.Encode(chr));
+            sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
             // family
             if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                 sp.Encode1(0);
@@ -753,11 +753,11 @@ public class ResCLogin {
         sp.Encode1(ops.get());
         if (ops == OpsLogin.LoginResCode_Success) {
             if (Region.KMSB.check()) {
-                sp.EncodeBuffer(DataCharacterData.Encode(chr, 1));
+                sp.EncodeBuffer(RD_CharacterData.Encode(chr, 1));
                 return sp;
             }
-            sp.EncodeBuffer(DataGW_CharacterStat.Encode(chr));
-            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+            sp.EncodeBuffer(RD_CharacterStat.Encode(chr));
+            sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
         }
 
         return sp;

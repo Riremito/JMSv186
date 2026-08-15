@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2024 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,20 +18,30 @@
  */
 package tacos.packet.response.data;
 
+import odin.client.MapleClient;
+import odin.client.inventory.IItem;
+import tacos.shared.SharedDate;
 import tacos.packet.ServerPacket;
+import odin.server.CashItemFactory;
 
 /**
  *
  * @author Riremito
  */
-public class DataCClientOptMan {
+public class RD_CCashShop {
 
-    // CClientOptMan::DecodeOpt
-    public static byte[] EncodeOpt() {
+    // buffer.
+    public static byte[] GW_CashItemInfo_Encode(IItem item, MapleClient client) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode2(0); // not 0, Encode4, Encode4
+        data.Encode8(item.getUniqueId());
+        data.Encode8(client.getId());
+        data.Encode4(item.getItemId());
+        data.Encode4(0); // first?
+        data.Encode2(item.getQuantity());
+        data.EncodeBuffer(item.getOwner(), 13);
+        data.Encode8(SharedDate.getMagicalExpirationDate());
+        data.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
         return data.getBytes();
     }
-
 }

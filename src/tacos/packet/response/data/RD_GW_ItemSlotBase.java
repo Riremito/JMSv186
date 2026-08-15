@@ -30,7 +30,7 @@ import tacos.packet.ServerPacket;
  *
  * @author Riremito
  */
-public class DataGW_ItemSlotBase {
+public class RD_GW_ItemSlotBase {
 
     public enum ItemType {
         Equip,
