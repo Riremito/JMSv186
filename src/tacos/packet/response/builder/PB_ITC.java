@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,16 +16,17 @@
  *
  *
  */
-package tacos.packet.ops.arg;
+package tacos.packet.response.builder;
 
+import lombok.Builder;
 import tacos.packet.ops.OpsITC;
 
 /**
  *
  * @author Riremito
  */
-public class ArgITCNormalItemResult {
+@Builder
+public class PB_ITC {
 
-    public OpsITC ops_res = OpsITC.UNKNOWN;
-    public OpsITC ops_fail_reason = OpsITC.UNKNOWN;
+    public OpsITC fail_reason;
 }

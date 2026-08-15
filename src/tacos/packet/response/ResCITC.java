@@ -21,8 +21,8 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import static tacos.packet.ops.OpsITC.ITCRes_GetITCList_Failed;
-import tacos.packet.ops.arg.ArgITCNormalItemResult;
+import tacos.packet.ops.OpsITC;
+import tacos.packet.response.builder.PB_ITC;
 
 /**
  *
@@ -47,16 +47,20 @@ public class ResCITC {
     }
 
     // CITC::OnNormalItemResult
-    public static ServerPacket ITCNormalItemResult(ArgITCNormalItemResult arg) {
+    public static ServerPacket ITCNormalItemResult(OpsITC ops) {
+        return ITCNormalItemResult(ops, null);
+    }
+
+    public static ServerPacket ITCNormalItemResult(OpsITC ops, PB_ITC pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
-        sp.Encode1(arg.ops_res.get());
-        switch (arg.ops_res) {
+        sp.Encode1(ops.get());
+        switch (ops) {
             case ITCRes_GetITCList_Done: {
                 break;
             }
             case ITCRes_GetITCList_Failed: {
-                sp.Encode1(arg.ops_fail_reason.get());
+                sp.Encode1(pb.fail_reason.get());
                 break;
             }
             case ITCRes_GetSearchITCList_Done: {
@@ -183,6 +187,7 @@ public class ResCITC {
                 break;
             }
         }
+
         return sp;
     }
 }
