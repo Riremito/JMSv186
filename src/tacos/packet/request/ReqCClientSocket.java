@@ -155,9 +155,7 @@ public class ReqCClientSocket {
     }
 
     public static boolean OnMigrateIn(MapleClient client, ClientPacket cp) {
-        if (Config.GreaterOrEqual(Region.KMS, 197)) {
-            int unk1 = cp.Decode4();
-        }
+        int unk1 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 197));
         int character_id = cp.Decode4(); // m_dwCharacterId
         if (Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 91)) { // 180+
             byte[] machine_id = cp.DecodeBuffer(16); // MachineId (HWID)
@@ -168,16 +166,12 @@ public class ReqCClientSocket {
         } else if (Config.GreaterOrEqual(Region.GMS, 61)) {
             byte unk2 = cp.Decode1(); // 1 byte
         }
-        if (Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.GMS, 61)) { // 146+
-            byte unk3 = cp.Decode1(); // 0, not in JMS131.
-        }
+        byte unk3 = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.GMS, 61));
         if (Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 84)) { // 180+
             long client_key = cp.Decode8(); // m_aClientKey, jms always sends 0. but GMS supports this.
             client.setClientKey(client_key);
         }
-        if (Config.GreaterOrEqual(Region.KMS, 95)) {
-            int unk4 = cp.Decode4(); // not in JMS.
-        }
+        int unk4 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 95));
 
         if (client.getPlayer() != null) {
             client.loginFailed("OnMigrateIn : client already has character.");

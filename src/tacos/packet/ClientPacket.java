@@ -147,4 +147,49 @@ public class ClientPacket {
     public int getRemainingSize() {
         return packet.length - this.decoded;
     }
+
+    /*
+        conditional
+     */
+    public byte Decode1(boolean cond) {
+        if (!cond) {
+            return 0;
+        }
+        return Decode1();
+    }
+
+    public short Decode2(boolean cond) {
+        if (!cond) {
+            return 0;
+        }
+        return Decode2();
+    }
+
+    public int Decode4(boolean cond) {
+        if (!cond) {
+            return 0;
+        }
+        return Decode4();
+    }
+
+    public long Decode8(boolean cond) {
+        if (!cond) {
+            return 0;
+        }
+        return Decode8();
+    }
+
+    public byte[] DecodeBuffer(int size, boolean cond) {
+        if (!cond) {
+            return null;
+        }
+        return DecodeBuffer(size);
+    }
+
+    public String DecodeStr(boolean cond) {
+        if (!cond) {
+            return null;
+        }
+        return DecodeStr();
+    }
 }
