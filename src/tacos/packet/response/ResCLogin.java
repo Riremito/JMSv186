@@ -53,10 +53,8 @@ public class ResCLogin {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPasswordResult);
 
         sp.Encode1(ops.get()); // ops
-        if (Region.GMS.check() || Region.GMST.check() || Config.Between(Region.EMS, 55, 70)) {
-            sp.Encode1(0);
-            sp.Encode4(0); // unused
-        }
+        sp.Encode1(0, Region.GMS.check() || Region.GMST.check() || Config.Between(Region.EMS, 55, 70));
+        sp.Encode4(0, Region.GMS.check() || Region.GMST.check() || Config.Between(Region.EMS, 55, 70)); // unused
 
         switch (ops) {
             case LoginResCode_Success: {
@@ -135,39 +133,23 @@ public class ResCLogin {
                             sp.Encode4(client.getId()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
-                            if (Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.JMST, 110)) {
-                                sp.Encode1(client.isGameMaster() ? 1 : 0);
-                            }
-                            if (Config.GreaterOrEqual(Region.JMS, 308)) {
-                                sp.Encode4(0);
-                                sp.Encode4(0);
-                                sp.Encode1(0);
-                                sp.Encode1(0);
-                            }
+                            sp.Encode1(client.isGameMaster() ? 1 : 0, Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.JMST, 110));
+                            sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 308));
+                            sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 308));
+                            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 308));
+                            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 308));
                             sp.EncodeStr(client.getMapleId()); // m_sNexonClubID
                             sp.EncodeStr(client.getMapleId());
                             sp.Encode1(0);
                             sp.Encode1(0); // m_nPurchaseExp
                             sp.Encode1(0); // m_nChatBlockReason
-                            if (Config.Between(Region.JMS, 131, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
-                                sp.Encode1(0);
-                            }
-                            if (Config.Between(Region.JMS, 164, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
-                                sp.Encode1(0);
-                            }
-                            if (Config.Between(Region.JMS, 180, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
-                                sp.Encode1(0);
-                            }
-                            if (Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.JMST, 110)) {
-                                sp.Encode1(-1); // 2nd password.
-                            }
-                            if (Config.GreaterOrEqual(Region.JMS, 302)) {
-                                sp.Encode1(1); // NexonID state.
-                            }
+                            sp.Encode1(0, Config.Between(Region.JMS, 131, 302) || Config.GreaterOrEqual(Region.JMST, 110));
+                            sp.Encode1(0, Config.Between(Region.JMS, 164, 302) || Config.GreaterOrEqual(Region.JMST, 110));
+                            sp.Encode1(0, Config.Between(Region.JMS, 180, 302) || Config.GreaterOrEqual(Region.JMST, 110));
+                            sp.Encode1(-1, Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.JMST, 110)); // 2nd password.
+                            sp.Encode1(1, Config.GreaterOrEqual(Region.JMS, 302)); // NexonID state.
                             sp.Encode8(0); // m_dtChatUnblockDate or client key (never used in JMS?)
-                            if (Config.GreaterOrEqual(Region.JMS, 308)) {
-                                sp.Encode1(1);
-                            }
+                            sp.Encode1(1, Config.GreaterOrEqual(Region.JMS, 308));
                             sp.EncodeStr(""); // v131: available name for new character, later version does not use this string
                             break;
                         }
