@@ -656,7 +656,7 @@ public class ResCLogin {
         if (Config.GreaterOrEqual(Region.KMS, 160) || Config.GreaterOrEqual(Region.EMS, 89)) {
             sp.Encode1(1); // m_bLoginOpt
             sp.Encode1(0);
-        } else if (Config.GreaterOrEqual(Region.JMS, 302) || Config.Between(Region.GMS, 83, 95)) {
+        } else if (Config.GreaterOrEqual(Region.JMS, 302) || Config.Between(Region.GMS, 83, 95) || Config.GreaterOrEqual(Region.GMST, 2)) {
             sp.Encode1(2); // m_bLoginOpt
         } else if (Config.Between(Region.JMS, 188, 194) || Config.GreaterOrEqual(Region.JMST, 110)) {
             sp.Encode1(0);

@@ -137,7 +137,7 @@ public class RD_CStage {
     public static byte[] CCashShop_LoadData(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Region.GMS.check() || Region.EMS.check() || Region.BMS.check()) {
+        if (Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.BMS.check()) {
             data.Encode1(1); // m_bCashShopAuthorized
         }
         // not asia soft.
