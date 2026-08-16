@@ -22,6 +22,9 @@ import tacos.config.Content;
 import java.util.ArrayList;
 import java.util.List;
 import odin.provider.IMapleData;
+import tacos.config.ContentCustom;
+import tacos.debug.DebugLogger;
+import tacos.packet.ops.OpsCommodity;
 
 /**
  *
@@ -79,5 +82,71 @@ public class EtcWz extends WzXML {
             }
         }
         return false;
+    }
+
+    public static class CS_COMMODITY {
+
+        public int nSN = 0;
+        public int nItemId = 0;
+        public int nCount = 0;
+        public int nPrice = 0;
+        public int bBonus = 0;
+        public int nPriority = 0;
+        public int nPeriod = 0;
+        public int nReqPOP = 0;
+        public int nReqLEV = 0;
+        public int nMaplePoint = 0;
+        public int nMeso = 0;
+        public int bForPremiumUser = 0;
+        public int nReqLev = 0;
+        public int nCommodityGender = 0;
+        public int bOnSale = 0;
+        public int nClass = 0;
+        public int nLimit = 0;
+        public int nPbCash = 0;
+        public int nPbPoint = 0;
+        public int nPbGift = 0;
+        public int nDiscountRate = 0;
+        public ArrayList<Integer> aPackageSN = new ArrayList<>();
+        public int aOriginalSN = 0;
+        public int nOriginalPrice = 0;
+        public int dwModifiedFlag = 0;
+    }
+
+    private static ArrayList<CS_COMMODITY> ONSALE_LIST = null;
+
+    public static ArrayList<CS_COMMODITY> getOnSale() {
+        if (ONSALE_LIST != null) {
+            return ONSALE_LIST;
+        }
+
+        ONSALE_LIST = new ArrayList<>();
+        if (!ContentCustom.CC_REMOVE_ALL_CASHITEM.get()) {
+            return ONSALE_LIST;
+        }
+        // remove all onsale items.
+        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
+            int nItemId = WzDataTool.getIntPath("ItemId", field, 0);
+            int nSN = WzDataTool.getIntPath("SN", field, 0);
+            int bOnSale = WzDataTool.getIntPath("OnSale", field, 0);
+            /*
+            if (nItemId / 1000000 == 1) {
+                continue;
+            }
+             */
+            if (bOnSale != 0) {
+                CS_COMMODITY onsale = new CS_COMMODITY();
+                onsale.nSN = nSN;
+                onsale.nItemId = nItemId;
+                onsale.bOnSale = bOnSale;
+                // overwrite test.
+                onsale.bOnSale = 0;
+                onsale.dwModifiedFlag = OpsCommodity.CM_ONSALE.get();
+                ONSALE_LIST.add(onsale);
+            }
+        }
+
+        DebugLogger.DebugLog("CS_COMMODITY : getOnSale = " + ONSALE_LIST.size());
+        return ONSALE_LIST;
     }
 }

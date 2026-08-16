@@ -156,12 +156,9 @@ public class ResCWvsContext {
     // CWvsContext::OnStatChanged
     public static ServerPacket StatChanged(TacosCharacter chr, boolean unlock, int statmask) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StatChanged);
-        // 0 = lock   -> do not clear lock flag
-        // 1 = unlock -> clear lock flag
+
         sp.Encode1(unlock ? 1 : 0); // CWvsContext->bExclRequestSent
-        if (Config.Between(Region.EMS, 55, 76) || Config.Between(Region.TWMS, 74, 93)) {
-            sp.Encode1(0); // EMS v55
-        }
+        sp.Encode1(0, Config.Between(Region.TWMS, 74, 93) || Config.Between(Region.EMS, 55, 76));
         sp.EncodeBuffer(RD_CharacterStat.EncodeChangeStat(chr, statmask));
         if (Config.PreBB()) {
             if (Region.JMS.check() || Region.JMST.check()) {
@@ -179,6 +176,7 @@ public class ResCWvsContext {
             sp.Encode1(0); // not 0 -> Encode1
             sp.Encode1(0); // not 0 -> Encode4, Encode4
         }
+
         return sp;
     }
 

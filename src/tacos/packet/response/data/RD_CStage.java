@@ -18,15 +18,19 @@
  */
 package tacos.packet.response.data;
 
+import java.util.ArrayList;
 import java.util.Map;
 import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsCommodity;
 import tacos.packet.response.ResCCashShop;
 import tacos.server.TacosITC;
 import tacos.shared.SharedDate;
+import tacos.wz.EtcWz;
+import tacos.wz.EtcWz.CS_COMMODITY;
 
 /**
  *
@@ -168,11 +172,125 @@ public class RD_CStage {
     public static byte[] CWvsContext_SetSaleInfo() {
         ServerPacket data = new ServerPacket();
 
-        data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 70, 76) || Config.GreaterOrEqual(Region.BMS, 24)); // NotSaleCount
-        data.EncodeBuffer(RD_CS_COMMODITY.CWvsContext_SetSaleInfo()); // 2 bytes.
+        data.Encode4(0, Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 55, 70) || Config.GreaterOrEqual(Region.BMS, 24)); // NotSaleCount
+        data.EncodeBuffer(getCommodities(EtcWz.getOnSale())); // 2 bytes.
         data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)); // non 0, Decode4, DecodeStr
         data.EncodeBuffer(getDiscountRates(0, 0, 99)); // 1 byte.
         data.Encode4(0, Config.GreaterOrEqual(Region.EMS, 89));
+        return data.getBytes();
+    }
+
+    public static byte[] getCommodities(ArrayList<CS_COMMODITY> onsales) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode2(onsales.size()); // count
+        for (CS_COMMODITY onsale : onsales) {
+            data.Encode4(onsale.nSN);
+            data.EncodeBuffer(CS_COMMODITY_EncodeModifiedData(onsale));
+        }
+
+        return data.getBytes();
+    }
+
+    // CS_COMMODITY::DecodeModifiedData
+    public static byte[] CS_COMMODITY_EncodeModifiedData(CS_COMMODITY ccm) {
+        ServerPacket data = new ServerPacket();
+
+        boolean mask4 = Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check() || Region.BMS.check() || Config.GreaterOrEqual(Region.GMS, 84);
+
+        if (mask4) {
+            data.Encode4(ccm.dwModifiedFlag);
+        } else {
+            data.Encode2(ccm.dwModifiedFlag); // GMS83, old cashshop masks
+        }
+
+        // 0x01
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_ITEMID.get()) != 0) {
+            data.Encode4(ccm.nItemId); // nItemId
+        }
+        // 0x02
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_COUNT.get()) != 0) {
+            data.Encode2(ccm.nCount); // nCount
+        }
+        // 0x10, weird order
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_PRIORITY.get()) != 0) {
+            data.Encode1(ccm.nPriority); // nPriority
+        }
+        // 0x04
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_PRICE.get()) != 0) {
+            data.Encode4(ccm.nPrice); // nPrice
+        }
+        // 0x08
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_BONUS.get()) != 0) {
+            data.Encode1(ccm.bBonus); // bBonus
+        }
+        // 0x20
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_PERIOD.get()) != 0) {
+            data.Encode2(ccm.nPeriod); // nPeriod
+        }
+        if (mask4) {
+            // 0x20000, weird order
+            if ((ccm.dwModifiedFlag & OpsCommodity.CM_REQPOP.get()) != 0) {
+                data.Encode2(ccm.nReqPOP); // nReqPOP
+            }
+            // 0x40000, weird order
+            if ((ccm.dwModifiedFlag & OpsCommodity.CM_REQLEV.get()) != 0) {
+                data.Encode2(ccm.nReqLEV); // nReqLEV
+            }
+        }
+        // 0x40
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_MAPLEPOINT.get()) != 0) {
+            data.Encode4(ccm.nMaplePoint); // nMaplePoint
+        }
+        // 0x80
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_MESO.get()) != 0) {
+            data.Encode4(ccm.nMeso); // nMeso
+        }
+        // 0x100
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_FORPREMIUMUSER.get()) != 0) {
+            data.Encode1(ccm.bForPremiumUser); // bForPremiumUser
+        }
+        // 0x200
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_COMMODITYGENDER.get()) != 0) {
+            data.Encode1(ccm.nCommodityGender); // nCommodityGender
+        }
+        // 0x400
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_ONSALE.get()) != 0) {
+            data.Encode1(ccm.bOnSale); // bOnSale
+        }
+        // 0x800
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_CLASS.get()) != 0) {
+            data.Encode1(ccm.nClass); // nClass
+        }
+        // 0x1000
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_LIMIT.get()) != 0) {
+            data.Encode1(ccm.nLimit); // nLimit
+        }
+        // 0x2000
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_PBCASH.get()) != 0) {
+            data.Encode2(ccm.nPbCash); // nPbCash
+        }
+        // 0x4000
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_PBPOINT.get()) != 0) {
+            data.Encode2(ccm.nPbPoint); // nPbPoint
+        }
+        // 0x8000
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_PBGIFT.get()) != 0) {
+            data.Encode2(ccm.nPbGift); // nPbGift
+        }
+
+        if (!mask4) {
+            return data.getBytes();
+        }
+
+        // 0x10000
+        if ((ccm.dwModifiedFlag & OpsCommodity.CM_ITEMID.get()) != 0) {
+            data.Encode1(ccm.aPackageSN.size()); // loop count
+            for (int p_aPackageSN : ccm.aPackageSN) {
+                data.Encode4(p_aPackageSN); // p_aPackageSN
+            }
+        }
+
         return data.getBytes();
     }
 

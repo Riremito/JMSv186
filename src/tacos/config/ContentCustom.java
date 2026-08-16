@@ -26,11 +26,11 @@ public enum ContentCustom {
     CC_WZ_MAP_ADDED,
     CC_EQUIP_STAT_RANDOMIZER,
     CC_MASTER_MONSTER_TIMER,
-    CC_REMOVE_ALL_CASHITEM(0),
+    CC_REMOVE_ALL_CASHITEM(false),
     CC_HIDE_DAMAGE(false),
     UNKNOWN;
 
-    int value;
+    private int value;
 
     ContentCustom(boolean val) {
         set(val);
