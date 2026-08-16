@@ -26,7 +26,6 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.data.RD_CharacterData;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.RD_CStage;
-import tacos.server.TacosITC;
 import tacos.shared.SharedDate;
 
 /**
@@ -160,17 +159,9 @@ public class ResCStage {
     // CStage::OnSetITC
     public static ServerPacket SetITC(final MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetITC);
+
         sp.EncodeBuffer(RD_CharacterData.Encode(chr));
-        // CITC::LoadData
-        {
-            sp.EncodeStr(chr.getClient().getMapleId());
-            sp.Encode4(TacosITC.MTS_MESO); // m_nRegisterFeeMeso
-            sp.Encode4(TacosITC.MTS_TAX); // m_nCommissionRate
-            sp.Encode4(TacosITC.MTS_BASE); // m_nCommissionBase
-            sp.Encode4(24); // m_nAuctionDurationMin
-            sp.Encode4(168); // m_nAuctionDurationMax
-            sp.Encode8(SharedDate.getTimestamp(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35));
-        }
+        sp.EncodeBuffer(RD_CStage.CITC_CITC(chr));
         return sp;
     }
 

@@ -25,6 +25,8 @@ import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCCashShop;
+import tacos.server.TacosITC;
+import tacos.shared.SharedDate;
 
 /**
  *
@@ -117,19 +119,33 @@ public class RD_CStage {
         return data.getBytes();
     }
 
+    // CITC::CITC
+    public static byte[] CITC_CITC(MapleCharacter chr) {
+        return CITC_LoadData(chr);
+    }
+
+    // CITC::LoadData
+    public static byte[] CITC_LoadData(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeStr(chr.getClient().getMapleId()); // m_sNexonClubID
+        data.Encode4(TacosITC.m_nRegisterFeeMeso); // m_nRegisterFeeMeso
+        data.Encode4(TacosITC.m_nCommissionRate); // m_nCommissionRate
+        data.Encode4(TacosITC.m_nCommissionBase); // m_nCommissionBase
+        data.Encode4(TacosITC.m_nAuctionDurationMin); // m_nAuctionDurationMin
+        data.Encode4(TacosITC.m_nAuctionDurationMax); // m_nAuctionDurationMax
+        data.Encode8(SharedDate.getTimestamp(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // ftServer
+        return data.getBytes();
+    }
+
     // CCashShop::CCashShop
     public static byte[] CCashShop_CCashShop(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeBuffer(RD_CStage.CCashShop_LoadData(chr));
         data.Encode1(0); // m_bEventOn
-        if (Config.GreaterOrEqual(Region.GMS, 62)) {
-            data.Encode4(0); // m_nHighestCharacterLevelInThisAccount
-        }
-        if (Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.IMS, 1)) {
-            data.Encode1(0);
-        }
-
+        data.Encode4(0, Config.GreaterOrEqual(Region.GMS, 62)); // m_nHighestCharacterLevelInThisAccount
+        data.Encode1(0, Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.IMS, 1));
         return data.getBytes();
     }
 
@@ -137,24 +153,14 @@ public class RD_CStage {
     public static byte[] CCashShop_LoadData(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.BMS.check()) {
-            data.Encode1(1); // m_bCashShopAuthorized
-        }
-        // not asia soft.
-        if (!(Region.MSEA.check() || Region.THMS.check() || Region.VMS.check())) {
-            data.EncodeStr(chr.getClient().getMapleId());
-        }
-        if (Config.GreaterOrEqual(Region.EMS, 55)) {
-            data.Encode1(0);
-        }
+        data.Encode1(1, Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.BMS.check()); // m_bCashShopAuthorized
+        data.EncodeStr(chr.getClient().getMapleId(), !(Region.MSEA.check() || Region.THMS.check() || Region.VMS.check())); // not asia soft.
+        data.Encode1(0, Config.GreaterOrEqual(Region.EMS, 55));
         data.EncodeBuffer(CWvsContext_SetSaleInfo());
         data.EncodeBuffer(ResCCashShop.getBestItems(), 1080);
         data.Encode2(0); // CCashShop::DecodeStock
         data.Encode2(0); // CCashShop::DecodeLimitGoods
-        if (Config.GreaterOrEqual(Region.GMS, 72)) {
-            data.Encode2(0); // CCashShop::DecodeZeroGoods
-        }
-
+        data.Encode2(0, Config.GreaterOrEqual(Region.GMS, 72)); // CCashShop::DecodeZeroGoods
         return data.getBytes();
     }
 
@@ -162,16 +168,25 @@ public class RD_CStage {
     public static byte[] CWvsContext_SetSaleInfo() {
         ServerPacket data = new ServerPacket();
 
-        if (Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 70, 76) || Config.GreaterOrEqual(Region.BMS, 24)) {
-            data.Encode4(0); // NotSaleCount
-        }
+        data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 187) || Config.GreaterOrEqual(Region.CMS, 88) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 70, 76) || Config.GreaterOrEqual(Region.BMS, 24)); // NotSaleCount
         data.EncodeBuffer(RD_CS_COMMODITY.CWvsContext_SetSaleInfo()); // 2 bytes.
-        if (Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)) {
-            data.Encode2(0); // non 0, Decode4, DecodeStr
-        }
-        data.EncodeBuffer(ResCCashShop.getDiscountRates()); // 1 byte.
-        if (Config.GreaterOrEqual(Region.EMS, 89)) {
-            data.Encode4(0);
+        data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)); // non 0, Decode4, DecodeStr
+        data.EncodeBuffer(getDiscountRates(0, 0, 99)); // 1 byte.
+        data.Encode4(0, Config.GreaterOrEqual(Region.EMS, 89));
+        return data.getBytes();
+    }
+
+    public static byte[] getDiscountRates(int categories, int sub_categories, int discount_rate) {
+        ServerPacket data = new ServerPacket();
+
+        // // count max 9*30, ただし1 byteなので全ては利用不可
+        data.Encode1(categories * sub_categories);
+        for (int category = 2; category < (categories + 2); category++) {
+            for (int sub_category = 0; sub_category < sub_categories; sub_category++) {
+                data.Encode1(category); // category
+                data.Encode1(sub_category); // sub category
+                data.Encode1(discount_rate); // discount rate
+            }
         }
 
         return data.getBytes();

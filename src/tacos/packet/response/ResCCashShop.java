@@ -57,44 +57,6 @@ public class ResCCashShop {
         return sp;
     }
 
-    /*
-    @016D : LP_CashShopChargeParamResult
-    @016E : LP_JMS_POINTSHOP_PRESENT_DIALOG
-    @016F : LP_CashShopQueryCashResult
-    @0170 : LP_CashShopCashItemResult
-    @0171 : LP_CashShopPurchaseExpChanged
-    @0172 : LP_CashShopGiftMateInfoResult
-    @0173 : LP_JMS_
-    @0174 : LP_JMS_POINTSHOP_KOC_PRESENT_DIALOG
-    @0175 : LP_JMSD
-    LP_CashShopCheckDuplicatedIDResult
-    LP_CashShopCheckNameChangePossibleResult
-    LP_CashShopRegisterNewCharacterResult
-    @0177 : LP_CashShopGachaponStampItemResult
-    @0178 : LP_CashShopCheckTransferWorldPossibleResult
-    LP_CashShopCashItemGachaponResult
-    @0179 : LP_CashShopCashGachaponOpenResult
-    LP_ChangeMaplePointResult
-    LP_CashShopOneADay
-    LP_CashShopNoticeFreeCashItem
-    LP_CashShopMemberShopResult
-     */
-    public static byte[] getDiscountRates() {
-        ServerPacket data = new ServerPacket();
-        data.Encode1(0); // count
-        /*
-        data.Encode1(6 * 10); // count max 9*30, ただし1 byteなので全ては利用不可
-        for (int category = 2; category < 8; category++) {
-            for (int sub_category = 0; sub_category < 10; sub_category++) {
-                data.Encode1(category); // category
-                data.Encode1(sub_category); // sub category
-                data.Encode1(99); // discount rate
-            }
-        }
-         */
-        return data.getBytes();
-    }
-
     public static enum BestItemCategory {
         BestItemCategory_Main(1),
         BestItemCategory_Event(2),

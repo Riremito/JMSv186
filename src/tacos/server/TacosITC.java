@@ -28,9 +28,11 @@ import tacos.property.Property_ITC;
  */
 public class TacosITC extends TacosServer {
 
-    public static final int MTS_MESO = 5000; //mesos needed
-    public static final int MTS_BASE = 0; //+1000 to everything in MSEA but cash is costly here
-    public static final int MTS_TAX = 10; //+% to everything
+    public static final int m_nRegisterFeeMeso = 5000;
+    public static final int m_nCommissionRate = 10;
+    public static final int m_nCommissionBase = 0;
+    public static final int m_nAuctionDurationMin = 24;
+    public static final int m_nAuctionDurationMax = 168;
     public static final int MIN_MTS = 110;
 
     private int world_id;

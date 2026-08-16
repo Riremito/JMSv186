@@ -121,7 +121,7 @@ public class ReqCITC {
                 long expiration = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
                 MTSStorage.getInstance().addToBuyNow(cart, item_copy, price, chr.getId(), chr.getName(), expiration);
                 MapleInventoryManipulator.removeFromSlot(client, inv_type, (short) inv_slot, (short) item_quantity, false);
-                chr.gainMeso(-TacosITC.MTS_MESO, false);
+                chr.gainMeso(-TacosITC.m_nRegisterFeeMeso, false);
                 chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_RegisterSaleEntry_Done));
                 sendMTSPackets(cart, client, true);
                 return true;
