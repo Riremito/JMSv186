@@ -38,12 +38,8 @@ import tacos.config.Config;
  */
 public class VersionSelector {
 
-    private static String[] versions
+    private static String[] versions_kms
             = {
-                // developing
-                "KMST v330.1",
-                "GMS v95.1",
-                // all list.
                 "KMS v1.1",
                 "KMS v3.1",
                 "KMS v31.1",
@@ -53,7 +49,7 @@ public class VersionSelector {
                 "KMS v51.2",
                 "KMS v55.1",
                 "KMS v65.1",
-                //"KMS v71.1",
+                "KMS v71.1",
                 "KMS v84.1",
                 "KMS v92.2",
                 "KMS v95.1",
@@ -65,14 +61,18 @@ public class VersionSelector {
                 "KMS v138.1",
                 "KMS v148.1",
                 "KMS v149.1",
-                //"KMS v150.1",
-                //"KMS v151.1",
+                "KMS v150.1",
+                "KMS v151.1",
                 "KMS v160.1",
                 "KMS v169.2",
-                //"KMS v174.2",
-                //"KMS v183.1",
+                "KMS v174.2",
+                "KMS v183.1",
                 "KMS v197.2",
-                //"KMS v200.1",
+                "KMS v200.1"
+            };
+
+    private static String[] versions_jms
+            = {
                 "JMS v131.0",
                 "JMS v146.0",
                 "JMS v147.0",
@@ -84,24 +84,36 @@ public class VersionSelector {
                 "JMS v188.0",
                 "JMS v194.0",
                 "JMS v302.0",
-                "JMS v308.0",
-                "KMSB v268.1", // 1.68
-                "KMST v330.1",
-                "KMST v391.1",
-                "JMST v110.0",
+                "JMS v308.0"
+            };
+
+    private static String[] versions_cms
+            = {
                 "CMS v85.1",
                 "CMS v88.1",
-                "CMS v104.1",
-                //"TWMS v74.1",
+                "CMS v104.1",};
+
+    private static String[] versions_twms
+            = {
+                "TWMS v74.1",
                 "TWMS v77.1",
                 "TWMS v96.1",
                 "TWMS v121.1",
-                //"TWMS v122.1",
-                //"TWMS v124.1",
+                "TWMS v122.1",
+                "TWMS v124.1",
                 "TWMS v125.1",
-                "TWMS v148.1",
-                "MSEA v100.1",
-                "MSEA v102.1",
+                "TWMS v148.1"
+            };
+
+    private static String[] versions_thms
+            = {
+                "THMS v87.0",
+                "THMS v88.0",
+                "THMS v96.0"
+            };
+
+    private static String[] versions_gms
+            = {
                 "GMS v61.1",
                 "GMS v62.1",
                 "GMS v65.1",
@@ -112,24 +124,40 @@ public class VersionSelector {
                 "GMS v83.1",
                 "GMS v84.1",
                 "GMS v91.1",
-                //"GMS v92.1",
+                "GMS v92.1",
                 "GMS v95.1",
                 "GMS v111.1",
                 "GMS v116.1",
                 "GMS v117.1",
                 "GMS v126.1",
-                "GMS v131.1",
-                "GMST v2.1",
+                "GMS v131.1"
+            };
+
+    private static String[] versions_msea
+            = {
+                "MSEA v77.1",
+                "MSEA v100.1",
+                "MSEA v102.1"
+            };
+
+    private static String[] versions_ems
+            = {
                 "EMS v55.1",
                 "EMS v70.1",
                 "EMS v76.2",
-                "EMS v89.2",
-                "THMS v87.0",
-                //"THMS v88.0",
-                "THMS v96.0",
+                "EMS v89.2"
+            };
+
+    private static String[] versions_etc
+            = {
+                "KMST v330.1",
+                "KMST v391.1",
+                "JMST v110.0",
+                "GMST v2.1",
                 "BMS v24.0",
                 "VMS v35.0",
-                "IMS v1.1"
+                "IMS v1.1",
+                "KMSB v268.1", // 1.68
             };
 
     public static boolean open() {
@@ -139,7 +167,22 @@ public class VersionSelector {
         dialog.setSize(400, 300);
         dialog.setLayout(new FlowLayout());
 
-        JComboBox<String> comboBox = new JComboBox<>(versions);
+        addComboBox(dialog, 100, 30, versions_kms).setSelectedItem("KMS v51.2");
+        addComboBox(dialog, 100, 30, versions_jms).setSelectedItem("JMS v187.0");
+        addComboBox(dialog, 100, 30, versions_cms).setSelectedItem("CMS v104.1");
+        addComboBox(dialog, 100, 30, versions_twms).setSelectedItem("TWMS v148.1");
+        addComboBox(dialog, 100, 30, versions_thms).setSelectedItem("THMS v87.1");
+        addComboBox(dialog, 100, 30, versions_gms).setSelectedItem("GMS v95.1");
+        addComboBox(dialog, 100, 30, versions_msea).setSelectedItem("MSEA v100.1");
+        addComboBox(dialog, 100, 30, versions_ems).setSelectedItem("EMS v70.1");
+        addComboBox(dialog, 100, 30, versions_etc).setSelectedItem("KMST v330.1");
+        dialog.setVisible(true); // close -> use previous result.
+        String ver_text = readConfig(); // read
+        return setConfig(ver_text); // set
+    }
+
+    public static JComboBox<String> addComboBox(JDialog dialog, int width, int height, String[] strings) {
+        JComboBox<String> comboBox = new JComboBox<>(strings);
 
         comboBox.addActionListener(e -> {
             String selected = (String) comboBox.getSelectedItem();
@@ -147,11 +190,10 @@ public class VersionSelector {
             dialog.dispose();
         });
 
-        comboBox.setPreferredSize(new Dimension(200, 60));
+        comboBox.setMaximumRowCount(30);
+        comboBox.setPreferredSize(new Dimension(width, height));
         dialog.add(comboBox);
-        dialog.setVisible(true); // close -> use previous result.
-        String ver_text = readConfig(); // read
-        return setConfig(ver_text); // set
+        return comboBox;
     }
 
     public static boolean autoConfig() {
