@@ -159,8 +159,57 @@ public class RD_CharacterData {
         if ((datamask & 0x1000L) != 0) {
             data.EncodeBuffer(Structure.addRocksInfo(chr));
         }
-
+        // please check the teleport rocks above info is in correct position or not.
         switch (Config.REGION) {
+            case THMS:
+            case MSEA:
+            case VMS:
+            case IMS: {
+                // OK.
+                if ((datamask & 0x20000) != 0) {
+                    data.Encode4(chr.getMonsterBook().getCover(), Config.Between(Region.THMS, 87, 88) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.VMS, 35));
+                }
+                if ((datamask & 0x10000) != 0) {
+                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr), Config.Between(Region.THMS, 87, 88) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.VMS, 35));
+                }
+                if ((datamask & 0x40000L) != 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr), Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.VMS, 35) || Config.GreaterOrEqual(Region.IMS, 1));
+                }
+                if ((datamask & 0x80000L) != 0) {
+                    data.Encode2(0, Config.Between(Region.THMS, 87, 88) || Config.GreaterOrEqual(Region.MSEA, 100));
+                }
+                if ((datamask & 0x200000L) != 0) {
+                    // pre-bb
+                    data.Encode2(0, Config.Between(Region.THMS, 87, 88) || Config.GreaterOrEqual(Region.MSEA, 100));
+                }
+                if ((datamask & 0x200000L) != 0 && (chr.getJob() / 100 == 33)) {
+                    // post-bb
+                    data.EncodeBuffer(RD_CStage.GW_WildHunterInfo_Encode(), Config.GreaterOrEqual(Region.IMS, 1));
+                }
+                if ((datamask & 0x400000L) != 0) {
+                    data.Encode2(0, Config.GreaterOrEqual(Region.THMS, 96) || Config.GreaterOrEqual(Region.IMS, 1)); // QuestCompleteOld
+                }
+                if ((datamask & 0x800000L) != 0) {
+                    data.Encode2(0, Config.GreaterOrEqual(Region.THMS, 96)); // not 0, Encode2, Encode2
+                }
+                break;
+            }
+            case BMS: {
+                // encode order problem.
+                if ((datamask & 0x40000L) != 0) {
+                    data.EncodeBuffer(Structure.QuestInfoPacket(chr), Config.GreaterOrEqual(Region.BMS, 24));
+                }
+                if ((datamask & 0x80000L) != 0) {
+                    data.Encode2(0, Config.GreaterOrEqual(Region.BMS, 24));
+                }
+                if ((datamask & 0x20000L) != 0) {
+                    data.Encode4(chr.getMonsterBook().getCover(), Config.GreaterOrEqual(Region.BMS, 24));
+                }
+                if ((datamask & 0x10000L) != 0) {
+                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr), Config.GreaterOrEqual(Region.BMS, 24));
+                }
+                break;
+            }
             case KMS:
             case KMST: {
                 if (Config.PreBB()) {
@@ -485,24 +534,6 @@ public class RD_CharacterData {
                 }
                 break;
             }
-            case MSEA: {
-                if ((datamask & 0x20000) != 0) {
-                    data.Encode4(chr.getMonsterBook().getCover());
-                }
-                if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr));
-                }
-                if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                }
-                if ((datamask & 0x80000L) != 0) {
-                    data.Encode2(0);
-                }
-                if ((datamask & 0x200000L) != 0) {
-                    data.Encode2(0);
-                }
-                break;
-            }
             case GMS:
             case GMST: {
                 if (Config.GreaterOrEqual(Region.GMS, 126)) {
@@ -797,82 +828,6 @@ public class RD_CharacterData {
                     if ((datamask & 0x800L) != 0) {
                         data.Encode2(0);
                     }
-                }
-                break;
-            }
-            case VMS: {
-                if ((datamask & 0x20000) != 0) {
-                    data.Encode4(chr.getMonsterBook().getCover());
-                }
-                if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr));
-                }
-                if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                }
-                break;
-            }
-            case BMS: {
-                if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                }
-                if ((datamask & 0x80000L) != 0) {
-                    data.Encode2(0);
-                }
-                if ((datamask & 0x20000) != 0) {
-                    data.Encode4(chr.getMonsterBook().getCover());
-                }
-                if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr));
-                }
-                break;
-            }
-            case THMS: {
-                // THMS96
-                if (Config.PostBB()) {
-                    if ((datamask & 0x40000L) != 0) {
-                        data.Encode2(0);
-                    }
-                    if ((datamask & 0x200000L) != 0 && (chr.getJob() / 100 == 33)) {
-                        data.EncodeBuffer(RD_CStage.GW_WildHunterInfo_Encode());
-                    }
-                    // 0x400000 QuestCompleteOld
-                    if ((datamask & 0x400000L) != 0) {
-                        data.Encode2(0); // not 0, Encode2, EncodeBuffer8
-                    }
-                    // 0x800000
-                    if ((datamask & 0x800000L) != 0) {
-                        data.Encode2(0); // not 0, Encode2, Encode2
-                    }
-                    break;
-                }
-                // PreBB
-                if ((datamask & 0x20000) != 0) {
-                    data.Encode4(chr.getMonsterBook().getCover());
-                }
-                if ((datamask & 0x10000) != 0) {
-                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr));
-                }
-                if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                }
-                if ((datamask & 0x80000L) != 0) {
-                    data.Encode2(0);
-                }
-                if ((datamask & 0x200000L) != 0) {
-                    data.Encode2(0);
-                }
-                break;
-            }
-            case IMS: {
-                if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
-                }
-                if ((datamask & 0x200000L) != 0 && (chr.getJob() / 100 == 33)) {
-                    data.EncodeBuffer(RD_CStage.GW_WildHunterInfo_Encode());
-                }
-                if ((datamask & 0x400000L) != 0) {
-                    data.Encode2(0);
                 }
                 break;
             }
