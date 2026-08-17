@@ -172,7 +172,7 @@ public class RD_CStage {
     public static byte[] CWvsContext_SetSaleInfo() {
         ServerPacket data = new ServerPacket();
 
-        data.Encode4(0, Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 55, 70) || Config.GreaterOrEqual(Region.BMS, 24)); // NotSaleCount
+        data.Encode4(0, Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 55, 70) || Config.GreaterOrEqual(Region.BMS, 24)); // NotSaleCount
         data.EncodeBuffer(getCommodities(EtcWz.getOnSale())); // 2 bytes.
         data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)); // non 0, Decode4, DecodeStr
         data.EncodeBuffer(getDiscountRates(0, 0, 99)); // 1 byte.

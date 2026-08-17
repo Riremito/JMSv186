@@ -97,7 +97,7 @@ public class VersionSelector {
             = {
                 "TWMS v74.1",
                 "TWMS v77.1",
-                "TWMS v96.1",
+                "TWMS v94.1",
                 "TWMS v121.1",
                 "TWMS v122.1",
                 "TWMS v124.1",
