@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
@@ -62,6 +63,17 @@ public class RD_CStage {
         data.Encode4(0); // item1?
         data.Encode4(0); // item2?
         data.Encode4(0); // item3?
+        return data.getBytes();
+    }
+
+    // JMS
+    public static byte[] MapleGift_Encode(MapleGiftData maple_gift_data) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode4(maple_gift_data.unk1);
+        data.Encode4(maple_gift_data.item_id);
+        data.Encode2(maple_gift_data.id);
+        data.EncodeStr(maple_gift_data.name);
         return data.getBytes();
     }
 

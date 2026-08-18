@@ -1084,6 +1084,13 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.critical_rate;
     }
 
+    // maple gift.
+    private final TacosMapleGift maple_gift = new TacosMapleGift();
+
+    public TacosMapleGift getMapleGift() {
+        return this.maple_gift;
+    }
+
     // monster book.
     private final TacosMonsterBook monster_book = new TacosMonsterBook();
 

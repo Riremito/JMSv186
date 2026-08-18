@@ -33,6 +33,8 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
+import tacos.client.TacosMapleGift;
+import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -220,6 +222,19 @@ public class TestCommand {
                 int index = dcmd.check(1) ? dcmd.getInt(1) : 1;
                 chr.DebugMsg("monsterPacketTest : " + index);
                 monsterPacketTest(chr, monster, index);
+                return true;
+            }
+            case "/maplegift": {
+                TacosMapleGift maple_gift = chr.getMapleGift();
+                maple_gift.clear();
+                MapleGiftData maple_gift_data = new MapleGiftData();
+                maple_gift_data.unk1 = 1;
+                maple_gift_data.item_id = 1452045;
+                maple_gift_data.name = "MAPLE";
+                maple_gift_data.id = 777;
+                maple_gift.add(maple_gift_data);
+                // there is no way to cancel maple gift popup.
+                chr.SendPacket(ResCWvsContext.MapleGift(maple_gift_data));
                 return true;
             }
             default: {

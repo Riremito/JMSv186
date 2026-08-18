@@ -65,6 +65,7 @@ import tacos.client.TacosBuff;
 import tacos.client.TacosBuff.Buff;
 import tacos.odin.OdinPair;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.client.TacosMonsterBook;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
@@ -73,6 +74,7 @@ import tacos.packet.ops.OpsMarriage;
 import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.RD_AvatarLook;
+import tacos.packet.response.data.RD_CStage;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -1482,6 +1484,29 @@ public class ResCWvsContext {
             sp.Encode4(chr.getTama()); // アイテム欄の玉の数に反映される値
             sp.Encode4(0); // 用途不明
         }
+        return sp;
+    }
+
+    public static ServerPacket MapleGift(MapleGiftData maple_gift_data) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_MapleGift);
+
+        int type = maple_gift_data == null ? 3 : 1;
+        sp.Encode1(type);
+        switch (type) {
+            case 1: {
+                sp.EncodeBuffer(RD_CStage.MapleGift_Encode(maple_gift_data));
+                break;
+            }
+            case 3: {
+                // no data, show error message for who sent gift.
+                break;
+            }
+            default: {
+                // do nothing.
+                break;
+            }
+        }
+
         return sp;
     }
 

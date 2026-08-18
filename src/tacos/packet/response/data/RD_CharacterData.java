@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.struct.Structure;
 import tacos.shared.SharedDate;
@@ -182,7 +183,11 @@ public class RD_CharacterData {
             case IMS: {
                 // OK.
                 if ((datamask & 0x7CL) != 0) {
-                    data.Encode2(0, Config.GreaterOrEqual(Region.JMS, 131)); // Present, not 0 -> Encode4, Encode4, Encode2, EncodeStr
+                    // probably, not supported by SetField.
+                    data.Encode2(chr.getMapleGift().get().size(), Config.GreaterOrEqual(Region.JMS, 131));
+                    for (MapleGiftData maple_gift_data : chr.getMapleGift().get()) {
+                        data.EncodeBuffer(RD_CStage.MapleGift_Encode(maple_gift_data), Config.GreaterOrEqual(Region.JMS, 131));
+                    }
                 }
                 if (Config.LessOrEqual(Region.JMS, 131)) {
                     return data.getBytes();
@@ -477,6 +482,9 @@ public class RD_CharacterData {
                 if ((datamask & 0x2000000L) != 0) {
                     data.Encode2(0);
                 }
+                break;
+            }
+            default: {
                 break;
             }
         }

@@ -79,6 +79,7 @@ import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
+import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.config.Config;
 import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
@@ -597,6 +598,21 @@ public class ReqCUser {
                 map.addMapObject(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.sendStatChanged(true);
+                return true;
+            }
+            case CP_JMS_MapleGift: {
+                byte unk1 = cp.Decode1(); // always 0.
+                int unk2 = cp.Decode4();
+                int item_id = cp.Decode4();
+                short id = cp.Decode2();
+                String name = cp.DecodeStr();
+
+                MapleGiftData maple_gift_data = chr.getMapleGift().find(id);
+                if (maple_gift_data != null) {
+                    chr.DebugMsgItem("MapleGiftTEST", maple_gift_data.item_id);
+                    chr.getMapleGift().remove(id);
+                    // TODO : give item to user.
+                }
                 return true;
             }
             case CP_UserMigrateToITCRequest: {
