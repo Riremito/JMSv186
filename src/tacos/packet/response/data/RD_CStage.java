@@ -149,7 +149,7 @@ public class RD_CStage {
         data.EncodeBuffer(RD_CStage.CCashShop_LoadData(chr));
         data.Encode1(0); // m_bEventOn
         data.Encode4(0, Config.GreaterOrEqual(Region.GMS, 62)); // m_nHighestCharacterLevelInThisAccount
-        data.Encode1(0, Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.IMS, 1));
+        data.Encode1(0, Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.IMS, 1));
         return data.getBytes();
     }
 
@@ -176,7 +176,7 @@ public class RD_CStage {
         data.EncodeBuffer(getCommodities(EtcWz.getOnSale())); // 2 bytes.
         data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)); // non 0, Decode4, DecodeStr
         data.EncodeBuffer(getDiscountRates(0, 0, 99)); // 1 byte.
-        data.Encode4(0, Config.GreaterOrEqual(Region.EMS, 89));
+        data.Encode4(0, Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.EMS, 89));
         return data.getBytes();
     }
 
