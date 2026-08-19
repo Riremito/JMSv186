@@ -49,11 +49,7 @@ public class MapleAESOFB {
     private byte iv[];
     private Cipher cipher;
     private short mapleVersion;
-    private boolean login; // x64
-    private boolean isCP; // x64
-
     private static SecretKeySpec skey = new SecretKeySpec(new byte[]{0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00}, "AES");
-    private final static SecretKeySpec skey_kms = new SecretKeySpec(new byte[]{0x15, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00}, "AES");
 
     private static final byte[] funnyBytes = new byte[]{(byte) 0xEC, (byte) 0x3F, (byte) 0x77, (byte) 0xA4, (byte) 0x45, (byte) 0xD0, (byte) 0x71, (byte) 0xBF, (byte) 0xB7, (byte) 0x98, (byte) 0x20, (byte) 0xFC,
         (byte) 0x4B, (byte) 0xE9, (byte) 0xB3, (byte) 0xE1, (byte) 0x5C, (byte) 0x22, (byte) 0xF7, (byte) 0x0C, (byte) 0x44, (byte) 0x1B, (byte) 0x81, (byte) 0xBD, (byte) 0x63, (byte) 0x8D, (byte) 0xD4, (byte) 0xC3,
@@ -105,7 +101,7 @@ public class MapleAESOFB {
         return false;
     }
 
-    public MapleAESOFB(byte iv[], boolean isLogin, boolean isOutbound) {
+    public MapleAESOFB(byte iv[], boolean isOutbound) {
         if (ClientEdit.PacketEncryptionRemoved.get()) {
             // no encryption
         } else {
@@ -116,21 +112,14 @@ public class MapleAESOFB {
                 } else {
                     cipher.init(Cipher.ENCRYPT_MODE, skey);
                 }
-                // Thank you for reading code!
-                //cipher.init(Cipher.ENCRYPT_MODE, skey_x64);
-            } catch (NoSuchAlgorithmException e) {
-                System.err.println("ERROR" + e);
-            } catch (NoSuchPaddingException e) {
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
                 System.err.println("ERROR" + e);
             } catch (InvalidKeyException e) {
                 System.err.println("Error initalizing the encryption cipher.  Make sure you're using the Unlimited Strength cryptography jar files.");
             }
         }
 
-        this.login = isLogin; // LoginServer
-        this.isCP = isOutbound; // ClientPacket
         this.setIv(iv);
-
         short vesrion = isOutbound ? (short) (0xFFFF - (short) Config.VERSION) : (short) Config.VERSION;
         this.mapleVersion = (short) (((vesrion >> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
     }
@@ -168,11 +157,6 @@ public class MapleAESOFB {
     }
 
     public byte[] crypt(byte[] data) {
-        /*
-        if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
-            return crypt_v414(data);
-        }
-         */
         int remaining = data.length;
         int llength = 0x5B0;
         int start = 0;
@@ -188,9 +172,6 @@ public class MapleAESOFB {
                     if ((x - start) % myIv.length == 0) {
                         byte[] newIv = cipher.doFinal(myIv);
                         System.arraycopy(newIv, 0, myIv, 0, myIv.length);
-                        // System.out
-                        // .println("Iv is now " + HexTool.toString(this.iv));
-
                     }
                     data[x] ^= myIv[(x - start) % myIv.length];
                 }
@@ -232,59 +213,11 @@ public class MapleAESOFB {
         return data;
     }
 
-    // JMS v414 x64
-    public byte[] crypt_v414(byte[] delta) {
-        if (this.login || this.isCP) { // server recv or login server
-            int a = delta.length;
-            int b = a;
-            int c = 0;
-            if (a >= 0x5B0) {
-                b = 0x5B0;
-            }
-            if (a >= 0xFF00) { // for outpacket?
-                b -= 4;
-            }
-            while (a > 0) {
-                byte[] d = multiplyBytes(this.iv, 4, 4);
-                for (int e = c; e < (c + b); e++) {
-                    if ((e - c) % d.length == 0) {
-                        try {
-                            //cipher.encrypt(d);
-                            byte[] newIv = cipher.doFinal(d);
-                            System.arraycopy(newIv, 0, d, 0, d.length);
-                        } catch (Exception ex) {
-                            ex.printStackTrace(); // may eventually want to remove this
-                        }
-                    }
-                    delta[e] ^= d[(e - c) % d.length];
-                }
-                c += b;
-                a -= b;
-                b = a;
-                if (b >= 0x5B4) {
-                    b = 0x5B4;
-                }
-            }
-        } else { // server send packet in all servers except login
-            int seqSnd = (this.iv[0] & 0xff) | (this.iv[1] & 0xff) << 8 | (this.iv[2] & 0xff) << 16 | (this.iv[3] & 0xff) << 24;
-            for (int i = 0, n = delta.length; i < n; i++) {
-                delta[i] += (byte) seqSnd; // isn't this just gamma[0]?
-            }
-        }
-        return delta;
-    }
-
     public void updateIv() {
         this.iv = getNewIv(this.iv);
     }
 
     public byte[] getPacketHeader(int length) {
-        /*
-        if (ServerConfig.IsJMS() && 414 <= ServerConfig.GetVersion()) {
-            return getPacketHeader_v414(length);
-        }
-         */
-
         int iiv = (((iv[3]) & 0xFF) | ((iv[2] << 8) & 0xFF00)) ^ mapleVersion;
         int mlength = (((length << 8) & 0xFF00) | (length >>> 8)) ^ iiv;
 
@@ -297,29 +230,7 @@ public class MapleAESOFB {
         return packetLength;
     }
 
-    /*
-    public byte[] getPacketHeader_v414(int length) {
-        MaplePacketLittleEndianWriter mplew = new MaplePacketLittleEndianWriter();
-        int uSeqSnd = ((iv[2] & 0xFF) | (iv[3] << 8)) & 0xFFFF;
-        uSeqSnd ^= (0xFFFF - (short) Version.getVersion());
-
-        mplew.writeShort((short) uSeqSnd);
-        if (length >= 0xFF00) {
-            mplew.writeShort((short) (0xFF00 ^ uSeqSnd));
-            mplew.writeInt(length ^ uSeqSnd);
-        } else {
-            mplew.writeShort((short) (length ^ uSeqSnd));
-        }
-        return mplew.getPacket().getBytes();
-    }
-     */
     public boolean checkPacket(byte[] packet) {
-        // x64
-        if (Config.GreaterOrEqual(Region.KMS, 373) || Config.GreaterOrEqual(Region.JMS, 414)) {
-            // KMS v373
-            return true;
-        }
-
         return ((((packet[0] ^ iv[2]) & 0xFF) == ((mapleVersion >> 8) & 0xFF)) && (((packet[1] ^ iv[3]) & 0xFF) == (mapleVersion & 0xFF)));
     }
 

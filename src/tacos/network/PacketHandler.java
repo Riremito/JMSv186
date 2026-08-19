@@ -126,8 +126,8 @@ public class PacketHandler extends IoHandlerAdapter {
         byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
         byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
 
-        MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true, true);
-        MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, true, false);
+        MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true);
+        MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, false);
         MapleClient client = new MapleClient(session);
         client.setServer(this.server);
 

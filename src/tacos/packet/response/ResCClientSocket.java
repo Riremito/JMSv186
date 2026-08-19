@@ -31,7 +31,7 @@ import tacos.tools.TacosTools;
  */
 public class ResCClientSocket {
 
-    // サーバーのバージョン情報
+    // first packet.
     public static ServerPacket getHello(byte[] sendIv, byte[] recvIv) {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
@@ -67,23 +67,12 @@ public class ResCClientSocket {
                 break;
             }
         }
+
         sp.EncodeBuffer(recvIv);
         sp.EncodeBuffer(sendIv);
         sp.Encode1(Config.REGION.get()); // JMS = 3
 
-        /*
-            // x64
-            sp.Encode2(Config.GetVersion());
-            sp.EncodeStr("1:" + Config.GetSubVersion()); // 1:1
-            sp.EncodeBuffer(recvIv);
-            sp.EncodeBuffer(sendIv);
-            sp.Encode1(Config.GetRegionNumber());
-            sp.Encode1(0);
-            sp.Encode1(5);
-            sp.Encode1(1);
-         */
-        // ヘッダにサイズを書き込む
-        sp.setHello();
+        sp.setHello(); // write size of this packet length.
         return sp;
     }
 
@@ -94,11 +83,7 @@ public class ResCClientSocket {
         sp.Encode1(1);
         sp.Encode4(TacosTools.getGameServerIP(server.getGlobalIP()));
         sp.Encode2(server.getPort());
-
-        if (Config.GreaterOrEqual(Region.KMS, 118) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.Equal(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
-            sp.Encode1(0);
-        }
-
+        sp.Encode1(0, Config.GreaterOrEqual(Region.KMS, 118) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.Equal(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         return sp;
     }
 
