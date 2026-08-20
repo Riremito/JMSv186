@@ -25,13 +25,13 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import java.util.LinkedList;
 import java.util.List;
 import tacos.packet.response.ResCEmployeePool;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
 import odin.server.maps.MapleMapObjectType;
+import tacos.client.TacosClient;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosWorld;
 
@@ -94,8 +94,8 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     @Override
-    public void buy(MapleClient c, int item, short quantity) {
-        MapleCharacter chr = c.getPlayer();
+    public void buy(TacosClient client, int item, short quantity) {
+        MapleCharacter chr = client.getPlayer();
         final MaplePlayerShopItem pItem = items.get(item);
         final IItem shopItem = pItem.item;
         final IItem newItem = shopItem.copy();
@@ -110,16 +110,16 @@ public class HiredMerchant extends AbstractPlayerStore {
             newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
         }
 
-        if (MapleInventoryManipulator.checkSpace(c, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(c, newItem, false)) {
+        if (MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
             pItem.bundles -= quantity; // Number remaining in the store
-            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), c.getPlayer().getName()));
+            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), client.getPlayer().getName()));
 
             final int gainmeso = getMeso() + (pItem.price * quantity);
             setMeso(gainmeso - GameConstants.EntrustedStoreTax(gainmeso));
-            c.getPlayer().gainMeso(-pItem.price * quantity, false);
+            client.getPlayer().gainMeso(-pItem.price * quantity, false);
             saveItems();
         } else {
-            c.getPlayer().dropMessage(1, "Your inventory is full.");
+            client.getPlayer().dropMessage(1, "Your inventory is full.");
             chr.updateInv();
         }
     }
@@ -154,14 +154,14 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(TacosClient client) {
         if (isAvailable()) {
             client.getSession().write(ResCEmployeePool.EmployeeLeaveField(this));
         }
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(TacosClient client) {
         if (isAvailable()) {
             client.getSession().write(ResCEmployeePool.EmployeeEnterField(this));
         }

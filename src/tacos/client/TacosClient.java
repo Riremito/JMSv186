@@ -18,10 +18,15 @@
  */
 package tacos.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import odin.client.MapleCharacter;
 import org.apache.mina.common.IoSession;
 import tacos.config.DeveloperMode;
+import tacos.constants.MapleClientState;
 import tacos.constants.TacosConstants;
+import tacos.database.LazyDatabase;
+import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
 import tacos.packet.response.ResCLogin;
 import tacos.server.TacosCashShop;
@@ -29,6 +34,7 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosITC;
 import tacos.server.TacosLogin;
 import tacos.server.TacosServer;
+import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.tools.TacosTools;
 
@@ -37,6 +43,8 @@ import tacos.tools.TacosTools;
  * @author Riremito
  */
 public class TacosClient extends BaseClient {
+
+    public static final String CLIENT_KEY = "CLIENT";
 
     // account info
     private TacosServer server;
@@ -50,16 +58,18 @@ public class TacosClient extends BaseClient {
     private boolean gameMaster;
     private byte gender = 0;
     private int charslots = TacosConstants.DEFAULT_CHARSLOT;
+    private List<MapleCharacter> characters = null;
     // server info
     private int loginAttempt = 0;
     private int world = 0;
     private int selected_world = 0;
     private int selected_channel = 1;
     // in game info
-    private MapleCharacter player = null;
+    private MapleCharacter character = null;
 
     public TacosClient(IoSession session) {
         super(session);
+        this.characters = new ArrayList<>();
     }
 
     public TacosServer getServer() {
@@ -220,17 +230,73 @@ public class TacosClient extends BaseClient {
     }
 
     public MapleCharacter getPlayer() {
-        return this.player;
+        return this.character;
     }
 
-    public void setPlayer(MapleCharacter player) {
-        this.player = player;
+    public void setPlayer(MapleCharacter character) {
+        this.character = character;
     }
 
     public void loginFailed(String text) {
         DebugLogger.ErrorLog("loginFailed : " + text);
         setPlayer(null);
         getSession().close();
+    }
+
+    public List<MapleCharacter> loadCharactersFromDB(List<Integer> character_ids) {
+        this.characters = new ArrayList<>();
+        for (int character_id : character_ids) {
+            MapleCharacter chr_mine = MapleCharacter.loadCharFromDB(character_id, this, false);
+            this.characters.add(chr_mine);
+        }
+        return this.characters;
+    }
+
+    public List<MapleCharacter> getCharacters() {
+        return this.characters;
+    }
+
+    public void addCharacter(MapleCharacter new_character) {
+        this.characters.add(new_character);
+    }
+
+    public boolean checkCharacterId(int character_id) {
+        for (MapleCharacter chr : this.characters) {
+            if (chr.getId() == character_id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getCharaterCount() {
+        return this.characters.size();
+    }
+
+    public boolean disconnect(boolean RemoveInChannelServer, boolean shutdown) {
+        MapleCharacter chr = getPlayer();
+        // save to DB
+        if (chr != null) {
+            chr.removalTask();
+            chr.saveToDB(false);
+            LazyDatabase.saveData(getPlayer());
+        }
+        if (shutdown) {
+            closeSession();
+            return true;
+        }
+        if (getServer().getType() == TacosServerType.LOGIN_SERVER) {
+            DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
+            return true;
+        }
+        // dc
+        if (chr != null) {
+            chr.disconnect(RemoveInChannelServer, false);
+            if (getWorld().findMigratingPlayer(chr.getId()) == null) {
+                DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
+            }
+        }
+        return true;
     }
 
     // ping pong
@@ -256,5 +322,4 @@ public class TacosClient extends BaseClient {
         this.alive_req++;
         return true;
     }
-
 }

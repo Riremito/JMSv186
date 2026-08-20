@@ -20,8 +20,8 @@ package tacos.server.map;
 
 import java.awt.Point;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosClient;
 import tacos.constants.TacosConstants;
 import tacos.script.TacosScriptPortal;
 
@@ -112,7 +112,7 @@ public class TacosPortal {
         this.portalState = ps;
     }
 
-    public boolean enterPortal(MapleClient client) {
+    public boolean enterPortal(TacosClient client) {
         MapleCharacter chr = client.getPlayer();
 
         if (!this.portalState) {

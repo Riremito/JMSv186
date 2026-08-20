@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
@@ -30,7 +30,7 @@ import tacos.packet.ClientPacketHeader;
  */
 public class Req_Farm {
 
-    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient client) {
+    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;

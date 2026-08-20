@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
 import tacos.packet.response.ResCField;
 import odin.server.quest.MapleQuest;
@@ -153,12 +153,12 @@ public class MapleMiniGame extends AbstractPlayerStore {
         return loser;
     }
 
-    public void send(MapleClient c) {
+    public void send(TacosClient client) {
         if (getMCOwner() == null) {
             closeShop(false, false, 0);
             return;
         }
-        c.getSession().write(ResCMiniRoomBaseDlg.getMiniGame(c, this));
+        client.getSession().write(ResCMiniRoomBaseDlg.getMiniGame(client, this));
     }
 
     public void setReady(int slot) {
@@ -367,6 +367,6 @@ public class MapleMiniGame extends AbstractPlayerStore {
     }
 
     @Override
-    public void buy(MapleClient c, int z, short i) {
+    public void buy(TacosClient client, int z, short i) {
     }
 }

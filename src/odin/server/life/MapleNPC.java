@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.server.MapleShopFactory;
 import odin.server.maps.MapleMapObjectType;
 
@@ -38,16 +38,16 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         return MapleShopFactory.getInstance().getShopForNPC(getId()) != null;
     }
 
-    public void sendShop(MapleClient c) {
-        MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(c);
+    public void sendShop(TacosClient client) {
+        MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(client);
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(TacosClient client) {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(TacosClient client) {
     }
 
     @Override

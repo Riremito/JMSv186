@@ -22,7 +22,7 @@ package odin.server.maps;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
 import odin.server.Timer.MapTimer;
 import tacos.odin.OdinPair;
@@ -106,17 +106,17 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(TacosClient client) {
         client.SendPacket(ResCReactorPool.ReactorLeaveField(this));
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(TacosClient client) {
         client.SendPacket(ResCReactorPool.ReactorEnterField(this));
     }
 
-    public void forceStartReactor(MapleClient c) {
-        TacosScriptReactor.getInstance().act(c, this);
+    public void forceStartReactor(TacosClient client) {
+        TacosScriptReactor.getInstance().act(client, this);
     }
 
     public void forceHitReactor(final byte newState) {
@@ -126,8 +126,8 @@ public class MapleReactor extends AbstractMapleMapObject {
     }
 
     //hitReactor command for item-triggered reactors
-    public void hitReactor(MapleClient c) {
-        hitReactor(0, (short) 0, c);
+    public void hitReactor(TacosClient client) {
+        hitReactor(0, (short) 0, client);
     }
 
     public void forceTrigger() {
@@ -144,7 +144,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         }, delay);
     }
 
-    public void hitReactor(int charPos, short stance, MapleClient c) {
+    public void hitReactor(int charPos, short stance, TacosClient client) {
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
             //type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
             final byte oldState = state;
@@ -157,17 +157,17 @@ public class MapleReactor extends AbstractMapleMapObject {
                     } else { //item-triggered on final step
                         map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, stance));
                     }
-                    TacosScriptReactor.getInstance().act(c, this);
+                    TacosScriptReactor.getInstance().act(client, this);
                 } else { //reactor not broken yet
                     boolean done = false;
                     map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, stance)); //magatia is weird cause full beaker can be activated by gm hat o.o
                     if (state == stats.getNextState(state) || rid == 2618000 || rid == 2309000) { //current state = next state, looping reactor
-                        TacosScriptReactor.getInstance().act(c, this);
+                        TacosScriptReactor.getInstance().act(client, this);
                         done = true;
                     }
                     if (stats.getTimeOut(state) > 0) {
                         if (!done) {
-                            TacosScriptReactor.getInstance().act(c, this);
+                            TacosScriptReactor.getInstance().act(client, this);
                         }
                         scheduleSetState(state, oldState, stats.getTimeOut(state));
                     }
@@ -205,12 +205,12 @@ public class MapleReactor extends AbstractMapleMapObject {
         return "Reactor " + getObjectId() + " of id " + rid + " at position " + getPosition().toString() + " state" + state + " type " + stats.getType(state);
     }
 
-    public void delayedHitReactor(final MapleClient c, long delay) {
+    public void delayedHitReactor(final TacosClient client, long delay) {
         MapTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public void run() {
-                hitReactor(c);
+                hitReactor(client);
             }
         }, delay);
     }

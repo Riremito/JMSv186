@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -36,7 +36,7 @@ import tacos.packet.response.wrapper.ResWrapper;
  */
 public class ReqCUIGoldHammer {
 
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;

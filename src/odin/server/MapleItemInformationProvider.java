@@ -12,7 +12,7 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
 import tacos.config.ContentState;
@@ -161,7 +161,7 @@ public class MapleItemInformationProvider {
     /**
      * returns the maximum of items in one slot
      */
-    public final short getSlotMax(final MapleClient c, final int itemId) {
+    public final short getSlotMax(final TacosClient client, final int itemId) {
         if (slotMaxCache.containsKey(itemId)) {
             return slotMaxCache.get(itemId);
         }

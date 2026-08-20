@@ -33,7 +33,7 @@ import java.lang.ref.WeakReference;
 import odin.client.inventory.IItem;
 import odin.client.inventory.ItemLoader;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.DatabaseConnection;
 import java.util.ArrayList;
@@ -340,11 +340,11 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(TacosClient client) {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(TacosClient client) {
     }
 
     @Override

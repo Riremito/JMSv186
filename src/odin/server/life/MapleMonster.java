@@ -38,7 +38,7 @@ import odin.client.ISkill;
 import odin.client.inventory.Item;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
@@ -563,13 +563,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
     }
 
-    public final void resetShammos(MapleClient c) {
+    public final void resetShammos(TacosClient client) {
         map.killAllMonsters(true);
         map.broadcastMessage(ResWrapper.BroadCastMsgEvent("A player has moved too far from Shammos. Shammos is going back to the start."));
         for (MapleCharacter chr : map.getCharacters()) {
             chr.changeMap(chr.getMap(), chr.getMap().getPortal(0));
         }
-        MapScriptMethods.startScript_FirstUser(c, "shammos_Fenter");
+        MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
     }
 
     public final void addListener(final MonsterListener listener) {
@@ -593,7 +593,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(TacosClient client) {
         if (!isAlive()) {
             return;
         }
@@ -614,7 +614,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(TacosClient client) {
         if (lastNode == -1) {
             client.SendPacket(ResCMobPool.MobLeaveField(this, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
         }

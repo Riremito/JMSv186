@@ -23,7 +23,7 @@ package odin.server.maps;
 import java.awt.Point;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.response.ResCSummonedPool;
 import odin.server.MapleStatEffect;
 import tacos.packet.ops.OpsAssist;
@@ -55,11 +55,11 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
     }
 
     @Override
-    public final void sendSpawnData(final MapleClient client) {
+    public final void sendSpawnData(final TacosClient client) {
     }
 
     @Override
-    public final void sendDestroyData(final MapleClient client) {
+    public final void sendDestroyData(final TacosClient client) {
         client.getSession().write(ResCSummonedPool.SummonedLeaveField(this, false));
     }
 

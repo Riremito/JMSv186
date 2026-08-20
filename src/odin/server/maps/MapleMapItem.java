@@ -23,7 +23,7 @@ package odin.server.maps;
 import java.awt.Point;
 import odin.client.inventory.IItem;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.EnterType;
 import tacos.packet.response.ResCDropPool.LeaveType;
@@ -125,14 +125,14 @@ public class MapleMapItem extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(final MapleClient client) {
+    public void sendSpawnData(final TacosClient client) {
         if (questid <= 0 || client.getPlayer().getQuestStatus(questid) == 1) {
             client.SendPacket(ResCDropPool.DropEnterField(this, EnterType.NO_ANIMATION, getPosition()));
         }
     }
 
     @Override
-    public void sendDestroyData(final MapleClient client) {
+    public void sendDestroyData(final TacosClient client) {
         client.SendPacket(ResCDropPool.DropLeaveField(this, LeaveType.NO_ANIMATION));
     }
 

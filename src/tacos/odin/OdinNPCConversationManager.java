@@ -35,7 +35,7 @@ import odin.client.inventory.IItem;
 import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
 import odin.client.inventory.ItemFlag;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.SkillFactory;
@@ -86,7 +86,7 @@ import tacos.server.TacosChannel;
 
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
-    private MapleClient client;
+    private TacosClient client;
     private int npc, script_name, questid;
     private String getText;
     private byte type; // -1 = NPC, 0 = start quest, 1 = end quest
@@ -94,7 +94,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public boolean pendingDisposal = false;
     private Invocable iv;
 
-    public OdinNPCConversationManager(MapleClient client, int npc, int questid, byte type, Invocable iv) {
+    public OdinNPCConversationManager(TacosClient client, int npc, int questid, byte type, Invocable iv) {
         super(client);
         this.client = client;
         this.npc = npc;
@@ -104,9 +104,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         this.script_name = npc;
     }
 
-    public OdinNPCConversationManager(MapleClient c, int npc, int questid, byte type, Invocable iv, int sciprt_name) {
-        super(c);
-        this.client = c;
+    public OdinNPCConversationManager(TacosClient client, int npc, int questid, byte type, Invocable iv, int sciprt_name) {
+        super(client);
+        this.client = client;
         this.npc = npc;
         this.questid = questid;
         this.type = type;

@@ -22,7 +22,7 @@ package odin.server.maps;
 
 import java.awt.Point;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 
 public interface MapleMapObject {
 
@@ -36,8 +36,8 @@ public interface MapleMapObject {
 
     public void setPosition(final Point position);
 
-    public void sendSpawnData(final MapleClient client);
+    public void sendSpawnData(final TacosClient client);
 
     //public void setPickedUp(final boolean pickedUp);
-    public void sendDestroyData(final MapleClient client);
+    public void sendDestroyData(final TacosClient client);
 }

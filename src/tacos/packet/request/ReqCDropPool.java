@@ -21,7 +21,7 @@ package tacos.packet.request;
 import java.util.LinkedList;
 import java.util.List;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.constants.GameConstants;
 import tacos.config.Region;
 import odin.handling.world.MaplePartyCharacter;
@@ -51,8 +51,8 @@ import tacos.packet.response.wrapper.ResWrapper;
  */
 public class ReqCDropPool {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }

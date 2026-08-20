@@ -19,10 +19,9 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.config.Config;
-import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsLogin;
@@ -44,12 +43,12 @@ import tacos.tools.TacosTools;
  */
 public class ResCLogin {
 
-    public static ServerPacket CheckPasswordResult(MapleClient client, int result) {
+    public static ServerPacket CheckPasswordResult(TacosClient client, int result) {
         return CheckPasswordResult(client, OpsLogin.find(result));
     }
 
     // CLogin::OnCheckPasswordResult
-    public static ServerPacket CheckPasswordResult(MapleClient client, OpsLogin ops) {
+    public static ServerPacket CheckPasswordResult(TacosClient client, OpsLogin ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckPasswordResult);
 
         sp.Encode1(ops.get()); // ops
@@ -362,7 +361,7 @@ public class ResCLogin {
     }
 
     // CLogin::OnGuestIDLoginResult
-    public static ServerPacket GuestIDLoginResult(MapleClient client, OpsLogin ops, int m_nRegStatID) {
+    public static ServerPacket GuestIDLoginResult(TacosClient client, OpsLogin ops, int m_nRegStatID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuestIDLoginResult);
 
         sp.Encode1(ops.get()); // ops code
@@ -396,7 +395,7 @@ public class ResCLogin {
     }
 
     // CLogin::OnAccountInfoResult
-    public static ServerPacket AccountInfoResult(MapleClient client, OpsLogin ops) {
+    public static ServerPacket AccountInfoResult(TacosClient client, OpsLogin ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AccountInfoResult);
 
         sp.Encode1(ops.get());
@@ -468,16 +467,15 @@ public class ResCLogin {
     }
 
     // CLogin::OnViewAllCharResult
-    public static ServerPacket ViewAllCharResult(MapleClient client, OpsViewAllChar ops) {
+    public static ServerPacket ViewAllCharResult(TacosClient client, OpsViewAllChar ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ViewAllCharResult);
-        List<MapleCharacter> chars = client.loadCharactersFromDB(); // world 0 only (test)
 
         sp.Encode1(ops.get());
         switch (ops) {
             case VAC_ResCode_Success: {
                 sp.Encode1(0); // m_anWorldID
-                sp.Encode1(chars.size()); // m_nCountRelatedSvrs
-                for (MapleCharacter chr : chars) {
+                sp.Encode1(client.getCharacters().size()); // m_nCountRelatedSvrs
+                for (MapleCharacter chr : client.getCharacters()) {
                     sp.EncodeBuffer(RD_CharacterStat.Encode(chr));
                     sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
                     sp.Encode1(1); // ranking
@@ -495,7 +493,7 @@ public class ResCLogin {
             }
             case VAC_ResCode_CountRelatedSvrs: {
                 sp.Encode4(1); // m_nCountRelatedSvrs
-                sp.Encode4(chars.size()); // m_nCountCharacters
+                sp.Encode4(client.getCharacters().size()); // m_nCountCharacters
                 break;
             }
             case VAC_ResCode_TimedOut:
@@ -586,7 +584,7 @@ public class ResCLogin {
     }
 
     // CLogin::OnSelectWorldResult
-    public static ServerPacket SelectWorldResult(MapleClient client, OpsLogin result) {
+    public static ServerPacket SelectWorldResult(TacosClient client, OpsLogin result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SelectWorldResult);
 
         sp.Encode1(result.get());
@@ -594,8 +592,6 @@ public class ResCLogin {
             // error
             return sp;
         }
-        List<MapleCharacter> chars = client.loadCharactersFromDB(true);
-        int charslots = client.getCharSlots();
         if (Region.JMS.check() || Region.JMST.check()) {
             sp.EncodeStr("");
         }
@@ -608,8 +604,8 @@ public class ResCLogin {
             sp.Encode4(1000000);
         }
         // character list
-        sp.Encode1(chars.size());
-        for (MapleCharacter chr : chars) {
+        sp.Encode1(client.getCharacters().size());
+        for (MapleCharacter chr : client.getCharacters()) {
             if (Region.KMSB.check()) {
                 sp.EncodeBuffer(RD_CharacterData.Encode(chr, 1));
                 continue;
@@ -655,7 +651,7 @@ public class ResCLogin {
         if (Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131)) {
             return sp;
         }
-        sp.Encode4(charslots); // m_nSlotCount
+        sp.Encode4(client.getCharSlots()); // m_nSlotCount
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); // m_nBuyCharCount
         }
@@ -831,7 +827,7 @@ public class ResCLogin {
     }
 
     // CLogin::OnExtraCharInfoResult, unused code.
-    public static ServerPacket CheckExtraCharInfoResult(MapleClient client) {
+    public static ServerPacket CheckExtraCharInfoResult(TacosClient client) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CheckExtraCharInfoResult);
 
         sp.Encode4(client.getId()); // m_dwAccountId

@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import java.util.Random;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacket;
@@ -38,8 +38,8 @@ import tacos.packet.response.builder.PB_UserEffect;
  */
 public class ReqCRPSGameDlg {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -63,7 +63,7 @@ public class ReqCRPSGameDlg {
     }
 
     public static boolean OnRPSGame(MapleCharacter chr, ClientPacket cp) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         int tax = 1000;
         int refund = 500;
 

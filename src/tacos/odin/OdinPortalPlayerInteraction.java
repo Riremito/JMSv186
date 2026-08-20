@@ -20,14 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.odin;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.server.map.TacosPortal;
 
 public class OdinPortalPlayerInteraction extends OdinAbstractPlayerInteraction {
 
     private TacosPortal portal;
 
-    public OdinPortalPlayerInteraction(MapleClient client, TacosPortal portal) {
+    public OdinPortalPlayerInteraction(TacosClient client, TacosPortal portal) {
         super(client);
         this.portal = portal;
     }

@@ -18,7 +18,7 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCParcelDlg;
 
@@ -60,13 +60,13 @@ public class ReqCParcelDlg {
     };
 
     // 宅配
-    public static boolean Accept(MapleClient c, ClientPacket p) {
+    public static boolean Accept(TacosClient client, ClientPacket cp) {
         // 処理内容
-        byte action = p.Decode1();
+        byte action = cp.Decode1();
         switch (Action.Find(action)) {
             // 配送
             case SEND: {
-                c.SendPacket(ResCParcelDlg.Send());
+                client.SendPacket(ResCParcelDlg.Send());
                 return true;
             }
             // 閉じる
@@ -79,5 +79,4 @@ public class ReqCParcelDlg {
         }
         return false;
     }
-
 }

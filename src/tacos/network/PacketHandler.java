@@ -20,7 +20,7 @@ package tacos.network;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoHandlerAdapter;
@@ -128,12 +128,12 @@ public class PacketHandler extends IoHandlerAdapter {
 
         MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true);
         MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, false);
-        MapleClient client = new MapleClient(session);
+        TacosClient client = new TacosClient(session);
         client.setServer(this.server);
 
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
         session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
-        session.setAttribute(MapleClient.CLIENT_KEY, client);
+        session.setAttribute(TacosClient.CLIENT_KEY, client);
         session.setAttribute(MapleAESOFB.AES_ENC_KEY, aes_enc);
         session.setAttribute(MapleAESOFB.AES_DEC_KEY, aes_dec);
         session.setIdleTime(IdleStatus.READER_IDLE, 10);
@@ -143,7 +143,7 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionClosed(IoSession session) throws Exception {
         log(session, "sessionClosed.");
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
 
         if (client != null) {
             try {
@@ -155,7 +155,7 @@ public class PacketHandler extends IoHandlerAdapter {
                 }
             } finally {
                 session.close();
-                session.removeAttribute(MapleClient.CLIENT_KEY);
+                session.removeAttribute(TacosClient.CLIENT_KEY);
             }
         }
 
@@ -165,7 +165,7 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
         log(session, "sessionIdle.");
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
 
         if (client != null) {
             client.sendPing();
@@ -192,7 +192,7 @@ public class PacketHandler extends IoHandlerAdapter {
             }
 
             // client
-            MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+            TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
             ClientPacketHeader header = cp.DecodeHeader();
             if (!((IPacketHandler) this).OnPacket(client, header, cp)) {
                 DebugLogger.CPLog(cp);

@@ -20,7 +20,6 @@ package tacos.packet.request;
 
 import java.util.ArrayList;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import tacos.constants.MapleClientState;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.MaplePet;
@@ -43,6 +42,7 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosClient;
 import tacos.config.Config;
 import tacos.config.Content;
 import tacos.database.query.DQ_Characters;
@@ -65,7 +65,7 @@ import tacos.wz.WzXML;
 public class ReqCClientSocket {
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_Login(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_Login(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_AliveAck: {
                 client.recvPong();
@@ -85,7 +85,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 // enter game server, change channel, leave cs/mts.
@@ -111,7 +111,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_ITC(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_ITC(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 // enter mts.
@@ -133,7 +133,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_CS(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_CS(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 // enter cashshop.
@@ -154,7 +154,7 @@ public class ReqCClientSocket {
         return false;
     }
 
-    public static boolean OnMigrateIn(MapleClient client, ClientPacket cp) {
+    public static boolean OnMigrateIn(TacosClient client, ClientPacket cp) {
         int unk1 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 197));
         int character_id = cp.Decode4(); // m_dwCharacterId
         if (Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 91)) { // 180+
@@ -181,7 +181,7 @@ public class ReqCClientSocket {
         MapleCharacter transfer = world.findMigratingPlayer(character_id);
         // channge channel, enter & leave itc/cs.
         if (transfer != null) {
-            MapleClient old_client = transfer.getClient();
+            TacosClient old_client = transfer.getClient();
             // check machine id.
             if (client.getMachineId() != null) {
                 if (!old_client.getMachineId().equals(client.getMachineId())) {
@@ -383,7 +383,7 @@ public class ReqCClientSocket {
         return true;
     }
 
-    public static boolean OnKOCCreation(MapleClient client, ClientPacket cp) {
+    public static boolean OnKOCCreation(TacosClient client, ClientPacket cp) {
         ArrayList<Integer> item_ids = new ArrayList<>();
         String name = cp.DecodeStr();
         int face_id = cp.Decode4();
@@ -418,7 +418,6 @@ public class ReqCClientSocket {
         }
 
         // no character slot.
-        client.loadCharactersFromDB();
         if (client.getCharSlots() <= client.getCharaterCount()) {
             client.SendPacket(ResCUserLocal.KOC_UI_Response(2));
             return false;
@@ -472,7 +471,6 @@ public class ReqCClientSocket {
 
         chr_koc.saveNewCharToDB();
         client.addCharacter(chr_koc);
-
         client.SendPacket(ResCUserLocal.KOC_UI_Response(0));
         return true;
     }

@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.handler.BeanGame;
 import tacos.packet.ClientPacket;
@@ -34,8 +34,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCField {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -59,7 +59,7 @@ public class ReqCField {
                 return true;
             }
             case BEANS_OPERATION: {
-                BeanGame.BeanGame1(c, cp);
+                BeanGame.BeanGame1(client, cp);
                 return true;
             }
             case BEANS_UPDATE: {

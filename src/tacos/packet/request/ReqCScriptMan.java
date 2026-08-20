@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugMan;
 import tacos.odin.OdinNPCConversationManager;
@@ -76,7 +76,7 @@ public class ReqCScriptMan {
     }
 
     public static boolean OnOdinScript(MapleCharacter chr, int nMsgType, int action, int m_nSelect, String m_sInputStr_Result) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         boolean is_npc_talk = false;
         boolean is_quest_start = false;
         boolean is_quest_end = false;

@@ -21,7 +21,7 @@ package tacos.packet.request;
 import java.awt.Point;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
@@ -120,7 +120,7 @@ import tacos.wz.opt.FieldOpt;
  */
 public class ReqCUser {
 
-    public static boolean OnPacket_Login(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_Login(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -132,7 +132,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
@@ -682,7 +682,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket_ITC(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_ITC(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -711,7 +711,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPacket_CS(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_CS(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_UpdateScreenSetting: {
                 return true;
@@ -746,7 +746,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnFamilyPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnFamilyPacket(TacosClient c, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = c.getPlayer();
         if (chr == null) {
             return true;
@@ -851,7 +851,7 @@ public class ReqCUser {
         return chr.changeChannel(channel + 1);
     }
 
-    public static boolean OnUserMigrateToCashShopRequest(MapleClient c, MapleCharacter chr) {
+    public static boolean OnUserMigrateToCashShopRequest(TacosClient client, MapleCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;
@@ -1336,7 +1336,7 @@ public class ReqCUser {
         short x = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
         short y = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
 
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
         MapleNPC npc = map.getNPCByOid(m_dwNpcId);
 
@@ -2304,7 +2304,7 @@ public class ReqCUser {
 
     // CQuest::StartQuest
     public static boolean OnUserQuestRequest(MapleCharacter chr, ClientPacket cp) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
 
         byte action = cp.Decode1();
@@ -3135,7 +3135,7 @@ public class ReqCUser {
     // CWvsContext::SendSendInvitaionRequest
     // CWvsContext::SendInvitationQuery
     public static boolean OnMarriageRequest(MapleCharacter chr, ClientPacket cp) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         byte mode = cp.Decode1();
 
         switch (OpsMarriage.find(mode)) {
@@ -3229,7 +3229,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserMigrateToITCRequest(MapleClient c, MapleCharacter chr) {
+    public static boolean OnUserMigrateToITCRequest(TacosClient client, MapleCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;

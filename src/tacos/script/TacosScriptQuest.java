@@ -20,7 +20,7 @@ package tacos.script;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.odin.OdinNPCConversationManager;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
@@ -45,7 +45,7 @@ public class TacosScriptQuest extends TacosScript {
 
     }
 
-    public boolean startQuest(MapleClient client, int npc_id, int quest_script_id) {
+    public boolean startQuest(TacosClient client, int npc_id, int quest_script_id) {
         DebugMsg(client, TacosScriptType.QUEST, quest_script_id);
 
         String quest_script_path = TacosScriptType.QUEST.get() + quest_script_id;
@@ -69,7 +69,7 @@ public class TacosScriptQuest extends TacosScript {
         return startQuest(client, 1, 0, 0);
     }
 
-    public boolean startQuest(MapleClient client, int mode, int type, int selection) {
+    public boolean startQuest(TacosClient client, int mode, int type, int selection) {
         OdinNPCConversationManager cm = cms.get(client);
 
         if (cm == null || -1 < cm.getLastMsg()) {
@@ -85,7 +85,7 @@ public class TacosScriptQuest extends TacosScript {
         return true;
     }
 
-    public boolean endQuest(MapleClient client, int npc_id, int quest_script_id, boolean customEnd) {
+    public boolean endQuest(TacosClient client, int npc_id, int quest_script_id, boolean customEnd) {
         if (!customEnd && !MapleQuest.getInstance(quest_script_id).canComplete(client.getPlayer(), null)) {
             return false;
         }
@@ -107,7 +107,7 @@ public class TacosScriptQuest extends TacosScript {
         return endQuest(client, 1, 0, 0);
     }
 
-    public boolean endQuest(MapleClient client, int mode, int type, int selection) {
+    public boolean endQuest(TacosClient client, int mode, int type, int selection) {
         OdinNPCConversationManager cm = cms.get(client);
 
         if (cm == null || -1 < cm.getLastMsg()) {
@@ -123,7 +123,7 @@ public class TacosScriptQuest extends TacosScript {
         return true;
     }
 
-    public boolean dispose(MapleClient client) {
+    public boolean dispose(TacosClient client) {
         OdinNPCConversationManager npccm = cms.get(client);
         if (npccm == null) {
             client.getPlayer().setConversation(0);

@@ -18,7 +18,7 @@
  */
 package tacos.unofficial;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.property.Property_Login;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -30,7 +30,7 @@ import tacos.packet.ClientPacketHeader;
  */
 public class CustomRequest {
 
-    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient client) {
+    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, TacosClient client) {
         if (Property_Login.getAntiCheat()) {
             return false;
         }

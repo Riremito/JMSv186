@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
@@ -293,7 +293,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getTradeStart(MapleClient c, MapleTrade trade, byte number, boolean isPointTrade) {
+    public static ServerPacket getTradeStart(TacosClient client, MapleTrade trade, byte number, boolean isPointTrade) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
@@ -309,10 +309,10 @@ public class ResCMiniRoomBaseDlg {
             }
         }
         sp.Encode1(number);
-        sp.EncodeBuffer(RD_AvatarLook.Encode(c.getPlayer()));
-        sp.EncodeStr(c.getPlayer().getName());
+        sp.EncodeBuffer(RD_AvatarLook.Encode(client.getPlayer()));
+        sp.EncodeStr(client.getPlayer().getName());
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-            sp.Encode2(c.getPlayer().getJob());
+            sp.Encode2(client.getPlayer().getJob());
         }
         sp.Encode1(-1);
         return sp;
@@ -510,13 +510,13 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getMiniGame(MapleClient c, MapleMiniGame minigame) {
+    public static ServerPacket getMiniGame(TacosClient client, MapleMiniGame minigame) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
         sp.Encode1(minigame.getGameType());
         sp.Encode1(minigame.getMaxSize());
-        sp.Encode2(minigame.getVisitorSlot(c.getPlayer()));
+        sp.Encode2(minigame.getVisitorSlot(client.getPlayer()));
         sp.EncodeBuffer(RD_AvatarLook.Encode(minigame.getMCOwner()));
         sp.EncodeStr(minigame.getOwnerName());
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
@@ -761,6 +761,7 @@ public class ResCMiniRoomBaseDlg {
     // GW_MiniGameRecord::Decode
     public static byte[] GW_MiniGameRecord_Encode(MapleCharacter chr, MapleMiniGame game) {
         ServerPacket data = new ServerPacket();
+
         data.Encode4(game.getGameType());
         data.Encode4(game.getWins(chr));
         data.Encode4(game.getTies(chr));
@@ -769,7 +770,7 @@ public class ResCMiniRoomBaseDlg {
         if (Config.GreaterOrEqual(Region.THMS, 87)) {
             data.Encode4(0);
         }
+
         return data.getBytes();
     }
-
 }

@@ -18,7 +18,7 @@
  */
 package tacos.unofficial;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.property.Property_Login;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -29,7 +29,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class CustomResponse {
 
-    public static boolean Test(MapleClient client) {
+    public static boolean Test(TacosClient client) {
         if (Property_Login.getAntiCheat()) {
             client.SendPacket(CustomResponse.GetWzHash("Skill.wz"));
             client.SendPacket(CustomResponse.GetMemoryHash(0x008625B5, 3)); // damage hack check

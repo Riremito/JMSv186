@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import odin.client.SummonSkillEntry;
 import odin.client.status.MonsterStatus;
@@ -55,7 +55,7 @@ public class ReqCSummonedPool {
     CUser::OnSummonedPacket (JMS187)
     CSummonedPool::OnPacket (JMS188)
      */
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;

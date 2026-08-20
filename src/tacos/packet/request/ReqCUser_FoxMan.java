@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -32,7 +32,7 @@ import tacos.packet.response.ResCUser_FoxMan;
 public class ReqCUser_FoxMan {
 
     // CUser::OnFoxManPacket
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null || chr.isHidden()) {
             return false;

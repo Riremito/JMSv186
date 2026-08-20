@@ -19,7 +19,7 @@
 package odin.server.maps;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import java.awt.Point;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.server.map.TacosPortal;
@@ -73,17 +73,17 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
     }
 
     // do not use spawn data
-    public final void sendSpawnPacket(final MapleClient client) {
+    public final void sendSpawnPacket(final TacosClient client) {
         client.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(this));
     }
 
     @Override
-    public final void sendSpawnData(final MapleClient client) {
+    public final void sendSpawnData(final TacosClient client) {
         //client.SendPacket(ItemPacket.CreatePinkBeanEventPortal(this));
     }
 
     @Override
-    public final void sendDestroyData(final MapleClient client) {
+    public final void sendDestroyData(final TacosClient client) {
     }
 
     @Override

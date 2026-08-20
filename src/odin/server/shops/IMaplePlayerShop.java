@@ -22,7 +22,7 @@ package odin.server.shops;
 
 import java.util.List;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.server.shops.AbstractPlayerStore.BoughtItem;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
@@ -78,7 +78,7 @@ public interface IMaplePlayerShop {
 
     public void removeAllVisitors(int error, int type);
 
-    public void buy(MapleClient c, int item, short quantity);
+    public void buy(TacosClient client, int item, short quantity);
 
     public void closeShop(boolean saveItems, boolean remove, int reason);
 

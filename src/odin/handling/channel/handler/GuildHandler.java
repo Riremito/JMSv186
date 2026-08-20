@@ -25,7 +25,7 @@ import odin.handling.world.guild.MapleGuild;
 import java.util.Iterator;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.handling.world.OdinWorld;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ClientPacket;
@@ -33,7 +33,7 @@ import tacos.packet.ServerPacket;
 
 public class GuildHandler {
 
-    public static final void DenyGuildRequest(ClientPacket cp, final MapleClient c) {
+    public static final void DenyGuildRequest(ClientPacket cp, final TacosClient c) {
         byte unk1 = cp.Decode1();
         String from = cp.DecodeStr();
 
@@ -79,7 +79,7 @@ public class GuildHandler {
     private static final java.util.List<Invited> invited = new java.util.LinkedList<Invited>();
     private static long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
-    public static final void Guild(ClientPacket cp, final MapleClient c) {
+    public static final void Guild(ClientPacket cp, final TacosClient c) {
         if (System.currentTimeMillis() >= nextPruneTime) {
             Iterator<Invited> itr = invited.iterator();
             Invited inv;

@@ -24,7 +24,7 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import java.lang.ref.WeakReference;
 import tacos.packet.response.ResCTownPortalPool;
@@ -127,7 +127,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     @Override
-    public final void sendSpawnData(final MapleClient client) {
+    public final void sendSpawnData(final TacosClient client) {
         if (getOwner() == null) {
             return;
         }
@@ -141,7 +141,7 @@ public class MapleDoor extends AbstractMapleMapObject {
     }
 
     @Override
-    public final void sendDestroyData(final MapleClient client) {
+    public final void sendDestroyData(final TacosClient client) {
         if (getOwner() == null) {
             return;
         }

@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleBBSThread;
 import java.util.List;
@@ -36,7 +36,7 @@ public class BBSHandler {
         return in;
     }
 
-    public static final void BBSOperation(ClientPacket cp, final MapleClient c) {
+    public static final void BBSOperation(ClientPacket cp, final TacosClient c) {
         if (c.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing bbs or hax
         }
@@ -90,14 +90,14 @@ public class BBSHandler {
         }
     }
 
-    private static void listBBSThreads(MapleClient c, int start) {
+    private static void listBBSThreads(TacosClient c, int start) {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
         c.getSession().write(ResCWvsContext.BBSThreadList(OdinWorld.Guild.getBBS(c.getPlayer().getGuildId()), start));
     }
 
-    private static void newBBSReply(final MapleClient c, final int localthreadid, final String text) {
+    private static void newBBSReply(final TacosClient c, final int localthreadid, final String text) {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
@@ -105,7 +105,7 @@ public class BBSHandler {
         displayThread(c, localthreadid);
     }
 
-    private static void editBBSThread(final MapleClient c, final String title, final String text, final int icon, final int localthreadid) {
+    private static void editBBSThread(final TacosClient c, final String title, final String text, final int icon, final int localthreadid) {
         if (c.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
@@ -113,21 +113,21 @@ public class BBSHandler {
         displayThread(c, localthreadid);
     }
 
-    private static void newBBSThread(final MapleClient c, final String title, final String text, final int icon, final boolean bNotice) {
+    private static void newBBSThread(final TacosClient c, final String title, final String text, final int icon, final boolean bNotice) {
         if (c.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
         displayThread(c, OdinWorld.Guild.addBBSThread(c.getPlayer().getGuildId(), title, text, icon, bNotice, c.getPlayer().getId()));
     }
 
-    private static final void deleteBBSThread(final MapleClient c, final int localthreadid) {
+    private static final void deleteBBSThread(final TacosClient c, final int localthreadid) {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
         OdinWorld.Guild.deleteBBSThread(c.getPlayer().getGuildId(), localthreadid, c.getPlayer().getId(), (int) c.getPlayer().getGuildRank());
     }
 
-    private static void deleteBBSReply(final MapleClient c, final int localthreadid, final int replyid) {
+    private static void deleteBBSReply(final TacosClient c, final int localthreadid, final int replyid) {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }
@@ -136,7 +136,7 @@ public class BBSHandler {
         displayThread(c, localthreadid);
     }
 
-    private static void displayThread(final MapleClient c, final int localthreadid) {
+    private static void displayThread(final TacosClient c, final int localthreadid) {
         if (c.getPlayer().getGuildId() <= 0) {
             return;
         }

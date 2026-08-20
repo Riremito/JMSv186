@@ -78,11 +78,10 @@ public class OnlinePlayers {
         DebugLogger.InfoLog("disconnectAll dc.");
 
         for (MapleCharacter player : this.players) {
-            player.getClient().disconnect(false, false, true);
+            player.getClient().disconnect(false, true);
             player.getClient().getSession().close();
         }
 
         this.players.clear();
     }
-
 }

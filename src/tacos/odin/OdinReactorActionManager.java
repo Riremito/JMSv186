@@ -29,7 +29,7 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -41,7 +41,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
     private MapleReactor reactor;
 
-    public OdinReactorActionManager(MapleClient client, MapleReactor reactor) {
+    public OdinReactorActionManager(TacosClient client, MapleReactor reactor) {
         super(client);
         this.reactor = reactor;
     }

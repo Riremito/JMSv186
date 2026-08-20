@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.provider.IMapleData;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -53,7 +53,7 @@ import tacos.wz.WzXML;
 public class TestCommand {
 
     public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {

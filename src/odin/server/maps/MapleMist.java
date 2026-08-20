@@ -25,7 +25,7 @@ import java.awt.Rectangle;
 
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import tacos.packet.response.ResCAffectedAreaPool;
 import odin.server.MapleStatEffect;
@@ -142,13 +142,13 @@ public class MapleMist extends AbstractMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(final MapleClient c) {
-        c.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(this));
+    public void sendSpawnData(TacosClient client) {
+        client.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(this));
     }
 
     @Override
-    public void sendDestroyData(final MapleClient c) {
-        c.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(this));
+    public void sendDestroyData(TacosClient client) {
+        client.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(this));
     }
 
     public boolean makeChanceResult() {

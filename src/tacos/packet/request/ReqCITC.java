@@ -21,7 +21,7 @@ package tacos.packet.request;
 import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -44,7 +44,7 @@ import tacos.server.TacosITC;
  */
 public class ReqCITC {
 
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online (ITC).");
@@ -73,7 +73,7 @@ public class ReqCITC {
         return false;
     }
 
-    public static boolean OnITCItemRequest(MapleClient client, MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnITCItemRequest(TacosClient client, MapleCharacter chr, ClientPacket cp) {
         MTSCart cart = MTSStorage.getInstance().getCart(chr.getId());
         byte req = cp.Decode1();
         OpsITC ops_req = OpsITC.find(req);
@@ -343,17 +343,17 @@ public class ReqCITC {
         return false;
     }
 
-    private static void doMTSPackets(MTSCart cart, MapleClient client) {
+    private static void doMTSPackets(MTSCart cart, TacosClient client) {
         sendMTSPackets(cart, client, false);
     }
 
-    public static void MTSUpdate(MTSCart cart, MapleClient client) {
+    public static void MTSUpdate(MTSCart cart, TacosClient client) {
         client.getPlayer().modifyCSPoints(1, MTSStorage.getInstance().getCart(client.getPlayer().getId()).getSetOwedNX(), false);
         client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetNotifyCancelWishResult));
         doMTSPackets(cart, client);
     }
 
-    private static void sendMTSPackets(MTSCart cart, MapleClient client, boolean changed) {
+    private static void sendMTSPackets(MTSCart cart, TacosClient client, boolean changed) {
         List<MTSStorage.MTSItemInfo> mts_items;
         switch (cart.getTab()) {
             case 1: {

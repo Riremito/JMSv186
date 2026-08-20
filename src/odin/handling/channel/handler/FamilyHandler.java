@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
@@ -34,18 +34,18 @@ import tacos.wz.opt.FieldOpt;
 
 public class FamilyHandler {
 
-    public static final void RequestFamily(ClientPacket cp, MapleClient c) {
+    public static final void RequestFamily(ClientPacket cp, TacosClient c) {
         MapleCharacter chr = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (chr != null) {
             c.getSession().write(ResCWvsContext.getFamilyPedigree(chr));
         }
     }
 
-    public static final void OpenFamily(ClientPacket cp, MapleClient c) {
+    public static final void OpenFamily(ClientPacket cp, TacosClient c) {
         c.getSession().write(ResCWvsContext.getFamilyInfo(c.getPlayer()));
     }
 
-    public static final void UseFamily(ClientPacket cp, MapleClient c) {
+    public static final void UseFamily(ClientPacket cp, TacosClient c) {
         int type = cp.Decode4();
         MapleFamilyBuffEntry entry = MapleFamilyBuff.getBuffEntry(type);
         if (entry == null) {
@@ -110,7 +110,7 @@ public class FamilyHandler {
         }
     }
 
-    public static final void FamilyOperation(ClientPacket cp, MapleClient c) {
+    public static final void FamilyOperation(ClientPacket cp, TacosClient c) {
         if (c.getPlayer() == null) {
             return;
         }
@@ -140,7 +140,7 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static final void FamilyPrecept(ClientPacket cp, MapleClient c) {
+    public static final void FamilyPrecept(ClientPacket cp, TacosClient c) {
         MapleFamily fam = OdinWorld.Family.getFamily(c.getPlayer().getFamilyId());
         if (fam == null || fam.getLeaderId() != c.getPlayer().getId()) {
             return;
@@ -148,7 +148,7 @@ public class FamilyHandler {
         fam.setNotice(cp.DecodeStr());
     }
 
-    public static final void FamilySummon(ClientPacket cp, MapleClient c) {
+    public static final void FamilySummon(ClientPacket cp, TacosClient c) {
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
         MapleCharacter tt = c.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
@@ -171,7 +171,7 @@ public class FamilyHandler {
         c.getPlayer().setTeleportName("");
     }
 
-    public static final void DeleteJunior(ClientPacket cp, MapleClient c) {
+    public static final void DeleteJunior(ClientPacket cp, TacosClient c) {
         int juniorid = cp.Decode4();
         if (c.getPlayer().getFamilyId() <= 0 || juniorid <= 0 || (c.getPlayer().getJunior1() != juniorid && c.getPlayer().getJunior2() != juniorid)) {
             return;
@@ -204,7 +204,7 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static final void DeleteSenior(ClientPacket cp, MapleClient c) {
+    public static final void DeleteSenior(ClientPacket cp, TacosClient c) {
         if (c.getPlayer().getFamilyId() <= 0 || c.getPlayer().getSeniorId() <= 0) {
             return;
         }
@@ -236,7 +236,7 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static final void AcceptFamily(ClientPacket cp, MapleClient c) {
+    public static final void AcceptFamily(ClientPacket cp, TacosClient c) {
         MapleCharacter inviter = c.getPlayer().getMap().getCharacterById(cp.Decode4());
         if (inviter != null && c.getPlayer().getSeniorId() == 0 && (c.getPlayer().isGM() || !inviter.isHidden())
                 && inviter.getLevel() - 20 < c.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2

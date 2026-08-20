@@ -20,7 +20,7 @@ package tacos.debug;
 
 import java.awt.Point;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
@@ -34,7 +34,7 @@ import tacos.wz.WzDataStorage;
 public class CustomCommand {
 
     public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {

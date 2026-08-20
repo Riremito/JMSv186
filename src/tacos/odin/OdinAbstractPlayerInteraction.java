@@ -27,7 +27,7 @@ import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.MapleQuestStatus;
@@ -65,17 +65,17 @@ import tacos.server.TacosChannel;
 
 public abstract class OdinAbstractPlayerInteraction {
 
-    protected MapleClient client;
+    protected TacosClient client;
 
-    public OdinAbstractPlayerInteraction(MapleClient client) {
+    public OdinAbstractPlayerInteraction(TacosClient client) {
         this.client = client;
     }
 
-    public final MapleClient getClient() {
+    public final TacosClient getClient() {
         return client;
     }
 
-    public final MapleClient getC() {
+    public final TacosClient getC() {
         return client;
     }
 
@@ -418,7 +418,7 @@ public abstract class OdinAbstractPlayerInteraction {
         return gainItem(id, quantity, randomStats, period, slots, owner, client);
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final MapleClient cg) {
+    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final TacosClient cg) {
         IItem item_info = null;
         if (quantity >= 0) {
             final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -767,7 +767,7 @@ public abstract class OdinAbstractPlayerInteraction {
         TacosScriptNPC.getInstance().start(getClient(), id);
     }
 
-    public final void openNpc(final MapleClient cg, final int id) {
+    public final void openNpc(final TacosClient cg, final int id) {
         TacosScriptNPC.getInstance().start(cg, id);
     }
 

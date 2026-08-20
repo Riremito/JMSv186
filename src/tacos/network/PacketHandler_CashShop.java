@@ -18,7 +18,7 @@
  */
 package tacos.network;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCCashShop;
@@ -37,15 +37,15 @@ public class PacketHandler_CashShop extends PacketHandler implements IPacketHand
     }
 
     @Override
-    public boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) throws Exception {
+    public boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) throws Exception {
         if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
-            return ReqCClientSocket.OnPacket_CS(c, header, cp);
+            return ReqCClientSocket.OnPacket_CS(client, header, cp);
         }
         if (header.between(ClientPacketHeader.CP_BEGIN_USER, ClientPacketHeader.CP_END_USER)) {
-            return ReqCUser.OnPacket_CS(c, header, cp);
+            return ReqCUser.OnPacket_CS(client, header, cp);
         }
         if (header.between(ClientPacketHeader.CP_BEGIN_CASHSHOP, ClientPacketHeader.CP_END_CASHSHOP)) {
-            return ReqCCashShop.OnPacket(c, header, cp);
+            return ReqCCashShop.OnPacket(client, header, cp);
         }
         return false;
     }

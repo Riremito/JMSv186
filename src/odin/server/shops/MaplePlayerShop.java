@@ -25,7 +25,7 @@ import java.util.List;
 import odin.client.inventory.IItem;
 import odin.client.inventory.ItemFlag;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
@@ -39,7 +39,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
     }
 
     @Override
-    public void buy(MapleClient c, int item, short quantity) {
+    public void buy(TacosClient client, int item, short quantity) {
         MaplePlayerShopItem pItem = items.get(item);
         if (pItem.bundles > 0) {
             IItem newItem = pItem.item.copy();
@@ -52,11 +52,11 @@ public class MaplePlayerShop extends AbstractPlayerStore {
                 newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
             }
             final int gainmeso = pItem.price * quantity;
-            if (c.getPlayer().getMeso() >= gainmeso) {
-                if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(c, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(c, newItem, false)) {
+            if (client.getPlayer().getMeso() >= gainmeso) {
+                if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
                     pItem.bundles -= quantity;
-                    bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, c.getPlayer().getName()));
-                    c.getPlayer().gainMeso(-gainmeso, false);
+                    bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, client.getPlayer().getName()));
+                    client.getPlayer().gainMeso(-gainmeso, false);
                     getMCOwner().gainMeso(gainmeso, false);
                     if (pItem.bundles <= 0) {
                         boughtnumber++;
@@ -66,10 +66,10 @@ public class MaplePlayerShop extends AbstractPlayerStore {
                         }
                     }
                 } else {
-                    c.getPlayer().dropMessage(1, "Your inventory is full.");
+                    client.getPlayer().dropMessage(1, "Your inventory is full.");
                 }
             } else {
-                c.getPlayer().dropMessage(1, "You do not have enough mesos.");
+                client.getPlayer().dropMessage(1, "You do not have enough mesos.");
                 //}
             }
             getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.shopItemUpdate(this));

@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -35,8 +35,8 @@ import tacos.config.Region;
 public class ReqCShopDlg {
 
     // CShopDlg::OnPacket
-    public static boolean OnPacket(ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(ClientPacket cp, TacosClient client) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -60,19 +60,19 @@ public class ReqCShopDlg {
 
                 final int itemId = cp.Decode4();
                 final short quantity = cp.Decode2();
-                shop.buy(c, chr, itemId, quantity);
+                shop.buy(client, chr, itemId, quantity);
                 break;
             }
             case ShopReq_Sell: {
                 final byte slot = (byte) cp.Decode2();
                 final int itemId = cp.Decode4();
                 final short quantity = cp.Decode2();
-                shop.sell(c, GameConstants.getInventoryType(itemId), slot, quantity);
+                shop.sell(client, GameConstants.getInventoryType(itemId), slot, quantity);
                 break;
             }
             case ShopReq_Recharge: {
                 final byte slot = (byte) cp.Decode2();
-                shop.recharge(c, slot);
+                shop.recharge(client, slot);
                 break;
             }
             case ShopReq_Close: {

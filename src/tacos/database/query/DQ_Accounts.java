@@ -18,7 +18,7 @@
  */
 package tacos.database.query;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.constants.MapleClientState;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
@@ -58,7 +58,7 @@ public class DQ_Accounts {
         return false;
     }
 
-    public static MapleClientState getLoginState(MapleClient client) {
+    public static MapleClientState getLoginState(TacosClient client) {
         try {
             Connection con = DatabaseConnection.getConnection();
             MapleClientState state;
@@ -85,7 +85,7 @@ public class DQ_Accounts {
         }
     }
 
-    public static void updateLoginState(MapleClient client, MapleClientState newstate) {
+    public static void updateLoginState(TacosClient client, MapleClientState newstate) {
         String ip_addr = client.getIPAddress();
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -147,7 +147,7 @@ public class DQ_Accounts {
         return false;
     }
 
-    public static boolean updatePassword(MapleClient client, String password) {
+    public static boolean updatePassword(TacosClient client, String password) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE id = ?")) {
@@ -182,7 +182,7 @@ public class DQ_Accounts {
         return false;
     }
 
-    public static int login(MapleClient client, String maple_id, String password) {
+    public static int login(TacosClient client, String maple_id, String password) {
         int loginok = 5;
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -237,19 +237,19 @@ public class DQ_Accounts {
         return loginok;
     }
 
-    public static boolean checkLoginIP(MapleClient c) {
+    public static boolean checkLoginIP(TacosClient client) {
         boolean ret = false;
 
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT SessionIP FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
-                ps.setInt(1, c.getId());
+                ps.setInt(1, client.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         final String sessionIP = rs.getString("SessionIP");
 
                         if (sessionIP != null) {
-                            ret = c.getIPAddress().equals(sessionIP.split(":")[0]);
+                            ret = client.getIPAddress().equals(sessionIP.split(":")[0]);
                         }
                     }
                 }
@@ -265,12 +265,12 @@ public class DQ_Accounts {
         return ret;
     }
 
-    public static boolean finishLogin(MapleClient c) {
-        MapleClientState state = getLoginState(c);
+    public static boolean finishLogin(TacosClient client) {
+        MapleClientState state = getLoginState(client);
         if (state.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get() && state != MapleClientState.LOGIN_WAITING) {
             return false;
         }
-        updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
+        updateLoginState(client, MapleClientState.LOGIN_LOGGEDIN);
         return true;
     }
 }

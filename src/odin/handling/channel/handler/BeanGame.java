@@ -4,7 +4,7 @@ package odin.handling.channel.handler;
 
 import odin.client.MapleBeans;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.constants.BeansConstants;
 import tacos.shared.SharedExpTable;
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class BeanGame {
     public static int 黄金狗设置局数 = 0;
     public static int 海洋帽子 = 1002743;
 
-    public static final void BeanGame1(MapleClient c, ClientPacket cp) {
+    public static final void BeanGame1(TacosClient c, ClientPacket cp) {
         BeansConstants Beans = new BeansConstants();
         String 豆豆装备[] = Beans.get豆豆装备();
         String 豆豆坐骑[] = Beans.get豆豆坐骑();

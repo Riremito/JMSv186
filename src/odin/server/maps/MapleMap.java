@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 import odin.client.inventory.IItem;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.packet.ops.OpsUserEffect;
@@ -468,12 +468,12 @@ public final class MapleMap extends TacosMap {
 
         private MapleMapItem mapitem;
         private MapleReactor reactor;
-        private MapleClient c;
+        private TacosClient c;
 
-        public ActivateItemReactor(MapleMapItem mapitem, MapleReactor reactor, MapleClient c) {
+        public ActivateItemReactor(MapleMapItem mapitem, MapleReactor reactor, TacosClient client) {
             this.mapitem = mapitem;
             this.reactor = reactor;
-            this.c = c;
+            this.c = client;
         }
 
         @Override
@@ -498,7 +498,7 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    private void activateItemReactors(final MapleMapItem drop, final MapleClient c) {
+    private void activateItemReactors(final MapleMapItem drop, final TacosClient client) {
         final IItem item = drop.getItem();
 
         mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
@@ -510,7 +510,7 @@ public final class MapleMap extends TacosMap {
                     if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getLeft()) && react.getReactItem().getRight() == item.getQuantity()) {
                         if (react.getArea().contains(drop.getPosition())) {
                             if (!react.isTimerActive()) {
-                                MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, c), 5000);
+                                MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, client), 5000);
                                 react.setTimerActive(true);
                                 break;
                             }

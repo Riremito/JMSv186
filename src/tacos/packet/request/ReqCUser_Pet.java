@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
@@ -55,8 +55,8 @@ public class ReqCUser_Pet {
     private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
 
     // CUserPool::OnUserCommonPacket
-    public static boolean OnPetPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPetPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -239,7 +239,7 @@ public class ReqCUser_Pet {
     }
 
     public static void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }

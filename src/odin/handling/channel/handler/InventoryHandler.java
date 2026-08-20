@@ -26,7 +26,7 @@ import odin.client.inventory.IItem;
 import odin.client.ISkill;
 import odin.client.inventory.ItemFlag;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
 import odin.client.PlayerStats;
@@ -57,7 +57,7 @@ import tacos.script.TacosScriptNPC;
 
 public class InventoryHandler {
 
-    public static int UseRewardItem(short slot, int itemId, MapleClient c, MapleCharacter chr) {
+    public static int UseRewardItem(short slot, int itemId, TacosClient c, MapleCharacter chr) {
         final IItem toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
         chr.updateInv();
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
@@ -98,7 +98,7 @@ public class InventoryHandler {
         return 0;
     }
 
-    public static void UseScriptedNPCItem(ClientPacket cp, MapleClient client, MapleCharacter chr) {
+    public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
         int time = cp.Decode4();
         final byte slot = (byte) cp.Decode2();
         final int itemId = cp.Decode4();
@@ -365,7 +365,7 @@ public class InventoryHandler {
         return reward;
     }
 
-    public static void UseCashItem(ClientPacket cp, MapleClient client, ClientPacket op) {
+    public static void UseCashItem(ClientPacket cp, TacosClient client, ClientPacket op) {
         MapleCharacter chr = client.getPlayer();
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
             int time = cp.Decode4();
@@ -804,7 +804,7 @@ public class InventoryHandler {
         chr.updateInv();
     }
 
-    private static boolean getIncubatedItems(MapleClient c) {
+    private static boolean getIncubatedItems(TacosClient c) {
         if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 2) {
             c.getPlayer().dropMessage(5, "Please make room in your inventory.");
             return false;
@@ -851,7 +851,7 @@ public class InventoryHandler {
 
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
-    public static void OwlWarp(MapleClient c, int id, int map) {
+    public static void OwlWarp(TacosClient c, int id, int map) {
         MapleCharacter chr = c.getPlayer();
         chr.updateInv();
         if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022 && c.getPlayer().getPlayerShop() == null) {

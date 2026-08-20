@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMapObject;
@@ -32,8 +32,8 @@ public class ReqCTownPortalPool {
 
     // UseDoor
     // CField::TryEnterTownPortal
-    public static boolean TryEnterTownPortal(ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean TryEnterTownPortal(ClientPacket cp, TacosClient client) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }

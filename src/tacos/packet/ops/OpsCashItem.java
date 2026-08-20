@@ -345,5 +345,4 @@ public enum OpsCashItem implements IPacketOps {
         }
         return;
     }
-
 }

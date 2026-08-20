@@ -23,7 +23,7 @@ package odin.server.maps;
 import java.awt.Point;
 import odin.client.MapleCharacter;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.arg.ArgFieldEffect;
@@ -171,7 +171,7 @@ public class MapScriptMethods {
         }
     };
 
-    public static void startScript_FirstUser(MapleClient client, String scriptName) {
+    public static void startScript_FirstUser(TacosClient client, String scriptName) {
         if (client.getPlayer() == null) {
             return;
         } //o_O
@@ -436,7 +436,7 @@ public class MapScriptMethods {
         }
     }
 
-    public static void startScript_User(MapleClient client, String scriptName) {
+    public static void startScript_User(TacosClient client, String scriptName) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
@@ -744,24 +744,24 @@ public class MapScriptMethods {
         return 0;
     }
 
-    private static void showIntro(final MapleClient c, final String data) {
+    private static void showIntro(final TacosClient c, final String data) {
         c.getSession().write(ResCUserLocal.SetStandAloneMode(true));
         c.getSession().write(ResCUserLocal.SetDirectionMode(true));
         c.getSession().write(ResCUserLocal.ShowWZEffect(data));
     }
 
-    private static void sendDojoClock(MapleClient c, int time) {
+    private static void sendDojoClock(TacosClient c, int time) {
         c.getSession().write(ResCField.Clock(time));
     }
 
-    private static void sendDojoStart(MapleClient c, int stage) {
+    private static void sendDojoStart(TacosClient c, int stage) {
         c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Dojang/start")));
         c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/stage")));
         c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/number/" + stage)));
         c.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Tremble, 0, 1)));
     }
 
-    private static void handlePinkBeanStart(MapleClient c) {
+    private static void handlePinkBeanStart(TacosClient c) {
         final MapleMap map = c.getPlayer().getMap();
         map.resetFully();
 
@@ -770,7 +770,7 @@ public class MapScriptMethods {
         }
     }
 
-    private static void reloadWitchTower(MapleClient c) {
+    private static void reloadWitchTower(TacosClient c) {
         final MapleMap map = c.getPlayer().getMap();
         map.killAllMonsters(false);
 

@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_MonsterCarnival;
@@ -37,8 +37,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCField_MonsterCarnival {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }

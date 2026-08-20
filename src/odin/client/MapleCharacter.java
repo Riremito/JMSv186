@@ -105,6 +105,7 @@ import odin.server.maps.Event_PyramidSubway;
 import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosClient;
 import tacos.network.MockIOSession;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.database.query.DQ_Characters;
@@ -226,7 +227,7 @@ public class MapleCharacter extends TacosCharacter {
         pets = new ArrayList<>();
     }
 
-    public static MapleCharacter loadCharFromDB(int character_id, MapleClient client, boolean channelserver) {
+    public static MapleCharacter loadCharFromDB(int character_id, TacosClient client, boolean channelserver) {
         MapleCharacter ret = new MapleCharacter();
         ret.init_step1();
         if (channelserver) {
@@ -2186,7 +2187,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(TacosClient client) {
         client.SendPacket(ResCUserPool.UserEnterField(this));
         // haku fox.
         if (skill_pet != null) {
@@ -3723,7 +3724,7 @@ public class MapleCharacter extends TacosCharacter {
 
     // クローン
     public MapleCharacter cloneCopy() {
-        MapleClient client_clone = new MapleClient(new MockIOSession());
+        TacosClient client_clone = new TacosClient(new MockIOSession());
 
         final int minus = (getId() + Randomizer.nextInt(getId())); // really randomize it, dont want it to fail
 

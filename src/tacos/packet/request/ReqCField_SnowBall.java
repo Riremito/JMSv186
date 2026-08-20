@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_SnowBall;
 import odin.server.maps.MapleMap;
@@ -31,8 +31,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCField_SnowBall {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }

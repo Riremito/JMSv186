@@ -18,7 +18,7 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.shared.SharedDate;
@@ -169,7 +169,7 @@ public class ResCShopDlg {
         return sp;
     }
 
-    public static ServerPacket OpenShopDlg(MapleClient c, int sid, List<MapleShopItem> items) {
+    public static ServerPacket OpenShopDlg(TacosClient client, int sid, List<MapleShopItem> items) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_OpenShopDlg);
 
@@ -235,7 +235,7 @@ public class ResCShopDlg {
                 sp.Encode2(1); // nQuantity
             }
             if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
-                sp.Encode2(ii.getSlotMax(c, item.getItemId())); // nMaxPerSlot
+                sp.Encode2(ii.getSlotMax(client, item.getItemId())); // nMaxPerSlot
             }
             if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode1(0);

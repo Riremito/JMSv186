@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import tacos.packet.response.ResCWvsContext;
@@ -31,7 +31,7 @@ import tacos.packet.ServerPacket;
 
 public class AllianceHandler {
 
-    public static final void HandleAlliance(ClientPacket cp, final MapleClient c, boolean denied) {
+    public static final void HandleAlliance(ClientPacket cp, final TacosClient c, boolean denied) {
         MapleCharacter chr = c.getPlayer();
         if (c.getPlayer().getGuildId() <= 0) {
             chr.updateStat();
@@ -151,7 +151,7 @@ public class AllianceHandler {
         //c.getSession().write(MaplePacketCreator.enableActions());
     }
 
-    public static final void DenyInvite(MapleClient c, final MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
+    public static final void DenyInvite(TacosClient c, final MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
         final int inviteid = OdinWorld.Guild.getInvitedId(c.getPlayer().getGuildId());
         if (inviteid > 0) {
             final int newAlliance = OdinWorld.Alliance.getAllianceLeader(inviteid);

@@ -28,7 +28,7 @@ import java.util.Map;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
@@ -124,7 +124,7 @@ public class ItemMakerHandler {
     }
 
     public static boolean OnItemMakeRequest(ClientPacket cp, MapleCharacter chr) {
-        MapleClient c = chr.getClient();
+        TacosClient c = chr.getClient();
         int type = cp.Decode4();
 
         switch (RecipeClass.find(type)) {
@@ -468,7 +468,7 @@ public class ItemMakerHandler {
         return items.get(Randomizer.nextInt(items.size()));
     }
 
-    private static final int checkRequiredNRemove(final MapleClient c, final List<OdinPair<Integer, Integer>> recipe) {
+    private static final int checkRequiredNRemove(final TacosClient c, final List<OdinPair<Integer, Integer>> recipe) {
         int itemid = 0;
         for (final OdinPair<Integer, Integer> p : recipe) {
             if (!c.getPlayer().haveItem(p.getLeft(), p.getRight(), false, true)) {
@@ -482,7 +482,7 @@ public class ItemMakerHandler {
         return itemid;
     }
 
-    private static final boolean hasSkill(final MapleClient c, final int reqlvl) {
+    private static final boolean hasSkill(final TacosClient c, final int reqlvl) {
         if (GameConstants.isKOC(c.getPlayer().getJob())) { // KoC Maker skill.
             return c.getPlayer().getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
         } else if (GameConstants.isAran(c.getPlayer().getJob())) { // KoC Maker skill.

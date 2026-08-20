@@ -20,7 +20,7 @@ package tacos.debug;
 
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
@@ -107,7 +107,7 @@ public class DebugCommand {
     }
 
     public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
-        MapleClient client = chr.getClient();
+        TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
@@ -1016,11 +1016,11 @@ public class DebugCommand {
     }
 
     // bypass npc data checks
-    public static boolean remoteNPCTalk(MapleClient client, int npc_id) {
+    public static boolean remoteNPCTalk(TacosClient client, int npc_id) {
         return remoteNPCTalk(client, npc_id, npc_id);
     }
 
-    public static boolean remoteNPCTalk(MapleClient client, int npc_script_id, int npc_id) {
+    public static boolean remoteNPCTalk(TacosClient client, int npc_script_id, int npc_id) {
         MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
         if (npc == null || npc.getName().equals("MISSINGNO")) {
             return false;
@@ -1029,7 +1029,7 @@ public class DebugCommand {
         return true;
     }
 
-    public static boolean bossTest(MapleClient client, String boss_name) {
+    public static boolean bossTest(TacosClient client, String boss_name) {
         int def_npc_id = 1012003; // Chief Stan
         int npc_id = 1012003;
 

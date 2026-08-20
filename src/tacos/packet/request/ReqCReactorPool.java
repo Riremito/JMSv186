@@ -18,7 +18,7 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -33,11 +33,11 @@ import tacos.script.TacosScriptReactor;
  */
 public class ReqCReactorPool {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_ReactorHit: {
                 int oid = cp.Decode4();
-                MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
+                MapleReactor reactor = client.getPlayer().getMap().getReactorByOid(oid);
                 if (reactor == null || !reactor.isAlive()) {
                     DebugLogger.ErrorLog("ReactorHit");
                     return true;
@@ -49,13 +49,13 @@ public class ReqCReactorPool {
                 int charPos = cp.Decode4();
                 short stance = cp.Decode2();
 
-                reactor.hitReactor(charPos, stance, c);
+                reactor.hitReactor(charPos, stance, client);
                 return true;
             }
             case CP_ReactorTouch: {
                 int oid = cp.Decode4();
 
-                MapleReactor reactor = c.getPlayer().getMap().getReactorByOid(oid);
+                MapleReactor reactor = client.getPlayer().getMap().getReactorByOid(oid);
                 if (reactor == null || !reactor.isAlive()) {
                     DebugLogger.ErrorLog("ReactorTouch");
                     return true;
@@ -73,7 +73,7 @@ public class ReqCReactorPool {
                     return false;
                 }
 
-                TacosScriptReactor.getInstance().act(c, reactor);
+                TacosScriptReactor.getInstance().act(client, reactor);
                 return true;
             }
             case CP_RequireFieldObstacleStatus: {
@@ -86,5 +86,4 @@ public class ReqCReactorPool {
 
         return false;
     }
-
 }

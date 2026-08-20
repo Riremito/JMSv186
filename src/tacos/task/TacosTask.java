@@ -19,7 +19,7 @@
 package tacos.task;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.server.maps.MapleMap;
 
 /**
@@ -28,7 +28,7 @@ import odin.server.maps.MapleMap;
  */
 public class TacosTask {
 
-    public static boolean update(MapleClient client) {
+    public static boolean update(TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;

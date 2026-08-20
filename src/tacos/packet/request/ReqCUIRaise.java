@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import java.util.List;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.IItem;
 import odin.client.inventory.MapleInventoryType;
@@ -40,7 +40,7 @@ import tacos.packet.response.wrapper.ResWrapper;
  */
 public class ReqCUIRaise {
 
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
 
         if (chr == null) {

@@ -18,7 +18,7 @@
  */
 package tacos.network;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.ReqCClientSocket;
@@ -54,7 +54,7 @@ public class PacketHandler_Game extends PacketHandler implements IPacketHandler 
     }
 
     @Override
-    public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) throws Exception {
+    public boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) throws Exception {
         TacosTask.update(client);
         // socket
         if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {

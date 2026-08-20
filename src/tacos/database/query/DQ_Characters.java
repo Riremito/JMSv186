@@ -19,7 +19,7 @@
 package tacos.database.query;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 import odin.handling.world.OdinWorld;
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import odin.client.PlayerStats;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosClient;
 import tacos.config.DeveloperMode;
 import tacos.server.TacosFriend;
 
@@ -221,13 +222,13 @@ public class DQ_Characters {
         return true;
     }
 
-    public static List<Integer> getCharatcerIds(MapleClient c) {
+    public static List<Integer> getCharatcerIds(TacosClient client) {
         List<Integer> character_ids = new ArrayList<>();
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT id, name FROM " + DB_TABLE_NAME + " WHERE accountid = ? AND world = ?")) {
-                ps.setInt(1, c.getId());
-                ps.setInt(2, c.getSelectedWorld());
+                ps.setInt(1, client.getId());
+                ps.setInt(2, client.getSelectedWorld());
 
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -265,12 +266,12 @@ public class DQ_Characters {
         return -1;
     }
 
-    public static boolean deleteCharacter(MapleClient c, int character_id) {
+    public static boolean deleteCharacter(TacosClient client, int character_id) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT guildid, guildrank, familyid, name FROM " + DB_TABLE_NAME + " WHERE id = ? AND accountid = ?")) {
                 ps.setInt(1, character_id);
-                ps.setInt(2, c.getId());
+                ps.setInt(2, client.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (!rs.next()) {
                         rs.close();

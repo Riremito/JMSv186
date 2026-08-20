@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.ClientPacket;
@@ -34,8 +34,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class Req_MapleTV {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -91,5 +91,4 @@ public class Req_MapleTV {
 
         return false;
     }
-
 }

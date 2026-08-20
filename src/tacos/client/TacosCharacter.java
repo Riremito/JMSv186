@@ -27,7 +27,6 @@ import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import odin.client.PlayerStats;
 import odin.client.SkillEntry;
 import odin.client.SkillFactory;
@@ -88,7 +87,7 @@ import tacos.wz.WzDataStorage;
  */
 public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
-    protected MapleClient client;
+    protected TacosClient client;
     protected int id;
     protected int world_id = 0;
     protected int channel_id = 0;
@@ -115,11 +114,11 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.client.closeSession();
     }
 
-    public MapleClient getClient() {
+    public TacosClient getClient() {
         return this.client;
     }
 
-    public void setClient(MapleClient client) {
+    public void setClient(TacosClient client) {
         this.client = client;
     }
 
@@ -224,12 +223,12 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     @Override
-    public void sendSpawnData(MapleClient client) {
+    public void sendSpawnData(TacosClient client) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void sendDestroyData(MapleClient client) {
+    public void sendDestroyData(TacosClient client) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

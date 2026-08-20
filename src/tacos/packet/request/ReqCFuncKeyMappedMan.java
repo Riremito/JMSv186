@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.SkillMacro;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -40,8 +40,8 @@ public class ReqCFuncKeyMappedMan {
         @008E : CP_FuncKeyMappedModified
         @00BF : CP_QuickslotKeyMappedModified
      */
-    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, TacosClient client) {
+        MapleCharacter chr = client.getPlayer();
 
         if (chr == null) {
             return false;

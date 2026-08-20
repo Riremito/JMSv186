@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.database.DatabaseConnection;
 import odin.handling.world.OdinWorld;
@@ -292,7 +292,7 @@ public class MapleGuild implements java.io.Serializable {
         return leader;
     }
 
-    public final MapleCharacter getLeader(final MapleClient c) {
+    public final MapleCharacter getLeader(final TacosClient c) {
         return c.getChannelServer().getOnlinePlayers().findById(leader);
     }
 
@@ -787,7 +787,7 @@ public class MapleGuild implements java.io.Serializable {
     // keep in mind that this will be called by a handler most of the time
     // so this will be running mostly on a channel server, unlike the rest
     // of the class
-    public static final MapleGuildResponse sendInvite(final MapleClient c, final String targetName) {
+    public static final MapleGuildResponse sendInvite(final TacosClient c, final String targetName) {
         final MapleCharacter mc = c.getChannelServer().getOnlinePlayers().findByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;

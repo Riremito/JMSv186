@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server;
 
-import java.io.Serializable;
 import odin.client.inventory.Equip;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -34,7 +33,7 @@ import odin.constants.GameConstants;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
@@ -42,13 +41,12 @@ import tacos.database.DatabaseConnection;
 import tacos.packet.response.ResCCashShop;
 import tacos.odin.OdinPair;
 
-public class CashShop implements Serializable {
+public class CashShop {
 
-    private static final long serialVersionUID = 231541893513373579L;
     private int accountId, characterId;
     private ItemLoader factory;
-    private List<IItem> inventory = new ArrayList<IItem>();
-    private List<Integer> uniqueids = new ArrayList<Integer>();
+    private List<IItem> inventory = new ArrayList<>();
+    private List<Integer> uniqueids = new ArrayList<>();
 
     public CashShop(int accountId, int characterId, int jobType) throws SQLException {
         this.accountId = accountId;
@@ -100,17 +98,17 @@ public class CashShop implements Serializable {
         return null;
     }
 
-    public void checkExpire(MapleClient c) {
-        List<IItem> toberemove = new ArrayList<IItem>();
+    public void checkExpire(TacosClient client) {
+        List<IItem> toberemove = new ArrayList<>();
         for (IItem item : inventory) {
             if (item != null && !GameConstants.isPet(item.getItemId()) && item.getExpiration() > 0 && item.getExpiration() < System.currentTimeMillis()) {
                 toberemove.add(item);
             }
         }
-        if (toberemove.size() > 0) {
+        if (!toberemove.isEmpty()) {
             for (IItem item : toberemove) {
                 removeFromInventory(item);
-                c.getSession().write(ResCCashShop.cashItemExpired(item.getUniqueId()));
+                client.getSession().write(ResCCashShop.cashItemExpired(item.getUniqueId()));
             }
             toberemove.clear();
         }
@@ -192,7 +190,7 @@ public class CashShop implements Serializable {
     }
 
     public List<OdinPair<IItem, String>> loadGifts() {
-        List<OdinPair<IItem, String>> gifts = new ArrayList<OdinPair<IItem, String>>();
+        List<OdinPair<IItem, String>> gifts = new ArrayList<>();
         Connection con = DatabaseConnection.getConnection();
         try {
             PreparedStatement ps = con.prepareStatement("SELECT * FROM `gifts` WHERE `recipient` = ?");
@@ -202,10 +200,10 @@ public class CashShop implements Serializable {
             while (rs.next()) {
                 CashItemInfo cItem = CashItemFactory.getInstance().getItem(rs.getInt("sn"));
                 IItem item = toItem(cItem, rs.getInt("uniqueid"), rs.getString("from"));
-                gifts.add(new OdinPair<IItem, String>(item, rs.getString("message")));
+                gifts.add(new OdinPair<>(item, rs.getString("message")));
                 uniqueids.add(item.getUniqueId());
                 List<CashItemInfo> packages = CashItemFactory.getInstance().getPackageItems(cItem.getId());
-                if (packages != null && packages.size() > 0) {
+                if (packages != null && !packages.isEmpty()) {
                     for (CashItemInfo packageItem : packages) {
                         addToInventory(toItem(packageItem, rs.getString("from")));
                     }
@@ -233,17 +231,17 @@ public class CashShop implements Serializable {
 
     public void sendedNote(int uniqueid) {
         for (int i = 0; i < uniqueids.size(); i++) {
-            if (uniqueids.get(i).intValue() == uniqueid) {
+            if (uniqueids.get(i) == uniqueid) {
                 uniqueids.remove(i);
             }
         }
     }
 
     public void save() throws SQLException {
-        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
+        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (IItem item : inventory) {
-            itemsWithType.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+            itemsWithType.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
         factory.saveItems(itemsWithType, accountId);

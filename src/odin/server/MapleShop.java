@@ -16,7 +16,7 @@ import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryIdentifier;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.database.DatabaseConnection;
@@ -82,12 +82,12 @@ public class MapleShop {
         }
     }
 
-    public void sendShop(MapleClient c) {
+    public void sendShop(TacosClient c) {
         c.getPlayer().setShop(this);
         c.SendPacket(ResCShopDlg.OpenShopDlg(c, getNpcId(), items));
     }
 
-    public boolean buy(MapleClient c, MapleCharacter chr, int itemId, short quantity) {
+    public boolean buy(TacosClient c, MapleCharacter chr, int itemId, short quantity) {
         MapleShopItem item = findById(itemId);
 
         if (quantity <= 0 || item == null) {
@@ -134,7 +134,7 @@ public class MapleShop {
         return true;
     }
 
-    public void sell(MapleClient c, MapleInventoryType type, byte slot, short quantity) {
+    public void sell(TacosClient c, MapleInventoryType type, byte slot, short quantity) {
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
@@ -173,7 +173,7 @@ public class MapleShop {
         }
     }
 
-    public boolean recharge(final MapleClient c, final byte slot) {
+    public boolean recharge(final TacosClient c, final byte slot) {
         final IItem item = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {

@@ -18,7 +18,7 @@
  */
 package tacos.network;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import org.apache.mina.common.IoSession;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
@@ -40,7 +40,7 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
     @Override
     public void sessionOpened(IoSession session) throws Exception {
         super.sessionOpened(session);
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
         if (client != null) {
             client.getLoginServer().getClients().add(client);
         }
@@ -48,7 +48,7 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
         if (client != null) {
             client.getLoginServer().getClients().remove(client);
             client.getLoginServer().getAuthorizedClients().remove(client);
@@ -57,7 +57,7 @@ public class PacketHandler_Login extends PacketHandler implements IPacketHandler
     }
 
     @Override
-    public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) throws Exception {
+    public boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) throws Exception {
         if (header.between(ClientPacketHeader.CP_BEGIN_SOCKET, ClientPacketHeader.CP_END_SOCKET)) {
             if (ReqCClientSocket.OnPacket_Login(client, header, cp)) {
                 return true;

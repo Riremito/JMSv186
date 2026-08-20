@@ -6,7 +6,7 @@ import odin.client.inventory.IItem;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import java.lang.ref.WeakReference;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -60,11 +60,11 @@ public class MapleTrade {
         wrchr.get().getClient().getSession().write(ResCMiniRoomBaseDlg.TradeMessage(tradingslot, (byte) 0x07));
     }
 
-    public final void cancel(final MapleClient c) {
+    public final void cancel(final TacosClient c) {
         cancel(c, 0);
     }
 
-    public final void cancel(final MapleClient c, final int unsuccessful) {
+    public final void cancel(final TacosClient c, final int unsuccessful) {
         if (items != null) { // just to be on the safe side...
             for (final IItem item : items) {
                 MapleInventoryManipulator.addFromDrop(c, item, false);
@@ -143,7 +143,7 @@ public class MapleTrade {
         return ret;
     }
 
-    public final boolean setItems(final MapleClient c, final IItem item, byte targetSlot, final int quantity) {
+    public final boolean setItems(final TacosClient c, final IItem item, byte targetSlot, final int quantity) {
         MapleCharacter chr = c.getPlayer();
         int target = getNextTargetSlot();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -246,7 +246,7 @@ public class MapleTrade {
         }
     }
 
-    public static final void cancelTrade(final MapleTrade Localtrade, final MapleClient c) {
+    public static final void cancelTrade(final MapleTrade Localtrade, final TacosClient c) {
         Localtrade.cancel(c);
 
         final MapleTrade partner = Localtrade.getPartner();
