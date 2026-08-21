@@ -135,8 +135,8 @@ public class MapleAESOFB {
     // JMS v131
     public static byte[] oops(byte[] iv) {
         byte[] newIv = new byte[16];
-        // TWMS
-        if (Region.TWMS.check()) {
+        // TWMS old, HKMS5
+        if (Region.TWMS.check() || Region.HKMS.check()) {
             for (int x = 0; x < 4; x++) {
                 funnyShit(funnyBytes[x], iv);
                 System.arraycopy(iv, 0, newIv, 4 * x, 4);
@@ -163,7 +163,7 @@ public class MapleAESOFB {
 
         try {
             while (remaining > 0) {
-                // JMS v131-141 / others
+                // JMS131-141, HKMS5 / others
                 byte[] myIv = Content.OldIV.get() ? oops(this.iv) : multiplyBytes(this.iv, 4, 4);
                 if (remaining < llength) {
                     llength = remaining;

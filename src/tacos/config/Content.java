@@ -237,6 +237,9 @@ public enum Content {
         if (Config.LessOrEqual(Region.JMS, 141)) {
             return true;
         }
+        if (Region.HKMS.check()) {
+            return true;
+        }
         return false;
     }
 

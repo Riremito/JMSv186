@@ -154,6 +154,7 @@ public class VersionSelector {
                 "KMST v391.1",
                 "JMST v110.0",
                 "GMST v2.1",
+                "HKMS v5.1",
                 "BMS v24.0",
                 "VMS v35.0",
                 "IMS v1.1",
