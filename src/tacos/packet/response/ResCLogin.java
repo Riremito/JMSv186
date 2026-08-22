@@ -213,6 +213,18 @@ public class ResCLogin {
                             sp.Encode8(0); // buffer
                             break;
                         }
+                        case HKMS: {
+                            sp.Encode4(client.getId());
+                            sp.Encode1(client.getGender());
+                            sp.Encode1(client.isGameMaster() ? 1 : 0);
+                            sp.EncodeStr(client.getMapleId());
+                            sp.Encode4(0);
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode1(0);
+                            sp.Encode8(0);
+                            break;
+                        }
                         case MSEA: {
                             sp.Encode4(client.getId());
                             sp.Encode1(client.getGender());

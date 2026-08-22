@@ -137,9 +137,10 @@ public class MapleAESOFB {
         byte[] newIv = new byte[16];
         // TWMS old, HKMS5
         if (Region.TWMS.check() || Region.HKMS.check()) {
+            byte iv_copy[] = iv.clone();
             for (int x = 0; x < 4; x++) {
-                funnyShit(funnyBytes[x], iv);
-                System.arraycopy(iv, 0, newIv, 4 * x, 4);
+                funnyShit(funnyBytes[x], iv_copy);
+                System.arraycopy(iv_copy, 0, newIv, 4 * x, 4);
             }
             return newIv;
         }
