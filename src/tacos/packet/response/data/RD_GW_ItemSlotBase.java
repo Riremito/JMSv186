@@ -53,7 +53,7 @@ public class RD_GW_ItemSlotBase {
             }
         }
 
-        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.TWMS, 94) || Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.TWMS, 94) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
             data.Encode1(pos);
         } else {
             // v186+
@@ -69,7 +69,7 @@ public class RD_GW_ItemSlotBase {
     public static final byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
-        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.TWMS, 94) || Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.TWMS, 94) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
             data.Encode1(0);
         } else {
             // v186+

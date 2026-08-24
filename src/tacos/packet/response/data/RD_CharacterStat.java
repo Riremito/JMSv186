@@ -48,7 +48,7 @@ public class RD_CharacterStat {
 
         if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || (Region.THMS.check() && Config.PostBB()) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.CMS, 88)) {
             // none
-        } else if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 131) || Region.BMS.check() || Region.VMS.check()) {
+        } else if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check() || Region.BMS.check() || Region.VMS.check()) {
             data.EncodeZeroBytes(8);
         } else if ((Region.JMS.check() || Region.JMST.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.CMS.check() || Region.MSEA.check() || ((Region.TWMS.check() || Region.EMS.check()) && Config.PreBB()))) {
             data.EncodeZeroBytes(24);
@@ -382,13 +382,13 @@ public class RD_CharacterStat {
         }
 
         // TWMS
-        if (Region.TWMS.check()) {
-            data.EncodeZeroBytes(25);
-            data.Encode1(0);
-            data.Encode1(0);
-            data.Encode1(0);
-            data.Encode1(0);
-            data.Encode1(0);
+        if (Region.TWMS.check() || Region.HKMS.check()) {
+            data.EncodeZeroBytes(25, Region.TWMS.check() || Region.HKMS.check());
+            data.Encode1(0, Region.TWMS.check() || Region.HKMS.check());
+            data.Encode1(0, Region.TWMS.check() || Region.HKMS.check());
+            data.Encode1(0, Region.TWMS.check());
+            data.Encode1(0, Region.TWMS.check());
+            data.Encode1(0, Region.TWMS.check());
             return data.getBytes();
         }
         // JMS

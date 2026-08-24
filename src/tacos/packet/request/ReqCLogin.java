@@ -60,7 +60,6 @@ public class ReqCLogin {
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_CheckPassword: {
-                // ログイン
                 if (OnCheckPassword(client, cp)) {
                     client.getLoginServer().getClients().remove(client);
                     client.getLoginServer().getAuthorizedClients().add(client);
@@ -72,18 +71,15 @@ public class ReqCLogin {
                 return true;
             }
             case CP_Check2ndPassword: {
-                // 2次パスワード入力
                 DebugLogger.TestLog("Check2ndPassword");
                 OnWorldInfoRequest(client);
                 return true;
             }
             case CP_WorldInfoRequest: {
-                // ワールド情報の取得
                 OnWorldInfoRequest(client);
                 return true;
             }
             case CP_SelectWorld: {
-                // チャンネル選択
                 OnSelectWorld(client, cp);
                 return true;
             }
@@ -96,13 +92,11 @@ public class ReqCLogin {
                 return true;
             }
             case CP_CheckDuplicatedID: {
-                // キャラクター名の確認
                 String character_name = cp.DecodeStr();
                 OnCheckDuplicatedID(client, character_name);
                 return true;
             }
             case CP_CreateNewCharacter: {
-                // キャラクター作成
                 OnCreateNewCharacter(client, cp);
                 return true;
             }
@@ -112,7 +106,6 @@ public class ReqCLogin {
                 return true;
             }
             case CP_DeleteCharacter: {
-                // キャラクター削除
                 OnDeleteCharacter(client, cp);
                 return true;
             }
@@ -455,26 +448,19 @@ public class ReqCLogin {
     }
 
     public static boolean OnSelectWorld(TacosClient client, ClientPacket cp) {
-        if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.EMS, 89) || Region.KMS.check() || Region.KMST.check() || Region.IMS.check() || Config.GreaterOrEqual(Region.TWMS, 148)) {
-            byte unk = cp.Decode1();
-        }
+        byte unk = cp.Decode1(Region.KMS.check() || Region.KMST.check() || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Region.HKMS.check() || Config.GreaterOrEqual(Region.EMS, 89) || Region.IMS.check());
 
-        if (Config.GreaterOrEqual(Region.GMS, 83)) {
-            byte m_nGameStartMode = cp.Decode1(); // m_nGameStartMode, always 2?
-            if (m_nGameStartMode == 1) {
-                String str = cp.DecodeStr();
-                byte hwid[] = cp.DecodeBuffer(16);
-                int GameRoomClient = cp.Decode4();
-                int m_nGameStartMode_2 = cp.Decode1();
-            }
+        byte m_nGameStartMode = cp.Decode1(Config.GreaterOrEqual(Region.GMS, 83)); // m_nGameStartMode, always 2?
+        if (m_nGameStartMode == 1) {
+            String str = cp.DecodeStr(Config.GreaterOrEqual(Region.GMS, 83));
+            byte hwid[] = cp.DecodeBuffer(16, Config.GreaterOrEqual(Region.GMS, 83));
+            int GameRoomClient = cp.Decode4(Config.GreaterOrEqual(Region.GMS, 83));
+            int m_nGameStartMode_2 = cp.Decode1(Config.GreaterOrEqual(Region.GMS, 83));
         }
 
         int world = cp.Decode1(); // nWorldID
         int channel = cp.Decode1(); // nChannelID
-
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 83) || Region.IMS.check() || Config.GreaterOrEqual(Region.CMS, 104)) {
-            int ip = cp.Decode4(); // S_addr
-        }
+        int ip = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.EMS, 89) || Region.IMS.check()); // S_addr
 
         // もみじ(1)
         if (world == 1) {
@@ -496,8 +482,8 @@ public class ReqCLogin {
 
     public static boolean OnDeleteCharacter(TacosClient client, ClientPacket cp) {
         // JMS188+
-        if (Config.GreaterOrEqual(Region.JMS, 188)) {
-            String MapleID = cp.DecodeStr();
+        if (Config.GreaterOrEqual(Region.JMS, 188) || Region.HKMS.check()) {
+            String MapleID = cp.DecodeStr(); // maple id or 2nd password.
             if (!MapleID.equals(client.getMapleId())) {
                 // state = 0以外にすると切断されます
             }
@@ -511,13 +497,8 @@ public class ReqCLogin {
             }
         }
 
-        if (Region.GMS.check() || Region.GMST.check() || Region.EMS.check()) {
-            int unke = cp.Decode4();
-        }
-        if (Region.THMS.check() || Region.VMS.check() || Region.BMS.check()) {
-            String key = cp.DecodeStr(); // 32 bytes hex or PIC
-        }
-
+        int unke = cp.Decode4(Region.GMS.check() || Region.GMST.check() || Region.EMS.check());
+        String key = cp.DecodeStr(Region.THMS.check() || Region.VMS.check() || Region.BMS.check()); // 32 bytes hex or PIC
         int character_id = cp.Decode4();
         if (!client.checkCharacterId(character_id)) {
             client.loginFailed("OnDeleteCharacter");

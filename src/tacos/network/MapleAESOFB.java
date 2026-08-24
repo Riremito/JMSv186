@@ -165,7 +165,8 @@ public class MapleAESOFB {
         try {
             while (remaining > 0) {
                 // JMS131-141, HKMS5 / others
-                byte[] myIv = Content.OldIV.get() ? oops(this.iv) : multiplyBytes(this.iv, 4, 4);
+                byte old_iv[] = this.iv.clone();
+                byte[] myIv = Content.OldIV.get() ? oops(old_iv) : multiplyBytes(this.iv, 4, 4);
                 if (remaining < llength) {
                     llength = remaining;
                 }

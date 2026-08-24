@@ -49,7 +49,7 @@ public class RD_CharacterData {
     public static byte[] Encode(MapleCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
 
-        if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 46) || Config.LessOrEqual(Region.JMS, 131)) {
+        if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 46) || Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check()) {
             data.Encode2((short) datamask); // statmask
         } else {
             // KMS51
@@ -89,7 +89,7 @@ public class RD_CharacterData {
         }
         if ((datamask & 2) != 0) {
             data.EncodeBuffer(RD_CharacterStat.EncodeMoney(chr));
-            data.EncodeBuffer(RD_CharacterStat.EncodePachinko(chr), Region.JMS.check() || Region.JMST.check() || Region.TWMS.check() || Region.CMS.check() || Region.THMS.check());
+            data.EncodeBuffer(RD_CharacterStat.EncodePachinko(chr), Region.JMS.check() || Region.JMST.check() || Region.CMS.check() || Region.TWMS.check() || Region.HKMS.check() || Region.THMS.check());
             data.Encode1(0, Config.GreaterOrEqual(Region.EMS, 89));
             data.Encode4(0, Config.GreaterOrEqual(Region.EMS, 89));
 
