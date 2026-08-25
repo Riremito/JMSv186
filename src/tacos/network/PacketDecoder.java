@@ -54,7 +54,7 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
                 byte decryptedPacket[] = new byte[required_size];
                 bb.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    aes_dec.crypt(decryptedPacket);
+                    aes_dec.CInPacket_DecryptData(decryptedPacket);
                     if (Content.CustomEncryption.get()) {
                         MapleCustomEncryption.decryptData(decryptedPacket);
                     }

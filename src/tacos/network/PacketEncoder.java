@@ -51,7 +51,7 @@ public class PacketEncoder implements ProtocolEncoder {
             if (Content.CustomEncryption.get()) {
                 MapleCustomEncryption.encryptData(packet);
             }
-            aes_enc.crypt(packet);
+            aes_enc.CInPacket_DecryptData(packet);
             aes_enc.updateIv();
         }
 

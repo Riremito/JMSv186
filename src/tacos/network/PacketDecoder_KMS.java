@@ -53,7 +53,7 @@ public class PacketDecoder_KMS extends CumulativeProtocolDecoder {
                 byte decryptedPacket[] = new byte[required_size];
                 bb.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    aes_dec.kms_decrypt(decryptedPacket);
+                    aes_dec.CIGCipher_innoDecrypt(decryptedPacket);
                 }
                 pdo.write(decryptedPacket);
                 // warning

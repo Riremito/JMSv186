@@ -51,7 +51,8 @@ public class MapleAESOFB {
     private short mapleVersion;
     private static SecretKeySpec skey = new SecretKeySpec(new byte[]{0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00}, "AES");
 
-    private static final byte[] funnyBytes = new byte[]{(byte) 0xEC, (byte) 0x3F, (byte) 0x77, (byte) 0xA4, (byte) 0x45, (byte) 0xD0, (byte) 0x71, (byte) 0xBF, (byte) 0xB7, (byte) 0x98, (byte) 0x20, (byte) 0xFC,
+    // CIGCipher::bShuffle
+    private static final byte[] CIGCipher_bShuffle = new byte[]{(byte) 0xEC, (byte) 0x3F, (byte) 0x77, (byte) 0xA4, (byte) 0x45, (byte) 0xD0, (byte) 0x71, (byte) 0xBF, (byte) 0xB7, (byte) 0x98, (byte) 0x20, (byte) 0xFC,
         (byte) 0x4B, (byte) 0xE9, (byte) 0xB3, (byte) 0xE1, (byte) 0x5C, (byte) 0x22, (byte) 0xF7, (byte) 0x0C, (byte) 0x44, (byte) 0x1B, (byte) 0x81, (byte) 0xBD, (byte) 0x63, (byte) 0x8D, (byte) 0xD4, (byte) 0xC3,
         (byte) 0xF2, (byte) 0x10, (byte) 0x19, (byte) 0xE0, (byte) 0xFB, (byte) 0xA1, (byte) 0x6E, (byte) 0x66, (byte) 0xEA, (byte) 0xAE, (byte) 0xD6, (byte) 0xCE, (byte) 0x06, (byte) 0x18, (byte) 0x4E, (byte) 0xEB,
         (byte) 0x78, (byte) 0x95, (byte) 0xDB, (byte) 0xBA, (byte) 0xB6, (byte) 0x42, (byte) 0x7A, (byte) 0x2A, (byte) 0x83, (byte) 0x0B, (byte) 0x54, (byte) 0x67, (byte) 0x6D, (byte) 0xE8, (byte) 0x65, (byte) 0xE7,
@@ -139,7 +140,7 @@ public class MapleAESOFB {
         if (Region.TWMS.check() || Region.HKMS.check()) {
             byte iv_copy[] = iv.clone();
             for (int x = 0; x < 4; x++) {
-                funnyShit(funnyBytes[x], iv_copy);
+                CIGCipher_MorphKey(CIGCipher_bShuffle[x], iv_copy);
                 System.arraycopy(iv_copy, 0, newIv, 4 * x, 4);
             }
             return newIv;
@@ -157,66 +158,78 @@ public class MapleAESOFB {
         return ret;
     }
 
-    public byte[] crypt(byte[] data) {
-        int remaining = data.length;
-        int llength = 0x5B0;
-        int start = 0;
+    // CInPacket::DecryptData
+    public byte[] CInPacket_DecryptData(byte[] data) {
+        int nLen = data.length;
+        int offset = 0;
 
-        try {
-            while (remaining > 0) {
-                // JMS131-141, HKMS5 / others
-                byte old_iv[] = this.iv.clone();
-                byte[] myIv = Content.OldIV.get() ? oops(old_iv) : multiplyBytes(this.iv, 4, 4);
-                if (remaining < llength) {
-                    llength = remaining;
-                }
-                for (int x = start; x < (start + llength); x++) {
-                    if ((x - start) % myIv.length == 0) {
-                        byte[] newIv = cipher.doFinal(myIv);
-                        System.arraycopy(newIv, 0, myIv, 0, myIv.length);
-                    }
-                    data[x] ^= myIv[(x - start) % myIv.length];
-                }
-                start += llength;
-                remaining -= llength;
-                llength = 0x5B4;
-            }
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
+        if (1456 <= nLen) {
+            nLen = 1456;
         }
+
+        do {
+            CAESCipher_Decrypt(data, offset, nLen);
+            offset += nLen;
+            nLen = data.length - offset;
+            if (1460 <= nLen) {
+                nLen = 1460;
+            }
+        } while (offset < data.length);
+
         return data;
     }
 
+    // CAESCipher::Decrypt
+    public boolean CAESCipher_Decrypt(byte[] data, int offset, int nLen) {
+        byte[] myIv = Content.OldIV.get() ? oops(this.iv) : multiplyBytes(this.iv, 4, 4);
+        for (int i = offset; i < (offset + nLen); i++) {
+            // CAESCipher::OFB_DecUpdate
+            if ((i - offset) % myIv.length == 0) {
+                try {
+                    byte[] newIv = this.cipher.doFinal(myIv);
+                    System.arraycopy(newIv, 0, myIv, 0, myIv.length);
+                } catch (IllegalBlockSizeException | BadPaddingException ex) {
+                    // iv error.
+                    DebugLogger.ExceptionLog("CAESCipher_Decrypt");
+                    return false;
+                }
+            }
+            // CAESCipher::OFB_DecFinal
+            data[i] ^= myIv[(i - offset) % myIv.length];
+        }
+        return true;
+    }
+
     // KMS v2.95
-    public byte[] kms_encrypt(byte[] data) {
+    // CIGCipher::innoEncrypt
+    public byte[] CIGCipher_innoEncrypt(byte[] data) {
         byte[] tempiv = this.iv;
         updateIv();
         for (int i = 0; i < data.length; i++) {
             int input = data[i] & 0xFF;
-            int crypted = (funnyBytes[tempiv[0] & 0xFF] ^ (((0x10 * input | (input >> 4)) >> 1) & 0x55 | 2 * ((0x10 * input | (input >> 4)) & 0xD5))) & 0xFF;
+            int crypted = (CIGCipher_bShuffle[tempiv[0] & 0xFF] ^ (((0x10 * input | (input >> 4)) >> 1) & 0x55 | 2 * ((0x10 * input | (input >> 4)) & 0xD5))) & 0xFF;
             data[i] = (byte) crypted;
-            funnyShit((byte) input, tempiv);
+            CIGCipher_MorphKey((byte) input, tempiv);
         }
         return data;
     }
 
-    public byte[] kms_decrypt(byte[] data) {
+    // CIGCipher::innoDecrypt
+    public byte[] CIGCipher_innoDecrypt(byte[] data) {
         byte[] ivtemp = this.iv;
         updateIv();
         for (int i = 0; i < data.length; i++) {
-            int first = ((data[i] & 0xFF) ^ funnyBytes[(ivtemp[0] & 0xFF)]) & 0xFF;
+            int first = ((data[i] & 0xFF) ^ CIGCipher_bShuffle[(ivtemp[0] & 0xFF)]) & 0xFF;
             int second = (((first >> 1) & 0x55) | ((first & 0xD5) << 1)) & 0xFF;
             int finals = ((second << 4) | (second >> 4)) & 0xFF;
             data[i] = (byte) finals;
-            funnyShit(data[i], ivtemp);
+            CIGCipher_MorphKey(data[i], ivtemp);
         }
         return data;
     }
 
     public void updateIv() {
-        this.iv = getNewIv(this.iv);
+        this.iv = CIGCipher_innoHash(this.iv);
     }
 
     public byte[] getPacketHeader(int length) {
@@ -240,32 +253,36 @@ public class MapleAESOFB {
         return checkPacket(new byte[]{(byte) ((packetHeader >> 24) & 0xFF), (byte) ((packetHeader >> 16) & 0xFF)});
     }
 
-    public static byte[] getNewIv(byte oldIv[]) {
-        byte[] in = {(byte) 0xf2, 0x53, (byte) 0x50, (byte) 0xc6}; // magic
+    // CIGCipher::innoHash
+    public static byte[] CIGCipher_innoHash(byte oldIv[]) {
+        byte[] in = {(byte) 0xf2, 0x53, (byte) 0x50, (byte) 0xc6}; // dwDefaultKey
+        int dwDefaultKey = 0xC65053F2;
+
         for (int x = 0; x < 4; x++) {
-            funnyShit(oldIv[x], in);
+            CIGCipher_MorphKey(oldIv[x], in);
         }
         return in;
     }
 
-    public static final void funnyShit(byte inputByte, byte[] in) {
+    // CIGCipher::MorphKey
+    public static final void CIGCipher_MorphKey(byte inputByte, byte[] in) {
         byte elina = in[1];
         byte anna = inputByte;
-        byte moritz = funnyBytes[(int) elina & 0xFF];
+        byte moritz = CIGCipher_bShuffle[(int) elina & 0xFF];
         moritz -= inputByte;
         in[0] += moritz;
         moritz = in[2];
-        moritz ^= funnyBytes[(int) anna & 0xFF];
+        moritz ^= CIGCipher_bShuffle[(int) anna & 0xFF];
         elina -= (int) moritz & 0xFF;
         in[1] = elina;
         elina = in[3];
         moritz = elina;
         elina -= (int) in[0] & 0xFF;
-        moritz = funnyBytes[(int) moritz & 0xFF];
+        moritz = CIGCipher_bShuffle[(int) moritz & 0xFF];
         moritz += inputByte;
         moritz ^= in[2];
         in[2] = moritz;
-        elina += (int) funnyBytes[(int) anna & 0xFF] & 0xFF;
+        elina += (int) CIGCipher_bShuffle[(int) anna & 0xFF] & 0xFF;
         in[3] = elina;
 
         int merry = ((int) in[0]) & 0xFF;

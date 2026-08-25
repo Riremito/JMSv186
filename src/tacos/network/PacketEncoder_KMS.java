@@ -47,7 +47,7 @@ public class PacketEncoder_KMS implements ProtocolEncoder {
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
-            aes_enc.kms_encrypt(packet);
+            aes_enc.CIGCipher_innoEncrypt(packet);
         }
 
         final byte[] encrypted_server_packet = new byte[header.length + packet.length];
