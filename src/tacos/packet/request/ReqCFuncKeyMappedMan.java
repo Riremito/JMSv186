@@ -35,11 +35,6 @@ import tacos.packet.response.ResCFuncKeyMappedMan;
  */
 public class ReqCFuncKeyMappedMan {
 
-    /*
-        @006C : CP_UserMacroSysDataModified
-        @008E : CP_FuncKeyMappedModified
-        @00BF : CP_QuickslotKeyMappedModified
-     */
     public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
 
@@ -48,7 +43,6 @@ public class ReqCFuncKeyMappedMan {
         }
 
         switch (header) {
-            // ChangeSkillMacro
             case CP_UserMacroSysDataModified: {
                 byte macro_count = cp.Decode1();
                 for (int i = 0; i < macro_count; i++) {
@@ -63,7 +57,6 @@ public class ReqCFuncKeyMappedMan {
 
                 return true;
             }
-            // ChangeKeymap
             case CP_FuncKeyMappedModified: {
                 OnFuncKeyMappedModified(cp, chr);
                 return true;
@@ -75,6 +68,7 @@ public class ReqCFuncKeyMappedMan {
                 break;
             }
         }
+
         return false;
     }
 
@@ -95,30 +89,30 @@ public class ReqCFuncKeyMappedMan {
             case FuncKeyMapped_PetConsumeHPItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoHPItem(item_id);
-                if (Config.LessOrEqual(Region.JMS, 131)) {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
+                if (Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check() || Region.BMS.check() || Region.VMS.check()) {
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit_JMS131(chr));
                 } else {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit(chr));
                 }
                 return true;
             }
             case FuncKeyMapped_PetConsumeMPItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoMPItem(item_id);
-                if (Config.LessOrEqual(Region.JMS, 131)) {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
+                if (Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check() || Region.BMS.check() || Region.VMS.check()) {
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit_JMS131(chr));
                 } else {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeMPItemInit(chr));
                 }
                 return true;
             }
             case FuncKeyMapped_JMS_PetConsumeCureItemModified: {
                 int item_id = cp.Decode4();
                 chr.setPetAutoCureItem(item_id);
-                if (Config.LessOrEqual(Region.JMS, 131)) {
+                if (Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check() || Region.BMS.check() || Region.VMS.check()) {
                     // nothing
                 } else {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeCureItemInit(chr));
                 }
                 return true;
             }

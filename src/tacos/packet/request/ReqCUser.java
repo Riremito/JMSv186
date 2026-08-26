@@ -2005,7 +2005,8 @@ public class ReqCUser {
 
         byte unk = cp.Decode1();
 
-        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.KMST, 330) || Region.HKMS.check() || Config.GreaterOrEqual(Region.GMS, 95)) {
+            // none.
         } else {
             int time_stamp_2 = cp.Decode4();
         }

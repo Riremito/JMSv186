@@ -283,16 +283,16 @@ public class ReqCClientSocket {
                         chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
                     }
                 }
-                if (Config.LessOrEqual(Region.JMS, 131) || Region.BMS.check() || Region.VMS.check()) {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
+                if (Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check() || Region.BMS.check() || Region.VMS.check()) {
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit_JMS131(chr));
                 } else {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeMPItemInit(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeCureItemInit(chr));
                 }
                 // keyboard
                 chr.SendPacket(ResCFuncKeyMappedMan.FuncKeyMappedInit(chr, false));
-                chr.SendPacket(ResCFuncKeyMappedMan.getMacros(chr));
+                chr.SendPacket(ResCFuncKeyMappedMan.MacroSysDataInit(chr));
                 // quest
                 for (MapleQuestStatus status : chr.getStartedQuests()) {
                     if (status.hasMobKills()) {
