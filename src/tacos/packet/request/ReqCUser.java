@@ -1074,7 +1074,7 @@ public class ReqCUser {
         int unk1 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode4() : 0;
         int time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         uhd.nAttackIdx = cp.Decode1();
-        byte nMagicElemAttr = Config.LessOrEqual(Region.KMS, 43) ? 0 : cp.Decode1();
+        byte nMagicElemAttr = (Config.LessOrEqual(Region.KMS, 43) || Region.HKMS.check()) ? 0 : cp.Decode1();
         uhd.nDamage = cp.Decode4();
         byte unk3 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
         byte unk4 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
