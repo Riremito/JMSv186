@@ -75,7 +75,7 @@ public class ResCStage {
                 sp.Encode4(chr.getStat().getHp());
             }
 
-            if (Region.TWMS.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.MSEA.check() || Region.EMS.check() || Region.BMS.check() || Region.VMS.check()) {
+            if (Region.TWMS.check() || Region.HKMS.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.MSEA.check() || Region.EMS.check() || Region.BMS.check() || Region.VMS.check()) {
                 boolean m_bChaseEnable = false;
                 sp.Encode1(m_bChaseEnable ? 1 : 0); // m_bChaseEnable
                 if (m_bChaseEnable) {
