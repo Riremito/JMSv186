@@ -29,17 +29,23 @@ public class CIOBufferManipulator {
         int Ln = Buffer.length;
 
         for (int i = 0; i < 3; i++) {
-            byte key = 0;
-            for (int index = 0; index < Ln; index++) {
-                int key_2 = Ln - index;
-                key ^= (byte) (key_2 + __ROL1__(Buffer[index], 3));
-                Buffer[index] = (byte) (0x47 - __ROR1__(key, key_2 % 8));
+            byte key_next = 0;
+            int key_index = Ln;
+            for (int offset = 0; offset < Ln; offset++) {
+                // S1-1
+                key_next ^= (byte) (key_index + __ROL1__(Buffer[offset], 3));
+                // S1-2
+                Buffer[offset] = (byte) (0x47 - __ROR1__(key_next, key_index % 8));
+                key_index--;
             }
-            key = 0;
-            for (int index = 0; index < Ln; index++) {
-                int key_2 = Ln - index;
-                key ^= (byte) key_2 + __ROL1__(Buffer[key_2 - 1], 4);
-                Buffer[key_2 - 1] = __ROR1__((byte) (key ^ 0x13), 3);
+            key_next = 0;
+            key_index = Ln;
+            for (int offset = Ln - 1; 0 <= offset; offset--) {
+                // S2-1
+                key_next ^= (byte) (key_index + __ROL1__(Buffer[offset], 4));
+                // S2-2
+                Buffer[offset] = __ROR1__((byte) (key_next ^ 0x13), 3);
+                key_index--;
             }
         }
     }
@@ -50,35 +56,24 @@ public class CIOBufferManipulator {
 
         for (int i = 0; i < 3; i++) {
             byte data = 0;
-            byte key = 0;
             byte key_next = 0;
-            byte key_index = (byte) (Ln & 0xFF);
-            for (int index = 0; index < Ln; index++) {
-                data = Buffer[Ln - index - 1];
-                data = __ROL1__(data, 3);
-                data ^= 0x13;
+            int key_index = Ln;
+            for (int offset = Ln - 1; 0 <= offset; offset--) {
+                // S2-2
+                data = (byte) (__ROL1__(Buffer[offset], 3) ^ 0x13);
+                // S2-1
+                Buffer[offset] = __ROR1__((byte) ((byte) (data ^ key_next) - key_index), 4);
                 key_next = data;
-                data ^= key;
-                key = key_next;
-                data -= key_index;
-                data = __ROR1__(data, 4);
-                Buffer[Ln - index - 1] = data;
                 key_index--;
             }
-            key = 0;
             key_next = 0;
-            key_index = (byte) (Ln & 0xFF);
-            for (int index = 0; index < Ln; index++) {
-                data = Buffer[index];
-                data -= 0x48;
-                data = (byte) (~data & 0xFF);
-                data = __ROL1__(data, key_index % 8);
+            key_index = Ln;
+            for (int offset = 0; offset < Ln; offset++) {
+                // S1-2
+                data = __ROL1__((byte) ((0x47 - Buffer[offset]) & 0xFF), key_index % 8);
+                // S1-1
+                Buffer[offset] = __ROR1__((byte) ((byte) (data ^ key_next) - key_index), 3);
                 key_next = data;
-                data ^= key;
-                key = key_next;
-                data -= key_index;
-                data = __ROR1__(data, 3);
-                Buffer[index] = data;
                 key_index--;
             }
         }
