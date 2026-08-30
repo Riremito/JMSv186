@@ -55,7 +55,7 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
                 bb.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
                     aes_dec.CInPacket_DecryptData(decryptedPacket);
-                    if (Content.CustomEncryption.get()) {
+                    if (Content.EncryptedByShanda.get()) {
                         CIOBufferManipulator._De(decryptedPacket);
                     }
                     aes_dec.updateIv();

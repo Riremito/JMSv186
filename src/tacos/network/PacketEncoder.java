@@ -48,7 +48,7 @@ public class PacketEncoder implements ProtocolEncoder {
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
-            if (Content.CustomEncryption.get()) {
+            if (Content.EncryptedByShanda.get()) {
                 CIOBufferManipulator._En(packet);
             }
             aes_enc.CInPacket_DecryptData(packet);
