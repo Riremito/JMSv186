@@ -25,7 +25,7 @@ package tacos.network;
 public class CIOBufferManipulator {
 
     // CIOBufferManipulator::_En
-    public static void _En(byte[] Buffer) {
+    public static byte[] _En(byte[] Buffer) {
         int Ln = Buffer.length;
 
         for (int i = 0; i < 3; i++) {
@@ -48,6 +48,8 @@ public class CIOBufferManipulator {
                 key_index--;
             }
         }
+
+        return Buffer;
     }
 
     // CIOBufferManipulator::_De
