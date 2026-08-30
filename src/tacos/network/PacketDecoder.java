@@ -56,7 +56,7 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
                     aes_dec.CInPacket_DecryptData(decryptedPacket);
                     if (Content.CustomEncryption.get()) {
-                        MapleCustomEncryption.decryptData(decryptedPacket);
+                        CIOBufferManipulator._De(decryptedPacket);
                     }
                     aes_dec.updateIv();
                 }

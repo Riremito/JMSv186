@@ -49,7 +49,7 @@ public class PacketEncoder implements ProtocolEncoder {
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
             if (Content.CustomEncryption.get()) {
-                MapleCustomEncryption.encryptData(packet);
+                CIOBufferManipulator._En(packet);
             }
             aes_enc.CInPacket_DecryptData(packet);
             aes_enc.updateIv();
