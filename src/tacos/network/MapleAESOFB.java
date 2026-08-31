@@ -116,11 +116,7 @@ public class MapleAESOFB {
         } else {
             try {
                 cipher = Cipher.getInstance("AES");
-                if (Region.KMS.check() || Region.KMST.check()) {
-                    // none
-                } else {
-                    cipher.init(Cipher.ENCRYPT_MODE, skey);
-                }
+                cipher.init(Cipher.ENCRYPT_MODE, skey);
             } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
                 System.err.println("ERROR" + e);
             } catch (InvalidKeyException e) {
@@ -263,34 +259,6 @@ public class MapleAESOFB {
         }
 
         return ChainVar;
-    }
-
-    // KMS v2.95
-    // CIGCipher::innoEncrypt
-    public byte[] CIGCipher_innoEncrypt(byte[] data) {
-        byte[] tempiv = this.iv;
-        updateIv();
-        for (int i = 0; i < data.length; i++) {
-            int input = data[i] & 0xFF;
-            int crypted = (CIGCipher_bShuffle[tempiv[0] & 0xFF] ^ (((0x10 * input | (input >>> 4)) >>> 1) & 0x55 | 2 * ((0x10 * input | (input >>> 4)) & 0xD5))) & 0xFF;
-            data[i] = (byte) crypted;
-            CIGCipher_MorphKey((byte) input, tempiv);
-        }
-        return data;
-    }
-
-    // CIGCipher::innoDecrypt
-    public byte[] CIGCipher_innoDecrypt(byte[] data) {
-        byte[] ivtemp = this.iv;
-        updateIv();
-        for (int i = 0; i < data.length; i++) {
-            int first = ((data[i] & 0xFF) ^ CIGCipher_bShuffle[(ivtemp[0] & 0xFF)]) & 0xFF;
-            int second = (((first >>> 1) & 0x55) | ((first & 0xD5) << 1)) & 0xFF;
-            int finals = ((second << 4) | (second >>> 4)) & 0xFF;
-            data[i] = (byte) finals;
-            CIGCipher_MorphKey(data[i], ivtemp);
-        }
-        return data;
     }
 
     public void updateIv() {

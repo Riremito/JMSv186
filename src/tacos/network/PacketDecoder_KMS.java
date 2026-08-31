@@ -33,7 +33,7 @@ public class PacketDecoder_KMS extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
-        MapleAESOFB aes_dec = (MapleAESOFB) is.getAttribute(MapleAESOFB.AES_DEC_KEY);
+        CIGCipher cipher = (CIGCipher) is.getAttribute(CIGCipher.KMS_DEC_KEY);
 
         // header check
         bb.mark(); // rollback position
@@ -45,15 +45,15 @@ public class PacketDecoder_KMS extends CumulativeProtocolDecoder {
         }
 
         int header_data = bb.getInt(); // +4
-        if (aes_dec.checkPacket(header_data)) {
-            int required_size = MapleAESOFB.getPacketLength(header_data);
+        if (cipher.checkPacket(header_data)) {
+            int required_size = CIGCipher.getPacketLength(header_data);
             buffer_size = bb.remaining();
 
             if (required_size <= buffer_size) {
                 byte decryptedPacket[] = new byte[required_size];
                 bb.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    aes_dec.CIGCipher_innoDecrypt(decryptedPacket);
+                    cipher.innoDecrypt(decryptedPacket);
                 }
                 pdo.write(decryptedPacket);
                 // warning
