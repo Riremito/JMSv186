@@ -30,7 +30,7 @@ public class CIGCipher {
     public static final String KMS_DEC_KEY = "KMS_DEC";
 
     // CIGCipher::bShuffle
-    private static final byte[] bShuffle = new byte[]{
+    private static final byte[] bShuffle = {
         (byte) 0xEC, (byte) 0x3F, (byte) 0x77, (byte) 0xA4, (byte) 0x45, (byte) 0xD0, (byte) 0x71, (byte) 0xBF, (byte) 0xB7, (byte) 0x98, (byte) 0x20, (byte) 0xFC, (byte) 0x4B, (byte) 0xE9, (byte) 0xB3, (byte) 0xE1,
         (byte) 0x5C, (byte) 0x22, (byte) 0xF7, (byte) 0x0C, (byte) 0x44, (byte) 0x1B, (byte) 0x81, (byte) 0xBD, (byte) 0x63, (byte) 0x8D, (byte) 0xD4, (byte) 0xC3, (byte) 0xF2, (byte) 0x10, (byte) 0x19, (byte) 0xE0,
         (byte) 0xFB, (byte) 0xA1, (byte) 0x6E, (byte) 0x66, (byte) 0xEA, (byte) 0xAE, (byte) 0xD6, (byte) 0xCE, (byte) 0x06, (byte) 0x18, (byte) 0x4E, (byte) 0xEB, (byte) 0x78, (byte) 0x95, (byte) 0xDB, (byte) 0xBA,
@@ -48,6 +48,8 @@ public class CIGCipher {
         (byte) 0x96, (byte) 0x41, (byte) 0x74, (byte) 0xAC, (byte) 0x52, (byte) 0x33, (byte) 0xF0, (byte) 0xD9, (byte) 0x29, (byte) 0x80, (byte) 0xB1, (byte) 0x16, (byte) 0xD3, (byte) 0xAB, (byte) 0x91, (byte) 0xB9,
         (byte) 0x84, (byte) 0x7F, (byte) 0x61, (byte) 0x1E, (byte) 0xCF, (byte) 0xC5, (byte) 0xD1, (byte) 0x56, (byte) 0x3D, (byte) 0xCA, (byte) 0xF4, (byte) 0x05, (byte) 0xC6, (byte) 0xE5, (byte) 0x08, (byte) 0x49
     };
+
+    public static final byte[] DefaultKey = {(byte) 0xF2, (byte) 0x53, (byte) 0x50, (byte) 0xC6}; // dwDefaultKey, 0xC65053F2
 
     private byte iv[] = null;
     private final short mapleVersion;
@@ -79,80 +81,69 @@ public class CIGCipher {
         return checkPacket(new byte[]{(byte) ((packetHeader >>> 24) & 0xFF), (byte) ((packetHeader >>> 16) & 0xFF)});
     }
 
+    public byte[] getIv() {
+        return this.iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
+
     // CIGCipher::innoEncrypt
-    public byte[] innoEncrypt(byte[] data) {
-        byte[] tempiv = this.iv;
-        updateIv();
-        for (int i = 0; i < data.length; i++) {
-            int input = data[i] & 0xFF;
-            int crypted = (bShuffle[tempiv[0] & 0xFF] ^ (((0x10 * input | (input >>> 4)) >>> 1) & 0x55 | 2 * ((0x10 * input | (input >>> 4)) & 0xD5))) & 0xFF;
-            data[i] = (byte) crypted;
-            MorphKey((byte) input, tempiv);
+    public static byte[] innoEncrypt(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey) {
+        byte[] key = (pdwKey == null) ? DefaultKey.clone() : pdwKey;
+
+        for (int i = 0; i < nLen; i++) {
+            byte bData = pSrc[i];
+            pDest[i] = (byte) (bShuffle[key[0] & 0xFF] ^ swapBits(swapBits(pSrc[i], 4, 0x0F), 1, 0x55));
+            MorphKey(key, bData);
         }
-        return data;
+
+        return pDest;
     }
 
     // CIGCipher::innoDecrypt
-    public byte[] innoDecrypt(byte[] data) {
-        byte[] ivtemp = this.iv;
-        updateIv();
-        for (int i = 0; i < data.length; i++) {
-            int first = ((data[i] & 0xFF) ^ bShuffle[(ivtemp[0] & 0xFF)]) & 0xFF;
-            int second = (((first >>> 1) & 0x55) | ((first & 0xD5) << 1)) & 0xFF;
-            int finals = ((second << 4) | (second >>> 4)) & 0xFF;
-            data[i] = (byte) finals;
-            MorphKey(data[i], ivtemp);
+    public static byte[] innoDecrypt(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey) {
+        byte[] key = (pdwKey == null) ? DefaultKey.clone() : pdwKey;
+
+        for (int i = 0; i < nLen; i++) {
+            pDest[i] = (byte) swapBits(swapBits(pSrc[i] ^ bShuffle[(key[0] & 0xFF)], 1, 0x55), 4, 0x0F);
+            MorphKey(key, pDest[i]);
         }
-        return data;
-    }
 
-    // CIGCipher::MorphKey
-    public static final void MorphKey(byte inputByte, byte[] in) {
-        byte elina = in[1];
-        byte anna = inputByte;
-        byte moritz = bShuffle[(int) elina & 0xFF];
-        moritz -= inputByte;
-        in[0] += moritz;
-        moritz = in[2];
-        moritz ^= bShuffle[(int) anna & 0xFF];
-        elina -= (int) moritz & 0xFF;
-        in[1] = elina;
-        elina = in[3];
-        moritz = elina;
-        elina -= (int) in[0] & 0xFF;
-        moritz = bShuffle[(int) moritz & 0xFF];
-        moritz += inputByte;
-        moritz ^= in[2];
-        in[2] = moritz;
-        elina += (int) bShuffle[(int) anna & 0xFF] & 0xFF;
-        in[3] = elina;
-
-        int merry = ((int) in[0]) & 0xFF;
-        merry |= (in[1] << 8) & 0xFF00;
-        merry |= (in[2] << 16) & 0xFF0000;
-        merry |= (in[3] << 24) & 0xFF000000;
-        int ret_value = merry >>> 0x1d;
-        merry <<= 3;
-        ret_value |= merry;
-
-        in[0] = (byte) (ret_value & 0xFF);
-        in[1] = (byte) ((ret_value >>> 8) & 0xFF);
-        in[2] = (byte) ((ret_value >>> 16) & 0xFF);
-        in[3] = (byte) ((ret_value >>> 24) & 0xFF);
-    }
-
-    public void updateIv() {
-        this.iv = innoHash(this.iv);
+        return pDest;
     }
 
     // CIGCipher::innoHash
-    public static byte[] innoHash(byte oldIv[]) {
-        byte[] in = {(byte) 0xf2, 0x53, (byte) 0x50, (byte) 0xc6}; // dwDefaultKey
+    public static byte[] innoHash(byte pSrc[], byte[] pdwKey) {
+        byte[] key = (pdwKey == null) ? DefaultKey.clone() : pdwKey;
+        int nLen = key.length;
 
-        for (int x = 0; x < 4; x++) {
-            MorphKey(oldIv[x], in);
+        for (int i = 0; i < nLen; i++) {
+            MorphKey(key, pSrc[i]);
         }
 
-        return in;
+        return key;
+    }
+
+    // CIGCipher::MorphKey
+    public static void MorphKey(byte[] pdwKey, byte bData) {
+        pdwKey[0] = (byte) (pdwKey[0] + bShuffle[pdwKey[1] & 0xFF] - bData);
+        pdwKey[1] = (byte) (pdwKey[1] - (bShuffle[bData & 0xFF] ^ pdwKey[2]));
+        pdwKey[2] = (byte) (pdwKey[2] ^ (bData + bShuffle[pdwKey[3] & 0xFF]));
+        pdwKey[3] = (byte) (pdwKey[3] + bShuffle[bData & 0xFF] - pdwKey[0]);
+
+        int key = (pdwKey[0] & 0xFF) | (pdwKey[1] & 0xFF) << 8 | (pdwKey[2] & 0xFF) << 16 | (pdwKey[3] & 0xFF) << 24;
+        key = key << 3 | key >>> 29;
+
+        pdwKey[0] = (byte) (key & 0xFF);
+        pdwKey[1] = (byte) (key >>> 8 & 0xFF);
+        pdwKey[2] = (byte) (key >>> 16 & 0xFF);
+        pdwKey[3] = (byte) (key >>> 24 & 0xFF);
+    }
+
+    private static int swapBits(int val, int shift, int mask_right) {
+        int mask_left = (~mask_right) & 0xFF;
+        return ((val >>> shift) & mask_right) | ((val << shift) & mask_left);
     }
 }
