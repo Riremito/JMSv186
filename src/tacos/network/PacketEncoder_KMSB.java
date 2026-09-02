@@ -33,10 +33,10 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
 
     @Override
     public void encode(IoSession is, Object o, ProtocolEncoderOutput peo) throws Exception {
-        MapleAESOFB aes_enc = (MapleAESOFB) is.getAttribute(MapleAESOFB.AES_ENC_KEY);
+        CIGCipher cipher = (CIGCipher) is.getAttribute(CIGCipher.KMS_ENC_KEY);
 
         // raw packet
-        if (aes_enc == null) {
+        if (cipher == null) {
             peo.write(ByteBuffer.wrap(((ServerPacket) o).getBytes()));
             return;
         }
@@ -46,7 +46,7 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
         final byte[] header_version = new byte[2];
         final byte[] header_size = new byte[2];
         final byte[] packet = raw_server_packet.clone();
-        byte key[] = aes_enc.getIv();
+        byte key[] = cipher.getIv();
         short version = (short) (0xFFFF - Config.VERSION);
 
         header_version[0] = (byte) (version & 0xFF);
@@ -75,7 +75,7 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
         key[1] = (byte) ((next_key >> 8) & 0xFF);
         key[2] = (byte) ((next_key >> 16) & 0xFF);
         key[3] = (byte) ((next_key >> 24) & 0xFF);
-        aes_enc.setIv(key);
+        cipher.setIv(key);
     }
 
     @Override

@@ -34,25 +34,26 @@ public class PacketEncoder implements ProtocolEncoder {
 
     @Override
     public void encode(IoSession is, Object o, ProtocolEncoderOutput peo) throws Exception {
-        MapleAESOFB aes_enc = (MapleAESOFB) is.getAttribute(MapleAESOFB.AES_ENC_KEY);
+        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_ENC_KEY);
 
         // raw packet
-        if (aes_enc == null) {
+        if (cipher == null) {
             peo.write(ByteBuffer.wrap(((ServerPacket) o).getBytes()));
             return;
         }
 
         // packet encryption
         final byte[] raw_server_packet = ((ServerPacket) o).getBytes();
-        final byte[] header = aes_enc.getPacketHeader(raw_server_packet.length); // 4 bytes
+        final byte[] header = cipher.getPacketHeader(raw_server_packet.length); // 4 bytes
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
             if (Content.EncryptedByShanda.get()) {
                 CIOBufferManipulator._En(packet);
             }
-            aes_enc.CInPacket_DecryptData(packet);
-            aes_enc.updateIv();
+            cipher.CInPacket_DecryptData(packet);
+            byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
+            cipher.setIv(iv);
         }
 
         final byte[] encrypted_server_packet = new byte[header.length + packet.length];

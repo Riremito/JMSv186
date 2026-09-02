@@ -126,16 +126,16 @@ public class PacketHandler extends IoHandlerAdapter {
         byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
         byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
 
-        MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true);
-        MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, false);
+        CAESCipher aes_enc = new CAESCipher(serverSend, true);
+        CAESCipher aes_dec = new CAESCipher(serverRecv, false);
         TacosClient client = new TacosClient(session);
         client.setServer(this.server);
 
-        session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
+        session.setAttribute(CAESCipher.AES_ENC_KEY, null);
         session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
         session.setAttribute(TacosClient.CLIENT_KEY, client);
-        session.setAttribute(MapleAESOFB.AES_ENC_KEY, aes_enc);
-        session.setAttribute(MapleAESOFB.AES_DEC_KEY, aes_dec);
+        session.setAttribute(CAESCipher.AES_ENC_KEY, aes_enc);
+        session.setAttribute(CAESCipher.AES_DEC_KEY, aes_dec);
         session.setIdleTime(IdleStatus.READER_IDLE, 10);
         //session.setIdleTime(IdleStatus.WRITER_IDLE, 5);
         CIGCipher kms_enc = new CIGCipher(serverSend, true);

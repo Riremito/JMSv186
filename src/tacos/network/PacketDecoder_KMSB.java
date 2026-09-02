@@ -33,8 +33,8 @@ public class PacketDecoder_KMSB extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
-        MapleAESOFB aes_dec = (MapleAESOFB) is.getAttribute(MapleAESOFB.AES_DEC_KEY);
-        byte key[] = aes_dec.getIv();
+        CIGCipher cipher = (CIGCipher) is.getAttribute(CIGCipher.KMS_DEC_KEY);
+        byte key[] = cipher.getIv();
         // header check
         bb.mark(); // rollback position
 
@@ -85,7 +85,7 @@ public class PacketDecoder_KMSB extends CumulativeProtocolDecoder {
         key[1] = (byte) ((next_key >> 8) & 0xFF);
         key[2] = (byte) ((next_key >> 16) & 0xFF);
         key[3] = (byte) ((next_key >> 24) & 0xFF);
-        aes_dec.setIv(key);
+        cipher.setIv(key);
         return true;
     }
 }

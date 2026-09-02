@@ -34,7 +34,7 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
-        MapleAESOFB aes_dec = (MapleAESOFB) is.getAttribute(MapleAESOFB.AES_DEC_KEY);
+        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_DEC_KEY);
 
         // header check
         bb.mark(); // rollback position
@@ -46,19 +46,20 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
         }
 
         int header_data = bb.getInt(); // +4
-        if (aes_dec.checkPacket(header_data)) {
-            int required_size = MapleAESOFB.getPacketLength(header_data);
+        if (cipher.checkPacket(header_data)) {
+            int required_size = CAESCipher.getPacketLength(header_data);
             buffer_size = bb.remaining();
 
             if (required_size <= buffer_size) {
                 byte decryptedPacket[] = new byte[required_size];
                 bb.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    aes_dec.CInPacket_DecryptData(decryptedPacket);
+                    cipher.CInPacket_DecryptData(decryptedPacket);
                     if (Content.EncryptedByShanda.get()) {
                         CIOBufferManipulator._De(decryptedPacket);
                     }
-                    aes_dec.updateIv();
+                    byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
+                    cipher.setIv(iv);
                 }
                 pdo.write(decryptedPacket);
                 // warning

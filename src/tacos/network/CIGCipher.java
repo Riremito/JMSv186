@@ -30,7 +30,7 @@ public class CIGCipher {
     public static final String KMS_DEC_KEY = "KMS_DEC";
 
     // CIGCipher::bShuffle
-    private static final byte[] bShuffle = {
+    public static final byte[] bShuffle = {
         (byte) 0xEC, (byte) 0x3F, (byte) 0x77, (byte) 0xA4, (byte) 0x45, (byte) 0xD0, (byte) 0x71, (byte) 0xBF, (byte) 0xB7, (byte) 0x98, (byte) 0x20, (byte) 0xFC, (byte) 0x4B, (byte) 0xE9, (byte) 0xB3, (byte) 0xE1,
         (byte) 0x5C, (byte) 0x22, (byte) 0xF7, (byte) 0x0C, (byte) 0x44, (byte) 0x1B, (byte) 0x81, (byte) 0xBD, (byte) 0x63, (byte) 0x8D, (byte) 0xD4, (byte) 0xC3, (byte) 0xF2, (byte) 0x10, (byte) 0x19, (byte) 0xE0,
         (byte) 0xFB, (byte) 0xA1, (byte) 0x6E, (byte) 0x66, (byte) 0xEA, (byte) 0xAE, (byte) 0xD6, (byte) 0xCE, (byte) 0x06, (byte) 0x18, (byte) 0x4E, (byte) 0xEB, (byte) 0x78, (byte) 0x95, (byte) 0xDB, (byte) 0xBA,
@@ -51,10 +51,10 @@ public class CIGCipher {
 
     public static final byte[] DefaultKey = {(byte) 0xF2, (byte) 0x53, (byte) 0x50, (byte) 0xC6}; // dwDefaultKey, 0xC65053F2
 
-    private byte iv[] = null;
+    private byte[] iv = null;
     private final short mapleVersion;
 
-    public CIGCipher(byte iv[], boolean isOutbound) {
+    public CIGCipher(byte[] iv, boolean isOutbound) {
         this.iv = iv;
         short vesrion = isOutbound ? (short) (0xFFFF - (short) Config.VERSION) : (short) Config.VERSION;
         this.mapleVersion = (short) (((vesrion >>> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
@@ -115,7 +115,7 @@ public class CIGCipher {
     }
 
     // CIGCipher::innoHash
-    public static byte[] innoHash(byte pSrc[], byte[] pdwKey) {
+    public static byte[] innoHash(byte[] pSrc, byte[] pdwKey) {
         byte[] key = (pdwKey == null) ? DefaultKey.clone() : pdwKey;
         int nLen = key.length;
 
@@ -144,6 +144,7 @@ public class CIGCipher {
 
     private static int swapBits(int val, int shift, int mask_right) {
         int mask_left = (~mask_right) & 0xFF;
+
         return ((val >>> shift) & mask_right) | ((val << shift) & mask_left);
     }
 }

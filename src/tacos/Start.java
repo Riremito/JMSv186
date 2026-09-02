@@ -36,7 +36,7 @@ import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
 import tacos.config.Config;
 import tacos.database.query.DQ_Characters;
-import tacos.network.MapleAESOFB;
+import tacos.network.CAESCipher;
 import tacos.property.Property_World;
 import tacos.server.TacosServer;
 import tacos.server.TacosCashShop;
@@ -81,7 +81,7 @@ public class Start {
         // TODO : debug config
         // AES
         DebugLogger.SetupLog("AES_KEY");
-        MapleAESOFB.setAesKey();
+        CAESCipher.setAesKey();
         // update content flags
         DebugLogger.SetupLog("FLAG_CONTENT");
         Content.init();
