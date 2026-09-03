@@ -47,6 +47,7 @@ public class PacketEncoder_KMS implements ProtocolEncoder {
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
+            // COutPacket::MakeBufferList = CIGCipher::innoEncrypt
             CIGCipher.innoEncrypt(packet, packet, packet.length, cipher.getIv().clone());
             byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
             cipher.setIv(iv);

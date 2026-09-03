@@ -48,10 +48,11 @@ public class PacketEncoder implements ProtocolEncoder {
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
+            // COutPacket::MakeBufferList
             if (Content.EncryptedByShanda.get()) {
                 CIOBufferManipulator._En(packet);
             }
-            cipher.CInPacket_DecryptData(packet);
+            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
             byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
             cipher.setIv(iv);
         }

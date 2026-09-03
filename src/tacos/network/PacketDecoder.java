@@ -54,7 +54,8 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
                 byte decryptedPacket[] = new byte[required_size];
                 bb.get(decryptedPacket, 0, required_size); // +required_size
                 if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    cipher.CInPacket_DecryptData(decryptedPacket);
+                    // CInPacket::DecryptData
+                    cipher.CInPacket_DecryptData(decryptedPacket, decryptedPacket, decryptedPacket.length, cipher.getIv().clone());
                     if (Content.EncryptedByShanda.get()) {
                         CIOBufferManipulator._De(decryptedPacket);
                     }

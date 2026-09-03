@@ -96,8 +96,7 @@ public class CAESCipher {
     }
 
     // CInPacket::DecryptData
-    public byte[] CInPacket_DecryptData(byte[] data) {
-        int nLen = data.length;
+    public byte[] CInPacket_DecryptData(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey) {
         int offset = 0;
 
         if (1456 <= nLen) {
@@ -105,66 +104,63 @@ public class CAESCipher {
         }
 
         do {
-            Decrypt(data, offset, nLen);
+            Crypt(pDest, pSrc, nLen, pdwKey, offset);
             offset += nLen;
-            nLen = data.length - offset;
+            nLen = pSrc.length - offset;
             if (1460 <= nLen) {
                 nLen = 1460;
             }
-        } while (offset < data.length);
+        } while (offset < pSrc.length);
 
-        this.iv_old_hkms = null; // clear for detecting next packet.
-        return data;
+        return pDest;
     }
 
-    // CAESCipher::Decrypt
-    private boolean Decrypt(byte[] data, int offset, int nLen) {
+    // CAESCipher::Encrypt, CAESCipher::Decrypt
+    private boolean Crypt(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey, int offset) {
         // CAESCipher::AES_EncKeySchedule
         // CAESCipher::AES_DecInit
-        byte[] myIv = null;
+        byte[] ChainVar = new byte[16]; // CAESCipher::AES_ALG_INFO *AlgInfo
         if (Content.OldIV.get()) {
             if (Region.TWMS.check() || Region.HKMS.check()) {
                 // iv is changed, you need to keep old iv for next loop (1456+ bytes).
-                myIv = AES_DecInit_HKMS5();
+                AES_Init_HKMS5(ChainVar, pdwKey);
             } else {
                 // iv is never changed.
-                myIv = AES_DecInit_JMS131();
+                AES_Init_JMS131(ChainVar, pdwKey);
             }
         } else {
             // iv is never changed.
-            myIv = AES_DecInit();
+            AES_Init(ChainVar, pdwKey);
         }
 
         for (int i = offset; i < (offset + nLen); i++) {
             // CAESCipher::OFB_DecUpdate
-            if ((i - offset) % myIv.length == 0) {
+            if ((i - offset) % ChainVar.length == 0) {
                 try {
-                    byte[] newIv = this.cipher.doFinal(myIv);
-                    System.arraycopy(newIv, 0, myIv, 0, myIv.length);
+                    byte[] newIv = this.cipher.doFinal(ChainVar);
+                    System.arraycopy(newIv, 0, ChainVar, 0, ChainVar.length);
                 } catch (IllegalBlockSizeException | BadPaddingException ex) {
                     // iv error.
-                    DebugLogger.ExceptionLog("CAESCipher_Decrypt");
+                    DebugLogger.ExceptionLog("Crypt");
                     return false;
                 }
             }
             // CAESCipher::OFB_DecFinal
-            data[i] ^= myIv[(i - offset) % myIv.length];
+            pDest[i] = (byte) (pSrc[i] ^ ChainVar[(i - offset) % ChainVar.length]);
         }
 
         return true;
     }
 
-    // CAESCipher::AES_DecInit
-    private byte[] AES_DecInit() {
-        byte[] ChainVar = new byte[16];
-
-        if (this.iv != null) {
+    // CAESCipher::AES_EncInit, CAESCipher::AES_DecInit
+    private static byte[] AES_Init(byte[] ChainVar, byte[] pdwKey) {
+        if (pdwKey != null) {
             for (int i = 0; i < ChainVar.length; i++) {
-                ChainVar[i] = this.iv[i % 4];
+                ChainVar[i] = pdwKey[i % 4];
             }
         } else {
             // never executed.
-            DebugLogger.ErrorLog("CAESCipher_AES_DecInit : iv = null.");
+            DebugLogger.ErrorLog("AES_Init : iv = null.");
             for (int i = 0; i < ChainVar.length; i++) {
                 ChainVar[i] = bDefaultAESKeyValue[i];
             }
@@ -173,17 +169,15 @@ public class CAESCipher {
         return ChainVar;
     }
 
-    // CAESCipher::AES_DecInit, JMS131
-    private byte[] AES_DecInit_JMS131() {
-        byte[] ChainVar = new byte[16];
-
-        if (this.iv != null) {
+    // JMS131
+    private static byte[] AES_Init_JMS131(byte[] ChainVar, byte[] pdwKey) {
+        if (pdwKey != null) {
             for (int i = 0; i < ChainVar.length; i++) {
-                ChainVar[i] = this.iv[0];
+                ChainVar[i] = pdwKey[0];
             }
         } else {
             // never executed.
-            DebugLogger.ErrorLog("CAESCipher_AES_DecInit_JMS131 : iv = null.");
+            DebugLogger.ErrorLog("AES_Init_JMS131 : iv = null.");
             for (int i = 0; i < ChainVar.length; i++) {
                 ChainVar[i] = bDefaultAESKeyValue[3]; // F2
             }
@@ -192,25 +186,19 @@ public class CAESCipher {
         return ChainVar;
     }
 
-    private byte[] iv_old_hkms = null;
-
-    // CAESCipher::AES_DecInit, HKMS5
-    private byte[] AES_DecInit_HKMS5() {
-        byte[] ChainVar = new byte[16];
-
-        if (this.iv != null) {
-            byte[] iv_copy = (this.iv_old_hkms == null) ? this.iv.clone() : this.iv_old_hkms.clone();
+    // HKMS5
+    private static byte[] AES_Init_HKMS5(byte[] ChainVar, byte[] pdwKey) {
+        if (pdwKey != null) {
             for (int i = 0; i < 4; i++) {
-                CIGCipher.MorphKey(iv_copy, CIGCipher.bShuffle[i]);
-                ChainVar[i * 4] = iv_copy[0];
-                ChainVar[i * 4 + 1] = iv_copy[1];
-                ChainVar[i * 4 + 2] = iv_copy[2];
-                ChainVar[i * 4 + 3] = iv_copy[3];
+                CIGCipher.MorphKey(pdwKey, CIGCipher.bShuffle[i]);
+                ChainVar[i * 4] = pdwKey[0];
+                ChainVar[i * 4 + 1] = pdwKey[1];
+                ChainVar[i * 4 + 2] = pdwKey[2];
+                ChainVar[i * 4 + 3] = pdwKey[3];
             }
-            this.iv_old_hkms = iv_copy;
         } else {
             // never executed.
-            DebugLogger.ErrorLog("CAESCipher_AES_DecInit_HKMS5 : iv = null.");
+            DebugLogger.ErrorLog("AES_Init_HKMS5 : iv = null.");
             for (int i = 0; i < ChainVar.length; i++) {
                 ChainVar[i] = bDefaultAESKeyValue[i]; // C65053F2A8...
             }
