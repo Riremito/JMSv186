@@ -38,20 +38,31 @@ public class CAESCipher {
 
     public static final String AES_ENC_KEY = "AES_ENC";
     public static final String AES_DEC_KEY = "AES_DEC";
+    private static SecretKeySpec sks = null;
 
-    private static SecretKeySpec skey = new SecretKeySpec(new byte[]{0x13, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, (byte) 0xB4, 0x00, 0x00, 0x00, 0x1B, 0x00, 0x00, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x52, 0x00, 0x00, 0x00}, "AES");
+    // CAESCipher::UserKey
+    private static final int[] UserKey = {
+        0x00000013, 0x00000052, 0x0000002A, 0x0000005B,
+        0x00000008, 0x00000002, 0x00000010, 0x00000060,
+        0x00000006, 0x00000002, 0x00000043, 0x0000000F,
+        0x000000B4, 0x0000004B, 0x00000035, 0x00000005,
+        0x0000001B, 0x0000000A, 0x0000005F, 0x00000009,
+        0x0000000F, 0x00000050, 0x0000000C, 0x0000001B,
+        0x00000033, 0x00000055, 0x00000001, 0x00000009,
+        0x00000052, 0x000000DE, 0x000000C7, 0x0000001E
+    };
 
     // CAESCipher::bDefaultAESKeyValue
-    private static final byte[] bDefaultAESKeyValue = new byte[]{
+    private static final byte[] bDefaultAESKeyValue = {
         (byte) 0xC6, (byte) 0x50, (byte) 0x53, (byte) 0xF2,
         (byte) 0xA8, (byte) 0x42, (byte) 0x9D, (byte) 0x7F,
         (byte) 0x77, (byte) 0x09, (byte) 0x1D, (byte) 0x26,
         (byte) 0x42, (byte) 0x53, (byte) 0x88, (byte) 0x7C
     };
 
-    private byte[] iv = null;
+    private byte[] iv;
     private final short mapleVersion;
-    private Cipher cipher;
+    private Cipher cipher = null;
 
     public CAESCipher(byte[] iv, boolean isOutbound) {
         this.iv = iv;
@@ -60,7 +71,7 @@ public class CAESCipher {
 
         try {
             this.cipher = Cipher.getInstance("AES");
-            this.cipher.init(Cipher.ENCRYPT_MODE, skey);
+            this.cipher.init(Cipher.ENCRYPT_MODE, sks);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ex) {
             DebugLogger.ExceptionLog("CAESCipher");
         }
@@ -207,34 +218,40 @@ public class CAESCipher {
         return ChainVar;
     }
 
+    // CAESCipher::RIJNDAEL_KeySchedule
     public static boolean setAesKey() {
-        byte aes_key[] = new byte[32]; // filled with 0.
+        byte[] e_key = new byte[32]; // filled with 0.
         if (Config.Equal(Region.GMS, 126)) {
-            aes_key[0] = (byte) 0x8B;
-            aes_key[4] = (byte) 0x24;
-            aes_key[8] = (byte) 0x8B;
-            aes_key[12] = (byte) 0x6D;
-            aes_key[16] = (byte) 0xB5;
-            aes_key[20] = (byte) 0xC6;
-            aes_key[24] = (byte) 0x08;
-            aes_key[28] = (byte) 0xB0;
-            skey = new SecretKeySpec(aes_key, "AES");
+            e_key[0] = (byte) 0x8B;
+            e_key[4] = (byte) 0x24;
+            e_key[8] = (byte) 0x8B;
+            e_key[12] = (byte) 0x6D;
+            e_key[16] = (byte) 0xB5;
+            e_key[20] = (byte) 0xC6;
+            e_key[24] = (byte) 0x08;
+            e_key[28] = (byte) 0xB0;
+            sks = new SecretKeySpec(e_key, "AES");
             DebugLogger.InfoLog("aes_key = GMS126");
             return true;
         }
         if (Config.Equal(Region.GMS, 131)) {
-            aes_key[0] = (byte) 0x44;
-            aes_key[4] = (byte) 0xB9;
-            aes_key[8] = (byte) 0x0F;
-            aes_key[12] = (byte) 0xB3;
-            aes_key[16] = (byte) 0x76;
-            aes_key[20] = (byte) 0x23;
-            aes_key[24] = (byte) 0x38;
-            aes_key[28] = (byte) 0xAE;
-            skey = new SecretKeySpec(aes_key, "AES");
+            e_key[0] = (byte) 0x44;
+            e_key[4] = (byte) 0xB9;
+            e_key[8] = (byte) 0x0F;
+            e_key[12] = (byte) 0xB3;
+            e_key[16] = (byte) 0x76;
+            e_key[20] = (byte) 0x23;
+            e_key[24] = (byte) 0x38;
+            e_key[28] = (byte) 0xAE;
+            sks = new SecretKeySpec(e_key, "AES");
             DebugLogger.InfoLog("aes_key = GMS131");
             return true;
         }
+
+        for (int i = 0; i < 8; i++) {
+            e_key[i * 4] = (byte) (UserKey[i * 4]); // 13 08...
+        }
+        sks = new SecretKeySpec(e_key, "AES");
         DebugLogger.InfoLog("aes_key = default");
         return false;
     }
