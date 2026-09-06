@@ -25,6 +25,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import tacos.config.Config;
 
 /**
  *
@@ -32,51 +33,51 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
  */
 public class PacketDecoder extends CumulativeProtocolDecoder {
 
+    private static final int DEC_HEADER_SIZE = 4;
+
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
         CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_DEC_KEY);
 
-        // header check
-        bb.mark(); // rollback position
-
-        int buffer_size = bb.remaining();
-        if (buffer_size < 4) {
-            DebugLogger.ErrorLog("doDecode size error");
+        if (bb.remaining() < DEC_HEADER_SIZE) {
             return false;
         }
 
-        int header_data = bb.getInt(); // +4
-        if (cipher.checkPacket(header_data)) {
-            int required_size = CAESCipher.getPacketLength(header_data);
-            buffer_size = bb.remaining();
+        // rollback position.
+        bb.mark();
 
-            if (required_size <= buffer_size) {
-                byte decryptedPacket[] = new byte[required_size];
-                bb.get(decryptedPacket, 0, required_size); // +required_size
-                if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    // CInPacket::DecryptData
-                    cipher.CInPacket_DecryptData(decryptedPacket, decryptedPacket, decryptedPacket.length, cipher.getIv().clone());
-                    if (Content.EncryptedByShanda.get()) {
-                        CIOBufferManipulator._De(decryptedPacket);
-                    }
-                    byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
-                    cipher.setIv(iv);
-                }
-                pdo.write(decryptedPacket);
-                // warning
-                if (required_size < buffer_size) {
-                    //Debug.InfoLog("doDecode size ( " + buffer_size + " / " + required_size + " )");
-                }
-                return true;
+        short m_uRawSeq = bb.getShort();
+        m_uRawSeq = (short) (((m_uRawSeq << 8) & 0xFF00) | ((m_uRawSeq >>> 8) & 0x00FF));
+        short m_uDataLen = bb.getShort();
+        m_uDataLen = (short) ((((m_uDataLen << 8) & 0xFF00) | ((m_uDataLen >>> 8) & 0x00FF)) ^ m_uRawSeq);
+        short uSeqKey = (short) (((cipher.getIv()[3] << 8) & 0xFF00) | (cipher.getIv()[2] & 0x00FF));
+
+        if ((short) (uSeqKey ^ m_uRawSeq) != Config.VERSION) {
+            is.close();
+            DebugLogger.ErrorLog("doDecode : version.");
+            return false;
+        }
+
+        if (bb.remaining() < m_uDataLen) {
+            // rollback.
+            bb.reset();
+            return false;
+        }
+
+        byte[] packet = new byte[m_uDataLen];
+        bb.get(packet, 0, m_uDataLen);
+
+        if (!ClientEdit.PacketEncryptionRemoved.get()) {
+            // CInPacket::DecryptData
+            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
+            if (Content.EncryptedByShanda.get()) {
+                CIOBufferManipulator._De(packet);
             }
-            // reset
-            //Debug.ErrorLog("doDecode size ( " + buffer_size + " / " + required_size + " )");
-            bb.reset(); // rollback because client still does not send full size of packet buffer.
-            return false;
+            byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
+            cipher.setIv(iv);
         }
 
-        DebugLogger.ErrorLog("doDecode dc.");
-        is.close();
-        return false;
+        pdo.write(packet);
+        return true;
     }
 }

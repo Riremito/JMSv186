@@ -24,6 +24,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 
 /**
@@ -44,7 +45,17 @@ public class PacketEncoder implements ProtocolEncoder {
 
         // packet encryption
         final byte[] raw_server_packet = ((ServerPacket) o).getBytes();
-        final byte[] header = cipher.getPacketHeader(raw_server_packet.length); // 4 bytes
+        final byte[] header = new byte[4];
+        short uSeqKey = (short) (((cipher.getIv()[3] << 8) & 0xFF00) | (cipher.getIv()[2] & 0x00FF));
+        short uSeqBase = (short) (0xFFFF - (short) Config.VERSION);
+        short uRawSeq = (short) (uSeqKey ^ uSeqBase);
+        short m_uOffset = (short) (uRawSeq ^ (short) raw_server_packet.length);
+
+        header[0] = (byte) (uRawSeq & 0xFF);
+        header[1] = (byte) ((uRawSeq >>> 8) & 0xFF);
+        header[2] = (byte) (m_uOffset & 0xFF);
+        header[3] = (byte) ((m_uOffset >>> 8) & 0xFF);
+
         final byte[] packet = raw_server_packet.clone();
 
         if (!ClientEdit.PacketEncryptionRemoved.get()) {
