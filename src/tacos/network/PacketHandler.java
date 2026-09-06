@@ -60,13 +60,6 @@ public class PacketHandler extends IoHandlerAdapter {
                 decoder = new PacketDecoder_KMSB();
                 break;
             }
-            case KMS:
-            case KMST:
-            case IMS: {
-                encoder = new PacketEncoder_KMS();
-                decoder = new PacketDecoder_KMS();
-                break;
-            }
             default: {
                 encoder = new PacketEncoder();
                 decoder = new PacketDecoder();
@@ -138,10 +131,6 @@ public class PacketHandler extends IoHandlerAdapter {
         session.setAttribute(CAESCipher.AES_DEC_KEY, aes_dec);
         session.setIdleTime(IdleStatus.READER_IDLE, 10);
         //session.setIdleTime(IdleStatus.WRITER_IDLE, 5);
-        CIGCipher kms_enc = new CIGCipher(serverSend, true);
-        CIGCipher kms_dec = new CIGCipher(serverRecv, false);
-        session.setAttribute(CIGCipher.KMS_ENC_KEY, kms_enc);
-        session.setAttribute(CIGCipher.KMS_DEC_KEY, kms_dec);
     }
 
     @Override

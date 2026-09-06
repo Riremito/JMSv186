@@ -18,7 +18,6 @@
  */
 package tacos;
 
-import tacos.config.ClientEdit;
 import tacos.config.Content;
 import tacos.property.Property;
 import tacos.shared.SharedExpTable;
@@ -86,9 +85,6 @@ public class Start {
         DebugLogger.SetupLog("FLAG_CONTENT");
         Content.init();
         //Content.showContentList();
-        // update client edit flags
-        DebugLogger.SetupLog("FLAG_CLIENT_EDIT");
-        ClientEdit.init();
         // update exp table
         DebugLogger.SetupLog("EXP_TABLE");
         SharedExpTable.init();

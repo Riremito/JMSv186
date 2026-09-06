@@ -18,7 +18,7 @@
  */
 package tacos.network;
 
-import tacos.config.ClientEdit;
+import java.nio.ByteOrder;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.ByteBuffer;
@@ -35,6 +35,24 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
 
     private static final int DEC_HEADER_SIZE = 4;
 
+    private boolean decrypt(CAESCipher cipher, byte[] packet) {
+        // CInPacket::DecryptData
+        if (Content.KMSEncryption.get()) {
+            CIGCipher.innoDecrypt(packet, packet, packet.length, cipher.getIv().clone());
+        } else {
+            // AES
+            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
+            // Shanda
+            if (Content.EncryptedByShanda.get()) {
+                CIOBufferManipulator._De(packet);
+            }
+        }
+        // IV
+        byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
+        cipher.setIv(iv);
+        return true;
+    }
+
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
         CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_DEC_KEY);
@@ -45,11 +63,10 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
 
         // rollback position.
         bb.mark();
+        bb.order(ByteOrder.LITTLE_ENDIAN);
 
         short m_uRawSeq = bb.getShort();
-        m_uRawSeq = (short) (((m_uRawSeq << 8) & 0xFF00) | ((m_uRawSeq >>> 8) & 0x00FF));
-        short m_uDataLen = bb.getShort();
-        m_uDataLen = (short) ((((m_uDataLen << 8) & 0xFF00) | ((m_uDataLen >>> 8) & 0x00FF)) ^ m_uRawSeq);
+        short m_uDataLen = (short) (bb.getShort() ^ m_uRawSeq);
         short uSeqKey = (short) (((cipher.getIv()[3] << 8) & 0xFF00) | (cipher.getIv()[2] & 0x00FF));
 
         if ((short) (uSeqKey ^ m_uRawSeq) != Config.VERSION) {
@@ -65,18 +82,9 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
         }
 
         byte[] packet = new byte[m_uDataLen];
+
         bb.get(packet, 0, m_uDataLen);
-
-        if (!ClientEdit.PacketEncryptionRemoved.get()) {
-            // CInPacket::DecryptData
-            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
-            if (Content.EncryptedByShanda.get()) {
-                CIOBufferManipulator._De(packet);
-            }
-            byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
-            cipher.setIv(iv);
-        }
-
+        decrypt(cipher, packet);
         pdo.write(packet);
         return true;
     }

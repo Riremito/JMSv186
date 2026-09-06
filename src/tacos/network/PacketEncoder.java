@@ -18,7 +18,7 @@
  */
 package tacos.network;
 
-import tacos.config.ClientEdit;
+import java.nio.ByteOrder;
 import tacos.config.Content;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
@@ -33,46 +33,52 @@ import tacos.packet.ServerPacket;
  */
 public class PacketEncoder implements ProtocolEncoder {
 
+    private static final int ENC_HEADER_SIZE = 4;
+
+    private boolean encrypt(CAESCipher cipher, byte[] packet) {
+        // COutPacket::MakeBufferList
+        if (Content.KMSEncryption.get()) {
+            CIGCipher.innoEncrypt(packet, packet, packet.length, cipher.getIv().clone());
+        } else {
+            // Shanda
+            if (Content.EncryptedByShanda.get()) {
+                CIOBufferManipulator._En(packet);
+            }
+            // AES
+            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
+        }
+        // IV
+        byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
+        cipher.setIv(iv);
+        return true;
+    }
+
     @Override
     public void encode(IoSession is, Object o, ProtocolEncoderOutput peo) throws Exception {
         CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_ENC_KEY);
 
+        byte[] packet = ((ServerPacket) o).getBytes().clone();
         // raw packet
         if (cipher == null) {
-            peo.write(ByteBuffer.wrap(((ServerPacket) o).getBytes()));
+            peo.write(ByteBuffer.wrap(packet));
             return;
         }
 
         // packet encryption
-        final byte[] raw_server_packet = ((ServerPacket) o).getBytes();
-        final byte[] header = new byte[4];
+        short m_uDataLen = (short) packet.length;
         short uSeqKey = (short) (((cipher.getIv()[3] << 8) & 0xFF00) | (cipher.getIv()[2] & 0x00FF));
         short uSeqBase = (short) (0xFFFF - (short) Config.VERSION);
         short uRawSeq = (short) (uSeqKey ^ uSeqBase);
-        short m_uOffset = (short) (uRawSeq ^ (short) raw_server_packet.length);
+        short m_uOffset = (short) (uRawSeq ^ m_uDataLen);
 
-        header[0] = (byte) (uRawSeq & 0xFF);
-        header[1] = (byte) ((uRawSeq >>> 8) & 0xFF);
-        header[2] = (byte) (m_uOffset & 0xFF);
-        header[3] = (byte) ((m_uOffset >>> 8) & 0xFF);
-
-        final byte[] packet = raw_server_packet.clone();
-
-        if (!ClientEdit.PacketEncryptionRemoved.get()) {
-            // COutPacket::MakeBufferList
-            if (Content.EncryptedByShanda.get()) {
-                CIOBufferManipulator._En(packet);
-            }
-            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
-            byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
-            cipher.setIv(iv);
-        }
-
-        final byte[] encrypted_server_packet = new byte[header.length + packet.length];
-        System.arraycopy(header, 0, encrypted_server_packet, 0, header.length);
-        System.arraycopy(packet, 0, encrypted_server_packet, header.length, packet.length);
-
-        peo.write(ByteBuffer.wrap(encrypted_server_packet));
+        encrypt(cipher, packet);
+        ByteBuffer enc_packet = ByteBuffer.allocate(ENC_HEADER_SIZE + m_uDataLen);
+        enc_packet.order(ByteOrder.LITTLE_ENDIAN);
+        enc_packet.putShort(uRawSeq);
+        enc_packet.putShort(m_uOffset);
+        enc_packet.put(packet);
+        enc_packet.flip();
+        peo.write(enc_packet);
     }
 
     @Override
