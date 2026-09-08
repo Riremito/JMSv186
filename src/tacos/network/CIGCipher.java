@@ -18,16 +18,11 @@
  */
 package tacos.network;
 
-import tacos.config.Config;
-
 /**
  *
  * @author Riremito
  */
 public class CIGCipher {
-
-    public static final String KMS_ENC_KEY = "KMS_ENC";
-    public static final String KMS_DEC_KEY = "KMS_DEC";
 
     // CIGCipher::bShuffle
     public static final byte[] bShuffle = {
@@ -50,44 +45,6 @@ public class CIGCipher {
     };
 
     public static final byte[] DefaultKey = {(byte) 0xF2, (byte) 0x53, (byte) 0x50, (byte) 0xC6}; // dwDefaultKey, 0xC65053F2
-
-    private byte[] iv = null;
-    private final short mapleVersion;
-
-    public CIGCipher(byte[] iv, boolean isOutbound) {
-        this.iv = iv;
-        short vesrion = isOutbound ? (short) (0xFFFF - (short) Config.VERSION) : (short) Config.VERSION;
-        this.mapleVersion = (short) (((vesrion >>> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
-    }
-
-    public byte[] getPacketHeader(int length) {
-        int iiv = (((this.iv[3]) & 0xFF) | ((this.iv[2] << 8) & 0xFF00)) ^ this.mapleVersion;
-        int mlength = (((length << 8) & 0xFF00) | (length >>> 8)) ^ iiv;
-
-        return new byte[]{(byte) ((iiv >>> 8) & 0xFF), (byte) (iiv & 0xFF), (byte) ((mlength >>> 8) & 0xFF), (byte) (mlength & 0xFF)};
-    }
-
-    public static int getPacketLength(int packetHeader) {
-        int packetLength = ((packetHeader >>> 16) ^ (packetHeader & 0xFFFF));
-        packetLength = ((packetLength << 8) & 0xFF00) | ((packetLength >>> 8) & 0xFF); // fix endianness
-        return packetLength;
-    }
-
-    public boolean checkPacket(byte[] packet) {
-        return ((((packet[0] ^ this.iv[2]) & 0xFF) == ((this.mapleVersion >>> 8) & 0xFF)) && (((packet[1] ^ this.iv[3]) & 0xFF) == (this.mapleVersion & 0xFF)));
-    }
-
-    public boolean checkPacket(int packetHeader) {
-        return checkPacket(new byte[]{(byte) ((packetHeader >>> 24) & 0xFF), (byte) ((packetHeader >>> 16) & 0xFF)});
-    }
-
-    public byte[] getIv() {
-        return this.iv;
-    }
-
-    public void setIv(byte[] iv) {
-        this.iv = iv;
-    }
 
     // CIGCipher::innoEncrypt
     public static byte[] innoEncrypt(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey) {

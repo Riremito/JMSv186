@@ -33,7 +33,7 @@ public class PacketDecoder_KMSB extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
-        CIGCipher cipher = (CIGCipher) is.getAttribute(CIGCipher.KMS_DEC_KEY);
+        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_DEC_KEY);
         byte key[] = cipher.getIv();
         // header check
         bb.mark(); // rollback position

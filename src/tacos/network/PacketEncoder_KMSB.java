@@ -33,7 +33,7 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
 
     @Override
     public void encode(IoSession is, Object o, ProtocolEncoderOutput peo) throws Exception {
-        CIGCipher cipher = (CIGCipher) is.getAttribute(CIGCipher.KMS_ENC_KEY);
+        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_ENC_KEY);
 
         // raw packet
         if (cipher == null) {

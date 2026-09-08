@@ -61,13 +61,10 @@ public class CAESCipher {
     };
 
     private byte[] iv;
-    private final short mapleVersion;
     private Cipher cipher = null;
 
     public CAESCipher(byte[] iv, boolean isOutbound) {
         this.iv = iv;
-        short vesrion = isOutbound ? (short) (0xFFFF - (short) Config.VERSION) : (short) Config.VERSION;
-        this.mapleVersion = (short) (((vesrion >>> 8) & 0xFF) | ((vesrion << 8) & 0xFF00));
 
         try {
             this.cipher = Cipher.getInstance("AES");
