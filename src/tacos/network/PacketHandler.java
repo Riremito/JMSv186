@@ -31,7 +31,6 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
-import odin.server.Randomizer;
 import org.apache.mina.common.ExecutorThreadModel;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
@@ -116,19 +115,12 @@ public class PacketHandler extends IoHandlerAdapter {
             return;
         }
 
-        byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
-        byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
-
-        CAESCipher aes_enc = new CAESCipher(serverSend, true);
-        CAESCipher aes_dec = new CAESCipher(serverRecv, false);
         TacosClient client = new TacosClient(session);
         client.setServer(this.server);
 
-        session.setAttribute(CAESCipher.AES_ENC_KEY, null);
-        session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
+        session.setAttribute(TacosClient.CLIENT_KEY, null);
+        session.write(ResCClientSocket.getHello(client));
         session.setAttribute(TacosClient.CLIENT_KEY, client);
-        session.setAttribute(CAESCipher.AES_ENC_KEY, aes_enc);
-        session.setAttribute(CAESCipher.AES_DEC_KEY, aes_dec);
         session.setIdleTime(IdleStatus.READER_IDLE, 10);
         //session.setIdleTime(IdleStatus.WRITER_IDLE, 5);
     }

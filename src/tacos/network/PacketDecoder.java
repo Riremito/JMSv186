@@ -25,6 +25,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import tacos.client.TacosClient;
 import tacos.config.Config;
 
 /**
@@ -35,27 +36,29 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
 
     private static final int DEC_HEADER_SIZE = 4;
 
-    private boolean decrypt(CAESCipher cipher, byte[] packet) {
+    private boolean decrypt(TacosClient client, byte[] packet) {
         // CInPacket::DecryptData
         if (Content.KMSEncryption.get()) {
-            CIGCipher.innoDecrypt(packet, packet, packet.length, cipher.getIv().clone());
+            CIGCipher.innoDecrypt(packet, packet, packet.length, client.getSeqSnd().clone());
         } else {
             // AES
-            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
+            CAESCipher.CryptData(packet, packet, packet.length, client.getSeqSnd().clone());
             // Shanda
             if (Content.EncryptedByShanda.get()) {
                 CIOBufferManipulator._De(packet);
             }
         }
         // IV
-        byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
-        cipher.setIv(iv);
+        byte[] iv_new = CIGCipher.innoHash(client.getSeqSnd(), null);
+        client.setSeqSnd(iv_new);
         return true;
     }
 
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
-        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_DEC_KEY);
+        TacosClient client = (TacosClient) is.getAttribute(TacosClient.CLIENT_KEY);
+
+        byte[] iv = client.getSeqSnd();
 
         if (bb.remaining() < DEC_HEADER_SIZE) {
             return false;
@@ -67,7 +70,7 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
 
         short m_uRawSeq = bb.getShort();
         short m_uDataLen = (short) (bb.getShort() ^ m_uRawSeq);
-        short uSeqKey = (short) (((cipher.getIv()[3] << 8) & 0xFF00) | (cipher.getIv()[2] & 0x00FF));
+        short uSeqKey = (short) (((iv[3] << 8) & 0xFF00) | (iv[2] & 0x00FF));
 
         if ((short) (uSeqKey ^ m_uRawSeq) != Config.VERSION) {
             is.close();
@@ -84,7 +87,7 @@ public class PacketDecoder extends CumulativeProtocolDecoder {
         byte[] packet = new byte[m_uDataLen];
 
         bb.get(packet, 0, m_uDataLen);
-        decrypt(cipher, packet);
+        decrypt(client, packet);
         pdo.write(packet);
         return true;
     }

@@ -23,6 +23,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import tacos.client.TacosClient;
 import tacos.config.Config;
 
 /**
@@ -33,8 +34,8 @@ public class PacketDecoder_KMSB extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
-        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_DEC_KEY);
-        byte key[] = cipher.getIv();
+        TacosClient client = (TacosClient) is.getAttribute(TacosClient.CLIENT_KEY);
+        byte key[] = client.getSeqSnd().clone();
         // header check
         bb.mark(); // rollback position
 
@@ -85,7 +86,7 @@ public class PacketDecoder_KMSB extends CumulativeProtocolDecoder {
         key[1] = (byte) ((next_key >> 8) & 0xFF);
         key[2] = (byte) ((next_key >> 16) & 0xFF);
         key[3] = (byte) ((next_key >> 24) & 0xFF);
-        cipher.setIv(key);
+        client.setSeqSnd(key);
         return true;
     }
 }

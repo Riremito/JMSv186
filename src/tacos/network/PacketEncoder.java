@@ -24,6 +24,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import tacos.client.TacosClient;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
 
@@ -35,43 +36,45 @@ public class PacketEncoder implements ProtocolEncoder {
 
     private static final int ENC_HEADER_SIZE = 4;
 
-    private boolean encrypt(CAESCipher cipher, byte[] packet) {
+    private boolean encrypt(TacosClient client, byte[] packet) {
         // COutPacket::MakeBufferList
         if (Content.KMSEncryption.get()) {
-            CIGCipher.innoEncrypt(packet, packet, packet.length, cipher.getIv().clone());
+            CIGCipher.innoEncrypt(packet, packet, packet.length, client.getSeqRcv().clone());
         } else {
             // Shanda
             if (Content.EncryptedByShanda.get()) {
                 CIOBufferManipulator._En(packet);
             }
             // AES
-            cipher.CInPacket_DecryptData(packet, packet, packet.length, cipher.getIv().clone());
+            CAESCipher.CryptData(packet, packet, packet.length, client.getSeqRcv().clone());
         }
         // IV
-        byte[] iv = CIGCipher.innoHash(cipher.getIv(), null);
-        cipher.setIv(iv);
+        byte[] iv_new = CIGCipher.innoHash(client.getSeqRcv(), null);
+        client.setSeqRcv(iv_new);
         return true;
     }
 
     @Override
     public void encode(IoSession is, Object o, ProtocolEncoderOutput peo) throws Exception {
-        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_ENC_KEY);
+        TacosClient client = (TacosClient) is.getAttribute(TacosClient.CLIENT_KEY);
 
         byte[] packet = ((ServerPacket) o).getBytes().clone();
         // raw packet
-        if (cipher == null) {
+        if (client == null) {
             peo.write(ByteBuffer.wrap(packet));
             return;
         }
 
+        byte[] iv = client.getSeqRcv();
+
         // packet encryption
         short m_uDataLen = (short) packet.length;
-        short uSeqKey = (short) (((cipher.getIv()[3] << 8) & 0xFF00) | (cipher.getIv()[2] & 0x00FF));
+        short uSeqKey = (short) (((iv[3] << 8) & 0xFF00) | (iv[2] & 0x00FF));
         short uSeqBase = (short) (0xFFFF - (short) Config.VERSION);
         short uRawSeq = (short) (uSeqKey ^ uSeqBase);
         short m_uOffset = (short) (uRawSeq ^ m_uDataLen);
 
-        encrypt(cipher, packet);
+        encrypt(client, packet);
         ByteBuffer enc_packet = ByteBuffer.allocate(ENC_HEADER_SIZE + m_uDataLen);
         enc_packet.order(ByteOrder.LITTLE_ENDIAN);
         enc_packet.putShort(uRawSeq);

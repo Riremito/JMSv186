@@ -36,9 +36,8 @@ import tacos.debug.DebugLogger;
  */
 public class CAESCipher {
 
-    public static final String AES_ENC_KEY = "AES_ENC";
-    public static final String AES_DEC_KEY = "AES_DEC";
     private static SecretKeySpec sks = null;
+    private static Cipher cipher_aes = null;
 
     // CAESCipher::UserKey
     private static final int[] UserKey = {
@@ -60,30 +59,22 @@ public class CAESCipher {
         (byte) 0x42, (byte) 0x53, (byte) 0x88, (byte) 0x7C
     };
 
-    private byte[] iv;
-    private Cipher cipher = null;
-
-    public CAESCipher(byte[] iv, boolean isOutbound) {
-        this.iv = iv;
-
+    private static Cipher getCipher() {
+        if (cipher_aes != null) {
+            return cipher_aes;
+        }
         try {
-            this.cipher = Cipher.getInstance("AES");
-            this.cipher.init(Cipher.ENCRYPT_MODE, sks);
+            cipher_aes = Cipher.getInstance("AES");
+            cipher_aes.init(Cipher.ENCRYPT_MODE, sks);
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException ex) {
             DebugLogger.ExceptionLog("CAESCipher");
         }
-    }
 
-    public byte[] getIv() {
-        return this.iv;
-    }
-
-    public void setIv(byte[] iv) {
-        this.iv = iv;
+        return cipher_aes;
     }
 
     // CInPacket::DecryptData
-    public byte[] CInPacket_DecryptData(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey) {
+    public static byte[] CryptData(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey) {
         int offset = 0;
 
         if (1456 <= nLen) {
@@ -103,7 +94,7 @@ public class CAESCipher {
     }
 
     // CAESCipher::Encrypt, CAESCipher::Decrypt
-    private boolean Crypt(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey, int offset) {
+    private static boolean Crypt(byte[] pDest, byte[] pSrc, int nLen, byte[] pdwKey, int offset) {
         // CAESCipher::AES_EncKeySchedule
         // CAESCipher::AES_DecInit
         byte[] ChainVar = new byte[16]; // CAESCipher::AES_ALG_INFO *AlgInfo
@@ -124,7 +115,7 @@ public class CAESCipher {
             // CAESCipher::OFB_DecUpdate
             if ((i - offset) % ChainVar.length == 0) {
                 try {
-                    byte[] newIv = this.cipher.doFinal(ChainVar);
+                    byte[] newIv = getCipher().doFinal(ChainVar);
                     System.arraycopy(newIv, 0, ChainVar, 0, ChainVar.length);
                 } catch (IllegalBlockSizeException | BadPaddingException ex) {
                     // iv error.

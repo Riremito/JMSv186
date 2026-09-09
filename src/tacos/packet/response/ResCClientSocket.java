@@ -18,6 +18,7 @@
  */
 package tacos.packet.response;
 
+import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
@@ -31,8 +32,8 @@ import tacos.tools.TacosTools;
  */
 public class ResCClientSocket {
 
-    // first packet.
-    public static ServerPacket getHello(byte[] sendIv, byte[] recvIv) {
+    // first raw packet.
+    public static ServerPacket getHello(TacosClient client) {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
         switch (Config.REGION) {
@@ -68,8 +69,8 @@ public class ResCClientSocket {
             }
         }
 
-        sp.EncodeBuffer(recvIv);
-        sp.EncodeBuffer(sendIv);
+        sp.EncodeBuffer(client.getSeqSnd()); // m_uSeqSnd (from client)
+        sp.EncodeBuffer(client.getSeqRcv()); // m_uSeqRcv (from client)
         sp.Encode1(Config.REGION.get()); // JMS = 3
 
         sp.setHello(); // write size of this packet length.

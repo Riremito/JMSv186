@@ -22,6 +22,7 @@ import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import tacos.client.TacosClient;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
 
@@ -33,10 +34,10 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
 
     @Override
     public void encode(IoSession is, Object o, ProtocolEncoderOutput peo) throws Exception {
-        CAESCipher cipher = (CAESCipher) is.getAttribute(CAESCipher.AES_ENC_KEY);
+        TacosClient client = (TacosClient) is.getAttribute(TacosClient.CLIENT_KEY);
 
         // raw packet
-        if (cipher == null) {
+        if (client == null) {
             peo.write(ByteBuffer.wrap(((ServerPacket) o).getBytes()));
             return;
         }
@@ -46,7 +47,7 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
         final byte[] header_version = new byte[2];
         final byte[] header_size = new byte[2];
         final byte[] packet = raw_server_packet.clone();
-        byte key[] = cipher.getIv();
+        byte key[] = client.getSeqRcv().clone();
         short version = (short) (0xFFFF - Config.VERSION);
 
         header_version[0] = (byte) (version & 0xFF);
@@ -75,7 +76,7 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
         key[1] = (byte) ((next_key >> 8) & 0xFF);
         key[2] = (byte) ((next_key >> 16) & 0xFF);
         key[3] = (byte) ((next_key >> 24) & 0xFF);
-        cipher.setIv(key);
+        client.setSeqRcv(key);
     }
 
     @Override

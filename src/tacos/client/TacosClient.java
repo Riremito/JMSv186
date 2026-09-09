@@ -20,6 +20,7 @@ package tacos.client;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import odin.client.MapleCharacter;
 import org.apache.mina.common.IoSession;
 import tacos.config.DeveloperMode;
@@ -46,6 +47,9 @@ public class TacosClient extends BaseClient {
 
     public static final String CLIENT_KEY = "CLIENT";
 
+    private byte[] m_uSeqSnd = new byte[4];
+    private byte[] m_uSeqRcv = new byte[4];
+
     // account info
     private TacosServer server;
     private int id = 0;
@@ -70,6 +74,25 @@ public class TacosClient extends BaseClient {
     public TacosClient(IoSession session) {
         super(session);
         this.characters = new ArrayList<>();
+        Random rand = new Random();
+        rand.nextBytes(this.m_uSeqSnd);
+        rand.nextBytes(this.m_uSeqRcv);
+    }
+
+    public byte[] getSeqSnd() {
+        return this.m_uSeqSnd;
+    }
+
+    public void setSeqSnd(byte[] iv) {
+        System.arraycopy(iv, 0, this.m_uSeqSnd, 0, this.m_uSeqSnd.length);
+    }
+
+    public byte[] getSeqRcv() {
+        return this.m_uSeqRcv;
+    }
+
+    public void setSeqRcv(byte[] iv) {
+        System.arraycopy(iv, 0, this.m_uSeqRcv, 0, this.m_uSeqRcv.length);
     }
 
     public TacosServer getServer() {
