@@ -238,7 +238,7 @@ public class FamilyHandler {
 
     public static final void AcceptFamily(ClientPacket cp, TacosClient c) {
         MapleCharacter inviter = c.getPlayer().getMap().getCharacterById(cp.Decode4());
-        if (inviter != null && c.getPlayer().getSeniorId() == 0 && (c.getPlayer().isGM() || !inviter.isHidden())
+        if (inviter != null && c.getPlayer().getSeniorId() == 0
                 && inviter.getLevel() - 20 < c.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2
                 /*&& inviter.getFamily().getGens() < 1000*/ && c.getPlayer().getLevel() >= 10) {
             boolean accepted = cp.Decode1() > 0;

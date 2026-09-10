@@ -34,7 +34,7 @@ public class ReqCUser_FoxMan {
     // CUser::OnFoxManPacket
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
-        if (chr == null || chr.isHidden()) {
+        if (chr == null) {
             return false;
         }
 

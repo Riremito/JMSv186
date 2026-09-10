@@ -546,7 +546,6 @@ public class DebugCommand {
                 }
 
                 monster_book.update();
-                chr.fakeRelog();
                 return true;
             }
             // ボス関連

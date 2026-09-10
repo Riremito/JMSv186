@@ -114,8 +114,6 @@ import tacos.database.query.DQ_Queststatus;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
-import tacos.packet.ServerPacket;
-import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_SkillPet;
@@ -131,14 +129,13 @@ import tacos.wz.opt.FieldOpt;
 public class MapleCharacter extends TacosCharacter {
 
     private String chalktext, BlessOfFairy_Origin;
-    private long lastfametime, keydown_skill;
+    private long lastfametime;
     private byte dojoRecord, fairyExp = 10;
     private int mulung_energy, availableCP, totalCP, hpApUsed;
     private int dojo,
-            fallcounter = 0, maplePoint, nexonPoint, chair, points, vpoints,
-            linkMid = 0, battleshipHP = 0;
-    private Point old = new Point(0, 0);
-    private boolean smega, hidden, hasSummon = false;
+            maplePoint, nexonPoint, chair, points, vpoints,
+            battleshipHP = 0;
+    private boolean smega, hasSummon = false;
     private int[] wishlist, rocks, savedLocations, regrocks;
     private transient AtomicInteger inst;
     private List<Integer> lastmonthfameids;
@@ -156,17 +153,12 @@ public class MapleCharacter extends TacosCharacter {
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
     private MapleParty party;
-    private boolean invincible = false, canTalk = true;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient ScheduledFuture<?> fairySchedule, mapTimeLimitTask, fishing;
     private long nextConsume = 0, pqStartTime = 0;
     private transient Event_PyramidSubway pyramidSubway = null;
     private transient List<Integer> pendingExpiration = null, pendingSkills = null;
     private String teleportname = "";
-    // デバッグモード
-    private boolean Debugger = false;
-    // スクリプト情報
-    private boolean Information = true;
     // パチンコ
     private int beansRange, beansNum;
     private boolean canSetBeansNum;
@@ -203,7 +195,6 @@ public class MapleCharacter extends TacosCharacter {
     @SuppressWarnings("unchecked")
     public void init_step2() {
         mulung_energy = 0;
-        keydown_skill = 0;
         smega = true;
         petStore = new byte[3];
         for (int i = 0; i < petStore.length; i++) {
@@ -788,18 +779,6 @@ public class MapleCharacter extends TacosCharacter {
         ps.close();
     }
 
-    public final byte[] QuestInfoPacket() {
-        ServerPacket data = new ServerPacket();
-
-        data.Encode2(questinfo.size());
-        for (final Entry<Integer, String> q : questinfo.entrySet()) {
-            data.Encode2(q.getKey());
-            data.EncodeStr(q.getValue() == null ? "" : q.getValue());
-        }
-
-        return data.getBytes();
-    }
-
     public final void updateInfoQuest(final int questid, final String data) {
         questinfo.put(questid, data);
         client.SendPacket(ResWrapper.updateInfoQuest(questid, data));
@@ -973,49 +952,6 @@ public class MapleCharacter extends TacosCharacter {
         return getSkillLevel(SkillFactory.getSkill(skillid));
     }
 
-    public void handleOrbgain() {
-        ISkill combo;
-        ISkill advcombo;
-
-        switch (getJob()) {
-            case 1110:
-            case 1111:
-            case 1112:
-                combo = SkillFactory.getSkill(11111001);
-                advcombo = SkillFactory.getSkill(11110005);
-                break;
-            default:
-                combo = SkillFactory.getSkill(1111002);
-                advcombo = SkillFactory.getSkill(1120003);
-                break;
-        }
-
-        MapleStatEffect ceffect = null;
-        int advComboSkillLevel = getSkillLevel(advcombo);
-        if (advComboSkillLevel > 0) {
-            ceffect = advcombo.getEffect(advComboSkillLevel);
-        } else if (getSkillLevel(combo) > 0) {
-            ceffect = combo.getEffect(getSkillLevel(combo));
-        }
-    }
-
-    public void handleOrbconsume() {
-        ISkill combo;
-
-        switch (getJob()) {
-            case 1110:
-            case 1111:
-                combo = SkillFactory.getSkill(11111001);
-                break;
-            default:
-                combo = SkillFactory.getSkill(1111002);
-                break;
-        }
-        if (getSkillLevel(combo) <= 0) {
-            return;
-        }
-    }
-
     public void silentEnforceMaxHpMp() {
         stats.setMp(stats.getMp());
         stats.setHp(stats.getHp(), true);
@@ -1061,16 +997,8 @@ public class MapleCharacter extends TacosCharacter {
         return dojoRecord;
     }
 
-    public final int getFallCounter() {
-        return fallcounter;
-    }
-
     public int getHpApUsed() {
         return hpApUsed;
-    }
-
-    public boolean isHidden() {
-        return hidden;
     }
 
     public void setHpApUsed(int hpApUsed) {
@@ -1130,36 +1058,12 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void setFallCounter(int fallcounter) {
-        this.fallcounter = fallcounter;
-    }
-
-    public Point getOldPosition() {
-        return old;
-    }
-
-    public void setOldPosition(Point x) {
-        this.old = x;
-    }
-
-    public void setRemainingAp(int remainingAp) {
-        this.remainingAp = remainingAp;
-    }
-
     public void setRemainingSp(int remainingSp) {
         this.remainingSp[GameConstants.getSkillBook(job)] = remainingSp; //default
     }
 
     public void setRemainingSp(int remainingSp, final int skillbook) {
         this.remainingSp[skillbook] = remainingSp;
-    }
-
-    public void setInvincible(boolean invinc) {
-        invincible = invinc;
-    }
-
-    public boolean isInvincible() {
-        return invincible;
     }
 
     public void addFame(int famechange) {
@@ -2705,14 +2609,6 @@ public class MapleCharacter extends TacosCharacter {
         client.getSession().write(ResWrapper.sendGhostPoint(type, inc));
     }
 
-    public final long getKeyDownSkill_Time() {
-        return keydown_skill;
-    }
-
-    public void setKeyDownSkill_Time(final long keydown_skill) {
-        this.keydown_skill = keydown_skill;
-    }
-
     public boolean IsBerserk() {
         final ISkill BerserkX = SkillFactory.getSkill(1320006);
         final int skilllevel = getSkillLevel(BerserkX);
@@ -2864,22 +2760,6 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void SetDebugger() {
-        Debugger = !Debugger;
-    }
-
-    public boolean GetDebugger() {
-        return Debugger;
-    }
-
-    public void SetInformation() {
-        Information = !Information;
-    }
-
-    public boolean GetInformation() {
-        return Information;
-    }
-
     public IMaplePlayerShop getPlayerShop() {
         return playerShop;
     }
@@ -2962,14 +2842,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void playerDiedCPQ(final String name, final int lostCP, final int team) {
         client.getSession().write(ResCField_MonsterCarnival.MCarnivalDeath(name, lostCP, team));
-    }
-
-    public boolean getCanTalk() {
-        return this.canTalk;
-    }
-
-    public void canTalk(boolean talk) {
-        this.canTalk = talk;
     }
 
     public int getEXPMod() {
@@ -3138,10 +3010,6 @@ public class MapleCharacter extends TacosCharacter {
         return fairyExp;
     }
 
-    public void spawnPet(short slot) {
-        spawnPet(slot, false, true);
-    }
-
     public void spawnPet(short slot, boolean lead) {
         spawnPet(slot, lead, true);
     }
@@ -3204,14 +3072,6 @@ public class MapleCharacter extends TacosCharacter {
         sendStatChanged(true);
     }
 
-    public int getLinkMid() {
-        return linkMid;
-    }
-
-    public void setLinkMid(int lm) {
-        this.linkMid = lm;
-    }
-
     public final void spawnSavedPets() {
         for (int i = 0; i < petStore.length; i++) {
             if (petStore[i] > -1) {
@@ -3219,10 +3079,6 @@ public class MapleCharacter extends TacosCharacter {
             }
         }
         petStore = new byte[]{-1, -1, -1};
-    }
-
-    public final byte[] getPetStores() {
-        return petStore;
     }
 
     public void resetStats(final int str, final int dex, final int int_, final int luk) {
@@ -3266,10 +3122,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public boolean changeChannel(int channel) {
         return changeChannel(channel, false);
-    }
-
-    public boolean fakeRelog() {
-        return changeChannel(client.getChannelId(), true);
     }
 
     public boolean changeChannel(int channel, boolean fake_relog) {
@@ -3641,11 +3493,6 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
-    public boolean EnterPointShop() {
-        ReqCUser.OnUserMigrateToCashShopRequest(client, this);
-        return true;
-    }
-
     public int getBeans() {
         return tama;
     }
@@ -3760,7 +3607,6 @@ public class MapleCharacter extends TacosCharacter {
         //ret.effects.putAll(effects);
         ret.guildrank = guildrank;
         ret.allianceRank = allianceRank;
-        ret.hidden = hidden;
         ret.setPosition(new Point(getPosition()));
         for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
             ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
@@ -3773,7 +3619,6 @@ public class MapleCharacter extends TacosCharacter {
         ret.rocks = rocks;
         ret.regrocks = regrocks;
         ret.buddylist = buddylist;
-        ret.keydown_skill = 0;
         ret.lastmonthfameids = lastmonthfameids;
         ret.lastfametime = lastfametime;
         ret.cs = this.cs;

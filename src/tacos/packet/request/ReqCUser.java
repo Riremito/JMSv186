@@ -873,10 +873,6 @@ public class ReqCUser {
     }
 
     public static boolean OnUserMove(ClientPacket cp, MapleMap map, MapleCharacter chr) {
-        if (chr.isHidden()) {
-            return false;
-        }
-
         // not in TWMS148, CMS104, but in TWMS125
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // -1
@@ -2214,7 +2210,6 @@ public class ReqCUser {
         int skilllevel_serv = chr.getSkillLevel(skill);
 
         if (skilllevel_serv > 0 && skilllevel_serv == nSLV && skill.isChargeSkill()) {
-            chr.setKeyDownSkill_Time(System.currentTimeMillis());
             chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSkillPrepare(chr, nSkillID, nSLV, action, attack_speed_degree), false);
         }
 

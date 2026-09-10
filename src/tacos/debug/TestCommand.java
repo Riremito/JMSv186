@@ -82,16 +82,6 @@ public class TestCommand {
                 chr.DebugMsg("thread id = " + DebugLogger.getThreadId());
                 return true;
             }
-            case "/debugmode": {
-                chr.SetDebugger();
-                chr.DebugMsg("DebugMode = " + chr.GetDebugger());
-                return true;
-            }
-            case "/infomode": {
-                chr.SetInformation();
-                chr.DebugMsg("InfoMode = " + chr.GetInformation());
-                return true;
-            }
             case "/test":
             case "/help": {
                 DebugCommand.remoteNPCTalk(client, 9010021, 1012003);
