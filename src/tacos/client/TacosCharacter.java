@@ -38,6 +38,7 @@ import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
+import odin.server.MapleItemInformationProvider;
 import odin.server.maps.AbstractAnimatedMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
@@ -56,6 +57,7 @@ import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPair;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferField;
@@ -1180,6 +1182,24 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         DQ_Buddies.removePending(this);
         DQ_Buddies.update(this);
         return true;
+    }
+
+    // useful.
+    public String getPlayerNameWithMedal() {
+        IItem equipped_medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
+        if (equipped_medal == null) {
+            return getName();
+        }
+        String medal_name = MapleItemInformationProvider.getInstance().getName(equipped_medal.getItemId());
+
+        if (medal_name == null) {
+            return getName();
+        }
+        int padding = medal_name.indexOf("の勲章");
+        if (padding > 0) {
+            medal_name = medal_name.substring(0, padding);
+        }
+        return "<" + medal_name + "> " + getName();
     }
 
     // unofficial.

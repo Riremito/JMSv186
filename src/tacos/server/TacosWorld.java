@@ -20,9 +20,11 @@ package tacos.server;
 
 import java.util.ArrayList;
 import odin.client.MapleCharacter;
+import odin.constants.GameConstants;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
+import tacos.packet.response.wrapper.ResWrapper;
 
 /**
  *
@@ -293,5 +295,18 @@ public class TacosWorld {
         messenger = new TacosMessenger();
         messengers.add(messenger);
         return messenger;
+    }
+
+    public boolean reachedMaxLevel(TacosCharacter player) {
+        int job_id = player.getJob();
+        int level = player.getLevel();
+        int max_level = GameConstants.isKOC(job_id) ? 120 : 200;
+
+        if (level != max_level) {
+            return false;
+        }
+
+        broadcastPacket(ResWrapper.BroadCastMsgNotice("[お祝い] " + player.getPlayerNameWithMedal() + "様がレベル" + max_level + "になりました。おめでとうございます。"));
+        return true;
     }
 }

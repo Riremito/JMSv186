@@ -62,7 +62,6 @@ import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
-import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.Res_JMS_CField_Pachinko;
@@ -1941,18 +1940,7 @@ public class MapleCharacter extends TacosCharacter {
         level += 1;
 
         int level = getLevel();
-        if (level == 200/* && !isGM()*/) {
-            final StringBuilder sb = new StringBuilder("[お祝い] ");
-            final IItem medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
-            if (medal != null) { // Medal
-                sb.append("<");
-                sb.append(MapleItemInformationProvider.getInstance().getName(medal.getItemId()));
-                sb.append("> ");
-            }
-            sb.append(getName());
-            sb.append("様がレベル200になりました。おめでとうございます。");
-            getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice(sb.toString()));
-        }
+        getWorld().reachedMaxLevel(this);
         maxhp = (short) Math.min(30000, Math.abs(maxhp));
         maxmp = (short) Math.min(30000, Math.abs(maxmp));
 
@@ -1980,27 +1968,9 @@ public class MapleCharacter extends TacosCharacter {
         silentPartyUpdate();
         guildUpdate();
         familyUpdate();
-        if (GameConstants.isAran(job)) {
-            switch (level) {
-                case 30:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 30! To job advance, go back to Lirin of Rien.", 5120000, true));
-                    break;
-                case 70:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 70! To job advance, talk to your job instructor in El Nath.", 5120000, true));
-                    break;
-                case 120:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 120! To job advance, talk to your job instructor in Leafre.", 5120000, true));
-                    break;
-            }
-        }
-        if (GameConstants.isKOC(job) && level == 70) {
-            client.getSession().write(ResCField.BlowWeather("You have reached level 70! To job advance, talk to your job instructor in Erev.", 5120000, true));
-        }
+
         if (GameConstants.isEvan(job)) {
             switch (level) {
-                case 9:
-                    client.getSession().write(ResCField.BlowWeather("Make sure you finish all the Required quests before reaching level 10, or you will not be able to continue.", 5120000, true));
-                    break;
                 case 10:
                 case 20:
                 case 30:
@@ -2014,34 +1984,6 @@ public class MapleCharacter extends TacosCharacter {
                     if (job < 2218) {
                         changeJob(job == 2001 ? 2200 : (job == 2200 ? 2210 : (job + 1))); //automatic
                     }
-                    break;
-            }
-        }
-        if (getSubcategory() == 1) { //db level 2
-            switch (level) {
-                case 2:
-                    client.getSession().write(ResCField.BlowWeather("Click the lightbulb above you and accept the [Required] quest. Remake the character if this quest is not showing.", 5120009, true));
-                    break;
-                case 10:
-                    client.getSession().write(ResCField.BlowWeather("Go and advance to a Rogue at Dark Lord in Kerning City. Make sure you do ALL the [Required] quests.", 5120000, true));
-                    break;
-                case 15:
-                    client.getSession().write(ResCField.BlowWeather("Make sure you have been doing all the required quests. Remember that saving SP is possible.", 5120000, true));
-                    break;
-                case 20:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 20. If you have done all your required quests, you can enter Secret Garden and advance.", 5120000, true));
-                    break;
-                case 30:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 30. Please go to Lady Syl to advance.", 5120000, true));
-                    break;
-                case 55:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 55. Please go to Lady Syl and do a few quests to advance.", 5120000, true));
-                    break;
-                case 70:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 70. Please go to your job instructor in Elnath to advance.", 5120000, true));
-                    break;
-                case 120:
-                    client.getSession().write(ResCField.BlowWeather("You have reached level 120. Please go to your job instructor in Leafre to advance.", 5120000, true));
                     break;
             }
         }

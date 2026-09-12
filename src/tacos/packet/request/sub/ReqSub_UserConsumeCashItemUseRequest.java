@@ -33,7 +33,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import tacos.packet.ClientPacket;
-import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.ops.arg.ArgBroadcastMsg;
@@ -620,25 +619,5 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         }
 
         return false;
-    }
-
-    // 勲章の名前を付けたキャラクター名
-    public static String MegaphoneGetSenderName(MapleCharacter chr) {
-        IItem equipped_medal = chr.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
-        // "キャラクター名"
-        if (equipped_medal == null) {
-            return chr.getName();
-        }
-        String medal_name = MapleItemInformationProvider.getInstance().getName(equipped_medal.getItemId());
-        //Debug.DebugLog("medal = " + equipped_medal.getItemId());
-        if (medal_name == null) {
-            return chr.getName();
-        }
-        int padding = medal_name.indexOf("の勲章");
-        if (padding > 0) {
-            medal_name = medal_name.substring(0, padding);
-        }
-        // "<勲章> キャラクター名"
-        return "<" + medal_name + "> " + chr.getName();
     }
 }
