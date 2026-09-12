@@ -21,10 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import odin.constants.GameConstants;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.Connection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,7 +32,7 @@ import odin.client.inventory.ItemLoader;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Hiredmerch;
 import java.util.ArrayList;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCUser;
@@ -136,43 +133,24 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         if (getShopType() != IMaplePlayerShop.HIRED_MERCHANT) { //hired merch only
             return false;
         }
-        Connection con = DatabaseConnection.getConnection();
+        Integer packageid = DQ_Hiredmerch.add(ownerId, owneraccount, meso.get());
+        if (packageid == null) {
+            return false;
+        }
+        List<OdinPair<IItem, MapleInventoryType>> iters = new ArrayList<>();
+        IItem item;
+        for (MaplePlayerShopItem pItems : items) {
+            if (pItems.item == null || pItems.bundles <= 0) {
+                continue;
+            }
+            if (pItems.item.getQuantity() <= 0 && !GameConstants.isRechargable(pItems.item.getItemId())) {
+                continue;
+            }
+            item = pItems.item.copy();
+            item.setQuantity((short) (item.getQuantity() * pItems.bundles));
+            iters.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
+        }
         try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM hiredmerch WHERE accountid = ? OR characterid = ?");
-            ps.setInt(1, owneraccount);
-            ps.setInt(2, ownerId);
-            ps.execute();
-            ps.close();
-            ps = con.prepareStatement("INSERT INTO hiredmerch (characterid, accountid, Mesos, time) VALUES (?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS);
-            ps.setInt(1, ownerId);
-            ps.setInt(2, owneraccount);
-            ps.setInt(3, meso.get());
-            ps.setLong(4, System.currentTimeMillis());
-
-            ps.executeUpdate();
-
-            ResultSet rs = ps.getGeneratedKeys();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                throw new RuntimeException("Error, adding merchant to DB");
-            }
-            final int packageid = rs.getInt(1);
-            rs.close();
-            ps.close();
-            List<OdinPair<IItem, MapleInventoryType>> iters = new ArrayList<>();
-            IItem item;
-            for (MaplePlayerShopItem pItems : items) {
-                if (pItems.item == null || pItems.bundles <= 0) {
-                    continue;
-                }
-                if (pItems.item.getQuantity() <= 0 && !GameConstants.isRechargable(pItems.item.getItemId())) {
-                    continue;
-                }
-                item = pItems.item.copy();
-                item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-                iters.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
-            }
             ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
             return true;
         } catch (SQLException se) {

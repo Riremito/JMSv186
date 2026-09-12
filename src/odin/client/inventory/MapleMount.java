@@ -21,14 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import java.lang.ref.WeakReference;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.concurrent.ScheduledFuture;
 
-import tacos.database.DatabaseConnection;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
+import tacos.database.query.DQ_Mountdata;
 
 public class MapleMount {
 
@@ -51,13 +49,7 @@ public class MapleMount {
         if (!changed) {
             return;
         }
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("UPDATE mountdata set `Level` = ?, `Exp` = ?, `Fatigue` = ? WHERE characterid = ?");
-        ps.setByte(1, (byte) level);
-        ps.setInt(2, exp);
-        ps.setByte(3, (byte) fatigue);
-        ps.setInt(4, charid);
-        ps.close();
+        DQ_Mountdata.update(this, charid);
     }
 
     public int getId() {

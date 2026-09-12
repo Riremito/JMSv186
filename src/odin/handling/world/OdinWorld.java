@@ -1,9 +1,5 @@
 package odin.handling.world;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -12,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Characters;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleBBSThread;
@@ -47,18 +43,7 @@ public class OdinWorld extends TacosWorld {
         private static final AtomicInteger runningPartyId = new AtomicInteger();
 
         static {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps;
-            try {
-                ps = con.prepareStatement("SELECT MAX(party)+2 FROM characters");
-                ResultSet rs = ps.executeQuery();
-                rs.next();
-                runningPartyId.set(rs.getInt(1));
-                rs.close();
-                ps.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            runningPartyId.set(DQ_Characters.getNextRunningPartyId());
         }
 
         public static void partyChat(int partyid, String chattext, String namefrom) {

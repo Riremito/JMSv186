@@ -1,10 +1,6 @@
 package odin.server;
 
 import odin.client.MapleCharacter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -19,7 +15,8 @@ import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Shopitems;
+import tacos.database.query.DQ_Shops;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -214,47 +211,25 @@ public class MapleShop {
     }
 
     public static MapleShop createFromDB(int id, boolean isShopId) {
-        MapleShop ret = null;
-        int shopId;
+        MapleShop ret = DQ_Shops.load(id, isShopId);
+        if (ret == null) {
+            return null;
+        }
 
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement(isShopId ? "SELECT * FROM shops WHERE shopid = ?" : "SELECT * FROM shops WHERE npcid = ?");
-
-            ps.setInt(1, id);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                shopId = rs.getInt("shopid");
-                ret = new MapleShop(shopId, rs.getInt("npcid"));
-                rs.close();
-                ps.close();
-            } else {
-                rs.close();
-                ps.close();
-                return null;
-            }
-            ps = con.prepareStatement("SELECT * FROM shopitems WHERE shopid = ? ORDER BY position ASC");
-            ps.setInt(1, shopId);
-            rs = ps.executeQuery();
-            List<Integer> recharges = new ArrayList<Integer>(rechargeableItems);
-            while (rs.next()) {
-                if (GameConstants.isThrowingStar(rs.getInt("itemid")) || GameConstants.isBullet(rs.getInt("itemid"))) {
-                    MapleShopItem starItem = new MapleShopItem((short) 1, rs.getInt("itemid"), rs.getInt("price"), rs.getInt("reqitem"), rs.getInt("reqitemq"));
-                    ret.addItem(starItem);
-                    if (rechargeableItems.contains(starItem.getItemId())) {
-                        recharges.remove(Integer.valueOf(starItem.getItemId()));
-                    }
-                } else {
-                    ret.addItem(new MapleShopItem((short) 1000, rs.getInt("itemid"), rs.getInt("price"), rs.getInt("reqitem"), rs.getInt("reqitemq")));
+        List<Integer> recharges = new ArrayList<Integer>(rechargeableItems);
+        for (DQ_Shopitems.Row row : DQ_Shopitems.loadByShopId(ret.getId())) {
+            if (GameConstants.isThrowingStar(row.itemId) || GameConstants.isBullet(row.itemId)) {
+                MapleShopItem starItem = new MapleShopItem((short) 1, row.itemId, row.price, row.reqItem, row.reqItemQ);
+                ret.addItem(starItem);
+                if (rechargeableItems.contains(starItem.getItemId())) {
+                    recharges.remove(Integer.valueOf(starItem.getItemId()));
                 }
+            } else {
+                ret.addItem(new MapleShopItem((short) 1000, row.itemId, row.price, row.reqItem, row.reqItemQ));
             }
-            for (Integer recharge : recharges) {
-                ret.addItem(new MapleShopItem((short) 1000, recharge.intValue(), 0, 0, 0));
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException e) {
-            System.err.println("Could not load shop" + e);
+        }
+        for (Integer recharge : recharges) {
+            ret.addItem(new MapleShopItem((short) 1000, recharge.intValue(), 0, 0, 0));
         }
         return ret;
     }

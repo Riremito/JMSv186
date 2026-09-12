@@ -20,6 +20,7 @@ package tacos.database.query;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
@@ -48,4 +49,41 @@ public class DQ_Notes {
         }
     }
 
+
+    /**
+     * Returns the `gift` value of the note with this id, or {@code null} if
+     * no such note exists (or the lookup failed).
+     */
+    public static Integer getGift(int noteId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT gift FROM " + DB_TABLE_NAME + " WHERE `id`=?")) {
+                ps.setInt(1, noteId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("gift");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getGift");
+        }
+
+        return null;
+    }
+
+    public static boolean deleteById(int noteId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE `id`=?")) {
+                ps.setInt(1, noteId);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException e) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "deleteById");
+        }
+
+        return false;
+    }
 }

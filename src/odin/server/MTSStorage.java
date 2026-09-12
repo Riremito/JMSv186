@@ -25,10 +25,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.IItem;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
-import java.sql.Connection;
-import tacos.database.DatabaseConnection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import tacos.database.query.DQ_MtsItems;
 import tacos.odin.OdinPair;
 import tacos.server.TacosITC;
 
@@ -142,25 +139,20 @@ public class MTSStorage {
         int lastPackage = 0;
         int cId;
         Map<Integer, OdinPair<IItem, MapleInventoryType>> items;
-        Connection con = DatabaseConnection.getConnection();
         try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM mts_items WHERE tab = 1");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                lastPackage = rs.getInt("id");
-                cId = rs.getInt("characterid");
+            for (DQ_MtsItems.TabOneRow row : DQ_MtsItems.getTabOneRows()) {
+                lastPackage = row.id;
+                cId = row.characterId;
                 if (!idToCart.containsKey(cId)) {
                     idToCart.put(cId, new MTSCart(cId));
                 }
                 items = ItemLoader.MTS.loadItems(false, lastPackage);
                 if (items != null && !items.isEmpty()) {
                     for (OdinPair<IItem, MapleInventoryType> i : items.values()) {
-                        buyNow.put(lastPackage, new MTSItemInfo(rs.getInt("price"), i.getLeft(), rs.getString("seller"), lastPackage, cId, rs.getLong("expiration")));
+                        buyNow.put(lastPackage, new MTSItemInfo(row.price, i.getLeft(), row.seller, lastPackage, cId, row.expiration));
                     }
                 }
             }
-            rs.close();
-            ps.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -179,13 +171,9 @@ public class MTSStorage {
         final List<Integer> toRemove = new ArrayList<>();
         final long now = System.currentTimeMillis();
         final Map<Integer, ArrayList<OdinPair<IItem, MapleInventoryType>>> items = new HashMap<>();
-        final Connection con = DatabaseConnection.getConnection();
+        final List<DQ_MtsItems.TabOneRow> rowsToSave = new ArrayList<>();
         mutex.writeLock().lock(); //lock wL so rL will also be locked
         try {
-            PreparedStatement ps = con.prepareStatement("DELETE FROM mts_items WHERE tab = 1");
-            ps.execute();
-            ps.close();
-            ps = con.prepareStatement("INSERT INTO mts_items VALUES (?, ?, ?, ?, ?, ?)");
             for (MTSItemInfo m : buyNow.values()) {
                 if (now > m.getEndingDate()) {
                     if (!expire.containsKey(m.getCharacterId())) {
@@ -195,13 +183,7 @@ public class MTSStorage {
                     toRemove.add(m.getId());
                     items.put(m.getId(), null); //destroy from the mtsitems.
                 } else {
-                    ps.setInt(1, m.getId());
-                    ps.setByte(2, (byte) 1);
-                    ps.setInt(3, m.getPrice());
-                    ps.setInt(4, m.getCharacterId());
-                    ps.setString(5, m.getSeller());
-                    ps.setLong(6, m.getEndingDate());
-                    ps.executeUpdate();
+                    rowsToSave.add(new DQ_MtsItems.TabOneRow(m.getId(), m.getCharacterId(), m.getPrice(), m.getSeller(), m.getEndingDate()));
                     if (!items.containsKey(m.getId())) {
                         items.put(m.getId(), new ArrayList<>());
                     }
@@ -211,9 +193,7 @@ public class MTSStorage {
             for (int i : toRemove) {
                 buyNow.remove(i);
             }
-            ps.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            DQ_MtsItems.replaceTabOne(rowsToSave);
         } finally {
             mutex.writeLock().unlock();
         }

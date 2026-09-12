@@ -22,9 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server;
 
 import odin.client.inventory.Equip;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +34,7 @@ import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Gifts;
 import tacos.packet.response.ResCCashShop;
 import tacos.odin.OdinPair;
 
@@ -175,49 +172,32 @@ public class CashShop {
     }
 
     public void gift(int recipient, String from, String message, int sn, int uniqueid) {
-        try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO `gifts` VALUES (DEFAULT, ?, ?, ?, ?, ?)");
-            ps.setInt(1, recipient);
-            ps.setString(2, from);
-            ps.setString(3, message);
-            ps.setInt(4, sn);
-            ps.setInt(5, uniqueid);
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
+        DQ_Gifts.add(recipient, from, message, sn, uniqueid);
     }
 
     public List<OdinPair<IItem, String>> loadGifts() {
         List<OdinPair<IItem, String>> gifts = new ArrayList<>();
-        Connection con = DatabaseConnection.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM `gifts` WHERE `recipient` = ?");
-            ps.setInt(1, characterId);
-            ResultSet rs = ps.executeQuery();
+        List<DQ_Gifts.GiftRow> rows = DQ_Gifts.loadAndClear(characterId);
+        if (rows == null) {
+            return gifts;
+        }
 
-            while (rs.next()) {
-                CashItemInfo cItem = CashItemFactory.getInstance().getItem(rs.getInt("sn"));
-                IItem item = toItem(cItem, rs.getInt("uniqueid"), rs.getString("from"));
-                gifts.add(new OdinPair<>(item, rs.getString("message")));
-                uniqueids.add(item.getUniqueId());
-                List<CashItemInfo> packages = CashItemFactory.getInstance().getPackageItems(cItem.getId());
-                if (packages != null && !packages.isEmpty()) {
-                    for (CashItemInfo packageItem : packages) {
-                        addToInventory(toItem(packageItem, rs.getString("from")));
-                    }
-                } else {
-                    addToInventory(item);
+        for (DQ_Gifts.GiftRow row : rows) {
+            CashItemInfo cItem = CashItemFactory.getInstance().getItem(row.sn);
+            IItem item = toItem(cItem, row.uniqueid, row.from);
+            gifts.add(new OdinPair<>(item, row.message));
+            uniqueids.add(item.getUniqueId());
+            List<CashItemInfo> packages = CashItemFactory.getInstance().getPackageItems(cItem.getId());
+            if (packages != null && !packages.isEmpty()) {
+                for (CashItemInfo packageItem : packages) {
+                    addToInventory(toItem(packageItem, row.from));
                 }
+            } else {
+                addToInventory(item);
             }
+        }
 
-            rs.close();
-            ps.close();
-            ps = con.prepareStatement("DELETE FROM `gifts` WHERE `recipient` = ?");
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-            ps.close();
+        try {
             save();
         } catch (SQLException sqle) {
             sqle.printStackTrace();

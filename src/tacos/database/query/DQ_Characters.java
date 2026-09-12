@@ -115,6 +115,55 @@ public class DQ_Characters {
         return false;
     }
 
+    /**
+     * NOTE: this declares {@code throws SQLException} instead of catching
+     * it internally, since it is called from MapleCharacter.saveToDB, which
+     * manages its own outer transaction and must see any failure in order
+     * to roll back correctly.
+     */
+    public static boolean updateStat(Connection con, CharacterSaveRow row) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET level = ?, fame = ?, str = ?, dex = ?, luk = ?, `int` = ?, exp = ?, hp = ?, mp = ?, maxhp = ?, maxmp = ?, sp = ?, ap = ?, gm = ?, skincolor = ?, gender = ?, job = ?, hair = ?, face = ?, map = ?, meso = ?, hpApUsed = ?, spawnpoint = ?, party = ?, buddyCapacity = ?, monsterbookcover = ?, dojo_pts = ?, dojoRecord = ?, pets = ?, subcategory = ?, marriageId = ?, currentrep = ?, totalrep = ?, name = ?, tama = ? WHERE id = ?", DatabaseConnection.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, row.level);
+            ps.setInt(2, row.fame);
+            ps.setInt(3, row.str);
+            ps.setInt(4, row.dex);
+            ps.setInt(5, row.luk);
+            ps.setInt(6, row.intel);
+            ps.setInt(7, row.exp);
+            ps.setInt(8, row.hp);
+            ps.setInt(9, row.mp);
+            ps.setInt(10, row.maxhp);
+            ps.setInt(11, row.maxmp);
+            ps.setString(12, row.sp);
+            ps.setInt(13, row.ap);
+            ps.setByte(14, row.gm);
+            ps.setByte(15, row.skinColor);
+            ps.setByte(16, row.gender);
+            ps.setInt(17, row.job);
+            ps.setInt(18, row.hair);
+            ps.setInt(19, row.face);
+            ps.setInt(20, row.map);
+            ps.setInt(21, row.meso);
+            ps.setInt(22, row.hpApUsed);
+            ps.setByte(23, row.spawnpoint);
+            ps.setInt(24, row.party);
+            ps.setShort(25, row.buddyCapacity);
+            ps.setInt(26, row.monsterbookcover);
+            ps.setInt(27, row.dojo);
+            ps.setInt(28, row.dojoRecord);
+            ps.setString(29, row.pets);
+            ps.setInt(30, row.subcategory);
+            ps.setInt(31, row.marriageId);
+            ps.setInt(32, row.currentrep);
+            ps.setInt(33, row.totalrep);
+            ps.setString(34, row.name);
+            ps.setInt(35, row.tama);
+            ps.setInt(36, row.id);
+
+            return ps.executeUpdate() >= 1;
+        }
+    }
+
     public static boolean loadStat(MapleCharacter ret) {
         Connection con = DatabaseConnection.getConnection();
         try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
@@ -220,6 +269,63 @@ public class DQ_Characters {
         }
 
         return true;
+    }
+
+    /**
+     * NOTE: this declares {@code throws SQLException} instead of catching
+     * it internally (unlike most methods in this class), matching the
+     * original MapleCharacter.loadCharFromDB behavior, which relies on the
+     * exception (and the not-found RuntimeException below) propagating to
+     * its own outer catch block.
+     */
+    public static ExtrasRow loadExtras(int characterId) throws SQLException {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+            ps.setInt(1, characterId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new RuntimeException("Loading the Char Failed (char not found)");
+                }
+                return new ExtrasRow(rs.getInt("party"), rs.getInt("monsterbookcover"), rs.getInt("dojo_pts"), rs.getByte("dojoRecord"), rs.getString("pets"));
+            }
+        }
+    }
+
+    /**
+     * NOTE: this declares {@code throws SQLException} for the same reason
+     * as {@code loadExtras} above.
+     */
+    public static List<BlessOfFairyRow> loadOtherCharactersForBlessOfFairy(int accountId) throws SQLException {
+        List<BlessOfFairyRow> ret = new ArrayList<>();
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE accountid = ? ORDER BY level DESC")) {
+            ps.setInt(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ret.add(new BlessOfFairyRow(rs.getInt("id"), rs.getShort("level"), rs.getString("name")));
+                }
+            }
+        }
+        return ret;
+    }
+
+    public static boolean updateFamilyStatus(int characterId, int familyId, int seniorId, int junior1, int junior2) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET familyid = ?, seniorid = ?, junior1 = ?, junior2 = ? WHERE id = ?")) {
+                ps.setInt(1, familyId);
+                ps.setInt(2, seniorId);
+                ps.setInt(3, junior1);
+                ps.setInt(4, junior2);
+                ps.setInt(5, characterId);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "updateFamilyStatus");
+        }
+
+        return false;
     }
 
     public static List<Integer> getCharatcerIds(TacosClient client) {
@@ -389,5 +495,280 @@ public class DQ_Characters {
         }
 
         return false;
+    }
+
+    public static boolean resetAllianceRankForGuild(int guildId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET alliancerank = 5 WHERE guildid = ?")) {
+                ps.setInt(1, guildId);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "resetAllianceRankForGuild");
+        }
+
+        return false;
+    }
+
+    public static List<FamilyMemberRow> getFamilyMembers(int familyId) {
+        List<FamilyMemberRow> ret = new ArrayList<>();
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT id, name, level, job, seniorid, junior1, junior2, currentrep, totalrep FROM " + DB_TABLE_NAME + " WHERE familyid = ?")) {
+                ps.setInt(1, familyId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(new FamilyMemberRow(rs.getInt("id"), rs.getShort("level"), rs.getString("name"), rs.getInt("job"),
+                                rs.getInt("seniorid"), rs.getInt("junior1"), rs.getInt("junior2"), rs.getInt("currentrep"), rs.getInt("totalrep")));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getFamilyMembers");
+        }
+
+        return ret;
+    }
+
+    public static boolean resetFamilyForMembers(int familyId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET familyid = 0, junior1 = 0, junior2 = 0, seniorid = 0 WHERE familyid = ?")) {
+                ps.setInt(1, familyId);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "resetFamilyForMembers");
+        }
+
+        return false;
+    }
+
+    public static boolean setOfflineFamilyStatus(int characterId, int familyId, int seniorId, int junior1, int junior2, int currentRep, int totalRep) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET familyid = ?, seniorid = ?, junior1 = ?, junior2 = ?, currentrep = ?, totalrep = ? WHERE id = ?")) {
+                ps.setInt(1, familyId);
+                ps.setInt(2, seniorId);
+                ps.setInt(3, junior1);
+                ps.setInt(4, junior2);
+                ps.setInt(5, currentRep);
+                ps.setInt(6, totalRep);
+                ps.setInt(7, characterId);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "setOfflineFamilyStatus");
+        }
+
+        return false;
+    }
+
+    public static int getNextRunningPartyId() {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT MAX(party)+2 FROM " + DB_TABLE_NAME)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    rs.next();
+                    return rs.getInt(1);
+                }
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getNextRunningPartyId");
+        }
+
+        return 0;
+    }
+
+    public static List<GuildMemberRow> getGuildMembers(int guildId) {
+        List<GuildMemberRow> ret = new ArrayList<>();
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT id, name, level, job, guildrank, alliancerank FROM " + DB_TABLE_NAME + " WHERE guildid = ? ORDER BY guildrank ASC, name ASC")) {
+                ps.setInt(1, guildId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ret.add(new GuildMemberRow(rs.getInt("id"), rs.getShort("level"), rs.getString("name"), rs.getInt("job"), rs.getByte("guildrank"), rs.getByte("alliancerank")));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getGuildMembers");
+        }
+
+        return ret;
+    }
+
+    public static boolean resetGuildForMembers(int guildId) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET guildid = 0, guildrank = 5, alliancerank = 5 WHERE guildid = ?")) {
+                ps.setInt(1, guildId);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "resetGuildForMembers");
+        }
+
+        return false;
+    }
+
+    public static boolean setOfflineGuildStatus(int characterId, int guildId, int guildRank, int allianceRank) {
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET guildid = ?, guildrank = ?, alliancerank = ? WHERE id = ?")) {
+                ps.setInt(1, guildId);
+                ps.setInt(2, guildRank);
+                ps.setInt(3, allianceRank);
+                ps.setInt(4, characterId);
+                ps.execute();
+                return true;
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "setOfflineGuildStatus");
+        }
+
+        return false;
+    }
+
+    public static final class ExtrasRow {
+        public final int party;
+        public final int monsterbookcover;
+        public final int dojo;
+        public final byte dojoRecord;
+        public final String pets;
+        public ExtrasRow(int party, int monsterbookcover, int dojo, byte dojoRecord, String pets) {
+            this.party = party;
+            this.monsterbookcover = monsterbookcover;
+            this.dojo = dojo;
+            this.dojoRecord = dojoRecord;
+            this.pets = pets;
+        }
+    }
+
+    public static final class BlessOfFairyRow {
+        public final int id;
+        public final int level;
+        public final String name;
+        public BlessOfFairyRow(int id, int level, String name) {
+            this.id = id;
+            this.level = level;
+            this.name = name;
+        }
+    }
+
+    public static final class CharacterSaveRow {
+        public final int id;
+        public final int level;
+        public final int fame;
+        public final int str, dex, luk, intel;
+        public final int exp;
+        public final int hp, mp, maxhp, maxmp;
+        public final String sp;
+        public final int ap;
+        public final byte gm;
+        public final byte skinColor;
+        public final byte gender;
+        public final int job;
+        public final int hair, face;
+        public final int map;
+        public final int meso;
+        public final int hpApUsed;
+        public final byte spawnpoint;
+        public final int party;
+        public final short buddyCapacity;
+        public final int monsterbookcover;
+        public final int dojo;
+        public final int dojoRecord;
+        public final String pets;
+        public final int subcategory;
+        public final int marriageId;
+        public final int currentrep, totalrep;
+        public final String name;
+        public final int tama;
+
+        public CharacterSaveRow(int id, int level, int fame, int str, int dex, int luk, int intel, int exp,
+                int hp, int mp, int maxhp, int maxmp, String sp, int ap, byte gm, byte skinColor, byte gender,
+                int job, int hair, int face, int map, int meso, int hpApUsed, byte spawnpoint, int party,
+                short buddyCapacity, int monsterbookcover, int dojo, int dojoRecord, String pets, int subcategory,
+                int marriageId, int currentrep, int totalrep, String name, int tama) {
+            this.id = id;
+            this.level = level;
+            this.fame = fame;
+            this.str = str;
+            this.dex = dex;
+            this.luk = luk;
+            this.intel = intel;
+            this.exp = exp;
+            this.hp = hp;
+            this.mp = mp;
+            this.maxhp = maxhp;
+            this.maxmp = maxmp;
+            this.sp = sp;
+            this.ap = ap;
+            this.gm = gm;
+            this.skinColor = skinColor;
+            this.gender = gender;
+            this.job = job;
+            this.hair = hair;
+            this.face = face;
+            this.map = map;
+            this.meso = meso;
+            this.hpApUsed = hpApUsed;
+            this.spawnpoint = spawnpoint;
+            this.party = party;
+            this.buddyCapacity = buddyCapacity;
+            this.monsterbookcover = monsterbookcover;
+            this.dojo = dojo;
+            this.dojoRecord = dojoRecord;
+            this.pets = pets;
+            this.subcategory = subcategory;
+            this.marriageId = marriageId;
+            this.currentrep = currentrep;
+            this.totalrep = totalrep;
+            this.name = name;
+            this.tama = tama;
+        }
+    }
+
+    public static final class FamilyMemberRow {
+        public final int id;
+        public final int level;
+        public final String name;
+        public final int job;
+        public final int seniorId;
+        public final int junior1;
+        public final int junior2;
+        public final int currentRep;
+        public final int totalRep;
+        public FamilyMemberRow(int id, int level, String name, int job, int seniorId, int junior1, int junior2, int currentRep, int totalRep) {
+            this.id = id; this.level = level; this.name = name; this.job = job;
+            this.seniorId = seniorId; this.junior1 = junior1; this.junior2 = junior2;
+            this.currentRep = currentRep; this.totalRep = totalRep;
+        }
+    }
+
+    public static final class GuildMemberRow {
+
+        public final int id;
+        public final int level;
+        public final String name;
+        public final int job;
+        public final int guildRank;
+        public final int allianceRank;
+
+        public GuildMemberRow(int id, int level, String name, int job, int guildRank, int allianceRank) {
+            this.id = id;
+            this.level = level;
+            this.name = name;
+            this.job = job;
+            this.guildRank = guildRank;
+            this.allianceRank = allianceRank;
+        }
     }
 }

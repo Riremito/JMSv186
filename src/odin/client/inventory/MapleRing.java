@@ -21,15 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import odin.client.MapleCharacter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.io.Serializable;
 
-import tacos.database.DatabaseConnection;
 import java.util.Comparator;
 import odin.server.MapleInventoryManipulator;
+import tacos.database.query.DQ_Rings;
 
 public class MapleRing implements Serializable {
 
@@ -41,7 +38,7 @@ public class MapleRing implements Serializable {
     private String partnerName;
     private boolean equipped = false;
 
-    private MapleRing(int id, int id2, int partnerId, int itemid, String partnerName) {
+    public MapleRing(int id, int id2, int partnerId, int itemid, String partnerName) {
         this.ringId = id;
         this.ringId2 = id2;
         this.partnerId = partnerId;
@@ -54,47 +51,13 @@ public class MapleRing implements Serializable {
     }
 
     public static MapleRing loadFromDb(int ringId, boolean equipped) {
-        try {
-            Connection con = DatabaseConnection.getConnection(); // Get a connection to the database
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM rings WHERE ringId = ?"); // Get details..
-            ps.setInt(1, ringId);
-
-            ResultSet rs = ps.executeQuery();
-            MapleRing ret = null;
-            if (rs.next()) {
-                ret = new MapleRing(ringId, rs.getInt("partnerRingId"), rs.getInt("partnerChrId"), rs.getInt("itemid"), rs.getString("partnerName"));
-                ret.setEquipped(equipped);
-            }
-            rs.close();
-            ps.close();
-
-            return ret;
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-
-            return null;
-        }
+        return DQ_Rings.load(ringId, equipped);
     }
 
     public static void addToDB(int itemid, MapleCharacter chr, String player, int id, int[] ringId) throws SQLException {
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("INSERT INTO rings (ringId, itemid, partnerChrId, partnerName, partnerRingId) VALUES (?, ?, ?, ?, ?)");
-        ps.setInt(1, ringId[0]);
-        ps.setInt(2, itemid);
-        ps.setInt(3, chr.getId());
-        ps.setString(4, chr.getName());
-        ps.setInt(5, ringId[1]);
-        ps.executeUpdate();
-        ps.close();
-
-        ps = con.prepareStatement("INSERT INTO rings (ringId, itemid, partnerChrId, partnerName, partnerRingId) VALUES (?, ?, ?, ?, ?)");
-        ps.setInt(1, ringId[1]);
-        ps.setInt(2, itemid);
-        ps.setInt(3, id);
-        ps.setString(4, player);
-        ps.setInt(5, ringId[0]);
-        ps.executeUpdate();
-        ps.close();
+        if (!DQ_Rings.add(itemid, chr, player, id, ringId)) {
+            throw new SQLException("Failed to insert into rings");
+        }
     }
 
     public static int createRing(int itemid, MapleCharacter partner1, String partner2, String msg, int id2, int sn) {
@@ -168,28 +131,7 @@ public class MapleRing implements Serializable {
     }
 
     public static void removeRingFromDb(MapleCharacter player) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM rings WHERE partnerChrId = ?");
-            ps.setInt(1, player.getId());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                ps.close();
-                rs.close();
-                return;
-            }
-            int otherId = rs.getInt("partnerRingId");
-            int otherotherId = rs.getInt("ringId");
-            rs.close();
-            ps.close();
-            ps = con.prepareStatement("DELETE FROM rings WHERE ringId = ? OR ringId = ?");
-            ps.setInt(1, otherotherId);
-            ps.setInt(2, otherId);
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException sex) {
-            sex.printStackTrace();
-        }
+        DQ_Rings.remove(player);
     }
 
     public static class RingComparator implements Comparator<MapleRing>, Serializable {

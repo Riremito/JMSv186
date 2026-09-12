@@ -30,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Random;
 import tacos.config.Config;
 import tacos.tools.TacosTools;
@@ -56,6 +57,54 @@ public class DQ_Accounts {
             DebugLogger.DBErrorLog(DB_TABLE_NAME, "resetLoginState");
         }
         return false;
+    }
+
+    /**
+     * NOTE: unlike most methods in this class, this declares
+     * {@code throws SQLException} instead of catching it internally,
+     * matching the original MapleCharacter.loadCharFromDB behavior, which
+     * relies on the exception propagating to its own outer catch block.
+     */
+    public static AccountLoginRow loadForCharacterLogin(int accountId) throws SQLException {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+            ps.setInt(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                return new AccountLoginRow(rs.getString("name"), rs.getInt("ACash"), rs.getInt("mPoints"), rs.getInt("points"), rs.getInt("vpoints"), rs.getTimestamp("lastlogon"));
+            }
+        }
+    }
+
+    /**
+     * NOTE: this declares {@code throws SQLException} for the same reason
+     * as {@code loadForCharacterLogin} above.
+     */
+    public static void updateLastLogon(int accountId) throws SQLException {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET lastlogon = CURRENT_TIMESTAMP() WHERE id = ?")) {
+            ps.setInt(1, accountId);
+            ps.executeUpdate();
+        }
+    }
+
+    /**
+     * NOTE: this declares {@code throws SQLException} instead of catching
+     * it internally, since it is called from MapleCharacter.saveToDB, which
+     * manages its own outer transaction and must see any failure in order
+     * to roll back correctly.
+     */
+    public static void updatePoints(Connection con, int accountId, int acash, int mpoints, int points, int vpoints) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?")) {
+            ps.setInt(1, acash);
+            ps.setInt(2, mpoints);
+            ps.setInt(3, points);
+            ps.setInt(4, vpoints);
+            ps.setInt(5, accountId);
+            ps.execute();
+        }
     }
 
     public static MapleClientState getLoginState(TacosClient client) {
@@ -272,5 +321,22 @@ public class DQ_Accounts {
         }
         updateLoginState(client, MapleClientState.LOGIN_LOGGEDIN);
         return true;
+    }
+
+    public static final class AccountLoginRow {
+        public final String name;
+        public final int acash;
+        public final int mpoints;
+        public final int points;
+        public final int vpoints;
+        public final Timestamp lastlogon;
+        public AccountLoginRow(String name, int acash, int mpoints, int points, int vpoints, Timestamp lastlogon) {
+            this.name = name;
+            this.acash = acash;
+            this.mpoints = mpoints;
+            this.points = points;
+            this.vpoints = vpoints;
+            this.lastlogon = lastlogon;
+        }
     }
 }

@@ -22,12 +22,8 @@ package odin.handling.channel;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Guilds;
 
 public class MapleGuildRanking {
 
@@ -47,28 +43,7 @@ public class MapleGuildRanking {
 
     private void reload() {
         ranks.clear();
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM guilds ORDER BY `GP` DESC LIMIT 50");
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                final GuildRankingInfo rank = new GuildRankingInfo(
-                        rs.getString("name"),
-                        rs.getInt("GP"),
-                        rs.getInt("logo"),
-                        rs.getInt("logoColor"),
-                        rs.getInt("logoBG"),
-                        rs.getInt("logoBGColor"));
-
-                ranks.add(rank);
-            }
-            ps.close();
-            rs.close();
-        } catch (SQLException e) {
-            System.err.println("Error handling guildRanking");
-            e.printStackTrace();
-        }
+        ranks.addAll(DQ_Guilds.getTopByGP(50));
     }
 
     public static class GuildRankingInfo {

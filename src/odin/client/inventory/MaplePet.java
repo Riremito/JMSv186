@@ -21,16 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import java.awt.Point;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.io.Serializable;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import tacos.database.DatabaseConnection;
 import odin.server.MapleItemInformationProvider;
+import tacos.database.query.DQ_Pets;
 
 public class MaplePet implements Serializable {
 
@@ -65,50 +59,15 @@ public class MaplePet implements Serializable {
     }
 
     public static final MaplePet loadFromDb(final int itemid, final int petid, final short inventorypos) {
-        try {
-            final MaplePet ret = new MaplePet(itemid, petid, inventorypos);
-
-            Connection con = DatabaseConnection.getConnection(); // Get a connection to the database
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM pets WHERE petid = ?"); // Get pet details..
-            ps.setInt(1, petid);
-
-            final ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                return null;
-            }
-
-            ret.setName(rs.getString("name"));
-            ret.setCloseness(rs.getShort("closeness"));
-            ret.setLevel(rs.getByte("level"));
-            ret.setFullness(rs.getByte("fullness"));
-            ret.setSecondsLeft(rs.getInt("seconds"));
-
-            rs.close();
-            ps.close();
-
-            return ret;
-        } catch (SQLException ex) {
-            Logger.getLogger(MaplePet.class.getName()).log(Level.SEVERE, null, ex);
+        final MaplePet ret = new MaplePet(itemid, petid, inventorypos);
+        if (!DQ_Pets.load(ret, petid)) {
             return null;
         }
+        return ret;
     }
 
     public final void saveToDb() {
-        try {
-            final PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("UPDATE pets SET name = ?, level = ?, closeness = ?, fullness = ?, seconds = ? WHERE petid = ?");
-            ps.setString(1, name); // Set name
-            ps.setByte(2, level); // Set Level
-            ps.setShort(3, closeness); // Set Closeness
-            ps.setByte(4, fullness); // Set Fullness
-            ps.setInt(5, secondsLeft);
-            ps.setInt(6, uniqueid); // Set ID
-            ps.executeUpdate(); // Execute statement
-            ps.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
-        }
+        DQ_Pets.save(this);
     }
 
     public static final MaplePet createPet(final int itemid, final int uniqueid) {
@@ -119,18 +78,7 @@ public class MaplePet implements Serializable {
         if (uniqueid <= -1) { //wah
             uniqueid = MapleInventoryIdentifier.getInstance();
         }
-        try { // Commit to db first
-            PreparedStatement pse = DatabaseConnection.getConnection().prepareStatement("INSERT INTO pets (petid, name, level, closeness, fullness, seconds) VALUES (?, ?, ?, ?, ?, ?)");
-            pse.setInt(1, uniqueid);
-            pse.setString(2, name);
-            pse.setByte(3, (byte) level);
-            pse.setShort(4, (short) closeness);
-            pse.setByte(5, (byte) fullness);
-            pse.setInt(6, secondsLeft);
-            pse.executeUpdate();
-            pse.close();
-        } catch (final SQLException ex) {
-            ex.printStackTrace();
+        if (!DQ_Pets.add(uniqueid, name, level, closeness, fullness, secondsLeft)) {
             return null;
         }
         final MaplePet pet = new MaplePet(itemid, uniqueid);

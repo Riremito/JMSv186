@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.database;
+package tacos.database.query;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,21 +25,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosMonsterBook;
+import tacos.database.DatabaseConnection;
+import tacos.debug.DebugLogger;
 
 /**
  *
  * @author Riremito
  */
-public class TableMonsterBook extends TacosDB {
+public class DQ_Monsterbook {
 
-    public TableMonsterBook() {
-        super("monsterbook");
-    }
+    public static final String DB_TABLE_NAME = "monsterbook";
 
-    public boolean load(TacosCharacter chr) {
+    public static boolean load(TacosCharacter chr) {
         LinkedHashMap<Integer, Integer> cards = chr.getMonsterBook().getCards();
 
-        try (PreparedStatement ps = prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE charid = ? ORDER BY cardid ASC")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE charid = ? ORDER BY cardid ASC")) {
             ps.setInt(1, chr.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -49,13 +49,13 @@ public class TableMonsterBook extends TacosDB {
             chr.getMonsterBook().update();
             return true;
         } catch (SQLException ex) {
-            error();
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "load");
         }
 
         return false;
     }
 
-    public boolean save(TacosCharacter chr) {
+    public static boolean save(TacosCharacter chr) {
         TacosMonsterBook monster_book = chr.getMonsterBook();
         if (monster_book.getModifiedCount() == 0) {
             return true;
@@ -65,7 +65,7 @@ public class TableMonsterBook extends TacosDB {
             return true;
         }
 
-        if (!setManual()) {
+        if (!DatabaseConnection.setManual()) {
             return false;
         }
 
@@ -77,15 +77,15 @@ public class TableMonsterBook extends TacosDB {
             card_data += "(" + chr.getId() + ", " + card.getKey() + ", " + card.getValue() + ")";
         }
 
-        try (PreparedStatement ps = prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (charid, cardid, level) VALUES " + card_data + " AS data ON DUPLICATE KEY UPDATE level = data.level")) {
+        try (PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (charid, cardid, level) VALUES " + card_data + " AS data ON DUPLICATE KEY UPDATE level = data.level")) {
             ps.execute();
             return true;
         } catch (SQLException ex) {
-            error();
-            rollback();
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "save");
+            DatabaseConnection.rollback();
         } finally {
-            commit();
-            setAuto();
+            DatabaseConnection.commit();
+            DatabaseConnection.setAuto();
         }
 
         return false;

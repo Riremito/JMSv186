@@ -20,18 +20,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world.family;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
 
 import odin.client.MapleCharacter;
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Characters;
+import tacos.database.query.DQ_Families;
 import odin.handling.world.OdinWorld;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -55,50 +51,33 @@ public class MapleFamily implements java.io.Serializable {
     public MapleFamily(final int fid) {
         super();
 
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM families WHERE familyid = ?");
-            ps.setInt(1, fid);
-            ResultSet rs = ps.executeQuery();
-
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-                id = -1;
-                return;
-            }
-
-            id = fid;
-            leaderid = rs.getInt("leaderid");
-            notice = rs.getString("notice");
-            rs.close();
-            ps.close();
-            //does not need to be in any order
-            ps = con.prepareStatement("SELECT id, name, level, job, seniorid, junior1, junior2, currentrep, totalrep FROM characters WHERE familyid = ?");
-            ps.setInt(1, fid);
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                if (rs.getInt("id") == leaderid) {
-                    leadername = rs.getString("name");
-                }
-                members.put(rs.getInt("id"), new MapleFamilyCharacter(rs.getInt("id"), rs.getShort("level"), rs.getString("name"), (byte) -1, rs.getInt("job"), fid, rs.getInt("seniorid"), rs.getInt("junior1"), rs.getInt("junior2"), rs.getInt("currentrep"), rs.getInt("totalrep"), false));
-            }
-            rs.close();
-            ps.close();
-
-            if (leadername == null || members.size() < 2) {
-                System.err.println("Leader " + leaderid + " isn't in family " + id + ".  Impossible... family is disbanding.");
-                writeToDB(true);
-                proper = false;
-                return;
-            }
-            resetPedigree();
-            resetDescendants(); //set
-            resetGens(); //set
-        } catch (SQLException se) {
-            System.err.println("unable to read family information from sql");
-            se.printStackTrace();
+        DQ_Families.FamilyRow row = DQ_Families.load(fid);
+        if (row == null) {
+            id = -1;
+            return;
         }
+
+        id = fid;
+        leaderid = row.leaderid;
+        notice = row.notice;
+
+        //does not need to be in any order
+        for (DQ_Characters.FamilyMemberRow m : DQ_Characters.getFamilyMembers(fid)) {
+            if (m.id == leaderid) {
+                leadername = m.name;
+            }
+            members.put(m.id, new MapleFamilyCharacter(m.id, m.level, m.name, (byte) -1, m.job, fid, m.seniorId, m.junior1, m.junior2, m.currentRep, m.totalRep, false));
+        }
+
+        if (leadername == null || members.size() < 2) {
+            System.err.println("Leader " + leaderid + " isn't in family " + id + ".  Impossible... family is disbanding.");
+            writeToDB(true);
+            proper = false;
+            return;
+        }
+        resetPedigree();
+        resetDescendants(); //set
+        resetGens(); //set
     }
 
     public int getGens() {
@@ -132,54 +111,26 @@ public class MapleFamily implements java.io.Serializable {
     public static final Collection<MapleFamily> loadAll() {
         final Collection<MapleFamily> ret = new ArrayList<MapleFamily>();
         MapleFamily g;
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT familyid FROM families");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                g = new MapleFamily(rs.getInt("familyid"));
-                if (g.getId() > 0) {
-                    ret.add(g);
-                }
+        for (int familyid : DQ_Families.getAllFamilyIds()) {
+            g = new MapleFamily(familyid);
+            if (g.getId() > 0) {
+                ret.add(g);
             }
-            rs.close();
-            ps.close();
-        } catch (SQLException se) {
-            System.err.println("unable to read family information from sql");
-            se.printStackTrace();
         }
         return ret;
     }
 
     public final void writeToDB(final boolean bDisband) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            if (!bDisband) {
-                PreparedStatement ps = con.prepareStatement("UPDATE families SET notice = ?, leaderid = ? WHERE familyid = ?");
-                ps.setString(1, notice);
-                ps.setInt(2, leaderid);
-                ps.setInt(3, id);
-                ps.execute();
-                ps.close();
-            } else {
-                //members is less than 2, this shall be executed
-                PreparedStatement ps;
-                if (leadername == null || members.size() < 2) {
-                    ps = con.prepareStatement("UPDATE characters SET familyid = 0, junior1 = 0, junior2 = 0, seniorid = 0 WHERE familyid = ?");
-                    ps.setInt(1, id);
-                    ps.execute();
-                    ps.close();
-                    broadcast(null, -1, FCOp.DISBAND, null);
-                }
-
-                ps = con.prepareStatement("DELETE FROM families WHERE familyid = ?");
-                ps.setInt(1, id);
-                ps.execute();
-                ps.close();
+        if (!bDisband) {
+            DQ_Families.update(id, notice, leaderid);
+        } else {
+            //members is less than 2, this shall be executed
+            if (leadername == null || members.size() < 2) {
+                DQ_Characters.resetFamilyForMembers(id);
+                broadcast(null, -1, FCOp.DISBAND, null);
             }
-        } catch (SQLException se) {
-            System.err.println("Error saving family to SQL");
-            se.printStackTrace();
+
+            DQ_Families.delete(id);
         }
     }
 
@@ -356,41 +307,11 @@ public class MapleFamily implements java.io.Serializable {
     }
 
     public static void setOfflineFamilyStatus(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {
-        try {
-            java.sql.Connection con = DatabaseConnection.getConnection();
-            java.sql.PreparedStatement ps = con.prepareStatement("UPDATE characters SET familyid = ?, seniorid = ?, junior1 = ?, junior2 = ?, currentrep = ?, totalrep = ? WHERE id = ?");
-            ps.setInt(1, familyid);
-            ps.setInt(2, seniorid);
-            ps.setInt(3, junior1);
-            ps.setInt(4, junior2);
-            ps.setInt(5, currentrep);
-            ps.setInt(6, totalrep);
-            ps.setInt(7, cid);
-            ps.execute();
-            ps.close();
-        } catch (SQLException se) {
-            System.out.println("SQLException: " + se.getLocalizedMessage());
-            se.printStackTrace();
-        }
+        DQ_Characters.setOfflineFamilyStatus(cid, familyid, seniorid, junior1, junior2, currentrep, totalrep);
     }
 
     public static int createFamily(int leaderId) {
-        try {
-            Connection con = DatabaseConnection.getConnection();
-
-            PreparedStatement ps = con.prepareStatement("INSERT INTO families (`leaderid`) VALUES (?)", Statement.RETURN_GENERATED_KEYS);
-            ps.setInt(1, leaderId);
-            ps.executeUpdate();
-            ResultSet rs = ps.getGeneratedKeys();
-            rs.next();
-            int ret = rs.getInt(1);
-            rs.close();
-            ps.close();
-            return ret;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0;
-        }
+        return DQ_Families.create(leaderId);
     }
 
     public static void mergeFamily(MapleFamily newfam, MapleFamily oldfam) {

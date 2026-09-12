@@ -1,15 +1,12 @@
 package odin.server;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
-import tacos.database.DatabaseConnection;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import odin.server.CashItemInfo.CashModInfo;
+import tacos.database.query.DQ_CashshopModifiedItems;
 import odin.provider.IMapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
@@ -146,19 +143,9 @@ public class CashItemFactory {
             if (initialized) {
                 return null;
             }
-            try {
-                Connection con = DatabaseConnection.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM cashshop_modified_items WHERE serial = ?");
-                ps.setInt(1, sn);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    ret = new CashModInfo(sn, rs.getInt("discount_price"), rs.getInt("mark"), rs.getInt("showup") > 0, rs.getInt("itemid"), rs.getInt("priority"), rs.getInt("package") > 0, rs.getInt("period"), rs.getInt("gender"), rs.getInt("count"), rs.getInt("meso"), rs.getInt("unk_1"), rs.getInt("unk_2"), rs.getInt("unk_3"), rs.getInt("extra_flags"));
-                    itemMods.put(sn, ret);
-                }
-                rs.close();
-                ps.close();
-            } catch (Exception e) {
-                e.printStackTrace();
+            ret = DQ_CashshopModifiedItems.load(sn);
+            if (ret != null) {
+                itemMods.put(sn, ret);
             }
         }
         return ret;

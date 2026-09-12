@@ -205,4 +205,22 @@ public class DQ_Inventoryitems {
         return items;
     }
 
+    public static int getMaxUniqueId() {
+        int ret = 0;
+        try {
+            Connection con = DatabaseConnection.getConnection();
+            try (PreparedStatement ps = con.prepareStatement("SELECT MAX(uniqueid) FROM " + DB_TABLE_NAME)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        ret = rs.getInt(1) + 1;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            DebugLogger.DBErrorLog(DB_TABLE_NAME, "getMaxUniqueId");
+        }
+
+        return ret;
+    }
+
 }

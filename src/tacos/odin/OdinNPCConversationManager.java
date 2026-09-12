@@ -20,10 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.odin;
 
-import java.sql.ResultSet;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Connection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +47,7 @@ import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
 import odin.server.MapleItemInformationProvider;
 import odin.handling.channel.MapleGuildRanking;
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Hiredmerchants;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.OdinWorld;
@@ -881,51 +877,13 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void giveMerchantMesos() {
-        long mesos = 0;
-        try {
-            Connection con = (Connection) DatabaseConnection.getConnection();
-            PreparedStatement ps = (PreparedStatement) con.prepareStatement("SELECT * FROM hiredmerchants WHERE merchantid = ?");
-            ps.setInt(1, getPlayer().getId());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-            } else {
-                mesos = rs.getLong("mesos");
-            }
-            rs.close();
-            ps.close();
-
-            ps = (PreparedStatement) con.prepareStatement("UPDATE hiredmerchants SET mesos = 0 WHERE merchantid = ?");
-            ps.setInt(1, getPlayer().getId());
-            ps.executeUpdate();
-            ps.close();
-
-        } catch (SQLException ex) {
-            System.err.println("Error gaining mesos in hired merchant" + ex);
-        }
+        long mesos = DQ_Hiredmerchants.getMesos(getPlayer().getId());
+        DQ_Hiredmerchants.clearMesos(getPlayer().getId());
         client.getPlayer().gainMeso((int) mesos, true);
     }
 
     public long getMerchantMesos() {
-        long mesos = 0;
-        try {
-            Connection con = (Connection) DatabaseConnection.getConnection();
-            PreparedStatement ps = (PreparedStatement) con.prepareStatement("SELECT * FROM hiredmerchants WHERE merchantid = ?");
-            ps.setInt(1, getPlayer().getId());
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                rs.close();
-                ps.close();
-            } else {
-                mesos = rs.getLong("mesos");
-            }
-            rs.close();
-            ps.close();
-        } catch (SQLException ex) {
-            System.err.println("Error gaining mesos in hired merchant" + ex);
-        }
-        return mesos;
+        return DQ_Hiredmerchants.getMesos(getPlayer().getId());
     }
 
     public void openDuey() {

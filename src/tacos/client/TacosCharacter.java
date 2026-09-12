@@ -47,7 +47,7 @@ import tacos.config.Region;
 import tacos.constants.TacosConstants;
 import tacos.database.LazyData;
 import tacos.database.InvTypeDB;
-import tacos.database.TacosDB;
+import tacos.database.query.DQ_Monsterbook;
 import tacos.database.query.DQ_Buddies;
 import tacos.database.query.DQ_Characters;
 import tacos.database.query.DQ_Inventoryitems;
@@ -1157,7 +1157,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
             }
         }
         DQ_KeyMap.loadKeyMap(this);
-        TacosDB.MONSTER_BOOK.load(this);
+        DQ_Monsterbook.load(this);
         for (BuddylistEntry ble : DQ_Buddies.load(this)) {
             this.buddylist.put(ble);
         }
@@ -1178,7 +1178,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         }
 
         DQ_KeyMap.saveKeys(this);
-        TacosDB.MONSTER_BOOK.save(this);
+        DQ_Monsterbook.save(this);
         DQ_Buddies.removePending(this);
         DQ_Buddies.update(this);
         return true;
