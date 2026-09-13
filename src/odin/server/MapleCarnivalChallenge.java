@@ -22,9 +22,9 @@ public class MapleCarnivalChallenge {
         this.challenger = new WeakReference<MapleCharacter>(challenger);
         challengeinfo += "#b";
         for (MaplePartyCharacter pc : challenger.getParty().getMembers()) {
-            MapleCharacter c = challenger.getMap().getCharacterById(pc.getId());
-            if (c != null) {
-                challengeinfo += (c.getName() + " / Level" + c.getLevel() + " / " + getJobNameById(c.getJob()));
+            MapleCharacter chr = challenger.getMap().getCharacterById(pc.getId());
+            if (chr != null) {
+                challengeinfo += (chr.getName() + " / Level" + chr.getLevel() + " / " + getJobNameById(chr.getJob()));
             }
         }
         challengeinfo += "#k";

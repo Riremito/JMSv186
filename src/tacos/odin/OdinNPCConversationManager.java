@@ -616,8 +616,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public int partyMembersInMap() {
         int inMap = 0;
-        for (MapleCharacter char2 : getPlayer().getMap().getCharacters()) {
-            if (char2.getParty() == getPlayer().getParty()) {
+        for (MapleCharacter player : getPlayer().getMap().getCharacters()) {
+            if (player.getParty() == getPlayer().getParty()) {
                 inMap++;
             }
         }
@@ -641,19 +641,19 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void warpPartyWithExp(int mapId, int exp) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
-            curChar.changeMap(target, target.getPortal(0));
-            curChar.gainExp(exp, true, false, true);
+            MapleCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
+            player.changeMap(target, target.getPortal(0));
+            player.gainExp(exp, true, false, true);
         }
     }
 
     public void warpPartyWithExpMeso(int mapId, int exp, int meso) {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter curChar = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
-            curChar.changeMap(target, target.getPortal(0));
-            curChar.gainExp(exp, true, false, true);
-            curChar.gainMeso(meso, true);
+            MapleCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
+            player.changeMap(target, target.getPortal(0));
+            player.gainExp(exp, true, false, true);
+            player.gainMeso(meso, true);
         }
     }
 
@@ -1131,12 +1131,12 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean createAlliance(String alliancename) {
         MapleParty pt = client.getPlayer().getParty();
-        MapleCharacter otherChar = client.getChannelServer().getOnlinePlayers().findById(pt.getMemberByIndex(1).getId());
-        if (otherChar == null || otherChar.getId() == client.getPlayer().getId()) {
+        MapleCharacter player = client.getChannelServer().getOnlinePlayers().findById(pt.getMemberByIndex(1).getId());
+        if (player == null || player.getId() == client.getPlayer().getId()) {
             return false;
         }
         try {
-            return OdinWorld.Alliance.createAlliance(alliancename, client.getPlayer().getId(), otherChar.getId(), client.getPlayer().getGuildId(), otherChar.getGuildId());
+            return OdinWorld.Alliance.createAlliance(alliancename, client.getPlayer().getId(), player.getId(), client.getPlayer().getGuildId(), player.getGuildId());
         } catch (Exception re) {
             re.printStackTrace();
             return false;

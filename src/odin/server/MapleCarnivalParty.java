@@ -64,19 +64,19 @@ public class MapleCarnivalParty {
     }
 
     public void warp(final MapleMap map, final String portalname) {
-        for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
-            if (c != null) {
-                c.changeMap(map, map.getPortal(portalname));
+        for (int character_id : members) {
+            final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            if (player != null) {
+                player.changeMap(map, map.getPortal(portalname));
             }
         }
     }
 
     public void warp(final MapleMap map, final int portalid) {
-        for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
-            if (c != null) {
-                c.changeMap(map, map.getPortal(portalid));
+        for (int character_id : members) {
+            final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            if (player != null) {
+                player.changeMap(map, map.getPortal(portalid));
             }
         }
     }

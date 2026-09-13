@@ -451,19 +451,19 @@ public final class MapleMap extends TacosMap {
 
         private MapleMapItem mapitem;
         private MapleReactor reactor;
-        private TacosClient c;
+        private TacosClient client;
 
         public ActivateItemReactor(MapleMapItem mapitem, MapleReactor reactor, TacosClient client) {
             this.mapitem = mapitem;
             this.reactor = reactor;
-            this.c = client;
+            this.client = client;
         }
 
         @Override
         public void run() {
             if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId(), mapitem.getType())) {
                 mapitem.expire(MapleMap.this);
-                reactor.hitReactor(c);
+                reactor.hitReactor(client);
                 reactor.setTimerActive(false);
 
                 if (reactor.getDelay() > 0) {

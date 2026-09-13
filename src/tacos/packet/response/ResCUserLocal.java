@@ -223,7 +223,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserQuestResult(MapleCharacter c, int quest, int npc, OpsQuest oq) {
+    public static ServerPacket UserQuestResult(MapleCharacter player, int quest, int npc, OpsQuest oq) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
 
         sp.Encode1(oq.get());

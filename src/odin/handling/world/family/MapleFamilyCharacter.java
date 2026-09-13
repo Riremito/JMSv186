@@ -44,18 +44,18 @@ public class MapleFamilyCharacter {
 
     // either read from active character...
     // if it's online
-    public MapleFamilyCharacter(MapleCharacter c, int fid, int sid, int j1, int j2) {
-        name = c.getName();
-        level = c.getLevel();
-        id = c.getId();
-        channel = c.getClient().getChannelId();
-        jobid = c.getJob();
+    public MapleFamilyCharacter(MapleCharacter chr, int fid, int sid, int j1, int j2) {
+        name = chr.getName();
+        level = chr.getLevel();
+        id = chr.getId();
+        channel = chr.getClient().getChannelId();
+        jobid = chr.getJob();
         familyid = fid;
         junior1 = j1;
         junior2 = j2;
         seniorid = sid;
-        currentrep = c.getCurrentRep();
-        totalrep = c.getTotalRep();
+        currentrep = chr.getCurrentRep();
+        totalrep = chr.getTotalRep();
         online = true;
     }
 

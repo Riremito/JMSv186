@@ -177,8 +177,8 @@ public class MapleGuild {
         return leader;
     }
 
-    public final MapleCharacter getLeader(final TacosClient c) {
-        return c.getChannelServer().getOnlinePlayers().findById(leader);
+    public final MapleCharacter getLeader(final TacosClient client) {
+        return client.getChannelServer().getOnlinePlayers().findById(leader);
     }
 
     public final int getGP() {

@@ -142,11 +142,11 @@ public class Event_PyramidSubway {
         }, time * 1000L);
     }
 
-    public final void onKill(final MapleCharacter c) {
+    public final void onKill(final MapleCharacter player) {
         kill++;
         if (Randomizer.nextInt(100) < 5) { //monster properties coolDamage and coolDamageProb determine this, will code later
             cool++;
-            broadcastEnergy(c, "massacre_cool", cool);
+            broadcastEnergy(player, "massacre_cool", cool);
         }
         energybar += 5;
         if (energybar > 100) {
@@ -155,34 +155,34 @@ public class Event_PyramidSubway {
         if (type != -1) {
             for (int i = 5; i >= 1; i--) {
                 if ((kill + cool) % (i * 100) == 0 && Randomizer.nextInt(100) < 50) {
-                    broadcastEffect(c, "killing/yeti" + (i - 1));
+                    broadcastEffect(player, "killing/yeti" + (i - 1));
                     break;
                 }
             }
             //i dont want to give buffs as they could smuggle it
             if ((kill + cool) % 500 == 0) {
                 skill++;
-                broadcastEnergy(c, "massacre_skill", skill);
+                broadcastEnergy(player, "massacre_skill", skill);
             }
         }
 
-        broadcastUpdate(c);
-        broadcastEnergy(c, "massacre_hit", kill);
+        broadcastUpdate(player);
+        broadcastEnergy(player, "massacre_hit", kill);
     }
 
-    public final void onChangeMap(final MapleCharacter c, final int newmapid) {
+    public final void onChangeMap(final MapleCharacter player, final int newmapid) {
         if ((newmapid == 910330001 && type == -1) || (newmapid == 926020001 + type && type != -1)) {
-            succeed(c);
+            succeed(player);
         } else {
             if (type == -1 && (newmapid < 910320100 || newmapid > 910320304)) {
-                dispose(c);
+                dispose(player);
                 return;
             } else if (type != -1 && (newmapid < 926010100 || newmapid > 926013504)) {
-                dispose(c);
+                dispose(player);
                 return;
-            } else if (c.getParty() == null || c.getParty().getLeader().equals(new MaplePartyCharacter(c))) {
+            } else if (player.getParty() == null || player.getParty().getLeader().equals(new MaplePartyCharacter(player))) {
                 energybar = 100;
-                commenceTimerNextMap(c, newmapid % 1000 / 100);
+                commenceTimerNextMap(player, newmapid % 1000 / 100);
             }
         }
     }
@@ -313,18 +313,18 @@ public class Event_PyramidSubway {
         dispose(player);
     }
 
-    public final void fail(final MapleCharacter c) {
+    public final void fail(final MapleCharacter player) {
         final MapleMap map;
         if (type == -1) {
-            map = c.findMap(910320001);
+            map = player.findMap(910320001);
         } else {
-            map = c.findMap(926010001 + type);
+            map = player.findMap(926010001 + type);
         }
-        changeMap(c, map, 1, 200, 2);
-        dispose(c);
+        changeMap(player, map, 1, 200, 2);
+        dispose(player);
     }
 
-    public final void dispose(final MapleCharacter c) {
+    public final void dispose(final MapleCharacter player) {
         final boolean lead = energyBarDecrease != null && timerSchedule != null;
         if (energyBarDecrease != null) {
             energyBarDecrease.cancel(false);
@@ -338,33 +338,33 @@ public class Event_PyramidSubway {
             yetiSchedule.cancel(false);
             yetiSchedule = null;
         }
-        if (c.getParty() != null && lead && c.getParty().getMembers().size() > 1) {
-            fail(c);
+        if (player.getParty() != null && lead && player.getParty().getMembers().size() > 1) {
+            fail(player);
             return;
         }
-        c.setPyramidSubway(null);
+        player.setPyramidSubway(null);
     }
 
-    public final void broadcastUpdate(final MapleCharacter c) {
-        final MapleMap map = c.getMap();
-        if (c.getParty() != null && c.getParty().getMembers().size() > 1) {
-            for (MaplePartyCharacter mpc : c.getParty().getMembers()) {
+    public final void broadcastUpdate(final MapleCharacter player) {
+        final MapleMap map = player.getMap();
+        if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
+            for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
                 final MapleCharacter chr = map.getCharacterById(mpc.getId());
                 if (chr != null) {
                     chr.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
                 }
             }
         } else {
-            c.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
+            player.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
         }
     }
 
-    public final void broadcastEffect(final MapleCharacter c, final String effect) {
-        c.SendPacket(ResWrapper.showEffect(effect));
+    public final void broadcastEffect(final MapleCharacter player, final String effect) {
+        player.SendPacket(ResWrapper.showEffect(effect));
     }
 
-    public final void broadcastEnergy(final MapleCharacter c, final String type, final int amount) {
-        c.SendPacket(ResWrapper.sendPyramidEnergy(type, String.valueOf(amount)));
+    public final void broadcastEnergy(final MapleCharacter player, final String type, final int amount) {
+        player.SendPacket(ResWrapper.sendPyramidEnergy(type, String.valueOf(amount)));
     }
 
     public static boolean warpStartSubway(MapleCharacter player) {
@@ -479,16 +479,16 @@ public class Event_PyramidSubway {
         return false;
     }
 
-    private static final void changeMap(final MapleCharacter c, final MapleMap map, final int minLevel, final int maxLevel) {
-        changeMap(c, map, minLevel, maxLevel, 0);
+    private static final void changeMap(final MapleCharacter player, final MapleMap map, final int minLevel, final int maxLevel) {
+        changeMap(player, map, minLevel, maxLevel, 0);
     }
 
-    private static final void changeMap(final MapleCharacter c, final MapleMap map, final int minLevel, final int maxLevel, final int clear) {
-        final MapleMap oldMap = c.getMap();
-        if (c.getParty() != null && c.getParty().getMembers().size() > 1) {
-            for (MaplePartyCharacter mpc : c.getParty().getMembers()) {
+    private static final void changeMap(final MapleCharacter player, final MapleMap map, final int minLevel, final int maxLevel, final int clear) {
+        final MapleMap oldMap = player.getMap();
+        if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
+            for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
                 final MapleCharacter chr = oldMap.getCharacterById(mpc.getId());
-                if (chr != null && chr.getId() != c.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
+                if (chr != null && chr.getId() != player.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
                     if (clear == 1) {
                         chr.SendPacket(ResWrapper.showEffect("killing/clear"));
                     } else if (clear == 2) {
@@ -499,11 +499,11 @@ public class Event_PyramidSubway {
             }
         }
         if (clear == 1) {
-            c.SendPacket(ResWrapper.showEffect("killing/clear"));
+            player.SendPacket(ResWrapper.showEffect("killing/clear"));
         } else if (clear == 2) {
-            c.SendPacket(ResWrapper.showEffect("killing/fail"));
+            player.SendPacket(ResWrapper.showEffect("killing/fail"));
         }
-        c.changeMap(map, map.getPortal(0));
+        player.changeMap(map, map.getPortal(0));
     }
 
     private static final void clearMap(final MapleMap map, final boolean check) {

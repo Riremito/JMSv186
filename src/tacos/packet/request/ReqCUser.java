@@ -753,8 +753,8 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnFamilyPacket(TacosClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnFamilyPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -766,39 +766,39 @@ public class ReqCUser {
 
         switch (header) {
             case CP_FamilyChartRequest: {
-                FamilyHandler.RequestFamily(cp, c);
+                FamilyHandler.RequestFamily(cp, client);
                 return true;
             }
             case CP_FamilyInfoRequest: {
-                FamilyHandler.OpenFamily(cp, c);
+                FamilyHandler.OpenFamily(cp, client);
                 return true;
             }
             case CP_FamilyRegisterJunior: {
-                FamilyHandler.FamilyOperation(cp, c);
+                FamilyHandler.FamilyOperation(cp, client);
                 return true;
             }
             case CP_FamilyUnregisterJunior: {
-                FamilyHandler.DeleteJunior(cp, c);
+                FamilyHandler.DeleteJunior(cp, client);
                 return true;
             }
             case CP_FamilyUnregisterParent: {
-                FamilyHandler.DeleteSenior(cp, c);
+                FamilyHandler.DeleteSenior(cp, client);
                 return true;
             }
             case CP_FamilyJoinResult: {
-                FamilyHandler.AcceptFamily(cp, c);
+                FamilyHandler.AcceptFamily(cp, client);
                 return true;
             }
             case CP_FamilyUsePrivilege: {
-                FamilyHandler.UseFamily(cp, c);
+                FamilyHandler.UseFamily(cp, client);
                 return true;
             }
             case CP_FamilySetPrecept: {
-                FamilyHandler.FamilyPrecept(cp, c);
+                FamilyHandler.FamilyPrecept(cp, client);
                 return true;
             }
             case CP_FamilySummonResult: {
-                FamilyHandler.FamilySummon(cp, c);
+                FamilyHandler.FamilySummon(cp, client);
                 return true;
             }
             default: {

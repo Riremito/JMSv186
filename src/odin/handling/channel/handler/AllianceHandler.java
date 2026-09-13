@@ -150,16 +150,16 @@ public class AllianceHandler {
         }
     }
 
-    public static final void DenyInvite(TacosClient c, final MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
-        final int inviteid = OdinWorld.Guild.getInvitedId(c.getPlayer().getGuildId());
+    public static final void DenyInvite(TacosClient client, final MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
+        final int inviteid = OdinWorld.Guild.getInvitedId(client.getPlayer().getGuildId());
         if (inviteid > 0) {
             final int newAlliance = OdinWorld.Alliance.getAllianceLeader(inviteid);
             if (newAlliance > 0) {
-                final MapleCharacter chr = c.getChannelServer().getOnlinePlayers().findById(newAlliance);
+                final MapleCharacter chr = client.getChannelServer().getOnlinePlayers().findById(newAlliance);
                 if (chr != null) {
                     chr.dropMessage(5, gs.getName() + " Guild has rejected the Guild Union invitation.");
                 }
-                OdinWorld.Guild.setInvitedId(c.getPlayer().getGuildId(), 0);
+                OdinWorld.Guild.setInvitedId(client.getPlayer().getGuildId(), 0);
             }
         }
     }

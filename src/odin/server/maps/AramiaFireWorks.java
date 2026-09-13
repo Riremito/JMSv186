@@ -58,16 +58,16 @@ public class AramiaFireWorks {
         return instance;
     }
 
-    public final void giveKegs(final MapleCharacter c, final int kegs) {
+    public final void giveKegs(final MapleCharacter player, final int kegs) {
         this.kegs += kegs;
         if (this.kegs >= MAX_KEGS) {
             this.kegs = 0;
-            broadcastEvent(c);
+            broadcastEvent(player);
         }
     }
 
-    private void broadcastServer(MapleCharacter c, int itemid) {
-        c.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNoticeItem("<Channel " + c.getClient().getChannelId() + "> " + "MAP_NAME" + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!", itemid));
+    private void broadcastServer(MapleCharacter player, int itemid) {
+        player.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNoticeItem("<Channel " + player.getClient().getChannelId() + "> " + "MAP_NAME" + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!", itemid));
     }
 
     public final short getKegsPercentage() {

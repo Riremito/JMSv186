@@ -1879,16 +1879,16 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket showGuildInfo(MapleCharacter c) {
+    public static ServerPacket showGuildInfo(MapleCharacter player) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(26); //signature for showing guild info
-        if (c == null || c.getMGC() == null) {
+        if (player == null || player.getMGC() == null) {
             //show empty guild (used for leaving, expelled)
             sp.Encode1(0);
             return sp;
         }
-        MapleGuild g = OdinWorld.Guild.getGuild(c.getGuildId());
+        MapleGuild g = OdinWorld.Guild.getGuild(player.getGuildId());
         if (g == null) {
             //failed to read from DB - don't show a guild
             sp.Encode1(0);

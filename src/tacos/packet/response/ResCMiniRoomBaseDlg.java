@@ -218,39 +218,40 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getTradeInvite(MapleCharacter c, boolean isPointTrade) {
+    public static ServerPacket getTradeInvite(MapleCharacter player, boolean isPointTrade) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Invite.get());
         sp.Encode1(isPointTrade ? 6 : 3);
-        sp.EncodeStr(c.getName());
+        sp.EncodeStr(player.getName());
         sp.Encode4(0); // Trade ID
         return sp;
     }
 
-    public static ServerPacket getTradePartnerAdd(MapleCharacter c) {
+    public static ServerPacket getTradePartnerAdd(MapleCharacter player) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
         sp.Encode1(1);
-        sp.EncodeBuffer(RD_AvatarLook.Encode(c));
-        sp.EncodeStr(c.getName());
+        sp.EncodeBuffer(RD_AvatarLook.Encode(player));
+        sp.EncodeStr(player.getName());
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-            sp.Encode2(c.getJob());
+            sp.Encode2(player.getJob());
         }
         return sp;
     }
 
-    public static ServerPacket getPlayerShopNewVisitor(MapleCharacter c, int slot) {
+    public static ServerPacket getPlayerShopNewVisitor(MapleCharacter player, int slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
         sp.Encode1(slot);
-        sp.EncodeBuffer(RD_AvatarLook.Encode(c));
-        sp.EncodeStr(c.getName());
+        sp.EncodeBuffer(RD_AvatarLook.Encode(player));
+        sp.EncodeStr(player.getName());
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-            sp.Encode2(c.getJob());
+            sp.Encode2(player.getJob());
         }
+
         return sp;
     }
 
@@ -729,17 +730,17 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getMiniGameNewVisitor(MapleCharacter c, int slot, MapleMiniGame game) {
+    public static ServerPacket getMiniGameNewVisitor(MapleCharacter player, int slot, MapleMiniGame game) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
         sp.Encode1(slot);
-        sp.EncodeBuffer(RD_AvatarLook.Encode(c));
-        sp.EncodeStr(c.getName());
+        sp.EncodeBuffer(RD_AvatarLook.Encode(player));
+        sp.EncodeStr(player.getName());
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-            sp.Encode2(c.getJob());
+            sp.Encode2(player.getJob());
         }
-        sp.EncodeBuffer(GW_MiniGameRecord_Encode(c, game));
+        sp.EncodeBuffer(GW_MiniGameRecord_Encode(player, game));
         return sp;
     }
 

@@ -123,7 +123,7 @@ public class ItemMakerHandler {
     }
 
     public static boolean OnItemMakeRequest(ClientPacket cp, MapleCharacter chr) {
-        TacosClient c = chr.getClient();
+        TacosClient client = chr.getClient();
         int type = cp.Decode4();
 
         switch (RecipeClass.find(type)) {
@@ -136,7 +136,7 @@ public class ItemMakerHandler {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 1");
                         return false;
                     }
-                    if (!hasSkill(c, gem.getReqSkillLevel())) {
+                    if (!hasSkill(client, gem.getReqSkillLevel())) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 2");
                         return false;
                     }
@@ -146,18 +146,18 @@ public class ItemMakerHandler {
                     }
                     final int randGemGiven = getRandomGem(gem.getRandomReward());
 
-                    if (c.getPlayer().getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
+                    if (client.getPlayer().getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 4");
                         return false;
                     }
-                    final int taken = checkRequiredNRemove(c, gem.getReqRecipes());
+                    final int taken = checkRequiredNRemove(client, gem.getReqRecipes());
                     if (taken == 0) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 5");
                         return false;
                     }
 
                     chr.gainMeso(-gem.getCost(), false);
-                    MapleInventoryManipulator.addById(c, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
+                    MapleInventoryManipulator.addById(client, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
                     PB_UserEffect pb = PB_UserEffect.builder()
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
@@ -171,7 +171,7 @@ public class ItemMakerHandler {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 6");
                         return false;
                     }
-                    if (!hasSkill(c, gem.getReqSkillLevel())) {
+                    if (!hasSkill(client, gem.getReqSkillLevel())) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 7");
                         return false;
                     }
@@ -184,7 +184,7 @@ public class ItemMakerHandler {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 9");
                         return false;
                     }
-                    if (checkRequiredNRemove(c, gem.getReqRecipes()) == 0) {
+                    if (checkRequiredNRemove(client, gem.getReqRecipes()) == 0) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 10");
                         return false;
                     }
@@ -192,9 +192,9 @@ public class ItemMakerHandler {
                     chr.gainMeso(-gem.getCost(), false);
 
                     if (GameConstants.getInventoryType(toCreate) == MapleInventoryType.EQUIP) {
-                        MapleInventoryManipulator.addbyItem(c, MapleItemInformationProvider.getInstance().getEquipById(toCreate));
+                        MapleInventoryManipulator.addbyItem(client, MapleItemInformationProvider.getInstance().getEquipById(toCreate));
                     } else {
-                        MapleInventoryManipulator.addById(c, toCreate, (byte) 1); // Gem is always 1
+                        MapleInventoryManipulator.addById(client, toCreate, (byte) 1); // Gem is always 1
                     }
                     PB_UserEffect pb = PB_UserEffect.builder()
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
@@ -216,7 +216,7 @@ public class ItemMakerHandler {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 12");
                         return false;
                     }
-                    if (!hasSkill(c, create.getReqSkillLevel())) {
+                    if (!hasSkill(client, create.getReqSkillLevel())) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 13");
                         return false;
                     }
@@ -228,7 +228,7 @@ public class ItemMakerHandler {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 15");
                         return false;
                     }
-                    if (checkRequiredNRemove(c, create.getReqItems()) == 0) {
+                    if (checkRequiredNRemove(client, create.getReqItems()) == 0) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 16");
                         return false;
                     }
@@ -239,23 +239,23 @@ public class ItemMakerHandler {
                     final Equip toGive = (Equip) ii.getEquipById(toCreate);
 
                     if (stimulator || numEnchanter > 0) {
-                        if (c.getPlayer().haveItem(create.getStimulator(), 1, false, true)) {
+                        if (client.getPlayer().haveItem(create.getStimulator(), 1, false, true)) {
                             ii.randomizeStats(toGive);
-                            MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
+                            MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
                         }
                         for (int i = 0; i < numEnchanter; i++) {
                             int enchant = cp.Decode4();
-                            if (c.getPlayer().haveItem(enchant, 1, false, true)) {
+                            if (client.getPlayer().haveItem(enchant, 1, false, true)) {
                                 final Map<String, Byte> stats = ii.getItemMakeStats(enchant);
                                 if (stats != null) {
                                     addEnchantStats(stats, toGive);
-                                    MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, enchant, 1, false, false);
+                                    MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, enchant, 1, false, false);
                                 }
                             }
                         }
                     }
 
-                    MapleInventoryManipulator.addbyItem(c, toGive);
+                    MapleInventoryManipulator.addbyItem(client, toGive);
                     PB_UserEffect pb = PB_UserEffect.builder()
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
@@ -271,8 +271,8 @@ public class ItemMakerHandler {
                     DebugLogger.ErrorLog("RECIPE_CLASS_MONSTER_CRYSTAL");
                     return false;
                 }
-                MapleInventoryManipulator.addById(c, getCreateCrystal(etc), (short) 1);
-                MapleInventoryManipulator.removeById(c, MapleInventoryType.ETC, etc, 100, false, false);
+                MapleInventoryManipulator.addById(client, getCreateCrystal(etc), (short) 1);
+                MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, etc, 100, false, false);
                 PB_UserEffect pb = PB_UserEffect.builder()
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                         .build();
@@ -296,8 +296,8 @@ public class ItemMakerHandler {
 
                 if (!ii.isDropRestricted(itemId) && !ii.isAccountShared(itemId)) {
                     final int[] toGive = getCrystal(itemId, ii.getReqLevel(itemId));
-                    MapleInventoryManipulator.addById(c, toGive[0], (byte) toGive[1]);
-                    MapleInventoryManipulator.removeFromSlot(c, MapleInventoryType.EQUIP, (short) slot, (byte) 1, false);
+                    MapleInventoryManipulator.addById(client, toGive[0], (byte) toGive[1]);
+                    MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.EQUIP, (short) slot, (byte) 1, false);
                 }
                 PB_UserEffect pb = PB_UserEffect.builder()
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
@@ -467,31 +467,31 @@ public class ItemMakerHandler {
         return items.get(Randomizer.nextInt(items.size()));
     }
 
-    private static final int checkRequiredNRemove(final TacosClient c, final List<OdinPair<Integer, Integer>> recipe) {
+    private static final int checkRequiredNRemove(final TacosClient client, final List<OdinPair<Integer, Integer>> recipe) {
         int itemid = 0;
         for (final OdinPair<Integer, Integer> p : recipe) {
-            if (!c.getPlayer().haveItem(p.getLeft(), p.getRight(), false, true)) {
+            if (!client.getPlayer().haveItem(p.getLeft(), p.getRight(), false, true)) {
                 return 0;
             }
         }
         for (final OdinPair<Integer, Integer> p : recipe) {
             itemid = p.getLeft();
-            MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemid), itemid, p.getRight(), false, false);
+            MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(itemid), itemid, p.getRight(), false, false);
         }
         return itemid;
     }
 
-    private static final boolean hasSkill(final TacosClient c, final int reqlvl) {
-        if (GameConstants.isKOC(c.getPlayer().getJob())) { // KoC Maker skill.
-            return c.getPlayer().getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
-        } else if (GameConstants.isAran(c.getPlayer().getJob())) { // KoC Maker skill.
-            return c.getPlayer().getSkillLevel(SkillFactory.getSkill(20001007)) >= reqlvl;
-        } else if (GameConstants.isEvan(c.getPlayer().getJob())) { // KoC Maker skill.
-            return c.getPlayer().getSkillLevel(SkillFactory.getSkill(20011007)) >= reqlvl;
-        } else if (GameConstants.isResist(c.getPlayer().getJob())) { // KoC Maker skill.
-            return c.getPlayer().getSkillLevel(SkillFactory.getSkill(30001007)) >= reqlvl;
+    private static final boolean hasSkill(final TacosClient client, final int reqlvl) {
+        if (GameConstants.isKOC(client.getPlayer().getJob())) { // KoC Maker skill.
+            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
+        } else if (GameConstants.isAran(client.getPlayer().getJob())) { // KoC Maker skill.
+            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(20001007)) >= reqlvl;
+        } else if (GameConstants.isEvan(client.getPlayer().getJob())) { // KoC Maker skill.
+            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(20011007)) >= reqlvl;
+        } else if (GameConstants.isResist(client.getPlayer().getJob())) { // KoC Maker skill.
+            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(30001007)) >= reqlvl;
         } else {
-            return c.getPlayer().getSkillLevel(SkillFactory.getSkill(1007)) >= reqlvl;
+            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(1007)) >= reqlvl;
         }
     }
 }
