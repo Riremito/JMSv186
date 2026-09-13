@@ -60,16 +60,8 @@ public class MapleFoothold implements Comparable<MapleFoothold> {
         return id;
     }
 
-    public short getNext() {
-        return next;
-    }
-
     public void setNext(short next) {
         this.next = next;
-    }
-
-    public short getPrev() {
-        return prev;
     }
 
     public void setPrev(short prev) {

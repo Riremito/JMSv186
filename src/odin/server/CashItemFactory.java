@@ -16,7 +16,6 @@ public class CashItemFactory {
     private final static CashItemFactory instance = new CashItemFactory();
     private boolean initialized = false;
     private final Map<Integer, CashItemInfo> itemStats = new HashMap<>();
-    private final Map<Integer, List<CashItemInfo>> itemPackage = new HashMap<>();
     private final Map<Integer, CashModInfo> itemMods = new HashMap<>();
 
     public static final CashItemFactory getInstance() {
@@ -87,22 +86,6 @@ public class CashItemFactory {
         }
 
         return 0;
-    }
-
-    public final List<CashItemInfo> getPackageItems(int itemId) {
-        if (itemPackage.get(itemId) != null) {
-            return itemPackage.get(itemId);
-        }
-        final List<CashItemInfo> packageItems = new ArrayList<>();
-
-        if (WzXML.ETC.getCashPackage() == null || WzXML.ETC.getCashPackage().getChildByPath(itemId + "/SN") == null) {
-            return null;
-        }
-        for (IMapleData d : WzXML.ETC.getCashPackage().getChildByPath(itemId + "/SN").getChildren()) {
-            packageItems.add(itemStats.get(WzDataTool.getInt(d, 0)));
-        }
-        itemPackage.put(itemId, packageItems);
-        return packageItems;
     }
 
     public final CashModInfo getModInfo(int sn) {

@@ -425,16 +425,6 @@ public final class MapleMap extends TacosMap {
         startMapEffect(msg, itemId, true);
     }
 
-    public final void broadcastMessageDelayed(MapleCharacter source, ServerPacket packet) {
-        int delay = 1000;
-        MapTimer.getInstance().schedule(new Runnable() {
-            @Override
-            public void run() {
-                broadcastMessage(source, packet, true);
-            }
-        }, delay);
-    }
-
     public final SpawnPoint addMonsterSpawn(final MapleMonster monster, final int mobTime, final byte carnivalTeam, final String msg) {
         final Point newpos = calcPointBelow(monster.getPosition());
         newpos.y -= 1;

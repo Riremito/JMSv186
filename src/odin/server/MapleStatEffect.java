@@ -947,10 +947,6 @@ public class MapleStatEffect {
         return skill && sourceid == 5101005;
     }
 
-    public final boolean isMonsterRiding_() {
-        return skill && (sourceid == 1004 || sourceid == 10001004 || sourceid == 20001004 || sourceid == 20011004 || sourceid == 30001004);
-    }
-
     public final boolean isMagicDoor() {
         return skill && (sourceid == 2311002 || sourceid == 8001 || sourceid == 10008001 || sourceid == 20008001 || sourceid == 20018001 || sourceid == 30008001);
     }

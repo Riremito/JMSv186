@@ -49,47 +49,6 @@ import tacos.script.TacosScriptNPC;
 
 public class InventoryHandler {
 
-    public static int UseRewardItem(short slot, int itemId, TacosClient client, MapleCharacter chr) {
-        final IItem toUse = client.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
-        chr.updateInv();
-        if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
-            if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() > -1) {
-                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                final OdinPair<Integer, List<StructRewardItem>> rewards = ii.getRewardItem(itemId);
-
-                if (rewards != null && rewards.getLeft() > 0) {
-                    boolean rewarded = false;
-                    while (!rewarded) {
-                        for (StructRewardItem reward : rewards.getRight()) {
-                            if (reward.prob > 0 && Randomizer.nextInt(rewards.getLeft()) < reward.prob) { // Total prob
-                                if (GameConstants.getInventoryType(reward.itemid) == MapleInventoryType.EQUIP) {
-                                    final IItem item = ii.getEquipById(reward.itemid);
-                                    if (reward.period > 0) {
-                                        item.setExpiration(System.currentTimeMillis() + (reward.period * 60 * 60 * 10));
-                                    }
-                                    MapleInventoryManipulator.addbyItem(client, item);
-                                } else {
-                                    MapleInventoryManipulator.addById(client, reward.itemid, reward.quantity);
-                                }
-                                MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(itemId), itemId, 1, false, false);
-
-                                client.SendPacket(ResCUserLocal.showRewardItemAnimation(reward.itemid, reward.effect));
-                                chr.getMap().broadcastMessage(chr, ResCUserRemote.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
-                                rewarded = true;
-                                return reward.itemid;
-                            }
-                        }
-                    }
-                } else {
-                    chr.dropMessage(6, "Unknown error.");
-                }
-            } else {
-                chr.dropMessage(6, "Insufficient inventory slot.");
-            }
-        }
-        return 0;
-    }
-
     public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
         cp.Decode4();
         final byte slot = (byte) cp.Decode2();
@@ -355,51 +314,6 @@ public class InventoryHandler {
         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
 
         return reward;
-    }
-
-    private static boolean getIncubatedItems(TacosClient client) {
-        if (client.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < 2 || client.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 2 || client.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 2) {
-            client.getPlayer().dropMessage(5, "Please make room in your inventory.");
-            return false;
-        }
-        final int[] ids = {2430091, 2430092, 2430093, 2430101, 2430102, //mounts 
-            2340000, //rares
-            1152000, 1152001, 1152004, 1152005, 1152006, 1152007, 1152008, //toenail only comes when db is out.
-            1000040, 1102246, 1082276, 1050169, 1051210, 1072447, 1442106, //blizzard
-            3010019, //chairs
-            1001060, 1002391, 1102004, 1050039, 1102040, 1102041, 1102042, 1102043, //equips
-            1082145, 1082146, 1082147, 1082148, 1082149, 1082150, //wg
-            2043704, 2040904, 2040409, 2040307, 2041030, 2040015, 2040109, 2041035, 2041036, 2040009, 2040511, 2040408, 2043804, 2044105, 2044903, 2044804, 2043009, 2043305, 2040610, 2040716, 2041037, 2043005, 2041032, 2040305, //scrolls
-            2040211, 2040212, 1022097, //dragon glasses
-            2049000, 2049001, 2049002, 2049003, //clean slate
-            1012058, 1012059, 1012060, 1012061, //pinocchio nose msea only.
-            1332100, 1382058, 1402073, 1432066, 1442090, 1452058, 1462076, 1472069, 1482051, 1492024, 1342009,//durability weapons level 105
-            2049400, 2049401, 2049301};
-        //out of 1000
-        final int[] chances = {100, 100, 100, 100, 100,
-            1,
-            10, 10, 10, 10, 10, 10, 10,
-            5, 5, 5, 5, 5, 5, 5,
-            2,
-            10, 10, 10, 10, 10, 10, 10, 10,
-            5, 5, 5, 5, 5, 5,
-            10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
-            5, 5, 10,
-            10, 10, 10, 10,
-            5, 5, 5, 5,
-            2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-            1, 2, 1, 2};
-        int z = Randomizer.nextInt(ids.length);
-        while (chances[z] < Randomizer.nextInt(1000)) {
-            z = Randomizer.nextInt(ids.length);
-        }
-        int z_2 = Randomizer.nextInt(ids.length);
-        while (z_2 == z || chances[z_2] < Randomizer.nextInt(1000)) {
-            z_2 = Randomizer.nextInt(ids.length);
-        }
-        client.SendPacket(ResCWvsContext.IncubatorResult(ids[z], (short) 1, ids[z_2], (short) 1));
-        return MapleInventoryManipulator.addById(client, ids[z], (short) 1) && MapleInventoryManipulator.addById(client, ids[z_2], (short) 1);
-
     }
 
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID

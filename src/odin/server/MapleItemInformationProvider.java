@@ -44,9 +44,7 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Integer> stateChangeCache = new HashMap<>();
     protected final Map<Integer, Integer> mesoCache = new HashMap<>();
     protected final Map<Integer, Boolean> notSaleCache = new HashMap<>();
-    protected final Map<Integer, Integer> karmaEnabledCache = new HashMap<>();
     protected final Map<Integer, Boolean> blockPickupCache = new HashMap<>();
-    protected final Map<Integer, List<Integer>> petsCanConsumeCache = new HashMap<>();
     protected final Map<Integer, List<OdinPair<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<OdinPair<Integer, Integer>>>();
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
@@ -1045,26 +1043,6 @@ public class MapleItemInformationProvider {
         return triggerItem;
     }
 
-    public final boolean isKarmaEnabled(final int itemId) {
-        if (karmaEnabledCache.containsKey(itemId)) {
-            return karmaEnabledCache.get(itemId) == 1;
-        }
-        final int iRestricted = WzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
-
-        karmaEnabledCache.put(itemId, iRestricted);
-        return iRestricted == 1;
-    }
-
-    public final boolean isPKarmaEnabled(final int itemId) {
-        if (karmaEnabledCache.containsKey(itemId)) {
-            return karmaEnabledCache.get(itemId) == 2;
-        }
-        final int iRestricted = WzDataTool.getIntPath("info/tradeAvailable", getItemData(itemId), 0);
-
-        karmaEnabledCache.put(itemId, iRestricted);
-        return iRestricted == 2;
-    }
-
     public final boolean isPickupBlocked(final int itemId) {
         if (blockPickupCache.containsKey(itemId)) {
             return blockPickupCache.get(itemId);
@@ -1150,32 +1128,6 @@ public class MapleItemInformationProvider {
             ret.put("skillid" + i, WzDataTool.getIntPath(Integer.toString(i), skill, 0));
         }
         SkillStatsCache.put(itemId, ret);
-        return ret;
-    }
-
-    public final List<Integer> petsCanConsume(final int itemId) {
-        if (petsCanConsumeCache.get(itemId) != null) {
-            return petsCanConsumeCache.get(itemId);
-        }
-        final List<Integer> ret = new ArrayList<>();
-        final IMapleData data = getItemData(itemId);
-        if (data == null || data.getChildByPath("spec") == null) {
-            return ret;
-        }
-        int curPetId = 0;
-        for (IMapleData c : data.getChildByPath("spec")) {
-            try {
-                Integer.parseInt(c.getName());
-            } catch (NumberFormatException e) {
-                continue;
-            }
-            curPetId = WzDataTool.getInt(c, 0);
-            if (curPetId == 0) {
-                break;
-            }
-            ret.add(Integer.valueOf(curPetId));
-        }
-        petsCanConsumeCache.put(itemId, ret);
         return ret;
     }
 

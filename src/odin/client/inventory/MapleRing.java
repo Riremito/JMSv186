@@ -57,15 +57,6 @@ public class MapleRing {
         }
     }
 
-    public static int makeRing(int itemid, MapleCharacter partner1, String partner2, int id2, String msg, int sn) throws Exception { //return partner1 the id
-        int[] ringID = {MapleInventoryIdentifier.getInstance(), MapleInventoryIdentifier.getInstance()};
-        //[1] = partner1, [0] = partner2
-        addToDB(itemid, partner1, partner2, id2, ringID);
-        MapleInventoryManipulator.addRing(partner1, itemid, ringID[1], sn);
-        partner1.getCashInventory().gift(id2, partner1.getName(), msg, sn, ringID[0]);
-        return 1;
-    }
-
     public int getRingId() {
         return ringId;
     }

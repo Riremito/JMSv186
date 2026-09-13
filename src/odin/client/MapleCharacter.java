@@ -698,12 +698,6 @@ public class MapleCharacter extends TacosCharacter {
         }, time, time);
     }
 
-    public void cancelMapTimeLimitTask() {
-        if (mapTimeLimitTask != null) {
-            mapTimeLimitTask.cancel(false);
-        }
-    }
-
     public void cancelFishingTask() {
         if (fishing != null) {
             fishing.cancel(false);
@@ -1280,13 +1274,6 @@ public class MapleCharacter extends TacosCharacter {
     public void forceReAddItem_NoUpdate(IItem item, MapleInventoryType type) {
         getInventory(type).removeSlot(item.getPosition());
         getInventory(type).addFromDB(item);
-    }
-
-    public void forceReAddItem_Flag(IItem item, MapleInventoryType type) { //used for flags
-        forceReAddItem_NoUpdate(item, type);
-        if (type != MapleInventoryType.UNDEFINED) {
-            SendPacket(ResWrapper.updateSpecialItemUse_(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
-        }
     }
 
     public void silentPartyUpdate() {

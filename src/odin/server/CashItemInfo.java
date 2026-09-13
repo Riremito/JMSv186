@@ -44,10 +44,6 @@ public class CashItemInfo {
         return gender;
     }
 
-    public boolean onSale() {
-        return onSale || (CashItemFactory.getInstance().getModInfo(sn) != null && CashItemFactory.getInstance().getModInfo(sn).showUp);
-    }
-
     public static class CashModInfo {
 
         public int discountPrice;
