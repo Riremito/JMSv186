@@ -429,9 +429,9 @@ public class OdinWorld extends TacosWorld {
             if (targetIds == exception) {
                 return;
             }
-            final MapleCharacter c = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
-            if (c != null && c.getGuildId() == guildid) {
-                c.getClient().getSession().write(packet);
+            final MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+            if (player != null && player.getGuildId() == guildid) {
+                player.SendPacket(packet);
             }
         }
 
@@ -439,9 +439,9 @@ public class OdinWorld extends TacosWorld {
             if (targetIds == exception) {
                 return;
             }
-            final MapleCharacter c = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
-            if (c != null && c.getFamilyId() == guildid) {
-                c.getClient().getSession().write(packet);
+            final MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+            if (player != null && player.getFamilyId() == guildid) {
+                player.SendPacket(packet);
             }
         }
     }

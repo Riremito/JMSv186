@@ -78,12 +78,12 @@ public class MapleShop {
         }
     }
 
-    public void sendShop(TacosClient c) {
-        c.getPlayer().setShop(this);
-        c.SendPacket(ResCShopDlg.OpenShopDlg(c, getNpcId(), items));
+    public void sendShop(TacosClient client) {
+        client.getPlayer().setShop(this);
+        client.SendPacket(ResCShopDlg.OpenShopDlg(client, getNpcId(), items));
     }
 
-    public boolean buy(TacosClient c, MapleCharacter chr, int itemId, short quantity) {
+    public boolean buy(TacosClient client, MapleCharacter chr, int itemId, short quantity) {
         MapleShopItem item = findById(itemId);
 
         if (quantity <= 0 || item == null) {
@@ -93,12 +93,12 @@ public class MapleShop {
 
         final int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
 
-        if (item.getPrice() < 0 || c.getPlayer().getMeso() < price) {
+        if (item.getPrice() < 0 || client.getPlayer().getMeso() < price) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyNoMoney));
             return false;
         }
 
-        if (!MapleInventoryManipulator.checkSpace(c, itemId, quantity, "")) {
+        if (!MapleInventoryManipulator.checkSpace(client, itemId, quantity, "")) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
             return false;
         }
@@ -109,32 +109,32 @@ public class MapleShop {
                 return false;
             }
 
-            MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, false);
+            MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, false);
         }
 
         chr.gainMeso(-price, false);
 
         if (GameConstants.isPet(itemId)) {
-            MapleInventoryManipulator.addById(c, itemId, quantity, "", MaplePet.createPet(itemId, MapleInventoryIdentifier.getInstance()), -1);
+            MapleInventoryManipulator.addById(client, itemId, quantity, "", MaplePet.createPet(itemId, MapleInventoryIdentifier.getInstance()), -1);
         } else {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
             if (GameConstants.isRechargable(itemId)) {
-                quantity = ii.getSlotMax(c, item.getItemId());
+                quantity = ii.getSlotMax(client, item.getItemId());
             }
 
-            MapleInventoryManipulator.addById(c, itemId, quantity);
+            MapleInventoryManipulator.addById(client, itemId, quantity);
         }
 
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         return true;
     }
 
-    public void sell(TacosClient c, MapleInventoryType type, byte slot, short quantity) {
+    public void sell(TacosClient client, MapleInventoryType type, byte slot, short quantity) {
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
-        IItem item = c.getPlayer().getInventory(type).getItem(slot);
+        IItem item = client.getPlayer().getInventory(type).getItem(slot);
         if (item == null) {
             return;
         }
@@ -154,49 +154,49 @@ public class MapleShop {
             return;
         }
         if (quantity <= iQuant && iQuant > 0) {
-            MapleInventoryManipulator.removeFromSlot(c, type, slot, quantity, false);
+            MapleInventoryManipulator.removeFromSlot(client, type, slot, quantity, false);
             double price;
             if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
-                price = ii.getWholePrice(item.getItemId()) / (double) ii.getSlotMax(c, item.getItemId());
+                price = ii.getWholePrice(item.getItemId()) / (double) ii.getSlotMax(client, item.getItemId());
             } else {
                 price = ii.getPrice(item.getItemId());
             }
             final int recvMesos = (int) Math.max(Math.ceil(price * quantity), 0);
             if (price != -1.0 && recvMesos > 0) {
-                c.getPlayer().gainMeso(recvMesos, false);
+                client.getPlayer().gainMeso(recvMesos, false);
             }
-            c.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
+            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
         }
     }
 
-    public boolean recharge(final TacosClient c, final byte slot) {
-        final IItem item = c.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
+    public boolean recharge(final TacosClient client, final byte slot) {
+        final IItem item = client.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
-            c.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
+            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
             return false;
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        short slotMax = ii.getSlotMax(c, item.getItemId());
-        final int skill = GameConstants.getMasterySkill(c.getPlayer().getJob());
+        short slotMax = ii.getSlotMax(client, item.getItemId());
+        final int skill = GameConstants.getMasterySkill(client.getPlayer().getJob());
 
         if (skill != 0) {
-            slotMax += c.getPlayer().getSkillLevel(SkillFactory.getSkill(skill)) * 10;
+            slotMax += client.getPlayer().getSkillLevel(SkillFactory.getSkill(skill)) * 10;
         }
         if (item.getQuantity() < slotMax) {
             final int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
-            if (c.getPlayer().getMeso() >= price) {
+            if (client.getPlayer().getMeso() >= price) {
                 item.setQuantity(slotMax);
-                c.getSession().write(ResWrapper.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
-                c.getPlayer().gainMeso(-price, false, true, false);
-                c.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
+                client.SendPacket(ResWrapper.updateInventorySlot(MapleInventoryType.USE, (Item) item, false));
+                client.getPlayer().gainMeso(-price, false, true, false);
+                client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
                 return true;
             } else {
-                c.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
+                client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
                 return false;
             }
         }
-        c.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_ServerMsg));
+        client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_ServerMsg));
         return false;
     }
 

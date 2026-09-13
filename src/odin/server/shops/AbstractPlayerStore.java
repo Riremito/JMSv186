@@ -96,22 +96,22 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     public void broadcastToVisitors(ServerPacket packet, boolean owner) {
         for (WeakReference<MapleCharacter> chr : chrs) {
             if (chr != null && chr.get() != null) {
-                chr.get().getClient().getSession().write(packet);
+                chr.get().SendPacket(packet);
             }
         }
         if (getShopType() != IMaplePlayerShop.HIRED_MERCHANT && owner && getMCOwner() != null) {
-            getMCOwner().getClient().getSession().write(packet);
+            getMCOwner().SendPacket(packet);
         }
     }
 
     public void broadcastToVisitors(ServerPacket packet, int exception) {
         for (WeakReference<MapleCharacter> chr : chrs) {
             if (chr != null && chr.get() != null && getVisitorSlot(chr.get()) != exception) {
-                chr.get().getClient().getSession().write(packet);
+                chr.get().SendPacket(packet);
             }
         }
         if (getShopType() != IMaplePlayerShop.HIRED_MERCHANT && getMCOwner() != null && exception != ownerId) {
-            getMCOwner().getClient().getSession().write(packet);
+            getMCOwner().SendPacket(packet);
         }
     }
 
@@ -230,7 +230,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             MapleCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
-                    visitor.getClient().getSession().write(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
+                    visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
                 }
                 broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);

@@ -118,7 +118,7 @@ public abstract class OdinAbstractPlayerInteraction {
         if (portal != 0 && map == client.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.getSession().write(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
+                client.SendPacket(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
@@ -140,7 +140,7 @@ public abstract class OdinAbstractPlayerInteraction {
         if (map == client.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.getSession().write(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
+                client.SendPacket(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
             } else {
                 client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
             }
@@ -728,7 +728,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void useItem(final int id) {
         MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(client.getPlayer());
-        client.getSession().write(ResWrapper.getStatusMsg(id));
+        client.SendPacket(ResWrapper.getStatusMsg(id));
     }
 
     public void cancelItem(int id) {
@@ -746,7 +746,7 @@ public abstract class OdinAbstractPlayerInteraction {
         final MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
-            getClient().getSession().write(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+            getClient().SendPacket(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
         }
     }
 
@@ -754,7 +754,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (final MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
-                getClient().getSession().write(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                getClient().SendPacket(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
             }
         }
     }
@@ -855,14 +855,14 @@ public abstract class OdinAbstractPlayerInteraction {
         if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.UserTutorMsg(msg));
+        client.SendPacket(ResCUserLocal.UserTutorMsg(msg));
     }
 
     public final void summonMsg(final int type) {
         if (!client.getPlayer().hasSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.UserTutorMsg(type));
+        client.SendPacket(ResCUserLocal.UserTutorMsg(type));
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
@@ -871,7 +871,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void playerSummonHint(final boolean summon) {
         client.getPlayer().setHasSummon(summon);
-        client.getSession().write(ResCUserLocal.UserHireTutor(summon));
+        client.SendPacket(ResCUserLocal.UserHireTutor(summon));
     }
 
     public final String getInfoQuest(final int id) {
@@ -891,32 +891,32 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        client.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
+        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
     }
 
     public final void evanTutorial(final String data, final int v1) {
-        client.getSession().write(ResCScriptMan.getEvanTutorial(data));
+        client.SendPacket(ResCScriptMan.getEvanTutorial(data));
     }
 
     public final void AranTutInstructionalBubble(final String data) {
-        client.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void ShowWZEffect(final String data) {
-        client.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void showWZEffect(final String data) {
-        client.getSession().write(ResCUserLocal.ShowWZEffect(data));
+        client.SendPacket(ResCUserLocal.ShowWZEffect(data));
     }
 
     public final void EarnTitleMsg(final String data) {
-        client.getSession().write(ResCWvsContext.ScriptProgressMessage(data));
+        client.SendPacket(ResCWvsContext.ScriptProgressMessage(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {
-        client.getSession().write(ResCUserLocal.SetStandAloneMode(enabled));
-        client.getSession().write(ResCUserLocal.SetDirectionMode(enabled));
+        client.SendPacket(ResCUserLocal.SetStandAloneMode(enabled));
+        client.SendPacket(ResCUserLocal.SetDirectionMode(enabled));
     }
 
     public MapleInventoryType getInvType(int i) {
@@ -966,7 +966,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void showMapEffect(String path) {
-        getClient().getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, path)));
+        getClient().SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, path)));
     }
 
     public int itemQuantity(int itemid) {

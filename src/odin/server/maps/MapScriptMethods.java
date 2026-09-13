@@ -335,8 +335,8 @@ public class MapScriptMethods {
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
                 client.getPlayer().getMap().resetFully();
-                client.getSession().write(ResWrapper.showEffect("killing/bonus/bonus"));
-                client.getSession().write(ResWrapper.showEffect("killing/bonus/stage"));
+                client.SendPacket(ResWrapper.showEffect("killing/bonus/bonus"));
+                client.SendPacket(ResWrapper.showEffect("killing/bonus/stage"));
                 Point pos1 = null, pos2 = null, pos3 = null;
                 int spawnPer = 0;
                 int mobId = 0;
@@ -388,7 +388,7 @@ public class MapScriptMethods {
                     final MapleMonster shammos = MapleLifeFactory.getMonster(9300275);
                     client.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(client.getPlayer().getMap().getPortal(0).getPosition()), 12);
                     shammos.switchController(client.getPlayer(), false);
-                    client.getSession().write(ResCMobPool.MobRequestResultEscortInfo(shammos, client.getPlayer().getMap()));
+                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, client.getPlayer().getMap()));
 
                 }
                 break;
@@ -448,7 +448,7 @@ public class MapScriptMethods {
                 break;
             }
             case shammos_Enter: { //nothing to go on inside the map
-                client.getSession().write(ResWrapper.sendPyramidEnergy("shammos_LastStage", String.valueOf((client.getPlayer().getMapId() % 1000) / 100)));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("shammos_LastStage", String.valueOf((client.getPlayer().getMapId() % 1000) / 100)));
                 if (client.getPlayer().getMapId() == 921120500) {
                     TacosScriptNPC.getInstance().dispose(client);
                     TacosScriptQuest.getInstance().dispose(client);
@@ -460,13 +460,13 @@ public class MapScriptMethods {
                 break;
             }
             case PRaid_W_Enter: {
-                client.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_expPenalty", "0"));
-                client.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_ElapssedTimeAtField", "0"));
-                client.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Point", "-1"));
-                client.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Bonus", "-1"));
-                client.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Total", "-1"));
-                client.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_Team", ""));
-                client.getSession().write(ResWrapper.sendPyramidEnergy("PRaid_IsRevive", "0"));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_expPenalty", "0"));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_ElapssedTimeAtField", "0"));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Point", "-1"));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Bonus", "-1"));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Total", "-1"));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Team", ""));
+                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_IsRevive", "0"));
                 client.getPlayer().writePoint("PRaid_Point", "-1");
                 client.getPlayer().writeStatus("Red_Stage", "1");
                 client.getPlayer().writeStatus("Blue_Stage", "1");
@@ -506,8 +506,8 @@ public class MapScriptMethods {
             case mirrorCave:
             case babyPigMap:
             case evanleaveD: {
-                client.getSession().write(ResCUserLocal.SetStandAloneMode(false));
-                client.getSession().write(ResCUserLocal.SetDirectionMode(false));
+                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
@@ -555,8 +555,8 @@ public class MapScriptMethods {
                         data = "Effect/Direction4.img/promotion/Scene3";
                         break;
                     case 900090004:
-                        client.getSession().write(ResCUserLocal.SetStandAloneMode(false));
-                        client.getSession().write(ResCUserLocal.SetDirectionMode(false));
+                        client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                        client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
                         final MapleMap mapto = chr.findMap(900010000);
                         client.getPlayer().changeMap(mapto, mapto.getPortal(0));
@@ -565,10 +565,10 @@ public class MapScriptMethods {
                 showIntro(client, data);
                 break;
             case TD_MC_title: {
-                client.getSession().write(ResCUserLocal.SetStandAloneMode(false));
-                client.getSession().write(ResCUserLocal.SetDirectionMode(false));
+                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
-                client.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
+                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
                 break;
             }
             case explorationPoint: {
@@ -576,8 +576,8 @@ public class MapScriptMethods {
             }
             case go10000:
             case go1020000:
-                client.getSession().write(ResCUserLocal.SetStandAloneMode(false));
-                client.getSession().write(ResCUserLocal.SetDirectionMode(false));
+                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
             case go20000:
             case go30000:
@@ -590,7 +590,7 @@ public class MapScriptMethods {
             case go1010200:
             case go1010300:
             case go1010400: {
-                client.getSession().write(ResWrapper.MapNameDisplay(client.getPlayer().getMapId()));
+                client.SendPacket(ResWrapper.MapNameDisplay(client.getPlayer().getMapId()));
                 break;
             }
             case goArcher: {
@@ -655,16 +655,16 @@ public class MapScriptMethods {
                 client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
                 client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
                 client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
-                client.getSession().write(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
-                client.getSession().write(ResCUserLocal.SetStandAloneMode(false));
-                client.getSession().write(ResCUserLocal.SetDirectionMode(false));
+                client.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
+                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
             case rienArrow: {
                 if (client.getPlayer().getInfoQuest(21019).equals("miss=o;helper=clear")) {
                     client.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
-                    client.getSession().write(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
+                    client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
                 }
                 break;
             }
@@ -672,8 +672,8 @@ public class MapScriptMethods {
                 if (client.getPlayer().getQuestStatus(21101) == 2 && client.getPlayer().getInfoQuest(21019).equals("miss=o;arr=o;helper=clear")) {
                     client.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;ck=1;helper=clear");
                 }
-                client.getSession().write(ResCUserLocal.SetStandAloneMode(false));
-                client.getSession().write(ResCUserLocal.SetDirectionMode(false));
+                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 break;
             }
             case check_count: {
@@ -690,12 +690,7 @@ public class MapScriptMethods {
                 break;
             }
             case Massacre_result: { //clear, give exp, etc.
-                //if (c.getPlayer().getPyramidSubway() == null) {
-                client.getSession().write(ResWrapper.showEffect("killing/fail"));
-                //} else {
-                //	c.getSession().write(MaplePacketCreator.showEffect("killing/clear"));
-                //}
-                //left blank because pyramidsubway handles this.
+                client.SendPacket(ResWrapper.showEffect("killing/fail"));
                 break;
             }
             default: {
@@ -743,25 +738,25 @@ public class MapScriptMethods {
         return 0;
     }
 
-    private static void showIntro(final TacosClient c, final String data) {
-        c.getSession().write(ResCUserLocal.SetStandAloneMode(true));
-        c.getSession().write(ResCUserLocal.SetDirectionMode(true));
-        c.getSession().write(ResCUserLocal.ShowWZEffect(data));
+    private static void showIntro(final TacosClient client, final String data) {
+        client.SendPacket(ResCUserLocal.SetStandAloneMode(true));
+        client.SendPacket(ResCUserLocal.SetDirectionMode(true));
+        client.SendPacket(ResCUserLocal.ShowWZEffect(data));
     }
 
-    private static void sendDojoClock(TacosClient c, int time) {
-        c.getSession().write(ResCField.Clock(time));
+    private static void sendDojoClock(TacosClient client, int time) {
+        client.SendPacket(ResCField.Clock(time));
     }
 
-    private static void sendDojoStart(TacosClient c, int stage) {
-        c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Dojang/start")));
-        c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/stage")));
-        c.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/number/" + stage)));
-        c.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Tremble, 0, 1)));
+    private static void sendDojoStart(TacosClient client, int stage) {
+        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Dojang/start")));
+        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/stage")));
+        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/number/" + stage)));
+        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Tremble, 0, 1)));
     }
 
-    private static void handlePinkBeanStart(TacosClient c) {
-        final MapleMap map = c.getPlayer().getMap();
+    private static void handlePinkBeanStart(TacosClient client) {
+        final MapleMap map = client.getPlayer().getMap();
         map.resetFully();
 
         if (!map.containsNPC(2141000)) {
@@ -769,11 +764,11 @@ public class MapScriptMethods {
         }
     }
 
-    private static void reloadWitchTower(TacosClient c) {
-        final MapleMap map = c.getPlayer().getMap();
+    private static void reloadWitchTower(TacosClient client) {
+        final MapleMap map = client.getPlayer().getMap();
         map.killAllMonsters(false);
 
-        final int level = c.getPlayer().getLevel();
+        final int level = client.getPlayer().getLevel();
         int mob;
         if (level <= 10) {
             mob = 9300367;

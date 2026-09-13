@@ -148,7 +148,7 @@ public class MapleMiniGame extends AbstractPlayerStore {
             closeShop(false, false, 0);
             return;
         }
-        client.getSession().write(ResCMiniRoomBaseDlg.getMiniGame(client, this));
+        client.SendPacket(ResCMiniRoomBaseDlg.getMiniGame(client, this));
     }
 
     public void setReady(int slot) {

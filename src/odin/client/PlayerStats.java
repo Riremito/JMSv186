@@ -655,7 +655,7 @@ public class PlayerStats {
             if (eqq.getDurability() == 0) { //> 0 went to negative
                 if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                     chr.updateInv();
-                    chr.getClient().getSession().write(ResWrapper.getShowInventoryFull());
+                    chr.SendPacket(ResWrapper.getShowInventoryFull());
                     return false;
                 }
                 durabilityHandling.remove(eqq);

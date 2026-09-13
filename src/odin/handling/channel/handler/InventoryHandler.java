@@ -49,8 +49,8 @@ import tacos.script.TacosScriptNPC;
 
 public class InventoryHandler {
 
-    public static int UseRewardItem(short slot, int itemId, TacosClient c, MapleCharacter chr) {
-        final IItem toUse = c.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
+    public static int UseRewardItem(short slot, int itemId, TacosClient client, MapleCharacter chr) {
+        final IItem toUse = client.getPlayer().getInventory(GameConstants.getInventoryType(itemId)).getItem(slot);
         chr.updateInv();
         if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
             if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() > -1 && chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() > -1) {
@@ -67,13 +67,13 @@ public class InventoryHandler {
                                     if (reward.period > 0) {
                                         item.setExpiration(System.currentTimeMillis() + (reward.period * 60 * 60 * 10));
                                     }
-                                    MapleInventoryManipulator.addbyItem(c, item);
+                                    MapleInventoryManipulator.addbyItem(client, item);
                                 } else {
-                                    MapleInventoryManipulator.addById(c, reward.itemid, reward.quantity);
+                                    MapleInventoryManipulator.addById(client, reward.itemid, reward.quantity);
                                 }
-                                MapleInventoryManipulator.removeById(c, GameConstants.getInventoryType(itemId), itemId, 1, false, false);
+                                MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(itemId), itemId, 1, false, false);
 
-                                c.getSession().write(ResCUserLocal.showRewardItemAnimation(reward.itemid, reward.effect));
+                                client.SendPacket(ResCUserLocal.showRewardItemAnimation(reward.itemid, reward.effect));
                                 chr.getMap().broadcastMessage(chr, ResCUserRemote.showRewardItemAnimation(reward.itemid, reward.effect, chr.getId()), false);
                                 rewarded = true;
                                 return reward.itemid;
@@ -357,9 +357,9 @@ public class InventoryHandler {
         return reward;
     }
 
-    private static boolean getIncubatedItems(TacosClient c) {
-        if (c.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 2 || c.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 2) {
-            c.getPlayer().dropMessage(5, "Please make room in your inventory.");
+    private static boolean getIncubatedItems(TacosClient client) {
+        if (client.getPlayer().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < 2 || client.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() < 2 || client.getPlayer().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < 2) {
+            client.getPlayer().dropMessage(5, "Please make room in your inventory.");
             return false;
         }
         final int[] ids = {2430091, 2430092, 2430093, 2430101, 2430102, //mounts 
@@ -397,20 +397,20 @@ public class InventoryHandler {
         while (z_2 == z || chances[z_2] < Randomizer.nextInt(1000)) {
             z_2 = Randomizer.nextInt(ids.length);
         }
-        c.getSession().write(ResCWvsContext.IncubatorResult(ids[z], (short) 1, ids[z_2], (short) 1));
-        return MapleInventoryManipulator.addById(c, ids[z], (short) 1) && MapleInventoryManipulator.addById(c, ids[z_2], (short) 1);
+        client.SendPacket(ResCWvsContext.IncubatorResult(ids[z], (short) 1, ids[z_2], (short) 1));
+        return MapleInventoryManipulator.addById(client, ids[z], (short) 1) && MapleInventoryManipulator.addById(client, ids[z_2], (short) 1);
 
     }
 
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
-    public static void OwlWarp(TacosClient c, int id, int map) {
-        MapleCharacter chr = c.getPlayer();
+    public static void OwlWarp(TacosClient client, int id, int map) {
+        MapleCharacter chr = client.getPlayer();
         chr.updateInv();
-        if (c.getPlayer().getMapId() >= 910000000 && c.getPlayer().getMapId() <= 910000022 && c.getPlayer().getPlayerShop() == null) {
+        if (client.getPlayer().getMapId() >= 910000000 && client.getPlayer().getMapId() <= 910000022 && client.getPlayer().getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
                 final MapleMap mapp = chr.findMap(map);
-                c.getPlayer().changeMap(mapp, mapp.getPortal(0));
+                client.getPlayer().changeMap(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
                 List<MapleMapObject> objects;
                 switch (OWL_ID) {
@@ -455,28 +455,28 @@ public class InventoryHandler {
                         break;
                 }
                 if (merchant != null) {
-                    if (merchant.isOwner(c.getPlayer())) {
+                    if (merchant.isOwner(client.getPlayer())) {
                         merchant.setOpen(false);
                         merchant.removeAllVisitors((byte) 16, (byte) 0);
-                        c.getPlayer().setPlayerShop(merchant);
-                        c.getSession().write(ResCMiniRoomBaseDlg.getHiredMerch(c.getPlayer(), merchant, false));
+                        client.getPlayer().setPlayerShop(merchant);
+                        client.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(client.getPlayer(), merchant, false));
                     } else {
                         if (!merchant.isOpen() || !merchant.isAvailable()) {
-                            c.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
+                            client.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
                         } else {
                             if (merchant.getFreeSlot() == -1) {
-                                c.getPlayer().dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
-                            } else if (merchant.isInBlackList(c.getPlayer().getName())) {
-                                c.getPlayer().dropMessage(1, "You have been banned from this store.");
+                                client.getPlayer().dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
+                            } else if (merchant.isInBlackList(client.getPlayer().getName())) {
+                                client.getPlayer().dropMessage(1, "You have been banned from this store.");
                             } else {
-                                c.getPlayer().setPlayerShop(merchant);
-                                merchant.addVisitor(c.getPlayer());
-                                c.getSession().write(ResCMiniRoomBaseDlg.getHiredMerch(c.getPlayer(), merchant, false));
+                                client.getPlayer().setPlayerShop(merchant);
+                                merchant.addVisitor(client.getPlayer());
+                                client.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(client.getPlayer(), merchant, false));
                             }
                         }
                     }
                 } else {
-                    c.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
+                    client.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
                 }
             }
         }

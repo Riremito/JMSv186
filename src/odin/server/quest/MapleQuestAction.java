@@ -180,7 +180,7 @@ public class MapleQuestAction {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                chr.getClient().getSession().write(ResCUserLocal.UserQuestResult(quest.getId(), status.getNpc(), WzDataTool.getInt(data)));
+                chr.SendPacket(ResCUserLocal.UserQuestResult(quest.getId(), status.getNpc(), WzDataTool.getInt(data)));
                 break;
             case money:
                 status = chr.getQuest(quest);
@@ -434,7 +434,7 @@ public class MapleQuestAction {
                 break;
             }
             case nextQuest: {
-                chr.getClient().getSession().write(ResCUserLocal.UserQuestResult(quest.getId(), chr.getQuest(quest).getNpc(), WzDataTool.getInt(data)));
+                chr.SendPacket(ResCUserLocal.UserQuestResult(quest.getId(), chr.getQuest(quest).getNpc(), WzDataTool.getInt(data)));
                 break;
             }
             case money: {

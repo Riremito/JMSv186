@@ -154,7 +154,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        client.getSession().write(ResWrapper.getMapSelection(npc, sel));
+        client.SendPacket(ResWrapper.getMapSelection(npc, sel));
         lastMsg = OpsScriptMan.SM_ASKSLIDEMENU.get();
     }
 
@@ -324,7 +324,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        client.getSession().write(ResWrapper.getNPCTalkStyle(npc, text, args));
+        client.SendPacket(ResWrapper.getNPCTalkStyle(npc, text, args));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -358,7 +358,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        client.getSession().write(ResWrapper.getNPCTalkStyle(npc, text, styles));
+        client.SendPacket(ResWrapper.getNPCTalkStyle(npc, text, styles));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -370,7 +370,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.getSession().write(ResWrapper.getNPCTalkNum(npc, text, def, min, max));
+        client.SendPacket(ResWrapper.getNPCTalkNum(npc, text, def, min, max));
         lastMsg = OpsScriptMan.SM_ASKNUMBER.get();
     }
 
@@ -586,7 +586,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (broadcast) {
             client.getPlayer().getMap().broadcastMessage(ResWrapper.showEffect(effect));
         } else {
-            client.getSession().write(ResWrapper.showEffect(effect));
+            client.SendPacket(ResWrapper.showEffect(effect));
         }
     }
 
@@ -594,7 +594,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (broadcast) {
             client.getPlayer().getMap().broadcastMessage(ResWrapper.playSound(sound));
         } else {
-            client.getSession().write(ResWrapper.playSound(sound));
+            client.SendPacket(ResWrapper.playSound(sound));
         }
     }
 
@@ -602,7 +602,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (broadcast) {
             client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Object, env)));
         } else {
-            client.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Object, env)));
+            client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Object, env)));
         }
     }
 
@@ -761,7 +761,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void genericGuildMessage(int code) {
-        client.getSession().write(ResCWvsContext.genericGuildMessage((byte) code));
+        client.SendPacket(ResCWvsContext.genericGuildMessage((byte) code));
     }
 
     public void disbandGuild() {
@@ -774,7 +774,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void increaseGuildCapacity() {
         if (client.getPlayer().getMeso() < 5000000) {
-            client.getSession().write(ResWrapper.BroadCastMsgAlert("You do not have enough mesos."));
+            client.SendPacket(ResWrapper.BroadCastMsgAlert("You do not have enough mesos."));
             return;
         }
         final int gid = client.getPlayer().getGuildId();
@@ -786,7 +786,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void displayGuildRanks() {
-        client.getSession().write(ResCWvsContext.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
+        client.SendPacket(ResCWvsContext.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
     }
 
     public boolean removePlayerFromInstance() {
@@ -887,12 +887,12 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void openDuey() {
         client.getPlayer().setConversation(1);
-        client.getSession().write(ResCParcelDlg.Open(false, true));
+        client.SendPacket(ResCParcelDlg.Open(false, true));
     }
 
     public void openMerchantItemStore() {
         client.getPlayer().setConversation(3);
-        client.getSession().write(ResCStoreBankDlg.merchItemStore((byte) 0x22));
+        client.SendPacket(ResCStoreBankDlg.merchItemStore((byte) 0x22));
         client.getPlayer().dropMessage(5, "Please enter ANY 13 characters.");
     }
 

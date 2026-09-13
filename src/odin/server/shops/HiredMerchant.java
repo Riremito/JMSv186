@@ -156,14 +156,14 @@ public class HiredMerchant extends AbstractPlayerStore {
     @Override
     public void sendDestroyData(TacosClient client) {
         if (isAvailable()) {
-            client.getSession().write(ResCEmployeePool.EmployeeLeaveField(this));
+            client.SendPacket(ResCEmployeePool.EmployeeLeaveField(this));
         }
     }
 
     @Override
     public void sendSpawnData(TacosClient client) {
         if (isAvailable()) {
-            client.getSession().write(ResCEmployeePool.EmployeeEnterField(this));
+            client.SendPacket(ResCEmployeePool.EmployeeEnterField(this));
         }
     }
 

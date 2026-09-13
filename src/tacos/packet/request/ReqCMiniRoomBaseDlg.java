@@ -208,7 +208,7 @@ public class ReqCMiniRoomBaseDlg {
                                 //merchant.removeAllVisitors((byte) 17, (byte) 0);
                                 List<OdinPair<Byte, MapleCharacter>> visitors = ips.getVisitors();
                                 for (int i = 0; i < visitors.size(); i++) {
-                                    visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
+                                    visitors.get(i).getRight().SendPacket(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
                                     System.out.println("slot = " + i + "char = " + visitors.get(i).getRight().getName());
                                     visitors.get(i).getRight().setPlayerShop(null);
                                     ips.removeVisitor(visitors.get(i).getRight());
@@ -220,7 +220,6 @@ public class ReqCMiniRoomBaseDlg {
                                 if (!merchant.isOpen() || !merchant.isAvailable()) {
                                     // パケットでこのメッセージが出せそう
                                     chr.dropMessage(1, "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。test");
-                                    //c.getSession().write(PlayerShopPacket.MaintenanceHiredMerchant(1));
                                 } else {
                                     if (ips.getFreeSlot() == -1) {
                                         chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
@@ -493,7 +492,7 @@ public class ReqCMiniRoomBaseDlg {
                 if (ips != null) {
                     for (OdinPair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
                         if (visitors.getRight().getName().equals(visitor_name)) {
-                            visitors.getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
+                            visitors.getRight().SendPacket(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
                             visitors.getRight().setPlayerShop(null);
                             ips.removeVisitor(visitors.getRight());
                             return true;
@@ -609,7 +608,7 @@ public class ReqCMiniRoomBaseDlg {
                     if (game.isOwner(chr)) {
                         game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameRequestTie(), false);
                     } else {
-                        game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMiniGameRequestTie());
+                        game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.getMiniGameRequestTie());
                     }
                     game.setRequestedTie(game.getVisitorSlot(chr));
                 }
@@ -768,7 +767,7 @@ public class ReqCMiniRoomBaseDlg {
                         if (game.isOwner(chr)) {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn), false);
                         } else {
-                            game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn));
+                            game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn));
                         }
                         game.setTurn(0); //2nd turn nao
                         return true;
@@ -822,7 +821,7 @@ public class ReqCMiniRoomBaseDlg {
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
         List<OdinPair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
         for (int i = 0; i < visitors.size(); i++) {
-            visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
+            visitors.get(i).getRight().SendPacket(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
             visitors.get(i).getRight().setPlayerShop(null);
             merchant.removeVisitor(visitors.get(i).getRight());
         }

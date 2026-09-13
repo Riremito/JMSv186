@@ -72,7 +72,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
                 client.getPlayer().dropMessage(1, "You do not have enough mesos.");
                 //}
             }
-            getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.shopItemUpdate(this));
+            getMCOwner().SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(this));
         }
     }
 
@@ -100,7 +100,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
             }
         }
 
-        owner.getClient().getSession().write(ResCMiniRoomBaseDlg.shopErrorMessage(reason, 0));
+        owner.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(reason, 0));
         owner.setPlayerShop(null);
         update();
     }

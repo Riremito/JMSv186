@@ -31,20 +31,20 @@ import tacos.packet.ServerPacket;
 
 public class AllianceHandler {
 
-    public static final void HandleAlliance(ClientPacket cp, final TacosClient c, boolean denied) {
-        MapleCharacter chr = c.getPlayer();
-        if (c.getPlayer().getGuildId() <= 0) {
+    public static final void HandleAlliance(ClientPacket cp, final TacosClient client, boolean denied) {
+        MapleCharacter chr = client.getPlayer();
+        if (client.getPlayer().getGuildId() <= 0) {
             chr.updateStat();
             return;
         }
-        final MapleGuild gs = OdinWorld.Guild.getGuild(c.getPlayer().getGuildId());
+        final MapleGuild gs = OdinWorld.Guild.getGuild(client.getPlayer().getGuildId());
         if (gs == null) {
             chr.updateStat();
             return;
         }
         //System.out.println("Unhandled GuildAlliance \n" + slea.toString());
         byte op = cp.Decode1();
-        if (c.getPlayer().getGuildRank() != 1 && op != 1) { //only updating doesn't need guild leader
+        if (client.getPlayer().getGuildRank() != 1 && op != 1) { //only updating doesn't need guild leader
             return;
         }
         if (op == 22) {
@@ -63,7 +63,7 @@ public class AllianceHandler {
             return;
         }
         if (denied) {
-            DenyInvite(c, gs);
+            DenyInvite(client, gs);
             return;
         }
         int inviteid;
@@ -72,27 +72,27 @@ public class AllianceHandler {
 
                 for (ServerPacket pack : OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), false)) {
                     if (pack != null) {
-                        c.getSession().write(pack);
+                        chr.SendPacket(pack);
                     }
                 }
                 break;
             case 3: //invite
                 final int newGuild = OdinWorld.Guild.getGuildLeader(cp.DecodeStr());
-                if (newGuild > 0 && c.getPlayer().getAllianceRank() == 1 && leaderid == c.getPlayer().getId()) {
-                    chr = c.getChannelServer().getOnlinePlayers().findById(newGuild);
+                if (newGuild > 0 && client.getPlayer().getAllianceRank() == 1 && leaderid == client.getPlayer().getId()) {
+                    chr = client.getChannelServer().getOnlinePlayers().findById(newGuild);
                     if (chr != null && chr.getGuildId() > 0 && OdinWorld.Alliance.canInvite(gs.getAllianceId())) {
-                        chr.getClient().getSession().write(ResCWvsContext.sendAllianceInvite(OdinWorld.Alliance.getAlliance(gs.getAllianceId()).getName(), c.getPlayer()));
+                        chr.SendPacket(ResCWvsContext.sendAllianceInvite(OdinWorld.Alliance.getAlliance(gs.getAllianceId()).getName(), client.getPlayer()));
                         OdinWorld.Guild.setInvitedId(chr.getGuildId(), gs.getAllianceId());
                     }
                 }
                 break;
             case 4: //accept invite... guildid that invited(int, a/b check) -> guildname that was invited? but we dont care about that
-                inviteid = OdinWorld.Guild.getInvitedId(c.getPlayer().getGuildId());
+                inviteid = OdinWorld.Guild.getInvitedId(client.getPlayer().getGuildId());
                 if (inviteid > 0) {
-                    if (!OdinWorld.Alliance.addGuildToAlliance(inviteid, c.getPlayer().getGuildId())) {
-                        c.getPlayer().dropMessage(5, "An error occured when adding guild.");
+                    if (!OdinWorld.Alliance.addGuildToAlliance(inviteid, client.getPlayer().getGuildId())) {
+                        client.getPlayer().dropMessage(5, "An error occured when adding guild.");
                     }
-                    OdinWorld.Guild.setInvitedId(c.getPlayer().getGuildId(), 0);
+                    OdinWorld.Guild.setInvitedId(client.getPlayer().getGuildId(), 0);
                 }
                 break;
             case 2: //leave; nothing
@@ -104,23 +104,23 @@ public class AllianceHandler {
                         break;
                     }
                 } else {
-                    gid = c.getPlayer().getGuildId();
+                    gid = client.getPlayer().getGuildId();
                 }
-                if (c.getPlayer().getAllianceRank() <= 2 && (c.getPlayer().getAllianceRank() == 1 || c.getPlayer().getGuildId() == gid)) {
-                    if (!OdinWorld.Alliance.removeGuildFromAlliance(gs.getAllianceId(), gid, c.getPlayer().getGuildId() != gid)) {
-                        c.getPlayer().dropMessage(5, "An error occured when removing guild.");
+                if (client.getPlayer().getAllianceRank() <= 2 && (client.getPlayer().getAllianceRank() == 1 || client.getPlayer().getGuildId() == gid)) {
+                    if (!OdinWorld.Alliance.removeGuildFromAlliance(gs.getAllianceId(), gid, client.getPlayer().getGuildId() != gid)) {
+                        client.getPlayer().dropMessage(5, "An error occured when removing guild.");
                     }
                 }
                 break;
             case 7: //change leader
-                if (c.getPlayer().getAllianceRank() == 1 && leaderid == c.getPlayer().getId()) {
+                if (client.getPlayer().getAllianceRank() == 1 && leaderid == client.getPlayer().getId()) {
                     if (!OdinWorld.Alliance.changeAllianceLeader(gs.getAllianceId(), cp.Decode4())) {
-                        c.getPlayer().dropMessage(5, "An error occured when changing leader.");
+                        client.getPlayer().dropMessage(5, "An error occured when changing leader.");
                     }
                 }
                 break;
             case 8: //title update
-                if (c.getPlayer().getAllianceRank() == 1 && leaderid == c.getPlayer().getId()) {
+                if (client.getPlayer().getAllianceRank() == 1 && leaderid == client.getPlayer().getId()) {
                     String[] ranks = new String[5];
                     for (int i = 0; i < 5; i++) {
                         ranks[i] = cp.DecodeStr();
@@ -129,14 +129,14 @@ public class AllianceHandler {
                 }
                 break;
             case 9:
-                if (c.getPlayer().getAllianceRank() <= 2) {
+                if (client.getPlayer().getAllianceRank() <= 2) {
                     if (!OdinWorld.Alliance.changeAllianceRank(gs.getAllianceId(), cp.Decode4(), cp.Decode1())) {
-                        c.getPlayer().dropMessage(5, "An error occured when changing rank.");
+                        client.getPlayer().dropMessage(5, "An error occured when changing rank.");
                     }
                 }
                 break;
             case 10: //notice update
-                if (c.getPlayer().getAllianceRank() <= 2) {
+                if (client.getPlayer().getAllianceRank() <= 2) {
                     final String notice = cp.DecodeStr();
                     if (notice.length() > 100) {
                         break;
@@ -148,7 +148,6 @@ public class AllianceHandler {
                 System.out.println("Unhandled GuildAlliance op: " + op + ", \n"/* + slea.toString()*/);
                 break;
         }
-        //c.getSession().write(MaplePacketCreator.enableActions());
     }
 
     public static final void DenyInvite(TacosClient c, final MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
@@ -163,6 +162,5 @@ public class AllianceHandler {
                 OdinWorld.Guild.setInvitedId(c.getPlayer().getGuildId(), 0);
             }
         }
-        //c.getSession().write(MaplePacketCreator.enableActions());
     }
 }

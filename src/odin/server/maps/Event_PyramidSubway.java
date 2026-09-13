@@ -48,44 +48,44 @@ public class Event_PyramidSubway {
     private ScheduledFuture<?> yetiSchedule;
     //type: -1 = subway, 0-3 = difficulty of nett's pyramid.
 
-    public Event_PyramidSubway(final MapleCharacter c) {
-        final int mapid = c.getMapId();
+    public Event_PyramidSubway(final MapleCharacter chr) {
+        final int mapid = chr.getMapId();
         if (mapid / 10000 == 91032) {
             type = -1;
         } else {
             type = mapid % 10000 / 1000;
         }
-        if (c.getParty() == null || c.getParty().getLeader().equals(new MaplePartyCharacter(c))) {
-            commenceTimerNextMap(c, 1);
+        if (chr.getParty() == null || chr.getParty().getLeader().equals(new MaplePartyCharacter(chr))) {
+            commenceTimerNextMap(chr, 1);
             energyBarDecrease = MapTimer.getInstance().register(new Runnable() {
 
                 public void run() {
-                    energybar -= (c.getParty() != null && c.getParty().getMembers().size() > 1 ? 10 : 5);
+                    energybar -= (chr.getParty() != null && chr.getParty().getMembers().size() > 1 ? 10 : 5);
                     if (broaded) {
                         //broadcastUpdate(c);
-                        c.getMap().respawn(true);
+                        chr.getMap().respawn(true);
                     } else {
                         broaded = true;
                     }
                     if (energybar <= 0) { //why
-                        fail(c);
+                        fail(chr);
                     }
                 }
             }, 1000);
         }
     }
 
-    public final void fullUpdate(final MapleCharacter c, final int stage) {
-        broadcastEnergy(c, "massacre_party", c.getParty() == null ? 0 : c.getParty().getMembers().size()); //huh
-        broadcastEnergy(c, "massacre_miss", miss);
-        broadcastEnergy(c, "massacre_cool", cool);
-        broadcastEnergy(c, "massacre_skill", skill);
-        broadcastEnergy(c, "massacre_laststage", stage - 1);
-        broadcastEnergy(c, "massacre_hit", kill);
-        broadcastUpdate(c);
+    public final void fullUpdate(final MapleCharacter chr, final int stage) {
+        broadcastEnergy(chr, "massacre_party", chr.getParty() == null ? 0 : chr.getParty().getMembers().size()); //huh
+        broadcastEnergy(chr, "massacre_miss", miss);
+        broadcastEnergy(chr, "massacre_cool", cool);
+        broadcastEnergy(chr, "massacre_skill", skill);
+        broadcastEnergy(chr, "massacre_laststage", stage - 1);
+        broadcastEnergy(chr, "massacre_hit", kill);
+        broadcastUpdate(chr);
     }
 
-    public final void commenceTimerNextMap(final MapleCharacter c, final int stage) {
+    public final void commenceTimerNextMap(final MapleCharacter chr, final int stage) {
         if (timerSchedule != null) {
             timerSchedule.cancel(false);
             timerSchedule = null;
@@ -94,29 +94,29 @@ public class Event_PyramidSubway {
             yetiSchedule.cancel(false);
             yetiSchedule = null;
         }
-        final MapleMap ourMap = c.getMap();
+        final MapleMap ourMap = chr.getMap();
         final int time = (type == -1 ? 180 : (stage == 1 ? 240 : 300)) - 1;
-        if (c.getParty() != null && c.getParty().getMembers().size() > 1) {
-            for (MaplePartyCharacter mpc : c.getParty().getMembers()) {
-                final MapleCharacter chr = ourMap.getCharacterById(mpc.getId());
-                if (chr != null) {
-                    chr.getClient().getSession().write(ResCField.Clock(time));
-                    chr.getClient().getSession().write(ResWrapper.showEffect("killing/first/number/" + stage));
-                    chr.getClient().getSession().write(ResWrapper.showEffect("killing/first/stage"));
-                    chr.getClient().getSession().write(ResWrapper.showEffect("killing/first/start"));
-                    fullUpdate(chr, stage);
+        if (chr.getParty() != null && chr.getParty().getMembers().size() > 1) {
+            for (MaplePartyCharacter mpc : chr.getParty().getMembers()) {
+                final MapleCharacter target = ourMap.getCharacterById(mpc.getId());
+                if (target != null) {
+                    target.SendPacket(ResCField.Clock(time));
+                    target.SendPacket(ResWrapper.showEffect("killing/first/number/" + stage));
+                    target.SendPacket(ResWrapper.showEffect("killing/first/stage"));
+                    target.SendPacket(ResWrapper.showEffect("killing/first/start"));
+                    fullUpdate(target, stage);
                 }
             }
         } else {
-            c.getClient().getSession().write(ResCField.Clock(time));
-            c.getClient().getSession().write(ResWrapper.showEffect("killing/first/number/" + stage));
-            c.getClient().getSession().write(ResWrapper.showEffect("killing/first/stage"));
-            c.getClient().getSession().write(ResWrapper.showEffect("killing/first/start"));
-            fullUpdate(c, stage);
+            chr.SendPacket(ResCField.Clock(time));
+            chr.SendPacket(ResWrapper.showEffect("killing/first/number/" + stage));
+            chr.SendPacket(ResWrapper.showEffect("killing/first/stage"));
+            chr.SendPacket(ResWrapper.showEffect("killing/first/start"));
+            fullUpdate(chr, stage);
         }
         if (type != -1 && (stage == 4 || stage == 5)) { //yetis. temporary
-            final Point pos = c.getPosition();
-            final MapleMap map = c.getMap();
+            final Point pos = chr.getPosition();
+            final MapleMap map = chr.getMap();
             yetiSchedule = MapTimer.getInstance().register(new Runnable() {
 
                 public void run() {
@@ -131,12 +131,12 @@ public class Event_PyramidSubway {
             public void run() {
                 boolean ret = false;
                 if (type == -1) {
-                    ret = warpNextMap_Subway(c);
+                    ret = warpNextMap_Subway(chr);
                 } else {
-                    ret = warpNextMap_Pyramid(c, type);
+                    ret = warpNextMap_Pyramid(chr, type);
                 }
                 if (!ret) {
-                    fail(c);
+                    fail(chr);
                 }
             }
         }, time * 1000L);
@@ -308,8 +308,8 @@ public class Event_PyramidSubway {
             exp = (((kill * 2) + (cool * 10)) + pt) * player.getChannelServer().getExpRate();
             player.gainExp(exp, true, false, false);
         }
-        player.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
-        player.getClient().getSession().write(ResCField_MassacreResult.MassacreResult(rank, exp));
+        player.SendPacket(ResWrapper.showEffect("killing/clear"));
+        player.SendPacket(ResCField_MassacreResult.MassacreResult(rank, exp));
         dispose(player);
     }
 
@@ -351,20 +351,20 @@ public class Event_PyramidSubway {
             for (MaplePartyCharacter mpc : c.getParty().getMembers()) {
                 final MapleCharacter chr = map.getCharacterById(mpc.getId());
                 if (chr != null) {
-                    chr.getClient().getSession().write(ResCField_Massacre.MassacreIncGauge(energybar));
+                    chr.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
                 }
             }
         } else {
-            c.getClient().getSession().write(ResCField_Massacre.MassacreIncGauge(energybar));
+            c.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
         }
     }
 
     public final void broadcastEffect(final MapleCharacter c, final String effect) {
-        c.getClient().getSession().write(ResWrapper.showEffect(effect));
+        c.SendPacket(ResWrapper.showEffect(effect));
     }
 
     public final void broadcastEnergy(final MapleCharacter c, final String type, final int amount) {
-        c.getClient().getSession().write(ResWrapper.sendPyramidEnergy(type, String.valueOf(amount)));
+        c.SendPacket(ResWrapper.sendPyramidEnergy(type, String.valueOf(amount)));
     }
 
     public static boolean warpStartSubway(MapleCharacter player) {
@@ -490,18 +490,18 @@ public class Event_PyramidSubway {
                 final MapleCharacter chr = oldMap.getCharacterById(mpc.getId());
                 if (chr != null && chr.getId() != c.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
                     if (clear == 1) {
-                        chr.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
+                        chr.SendPacket(ResWrapper.showEffect("killing/clear"));
                     } else if (clear == 2) {
-                        chr.getClient().getSession().write(ResWrapper.showEffect("killing/fail"));
+                        chr.SendPacket(ResWrapper.showEffect("killing/fail"));
                     }
                     chr.changeMap(map, map.getPortal(0));
                 }
             }
         }
         if (clear == 1) {
-            c.getClient().getSession().write(ResWrapper.showEffect("killing/clear"));
+            c.SendPacket(ResWrapper.showEffect("killing/clear"));
         } else if (clear == 2) {
-            c.getClient().getSession().write(ResWrapper.showEffect("killing/fail"));
+            c.SendPacket(ResWrapper.showEffect("killing/fail"));
         }
         c.changeMap(map, map.getPortal(0));
     }

@@ -62,7 +62,7 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
 
     @Override
     public final void sendDestroyData(final TacosClient client) {
-        client.getSession().write(ResCSummonedPool.SummonedLeaveField(this, false));
+        client.SendPacket(ResCSummonedPool.SummonedLeaveField(this, false));
     }
 
     public final void updateMap(final MapleMap map) {

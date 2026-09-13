@@ -106,7 +106,7 @@ public class CashShop {
         if (!toberemove.isEmpty()) {
             for (IItem item : toberemove) {
                 removeFromInventory(item);
-                client.getSession().write(ResCCashShop.cashItemExpired(item.getUniqueId()));
+                client.SendPacket(ResCCashShop.cashItemExpired(item.getUniqueId()));
             }
             toberemove.clear();
         }

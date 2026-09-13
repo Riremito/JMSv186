@@ -125,7 +125,7 @@ public class MapleDoor extends AbstractMapleMapObject {
             return;
         }
         if (map_field.getId() == client.getPlayer().getMapId() || getOwnerId() == client.getPlayer().getId() || (getOwner() != null && getOwner().getParty() != null && getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
-            //client.getSession().write(MysticDoorResponse.spawnDoor(getOwnerId(), map_town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : getPosition(), true));
+            //client.SendPacket(MysticDoorResponse.spawnDoor(getOwnerId(), map_town.getId() == client.getPlayer().getMapId() ? townPortal.getPosition() : getPosition(), true));
             if (getOwner() != null && getOwner().getParty() != null && (getOwnerId() == client.getPlayer().getId() || getOwner().getParty().getMemberById(client.getPlayer().getId()) != null)) {
                 //client.SendPacket(MysticDoorResponse.partyPortal(this));
             }

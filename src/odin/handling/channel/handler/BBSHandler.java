@@ -90,11 +90,11 @@ public class BBSHandler {
         }
     }
 
-    private static void listBBSThreads(TacosClient c, int start) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void listBBSThreads(TacosClient client, int start) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        c.getSession().write(ResCWvsContext.BBSThreadList(OdinWorld.Guild.getBBS(c.getPlayer().getGuildId()), start));
+        client.SendPacket(ResCWvsContext.BBSThreadList(OdinWorld.Guild.getBBS(client.getPlayer().getGuildId()), start));
     }
 
     private static void newBBSReply(final TacosClient c, final int localthreadid, final String text) {
@@ -136,15 +136,15 @@ public class BBSHandler {
         displayThread(c, localthreadid);
     }
 
-    private static void displayThread(final TacosClient c, final int localthreadid) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void displayThread(final TacosClient client, final int localthreadid) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        final List<MapleBBSThread> bbsList = OdinWorld.Guild.getBBS(c.getPlayer().getGuildId());
+        final List<MapleBBSThread> bbsList = OdinWorld.Guild.getBBS(client.getPlayer().getGuildId());
         if (bbsList != null) {
             for (MapleBBSThread t : bbsList) {
                 if (t != null && t.localthreadID == localthreadid) {
-                    c.getSession().write(ResCWvsContext.showThread(t));
+                    client.SendPacket(ResCWvsContext.showThread(t));
                 }
             }
         }

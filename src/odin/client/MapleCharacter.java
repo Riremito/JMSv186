@@ -604,7 +604,7 @@ public class MapleCharacter extends TacosCharacter {
         if (!(quest.isCustom())) {
             client.SendPacket(ResWrapper.updateQuest(quest));
             if (quest.getStatus() == 1 && !update) {
-                client.getSession().write(ResCUserLocal.UserQuestResult(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
+                SendPacket(ResCUserLocal.UserQuestResult(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
             }
         }
     }
@@ -626,7 +626,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void startMapTimeLimitTask(int time, final MapleMap to) {
-        client.getSession().write(ResCField.Clock(time));
+        SendPacket(ResCField.Clock(time));
 
         time *= 1000;
         mapTimeLimitTask = MapTimer.getInstance().register(new Runnable() {
@@ -673,7 +673,7 @@ public class MapleCharacter extends TacosCharacter {
                     {
                         final int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
                         gainMeso(caught_meso, true);
-                        client.getSession().write(ResCWvsContext.fishingUpdate((byte) 1, caught_meso));
+                        SendPacket(ResCWvsContext.fishingUpdate((byte) 1, caught_meso));
                         break;
                     }
                     case 1: // EXP
@@ -684,12 +684,12 @@ public class MapleCharacter extends TacosCharacter {
                             caught_exp += 1;
                         }
                         gainExp(caught_exp, true, false, true);
-                        client.getSession().write(ResCWvsContext.fishingUpdate((byte) 2, caught_exp));
+                        SendPacket(ResCWvsContext.fishingUpdate((byte) 2, caught_exp));
                         break;
                     }
                     default: {
                         MapleInventoryManipulator.addById(client, randval, (short) 1);
-                        //client.getSession().write(UIPacket.fishingUpdate((byte) 0, randval));
+                        //SendPacket(UIPacket.fishingUpdate((byte) 0, randval));
                         break;
                     }
                 }
@@ -898,7 +898,7 @@ public class MapleCharacter extends TacosCharacter {
             if (newJob != 0 && newJob != 1000 && newJob != 2000 && newJob != 2001 && newJob != 3000) {
                 if (isEv) {
                     remainingSp[GameConstants.getSkillBook(newJob)] += 5;
-                    client.getSession().write(ResWrapper.getSPMsg((byte) 5, (short) newJob));
+                    SendPacket(ResWrapper.getSPMsg((byte) 5, (short) newJob));
                 } else {
                     remainingSp[GameConstants.getSkillBook(newJob)]++;
                     if (newJob % 10 >= 2) {
@@ -919,7 +919,7 @@ public class MapleCharacter extends TacosCharacter {
                     expandInventory((byte) 2, 4);
                     expandInventory((byte) 3, 4);
                     expandInventory((byte) 4, 4);
-                    client.getSession().write(ResCScriptMan.getEvanTutorial("UI/tutorial/evan/14/0"));
+                    SendPacket(ResCScriptMan.getEvanTutorial("UI/tutorial/evan/14/0"));
                     dropMessage(5, "The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
                 }
             }
@@ -1030,13 +1030,13 @@ public class MapleCharacter extends TacosCharacter {
     public void gainSP(int sp) {
         this.remainingSp[GameConstants.getSkillBook(job)] += sp; //default
         sendStatChanged(false);
-        client.getSession().write(ResWrapper.getSPMsg((byte) sp, (short) job));
+        SendPacket(ResWrapper.getSPMsg((byte) sp, (short) job));
     }
 
     public void gainSP(int sp, final int skillbook) {
         this.remainingSp[skillbook] += sp; //default
         sendStatChanged(false);
-        client.getSession().write(ResWrapper.getSPMsg((byte) sp, (short) job));
+        SendPacket(ResWrapper.getSPMsg((byte) sp, (short) job));
     }
 
     public void resetAPSP() {
@@ -1059,7 +1059,7 @@ public class MapleCharacter extends TacosCharacter {
             DebugLogger.ErrorLog("changeSkillLevel : error = " + skill.getId());
             return;
         }
-        client.getSession().write(ResCWvsContext.ChangeSkillRecordResult(skill.getId(), newLevel, newMasterlevel, expiration));
+        SendPacket(ResCWvsContext.ChangeSkillRecordResult(skill.getId(), newLevel, newMasterlevel, expiration));
         if (newLevel == 0 && newMasterlevel == 0) {
             if (skills.containsKey(skill)) {
                 skills.remove(skill);
@@ -1087,7 +1087,7 @@ public class MapleCharacter extends TacosCharacter {
                 if (charms > 0xFF) {
                     charms = 0xFF;
                 }
-                client.getSession().write(ResCUserLocal.useCharm((byte) charms, (byte) 0));
+                SendPacket(ResCUserLocal.useCharm((byte) charms, (byte) 0));
             } else {
                 float diepercentage = 0.0f;
                 int expforlevel = SharedExpTable.getExpNeededForLevel(level);
@@ -1285,7 +1285,7 @@ public class MapleCharacter extends TacosCharacter {
     public void forceReAddItem_Flag(IItem item, MapleInventoryType type) { //used for flags
         forceReAddItem_NoUpdate(item, type);
         if (type != MapleInventoryType.UNDEFINED) {
-            client.getSession().write(ResWrapper.updateSpecialItemUse_(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
+            SendPacket(ResWrapper.updateSpecialItemUse_(item, type == MapleInventoryType.EQUIPPED ? (byte) 1 : type.getType()));
         }
     }
 
@@ -1341,14 +1341,14 @@ public class MapleCharacter extends TacosCharacter {
         if (pending) {
             if (pendingExpiration != null) {
                 for (Integer z : pendingExpiration) {
-                    client.getSession().write(ResWrapper.itemExpired(z.intValue()));
+                    SendPacket(ResWrapper.itemExpired(z.intValue()));
                 }
             }
             pendingExpiration = null;
             if (pendingSkills != null) {
                 for (Integer z : pendingSkills) {
-                    client.getSession().write(ResCWvsContext.ChangeSkillRecordResult(z, 0, 0, -1));
-                    client.getSession().write(ResWrapper.BroadCastMsgEvent("[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use."));
+                    SendPacket(ResCWvsContext.ChangeSkillRecordResult(z, 0, 0, -1));
+                    SendPacket(ResWrapper.BroadCastMsgEvent("[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use."));
                 }
             } //not real msg
             pendingSkills = null;
@@ -1496,7 +1496,7 @@ public class MapleCharacter extends TacosCharacter {
             if (q.mobKilled(id, skillID)) {
                 client.SendPacket(ResWrapper.updateQuestMobKills(q));
                 if (q.getQuest().canComplete(this, null)) {
-                    client.getSession().write(ResCWvsContext.QuestClear(q.getQuest().getId()));
+                    SendPacket(ResCWvsContext.QuestClear(q.getQuest().getId()));
                 }
             }
         }
@@ -2007,7 +2007,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         if (show && quantity != 0) {
             dropMessage(-1, "You have " + (quantity > 0 ? "gained " : "lost ") + quantity + (type == 1 ? " cash." : " maple points."));
-            //client.getSession().write(MaplePacketCreator.showSpecialEffect(19));
+            //SendPacket(MaplePacketCreator.showSpecialEffect(19));
         }
     }
 
@@ -2148,19 +2148,19 @@ public class MapleCharacter extends TacosCharacter {
         } else {
             mulung_energy = 0;
         }
-        client.getSession().write(ResWrapper.MulungEnergy(mulung_energy));
+        SendPacket(ResWrapper.MulungEnergy(mulung_energy));
     }
 
     public void writeMulungEnergy() {
-        client.getSession().write(ResWrapper.MulungEnergy(mulung_energy));
+        SendPacket(ResWrapper.MulungEnergy(mulung_energy));
     }
 
     public void writeStatus(String type, String inc) {
-        client.getSession().write(ResWrapper.sendGhostStatus(type, inc));
+        SendPacket(ResWrapper.sendGhostStatus(type, inc));
     }
 
     public void writePoint(String type, String inc) {
-        client.getSession().write(ResWrapper.sendGhostPoint(type, inc));
+        SendPacket(ResWrapper.sendGhostPoint(type, inc));
     }
 
     public boolean IsBerserk() {
@@ -2278,9 +2278,9 @@ public class MapleCharacter extends TacosCharacter {
 
     public void dropMessage(int type, String message) {
         if (type == -1) {
-            client.getSession().write(ResCWvsContext.ScriptProgressMessage(message));
+            SendPacket(ResCWvsContext.ScriptProgressMessage(message));
         } else if (type == -2) {
-            client.getSession().write(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
+            SendPacket(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
         } else {
             client.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
         }
@@ -2350,7 +2350,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void CPUpdate(final boolean party, final int available, final int total, final int team) {
-        client.getSession().write(ResCField_MonsterCarnival.CPUpdate(party, available, total, team));
+        SendPacket(ResCField_MonsterCarnival.CPUpdate(party, available, total, team));
     }
 
     public int getEXPMod() {
@@ -2394,15 +2394,6 @@ public class MapleCharacter extends TacosCharacter {
                     .build();
             SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         }
-        /*if (type == MapleInventoryType.EQUIP) { //check equipped
-        type = MapleInventoryType.EQUIPPED;
-        possessed = getInventory(type).countById(id);
-
-        if (possessed > 0) {
-        MapleInventoryManipulator.removeById(getClient(), type, id, possessed, true, false);
-        getClient().getSession().write(MaplePacketCreator.getShowItemGain(id, (short)-possessed, true));
-        }
-        }*/
     }
 
     //TODO: more than one crush/friendship ring at a time
@@ -2640,7 +2631,7 @@ public class MapleCharacter extends TacosCharacter {
     public void expandInventory(byte type, int amount) {
         final MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
         inv.addSlot((byte) amount);
-        client.getSession().write(ResCWvsContext.InventoryGrow(type, (byte) inv.getSlotLimit()));
+        SendPacket(ResCWvsContext.InventoryGrow(type, (byte) inv.getSlotLimit()));
     }
 
     // TODO: gvup, vic, lose, draw, VR
@@ -2979,7 +2970,7 @@ public class MapleCharacter extends TacosCharacter {
     // パチンコ
     // CMS v72から流用
     public boolean StartPachinko(int type) {
-        client.getSession().write(Res_JMS_CField_Pachinko.openBeans(this, type));
+        SendPacket(Res_JMS_CField_Pachinko.openBeans(this, type));
         return true;
     }
 
