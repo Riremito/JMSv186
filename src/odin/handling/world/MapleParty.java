@@ -36,10 +36,6 @@ public class MapleParty {
         this.id = id;
     }
 
-    public boolean containsMembers(MaplePartyCharacter member) {
-        return members.contains(member);
-    }
-
     public void addMember(MaplePartyCharacter member) {
         members.add(member);
     }

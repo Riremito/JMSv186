@@ -73,13 +73,6 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean is_mercedes(int job_id) {
-        if (job_id == 2002 || (2300 <= job_id && job_id <= 2312)) {
-            return true;
-        }
-        return false;
-    }
-
     public static boolean is_extendsp_job(int job_id) {
         if (Config.GreaterOrEqual(Region.KMS, 197)) {
             return true;
@@ -921,10 +914,6 @@ public class GameConstants {
         return 0;
     }
 
-    public static int getStatChance() {
-        return 25;
-    }
-
     public static MonsterStatus getStatFromWeapon(final int itemid) {
         switch (itemid) {
             case 1302109:
@@ -961,26 +950,6 @@ public class GameConstants {
                 return MonsterStatus.SPEED;
         }
         return null;
-    }
-
-    public static int getXForStat(MonsterStatus stat) {
-        switch (stat) {
-            case ACC:
-                return -70;
-            case SPEED:
-                return -50;
-        }
-        return 0;
-    }
-
-    public static int getSkillForStat(MonsterStatus stat) {
-        switch (stat) {
-            case ACC:
-                return 3221006;
-            case SPEED:
-                return 3121007;
-        }
-        return 0;
     }
 
     public static int getSkillBook(final int job) {
@@ -1457,15 +1426,4 @@ public class GameConstants {
         }
     }
 
-    public static boolean canForfeit(int questid) {
-        switch (questid) {
-            case 20000:
-            case 20010:
-            case 20015: //cygnus quests
-            case 20020:
-                return false;
-            default:
-                return true;
-        }
-    }
 }

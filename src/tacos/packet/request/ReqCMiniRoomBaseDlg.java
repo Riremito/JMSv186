@@ -49,7 +49,7 @@ import tacos.packet.ops.OpsMiniRoomType;
  */
 public class ReqCMiniRoomBaseDlg {
 
-    public static boolean OnMiniRoom(MapleMap map, MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnMiniRoom(MapleCharacter chr, MapleMap map, ClientPacket cp) {
         byte protocol_req = cp.Decode1();
 
         switch (OpsMiniRoomProtocol.find(protocol_req)) {

@@ -601,40 +601,6 @@ public class MapleStatEffect implements Serializable {
         this.duration = d;
     }
 
-    public final void silentApplyBuff(final MapleCharacter chr, final long starttime) {
-        OpsMoveAbility summonMovementType = getSummonMovementType();
-        if (summonMovementType != null) {
-            final MapleSummon tosummon = new MapleSummon(chr, this, chr.getPosition(), summonMovementType);
-            if (!tosummon.isPuppet()) {
-                chr.getMap().spawnSummon(tosummon);
-                chr.getSummons().put(sourceid, tosummon);
-                tosummon.addHP((short) x);
-                if (isBeholder()) {
-                    tosummon.addHP((short) 1);
-                }
-            }
-        }
-    }
-
-    public static int parseMountInfo(MapleCharacter player, int skillid) {
-        switch (skillid) {
-            case 1004: // Monster riding
-            case 10001004:
-            case 20001004:
-            case 20011004:
-            case 30001004:
-                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) != null) {
-                    return player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/).getItemId();
-                }
-                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/) != null) {
-                    return player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/).getItemId();
-                }
-                return 0;
-            default:
-                return GameConstants.getMountItem(skillid);
-        }
-    }
-
     private final int calcHPChange(final MapleCharacter applyfrom, final boolean primary) {
         int hpchange = 0;
         if (hp != 0) {
@@ -817,10 +783,6 @@ public class MapleStatEffect implements Serializable {
         return false;
     }
 
-    public final void setPartyBuff(boolean pb) {
-        this.partyBuff = pb;
-    }
-
     private final boolean isPartyBuff() {
         if (lt == null || rb == null || !partyBuff) {
             return isSoulStone();
@@ -862,10 +824,6 @@ public class MapleStatEffect implements Serializable {
         return mp;
     }
 
-    public final byte getMastery() {
-        return mastery;
-    }
-
     public final short getWatk() {
         return watk;
     }
@@ -902,20 +860,12 @@ public class MapleStatEffect implements Serializable {
         return jump;
     }
 
-    public int getBooster() {
-        return booster;
-    }
-
     public ArrayList<OdinPair<OpsSecondaryStat, Integer>> getOss() {
         return oss;
     }
 
     public final int getDuration() {
         return duration;
-    }
-
-    public final boolean isOverTime() {
-        return overTime;
     }
 
     public final int getX() {
@@ -926,32 +876,12 @@ public class MapleStatEffect implements Serializable {
         return y;
     }
 
-    public final int getZ() {
-        return z;
-    }
-
     public final short getDamage() {
         return damage;
     }
 
-    public final byte getAttackCount() {
-        return attackCount;
-    }
-
-    public final byte getBulletCount() {
-        return bulletCount;
-    }
-
-    public final int getBulletConsume() {
-        return bulletConsume;
-    }
-
     public final byte getMobCount() {
         return mobCount;
-    }
-
-    public final int getMoneyCon() {
-        return moneyCon;
     }
 
     public int getCooldown() {
@@ -960,22 +890,6 @@ public class MapleStatEffect implements Serializable {
 
     public final Map<MonsterStatus, Integer> getMonsterStati() {
         return monsterStatus;
-    }
-
-    public final int getBerserk() {
-        return berserk;
-    }
-
-    public final boolean isHide() {
-        return skill && sourceid == 9001004;
-    }
-
-    public final boolean isDragonBlood() {
-        return skill && sourceid == 1311008;
-    }
-
-    public final boolean isBerserk() {
-        return skill && sourceid == 1320006;
     }
 
     public final boolean isBeholder() {
@@ -990,29 +904,8 @@ public class MapleStatEffect implements Serializable {
         return skill && (sourceid == 1004 || sourceid == 10001004 || sourceid == 20001004 || sourceid == 20011004 || sourceid == 30001004);
     }
 
-    public final boolean isMonsterRiding() {
-        return skill && (isMonsterRiding_() || GameConstants.getMountItem(sourceid) != 0);
-    }
-
     public final boolean isMagicDoor() {
         return skill && (sourceid == 2311002 || sourceid == 8001 || sourceid == 10008001 || sourceid == 20008001 || sourceid == 20018001 || sourceid == 30008001);
-    }
-
-    public final boolean isMesoGuard() {
-        return skill && sourceid == 4211005;
-    }
-
-    public final boolean isCharge() {
-        switch (sourceid) {
-            case 1211003:
-            case 1211008:
-            case 11111007:
-            case 12101005:
-            case 15101006:
-            case 21111005:
-                return skill;
-        }
-        return false;
     }
 
     public final boolean isPoison() {
@@ -1036,48 +929,6 @@ public class MapleStatEffect implements Serializable {
 
     private final boolean isSpiritClaw() {
         return skill && sourceid == 4121006;
-    }
-
-    private final boolean isDispel() {
-        return skill && (sourceid == 2311001 || sourceid == 9001000);
-    }
-
-    private final boolean isHeroWill() {
-        switch (sourceid) {
-            case 1121011:
-            case 1221012:
-            case 1321010:
-            case 2121008:
-            case 2221008:
-            case 2321009:
-            case 3121009:
-            case 3221008:
-            case 4121009:
-            case 4221008:
-            case 5121008:
-            case 5221010:
-            case 21121008:
-            case 22171004:
-            case 4341008:
-            case 32121008:
-            case 33121008:
-            case 35121008:
-                return skill;
-        }
-        return false;
-    }
-
-    public final boolean isAranCombo() {
-        return sourceid == 21000000;
-    }
-
-    public final boolean isCombo() {
-        switch (sourceid) {
-            case 1111002:
-            case 11111001: // Combo
-                return skill;
-        }
-        return false;
     }
 
     public final boolean isPirateMorph() {
@@ -1107,30 +958,6 @@ public class MapleStatEffect implements Serializable {
                 return 1003;
         }
         return morphId;
-    }
-
-    public final boolean isDivineBody() {
-        switch (sourceid) {
-            case 1010:
-            case 10001010:// Invincible Barrier
-            case 20001010:
-            case 20011010:
-            case 30001010:
-                return skill;
-        }
-        return false;
-    }
-
-    public final boolean isBerserkFury() {
-        switch (sourceid) {
-            case 1011: // Berserk fury
-            case 10001011:
-            case 20001011:
-            case 20011011:
-            case 30001011:
-                return skill;
-        }
-        return false;
     }
 
     public final int getMorph(final MapleCharacter chr) {
@@ -1198,24 +1025,8 @@ public class MapleStatEffect implements Serializable {
         return null;
     }
 
-    public final boolean isSkill() {
-        return skill;
-    }
-
     public final int getSourceId() {
         return sourceid;
-    }
-
-    public final boolean isSoaring() {
-        switch (sourceid) {
-            case 1026: // Soaring
-            case 10001026: // Soaring
-            case 20001026: // Soaring
-            case 20011026: // Soaring
-            case 30001026:
-                return skill;
-        }
-        return false;
     }
 
     public final boolean isFinalAttack() {

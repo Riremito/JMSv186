@@ -175,36 +175,6 @@ public class CashShop {
         DQ_Gifts.add(recipient, from, message, sn, uniqueid);
     }
 
-    public List<OdinPair<IItem, String>> loadGifts() {
-        List<OdinPair<IItem, String>> gifts = new ArrayList<>();
-        List<DQ_Gifts.GiftRow> rows = DQ_Gifts.loadAndClear(characterId);
-        if (rows == null) {
-            return gifts;
-        }
-
-        for (DQ_Gifts.GiftRow row : rows) {
-            CashItemInfo cItem = CashItemFactory.getInstance().getItem(row.sn);
-            IItem item = toItem(cItem, row.uniqueid, row.from);
-            gifts.add(new OdinPair<>(item, row.message));
-            uniqueids.add(item.getUniqueId());
-            List<CashItemInfo> packages = CashItemFactory.getInstance().getPackageItems(cItem.getId());
-            if (packages != null && !packages.isEmpty()) {
-                for (CashItemInfo packageItem : packages) {
-                    addToInventory(toItem(packageItem, row.from));
-                }
-            } else {
-                addToInventory(item);
-            }
-        }
-
-        try {
-            save();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-        return gifts;
-    }
-
     public boolean canSendNote(int uniqueid) {
         return uniqueids.contains(uniqueid);
     }

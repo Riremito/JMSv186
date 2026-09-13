@@ -23,7 +23,6 @@ package odin.server.life;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import tacos.database.query.DQ_DropData;
 
 public class MapleMonsterInformationProvider {
@@ -44,7 +43,4 @@ public class MapleMonsterInformationProvider {
         return ret;
     }
 
-    public final void clearDrops() {
-        drops.clear();
-    }
 }

@@ -70,10 +70,6 @@ public enum MonsterStatus implements Serializable {
         this.first = first;
     }
 
-    public boolean isFirst() {
-        return first;
-    }
-
     public boolean isEmpty() {
         return this == SUMMON || this == EMPTY;
     }

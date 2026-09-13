@@ -178,32 +178,16 @@ public class MapleGuild implements java.io.Serializable {
         return logo;
     }
 
-    public final void setLogo(final int l) {
-        logo = l;
-    }
-
     public final int getLogoColor() {
         return logoColor;
-    }
-
-    public final void setLogoColor(final int c) {
-        logoColor = c;
     }
 
     public final int getLogoBG() {
         return logoBG;
     }
 
-    public final void setLogoBG(final int bg) {
-        logoBG = bg;
-    }
-
     public final int getLogoBGColor() {
         return logoBGColor;
-    }
-
-    public final void setLogoBGColor(final int c) {
-        logoBGColor = c;
     }
 
     public final String getNotice() {
@@ -219,10 +203,6 @@ public class MapleGuild implements java.io.Serializable {
 
     public final int getCapacity() {
         return capacity;
-    }
-
-    public final int getSignature() {
-        return signature;
     }
 
     public void broadcast(ServerPacket packet) {
@@ -615,10 +595,6 @@ public class MapleGuild implements java.io.Serializable {
 
     public java.util.Collection<MapleGuildCharacter> getMembers() {
         return java.util.Collections.unmodifiableCollection(members);
-    }
-
-    public final boolean isInit() {
-        return init;
     }
 
     public final List<MapleBBSThread> getBBS() {

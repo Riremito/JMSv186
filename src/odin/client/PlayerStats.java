@@ -51,7 +51,7 @@ public class PlayerStats {
     private byte passive_mastery = 0;
     private int localstr, localdex, localluk, localint_;
     private int magic, watk, hands, accuracy;
-    public boolean equippedWelcomeBackRing, equippedFairy, hasMeso, hasItem, hasVac, hasClone, hasPartyBonus, Berserk = false, isRecalc = false;
+    public boolean equippedWelcomeBackRing, equippedFairy, hasMeso, hasItem, hasVac, hasClone, hasPartyBonus, isRecalc = false;
     public int equipmentBonusExp, expMod, dropMod, cashMod, levelBonus;
     public double expBuff, dropBuff, mesoBuff, cashBuff;
     //restore/recovery are separate variables because i dont know jack shit what it even does
@@ -196,14 +196,6 @@ public class PlayerStats {
 
     public final int getTotalMagic() {
         return magic;
-    }
-
-    public final double getSpeedMod() {
-        return speedMod;
-    }
-
-    public final double getJumpMod() {
-        return jumpMod;
     }
 
     public final int getTotalWatk() {
@@ -697,19 +689,6 @@ public class PlayerStats {
         }
         shouldHealHP *= 2; // To avoid any problem with bathrobe / Sauna >.<
         shouldHealMP *= 2; // 1.5
-    }
-
-    public final int getSkillByJob(final int skillID, final int job) {
-        if (GameConstants.isKOC(job)) {
-            return skillID + 10000000;
-        } else if (GameConstants.isAran(job)) {
-            return skillID + 20000000;
-        } else if (GameConstants.isEvan(job)) {
-            return skillID + 20010000;
-        } else if (GameConstants.isResist(job)) {
-            return skillID + 30000000;
-        }
-        return skillID;
     }
 
 }

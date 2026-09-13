@@ -22,7 +22,6 @@ package odin.client.inventory;
 
 import java.lang.ref.WeakReference;
 import java.sql.SQLException;
-import java.util.concurrent.ScheduledFuture;
 
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
@@ -33,7 +32,6 @@ public class MapleMount {
     private int itemid, skillid, exp;
     private int fatigue, level;
     private boolean changed = false;
-    private ScheduledFuture<?> tirednessSchedule = null;
     private WeakReference<TacosCharacter> owner;
 
     public MapleMount(TacosCharacter owner, int id, int skillid, int fatigue, int level, int exp) {
@@ -94,11 +92,6 @@ public class MapleMount {
 
     public int getLevel() {
         return level;
-    }
-
-    public void setItemId(int c) {
-        changed = true;
-        this.itemid = c;
     }
 
     public void setFatigue(byte amount) {

@@ -39,7 +39,7 @@ import tacos.client.TacosStorage;
 public class ReqCTrunkDlg {
 
     // CTrunkDlg::OnPacket
-    public static boolean OnPacket(ClientPacket cp, TacosClient client) {
+    public static boolean OnPacket(TacosClient client, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;

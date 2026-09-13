@@ -58,7 +58,7 @@ public class ReqCCashShop {
                 return true;
             }
             case CP_CashShopCashItemRequest: {
-                OnCashItem(cp, client);
+                OnCashItem(client, cp);
                 chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
                 return false;
             }
@@ -109,7 +109,7 @@ public class ReqCCashShop {
     }
 
     // BuyCashItem
-    public static boolean OnCashItem(ClientPacket cp, TacosClient client) {
+    public static boolean OnCashItem(TacosClient client, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
 
         if (chr == null) {
@@ -124,7 +124,7 @@ public class ReqCCashShop {
             case CashItemReq_Buy: {
                 byte use_maple_point = cp.Decode1();
                 int item_SN = cp.Decode4();
-                return BuyCashItem(use_maple_point, item_SN, client);
+                return BuyCashItem(client, use_maple_point, item_SN);
             }
             // 0x06
             case CashItemReq_IncSlotCount: {
@@ -134,11 +134,11 @@ public class ReqCCashShop {
                 // 8 slot
                 if (is_slot8 != 0) {
                     int item_SN = cp.Decode4();
-                    return BuyCashItem(use_maple_point, item_SN, client);
+                    return BuyCashItem(client, use_maple_point, item_SN);
                 }
                 // 4 slot
                 byte inv_type = cp.Decode1();
-                if (IncSlotCount4(use_maple_point, inv_type, chr)) {
+                if (IncSlotCount4(chr, use_maple_point, inv_type)) {
                     client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncSlotCount_Done, client, new ResCCashShop.CashItemStruct(MapleInventoryType.getByType(inv_type))));
                 } else {
                     // faield   
@@ -149,7 +149,7 @@ public class ReqCCashShop {
             case CashItemReq_IncTrunkCount: {
                 byte use_maple_point = cp.Decode1();
                 byte unk2 = cp.Decode1();
-                if (IncTrunkCount4(use_maple_point, chr)) {
+                if (IncTrunkCount4(chr, use_maple_point)) {
                     client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncTrunkCount_Done, client));
                 } else {
                     // failed
@@ -186,12 +186,12 @@ public class ReqCCashShop {
             // 0x21
             case CashItemReq_BuyNormal: {
                 int item_SN = cp.Decode4();
-                return BuyNormalItem(item_SN, client);
+                return BuyNormalItem(client, item_SN);
             }
             // 0x2A
             case CashItemReq_FreeCashItem: {
                 int item_SN = cp.Decode4();
-                return BuyFreeItem(item_SN, client);
+                return BuyFreeItem(client, item_SN);
             }
             default: {
                 DebugLogger.ErrorLog("OnCashItem not coded : " + type);
@@ -232,7 +232,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean BuyCashItem(byte use_maple_point, int item_SN, TacosClient client) {
+    private static boolean BuyCashItem(TacosClient client, byte use_maple_point, int item_SN) {
         MapleCharacter chr = client.getPlayer();
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
@@ -264,11 +264,11 @@ public class ReqCCashShop {
     }
 
     // 修正が必要、まぁ動くからいいか...
-    private static boolean BuyNormalItem(int item_SN, TacosClient client) {
-        return BuyCashItem((byte) 0, item_SN, client);
+    private static boolean BuyNormalItem(TacosClient client, int item_SN) {
+        return BuyCashItem(client, (byte) 0, item_SN);
     }
 
-    private static boolean BuyFreeItem(int item_SN, TacosClient client) {
+    private static boolean BuyFreeItem(TacosClient client, int item_SN) {
         MapleCharacter chr = client.getPlayer();
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
@@ -302,16 +302,16 @@ public class ReqCCashShop {
     private static final int SLOT_LIMIT = 96;
     private static final int TRUNK_SLOT_LIMIT = 60;
 
-    private static boolean IncSlotCount4(byte use_maple_point, byte inv_type, MapleCharacter chr) {
-        return IncSlotCount(use_maple_point, inv_type, chr, 4);
+    private static boolean IncSlotCount4(MapleCharacter chr, byte use_maple_point, byte inv_type) {
+        return IncSlotCount(chr, use_maple_point, inv_type, 4);
     }
 
-    private static boolean IncSlotCount8(byte use_maple_point, int item_SN, MapleCharacter chr) {
+    private static boolean IncSlotCount8(MapleCharacter chr, byte use_maple_point, int item_SN) {
         // not coded
-        return IncSlotCount(use_maple_point, (byte) 0, chr, 8);
+        return IncSlotCount(chr, use_maple_point, (byte) 0, 8);
     }
 
-    private static boolean IncSlotCount(byte use_maple_point, byte inv_type, MapleCharacter chr, int inc_slot) {
+    private static boolean IncSlotCount(MapleCharacter chr, byte use_maple_point, byte inv_type, int inc_slot) {
         if (!checkPoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE)) {
             // 残高不足
             return false;
@@ -328,7 +328,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean IncTrunkCount4(byte use_maple_point, MapleCharacter chr) {
+    private static boolean IncTrunkCount4(MapleCharacter chr, byte use_maple_point) {
         if (!checkPoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE)) {
             // 残高不足
             return false;

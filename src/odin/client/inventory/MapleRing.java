@@ -60,20 +60,6 @@ public class MapleRing implements Serializable {
         }
     }
 
-    public static int createRing(int itemid, MapleCharacter partner1, String partner2, String msg, int id2, int sn) {
-        try {
-            if (partner1 == null) {
-                return -2;
-            } else if (id2 <= 0) {
-                return -1;
-            }
-            return makeRing(itemid, partner1, partner2, id2, msg, sn);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return 0;
-        }
-    }
-
     public static int makeRing(int itemid, MapleCharacter partner1, String partner2, int id2, String msg, int sn) throws Exception { //return partner1 the id
         int[] ringID = {MapleInventoryIdentifier.getInstance(), MapleInventoryIdentifier.getInstance()};
         //[1] = partner1, [0] = partner2
@@ -99,20 +85,12 @@ public class MapleRing implements Serializable {
         return itemId;
     }
 
-    public boolean isEquipped() {
-        return equipped;
-    }
-
     public void setEquipped(boolean equipped) {
         this.equipped = equipped;
     }
 
     public String getPartnerName() {
         return partnerName;
-    }
-
-    public void setPartnerName(String partnerName) {
-        this.partnerName = partnerName;
     }
 
     @Override

@@ -23,7 +23,6 @@ package odin.handling.channel.handler;
 import odin.handling.world.guild.MapleGuildResponse;
 import odin.handling.world.guild.MapleGuild;
 import java.util.Iterator;
-
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.handling.world.OdinWorld;
@@ -34,7 +33,7 @@ import tacos.packet.ServerPacket;
 public class GuildHandler {
 
     public static final void DenyGuildRequest(ClientPacket cp, final TacosClient c) {
-        byte unk1 = cp.Decode1();
+        cp.Decode1();
         String from = cp.DecodeStr();
 
         final MapleCharacter cfrom = c.getChannelServer().getOnlinePlayers().findByName(from);

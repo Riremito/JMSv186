@@ -28,5 +28,4 @@ public class ReactorDropEntry {
         this.questid = questid;
     }
     public int itemId, chance, questid;
-    public int assignedRangeStart, assignedRangeLength;
 }

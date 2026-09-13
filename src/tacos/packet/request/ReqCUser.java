@@ -143,13 +143,13 @@ public class ReqCUser {
         }
         switch (header) {
             case CP_UserTransferFieldRequest: {
-                if (!OnUserTransferFieldRequest(cp, chr)) {
+                if (!OnUserTransferFieldRequest(chr, cp)) {
                     chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
                 }
                 return true;
             }
             case CP_UserTransferChannelRequest: {
-                if (!OnUserTransferChannelRequest(cp, chr)) {
+                if (!OnUserTransferChannelRequest(chr, cp)) {
                     chr.SendPacket(ResCField.TransferChannelReqIgnored(OpsTransferChannel.TC_GAMESVR_DISCONNECTED));
                 }
                 return true;
@@ -161,15 +161,15 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMove: {
-                OnUserMove(cp, map, chr);
+                OnUserMove(chr, cp, map);
                 return true;
             }
             case CP_UserSitRequest: {
-                OnUserSitRequest(cp, chr);
+                OnUserSitRequest(chr, cp);
                 return true;
             }
             case CP_UserPortableChairSitRequest: {
-                OnUserPortableChairSitRequest(cp, chr);
+                OnUserPortableChairSitRequest(chr, cp);
                 return true;
             }
             case CP_UserMeleeAttack:
@@ -222,17 +222,17 @@ public class ReqCUser {
                     DebugShop.OnUserShopRequestHook(chr, cp);
                     return true;
                 }
-                ReqCShopDlg.OnPacket(cp, client);
+                ReqCShopDlg.OnPacket(client, cp);
                 return true;
             }
             case CP_UserTrunkRequest: {
-                ReqCTrunkDlg.OnPacket(cp, client);
+                ReqCTrunkDlg.OnPacket(client, cp);
                 return true;
             }
             case CP_UserEntrustedShopRequest: {
                 byte es_req = cp.Decode1();
                 long cash_item_uid = cp.Decode8();
-                OnUserEntrustedShopRequest(map, chr, es_req, cash_item_uid);
+                OnUserEntrustedShopRequest(chr, map, es_req, cash_item_uid);
                 return true;
             }
             case CP_UserStoreBankRequest: {
@@ -308,7 +308,7 @@ public class ReqCUser {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
-                OnUserTamingMobFoodItemUseRequest(map, chr, item_slot, item_id);
+                OnUserTamingMobFoodItemUseRequest(chr, map, item_slot, item_id);
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
@@ -316,7 +316,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
-                if (!OnUserConsumeCashItemUseRequest(map, chr, cp)) {
+                if (!OnUserConsumeCashItemUseRequest(chr, map, cp)) {
                     chr.updateInv();
                 }
                 return true;
@@ -331,14 +331,14 @@ public class ReqCUser {
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
                 int mob_oid = cp.Decode4();
-                OnUserBridleItemUseRequest(map, chr, item_slot, item_id, mob_oid);
+                OnUserBridleItemUseRequest(chr, map, item_slot, item_id, mob_oid);
                 return true;
             }
             case CP_UserSkillLearnItemUseRequest: {
                 int time_stamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 int item_id = cp.Decode4();
-                OnUserSkillLearnItemUseRequest(map, chr, item_slot, item_id);
+                OnUserSkillLearnItemUseRequest(chr, map, item_slot, item_id);
                 //chr.saveToDB(false, false);
                 return true;
             }
@@ -379,14 +379,14 @@ public class ReqCUser {
                 int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
                 short item_slot = cp.Decode2();
                 short equip_slot = cp.Decode2();
-                OnUserUpgradeItemUseRequest(map, chr, item_slot, equip_slot, 0);
+                OnUserUpgradeItemUseRequest(chr, map, item_slot, equip_slot, 0);
                 return true;
             }
             case CP_UserItemReleaseRequest: {
                 int timestamp = cp.Decode4();
                 short item_slot = cp.Decode2();
                 short equip_slot = cp.Decode2();
-                OnUserItemReleaseRequest(map, chr, item_slot, equip_slot);
+                OnUserItemReleaseRequest(chr, map, item_slot, equip_slot);
                 return true;
             }
             case CP_UserAbilityUpRequest: {
@@ -426,7 +426,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserCharacterInfoRequest: {
-                OnCharacterInfoRequest(cp, chr, map);
+                OnCharacterInfoRequest(chr, cp, map);
                 return true;
             }
             case CP_UserActivatePetRequest: {
@@ -464,7 +464,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMacroSysDataModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(header, cp, client);
+                return ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
             }
             case CP_UserItemMakeRequest: {
                 ItemMakerHandler.OnItemMakeRequest(cp, chr);
@@ -515,7 +515,7 @@ public class ReqCUser {
                 return ReqCUIMessenger.OnPacket(chr, header, cp);
             }
             case CP_MiniRoom: {
-                return ReqCMiniRoomBaseDlg.OnMiniRoom(map, chr, cp);
+                return ReqCMiniRoomBaseDlg.OnMiniRoom(chr, map, cp);
             }
             case CP_PartyRequest: {
                 OnPartyRequest(chr, cp);
@@ -543,7 +543,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_FriendRequest: {
-                ReqSub_FriendRequest.OnFriendRequest(cp, chr);
+                ReqSub_FriendRequest.OnFriendRequest(chr, cp);
                 return true;
             }
             case CP_MemoRequest: {
@@ -551,11 +551,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_EnterTownPortalRequest: {
-                ReqCTownPortalPool.TryEnterTownPortal(cp, client);
+                ReqCTownPortalPool.TryEnterTownPortal(client, cp);
                 return true;
             }
             case CP_FuncKeyMappedModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(header, cp, client);
+                return ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
             }
             case CP_RPSGame: {
                 return ReqCRPSGameDlg.OnPacket(client, header, cp);
@@ -657,7 +657,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_QuickslotKeyMappedModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(header, cp, client);
+                return ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
             }
             case CP_UpdateScreenSetting: // 解像度変更
             {
@@ -672,7 +672,7 @@ public class ReqCUser {
             }
             case CP_JMS_FarmEnter:
             case CP_JMS_FarmLeave: {
-                Req_Farm.OnPacket(header, cp, client);
+                Req_Farm.OnPacket(client, header, cp);
                 return true;
             }
             default: {
@@ -802,7 +802,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserTransferFieldRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserTransferFieldRequest(MapleCharacter chr, ClientPacket cp) {
         boolean isKMS95orLater = Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 330) || Region.IMS.check() || Region.MSEA.check(); // not in KMST391
         short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
         int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
@@ -840,7 +840,7 @@ public class ReqCUser {
         }
     }
 
-    public static boolean OnUserTransferChannelRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserTransferChannelRequest(MapleCharacter chr, ClientPacket cp) {
         int channel = cp.Decode1(); // from 0.
 
         if (!chr.isAlive() || FieldOpt.FIELDOPT_MIGRATELIMIT.check(chr.getMap().getFieldLimit())) {
@@ -872,7 +872,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserMove(ClientPacket cp, MapleMap map, MapleCharacter chr) {
+    public static boolean OnUserMove(MapleCharacter chr, ClientPacket cp, MapleMap map) {
         // not in TWMS148, CMS104, but in TWMS125
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
             cp.Decode4(); // -1
@@ -923,7 +923,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSitRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserSitRequest(MapleCharacter chr, ClientPacket cp) {
         short map_chair_id = cp.Decode2();
 
         boolean is_cancel = (map_chair_id == -1);
@@ -941,7 +941,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserPortableChairSitRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnUserPortableChairSitRequest(MapleCharacter chr, ClientPacket cp) {
         int item_id = cp.Decode4();
 
         IItem toUse = chr.getInventory(MapleInventoryType.SETUP).findById(item_id);
@@ -1400,7 +1400,7 @@ public class ReqCUser {
     }
 
     // CUser::OnCharacterInfoRequest
-    public static final boolean OnCharacterInfoRequest(ClientPacket cp, MapleCharacter chr, MapleMap map) {
+    public static final boolean OnCharacterInfoRequest(MapleCharacter chr, ClientPacket cp, MapleMap map) {
         // CCheatInspector::InspectExclRequestTime
         final int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         final int m_dwCharacterId = cp.Decode4();
@@ -1424,7 +1424,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserEntrustedShopRequest(MapleMap map, MapleCharacter chr, byte es_req, long cash_item_uid) {
+    public static boolean OnUserEntrustedShopRequest(MapleCharacter chr, MapleMap map, byte es_req, long cash_item_uid) {
         chr.DebugMsg("OnUserEntrustedShopRequest : " + es_req + "," + cash_item_uid);
         // HiredMerchantHandler.UseHiredMerchant(c);
         if (OpsEntrustedShop.find(es_req) != OpsEntrustedShop.EntrustedShopReq_CheckOpenPossible) {
@@ -1528,7 +1528,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserUpgradeItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, short equip_slot, int vegas) {
+    public static boolean OnUserUpgradeItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot, int vegas) {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -1701,17 +1701,17 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserHyperUpgradeItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, short equip_slot) {
+    public static boolean OnUserHyperUpgradeItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
 
         return true;
     }
 
-    public static boolean OnUserItemOptionUpgradeItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, short equip_slot) {
+    public static boolean OnUserItemOptionUpgradeItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
 
         return true;
     }
 
-    public static boolean OnUserItemReleaseRequest(MapleMap map, MapleCharacter chr, short item_slot, short equip_slot) {
+    public static boolean OnUserItemReleaseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
         final IItem magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         IItem toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
 
@@ -2530,7 +2530,7 @@ public class ReqCUser {
         return ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.USE, item_slot, item_id);
     }
 
-    public static boolean OnUserTamingMobFoodItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, int item_id) {
+    public static boolean OnUserTamingMobFoodItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id) {
         final IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         final MapleMount mount = chr.getMount();
 
@@ -2553,11 +2553,11 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserConsumeCashItemUseRequest(MapleMap map, MapleCharacter chr, ClientPacket cp) {
-        return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(map, chr, cp);
+    public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+        return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
     }
 
-    public static boolean OnUserBridleItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, int item_id, int mob_oid) {
+    public static boolean OnUserBridleItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id, int mob_oid) {
         MapleMonster mob = map.getMonsterByOid(mob_oid);
 
         if (mob == null) {
@@ -2623,7 +2623,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSkillLearnItemUseRequest(MapleMap map, MapleCharacter chr, short item_slot, final int item_id) {
+    public static boolean OnUserSkillLearnItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, final int item_id) {
         int item_type = item_id / 10000;
         boolean bIsMaterbook = (item_type == 229 || item_type == 562);
         boolean bUsed = false;

@@ -59,7 +59,7 @@ import tacos.wz.opt.FieldOpt;
  */
 public class ReqSub_UserConsumeCashItemUseRequest {
 
-    public static boolean OnUserConsumeCashItemUseRequestInternal(MapleMap map, MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserConsumeCashItemUseRequestInternal(MapleCharacter chr, MapleMap map, ClientPacket cp) {
         int timestamp = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
         short cash_item_slot = cp.Decode2();
         int cash_item_id = cp.Decode4();
@@ -222,14 +222,14 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 int inv_type_use = cp.Decode4(); // unused
                 int scroll_slot = cp.Decode4();
 
-                if (ReqCUser.OnUserUpgradeItemUseRequest(map, chr, (short) scroll_slot, (short) equip_slot, cash_item_id)) {
+                if (ReqCUser.OnUserUpgradeItemUseRequest(chr, map, (short) scroll_slot, (short) equip_slot, cash_item_id)) {
                     item_use.run();
                     return true;
                 }
                 return false;
             }
             case 562: {
-                ReqCUser.OnUserSkillLearnItemUseRequest(map, chr, cash_item_slot, cash_item_id);
+                ReqCUser.OnUserSkillLearnItemUseRequest(chr, map, cash_item_slot, cash_item_id);
                 return true;
             }
             default: {

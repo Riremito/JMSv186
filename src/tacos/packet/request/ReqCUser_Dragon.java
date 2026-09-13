@@ -52,7 +52,7 @@ public class ReqCUser_Dragon {
 
         switch (header) {
             case CP_DragonMove: {
-                OnMove(map, chr, dragon, cp);
+                OnMove(chr, map, dragon, cp);
                 return true;
             }
             default: {
@@ -63,7 +63,7 @@ public class ReqCUser_Dragon {
         return false;
     }
 
-    public static boolean OnMove(TacosMap map, TacosCharacter chr, TacosDragon dragon, ClientPacket cp) {
+    public static boolean OnMove(TacosCharacter chr, TacosMap map, TacosDragon dragon, ClientPacket cp) {
         // CMovePath::Decode
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {

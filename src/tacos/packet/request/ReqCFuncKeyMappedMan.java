@@ -35,7 +35,7 @@ import tacos.packet.response.ResCFuncKeyMappedMan;
  */
 public class ReqCFuncKeyMappedMan {
 
-    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, TacosClient client) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
 
         if (chr == null) {
@@ -58,7 +58,7 @@ public class ReqCFuncKeyMappedMan {
                 return true;
             }
             case CP_FuncKeyMappedModified: {
-                OnFuncKeyMappedModified(cp, chr);
+                OnFuncKeyMappedModified(chr, cp);
                 return true;
             }
             case CP_QuickslotKeyMappedModified: {
@@ -72,7 +72,7 @@ public class ReqCFuncKeyMappedMan {
         return false;
     }
 
-    public static boolean OnFuncKeyMappedModified(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnFuncKeyMappedModified(MapleCharacter chr, ClientPacket cp) {
         int funckey_type = cp.Decode4();
 
         switch (OpsFuncKeyMapped.find(funckey_type)) {

@@ -123,45 +123,6 @@ public class MapleSummon extends AbstractAnimatedMapleMapObject {
         return skill == 1321007;
     }
 
-    public final boolean isMultiSummon() {
-        return skill == 5211002 || skill == 5211001 || skill == 5220002 || skill == 32111006;
-    }
-
-    public final boolean isSummon() {
-        switch (skill) {
-            case 12111004:
-            case 1321007: //beholder
-            case 2311006:
-            case 2321003:
-            case 2121005:
-            case 2221005:
-            case 5211001: // Pirate octopus summon
-            case 5211002:
-            case 5220002: // wrath of the octopi
-            case 13111004:
-            case 11001004:
-            case 12001004:
-            case 13001004:
-            case 14001005:
-            case 15001004:
-            case 33111005:
-            case 35111001:
-            case 35111010:
-            case 35111009:
-            case 35111002: //pre-bb = 35111002, 35111004(amp?), 35111005(accel)
-            case 35111005: //TEMP
-            case 35111004: //TEMP
-            //case 35111011: //TEMP
-            case 35121009:
-            //case 35121010: //TEMP
-            case 35121011:
-            //case 4111007: //TEMP
-            case 32111006:
-                return true;
-        }
-        return false;
-    }
-
     public final int getSkillLevel() {
         return skillLevel;
     }

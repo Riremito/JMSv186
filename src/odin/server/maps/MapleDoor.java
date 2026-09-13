@@ -97,14 +97,6 @@ public class MapleDoor extends AbstractMapleMapObject {
         return ownerId;
     }
 
-    public int getTownMapId() {
-        return map_town.getId();
-    }
-
-    public int getFieldMapId() {
-        return map_field.getId();
-    }
-
     private TacosPortal getFreePortal() {
         final List<TacosPortal> freePortals = new ArrayList<>();
 

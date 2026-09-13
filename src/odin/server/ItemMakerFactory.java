@@ -113,10 +113,6 @@ public class ItemMakerFactory {
             this.quantity = quantity;
         }
 
-        public int getRewardAmount() {
-            return quantity;
-        }
-
         public List<OdinPair<Integer, Integer>> getRandomReward() {
             return randomReward;
         }
@@ -152,8 +148,6 @@ public class ItemMakerFactory {
         private int cost, quantity, stimulator;
         private byte tuc, reqMakerLevel;
         private List<OdinPair<Integer, Integer>> reqItems = new ArrayList<OdinPair<Integer, Integer>>(); // itemId / amount
-        private List<Integer> reqEquips = new ArrayList<Integer>();
-
         public ItemMakerCreateEntry(int cost, int reqLevel, byte reqMakerLevel, int quantity, byte tuc, int stimulator) {
             this.cost = cost;
             this.tuc = tuc;
@@ -167,16 +161,8 @@ public class ItemMakerFactory {
             return tuc;
         }
 
-        public int getRewardAmount() {
-            return quantity;
-        }
-
         public List<OdinPair<Integer, Integer>> getReqItems() {
             return reqItems;
-        }
-
-        public List<Integer> getReqEquips() {
-            return reqEquips;
         }
 
         public int getReqLevel() {

@@ -24,7 +24,6 @@ import odin.client.MapleCharacter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-
 import odin.client.inventory.IItem;
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
@@ -284,7 +283,7 @@ public class ItemMakerHandler {
             }
             case RECIPE_CLASS_EQUIP_DISASSEMBLE: {
                 int itemId = cp.Decode4();
-                int unk = cp.Decode4();
+                cp.Decode4();
                 int slot = cp.Decode4();
 
                 final IItem toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);

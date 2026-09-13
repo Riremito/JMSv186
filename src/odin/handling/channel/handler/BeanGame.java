@@ -465,7 +465,7 @@ public class BeanGame {
     }
 
     private static int getBeanType() {
-        int random = rand(1, 100);
+        rand(1, 100);
         int beanType = 0;
         return beanType;
     }

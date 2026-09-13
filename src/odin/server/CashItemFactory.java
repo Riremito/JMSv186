@@ -14,7 +14,6 @@ import tacos.wz.WzXML;
 public class CashItemFactory {
 
     private final static CashItemFactory instance = new CashItemFactory();
-    private final static int[] bestItems = new int[]{10002819, 50100010, 50200001, 10002147, 60000073};
     private boolean initialized = false;
     private final Map<Integer, CashItemInfo> itemStats = new HashMap<Integer, CashItemInfo>();
     private final Map<Integer, List<CashItemInfo>> itemPackage = new HashMap<Integer, List<CashItemInfo>>();
@@ -25,37 +24,6 @@ public class CashItemFactory {
     }
 
     protected CashItemFactory() {
-    }
-
-    public void initialize() {
-        final List<Integer> itemids = new ArrayList<>();
-        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
-            final int itemId = WzDataTool.getIntPath("ItemId", field, 0);
-            final int SN = WzDataTool.getIntPath("SN", field, 0);
-
-            final CashItemInfo stats = new CashItemInfo(itemId,
-                    WzDataTool.getIntPath("Count", field, 1),
-                    WzDataTool.getIntPath("Price", field, 0), SN,
-                    WzDataTool.getIntPath("Period", field, 0),
-                    WzDataTool.getIntPath("Gender", field, 2),
-                    WzDataTool.getIntPath("OnSale", field, 0) > 0);
-
-            if (SN > 0) {
-                itemStats.put(SN, stats);
-            }
-
-            if (itemId > 0) {
-                itemids.add(itemId);
-            }
-        }
-        for (int i : itemids) {
-            getPackageItems(i);
-        }
-        for (int i : itemStats.keySet()) {
-            getModInfo(i);
-            getItem(i); //init the modinfo's citem
-        }
-        initialized = true;
     }
 
     public final CashItemInfo getItem(int item_SN) {

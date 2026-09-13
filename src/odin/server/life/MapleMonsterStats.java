@@ -92,40 +92,20 @@ public class MapleMonsterStats {
         this.fixedDamage = damage;
     }
 
-    public int getFixedDamage() {
-        return fixedDamage;
-    }
-
     public void setPhysicalDefense(final short PhysicalDefense) {
         this.PhysicalDefense = PhysicalDefense;
-    }
-
-    public short getPhysicalDefense() {
-        return PhysicalDefense;
     }
 
     public final void setMagicDefense(final short MagicDefense) {
         this.MagicDefense = MagicDefense;
     }
 
-    public final short getMagicDefense() {
-        return MagicDefense;
-    }
-
     public final void setEva(final short eva) {
         this.eva = eva;
     }
 
-    public final short getEva() {
-        return eva;
-    }
-
     public void setOnlyNormalAttack(boolean onlyNormalAttack) {
         this.onlyNormalAttack = onlyNormalAttack;
-    }
-
-    public boolean getOnlyNoramlAttack() {
-        return onlyNormalAttack;
     }
 
     public BanishInfo getBanishInfo() {
@@ -142,10 +122,6 @@ public class MapleMonsterStats {
 
     public void setRemoveAfter(int removeAfter) {
         this.removeAfter = removeAfter;
-    }
-
-    public byte getrareItemDropLevel() {
-        return rareItemDropLevel;
     }
 
     public void setrareItemDropLevel(byte rareItemDropLevel) {
@@ -188,10 +164,6 @@ public class MapleMonsterStats {
         this.fly = fly;
     }
 
-    public boolean getFly() {
-        return fly;
-    }
-
     public List<Integer> getRevives() {
         return revives;
     }
@@ -204,16 +176,8 @@ public class MapleMonsterStats {
         this.undead = undead;
     }
 
-    public boolean getUndead() {
-        return undead;
-    }
-
     public void setEffectiveness(Element e, ElementalEffectiveness ee) {
         resistance.put(e, ee);
-    }
-
-    public void removeEffectiveness(Element e) {
-        resistance.remove(e);
     }
 
     public ElementalEffectiveness getEffectiveness(Element e) {
@@ -284,10 +248,6 @@ public class MapleMonsterStats {
         this.cp = cp;
     }
 
-    public byte getCP() {
-        return cp;
-    }
-
     public void setPoint(int cp) {
         this.point = cp;
     }
@@ -326,10 +286,6 @@ public class MapleMonsterStats {
 
     public void setHPDisplayType(byte HPDisplayType) {
         this.HPDisplayType = HPDisplayType;
-    }
-
-    public int getDropItemPeriod() {
-        return dropItemPeriod;
     }
 
     public void setDropItemPeriod(int d) {

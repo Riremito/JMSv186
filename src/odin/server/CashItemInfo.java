@@ -48,10 +48,6 @@ public class CashItemInfo {
         return onSale || (CashItemFactory.getInstance().getModInfo(sn) != null && CashItemFactory.getInstance().getModInfo(sn).showUp);
     }
 
-    public boolean genderEquals(int g) {
-        return g == this.gender || this.gender == 2;
-    }
-
     public static class CashModInfo {
 
         public int discountPrice, mark, priority, sn, itemid, flags, period, gender, count, meso, unk_1, unk_2, unk_3, extra_flags;
@@ -119,49 +115,5 @@ public class CashItemInfo {
             }
         }
 
-        public CashItemInfo toCItem(CashItemInfo backup) {
-            if (cii != null) {
-                return cii;
-            }
-            final int item, c, price, expire, gen;
-            final boolean onSale;
-            if (itemid <= 0) {
-                item = (backup == null ? 0 : backup.getId());
-            } else {
-                item = itemid;
-            }
-            if (count <= 0) {
-                c = (backup == null ? 0 : backup.getCount());
-            } else {
-                c = count;
-            }
-            if (meso <= 0) {
-                if (discountPrice <= 0) {
-                    price = (backup == null ? 0 : backup.getPrice());
-                } else {
-                    price = discountPrice;
-                }
-            } else {
-                price = meso;
-            }
-            if (period <= 0) {
-                expire = (backup == null ? 0 : backup.getPeriod());
-            } else {
-                expire = period;
-            }
-            if (gender < 0) {
-                gen = (backup == null ? 0 : backup.getGender());
-            } else {
-                gen = gender;
-            }
-            if (!showUp) {
-                onSale = (backup == null ? false : backup.onSale());
-            } else {
-                onSale = showUp;
-            }
-
-            cii = new CashItemInfo(item, c, price, sn, expire, gen, onSale);
-            return cii;
-        }
     }
 }

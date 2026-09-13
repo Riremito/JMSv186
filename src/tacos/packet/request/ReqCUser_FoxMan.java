@@ -40,7 +40,7 @@ public class ReqCUser_FoxMan {
 
         switch (header) {
             case CP_FoxManMove: {
-                OnFoxManMove(cp, chr);
+                OnFoxManMove(chr, cp);
                 return true;
             }
             case CP_FoxManActionSetUseRequest: {
@@ -53,7 +53,7 @@ public class ReqCUser_FoxMan {
         return false;
     }
 
-    public static boolean OnFoxManMove(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnFoxManMove(MapleCharacter chr, ClientPacket cp) {
 
         // TODO fox check.
         // CMovePath::Decode

@@ -32,7 +32,7 @@ public class ReqCTownPortalPool {
 
     // UseDoor
     // CField::TryEnterTownPortal
-    public static boolean TryEnterTownPortal(ClientPacket cp, TacosClient client) {
+    public static boolean TryEnterTownPortal(TacosClient client, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;

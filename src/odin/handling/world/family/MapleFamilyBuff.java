@@ -84,14 +84,5 @@ public class MapleFamilyBuff {
             this.effect = effect;
         }
 
-        public int getEffectId() {
-            switch (type) {
-                case 2: //drop
-                    return 2022694;
-                case 3: //exp
-                    return 2450018;
-            }
-            return 2022332; //custom
-        }
     }
 }

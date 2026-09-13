@@ -83,11 +83,11 @@ public class ReqCUser_Pet {
 
         switch (header) {
             case CP_PetMove: {
-                OnPetMove(map, chr, pet, cp);
+                OnPetMove(chr, map, pet, cp);
                 return true;
             }
             case CP_PetAction: {
-                OnPetAction(map, chr, pet, cp);
+                OnPetAction(chr, map, pet, cp);
                 return true;
             }
             // PetCommand
@@ -146,7 +146,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetMove(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetMove(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             byte unk = cp.Decode1();
         }
@@ -160,7 +160,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetAction(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetAction(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
@@ -169,7 +169,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static void OnPetInteractionRequest(ClientPacket cp, MapleCharacter chr) {
+    public static void OnPetInteractionRequest(MapleCharacter chr, ClientPacket cp) {
         final int petIndex = cp.Decode4();
         /*chr.getPetIndex(slea.readInt());*/
         if (petIndex == -1) {

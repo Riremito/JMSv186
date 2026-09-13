@@ -163,22 +163,6 @@ public class Event_PyramidSubway {
         broadcastEnergy(c, "massacre_hit", kill);
     }
 
-    public final void onMiss(final MapleCharacter c) {
-        miss++;
-        energybar -= 5;
-        broadcastUpdate(c);
-        broadcastEnergy(c, "massacre_miss", miss);
-    }
-
-    public final boolean onSkillUse(final MapleCharacter c) {
-        if (skill > 0 && type != -1) {
-            skill--;
-            broadcastEnergy(c, "massacre_skill", skill);
-            return true;
-        }
-        return false;
-    }
-
     public final void onChangeMap(final MapleCharacter c, final int newmapid) {
         if ((newmapid == 910330001 && type == -1) || (newmapid == 926020001 + type && type != -1)) {
             succeed(c);

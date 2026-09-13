@@ -146,34 +146,6 @@ public class MapleFootholdTree {
         return null;
     }
 
-    public final MapleFoothold findWall(final Point p1, final Point p2) {
-        if (p1.y != p2.y) {
-            throw new IllegalArgumentException();
-        }
-        return findWallR(p1, p2);
-    }
-
-    // To be refined, still inaccurate :(
-    public final boolean checkRelevantFH(final short fromx, final short fromy, final short tox, final short toy) {
-        MapleFoothold fhdata = null;
-        for (final MapleFoothold fh : footholds) { // From
-            if (fh.getX1() <= fromx && fh.getX2() >= fromx && fh.getY1() <= fromy && fh.getY2() >= fromy) { // monster pos is within
-                fhdata = fh;
-                break;
-            }
-        }
-        for (final MapleFoothold fh2 : footholds) { // To
-            if (fh2.getX1() <= tox && fh2.getX2() >= tox && fh2.getY1() <= toy && fh2.getY2() >= toy) { // monster pos is within
-                if (!(fhdata.getId() == fh2.getId() || fh2.getId() == fhdata.getNext() || fh2.getId() == fhdata.getPrev())) {
-                    System.out.println("Couldn't find the correct pos for next/prev");
-                    return false;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-
     public MapleFoothold findBelow(Point p) {
         List<MapleFoothold> relevants = getRelevants(p);
         List<MapleFoothold> xMatches = new LinkedList<>();
@@ -223,14 +195,6 @@ public class MapleFootholdTree {
 
     public final int getY2() {
         return p2.y;
-    }
-
-    public final int getMaxDropX() {
-        return maxDropX;
-    }
-
-    public final int getMinDropX() {
-        return minDropX;
     }
 
     public MapleFoothold findFootHold(int foothold_id) {

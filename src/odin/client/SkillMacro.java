@@ -25,7 +25,6 @@ import java.io.Serializable;
 public class SkillMacro implements Serializable {
 
     private static final long serialVersionUID = -63413738569L;
-    private int macroId;
     private int skill1;
     private int skill2;
     private int skill3;
@@ -40,10 +39,6 @@ public class SkillMacro implements Serializable {
         this.name = name;
         this.shout = shout;
         this.position = position;
-    }
-
-    public int getMacroId() {
-        return macroId;
     }
 
     public int getSkill1() {
@@ -70,28 +65,8 @@ public class SkillMacro implements Serializable {
         return position;
     }
 
-    public void setMacroId(int macroId) {
-        this.macroId = macroId;
-    }
-
-    public void setSkill1(int skill1) {
-        this.skill1 = skill1;
-    }
-
-    public void setSkill2(int skill2) {
-        this.skill2 = skill2;
-    }
-
-    public void setSkill3(int skill3) {
-        this.skill3 = skill3;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setShout(int shout) {
-        this.shout = shout;
     }
 
     public void setPosition(int position) {

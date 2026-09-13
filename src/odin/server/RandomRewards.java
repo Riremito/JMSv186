@@ -96,16 +96,4 @@ public class RandomRewards {
         return compiledFishing.get(Randomizer.nextInt(compiledFishing.size()));
     }
 
-    public final int getEventReward() {
-        final int chance = Randomizer.nextInt(100);
-        if (chance < 50) {
-            return compiledEventC.get(Randomizer.nextInt(compiledEventC.size()));
-        } else if (chance < 80) {
-            return compiledEventB.get(Randomizer.nextInt(compiledEventB.size()));
-        } else if (chance < 95) {
-            return compiledEventA.get(Randomizer.nextInt(compiledEventA.size()));
-        } else {
-            return compiledEvent.get(Randomizer.nextInt(compiledEvent.size()));
-        }
-    }
 }

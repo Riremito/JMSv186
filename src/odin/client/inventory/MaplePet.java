@@ -175,16 +175,6 @@ public class MaplePet implements Serializable {
         return petitemid;
     }
 
-    public final boolean canConsume(final int itemId) {
-        final MapleItemInformationProvider mii = MapleItemInformationProvider.getInstance();
-        for (final int petId : mii.petsCanConsume(itemId)) {
-            if (petId == petitemid) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public final int getSecondsLeft() {
         return secondsLeft;
     }
@@ -195,18 +185,6 @@ public class MaplePet implements Serializable {
 
     public short getFlags() {
         return skill_mask;
-    }
-
-    // 親密度
-    public boolean addCloseness(int val) {
-        if (pet_closeness_limit <= (int) this.closeness) {
-            return false;
-        }
-        this.closeness += val;
-        if (pet_closeness_limit < (int) this.closeness) {
-            this.closeness = (short) pet_closeness_limit;
-        }
-        return getClosenessNeededForLevel(getLevel() + 1) <= this.closeness;
     }
 
     // エサやり

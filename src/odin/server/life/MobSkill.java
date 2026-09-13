@@ -304,18 +304,6 @@ public class MobSkill {
         return cooltime;
     }
 
-    public Point getLt() {
-        return lt;
-    }
-
-    public Point getRb() {
-        return rb;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
     public boolean makeChanceResult() {
         return prop >= 1.0 || Math.random() < prop;
     }

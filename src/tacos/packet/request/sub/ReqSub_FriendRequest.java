@@ -38,7 +38,7 @@ import tacos.server.TacosFriend;
 public class ReqSub_FriendRequest {
 
     // CP_FriendRequest
-    public static boolean OnFriendRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnFriendRequest(MapleCharacter chr, ClientPacket cp) {
         byte flag = cp.Decode1();
         OpsFriend ops_req = OpsFriend.find(flag);
         DebugLogger.DebugLog("OnFriendRequest : " + ops_req + " (" + flag + ")");

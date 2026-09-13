@@ -30,7 +30,7 @@ import tacos.packet.ClientPacketHeader;
  */
 public class Req_Farm {
 
-    public static boolean OnPacket(ClientPacketHeader header, ClientPacket cp, TacosClient client) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;

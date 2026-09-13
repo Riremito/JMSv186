@@ -123,7 +123,7 @@ public class ReqCITC {
                 MapleInventoryManipulator.removeFromSlot(client, inv_type, (short) inv_slot, (short) item_quantity, false);
                 chr.gainMeso(-TacosITC.m_nRegisterFeeMeso, false);
                 chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_RegisterSaleEntry_Done));
-                sendMTSPackets(cart, client, true);
+                sendMTSPackets(client, cart, true);
                 return true;
             }
             case ITCReq_SaleCurrentItemToWish: {
@@ -144,7 +144,7 @@ public class ReqCITC {
                 int unk2 = cp.Decode4(); // sub tab
                 int unk3 = cp.Decode4(); // page
                 cart.changeInfo(unk1, unk2, unk3);
-                doMTSPackets(cart, client);
+                doMTSPackets(client, cart);
                 return true;
             }
             case ITCReq_GetSearchITCList: {
@@ -161,7 +161,7 @@ public class ReqCITC {
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_CancelSaleItem_Failed, pb));
                 } else {
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_CancelSaleItem_Done));
-                    sendMTSPackets(cart, client, true);
+                    sendMTSPackets(client, cart, true);
                 }
                 return true;
             }
@@ -170,7 +170,7 @@ public class ReqCITC {
                 int unk1 = cp.Decode4();
                 int id = unk1; // fake id
                 if (id >= cart.getInventory().size()) {
-                    sendMTSPackets(cart, client, true);
+                    sendMTSPackets(client, cart, true);
                     return true;
                 }
                 IItem item = cart.getInventory().get(id);
@@ -202,7 +202,7 @@ public class ReqCITC {
                         .item(item_)
                         .build();
                 chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_MoveITCPurchaseItemLtoS_Done, pb));
-                sendMTSPackets(cart, client, true);
+                sendMTSPackets(client, cart, true);
                 return true;
             }
             case ITCReq_SetZzim: {
@@ -274,7 +274,7 @@ public class ReqCITC {
                 chr.modifyCSPoints(1, -mts.getRealPrice(), false);
                 MTSStorage.getInstance().getCart(mts.getCharacterId()).increaseOwedNX(mts.getPrice());
                 chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Done));
-                sendMTSPackets(cart, client, true);
+                sendMTSPackets(client, cart, true);
                 return true;
             }
             case ITCReq_BuyZzimItem: {
@@ -310,7 +310,7 @@ public class ReqCITC {
                 chr.modifyCSPoints(1, -mts.getRealPrice(), false);
                 MTSStorage.getInstance().getCart(mts.getCharacterId()).increaseOwedNX(mts.getPrice());
                 chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Done));
-                sendMTSPackets(cart, client, true);
+                sendMTSPackets(client, cart, true);
                 return true;
             }
             case ITCReq_RegAuction: {
@@ -343,17 +343,17 @@ public class ReqCITC {
         return false;
     }
 
-    private static void doMTSPackets(MTSCart cart, TacosClient client) {
-        sendMTSPackets(cart, client, false);
+    private static void doMTSPackets(TacosClient client, MTSCart cart) {
+        sendMTSPackets(client, cart, false);
     }
 
-    public static void MTSUpdate(MTSCart cart, TacosClient client) {
+    public static void MTSUpdate(TacosClient client, MTSCart cart) {
         client.getPlayer().modifyCSPoints(1, MTSStorage.getInstance().getCart(client.getPlayer().getId()).getSetOwedNX(), false);
         client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetNotifyCancelWishResult));
-        doMTSPackets(cart, client);
+        doMTSPackets(client, cart);
     }
 
-    private static void sendMTSPackets(MTSCart cart, TacosClient client, boolean changed) {
+    private static void sendMTSPackets(TacosClient client, MTSCart cart, boolean changed) {
         List<MTSStorage.MTSItemInfo> mts_items;
         switch (cart.getTab()) {
             case 1: {

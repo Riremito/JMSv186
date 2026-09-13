@@ -55,10 +55,6 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
         this.f = f;
     }
 
-    public boolean isHidden() {
-        return hide;
-    }
-
     public void setHide(boolean hide) {
         this.hide = hide;
     }
@@ -77,10 +73,6 @@ public abstract class AbstractLoadedMapleLife extends AbstractAnimatedMapleMapOb
 
     public void setFh(int fh) {
         this.fh = fh;
-    }
-
-    public int getCy() {
-        return cy;
     }
 
     public void setCy(int cy) {

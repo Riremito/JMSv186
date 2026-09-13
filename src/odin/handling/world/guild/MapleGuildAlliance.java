@@ -140,10 +140,6 @@ public class MapleGuildAlliance implements java.io.Serializable {
         return ranks[rank - 1];
     }
 
-    public String[] getRanks() {
-        return ranks;
-    }
-
     public String getNotice() {
         return notice;
     }

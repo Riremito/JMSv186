@@ -189,56 +189,6 @@ public class MapleFamilyCharacter implements java.io.Serializable {
         return ret;
     }
 
-    public List<MapleFamilyCharacter> getOnlineJuniors(MapleFamily fam) { //to be used scarcely
-        List<MapleFamilyCharacter> ret = new ArrayList<MapleFamilyCharacter>();
-        ret.add(this);
-        if (junior1 > 0) {
-            MapleFamilyCharacter chr = fam.getMFC(junior1);
-            if (chr != null) {
-                if (chr.isOnline()) {
-                    ret.add(chr);
-                }
-                if (chr.getJunior1() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior1());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
-                if (chr.getJunior2() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior2());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
-                //} else {
-                //	junior1 = 0;
-            }
-        }
-        if (junior2 > 0) {
-            MapleFamilyCharacter chr = fam.getMFC(junior2);
-            if (chr != null) {
-                if (chr.isOnline()) {
-                    ret.add(chr);
-                }
-                if (chr.getJunior1() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior1());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
-                if (chr.getJunior2() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior2());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
-                //} else {
-                //	junior2 = 0;
-            }
-        }
-        return ret;
-    }
-
     public List<Integer> getPedigree() {
         return pedigree;
     }

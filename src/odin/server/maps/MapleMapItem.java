@@ -80,10 +80,6 @@ public class MapleMapItem extends AbstractMapleMapObject {
         return item;
     }
 
-    public void setItem(IItem z) {
-        this.item = z;
-    }
-
     public final int getQuest() {
         return questid;
     }
@@ -113,10 +109,6 @@ public class MapleMapItem extends AbstractMapleMapObject {
 
     public byte getDropType() {
         return type;
-    }
-
-    public void setDropType(byte z) {
-        this.type = z;
     }
 
     @Override

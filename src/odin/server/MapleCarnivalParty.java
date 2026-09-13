@@ -4,7 +4,6 @@ import odin.client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
 import java.lang.ref.WeakReference;
-import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
 
 /**
@@ -81,15 +80,6 @@ public class MapleCarnivalParty {
         }
     }
 
-    public boolean allInMap(MapleMap map) {
-        for (int chr : members) {
-            if (map.getCharacterById(chr) == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void removeMember(MapleCharacter chr) {
         for (int i = 0; i < members.size(); i++) {
             if (members.get(i) == chr.getId()) {
@@ -104,26 +94,4 @@ public class MapleCarnivalParty {
         return winner;
     }
 
-    public void setWinner(boolean status) {
-        winner = status;
-    }
-
-    public void displayMatchResult() {
-        final String effect = winner ? "quest/carnival/win" : "quest/carnival/lose";
-        final String sound = winner ? "MobCarnival/Win" : "MobCarnival/Lose";
-        boolean done = false;
-        for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
-            if (c != null) {
-                c.getClient().getSession().write(ResWrapper.showEffect(effect));
-                c.getClient().getSession().write(ResWrapper.playSound(sound));
-                if (!done) {
-                    done = true;
-                    c.getMap().killAllMonsters(true);
-                    c.getMap().setSpawns(false); //resetFully will take care of this
-                }
-            }
-        }
-
-    }
 }

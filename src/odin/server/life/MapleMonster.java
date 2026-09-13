@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
-
 import odin.constants.GameConstants;
 import odin.client.inventory.IItem;
 import odin.client.ISkill;
@@ -81,8 +80,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private Map<Integer, Long> usedSkills;
     private int stolen = -1; //monster can only be stolen ONCE
     private ScheduledFuture<?> dropItemSchedule;
-    private boolean shouldDropItem = false;
-
     public MapleMonster(final int id, final MapleMonsterStats stats) {
         super(id);
         initWithStats(stats);
@@ -177,14 +174,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public final MapleMonster getSponge() {
         return sponge.get();
-    }
-
-    public final byte getVenomMulti() {
-        return venom_counter;
-    }
-
-    public final void setVenomMulti(final byte venom_counter) {
-        this.venom_counter = venom_counter;
     }
 
     public final void damage(final MapleCharacter from, final long damage, final boolean updateAttackTime) {
@@ -584,10 +573,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         this.controllerHasAggro = controllerHasAggro;
     }
 
-    public final boolean isControllerKnowsAboutAggro() {
-        return controllerKnowsAboutAggro;
-    }
-
     public final void setControllerKnowsAboutAggro(final boolean controllerKnowsAboutAggro) {
         this.controllerKnowsAboutAggro = controllerKnowsAboutAggro;
     }
@@ -665,10 +650,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public final OdinEventInstanceManager getEventInstance() {
         return eventInstance;
-    }
-
-    public final void setEventInstance(final OdinEventInstanceManager eventInstance) {
-        this.eventInstance = eventInstance;
     }
 
     public final void applyStatus(final MapleCharacter from, final MonsterStatusEffect status, final boolean poison, final long duration, final boolean venom) {
@@ -778,10 +759,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         this.fake = fake;
     }
 
-    public final boolean isFake() {
-        return fake;
-    }
-
     public final MapleMap getMap() {
         return map;
     }
@@ -883,10 +860,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
         public final long getLastAttackTime() {
             return lastAttackTime;
-        }
-
-        public final void setLastAttackTime(final long lastAttackTime) {
-            this.lastAttackTime = lastAttackTime;
         }
 
         public final MapleCharacter getAttacker() {
@@ -1181,10 +1154,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return stolen;
     }
 
-    public void setStolen(final int s) {
-        this.stolen = s;
-    }
-
     public void handleSteal(MapleCharacter chr) {
         ISkill steal = SkillFactory.getSkill(4201004);
         final int level = chr.getSkillLevel(steal);
@@ -1221,10 +1190,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public final void setLastNodeController(final int lastNode) {
         this.lastNodeController = lastNode;
-    }
-
-    public final int getLastNodeController() {
-        return lastNodeController;
     }
 
     public final void cancelDropItem() {

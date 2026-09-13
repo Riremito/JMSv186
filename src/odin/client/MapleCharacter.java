@@ -33,7 +33,6 @@ import odin.client.inventory.MapleRing;
 import java.awt.Point;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Deque;
 import java.util.ArrayList;
@@ -101,7 +100,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.Event_PyramidSubway;
-import odin.server.maps.MapleFoothold;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
@@ -142,9 +140,7 @@ public class MapleCharacter extends TacosCharacter {
     private long lastfametime;
     private byte dojoRecord, fairyExp = 10;
     private int mulung_energy, availableCP, totalCP, hpApUsed;
-    private int dojo,
-            maplePoint, nexonPoint, chair, points, vpoints,
-            battleshipHP = 0;
+    private int dojo, maplePoint, nexonPoint, chair, points, vpoints;
     private boolean smega, hasSummon = false;
     private int[] wishlist, rocks, savedLocations, regrocks;
     private transient AtomicInteger inst;
@@ -874,16 +870,6 @@ public class MapleCharacter extends TacosCharacter {
         saveToDB(false);
     }
 
-    public void leaveMap() {
-        controlled.clear();
-        visibleMapObjects.clear();
-        if (chair != 0) {
-            cancelFishingTask();
-            chair = 0;
-        }
-        cancelMapTimeLimitTask();
-    }
-
     public void changeJob(int newJob) {
         try {
             final boolean isEv = GameConstants.isEvan(job) || GameConstants.isResist(job);
@@ -1070,23 +1056,6 @@ public class MapleCharacter extends TacosCharacter {
 
     }
 
-    public void changeSkillLevel_Skip(final ISkill skill, byte newLevel, byte newMasterlevel) {
-        if (skill == null) {
-            return;
-        }
-        client.getSession().write(ResCWvsContext.ChangeSkillRecordResult(skill.getId(), newLevel, newMasterlevel, -1L));
-        if (newLevel == 0 && newMasterlevel == 0) {
-            if (skills.containsKey(skill)) {
-                skills.remove(skill);
-            } else {
-                return; //nothing happen
-            }
-        } else {
-            skills.put(skill, new SkillEntry(newLevel, newMasterlevel, -1L));
-        }
-
-    }
-
     public void playerDead() {
         if (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000) {
             int charms = getItemQuantity(5130000, false);
@@ -1160,18 +1129,6 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void healHP(int delta) {
-        addHP(delta);
-        client.getSession().write(ResCUserLocal.showOwnHpHealed(delta));
-        getMap().broadcastMessage(this, ResCUserRemote.showHpHealed(getId(), delta), false);
-    }
-
-    public void healMP(int delta) {
-        addMP(delta);
-        client.getSession().write(ResCUserLocal.showOwnHpHealed(delta));
-        getMap().broadcastMessage(this, ResCUserRemote.showHpHealed(getId(), delta), false);
-    }
-
     public void addHP(int delta) {
         if (stats.setHp(stats.getHp() + delta)) {
             sendStatChanged();
@@ -1182,12 +1139,6 @@ public class MapleCharacter extends TacosCharacter {
         if (stats.setMp(stats.getMp() + delta)) {
             sendStatChanged();
         }
-    }
-
-    public void addMPHP(int hpDiff, int mpDiff) {
-        stats.setHp(stats.getHp() + hpDiff);
-        stats.setMp(stats.getMp() + mpDiff);
-        sendStatChanged();
     }
 
     public void gainExp(final int total, final boolean show, final boolean inChat, final boolean white) {
@@ -1323,10 +1274,6 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public int getGMLevel() {
-        return gmLevel;
-    }
-
     // removeFromSlot like
     private boolean useItemDone(MapleInventoryType type, IItem item_used, short item_quantity) {
         boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
@@ -1446,10 +1393,6 @@ public class MapleCharacter extends TacosCharacter {
         meso = val;
     }
 
-    public final int[] getSavedLocations() {
-        return savedLocations;
-    }
-
     public int getSavedLocation(SavedLocationType type) {
         return savedLocations[type.getValue()];
     }
@@ -1518,10 +1461,6 @@ public class MapleCharacter extends TacosCharacter {
         } else {
             monster.switchController(this, true);
         }
-    }
-
-    public Collection<MapleMonster> getControlledMonsters() {
-        return Collections.unmodifiableCollection(controlled);
     }
 
     public int getControlledSize() {
@@ -1770,14 +1709,6 @@ public class MapleCharacter extends TacosCharacter {
         visibleMapObjects.remove(mo);
     }
 
-    public boolean isMapObjectVisible(MapleMapObject mo) {
-        return visibleMapObjects.contains(mo);
-    }
-
-    public Collection<MapleMapObject> getVisibleMapObjects() {
-        return Collections.unmodifiableCollection(visibleMapObjects);
-    }
-
     @Override
     public void sendSpawnData(TacosClient client) {
         client.SendPacket(ResCUserPool.UserEnterField(this));
@@ -1809,10 +1740,6 @@ public class MapleCharacter extends TacosCharacter {
             }
         }
         return null;
-    }
-
-    public void removePetCS(MaplePet pet) {
-        pets.remove(pet);
     }
 
     public void addPet(final MaplePet pet) {
@@ -1892,23 +1819,6 @@ public class MapleCharacter extends TacosCharacter {
         return pets;
     }
 
-    public boolean isPetSummoned() {
-        for (final MaplePet pet : getPets()) {
-            if (pet.getSummoned()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public final void unequipAllPets() {
-        for (final MaplePet pet : pets) {
-            if (pet != null) {
-                unequipPet(pet, true, false);
-            }
-        }
-    }
-
     public void unequipPet(MaplePet pet, boolean shiftLeft, boolean hunger) {
         if (pet.getSummoned()) {
             pet.saveToDb();
@@ -1916,14 +1826,6 @@ public class MapleCharacter extends TacosCharacter {
             removePet(pet, shiftLeft);
             sendStatChanged(true);
         }
-    }
-
-    public final long getLastFameTime() {
-        return lastfametime;
-    }
-
-    public final List<Integer> getFamedCharacters() {
-        return lastmonthfameids;
     }
 
     public FameStatus canGiveFame(MapleCharacter from) {
@@ -1943,10 +1845,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public MapleParty getParty() {
         return party;
-    }
-
-    public int getPartyId() {
-        return (party != null ? party.getId() : -1);
     }
 
     public void setParty(MapleParty party) {
@@ -1971,16 +1869,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public List<MapleDoor> getDoors() {
         return new ArrayList<>(doors);
-    }
-
-    public void setSmega() {
-        if (smega) {
-            smega = false;
-            dropMessage(5, "You have set megaphone to disabled mode");
-        } else {
-            smega = true;
-            dropMessage(5, "You have set megaphone to enabled mode");
-        }
     }
 
     public boolean getSmega() {
@@ -2246,10 +2134,6 @@ public class MapleCharacter extends TacosCharacter {
         client.getSession().write(ResWrapper.MulungEnergy(mulung_energy));
     }
 
-    public void writeEnergy(String type, String inc) {
-        client.getSession().write(ResWrapper.sendPyramidEnergy(type, inc));
-    }
-
     public void writeStatus(String type, String inc) {
         client.getSession().write(ResWrapper.sendGhostStatus(type, inc));
     }
@@ -2301,12 +2185,6 @@ public class MapleCharacter extends TacosCharacter {
         return wishlist;
     }
 
-    public void clearWishlist() {
-        for (int i = 0; i < 10; i++) {
-            wishlist[i] = 0;
-        }
-    }
-
     public int getWishlistSize() {
         int ret = 0;
         for (int i = 0; i < 10; i++) {
@@ -2315,10 +2193,6 @@ public class MapleCharacter extends TacosCharacter {
             }
         }
         return ret;
-    }
-
-    public void setWishlist(int[] wl) {
-        this.wishlist = wl;
     }
 
     public int[] getRocks() {
@@ -2351,15 +2225,6 @@ public class MapleCharacter extends TacosCharacter {
         rocks[getRockSize()] = getMapId();
     }
 
-    public boolean isRockMap(int id) {
-        for (int i = 0; i < 10; i++) {
-            if (rocks[i] == id) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public int[] getRegRocks() {
         return regrocks;
     }
@@ -2388,15 +2253,6 @@ public class MapleCharacter extends TacosCharacter {
             return;
         }
         regrocks[getRegRockSize()] = getMapId();
-    }
-
-    public boolean isRegRockMap(int id) {
-        for (int i = 0; i < 5; i++) {
-            if (regrocks[i] == id) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public void dropMessage(int type, String message) {
@@ -2464,11 +2320,6 @@ public class MapleCharacter extends TacosCharacter {
         return totalCP;
     }
 
-    public void resetCP() {
-        totalCP = 0;
-        availableCP = 0;
-    }
-
     public void addCarnivalRequest(MapleCarnivalChallenge request) {
         pendingCarnivalRequests.add(request);
     }
@@ -2477,20 +2328,8 @@ public class MapleCharacter extends TacosCharacter {
         return pendingCarnivalRequests.pollLast();
     }
 
-    public void clearCarnivalRequests() {
-        pendingCarnivalRequests = new LinkedList<MapleCarnivalChallenge>();
-    }
-
-    public void startMonsterCarnival(final int enemyavailable, final int enemytotal) {
-        client.getSession().write(ResCField_MonsterCarnival.MCarnivalEnter(this, enemyavailable, enemytotal));
-    }
-
     public void CPUpdate(final boolean party, final int available, final int total, final int team) {
         client.getSession().write(ResCField_MonsterCarnival.CPUpdate(party, available, total, team));
-    }
-
-    public void playerDiedCPQ(final String name, final int lostCP, final int team) {
-        client.getSession().write(ResCField_MonsterCarnival.MCarnivalDeath(name, lostCP, team));
     }
 
     public int getEXPMod() {
@@ -2499,10 +2338,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public int getDropMod() {
         return stats.dropMod;
-    }
-
-    public int getCashMod() {
-        return stats.cashMod;
     }
 
     public void setPoints(int p) {
@@ -2600,14 +2435,6 @@ public class MapleCharacter extends TacosCharacter {
         Collections.sort(frings, new MapleRing.RingComparator());
         Collections.sort(crings, new MapleRing.RingComparator());
         return new OdinPair<List<MapleRing>, List<MapleRing>>(crings, frings);
-    }
-
-    public int findFH() {
-        MapleFoothold fh = getMap().getFootholds().findBelow(getPosition());
-        if (fh != null) {
-            return fh.getId();
-        }
-        return 0;
     }
 
     public int getFH() {
@@ -2867,7 +2694,7 @@ public class MapleCharacter extends TacosCharacter {
             if (oldRank == null || oldRank.equals("S")) {
                 return;
             }
-            final String[] split = questinfo.get(questid).split(";");
+            questinfo.get(questid).split(";");
             String newRank = null;
             if (oldRank.equals("A")) {
                 newRank = "S";
@@ -2928,7 +2755,8 @@ public class MapleCharacter extends TacosCharacter {
             if (pqStartTime > 0) {
                 final long changeTime = System.currentTimeMillis() - pqStartTime;
                 final int mins = (int) (changeTime / 1000 / 60), secs = (int) (changeTime / 1000 % 60);
-                final int mins2 = Integer.parseInt(getOneInfo(questid, "min")), secs2 = Integer.parseInt(getOneInfo(questid, "sec"));
+                final int mins2 = Integer.parseInt(getOneInfo(questid, "min"));
+                Integer.parseInt(getOneInfo(questid, "sec"));
                 if (mins2 <= 0 || mins < mins2) {
                     updateOneInfo(questid, "min", String.valueOf(mins));
                     updateOneInfo(questid, "sec", String.valueOf(secs));
@@ -3127,27 +2955,11 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public int maxBattleshipHP(int skillid) {
-        return (getSkillLevel(skillid) * 5000) + ((getLevel() - 120) * 3000);
-    }
-
-    public int currentBattleshipHP() {
-        return battleshipHP;
-    }
-
     // パチンコ
     // CMS v72から流用
     public boolean StartPachinko(int type) {
         client.getSession().write(Res_JMS_CField_Pachinko.openBeans(this, type));
         return true;
-    }
-
-    public int getBeans() {
-        return tama;
-    }
-
-    public void setBeans(int b) {
-        tama = b;
     }
 
     public void gainTama(int s) {
@@ -3378,9 +3190,9 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public final boolean disconnect(final boolean RemoveInChannelServer, final boolean fromCS) {
-        final String namez = this.getName();
+        this.getName();
         final int idz = this.getId(), gid = this.getGuildId(), fid = this.getFamilyId();
-        final BuddyList bl = this.getBuddylist();
+        this.getBuddylist();
         final MaplePartyCharacter chrp = new MaplePartyCharacter(this);
         final MapleGuildCharacter chrg = this.getMGC();
         final MapleFamilyCharacter chrf = this.getMFC();

@@ -2,7 +2,6 @@ package odin.server;
 
 import java.util.LinkedList;
 import java.util.List;
-
 import odin.client.MapleCharacter;
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
@@ -98,25 +97,12 @@ public class MapleSquad {
         return leader.get();
     }
 
-    public boolean containsMember(MapleCharacter member) {
-        for (String mmbr : members.keySet()) {
-            if (mmbr.equalsIgnoreCase(member.getName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public List<String> getMembers() {
         return new LinkedList<>(members.keySet());
     }
 
     public List<String> getBannedMembers() {
         return new LinkedList<>(bannedMembers.keySet());
-    }
-
-    public int getSquadSize() {
-        return members.size();
     }
 
     public boolean isBanned(MapleCharacter member) {
@@ -157,11 +143,6 @@ public class MapleSquad {
 
             getChar(toadd).dropMessage(5, getLeaderName() + " has decided to add you back to the squad.");
         }
-    }
-
-    public void reAddMember(MapleCharacter chr) {
-        removeMember(chr);
-        members.put(chr.getName(), MapleCarnivalChallenge.getJobBasicNameById(chr.getJob()));
     }
 
     public void removeMember(MapleCharacter chr) {

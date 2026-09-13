@@ -303,13 +303,6 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public final void spawnFakeMonsterOnGroundBelow(final MapleMonster mob, final Point pos) {
-        Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
-        spos.y -= 1;
-        mob.setPosition(spos);
-        spawnFakeMonster(mob);
-    }
-
     public void spawnMist(MapleMist mist, int duration, boolean fake) {
         addMapObject(mist);
         spawnRangedMapObject(mist, ResCAffectedAreaPool.AffectedAreaCreated(mist));
@@ -430,16 +423,6 @@ public final class MapleMap extends TacosMap {
 
     public final void startJukebox(final String msg, final int itemId) {
         startMapEffect(msg, itemId, true);
-    }
-
-    public void broadcastMessageClone(MapleCharacter source, ServerPacket packet) {
-        int clone_delay = 1000;
-        MapTimer.getInstance().schedule(new Runnable() {
-            @Override
-            public void run() {
-                broadcastMessage(source, packet, false);
-            }
-        }, clone_delay);
     }
 
     public final void broadcastMessageDelayed(MapleCharacter source, ServerPacket packet) {

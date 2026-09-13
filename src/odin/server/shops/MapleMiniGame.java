@@ -24,11 +24,9 @@ package odin.server.shops;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
-import tacos.packet.response.ResCField;
 import odin.server.quest.MapleQuest;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
@@ -107,10 +105,6 @@ public class MapleMiniGame extends AbstractPlayerStore {
         }
     }
 
-    public int getOwnerPoints(int slot) {
-        return points[slot];
-    }
-
     public void setPieceType(int type) {
         piecetype = type;
     }
@@ -143,10 +137,6 @@ public class MapleMiniGame extends AbstractPlayerStore {
 
     public int getMatchesToWin() {
         return (getPieceType() == 0 ? 6 : (getPieceType() == 1 ? 10 : 15));
-    }
-
-    public void setLoser(int type) {
-        loser = type;
     }
 
     public int getLoser() {

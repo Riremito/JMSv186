@@ -50,29 +50,12 @@ public class MonsterStatusEffect {
         return x;
     }
 
-    public final void setValue(final MonsterStatus status, final Integer newVal) {
-        stati = status;
-        x = newVal;
-    }
-
     public final int getSkill() {
         return skill;
     }
 
     public final MobSkill getMobSkill() {
         return mobskill;
-    }
-
-    public final boolean isMonsterSkill() {
-        return monsterSkill;
-    }
-
-    public final void setCancelTask(final ScheduledFuture<?> cancelTask) {
-        this.cancelTask = cancelTask;
-    }
-
-    public final void setPoisonSchedule(final ScheduledFuture<?> poisonSchedule) {
-        this.poisonSchedule = poisonSchedule;
     }
 
     public final void cancelTask() {
@@ -82,13 +65,4 @@ public class MonsterStatusEffect {
         this.cancelTask = null;
     }
 
-    public final void cancelPoisonSchedule() {
-        if (this.poisonSchedule != null) {
-	    try {
-            	this.poisonSchedule.cancel(false);
-	    } catch(NullPointerException e) {
-	    } //set to null anyway.
-        }
-        this.poisonSchedule = null;
-    }
 }

@@ -105,20 +105,6 @@ public class MaplePlayerShop extends AbstractPlayerStore {
         update();
     }
 
-    public void banPlayer(String name) {
-        if (!bannedList.contains(name)) {
-            bannedList.add(name);
-        }
-        for (int i = 0; i < 3; i++) {
-            MapleCharacter chr = getVisitor(i);
-            if (chr.getName().equals(name)) {
-                chr.getClient().getSession().write(ResCMiniRoomBaseDlg.shopErrorMessage(5, 1));
-                chr.setPlayerShop(null);
-                removeVisitor(chr);
-            }
-        }
-    }
-
     public boolean isBanned(String name) {
         if (bannedList.contains(name)) {
             return true;

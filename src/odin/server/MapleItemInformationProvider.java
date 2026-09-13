@@ -6,7 +6,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.ItemFlag;
@@ -34,10 +33,8 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Equip> equipCache = new HashMap<Integer, Equip>();
     protected final Map<Integer, Double> priceCache = new HashMap<Integer, Double>();
     protected final Map<Integer, Integer> wholePriceCache = new HashMap<Integer, Integer>();
-    protected final Map<Integer, Integer> projectileWatkCache = new HashMap<Integer, Integer>();
     protected final Map<Integer, Integer> monsterBookID = new HashMap<Integer, Integer>();
     protected final Map<Integer, String> nameCache = new HashMap<Integer, String>();
-    protected final Map<Integer, String> descCache = new HashMap<Integer, String>();
     protected final Map<Integer, String> msgCache = new HashMap<Integer, String>();
     protected final Map<Integer, Map<String, Integer>> SkillStatsCache = new HashMap<Integer, Map<String, Integer>>();
     protected final Map<Integer, Byte> consumeOnPickupCache = new HashMap<Integer, Byte>();
@@ -48,12 +45,9 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Integer> mesoCache = new HashMap<Integer, Integer>();
     protected final Map<Integer, Boolean> notSaleCache = new HashMap<Integer, Boolean>();
     protected final Map<Integer, Integer> karmaEnabledCache = new HashMap<Integer, Integer>();
-    protected final Map<Integer, Boolean> isQuestItemCache = new HashMap<Integer, Boolean>();
     protected final Map<Integer, Boolean> blockPickupCache = new HashMap<Integer, Boolean>();
     protected final Map<Integer, List<Integer>> petsCanConsumeCache = new HashMap<Integer, List<Integer>>();
-    protected final Map<Integer, Boolean> logoutExpireCache = new HashMap<Integer, Boolean>();
     protected final Map<Integer, List<OdinPair<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<OdinPair<Integer, Integer>>>();
-    protected final List<OdinPair<Integer, String>> itemNameCache = new ArrayList<OdinPair<Integer, String>>();
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
     protected Map<Integer, OdinPair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
@@ -932,17 +926,6 @@ public class MapleItemInformationProvider {
         return monsterBookID.get(id);
     }
 
-    public final int getWatkForProjectile(final int itemId) {
-        Integer atk = projectileWatkCache.get(itemId);
-        if (atk != null) {
-            return atk.intValue();
-        }
-        final IMapleData data = getItemData(itemId);
-        atk = Integer.valueOf(WzDataTool.getIntPath("info/incPAD", data, 0));
-        projectileWatkCache.put(itemId, atk);
-        return atk.intValue();
-    }
-
     public final boolean canScroll(final int scrollid, final int itemid) {
         return (scrollid / 100) % 100 == (itemid / 10000) % 100;
     }
@@ -1092,16 +1075,6 @@ public class MapleItemInformationProvider {
         return iRestricted;
     }
 
-    public final boolean isLogoutExpire(final int itemId) {
-        if (logoutExpireCache.containsKey(itemId)) {
-            return logoutExpireCache.get(itemId);
-        }
-        final boolean iRestricted = WzDataTool.getIntPath("info/expireOnLogout", getItemData(itemId), 0) == 1;
-
-        logoutExpireCache.put(itemId, iRestricted);
-        return iRestricted;
-    }
-
     public final boolean cantSell(final int itemId) { //true = cant sell, false = can sell
         if (notSaleCache.containsKey(itemId)) {
             return notSaleCache.get(itemId);
@@ -1204,15 +1177,6 @@ public class MapleItemInformationProvider {
         }
         petsCanConsumeCache.put(itemId, ret);
         return ret;
-    }
-
-    public final boolean isQuestItem(final int itemId) {
-        if (isQuestItemCache.containsKey(itemId)) {
-            return isQuestItemCache.get(itemId);
-        }
-        final boolean questItem = WzDataTool.getIntPath("info/quest", getItemData(itemId), 0) == 1;
-        isQuestItemCache.put(itemId, questItem);
-        return questItem;
     }
 
     public OdinPair<Integer, List<Integer>> questItemInfo(int itemId) {

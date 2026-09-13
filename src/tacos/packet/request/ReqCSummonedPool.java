@@ -86,11 +86,11 @@ public class ReqCSummonedPool {
 
         switch (header) {
             case CP_SummonedMove: {
-                OnMove(cp, chr, summon);
+                OnMove(chr, cp, summon);
                 return true;
             }
             case CP_SummonedAttack: {
-                OnAttack(cp, summon, chr);
+                OnAttack(chr, cp, summon);
                 return true;
             }
             case CP_SummonedSkill: {
@@ -98,7 +98,7 @@ public class ReqCSummonedPool {
                 break;
             }
             case CP_SummonedHit: {
-                OnHit(cp, chr);
+                OnHit(chr, cp);
                 return true;
             }
             case CP_Remove: {
@@ -115,7 +115,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnMove
-    public static boolean OnMove(ClientPacket cp, MapleCharacter chr, MapleSummon summon) {
+    public static boolean OnMove(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
         if (summon.getMovementType() == OpsMoveAbility.MOVEABILITY_STOP || summon.isChangedMap()) {
             return false;
         }
@@ -130,7 +130,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnAttack
-    public static void OnAttack(ClientPacket cp, MapleSummon summon, MapleCharacter chr) {
+    public static void OnAttack(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
         final MapleMap map = chr.getMap();
 
         final SummonSkillEntry sse = SkillFactory.getSummonData(summon.getSkill());
@@ -299,7 +299,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnHit
-    public static void OnHit(ClientPacket cp, MapleCharacter chr) {
+    public static void OnHit(MapleCharacter chr, ClientPacket cp) {
         int unkByte = cp.Decode1();
         int damage = cp.Decode4();
         int monsterIdFrom = cp.Decode4();

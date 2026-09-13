@@ -43,10 +43,6 @@ public enum MapleInventoryType {
         return type;
     }
 
-    public short getBitfieldEncoding() {
-        return (short) (2 << type);
-    }
-
     public static MapleInventoryType getByType(byte type) {
         for (MapleInventoryType l : MapleInventoryType.values()) {
             if (l.getType() == type) {
