@@ -51,7 +51,7 @@ public class MapleFamilyBuff {
     private final static List<MapleFamilyBuffEntry> buffEntries;
 
     static {
-        buffEntries = new ArrayList<MapleFamilyBuffEntry>();
+        buffEntries = new ArrayList<>();
         for (int i = 0; i < event; i++) { //count = 1, questid = 190000+i
             buffEntries.add(new MapleFamilyBuffEntry(i, name[i], desc[i], 1, rep[i], type[i], 190000 + i, duration[i], effect[i]));
         }

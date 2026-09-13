@@ -90,7 +90,7 @@ public class MapleFootholdTree {
     }
 
     private final List<MapleFoothold> getRelevants(final Point p) {
-        return getRelevants(p, new LinkedList<MapleFoothold>());
+        return getRelevants(p, new LinkedList<>());
     }
 
     private final List<MapleFoothold> getRelevants(final Point p, final List<MapleFoothold> list) {

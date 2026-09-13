@@ -537,7 +537,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public final void setController(final MapleCharacter controller) {
-        this.controller = new WeakReference<MapleCharacter>(controller);
+        this.controller = new WeakReference<>(controller);
     }
 
     public final void switchController(final MapleCharacter newController, final boolean immediateAggro) {

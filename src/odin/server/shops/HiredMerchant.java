@@ -49,7 +49,7 @@ public class HiredMerchant extends AbstractPlayerStore {
         this.item_sub_type = itemId % 100;
         this.foothold_id = owner.getFH();
         start = System.currentTimeMillis();
-        blacklist = new LinkedList<String>();
+        blacklist = new LinkedList<>();
         this.schedule = EtcTimer.getInstance().schedule(new Runnable() {
 
             @Override

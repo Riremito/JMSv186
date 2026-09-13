@@ -202,7 +202,7 @@ public class MapleFamilyCharacter {
     }
 
     public void resetPedigree(MapleFamily fam) { //not in order
-        pedigree = new ArrayList<Integer>();
+        pedigree = new ArrayList<>();
         pedigree.add(id); //lol
         if (seniorid > 0) {
             MapleFamilyCharacter chr = fam.getMFC(seniorid);

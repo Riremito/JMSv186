@@ -86,7 +86,7 @@ public class SkillWz extends WzXML {
                                 Skill skil = Skill.loadFromData(skillid, data2);
                                 List<Integer> job = map_SkillsByJob.get(skillid / 10000);
                                 if (job == null) {
-                                    job = new ArrayList<Integer>();
+                                    job = new ArrayList<>();
                                     map_SkillsByJob.put(skillid / 10000, job);
                                 }
                                 job.add(skillid);
