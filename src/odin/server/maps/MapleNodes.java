@@ -39,7 +39,9 @@ public class MapleNodes {
     private List<Integer> skillIds;
     private List<OdinPair<Integer, Integer>> mobsToSpawn;
     private List<OdinPair<Point, Integer>> guardiansToSpawn;
-    private int nodeStart = -1, nodeEnd = -1, mapid;
+    private int nodeStart = -1;
+    private int nodeEnd = -1;
+    private int mapid;
     private boolean firstHighest = true;
 
     public MapleNodes(int mapid) {
@@ -63,7 +65,11 @@ public class MapleNodes {
 
     public static class MapleNodeInfo {
 
-        public int node, key, x, y, attr;
+        public int node;
+        public int key;
+        public int x;
+        public int y;
+        public int attr;
         public List<Integer> edge;
 
         public MapleNodeInfo(int node, int key, int x, int y, int attr, List<Integer> edge) {
@@ -151,7 +157,13 @@ public class MapleNodes {
     public static class MaplePlatform {
 
         public String name;
-        public int start, speed, x1, y1, x2, y2, r;
+        public int start;
+        public int speed;
+        public int x1;
+        public int y1;
+        public int x2;
+        public int y2;
+        public int r;
         public List<Integer> SN;
 
         public MaplePlatform(String name, int start, int speed, int x1, int y1, int x2, int y2, int r, List<Integer> SN) {
@@ -177,7 +189,11 @@ public class MapleNodes {
 
     public static class MonsterPoint {
 
-        public int x, y, fh, cy, team;
+        public int x;
+        public int y;
+        public int fh;
+        public int cy;
+        public int team;
 
         public MonsterPoint(int x, int y, int fh, int cy, int team) {
             this.x = x;

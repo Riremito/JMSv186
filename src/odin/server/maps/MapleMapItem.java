@@ -33,10 +33,16 @@ public class MapleMapItem extends AbstractMapleMapObject {
 
     protected IItem item;
     protected MapleMapObject dropper;
-    protected int character_ownerid, meso = 0, questid = -1;
+    protected int character_ownerid;
+    protected int meso = 0;
+    protected int questid = -1;
     protected byte type;
-    protected boolean pickedUp = false, playerDrop, randDrop = false;
-    protected long nextExpiry = 0, nextFFA = 0;
+    protected boolean pickedUp = false;
+    protected boolean playerDrop;
+    protected boolean randDrop = false;
+    protected long nextExpiry = 0;
+    protected long nextFFA = 0;
+    private long time = 0;
 
     public MapleMapItem(IItem item, Point position, MapleMapObject dropper, MapleCharacter owner, byte type, boolean playerDrop) {
         setPosition(position);
@@ -127,8 +133,6 @@ public class MapleMapItem extends AbstractMapleMapObject {
     public void sendDestroyData(final TacosClient client) {
         client.SendPacket(ResCDropPool.DropLeaveField(this, LeaveType.NO_ANIMATION));
     }
-
-    private long time = 0;
 
     public long getTime() {
         return this.time;

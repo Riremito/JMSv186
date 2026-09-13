@@ -24,9 +24,13 @@ import tacos.client.TacosCharacter;
 
 public class MapleGuildCharacter { // alias for a character
 
-    private int channel = -1, guildrank, allianceRank;
+    private int channel = -1;
+    private int guildrank;
+    private int allianceRank;
     private int level;
-    private int id, jobid, guildid;
+    private int id;
+    private int jobid;
+    private int guildid;
     private boolean online;
     private String name;
 

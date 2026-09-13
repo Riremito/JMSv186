@@ -28,10 +28,34 @@ import tacos.config.Config;
 
 public class Equip extends Item implements IEquip {
 
-    private int upgradeSlots = 0, level = 0, vicioushammer = 0, enhance = 0;
-    private int str = 0, dex = 0, _int = 0, luk = 0, hp = 0, mp = 0, watk = 0, matk = 0, wdef = 0, mdef = 0, acc = 0, avoid = 0, hands = 0, speed = 0, jump = 0, hpR = 0, mpR = 0;
-    private int rank = 0, hidden = 0, potential1 = 0, potential2 = 0, potential3 = 0;
-    private int itemEXP = 0, durability = -1;
+    private int upgradeSlots = 0;
+    private int level = 0;
+    private int vicioushammer = 0;
+    private int enhance = 0;
+    private int str = 0;
+    private int dex = 0;
+    private int _int = 0;
+    private int luk = 0;
+    private int hp = 0;
+    private int mp = 0;
+    private int watk = 0;
+    private int matk = 0;
+    private int wdef = 0;
+    private int mdef = 0;
+    private int acc = 0;
+    private int avoid = 0;
+    private int hands = 0;
+    private int speed = 0;
+    private int jump = 0;
+    private int hpR = 0;
+    private int mpR = 0;
+    private int rank = 0;
+    private int hidden = 0;
+    private int potential1 = 0;
+    private int potential2 = 0;
+    private int potential3 = 0;
+    private int itemEXP = 0;
+    private int durability = -1;
     private int incattackSpeed = 0; // 攻撃速度の書
 
     public Equip(int id, short position, byte flag) {

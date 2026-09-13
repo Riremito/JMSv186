@@ -38,7 +38,10 @@ public class MapleMist extends AbstractMapleMapObject {
     private MapleStatEffect source;
     private MobSkill skill;
     private boolean isMobMist;
-    private int skillDelay, skilllevel, isPoisonMist, ownerId;
+    private int skillDelay;
+    private int skilllevel;
+    private int isPoisonMist;
+    private int ownerId;
 
     public MapleMist(Rectangle mistPosition, MapleMonster mob, MobSkill skill) {
         this.mistPosition = mistPosition;

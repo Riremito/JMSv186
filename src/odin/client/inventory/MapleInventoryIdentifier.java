@@ -32,7 +32,8 @@ public class MapleInventoryIdentifier {
 
     private AtomicInteger runningUID;
     private ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();
-    private Lock readLock = rwl.readLock(), writeLock = rwl.writeLock();
+    private Lock readLock = rwl.readLock();
+    private Lock writeLock = rwl.writeLock();
     private static MapleInventoryIdentifier instance = new MapleInventoryIdentifier();
 
     public MapleInventoryIdentifier() {

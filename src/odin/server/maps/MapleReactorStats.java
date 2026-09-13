@@ -99,7 +99,8 @@ public class MapleReactorStats {
 
     private static class StateData {
 
-        private int type, timeOut;
+        private int type;
+        private int timeOut;
         private OdinPair<Integer, Integer> reactItem;
         private byte nextState;
 

@@ -23,8 +23,10 @@ package odin.server.life;
 public class MobAttackInfo {
 
     private boolean isDeadlyAttack;
-    private int mpBurn, mpCon;
-    private int diseaseSkill, diseaseLevel;
+    private int mpBurn;
+    private int mpCon;
+    private int diseaseSkill;
+    private int diseaseLevel;
 
     public MobAttackInfo() {
     }

@@ -34,7 +34,10 @@ import tacos.odin.OdinPair;
 
 public class MTSCart {
 
-    private int characterId, tab = 1, type = 0, page = 0;
+    private int characterId;
+    private int tab = 1;
+    private int type = 0;
+    private int page = 0;
     //tab; 1 = buy now, 2 = wanted, 3 = auction, 4 = cart
     //type = inventorytype; 0 = anything
     //page = whatever

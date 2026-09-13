@@ -28,8 +28,11 @@ import tacos.database.query.DQ_Mountdata;
 
 public class MapleMount {
 
-    private int itemid, skillid, exp;
-    private int fatigue, level;
+    private int itemid;
+    private int skillid;
+    private int exp;
+    private int fatigue;
+    private int level;
     private boolean changed = false;
     private WeakReference<TacosCharacter> owner;
 

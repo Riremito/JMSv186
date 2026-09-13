@@ -36,9 +36,16 @@ import odin.server.life.MapleLifeFactory;
 
 public class Event_PyramidSubway {
 
-    private int kill = 0, cool = 0, miss = 0, skill = 0, type, energybar = 100;
+    private int kill = 0;
+    private int cool = 0;
+    private int miss = 0;
+    private int skill = 0;
+    private int type;
+    private int energybar = 100;
     private boolean broaded = false;
-    private ScheduledFuture<?> energyBarDecrease, timerSchedule, yetiSchedule;
+    private ScheduledFuture<?> energyBarDecrease;
+    private ScheduledFuture<?> timerSchedule;
+    private ScheduledFuture<?> yetiSchedule;
     //type: -1 = subway, 0-3 = difficulty of nett's pyramid.
 
     public Event_PyramidSubway(final MapleCharacter c) {

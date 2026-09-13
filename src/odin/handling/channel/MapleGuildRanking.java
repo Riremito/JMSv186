@@ -48,7 +48,11 @@ public class MapleGuildRanking {
     public static class GuildRankingInfo {
 
         private String name;
-        private int gp, logo, logocolor, logobg, logobgcolor;
+        private int gp;
+        private int logo;
+        private int logocolor;
+        private int logobg;
+        private int logobgcolor;
 
         public GuildRankingInfo(String name, int gp, int logo, int logocolor, int logobg, int logobgcolor) {
             this.name = name;

@@ -45,9 +45,16 @@ import tacos.server.TacosWorld;
 
 public abstract class AbstractPlayerStore extends AbstractMapleMapObject implements IMaplePlayerShop {
 
-    protected boolean open = false, available = false;
-    protected String ownerName, des, pass;
-    protected int ownerId, owneraccount, itemId, channel, map;
+    protected boolean open = false;
+    protected boolean available = false;
+    protected String ownerName;
+    protected String des;
+    protected String pass;
+    protected int ownerId;
+    protected int owneraccount;
+    protected int itemId;
+    protected int channel;
+    protected int map;
     protected AtomicInteger meso = new AtomicInteger(0);
     protected WeakReference<MapleCharacter> chrs[];
     protected List<String> visitors = new LinkedList<>();

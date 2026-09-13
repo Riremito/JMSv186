@@ -27,7 +27,8 @@ public class MapleFoothold implements Comparable<MapleFoothold> {
     private Point p1;
     private Point p2;
     private int id;
-    private short next, prev;
+    private short next;
+    private short prev;
 
     public MapleFoothold(Point p1, Point p2, int id) {
         this.p1 = p1;

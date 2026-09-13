@@ -30,7 +30,10 @@ import tacos.packet.ops.OpsMoveAbility;
 
 public class MapleSummon extends AbstractAnimatedMapleMapObject {
 
-    private final int ownerid, skillLevel, ownerLevel, skill;
+    private final int ownerid;
+    private final int skillLevel;
+    private final int ownerLevel;
+    private final int skill;
     private int fh;
     private MapleMap map; //required for instanceMaps
     private short hp;

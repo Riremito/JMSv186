@@ -22,8 +22,12 @@ package odin.client;
 
 public class BuddylistEntry {
 
-    private String name, group;
-    private int cid, channel, level, job;
+    private String name;
+    private String group;
+    private int cid;
+    private int channel;
+    private int level;
+    private int job;
     private boolean visible;
     private boolean hidden = false;
 

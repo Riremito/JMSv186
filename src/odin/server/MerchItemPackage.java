@@ -6,7 +6,8 @@ import odin.client.inventory.IItem;
 
 public class MerchItemPackage {
 
-    private int mesos = 0, packageid;
+    private int mesos = 0;
+    private int packageid;
     private List<IItem> items = new ArrayList<>();
 
     public void setItems(List<IItem> items) {

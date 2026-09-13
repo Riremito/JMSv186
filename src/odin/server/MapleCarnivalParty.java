@@ -18,7 +18,8 @@ public class MapleCarnivalParty {
     private WeakReference<MapleCharacter> leader;
     private byte team;
     private int channel;
-    private short availableCP = 0, totalCP = 0;
+    private short availableCP = 0;
+    private short totalCP = 0;
     private boolean winner = false;
 
     public MapleCarnivalParty(final MapleCharacter owner, final List<MapleCharacter> members1, final byte team1) {

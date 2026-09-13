@@ -36,8 +36,14 @@ public class Skill implements ISkill {
     private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
     private byte level;
-    private int id, animationTime, requiredSkill, masterLevel;
-    private boolean action, invisible, chargeskill, timeLimited;
+    private int id;
+    private int animationTime;
+    private int requiredSkill;
+    private int masterLevel;
+    private boolean action;
+    private boolean invisible;
+    private boolean chargeskill;
+    private boolean timeLimited;
 
     public Skill(final int id) {
         super();

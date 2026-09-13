@@ -42,9 +42,13 @@ public class MapleFamily {
     }
     //does not need to be in order :) CID -> MFC
     private final Map<Integer, MapleFamilyCharacter> members = new ConcurrentHashMap<>();
-    private String leadername = null, notice;
-    private int id, leaderid, generations = 0;
-    private boolean proper = true, bDirty = false;
+    private String leadername = null;
+    private String notice;
+    private int id;
+    private int leaderid;
+    private int generations = 0;
+    private boolean proper = true;
+    private boolean bDirty = false;
 
     public MapleFamily(final int fid) {
         super();

@@ -33,6 +33,7 @@ import tacos.wz.WzXML;
 public class MapleLifeFactory {
 
     private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
+    private static Map<Integer, String> npcNames = new HashMap<>();
 
     public static AbstractLoadedMapleLife getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {
@@ -213,7 +214,6 @@ public class MapleLifeFactory {
         return false;
     }
 
-    private static Map<Integer, String> npcNames = new HashMap<>();
 
     public static MapleNPC getNPC(int npc_id) {
         String name = npcNames.get(npc_id);

@@ -23,7 +23,8 @@ package odin.server.life;
 public class OverrideMonsterStats {
 
     private long hp;
-    private int exp, mp;
+    private int exp;
+    private int mp;
 
     public OverrideMonsterStats() {
         hp = 0;

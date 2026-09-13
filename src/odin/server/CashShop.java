@@ -40,7 +40,8 @@ import tacos.odin.OdinPair;
 
 public class CashShop {
 
-    private int accountId, characterId;
+    private int accountId;
+    private int characterId;
     private ItemLoader factory;
     private List<IItem> inventory = new ArrayList<>();
     private List<Integer> uniqueids = new ArrayList<>();

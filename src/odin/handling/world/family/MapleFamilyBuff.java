@@ -37,7 +37,6 @@ public class MapleFamilyBuff {
     private static final String[] name = {"Family Reunion", "Summon Family", "My Drop Rate 1.5x (15min)", "My EXP 1.5x (15min)",
         "Family Bonding (30min)", "My Drop Rate 2x (15min)", "My EXP 2x (15min)", "My Drop Rate 2x (30min)",
         "My EXP 2x (30min)", "My Party Drop Rate 2x (30min)", "My Party EXP 2x (30min)"};
-
     private static final String[] desc = {"[Target] Me\n[Effect] Teleport directly to the Family member of your choice.",
         "[Target] 1 Family member\n[Effect] Summon a Family member of choice to the map you're in.",
         "[Target] Me\n[Time] 15 min.\n[Effect] Monster drop rate will be increased #c1.5x#.\n*  If the Drop Rate event is in progress, this will be nullified.",
@@ -49,7 +48,6 @@ public class MapleFamilyBuff {
         "[Target] Me\n[Time] 30 min.\n[Effect] EXP earned from hunting will be increased #c2x#.\n* If the EXP event is in progress, this will be nullified.",
         "[Target] My party\n[Time] 30 min.\n[Effect] Monster drop rate will be increased #c2x#.\n* If the Drop Rate event is in progress, this will be nullified.",
         "[Target] My party\n[Time] 30 min.\n[Effect] EXP earned from hunting will be increased #c2x#.\n* If the EXP event is in progress, this will be nullified."};
-
     private final static List<MapleFamilyBuffEntry> buffEntries;
 
     static {
@@ -69,8 +67,15 @@ public class MapleFamilyBuff {
 
     public static class MapleFamilyBuffEntry {
 
-        public String name, desc;
-        public int count, rep, type, index, questID, duration, effect;
+        public String name;
+        public String desc;
+        public int count;
+        public int rep;
+        public int type;
+        public int index;
+        public int questID;
+        public int duration;
+        public int effect;
 
         public MapleFamilyBuffEntry(int index, String name, String desc, int count, int rep, int type, int questID, int duration, int effect) {
             this.name = name;

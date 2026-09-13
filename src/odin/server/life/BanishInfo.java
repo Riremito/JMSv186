@@ -23,7 +23,8 @@ package odin.server.life;
 public class BanishInfo {
 
     private int map;
-    private String portal, msg;
+    private String portal;
+    private String msg;
 
     public BanishInfo(String msg, int map, String portal) {
         this.msg = msg;

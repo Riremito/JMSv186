@@ -37,13 +37,21 @@ import odin.server.maps.MapleMist;
 
 public class MobSkill {
 
-    private int skillId, skillLevel, mpCon, spawnEffect, hp, x, y;
-    private long duration, cooltime;
+    private int skillId;
+    private int skillLevel;
+    private int mpCon;
+    private int spawnEffect;
+    private int hp;
+    private int x;
+    private int y;
+    private long duration;
+    private long cooltime;
     private float prop;
 //    private short effect_delay;
     private short limit;
     private List<Integer> toSummon = new ArrayList<>();
-    private Point lt, rb;
+    private Point lt;
+    private Point rb;
 
     public MobSkill(int skillId, int level) {
         this.skillId = skillId;

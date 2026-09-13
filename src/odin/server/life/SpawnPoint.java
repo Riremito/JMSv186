@@ -33,7 +33,8 @@ public class SpawnPoint extends Spawns {
     private MapleMonster monster;
     private Point pos;
     private long nextPossibleSpawn;
-    private int mobTime, carnival = -1;
+    private int mobTime;
+    private int carnival = -1;
     private AtomicInteger spawnedMonsters = new AtomicInteger(0);
     private boolean immobile;
     private String msg;

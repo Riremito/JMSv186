@@ -26,9 +26,13 @@ import java.util.Map;
 
 public class MapleBBSThread {
 
-    public String name, text;
+    public String name;
+    public String text;
     public long timestamp;
-    public int localthreadID, guildID, ownerID, icon;
+    public int localthreadID;
+    public int guildID;
+    public int ownerID;
+    public int icon;
     public Map<Integer, MapleBBSReply> replies = new HashMap<>();
 
     public MapleBBSThread(final int localthreadID, final String name, final String text, final long timestamp,
@@ -52,7 +56,8 @@ public class MapleBBSThread {
 
     public static class MapleBBSReply {
 
-        public int replyid, ownerID;
+        public int replyid;
+        public int ownerID;
         public long timestamp;
         public String content;
 

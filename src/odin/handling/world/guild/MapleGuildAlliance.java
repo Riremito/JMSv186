@@ -38,8 +38,11 @@ public class MapleGuildAlliance {
     }
     public static final int CHANGE_CAPACITY_COST = 10000000;
     private final int[] guilds = new int[5];
-    private int allianceid, leaderid, capacity; //make SQL for this auto-increment
-    private String name, notice;
+    private int allianceid;
+    private int leaderid;
+    private int capacity; //make SQL for this auto-increment
+    private String name;
+    private String notice;
     private String ranks[] = new String[5];
 
     public MapleGuildAlliance(final int id) {

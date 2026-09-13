@@ -101,8 +101,10 @@ public class ItemMakerFactory {
 
     public static class GemCreateEntry {
 
-        private int reqLevel, reqMakerLevel;
-        private int cost, quantity;
+        private int reqLevel;
+        private int reqMakerLevel;
+        private int cost;
+        private int quantity;
         private List<OdinPair<Integer, Integer>> randomReward = new ArrayList<>();
         private List<OdinPair<Integer, Integer>> reqRecipe = new ArrayList<>();
 
@@ -145,9 +147,13 @@ public class ItemMakerFactory {
     public static class ItemMakerCreateEntry {
 
         private int reqLevel;
-        private int cost, quantity, stimulator;
-        private byte tuc, reqMakerLevel;
+        private int cost;
+        private int quantity;
+        private int stimulator;
+        private byte tuc;
+        private byte reqMakerLevel;
         private List<OdinPair<Integer, Integer>> reqItems = new ArrayList<>(); // itemId / amount
+
         public ItemMakerCreateEntry(int cost, int reqLevel, byte reqMakerLevel, int quantity, byte tuc, int stimulator) {
             this.cost = cost;
             this.tuc = tuc;

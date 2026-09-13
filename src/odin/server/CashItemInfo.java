@@ -50,8 +50,22 @@ public class CashItemInfo {
 
     public static class CashModInfo {
 
-        public int discountPrice, mark, priority, sn, itemid, flags, period, gender, count, meso, unk_1, unk_2, unk_3, extra_flags;
-        public boolean showUp, packagez;
+        public int discountPrice;
+        public int mark;
+        public int priority;
+        public int sn;
+        public int itemid;
+        public int flags;
+        public int period;
+        public int gender;
+        public int count;
+        public int meso;
+        public int unk_1;
+        public int unk_2;
+        public int unk_3;
+        public int extra_flags;
+        public boolean showUp;
+        public boolean packagez;
         private CashItemInfo cii;
 
         public CashModInfo(int sn, int discount, int mark, boolean show, int itemid, int priority, boolean packagez, int period, int gender, int count, int meso, int unk_1, int unk_2, int unk_3, int extra_flags) {
