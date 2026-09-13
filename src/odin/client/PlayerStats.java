@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.struct.InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.response.ResCUserLocal;
@@ -628,7 +630,7 @@ public class PlayerStats {
                 }
                 changed = true;
             }
-            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eq.copy()));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIPPED, eq.copy()).build()));
         }
         if (changed) {
             chr.equipChanged();
@@ -660,9 +662,9 @@ public class PlayerStats {
                 durabilityHandling.remove(eqq);
                 final short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
                 MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, eqq));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, eqq).build()));
             } else {
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eqq.copy()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIPPED, eqq.copy()).build()));
             }
         }
         return true;

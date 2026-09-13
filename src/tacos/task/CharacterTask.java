@@ -23,7 +23,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import tacos.client.TacosBuff;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.struct.InvOp;
 import tacos.wz.WzXML;
 
 /**
@@ -66,7 +66,7 @@ public class CharacterTask {
                 continue;
             }
             pet.setFullness(newFullness);
-            chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
         }
         return true;
     }

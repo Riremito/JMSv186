@@ -34,7 +34,8 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.struct.InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -137,7 +138,7 @@ public class ReqCUser_Pet {
         chr.updateInv();
 
         // 情報更新
-        chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+        chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
             chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(0));
@@ -197,7 +198,7 @@ public class ReqCUser_Pet {
                     chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
                     chr.getMap().broadcastMessage(ResCUserRemote.showPetLevelUp(chr, petIndex));
                 }
-                chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
         chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetActionCommand(chr.getId(), command, petIndex, success, false), true);

@@ -77,6 +77,7 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.struct.InvOp;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
@@ -1288,9 +1289,9 @@ public class MapleCharacter extends TacosCharacter {
         getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
 
         if (item_used.getQuantity() == 0 && !isRecharge) {
-            SendPacket(ResWrapper.clearInventoryItem(type, item_used.getPosition(), true));
+            SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().remove(type, item_used.getPosition()).build()));
         } else {
-            SendPacket(ResWrapper.updateInventorySlot(type, (Item) item_used, true));
+            SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().update(type, (Item) item_used).build()));
         }
 
         return true;

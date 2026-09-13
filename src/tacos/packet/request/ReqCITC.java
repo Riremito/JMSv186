@@ -35,7 +35,8 @@ import odin.server.MTSStorage;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.response.builder.PB_ITC;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.struct.InvOp;
 import tacos.server.TacosITC;
 
 /**
@@ -196,7 +197,7 @@ public class ReqCITC {
                     chr.addPet(item_.getPet());
                 }
                 cart.removeFromInventory(item);
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.getByType(item_.getType()), item_));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.getByType(item_.getType()), item_).build()));
 
                 PB_ITC pb = PB_ITC.builder()
                         .item(item_)

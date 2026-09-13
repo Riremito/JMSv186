@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
-import odin.constants.GameConstants;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.arg.ArgBroadcastMsg;
@@ -40,7 +37,6 @@ import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.struct.InvOp;
 import odin.server.Randomizer;
 
 /**
@@ -48,100 +44,6 @@ import odin.server.Randomizer;
  * @author Riremito
  */
 public class ResWrapper {
-
-    public static ServerPacket addInventorySlot(MapleInventoryType type, Item item) {
-        return addInventorySlot(type, item, false);
-    }
-
-    public static ServerPacket addInventorySlot(MapleInventoryType type, Item item, boolean fromDrop) {
-        InvOp io = new InvOp();
-        io.add(type, item);
-        return ResCWvsContext.InventoryOperation(fromDrop, io);
-    }
-
-    public static ServerPacket updateInventorySlot(MapleInventoryType type, Item item, boolean fromDrop) {
-        InvOp io = new InvOp();
-        io.update(type, item);
-        return ResCWvsContext.InventoryOperation(fromDrop, io);
-    }
-
-    public static ServerPacket dropInventoryItemUpdate(MapleInventoryType type, Item item) {
-        InvOp io = new InvOp();
-        io.update(type, item);
-        return ResCWvsContext.InventoryOperation(true, io);
-    }
-
-    public static ServerPacket updatePet(final MaplePet pet, final Item item) {
-        InvOp io = new InvOp();
-        // ペットと装備の更新時はアイテムを削除する必要はなく、同一スロットにアイテムを追加するだけで良い
-        // アイテム削除を行うとペットと装備固有のクエストが再発生する
-        io.add(MapleInventoryType.CASH, item);
-        return ResCWvsContext.InventoryOperation(false, io);
-    }
-
-    public static ServerPacket moveInventoryItem(MapleInventoryType type, int src, int dst) {
-        return moveInventoryItem(type, src, dst, (byte) -1);
-    }
-
-    public static ServerPacket moveInventoryItem(MapleInventoryType type, int src, int dst, short equipIndicator) {
-        InvOp io = new InvOp();
-        io.move(type, src, dst);
-        return ResCWvsContext.InventoryOperation(true, io);
-    }
-
-    public static ServerPacket dropInventoryItem(MapleInventoryType type, short src) {
-        InvOp io = new InvOp();
-        io.remove(type, src);
-        return ResCWvsContext.InventoryOperation(true, io);
-    }
-
-    public static ServerPacket clearInventoryItem(MapleInventoryType type, short slot, boolean fromDrop) {
-        InvOp io = new InvOp();
-        io.remove(type, slot);
-        return ResCWvsContext.InventoryOperation(fromDrop, io);
-    }
-
-    public static ServerPacket scrolledItem(Item scroll, Item item, boolean destroyed, boolean potential) {
-        InvOp io = new InvOp();
-
-        // 書
-        if (0 < scroll.getQuantity()) {
-            io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
-        } else {
-            io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
-        }
-
-        // 装備
-        if (!destroyed) {
-            io.add(GameConstants.getInventoryType(item.getItemId()), item);
-        } else {
-            io.remove(GameConstants.getInventoryType(item.getItemId()), item.getPosition());
-        }
-
-        return ResCWvsContext.InventoryOperation(true, io);
-    }
-
-    public static ServerPacket moveAndMergeInventoryItem(MapleInventoryType type, Item item, short slot_remove) {
-        InvOp io = new InvOp();
-        io.move(type, slot_remove, item.getPosition()); // new item frame movement
-        io.remove(type, slot_remove);
-        io.update(type, item);
-        return ResCWvsContext.InventoryOperation(true, io);
-    }
-
-    public static ServerPacket moveAndMergeWithRestInventoryItem(MapleInventoryType type, Item item_max, Item item_rest) {
-        InvOp io = new InvOp();
-        io.update(type, item_rest);
-        io.update(type, item_max);
-        return ResCWvsContext.InventoryOperation(true, io);
-    }
-
-    // 装着時交換不可など
-    public static ServerPacket updateSpecialItemUse_(Item item, byte invType) {
-        InvOp io = new InvOp();
-        io.add(GameConstants.getInventoryType(item.getItemId()), item);
-        return ResCWvsContext.InventoryOperation(true, io);
-    }
 
     public static ServerPacket getShowInventoryFull() {
         return getShowInventoryStatus(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL);

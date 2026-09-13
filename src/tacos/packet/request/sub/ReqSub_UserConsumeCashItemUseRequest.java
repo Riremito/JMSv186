@@ -45,7 +45,7 @@ import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.struct.InvOp;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
@@ -211,7 +211,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 equip.setViciousHammer(equip.getViciousHammer() + 1);
                 equip.setUpgradeSlots(equip.getUpgradeSlots() + 1);
 
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 chr.SendPacket(ResCUIItemUpgrade.ItemUpgradeResult(OpsCashItem.CashItemRes_ItemUpgradeSuccess, equip));
                 item_use.run();
                 return true;
@@ -259,7 +259,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
 
                 item.setOwner(chr.getName());
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, item));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, item).build()));
                 return true;
             }
             case 5060001: // 封印の錠
@@ -291,7 +291,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
 
                 item.setFlag((byte) (item.getFlag() | ItemFlag.LOCK.getValue()));
-                chr.SendPacket(ResWrapper.addInventorySlot(type, item));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, item).build()));
                 return true;
             }
             case 5062000:
@@ -309,7 +309,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 equip.resetPotential(cash_item_id == 5062001 || cash_item_id == 5062003, cash_item_id == 5062002 || cash_item_id == 5062003);
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
                 chr.getMap().broadcastMessage(chr, ResCUser.UserItemUnreleaseEffect(chr), false);
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 //MapleInventoryManipulator.addById(chr.getClient(), 2430112, (short) 1);
                 return true;
             }
@@ -536,7 +536,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 // new name
                 pet.setName(pet_name);
-                chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
                 chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetNameChanged(chr, pet, pet_name), true);
                 return true;
             }

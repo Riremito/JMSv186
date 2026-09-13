@@ -20,7 +20,9 @@ package tacos.packet.response.struct;
 
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -28,29 +30,50 @@ import java.util.ArrayList;
  */
 public class InvOp {
 
-    private ArrayList<InvData> idv = new ArrayList<>();
+    private final List<InvData> idv;
 
-    public void add(MapleInventoryType type, Item item) {
-        idv.add(new InvData(0, type, item));
+    private InvOp(List<InvData> idv) {
+        this.idv = idv;
     }
 
-    public void update(MapleInventoryType type, Item item) {
-        idv.add(new InvData(1, type, item));
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public void move(MapleInventoryType type, int src, int dst) {
-        idv.add(new InvData(2, type, src, dst));
-    }
-
-    public void remove(MapleInventoryType type, int src) {
-        idv.add(new InvData(3, type, src));
-    }
-
-    public ArrayList<InvData> get() {
+    public List<InvData> get() {
         return idv;
     }
 
-    public class InvData {
+    public static class Builder {
+
+        private final List<InvData> idv = new LinkedList<>();
+
+        public Builder add(MapleInventoryType type, Item item) {
+            idv.add(new InvData(0, type, item));
+            return this;
+        }
+
+        public Builder update(MapleInventoryType type, Item item) {
+            idv.add(new InvData(1, type, item));
+            return this;
+        }
+
+        public Builder move(MapleInventoryType type, int src, int dst) {
+            idv.add(new InvData(2, type, src, dst));
+            return this;
+        }
+
+        public Builder remove(MapleInventoryType type, int src) {
+            idv.add(new InvData(3, type, src));
+            return this;
+        }
+
+        public InvOp build() {
+            return new InvOp(Collections.unmodifiableList(idv));
+        }
+    }
+
+    public static class InvData {
 
         public int mode;
         public MapleInventoryType type;

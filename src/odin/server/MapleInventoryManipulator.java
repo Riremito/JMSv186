@@ -18,6 +18,8 @@ import tacos.config.Region;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.struct.InvOp;
 import odin.server.maps.AramiaFireWorks;
 import tacos.client.TacosClient;
 import tacos.config.Config;
@@ -53,7 +55,7 @@ public class MapleInventoryManipulator {
             return newSlot;
         }
         if (!fromcs) {
-            client.SendPacket(ResWrapper.addInventorySlot(type, item));
+            client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, item).build()));
         }
         client.getPlayer().havePartyQuest(item.getItemId());
         return newSlot;
@@ -118,7 +120,7 @@ public class MapleInventoryManipulator {
                                 short newQ = (short) Math.min(oldQ + quantity, slotMax);
                                 quantity -= (newQ - oldQ);
                                 eItem.setQuantity(newQ);
-                                client.SendPacket(ResWrapper.updateInventorySlot(type, eItem, false));
+                                client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().update(type, eItem).build()));
                             }
                         } else {
                             break;
@@ -150,7 +152,7 @@ public class MapleInventoryManipulator {
                             pet.setInventoryPosition(newSlot);
                             client.getPlayer().addPet(pet);
                         }
-                        client.SendPacket(ResWrapper.addInventorySlot(type, nItem));
+                        client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nItem).build()));
                         if (GameConstants.isRechargable(itemId) && quantity == 0) {
                             break;
                         }
@@ -174,7 +176,7 @@ public class MapleInventoryManipulator {
                     nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }
 
-                client.SendPacket(ResWrapper.addInventorySlot(type, nItem));
+                client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nItem).build()));
                 chr.updateInv();
             }
         } else {
@@ -193,7 +195,7 @@ public class MapleInventoryManipulator {
                     client.SendPacket(ResWrapper.getShowInventoryFull());
                     return -1;
                 }
-                client.SendPacket(ResWrapper.addInventorySlot(type, nEquip));
+                client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nEquip).build()));
             } else {
                 throw new InventoryException("Trying to create equip with non-one quantity");
             }
@@ -236,7 +238,7 @@ public class MapleInventoryManipulator {
                                 short newQ = (short) Math.min(oldQ + quantity, slotMax);
                                 quantity -= (newQ - oldQ);
                                 nItem.setQuantity(newQ);
-                                client.SendPacket(ResWrapper.updateInventorySlot(type, nItem, false));
+                                client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().update(type, nItem).build()));
                             }
                         } else {
                             break;
@@ -256,7 +258,7 @@ public class MapleInventoryManipulator {
                             return null;
                         }
                         recieved = true;
-                        client.SendPacket(ResWrapper.addInventorySlot(type, nItem));
+                        client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nItem).build()));
                         if (GameConstants.isRechargable(itemId) && quantity == 0) {
                             break;
                         }
@@ -276,7 +278,7 @@ public class MapleInventoryManipulator {
                 if (newSlot == -1) {
                     return null;
                 }
-                client.SendPacket(ResWrapper.addInventorySlot(type, nItem));
+                client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nItem).build()));
                 client.getPlayer().havePartyQuest(nItem.getItemId());
                 return nItem;
             }
@@ -288,7 +290,7 @@ public class MapleInventoryManipulator {
                 if (newSlot == -1) {
                     return null;
                 }
-                client.SendPacket(ResWrapper.addInventorySlot(type, item, true));
+                client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().add(type, item).build()));
                 client.getPlayer().havePartyQuest(item.getItemId());
                 return item;
             } else {
@@ -333,7 +335,7 @@ public class MapleInventoryManipulator {
                                 final short newQ = (short) Math.min(oldQ + quantity, slotMax);
                                 quantity -= (newQ - oldQ);
                                 eItem.setQuantity(newQ);
-                                client.SendPacket(ResWrapper.updateInventorySlot(type, eItem, true));
+                                client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().update(type, eItem).build()));
                             }
                         } else {
                             break;
@@ -355,7 +357,7 @@ public class MapleInventoryManipulator {
                         item.setQuantity((short) (quantity + newQ));
                         return false;
                     }
-                    client.SendPacket(ResWrapper.addInventorySlot(type, nItem, true));
+                    client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().add(type, nItem).build()));
                 }
             } else {
                 // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
@@ -369,7 +371,7 @@ public class MapleInventoryManipulator {
                     client.SendPacket(ResWrapper.getShowInventoryFull());
                     return false;
                 }
-                client.SendPacket(ResWrapper.addInventorySlot(type, nItem));
+                client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nItem).build()));
                 chr.updateInv();
             }
         } else {
@@ -384,7 +386,7 @@ public class MapleInventoryManipulator {
                     client.SendPacket(ResWrapper.getShowInventoryFull());
                     return false;
                 }
-                client.SendPacket(ResWrapper.addInventorySlot(type, item, true));
+                client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().add(type, item).build()));
             } else {
                 throw new RuntimeException("Trying to create equip with non-one quantity");
             }
@@ -485,9 +487,9 @@ public class MapleInventoryManipulator {
             client.getPlayer().getInventory(type).removeItem(slot, quantity, allowZero);
 
             if (item.getQuantity() == 0 && !allowZero) {
-                client.SendPacket(ResWrapper.clearInventoryItem(type, item.getPosition(), unlock));
+                client.SendPacket(ResCWvsContext.InventoryOperation(unlock, InvOp.builder().remove(type, item.getPosition()).build()));
             } else {
-                client.SendPacket(ResWrapper.updateInventorySlot(type, (Item) item, unlock));
+                client.SendPacket(ResCWvsContext.InventoryOperation(unlock, InvOp.builder().update(type, (Item) item).build()));
             }
         }
     }
@@ -533,13 +535,13 @@ public class MapleInventoryManipulator {
                 && !type.equals(MapleInventoryType.CASH)) {
             if ((olddstQ + oldsrcQ) > slotMax) {
                 // アイテム個数がMAXを超過する場合は古い移動前のスロットも維持
-                client.SendPacket(ResWrapper.moveAndMergeWithRestInventoryItem(type, initialTarget, source));
+                client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().update(type, source).update(type, initialTarget).build()));
             } else {
                 // アイテム個数がMAXを超過しない場合は古い移動前のスロットを削除
-                client.SendPacket(ResWrapper.moveAndMergeInventoryItem(type, initialTarget, src));
+                client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().move(type, src, initialTarget.getPosition()).remove(type, src).update(type, initialTarget).build()));
             }
         } else {
-            client.SendPacket(ResWrapper.moveInventoryItem(type, src, dst));
+            client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().move(type, src, dst).build()));
         }
     }
 
@@ -664,7 +666,7 @@ public class MapleInventoryManipulator {
             if (!ItemFlag.UNTRADEABLE.check(flag)) {
                 flag |= ItemFlag.UNTRADEABLE.getValue();
                 source.setFlag(flag);
-                client.SendPacket(ResWrapper.updateSpecialItemUse_(source, GameConstants.getInventoryType(source.getItemId()).getType()));
+                client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().add(GameConstants.getInventoryType(source.getItemId()), source).build()));
             }
         }
 
@@ -681,7 +683,7 @@ public class MapleInventoryManipulator {
         if (source.getItemId() == 1122017) {
             chr.startFairySchedule(true, true);
         }
-        client.SendPacket(ResWrapper.moveInventoryItem(MapleInventoryType.EQUIP, src, dst, (byte) 2));
+        client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().move(MapleInventoryType.EQUIP, src, dst).build()));
         chr.equipChanged();
     }
 
@@ -710,7 +712,7 @@ public class MapleInventoryManipulator {
         if (source.getItemId() == 1122017) {
             client.getPlayer().cancelFairySchedule(true);
         }
-        client.SendPacket(ResWrapper.moveInventoryItem(MapleInventoryType.EQUIP, src, dst, (byte) 1));
+        client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().move(MapleInventoryType.EQUIP, src, dst).build()));
         client.getPlayer().equipChanged();
     }
 
@@ -747,7 +749,7 @@ public class MapleInventoryManipulator {
             final Item target = source.copy();
             target.setQuantity(quantity);
             source.setQuantity((short) (source.getQuantity() - quantity));
-            client.SendPacket(ResWrapper.dropInventoryItemUpdate(type, source));
+            client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().update(type, source).build()));
 
             if (ii.isDropRestricted(target.getItemId()) || ii.isAccountShared(target.getItemId())) {
                 if (ItemFlag.KARMA_EQ.check(flag)) {
@@ -770,7 +772,7 @@ public class MapleInventoryManipulator {
             }
         } else {
             client.getPlayer().getInventory(type).removeSlot(src);
-            client.SendPacket(ResWrapper.dropInventoryItem((src < 0 ? MapleInventoryType.EQUIP : type), src));
+            client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().remove((src < 0 ? MapleInventoryType.EQUIP : type), src).build()));
             if (src < 0) {
                 client.getPlayer().equipChanged();
             }

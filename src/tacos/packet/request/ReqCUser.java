@@ -63,6 +63,7 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.struct.InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
@@ -1569,7 +1570,16 @@ public class ReqCUser {
             }
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
-            chr.SendPacket(ResWrapper.scrolledItem(scroll, toHammer, false, false));
+            {
+                InvOp.Builder io = InvOp.builder();
+                if (0 < scroll.getQuantity()) {
+                    io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
+                } else {
+                    io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
+                }
+                io.add(GameConstants.getInventoryType(toHammer.getItemId()), toHammer);
+                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+            }
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
             chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
             return true;
@@ -1684,14 +1694,32 @@ public class ReqCUser {
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
         }
         if (scrollSuccess == Equip.ScrollResult.CURSE) {
-            chr.SendPacket(ResWrapper.scrolledItem(scroll, toScroll, true, false));
+            {
+                InvOp.Builder io = InvOp.builder();
+                if (0 < scroll.getQuantity()) {
+                    io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
+                } else {
+                    io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
+                }
+                io.remove(GameConstants.getInventoryType(toScroll.getItemId()), toScroll.getPosition());
+                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+            }
             if (equip_slot < 0) {
                 chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
             } else {
                 chr.getInventory(MapleInventoryType.EQUIP).removeItem(toScroll.getPosition());
             }
         } else if (vegas == 0) {
-            chr.SendPacket(ResWrapper.scrolledItem(scroll, scrolled, false, false));
+            {
+                InvOp.Builder io = InvOp.builder();
+                if (0 < scroll.getQuantity()) {
+                    io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
+                } else {
+                    io.remove(GameConstants.getInventoryType(scroll.getItemId()), scroll.getPosition());
+                }
+                io.add(GameConstants.getInventoryType(scrolled.getItemId()), scrolled);
+                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+            }
         }
         chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), scrollSuccess, legendarySpirit), vegas == 0);
         // equipped item was scrolled and changed
@@ -1700,7 +1728,7 @@ public class ReqCUser {
         }
         // ベガの呪文書
         if (vegas != 0) {
-            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, toScroll));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, toScroll).build()));
             chr.SendPacket(ResCUIVega.VegaResult(OpsCashItem.CashItemRes_VegaSuccess1));
             chr.SendPacket(ResCUIVega.VegaResult(scrollSuccess == Equip.ScrollResult.SUCCESS ? OpsCashItem.CashItemRes_VegaSuccess2 : OpsCashItem.CashItemRes_VegaErr2));
         }
@@ -1735,7 +1763,16 @@ public class ReqCUser {
         if (eqq.getHidden() == 1
                 && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
             eqq.setHidden(0); // 未確認状態へ変更
-            chr.SendPacket(ResWrapper.scrolledItem(magnify, toReveal, false, true));
+            {
+                InvOp.Builder io = InvOp.builder();
+                if (0 < magnify.getQuantity()) {
+                    io.update(GameConstants.getInventoryType(magnify.getItemId()), magnify);
+                } else {
+                    io.remove(GameConstants.getInventoryType(magnify.getItemId()), magnify.getPosition());
+                }
+                io.add(GameConstants.getInventoryType(toReveal.getItemId()), toReveal);
+                chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
+            }
             map.broadcastMessage(ResCUser.UserItemReleaseEffect(chr, eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
             //Debug.DebugLog("potential updated");
@@ -2716,11 +2753,11 @@ public class ReqCUser {
 
         for (Equip equip : equippeds) {
             equip.setDurability(TacosShared.getDurabilityMax(equip));
-            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, equip));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIPPED, equip).build()));
         }
         for (Equip equip : equips) {
             equip.setDurability(TacosShared.getDurabilityMax(equip));
-            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
         }
 
         return true;
@@ -2747,7 +2784,7 @@ public class ReqCUser {
 
         chr.gainMeso(-price, false);
         equip.setDurability(durability_max);
-        chr.SendPacket(ResWrapper.addInventorySlot(type, equip));
+        chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, equip).build()));
         return true;
     }
 

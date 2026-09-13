@@ -59,6 +59,7 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.struct.InvOp;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosChannel;
@@ -746,7 +747,7 @@ public abstract class OdinAbstractPlayerInteraction {
         final MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
-            getClient().SendPacket(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+            getClient().SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         }
     }
 
@@ -754,7 +755,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (final MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
-                getClient().SendPacket(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                getClient().SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
     }
