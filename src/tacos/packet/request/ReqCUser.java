@@ -244,7 +244,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserParcelRequest: {
-                return ReqCParcelDlg.Accept(client, cp);
+                ReqCParcelDlg.Accept(client, cp);
+                return true;
             }
             case CP_ShopScannerRequest: {
                 OnShopScannerRequest(chr, cp);
@@ -464,7 +465,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMacroSysDataModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                return true;
             }
             case CP_UserItemMakeRequest: {
                 ItemMakerHandler.OnItemMakeRequest(cp, chr);
@@ -512,10 +514,12 @@ public class ReqCUser {
                 return true;
             }
             case CP_Messenger: {
-                return ReqCUIMessenger.OnPacket(chr, header, cp);
+                ReqCUIMessenger.OnPacket(chr, header, cp);
+                return true;
             }
             case CP_MiniRoom: {
-                return ReqCMiniRoomBaseDlg.OnMiniRoom(chr, map, cp);
+                ReqCMiniRoomBaseDlg.OnMiniRoom(chr, map, cp);
+                return true;
             }
             case CP_PartyRequest: {
                 OnPartyRequest(chr, cp);
@@ -555,10 +559,12 @@ public class ReqCUser {
                 return true;
             }
             case CP_FuncKeyMappedModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                return true;
             }
             case CP_RPSGame: {
-                return ReqCRPSGameDlg.OnPacket(client, header, cp);
+                ReqCRPSGameDlg.OnPacket(client, header, cp);
+                return true;
             }
             case CP_MarriageRequest: {
                 OnMarriageRequest(chr, cp);
@@ -657,7 +663,8 @@ public class ReqCUser {
                 return true;
             }
             case CP_QuickslotKeyMappedModified: {
-                return ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                return true;
             }
             case CP_UpdateScreenSetting: // 解像度変更
             {
