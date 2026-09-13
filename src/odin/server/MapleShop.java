@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
@@ -134,7 +133,7 @@ public class MapleShop {
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
-        IItem item = client.getPlayer().getInventory(type).getItem(slot);
+        Item item = client.getPlayer().getInventory(type).getItem(slot);
         if (item == null) {
             return;
         }
@@ -170,7 +169,7 @@ public class MapleShop {
     }
 
     public boolean recharge(final TacosClient client, final byte slot) {
-        final IItem item = client.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
+        final Item item = client.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
             client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));

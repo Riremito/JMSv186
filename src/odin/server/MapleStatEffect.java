@@ -1,6 +1,6 @@
 package odin.server;
 
-import odin.client.ISkill;
+import odin.client.Skill;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -9,7 +9,7 @@ import java.util.Map;
 import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.status.MonsterStatus;
@@ -460,7 +460,7 @@ public class MapleStatEffect {
             applyto.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
         } else if (isSpiritClaw()) {
             MapleInventory use = applyto.getInventory(MapleInventoryType.USE);
-            IItem item;
+            Item item;
             for (int i = 0; i < use.getSlotLimit(); i++) { // impose order...
                 item = use.getItem((byte) i);
                 if (item != null) {
@@ -724,7 +724,7 @@ public class MapleStatEffect {
 
                 final int ElemSkillId = getElementalAmp(applyfrom.getJob());
                 if (ElemSkillId != -1) {
-                    final ISkill amp = SkillFactory.getSkill(ElemSkillId);
+                    final Skill amp = SkillFactory.getSkill(ElemSkillId);
                     final int ampLevel = applyfrom.getSkillLevel(amp);
                     if (ampLevel > 0) {
                         MapleStatEffect ampStat = amp.getEffect(ampLevel);
@@ -752,7 +752,7 @@ public class MapleStatEffect {
     }
 
     private final MapleStatEffect getAlchemistEffect(final MapleCharacter chr) {
-        ISkill al;
+        Skill al;
         switch (chr.getJob()) {
             case 411:
             case 412:

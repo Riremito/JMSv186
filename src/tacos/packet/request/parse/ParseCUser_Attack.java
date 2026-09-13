@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import odin.client.SkillFactory;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleStatEffect;
@@ -104,14 +104,14 @@ public class ParseCUser_Attack {
         return (HitKey >> 4) & 0x0F; // nCount
     }
 
-    public MapleStatEffect getAttackEffect(MapleCharacter chr, int skillLevel, ISkill skill_) {
+    public MapleStatEffect getAttackEffect(MapleCharacter chr, int skillLevel, Skill skill_) {
         if (GameConstants.isMulungSkill(skill) || GameConstants.isPyramidSkill(skill)) {
             skillLevel = 1;
         } else if (skillLevel <= 0) {
             return null;
         }
         if (GameConstants.isLinkedAranSkill(skill)) {
-            final ISkill skillLink = SkillFactory.getSkill(skill);
+            final Skill skillLink = SkillFactory.getSkill(skill);
             return skillLink.getEffect(skillLevel);
         }
         return skill_.getEffect(skillLevel);
@@ -182,14 +182,14 @@ public class ParseCUser_Attack {
             }
         }
         if (this.pnCashItemPos != 0) {
-            IItem item = chr.getInventory(MapleInventoryType.CASH).getItem(this.pnCashItemPos);
+            Item item = chr.getInventory(MapleInventoryType.CASH).getItem(this.pnCashItemPos);
             if (item != null) {
                 this.nBulletItemID = item.getItemId();
             }
             return true;
         }
         if (this.ProperBulletPosition != 0) {
-            IItem item = chr.getInventory(MapleInventoryType.USE).getItem(this.ProperBulletPosition);
+            Item item = chr.getInventory(MapleInventoryType.USE).getItem(this.ProperBulletPosition);
             if (item != null) {
                 this.nBulletItemID = item.getItemId();
             }

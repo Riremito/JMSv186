@@ -22,7 +22,7 @@ package odin.server.quest;
 
 import java.util.HashMap;
 import java.util.Map;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.constants.GameConstants;
 import odin.client.inventory.InventoryException;
 import odin.client.MapleCharacter;
@@ -201,7 +201,7 @@ public class MapleQuestAction {
                     final int skillid = WzDataTool.getInt(sEntry.getChildByPath("id"));
                     int skillLevel = WzDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
                     int masterLevel = WzDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
-                    final ISkill skillObject = SkillFactory.getSkill(skillid);
+                    final Skill skillObject = SkillFactory.getSkill(skillid);
 
                     for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
                         if (skillObject.isBeginnerSkill() || chr.getJob() == WzDataTool.getInt(applicableJob)) {
@@ -453,7 +453,7 @@ public class MapleQuestAction {
                     final int skillid = WzDataTool.getInt(sEntry.getChildByPath("id"));
                     int skillLevel = WzDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
                     int masterLevel = WzDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
-                    final ISkill skillObject = SkillFactory.getSkill(skillid);
+                    final Skill skillObject = SkillFactory.getSkill(skillid);
 
                     for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
                         if (skillObject.isBeginnerSkill() || chr.getJob() == WzDataTool.getInt(applicableJob)) {

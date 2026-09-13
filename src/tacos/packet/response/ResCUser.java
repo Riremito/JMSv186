@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IEquip;
+import odin.client.inventory.Equip;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
@@ -80,7 +80,7 @@ public class ResCUser {
 
     // CUser::SetConsumeItemEffect
     // CUser::ShowItemUpgradeEffect
-    public static ServerPacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
+    public static ServerPacket getScrollEffect(int chr, Equip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
@@ -91,10 +91,10 @@ public class ResCUser {
                 3 = 使用不可
              */
             int result = 0;
-            if (scrollSuccess == IEquip.ScrollResult.SUCCESS) {
+            if (scrollSuccess == Equip.ScrollResult.SUCCESS) {
                 result = 1;
             }
-            if (scrollSuccess == IEquip.ScrollResult.CURSE) {
+            if (scrollSuccess == Equip.ScrollResult.CURSE) {
                 result = 2;
             }
             sp.Encode1(result);
@@ -105,8 +105,8 @@ public class ResCUser {
             sp.Encode1(0);
             sp.Encode4(0); // 2 = 装備のアップグレードに成功しました。
         } else {
-            sp.Encode1(scrollSuccess == IEquip.ScrollResult.SUCCESS ? 1 : 0); // bSuccess
-            sp.Encode1(scrollSuccess == IEquip.ScrollResult.CURSE ? 1 : 0);
+            sp.Encode1(scrollSuccess == Equip.ScrollResult.SUCCESS ? 1 : 0); // bSuccess
+            sp.Encode1(scrollSuccess == Equip.ScrollResult.CURSE ? 1 : 0);
             sp.Encode1(legendarySpirit ? 1 : 0); // bEnchantSkill
             sp.Encode1(0); // White Scroll
             if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {

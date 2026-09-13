@@ -28,7 +28,7 @@ import tacos.wz.WzXML;
 
 public class SkillFactory {
 
-    public static ISkill getSkill(int id) {
+    public static Skill getSkill(int id) {
         return WzXML.SKILL.getSkill().get(id);
     }
 
@@ -37,7 +37,7 @@ public class SkillFactory {
     }
 
     public static String getSkillName(int id) {
-        ISkill skil = getSkill(id);
+        Skill skil = getSkill(id);
         if (skil != null) {
             return skil.getName();
         }
@@ -56,7 +56,7 @@ public class SkillFactory {
         return WzXML.SKILL.getSummonSkillInformation().get(skillid);
     }
 
-    public static Collection<ISkill> getAllSkills() {
+    public static Collection<Skill> getAllSkills() {
         return WzXML.SKILL.getSkill().values();
     }
 }

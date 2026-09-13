@@ -20,7 +20,7 @@ package tacos.packet.request.sub;
 
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
@@ -192,7 +192,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             {
                 int inv_type = cp.Decode4(); // unused
                 int item_slot = cp.Decode4();
-                IItem item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) item_slot);
+                Item item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) item_slot);
 
                 if (item == null) {
                     return false;
@@ -253,7 +253,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     return false;
                 }
 
-                IItem item = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) equipped_slot);
+                Item item = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((short) equipped_slot);
                 if (item == null) {
                     return false;
                 }
@@ -269,7 +269,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 MapleInventoryType type = MapleInventoryType.getByType((byte) inv_type);
 
-                IItem item = chr.getInventory(type).getItem((short) item_slot);
+                Item item = chr.getInventory(type).getItem((short) item_slot);
                 if (item == null) {
                     return false;
                 }
@@ -300,7 +300,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 5062003: // miracle cubes
             {
                 int equip_slot = cp.Decode4();
-                IItem item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
+                Item item = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) equip_slot);
                 if (item == null) {
                     return false;
                 }
@@ -460,7 +460,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
                 byte showitem = cp.Decode1();
-                IItem item = null;
+                Item item = null;
                 if (showitem == 1) {
                     // アイテム情報
                     int type = cp.Decode4();

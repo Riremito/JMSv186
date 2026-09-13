@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server;
 
 import odin.constants.GameConstants;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
 import java.sql.SQLException;
@@ -41,29 +41,29 @@ public class MTSCart {
     //tab; 1 = buy now, 2 = wanted, 3 = auction, 4 = cart
     //type = inventorytype; 0 = anything
     //page = whatever
-    private List<IItem> transfer = new ArrayList<>();
+    private List<Item> transfer = new ArrayList<>();
     private List<Integer> cart = new ArrayList<>();
     private List<Integer> notYetSold = new ArrayList<>(10);
     private int owedNX = 0;
 
     public MTSCart(int characterId) throws SQLException {
         this.characterId = characterId;
-        for (OdinPair<IItem, MapleInventoryType> item : ItemLoader.MTS_TRANSFER.loadItems(false, characterId).values()) {
+        for (OdinPair<Item, MapleInventoryType> item : ItemLoader.MTS_TRANSFER.loadItems(false, characterId).values()) {
             transfer.add(item.getLeft());
         }
         loadCart();
         loadNotYetSold();
     }
 
-    public List<IItem> getInventory() {
+    public List<Item> getInventory() {
         return transfer;
     }
 
-    public void addToInventory(IItem item) {
+    public void addToInventory(Item item) {
         transfer.add(item);
     }
 
-    public void removeFromInventory(IItem item) {
+    public void removeFromInventory(Item item) {
         transfer.remove(item);
     }
 
@@ -114,9 +114,9 @@ public class MTSCart {
     }
 
     public void save() throws SQLException {
-        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<>();
+        List<OdinPair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
-        for (IItem item : getInventory()) {
+        for (Item item : getInventory()) {
             itemsWithType.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 

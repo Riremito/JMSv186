@@ -2,19 +2,19 @@ package odin.server;
 
 import java.util.List;
 import java.util.ArrayList;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 
 public class MerchItemPackage {
 
     private int mesos = 0;
     private int packageid;
-    private List<IItem> items = new ArrayList<>();
+    private List<Item> items = new ArrayList<>();
 
-    public void setItems(List<IItem> items) {
+    public void setItems(List<Item> items) {
         this.items = items;
     }
 
-    public List<IItem> getItems() {
+    public List<Item> getItems() {
         return items;
     }
 

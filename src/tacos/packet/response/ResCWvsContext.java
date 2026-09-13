@@ -20,7 +20,7 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
@@ -833,7 +833,7 @@ public class ResCWvsContext {
         }
 
         // CUIUserInfo::SetTamingMobInfo
-        IItem inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
+        Item inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
         boolean TamingMobEnabled = false;
         final MapleMount tm = player.getMount();
         if (tm != null && inv_mount != null) {
@@ -868,7 +868,7 @@ public class ResCWvsContext {
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             // MedalAchievementInfo::Decode
-            IItem inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
+            Item inv_medal = player.getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
             sp.Encode4(inv_medal == null ? 0 : inv_medal.getItemId()); // nEquipedMedalID
             List<Integer> medalQuests = new ArrayList<>();
             List<MapleQuestStatus> completed = player.getCompletedQuests();
@@ -890,7 +890,7 @@ public class ResCWvsContext {
                 // Chair List
                 sp.Encode4(player.getInventory(MapleInventoryType.SETUP).list().size());
                 // CInPacket::DecodeBuffer(v4, iPacket, 4 * chairs);
-                for (IItem chair : player.getInventory(MapleInventoryType.SETUP).list()) {
+                for (Item chair : player.getInventory(MapleInventoryType.SETUP).list()) {
                     sp.Encode4(chair.getItemId());
                 }
             }

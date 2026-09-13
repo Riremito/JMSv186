@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
@@ -124,7 +124,7 @@ public class ReqCUser_Pet {
             return false;
         }
 
-        IItem toUse = chr.getInventory(item_type).getItem(item_slot);
+        Item toUse = chr.getInventory(item_type).getItem(item_slot);
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
             chr.updateInv();
             return false;

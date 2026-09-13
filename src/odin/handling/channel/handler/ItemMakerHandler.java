@@ -24,7 +24,7 @@ import odin.client.MapleCharacter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
 import tacos.client.TacosClient;
@@ -286,7 +286,7 @@ public class ItemMakerHandler {
                 cp.Decode4();
                 int slot = cp.Decode4();
 
-                final IItem toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
+                final Item toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
                 if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
                     DebugLogger.ErrorLog("RECIPE_CLASS_EQUIP_DISASSEMBLE");
                     return false;

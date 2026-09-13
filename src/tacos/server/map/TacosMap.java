@@ -37,7 +37,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -1182,7 +1181,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void spawnAutoDrop(int itemid, Point pos) {
-        IItem idrop = null;
+        Item idrop = null;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
             idrop = ii.randomizeStats((Equip) ii.getEquipById(itemid));

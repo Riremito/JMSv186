@@ -28,8 +28,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IEquip;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
@@ -74,7 +72,7 @@ public class DQ_Inventoryitems {
         return false;
     }
 
-    public static boolean add(InvTypeDB itb, int owner_id, ArrayList<IItem> items) {
+    public static boolean add(InvTypeDB itb, int owner_id, ArrayList<Item> items) {
         if (!DatabaseConnection.setManual()) {
             return false;
         }
@@ -85,7 +83,7 @@ public class DQ_Inventoryitems {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (type, characterid, itemid, inventorytype, position, quantity, owner, GM_Log, uniqueid, expiredate, flag, sender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", Statement.RETURN_GENERATED_KEYS)) {
 
-                for (IItem item : items) {
+                for (Item item : items) {
                     MapleInventoryType inv_type = GameConstants.getInventoryType(item.getItemId());
                     if (inv_type == MapleInventoryType.EQUIP) {
                         if (item.getPosition() < 0) {
@@ -112,7 +110,7 @@ public class DQ_Inventoryitems {
                                 return false;
                             }
                             int unique_id = rs.getInt(1);
-                            DQ_Inventoryequipment.add(unique_id, (IEquip) item);
+                            DQ_Inventoryequipment.add(unique_id, (Equip) item);
                         }
                     }
                 }
@@ -130,12 +128,12 @@ public class DQ_Inventoryitems {
         return false;
     }
 
-    public static Map<Integer, OdinPair<IItem, MapleInventoryType>> load(InvTypeDB itb, int owner_id) {
+    public static Map<Integer, OdinPair<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id) {
         return load(itb, owner_id, false);
     }
 
-    public static Map<Integer, OdinPair<IItem, MapleInventoryType>> load(InvTypeDB itb, int owner_id, boolean is_avatar_look) {
-        Map<Integer, OdinPair<IItem, MapleInventoryType>> items = new LinkedHashMap<>();
+    public static Map<Integer, OdinPair<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id, boolean is_avatar_look) {
+        Map<Integer, OdinPair<Item, MapleInventoryType>> items = new LinkedHashMap<>();
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE type = ? AND characterid = ?;")) {

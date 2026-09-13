@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.server.MTSStorage;
 import tacos.config.Config;
 import static tacos.config.Region.JMS;
@@ -113,7 +113,7 @@ public class ResCITC {
             }
             case ITCRes_GetUserPurchaseItem_Done: {
                 sp.Encode4(pb.items.size()); // nTotalCount
-                for (IItem item : pb.items) {
+                for (Item item : pb.items) {
                     sp.EncodeBuffer(ITCITEM_Encode(item));
                 }
                 sp.Encode4(0); // hidden item count.
@@ -224,7 +224,7 @@ public class ResCITC {
     }
 
     // ITCITEM::Decode
-    public static byte[] ITCITEM_Encode(IItem item) {
+    public static byte[] ITCITEM_Encode(Item item) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));

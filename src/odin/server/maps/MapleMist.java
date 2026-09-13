@@ -22,7 +22,7 @@ package odin.server.maps;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
@@ -99,7 +99,7 @@ public class MapleMist extends AbstractMapleMapObject {
         return mistPosition.getLocation();
     }
 
-    public ISkill getSourceSkill() {
+    public Skill getSourceSkill() {
         return SkillFactory.getSkill(source.getSourceId());
     }
 

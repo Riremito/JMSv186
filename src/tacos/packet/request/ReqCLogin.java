@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Content;
@@ -424,7 +424,7 @@ public class ReqCLogin {
 
         MapleInventory mv_equipped = newchar.getInventory(MapleInventoryType.EQUIPPED);
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-        IItem item = miip.getEquipById(item_id);
+        Item item = miip.getEquipById(item_id);
         OpsBodyPart bodypart = OpsBodyPart.get_bodypart_from_item(item_id);
         DebugLogger.DebugLog("SetDefaultEquip, item_id = " + item_id + ", slot = " + -bodypart.get());
         item.setPosition((short) -bodypart.get());

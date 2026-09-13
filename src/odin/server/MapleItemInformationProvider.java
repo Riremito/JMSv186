@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
@@ -459,8 +459,8 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final IItem scrollEquipWithId(final IItem equip, final IItem scrollId, final boolean ws, final MapleCharacter chr, final int vegas) {
-        if (equip.getType() == 1) { // See IItem.java
+    public final Item scrollEquipWithId(final Item equip, final Item scrollId, final boolean ws, final MapleCharacter chr, final int vegas) {
+        if (equip.getType() == 1) { // See Item.java
             final Equip nEquip = (Equip) equip;
             final Map<String, Integer> stats = getEquipStats(scrollId.getItemId());
             final Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
@@ -692,11 +692,11 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
-    public final IItem getEquipById(int equipId) {
+    public final Item getEquipById(int equipId) {
         return getEquipById(equipId, -1);
     }
 
-    public final IItem getEquipById(final int equipId, final int ringId) {
+    public final Item getEquipById(final int equipId, final int ringId) {
         final Equip nEquip = new Equip(equipId, (byte) 0, ringId, (byte) 0);
         nEquip.setQuantity((short) 1);
         final Map<String, Integer> stats = getEquipStats(equipId);

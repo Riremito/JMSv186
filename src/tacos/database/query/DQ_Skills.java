@@ -25,7 +25,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.SkillEntry;
 import odin.constants.GameConstants;
 import tacos.database.DatabaseConnection;
@@ -56,7 +56,7 @@ public class DQ_Skills {
         return ret;
     }
 
-    public static void deleteAndSaveAll(Connection con, int characterId, Map<ISkill, SkillEntry> skills) throws SQLException {
+    public static void deleteAndSaveAll(Connection con, int characterId, Map<Skill, SkillEntry> skills) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
             ps.setInt(1, characterId);
             ps.executeUpdate();
@@ -64,7 +64,7 @@ public class DQ_Skills {
 
         try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, skillid, skilllevel, masterlevel, expiration) VALUES (?, ?, ?, ?, ?)")) {
             ps.setInt(1, characterId);
-            for (Map.Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
+            for (Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
                 if (GameConstants.isApplicableSkill(skill.getKey().getId())) { //do not save additional skills
                     ps.setInt(2, skill.getKey().getId());
                     ps.setByte(3, skill.getValue().skillevel);

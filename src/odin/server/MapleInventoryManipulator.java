@@ -7,9 +7,8 @@ import java.util.Map;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
-import odin.client.inventory.InventoryException;
 import odin.client.inventory.Item;
+import odin.client.inventory.InventoryException;
 import odin.client.inventory.ItemFlag;
 import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
@@ -30,7 +29,7 @@ public class MapleInventoryManipulator {
         if (csi == null) {
             return;
         }
-        IItem ring = chr.getCashInventory().toItem(csi, ringId);
+        Item ring = chr.getCashInventory().toItem(csi, ringId);
         if (ring == null || ring.getUniqueId() != ringId || ring.getUniqueId() <= 0 || ring.getItemId() != itemId) {
             return;
         }
@@ -38,11 +37,11 @@ public class MapleInventoryManipulator {
         chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, chr.getClient(), new ResCCashShop.CashItemStruct(ring)));
     }
 
-    public static boolean addbyItem(final TacosClient client, final IItem item) {
+    public static boolean addbyItem(final TacosClient client, final Item item) {
         return addbyItem(client, item, false) >= 0;
     }
 
-    public static short addbyItem(final TacosClient client, final IItem item, final boolean fromcs) {
+    public static short addbyItem(final TacosClient client, final Item item, final boolean fromcs) {
         MapleCharacter chr = client.getPlayer();
         final MapleInventoryType type = GameConstants.getInventoryType(item.getItemId());
         final short newSlot = client.getPlayer().getInventory(type).addItem(item);
@@ -107,10 +106,10 @@ public class MapleInventoryManipulator {
         short newSlot = -1;
         if (!type.equals(MapleInventoryType.EQUIP)) {
             final short slotMax = ii.getSlotMax(client, itemId);
-            final List<IItem> existing = client.getPlayer().getInventory(type).listById(itemId);
+            final List<Item> existing = client.getPlayer().getInventory(type).listById(itemId);
             if (!GameConstants.isRechargable(itemId)) {
                 if (existing.size() > 0) { // first update all existing slots to slotMax
-                    Iterator<IItem> i = existing.iterator();
+                    Iterator<Item> i = existing.iterator();
                     while (quantity > 0) {
                         if (i.hasNext()) {
                             Item eItem = (Item) i.next();
@@ -180,7 +179,7 @@ public class MapleInventoryManipulator {
             }
         } else {
             if (quantity == 1) {
-                final IItem nEquip = ii.getEquipById(itemId);
+                final Item nEquip = ii.getEquipById(itemId);
                 if (owner != null) {
                     nEquip.setOwner(owner);
                 }
@@ -203,7 +202,7 @@ public class MapleInventoryManipulator {
         return (byte) newSlot;
     }
 
-    public static IItem addbyId_Gachapon(final TacosClient client, final int itemId, short quantity) {
+    public static Item addbyId_Gachapon(final TacosClient client, final int itemId, short quantity) {
         MapleCharacter chr = client.getPlayer();
         if (client.getPlayer().getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() == -1 || client.getPlayer().getInventory(MapleInventoryType.USE).getNextFreeSlot() == -1 || client.getPlayer().getInventory(MapleInventoryType.ETC).getNextFreeSlot() == -1 || client.getPlayer().getInventory(MapleInventoryType.SETUP).getNextFreeSlot() == -1) {
             return null;
@@ -218,14 +217,14 @@ public class MapleInventoryManipulator {
 
         if (!type.equals(MapleInventoryType.EQUIP)) {
             short slotMax = ii.getSlotMax(client, itemId);
-            final List<IItem> existing = client.getPlayer().getInventory(type).listById(itemId);
+            final List<Item> existing = client.getPlayer().getInventory(type).listById(itemId);
 
             if (!GameConstants.isRechargable(itemId)) {
-                IItem nItem = null;
+                Item nItem = null;
                 boolean recieved = false;
 
                 if (existing.size() > 0) { // first update all existing slots to slotMax
-                    Iterator<IItem> i = existing.iterator();
+                    Iterator<Item> i = existing.iterator();
                     while (quantity > 0) {
                         if (i.hasNext()) {
                             nItem = (Item) i.next();
@@ -283,7 +282,7 @@ public class MapleInventoryManipulator {
             }
         } else {
             if (quantity == 1) {
-                final IItem item = ii.randomizeStats((Equip) ii.getEquipById(itemId));
+                final Item item = ii.randomizeStats((Equip) ii.getEquipById(itemId));
                 final short newSlot = client.getPlayer().getInventory(type).addItem(item);
 
                 if (newSlot == -1) {
@@ -299,11 +298,11 @@ public class MapleInventoryManipulator {
         return null;
     }
 
-    public static boolean addFromDrop(final TacosClient client, final IItem item, final boolean show) {
+    public static boolean addFromDrop(final TacosClient client, final Item item, final boolean show) {
         return addFromDrop(client, item, show, false);
     }
 
-    public static boolean addFromDrop(final TacosClient client, IItem item, final boolean show, final boolean enhance) {
+    public static boolean addFromDrop(final TacosClient client, Item item, final boolean show, final boolean enhance) {
         MapleCharacter chr = client.getPlayer();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
@@ -318,14 +317,14 @@ public class MapleInventoryManipulator {
 
         if (!type.equals(MapleInventoryType.EQUIP)) {
             final short slotMax = ii.getSlotMax(client, item.getItemId());
-            final List<IItem> existing = client.getPlayer().getInventory(type).listById(item.getItemId());
+            final List<Item> existing = client.getPlayer().getInventory(type).listById(item.getItemId());
             if (!GameConstants.isRechargable(item.getItemId())) {
                 if (quantity <= 0) { //wthchr.updateInv();
                     client.SendPacket(ResWrapper.showItemUnavailable());
                     return false;
                 }
                 if (existing.size() > 0) { // first update all existing slots to slotMax
-                    Iterator<IItem> i = existing.iterator();
+                    Iterator<Item> i = existing.iterator();
                     while (quantity > 0) {
                         if (i.hasNext()) {
                             final Item eItem = (Item) i.next();
@@ -410,7 +409,7 @@ public class MapleInventoryManipulator {
         return true;
     }
 
-    private static final IItem checkEnhanced(final IItem before, final MapleCharacter chr) {
+    private static final Item checkEnhanced(final Item before, final MapleCharacter chr) {
         if (Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 185) || Region.BMS.check()) {
             return before;
         }
@@ -444,10 +443,10 @@ public class MapleInventoryManipulator {
         }
         if (!type.equals(MapleInventoryType.EQUIP)) {
             final short slotMax = ii.getSlotMax(client, itemid);
-            final List<IItem> existing = client.getPlayer().getInventory(type).listById(itemid);
+            final List<Item> existing = client.getPlayer().getInventory(type).listById(itemid);
             if (!GameConstants.isRechargable(itemid)) {
                 if (existing.size() > 0) { // first update all existing slots to slotMax
-                    for (IItem eItem : existing) {
+                    for (Item eItem : existing) {
                         final short oldQ = eItem.getQuantity();
                         if (oldQ < slotMax && owner != null && owner.equals(eItem.getOwner())) {
                             final short newQ = (short) Math.min(oldQ + quantity, slotMax);
@@ -480,7 +479,7 @@ public class MapleInventoryManipulator {
         if (client.getPlayer() == null || client.getPlayer().getInventory(type) == null) {
             return;
         }
-        final IItem item = client.getPlayer().getInventory(type).getItem(slot);
+        final Item item = client.getPlayer().getInventory(type).getItem(slot);
         if (item != null) {
             final boolean allowZero = consume && GameConstants.isRechargable(item.getItemId());
             client.getPlayer().getInventory(type).removeItem(slot, quantity, allowZero);
@@ -495,7 +494,7 @@ public class MapleInventoryManipulator {
 
     public static boolean removeById(TacosClient client, final MapleInventoryType type, final int itemId, final int quantity, final boolean fromDrop, final boolean consume) {
         int remremove = quantity;
-        for (IItem item : client.getPlayer().getInventory(type).listById(itemId)) {
+        for (Item item : client.getPlayer().getInventory(type).listById(itemId)) {
             if (remremove <= item.getQuantity()) {
                 removeFromSlot(client, type, item.getPosition(), (short) remremove, fromDrop, consume);
                 remremove = 0;
@@ -513,8 +512,8 @@ public class MapleInventoryManipulator {
             return;
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final IItem source = client.getPlayer().getInventory(type).getItem(src);
-        final IItem initialTarget = client.getPlayer().getInventory(type).getItem(dst);
+        final Item source = client.getPlayer().getInventory(type).getItem(src);
+        final Item initialTarget = client.getPlayer().getInventory(type).getItem(dst);
         if (source == null) {
             return;
         }
@@ -591,7 +590,7 @@ public class MapleInventoryManipulator {
 
         switch (dst) {
             case -6: { // Top
-                final IItem top = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
+                final Item top = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
                 if (top != null && GameConstants.isOverall(top.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                         chr.updateInv();
@@ -603,8 +602,8 @@ public class MapleInventoryManipulator {
                 break;
             }
             case -5: {
-                final IItem top = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
-                final IItem bottom = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -6);
+                final Item top = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
+                final Item bottom = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -6);
                 if (top != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull(bottom != null && GameConstants.isOverall(source.getItemId()) ? 1 : 0)) {
                         chr.updateInv();
@@ -624,7 +623,7 @@ public class MapleInventoryManipulator {
                 break;
             }
             case -10: { // Shield
-                IItem weapon = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
+                Item weapon = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
                 if (GameConstants.isKatara(source.getItemId())) {
                     if ((chr.getJob() != 900 && (chr.getJob() < 430 || chr.getJob() > 434)) || weapon == null || !GameConstants.isDagger(weapon.getItemId())) {
                         chr.updateInv();
@@ -642,7 +641,7 @@ public class MapleInventoryManipulator {
                 break;
             }
             case -11: { // Weapon
-                IItem shield = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10);
+                Item shield = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10);
                 if (shield != null && GameConstants.isTwoHanded(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                         chr.updateInv();;
@@ -728,7 +727,7 @@ public class MapleInventoryManipulator {
         if (client.getPlayer() == null) {
             return false;
         }
-        final IItem source = client.getPlayer().getInventory(type).getItem(src);
+        final Item source = client.getPlayer().getInventory(type).getItem(src);
         if (quantity < 0 || source == null || (!npcInduced && GameConstants.isPet(source.getItemId())) || (quantity == 0 && !GameConstants.isRechargable(source.getItemId()))) {
             chr.updateInv();
             return false;
@@ -745,7 +744,7 @@ public class MapleInventoryManipulator {
         }
         final Point dropPos = new Point(client.getPlayer().getPosition());
         if (quantity < source.getQuantity() && !GameConstants.isRechargable(source.getItemId())) {
-            final IItem target = source.copy();
+            final Item target = source.copy();
             target.setQuantity(quantity);
             source.setQuantity((short) (source.getQuantity() - quantity));
             client.SendPacket(ResWrapper.dropInventoryItemUpdate(type, source));

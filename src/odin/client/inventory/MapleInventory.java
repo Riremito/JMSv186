@@ -29,9 +29,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MapleInventory implements Iterable<IItem> {
+public class MapleInventory implements Iterable<Item> {
 
-    private Map<Short, IItem> inventory;
+    private Map<Short, Item> inventory;
     private byte slotLimit = 96;
     private MapleInventoryType type;
 
@@ -70,8 +70,8 @@ public class MapleInventory implements Iterable<IItem> {
      * Returns the item with its slot id if it exists within the inventory,
      * otherwise null is returned
      */
-    public IItem findById(int itemId) {
-        for (IItem item : inventory.values()) {
+    public Item findById(int itemId) {
+        for (Item item : inventory.values()) {
             if (item.getItemId() == itemId) {
                 return item;
             }
@@ -79,8 +79,8 @@ public class MapleInventory implements Iterable<IItem> {
         return null;
     }
 
-    public IItem findByUniqueId(long itemId) {
-        for (IItem item : inventory.values()) {
+    public Item findByUniqueId(long itemId) {
+        for (Item item : inventory.values()) {
             if (item.getUniqueId() == itemId) {
                 return item;
             }
@@ -90,7 +90,7 @@ public class MapleInventory implements Iterable<IItem> {
 
     public int countById(int itemId) {
         int possesed = 0;
-        for (IItem item : inventory.values()) {
+        for (Item item : inventory.values()) {
             if (item.getItemId() == itemId) {
                 possesed += item.getQuantity();
             }
@@ -98,9 +98,9 @@ public class MapleInventory implements Iterable<IItem> {
         return possesed;
     }
 
-    public List<IItem> listById(int itemId) {
-        List<IItem> ret = new ArrayList<>();
-        for (IItem item : inventory.values()) {
+    public List<Item> listById(int itemId) {
+        List<Item> ret = new ArrayList<>();
+        for (Item item : inventory.values()) {
             if (item.getItemId() == itemId) {
                 ret.add(item);
             }
@@ -109,19 +109,19 @@ public class MapleInventory implements Iterable<IItem> {
         // correct order - blargh, we could empty the map and reinsert in the correct order after each inventory
         // addition, or we could use an array/list, it's only 255 entries anyway...
         if (ret.size() > 1) {
-            Collections.sort(ret, (item1, item2) -> IItem.comparePosition(item1, item2));
+            Collections.sort(ret, (item1, item2) -> Item.comparePosition(item1, item2));
         }
         return ret;
     }
 
-    public Collection<IItem> list() {
+    public Collection<Item> list() {
         return inventory.values();
     }
 
     /**
      * Adds the item to the inventory and returns the assigned slot id
      */
-    public short addItem(IItem item) {
+    public short addItem(Item item) {
         short slotId = getNextFreeSlot();
         if (slotId < 0) {
             return -1;
@@ -131,7 +131,7 @@ public class MapleInventory implements Iterable<IItem> {
         return slotId;
     }
 
-    public void addFromDB(IItem item) {
+    public void addFromDB(Item item) {
         if (item.getPosition() < 0 && !type.equals(MapleInventoryType.EQUIPPED)) {
             // This causes a lot of stuck problem, until we are done with position checking
             return;
@@ -167,7 +167,7 @@ public class MapleInventory implements Iterable<IItem> {
         }
     }
 
-    private void swap(IItem source, IItem target) {
+    private void swap(Item source, Item target) {
         inventory.remove(source.getPosition());
         inventory.remove(target.getPosition());
         short swapPos = source.getPosition();
@@ -177,7 +177,7 @@ public class MapleInventory implements Iterable<IItem> {
         inventory.put(target.getPosition(), target);
     }
 
-    public IItem getItem(short slot) {
+    public Item getItem(short slot) {
         return inventory.get(slot);
     }
 
@@ -186,7 +186,7 @@ public class MapleInventory implements Iterable<IItem> {
     }
 
     public void removeItem(short slot, short quantity, boolean allowZero) {
-        IItem item = inventory.get(slot);
+        Item item = inventory.get(slot);
         if (item == null) { // TODO is it ok not to throw an exception here?
             return;
         }
@@ -253,7 +253,7 @@ public class MapleInventory implements Iterable<IItem> {
     }
 
     @Override
-    public Iterator<IItem> iterator() {
+    public Iterator<Item> iterator() {
         return Collections.unmodifiableCollection(inventory.values()).iterator();
     }
 }

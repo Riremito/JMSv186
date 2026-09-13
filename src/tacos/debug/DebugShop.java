@@ -19,7 +19,7 @@
 package tacos.debug;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import odin.constants.GameConstants;
@@ -278,7 +278,7 @@ public class DebugShop {
 
     public boolean sell(MapleCharacter chr, short item_slot, int item_id, int quantity) {
         boolean is_recharge_item = GameConstants.isRechargable(item_id);
-        IItem item = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
+        Item item = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
         if (item == null) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
             return false;
@@ -320,7 +320,7 @@ public class DebugShop {
     }
 
     public boolean recharge(MapleCharacter chr, short item_slot) {
-        IItem item = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item item = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item == null) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeUnknown));
             return false;

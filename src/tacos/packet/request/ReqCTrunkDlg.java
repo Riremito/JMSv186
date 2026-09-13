@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -52,7 +52,7 @@ public class ReqCTrunkDlg {
             case TrunkReq_GetItem: {
                 byte type = cp.Decode1();
                 byte slot = cp.Decode1();
-                IItem item = storage.getItem(type, slot);
+                Item item = storage.getItem(type, slot);
                 if (item == null) {
                     return false;
                 }
@@ -94,7 +94,7 @@ public class ReqCTrunkDlg {
                     return false;
                 }
 
-                IItem item = chr.getInventory(type).getItem(slot).copy();
+                Item item = chr.getInventory(type).getItem(slot).copy();
 
                 if (GameConstants.isPet(item.getItemId())) {
                     chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_PutIncorrectRequest));

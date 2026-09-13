@@ -18,12 +18,12 @@
  */
 package tacos.debug;
 
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
@@ -32,7 +32,6 @@ import tacos.wz.ids.DWI_Random;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import odin.client.inventory.Item;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
@@ -512,7 +511,7 @@ public class DebugCommand {
                     item_quantity = 1;
                 }
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                IItem item = is_equip ? ii.getEquipById(item_id) : new Item(item_id, (byte) 0, (short) item_quantity, (byte) 0);
+                Item item = is_equip ? ii.getEquipById(item_id) : new Item(item_id, (byte) 0, (short) item_quantity, (byte) 0);
                 if (is_equip) {
                     item = ii.randomizeStats((Equip) item);
                 }
@@ -949,7 +948,7 @@ public class DebugCommand {
             case "/randomdrop": {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 int itemid = WzDataStorage.ITEM.getRandom();
-                IItem toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+                Item toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
                 map.spawnItemDrop(chr, chr, toDrop, chr.getPosition(), true, true);
                 String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
 
@@ -1158,7 +1157,7 @@ public class DebugCommand {
                 continue;
             }
             chr.DebugMsg("AddSkill : " + skill_id);
-            ISkill skill = SkillFactory.getSkill(skill_id);
+            Skill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
         }
         return true;
@@ -1167,7 +1166,7 @@ public class DebugCommand {
     private static boolean resetBasicSkill(MapleCharacter chr) {
         for (int skill_id : WzXML.SKILL.getBasicSkill(chr, debug_basic_job)) {
             chr.DebugMsg("RemoveSkill : " + skill_id);
-            ISkill skill = SkillFactory.getSkill(skill_id);
+            Skill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
         }
         return true;

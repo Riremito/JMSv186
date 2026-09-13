@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Map;
 import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillEntry;
 import odin.client.SkillFactory;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
@@ -635,10 +635,10 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         this.subcategory = subcategory;
     }
 
-    protected Map<ISkill, SkillEntry> skills = new LinkedHashMap<>();
+    protected Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
 
     public int getSkillLevel(OpsSkill ops) {
-        ISkill skill = SkillFactory.getSkill(ops.get());
+        Skill skill = SkillFactory.getSkill(ops.get());
         if (skill == null) {
             return 0;
         }
@@ -771,8 +771,8 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         return this.inventory[type.ordinal()];
     }
 
-    public ArrayList<IItem> getAllItems() {
-        ArrayList<IItem> items = new ArrayList<>();
+    public ArrayList<Item> getAllItems() {
+        ArrayList<Item> items = new ArrayList<>();
         for (MapleInventory iv : getInventorys()) {
             items.addAll(iv.list());
         }
@@ -1136,7 +1136,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         // login server.
         if (!is_channel_server) {
             // avatar look.
-            for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
+            for (OdinPair<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
                 if (mit.getRight() == MapleInventoryType.EQUIPPED) {
                     getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getLeft());
                 }
@@ -1146,7 +1146,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         // channel server.
         // inventory.
         DQ_Inventoryslot.load(this);
-        for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
+        for (OdinPair<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
             if (!WzDataStorage.ITEM.check(mit.getLeft().getItemId())) {
                 DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
                 continue;
@@ -1186,7 +1186,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     // useful.
     public String getPlayerNameWithMedal() {
-        IItem equipped_medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
+        Item equipped_medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
         if (equipped_medal == null) {
             return getName();
         }

@@ -21,7 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import java.util.List;
@@ -207,7 +207,7 @@ public class ResCMiniRoomBaseDlg {
             for (int i = 0; i < sale_item_count; i++) {
                 MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
                 int itemid = WzDataStorage.ITEM.getRandom();
-                IItem item_gen = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? miip.randomizeStats((Equip) miip.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
+                Item item_gen = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? miip.randomizeStats((Equip) miip.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
 
                 sp.Encode2(1); // bundle
                 sp.Encode2(1); // quanty
@@ -255,7 +255,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getTradeItemAdd(byte number, IItem item) {
+    public static ServerPacket getTradeItemAdd(byte number, Item item) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.TRP_PutItem.get());

@@ -25,10 +25,9 @@ import odin.client.inventory.Equip;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.MaplePet;
-import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
@@ -43,7 +42,7 @@ public class CashShop {
     private int accountId;
     private int characterId;
     private ItemLoader factory;
-    private List<IItem> inventory = new ArrayList<>();
+    private List<Item> inventory = new ArrayList<>();
     private List<Integer> uniqueids = new ArrayList<>();
 
     public CashShop(int accountId, int characterId, int jobType) throws SQLException {
@@ -64,7 +63,7 @@ public class CashShop {
             factory = ItemLoader.CASHSHOP_EXPLORER;
         }
 
-        for (OdinPair<IItem, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
+        for (OdinPair<Item, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
             inventory.add(item.getLeft());
         }
     }
@@ -73,12 +72,12 @@ public class CashShop {
         return inventory.size();
     }
 
-    public List<IItem> getInventory() {
+    public List<Item> getInventory() {
         return inventory;
     }
 
-    public IItem findByCashId(long cashId) {
-        for (IItem item : inventory) {
+    public Item findByCashId(long cashId) {
+        for (Item item : inventory) {
             if (item.getUniqueId() == cashId) {
                 return item;
             }
@@ -87,8 +86,8 @@ public class CashShop {
         return null;
     }
 
-    public IItem findItem(int item_id) {
-        for (IItem item : inventory) {
+    public Item findItem(int item_id) {
+        for (Item item : inventory) {
             if (item.getItemId() == item_id) {
                 return item;
             }
@@ -97,14 +96,14 @@ public class CashShop {
     }
 
     public void checkExpire(TacosClient client) {
-        List<IItem> toberemove = new ArrayList<>();
-        for (IItem item : inventory) {
+        List<Item> toberemove = new ArrayList<>();
+        for (Item item : inventory) {
             if (item != null && !GameConstants.isPet(item.getItemId()) && item.getExpiration() > 0 && item.getExpiration() < System.currentTimeMillis()) {
                 toberemove.add(item);
             }
         }
         if (!toberemove.isEmpty()) {
-            for (IItem item : toberemove) {
+            for (Item item : toberemove) {
                 removeFromInventory(item);
                 client.SendPacket(ResCCashShop.cashItemExpired(item.getUniqueId()));
             }
@@ -112,19 +111,19 @@ public class CashShop {
         }
     }
 
-    public IItem toItem(CashItemInfo cItem) {
+    public Item toItem(CashItemInfo cItem) {
         return toItem(cItem, MapleInventoryManipulator.getUniqueId(cItem.getId(), null), "");
     }
 
-    public IItem toItem(CashItemInfo cItem, String gift) {
+    public Item toItem(CashItemInfo cItem, String gift) {
         return toItem(cItem, MapleInventoryManipulator.getUniqueId(cItem.getId(), null), gift);
     }
 
-    public IItem toItem(CashItemInfo cItem, int uniqueid) {
+    public Item toItem(CashItemInfo cItem, int uniqueid) {
         return toItem(cItem, uniqueid, "");
     }
 
-    public IItem toItem(CashItemInfo cItem, int uniqueid, String gift) {
+    public Item toItem(CashItemInfo cItem, int uniqueid, String gift) {
         if (uniqueid <= 0) {
             uniqueid = MapleInventoryIdentifier.getInstance();
         }
@@ -132,7 +131,7 @@ public class CashShop {
         if (period <= 0 || GameConstants.isPet(cItem.getId())) {
             period = 45;
         }
-        IItem ret = null;
+        Item ret = null;
         if (GameConstants.getInventoryType(cItem.getId()) == MapleInventoryType.EQUIP) {
             Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(cItem.getId());
             eq.setUniqueId(uniqueid);
@@ -160,11 +159,11 @@ public class CashShop {
         return ret;
     }
 
-    public void addToInventory(IItem item) {
+    public void addToInventory(Item item) {
         inventory.add(item);
     }
 
-    public void removeFromInventory(IItem item) {
+    public void removeFromInventory(Item item) {
         inventory.remove(item);
     }
 
@@ -189,9 +188,9 @@ public class CashShop {
     }
 
     public void save() throws SQLException {
-        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<>();
+        List<OdinPair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
-        for (IItem item : inventory) {
+        for (Item item : inventory) {
             itemsWithType.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 

@@ -19,8 +19,6 @@
 package tacos.database.query;
 
 import odin.client.inventory.Equip;
-import odin.client.inventory.IEquip;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
@@ -57,9 +55,9 @@ public class DQ_Dueyitems {
     public static final String DB_TABLE_NAME = "dueyitems";
     public static final String DB_TABLE_NAME_EQUIP = "dueyequipment";
 
-    public static Map<Integer, OdinPair<IItem, MapleInventoryType>> load(int value, List<String> arg, boolean login, Integer... id) throws SQLException {
+    public static Map<Integer, OdinPair<Item, MapleInventoryType>> load(int value, List<String> arg, boolean login, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
-        Map<Integer, OdinPair<IItem, MapleInventoryType>> items = new LinkedHashMap<>();
+        Map<Integer, OdinPair<Item, MapleInventoryType>> items = new LinkedHashMap<>();
         if (lulz.size() != arg.size()) {
             return items;
         }
@@ -167,12 +165,12 @@ public class DQ_Dueyitems {
         return items;
     }
 
-    public static void save(int value, List<String> arg, List<OdinPair<IItem, MapleInventoryType>> items, Integer... id) throws SQLException {
+    public static void save(int value, List<String> arg, List<OdinPair<Item, MapleInventoryType>> items, Integer... id) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         save(value, arg, items, con, id);
     }
 
-    public static void save(int value, List<String> arg, List<OdinPair<IItem, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
+    public static void save(int value, List<String> arg, List<OdinPair<Item, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
         if (lulz.size() != arg.size()) {
             return;
@@ -216,11 +214,11 @@ public class DQ_Dueyitems {
         query_2.append(")");
         ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
         PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        final Iterator<OdinPair<IItem, MapleInventoryType>> iter = items.iterator();
-        OdinPair<IItem, MapleInventoryType> pair;
+        final Iterator<OdinPair<Item, MapleInventoryType>> iter = items.iterator();
+        OdinPair<Item, MapleInventoryType> pair;
         while (iter.hasNext()) {
             pair = iter.next();
-            IItem item = pair.getLeft();
+            Item item = pair.getLeft();
             MapleInventoryType mit = pair.getRight();
             int i = 1;
             for (int x = 0; x < lulz.size(); x++) {
@@ -249,7 +247,7 @@ public class DQ_Dueyitems {
 
                 pse.setInt(1, rs.getInt(1));
                 rs.close();
-                IEquip equip = (IEquip) item;
+                Equip equip = (Equip) item;
                 pse.setInt(2, equip.getUpgradeSlots());
                 pse.setInt(3, equip.getLevel());
                 pse.setInt(4, equip.getStr());

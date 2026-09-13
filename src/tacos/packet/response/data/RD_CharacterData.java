@@ -19,7 +19,6 @@
 package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -514,12 +513,12 @@ public class RD_CharacterData {
         // 装備
         if ((datamask & 4) != 0) {
             MapleInventory iv = chr.getInventory(MapleInventoryType.EQUIPPED);
-            Collection<IItem> equippedC = iv.list();
+            Collection<Item> equippedC = iv.list();
             List<Item> equipped = new ArrayList<>(equippedC.size());
-            for (IItem item : equippedC) {
+            for (Item item : equippedC) {
                 equipped.add((Item) item);
             }
-            Collections.sort(equipped, (item1, item2) -> IItem.comparePosition(item1, item2));
+            Collections.sort(equipped, (item1, item2) -> Item.comparePosition(item1, item2));
             // 装備済みアイテム
             for (Item item : equipped) {
                 if (item.getPosition() < 0 && item.getPosition() > -100) {
@@ -538,7 +537,7 @@ public class RD_CharacterData {
             data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
             // 装備
             iv = chr.getInventory(MapleInventoryType.EQUIP);
-            for (IItem item : iv.list()) {
+            for (Item item : iv.list()) {
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlot(item));
                 data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
@@ -603,7 +602,7 @@ public class RD_CharacterData {
         }
         // 消費
         if ((datamask & 8) != 0) {
-            for (IItem item : chr.getInventory(MapleInventoryType.USE).list()) {
+            for (Item item : chr.getInventory(MapleInventoryType.USE).list()) {
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlot(item));
                 data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
@@ -611,7 +610,7 @@ public class RD_CharacterData {
         }
         // 設置
         if ((datamask & 0x10L) != 0) {
-            for (IItem item : chr.getInventory(MapleInventoryType.SETUP).list()) {
+            for (Item item : chr.getInventory(MapleInventoryType.SETUP).list()) {
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlot(item));
                 data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
@@ -619,7 +618,7 @@ public class RD_CharacterData {
         }
         // ETC
         if ((datamask & 0x20L) != 0) {
-            for (IItem item : chr.getInventory(MapleInventoryType.ETC).list()) {
+            for (Item item : chr.getInventory(MapleInventoryType.ETC).list()) {
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlot(item));
                 data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
@@ -627,7 +626,7 @@ public class RD_CharacterData {
         }
         // ポイントアイテム
         if ((datamask & 0x40L) != 0) {
-            for (IItem item : chr.getInventory(MapleInventoryType.CASH).list()) {
+            for (Item item : chr.getInventory(MapleInventoryType.CASH).list()) {
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlot(item));
                 data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }

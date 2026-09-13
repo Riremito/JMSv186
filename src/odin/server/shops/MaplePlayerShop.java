@@ -22,7 +22,7 @@ package odin.server.shops;
 
 import java.util.ArrayList;
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
@@ -42,7 +42,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
     public void buy(TacosClient client, int item, short quantity) {
         MaplePlayerShopItem pItem = items.get(item);
         if (pItem.bundles > 0) {
-            IItem newItem = pItem.item.copy();
+            Item newItem = pItem.item.copy();
             newItem.setQuantity((short) (quantity * newItem.getQuantity()));
             byte flag = newItem.getFlag();
 
@@ -89,7 +89,7 @@ public class MaplePlayerShop extends AbstractPlayerStore {
 
         for (MaplePlayerShopItem items : getItems()) {
             if (items.bundles > 0) {
-                IItem newItem = items.item.copy();
+                Item newItem = items.item.copy();
                 newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
                 if (MapleInventoryManipulator.addFromDrop(owner.getClient(), newItem, false)) {
                     items.bundles = 0;

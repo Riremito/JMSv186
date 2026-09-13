@@ -19,7 +19,7 @@
 package tacos.packet.response.data;
 
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import tacos.config.Config;
 import tacos.config.Content;
 import tacos.config.Region;
@@ -42,7 +42,7 @@ public class RD_GW_ItemSlotBase {
         UNKNOWN;
     }
 
-    public static final byte[] EncodeSlot(final IItem item) {
+    public static final byte[] EncodeSlot(final Item item) {
         ServerPacket data = new ServerPacket();
 
         short pos = item.getPosition();
@@ -104,7 +104,7 @@ public class RD_GW_ItemSlotBase {
 
     // GW_ItemSlotBase::Decode
     // addItemInfo
-    public static final byte[] Encode(final IItem item) {
+    public static final byte[] Encode(final Item item) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(item.getPet() != null ? 3 : item.getType());
@@ -591,7 +591,7 @@ public class RD_GW_ItemSlotBase {
 
     // E8 ?? ?? ?? ?? 84 C0 74 ?? 6A 08
     // GW_ItemSlotBase::RawDecode
-    public static final byte[] RawEncode(final IItem item) {
+    public static final byte[] RawEncode(final Item item) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(item.getItemId());

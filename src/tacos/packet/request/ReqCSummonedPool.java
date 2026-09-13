@@ -18,7 +18,7 @@
  */
 package tacos.packet.request;
 
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
@@ -176,7 +176,7 @@ public class ReqCSummonedPool {
             if (!summon.isChangedMap()) {
                 map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
             }
-            ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
+            Skill summonSkill = SkillFactory.getSkill(summon.getSkill());
             MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
 
             if (summonEffect == null) {
@@ -267,7 +267,7 @@ public class ReqCSummonedPool {
         if (!summon.isChangedMap()) {
             map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
         }
-        final ISkill summonSkill = SkillFactory.getSkill(summon.getSkill());
+        final Skill summonSkill = SkillFactory.getSkill(summon.getSkill());
         final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
 
         if (summonEffect == null) {

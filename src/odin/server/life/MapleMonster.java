@@ -32,9 +32,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import odin.constants.GameConstants;
-import odin.client.inventory.IItem;
-import odin.client.ISkill;
 import odin.client.inventory.Item;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import tacos.client.TacosClient;
@@ -671,7 +670,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         if (!isAlive()) {
             return;
         }
-        ISkill skilz = SkillFactory.getSkill(status.getSkill());
+        Skill skilz = SkillFactory.getSkill(status.getSkill());
         if (skilz != null) {
             switch (stats.getEffectiveness(skilz.getElement())) {
                 case IMMUNE:
@@ -1166,13 +1165,13 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     }
 
     public void handleSteal(MapleCharacter chr) {
-        ISkill steal = SkillFactory.getSkill(4201004);
+        Skill steal = SkillFactory.getSkill(4201004);
         final int level = chr.getSkillLevel(steal);
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
             final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
             final List<MonsterDropEntry> dropEntry = new ArrayList<>(mi.retrieveDrop(getId()));
             Collections.shuffle(dropEntry);
-            IItem idrop;
+            Item idrop;
             for (MonsterDropEntry d : dropEntry) {
                 if (d.itemId > 0 && d.questid == 0 && steal.getEffect(level).makeChanceResult()) { //kinda op
                     if (GameConstants.getInventoryType(d.itemId) == MapleInventoryType.EQUIP) {

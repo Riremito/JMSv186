@@ -18,9 +18,8 @@
  */
 package tacos.wz;
 
-import odin.client.ISkill;
-import odin.client.MapleCharacter;
 import odin.client.Skill;
+import odin.client.MapleCharacter;
 import static odin.client.SkillFactory.getName;
 import odin.client.SummonSkillEntry;
 import tacos.config.Content;
@@ -46,7 +45,7 @@ public class SkillWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz");
     }
 
-    private Map<Integer, ISkill> map_Skill = null;
+    private Map<Integer, Skill> map_Skill = null;
     private Map<Integer, List<Integer>> map_SkillsByJob = null;
     private Map<Integer, SummonSkillEntry> map_SummonSkillInformation = null;
 
@@ -64,7 +63,7 @@ public class SkillWz extends WzXML {
         return map_SummonSkillInformation;
     }
 
-    public Map<Integer, ISkill> getSkill() {
+    public Map<Integer, Skill> getSkill() {
         if (map_Skill != null) {
             return map_Skill;
         }

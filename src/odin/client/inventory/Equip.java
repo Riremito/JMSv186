@@ -26,7 +26,14 @@ import tacos.wz.ids.DWI_Random;
 import odin.server.Randomizer;
 import tacos.config.Config;
 
-public class Equip extends Item implements IEquip {
+public class Equip extends Item {
+
+    public static enum ScrollResult {
+
+        SUCCESS, FAIL, CURSE
+    }
+    public static final int ARMOR_RATIO = 350000;
+    public static final int WEAPON_RATIO = 700000;
 
     private int upgradeSlots = 0;
     private int level = 0;
@@ -67,7 +74,7 @@ public class Equip extends Item implements IEquip {
     }
 
     @Override
-    public IItem copy() {
+    public Item copy() {
         Equip ret = new Equip(getItemId(), getPosition(), getUniqueId(), getFlag());
         ret.str = str;
         ret.dex = dex;
@@ -110,82 +117,66 @@ public class Equip extends Item implements IEquip {
         return 1;
     }
 
-    @Override
     public int getUpgradeSlots() {
         return upgradeSlots;
     }
 
-    @Override
     public int getStr() {
         return str;
     }
 
-    @Override
     public int getDex() {
         return dex;
     }
 
-    @Override
     public int getInt() {
         return _int;
     }
 
-    @Override
     public int getLuk() {
         return luk;
     }
 
-    @Override
     public int getHp() {
         return hp;
     }
 
-    @Override
     public int getMp() {
         return mp;
     }
 
-    @Override
     public int getWatk() {
         return watk;
     }
 
-    @Override
     public int getMatk() {
         return matk;
     }
 
-    @Override
     public int getWdef() {
         return wdef;
     }
 
-    @Override
     public int getMdef() {
         return mdef;
     }
 
-    @Override
     public int getAcc() {
         return acc;
     }
 
-    @Override
     public int getAvoid() {
         return avoid;
     }
 
-    @Override
     public int getHands() {
         return hands;
     }
 
-    @Override
     public int getSpeed() {
         return speed;
     }
 
-    @Override
     public int getJump() {
         return jump;
     }
@@ -299,7 +290,6 @@ public class Equip extends Item implements IEquip {
         this.upgradeSlots = upgradeSlots;
     }
 
-    @Override
     public int getLevel() {
         return level;
     }
@@ -308,7 +298,6 @@ public class Equip extends Item implements IEquip {
         this.level = level;
     }
 
-    @Override
     public int getViciousHammer() {
         return vicioushammer;
     }
@@ -317,7 +306,6 @@ public class Equip extends Item implements IEquip {
         vicioushammer = ham;
     }
 
-    @Override
     public int getItemEXP() {
         return itemEXP;
     }
@@ -329,20 +317,18 @@ public class Equip extends Item implements IEquip {
         this.itemEXP = itemEXP;
     }
 
-    @Override
     public int getEquipExp() {
         if (itemEXP <= 0) {
             return 0;
         }
         //aproximate value
         if (GameConstants.isWeapon(getItemId())) {
-            return itemEXP / IEquip.WEAPON_RATIO;
+            return itemEXP / Equip.WEAPON_RATIO;
         } else {
-            return itemEXP / IEquip.ARMOR_RATIO;
+            return itemEXP / Equip.ARMOR_RATIO;
         }
     }
 
-    @Override
     public int getEquipExpForLevel() {
         if (getEquipExp() <= 0) {
             return 0;
@@ -358,7 +344,6 @@ public class Equip extends Item implements IEquip {
         return expz;
     }
 
-    @Override
     public int getExpPercentage() {
         if (getEquipLevel() < getBaseLevel() || getEquipLevel() > GameConstants.getMaxLevel(getItemId()) || GameConstants.getExpForLevel(getEquipLevel(), getItemId()) <= 0) {
             return 0;
@@ -366,7 +351,6 @@ public class Equip extends Item implements IEquip {
         return getEquipExpForLevel() * 100 / GameConstants.getExpForLevel(getEquipLevel(), getItemId());
     }
 
-    @Override
     public int getEquipLevel() {
         if (GameConstants.getMaxLevel(getItemId()) <= 0) {
             return 0;
@@ -386,7 +370,6 @@ public class Equip extends Item implements IEquip {
         return levelz;
     }
 
-    @Override
     public int getBaseLevel() {
         return (GameConstants.getStatFromWeapon(getItemId()) == null ? 1 : 0);
     }
@@ -399,7 +382,6 @@ public class Equip extends Item implements IEquip {
         super.setQuantity(quantity);
     }
 
-    @Override
     public int getDurability() {
         return this.durability;
     }
@@ -408,7 +390,6 @@ public class Equip extends Item implements IEquip {
         this.durability = dur;
     }
 
-    @Override
     public int getEnhance() {
         return enhance;
     }
@@ -417,7 +398,6 @@ public class Equip extends Item implements IEquip {
         this.enhance = en;
     }
 
-    @Override
     public int getPotential1() {
         return potential1;
     }
@@ -426,7 +406,6 @@ public class Equip extends Item implements IEquip {
         this.potential1 = en;
     }
 
-    @Override
     public int getPotential2() {
         return potential2;
     }
@@ -435,7 +414,6 @@ public class Equip extends Item implements IEquip {
         this.potential2 = en;
     }
 
-    @Override
     public int getPotential3() {
         return potential3;
     }
@@ -444,7 +422,6 @@ public class Equip extends Item implements IEquip {
         this.potential3 = en;
     }
 
-    @Override
     public int getRank() {
         return rank;
     }
@@ -453,7 +430,6 @@ public class Equip extends Item implements IEquip {
         this.rank = rank;
     }
 
-    @Override
     public int getHidden() {
         return hidden;
     }
@@ -521,7 +497,6 @@ public class Equip extends Item implements IEquip {
         return true;
     }
 
-    @Override
     public int getHpR() {
         return hpR;
     }
@@ -530,7 +505,6 @@ public class Equip extends Item implements IEquip {
         this.hpR = hp;
     }
 
-    @Override
     public int getMpR() {
         return mpR;
     }
@@ -540,7 +514,6 @@ public class Equip extends Item implements IEquip {
     }
 
     // 攻撃速度の書
-    @Override
     public int getIncAttackSpeed() {
         return incattackSpeed;
     }

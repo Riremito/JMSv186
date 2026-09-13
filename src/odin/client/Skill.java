@@ -29,7 +29,7 @@ import odin.provider.IMapleData;
 import tacos.config.Config;
 import tacos.wz.WzDataTool;
 
-public class Skill implements ISkill {
+public class Skill {
 
     //public static final int[] skills = new int[]{4311003, 4321000, 4331002, 4331005, 4341004, 4341007};
     private String name = "";
@@ -54,12 +54,10 @@ public class Skill implements ISkill {
         this.name = name;
     }
 
-    @Override
     public int getId() {
         return id;
     }
 
-    @Override
     public String getName() {
         return name;
     }
@@ -239,7 +237,6 @@ public class Skill implements ISkill {
         return ret;
     }
 
-    @Override
     public MapleStatEffect getEffect(final int level) {
         if (effects.size() < level) {
             if (!effects.isEmpty()) { //incAllskill
@@ -252,42 +249,34 @@ public class Skill implements ISkill {
         return effects.get(level - 1);
     }
 
-    @Override
     public boolean getAction() {
         return action;
     }
 
-    @Override
     public boolean isChargeSkill() {
         return chargeskill;
     }
 
-    @Override
     public boolean isInvisible() {
         return invisible;
     }
 
-    @Override
     public boolean hasRequiredSkill() {
         return level > 0;
     }
 
-    @Override
     public int getRequiredSkillLevel() {
         return level;
     }
 
-    @Override
     public int getRequiredSkillId() {
         return requiredSkill;
     }
 
-    @Override
     public byte getMaxLevel() {
         return (byte) effects.size();
     }
 
-    @Override
     public boolean canBeLearnedBy(int job) {
         int jid = job;
         int skillForJob = id / 10000;
@@ -315,12 +304,10 @@ public class Skill implements ISkill {
         return true;
     }
 
-    @Override
     public boolean isTimeLimited() {
         return timeLimited;
     }
 
-    @Override
     public boolean isFourthJob() {
         int job_id = id / 10000;
         // エヴァン
@@ -345,22 +332,18 @@ public class Skill implements ISkill {
         return false;
     }
 
-    @Override
     public Element getElement() {
         return element;
     }
 
-    @Override
     public int getAnimationTime() {
         return animationTime;
     }
 
-    @Override
     public int getMasterLevel() {
         return masterLevel;
     }
 
-    @Override
     public boolean isBeginnerSkill() {
         int jobId = id / 10000;
         return jobId == 0 || jobId == 1000 || jobId == 2000 || jobId == 2001 || jobId == 3000;

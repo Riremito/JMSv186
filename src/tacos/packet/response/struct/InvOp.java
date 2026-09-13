@@ -18,7 +18,7 @@
  */
 package tacos.packet.response.struct;
 
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import java.util.ArrayList;
 
@@ -30,11 +30,11 @@ public class InvOp {
 
     private ArrayList<InvData> idv = new ArrayList<>();
 
-    public void add(MapleInventoryType type, IItem item) {
+    public void add(MapleInventoryType type, Item item) {
         idv.add(new InvData(0, type, item));
     }
 
-    public void update(MapleInventoryType type, IItem item) {
+    public void update(MapleInventoryType type, Item item) {
         idv.add(new InvData(1, type, item));
     }
 
@@ -54,10 +54,10 @@ public class InvOp {
 
         public int mode;
         public MapleInventoryType type;
-        public IItem item;
+        public Item item;
         public int src, dst;
 
-        public InvData(int mode, MapleInventoryType type, IItem item) {
+        public InvData(int mode, MapleInventoryType type, Item item) {
             this.mode = mode;
             this.type = type;
             this.item = item;

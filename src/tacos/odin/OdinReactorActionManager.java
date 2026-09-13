@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import tacos.client.TacosClient;
@@ -97,7 +96,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
                 mesoDrop = Randomizer.nextInt(range) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
                 reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor, getPlayer(), false, (byte) 0);
             } else {
-                IItem drop;
+                Item drop;
                 if (GameConstants.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
                     drop = new Item(d.itemId, (byte) 0, (short) 1, (byte) 0);
                 } else {

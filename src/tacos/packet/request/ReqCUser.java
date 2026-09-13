@@ -19,14 +19,13 @@
 package tacos.packet.request;
 
 import java.awt.Point;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IEquip;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
@@ -951,7 +950,7 @@ public class ReqCUser {
     public static boolean OnUserPortableChairSitRequest(MapleCharacter chr, ClientPacket cp) {
         int item_id = cp.Decode4();
 
-        IItem toUse = chr.getInventory(MapleInventoryType.SETUP).findById(item_id);
+        Item toUse = chr.getInventory(MapleInventoryType.SETUP).findById(item_id);
         if (toUse == null) {
             return false;
         }
@@ -959,7 +958,7 @@ public class ReqCUser {
         // 釣り
         if (item_id == 3011000) {
             int fishing_level = 0;
-            for (IItem item : chr.getInventory(MapleInventoryType.CASH).list()) {
+            for (Item item : chr.getInventory(MapleInventoryType.CASH).list()) {
                 if (fishing_level <= 1 && item.getItemId() == 5340000) {
                     fishing_level = 1;
                 }
@@ -988,7 +987,7 @@ public class ReqCUser {
         MapleMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;
         if (is_skill_attack) {
-            ISkill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
+            Skill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
             int skillLevel = chr.getSkillLevel(skill);
             MapleStatEffect skill_effect = attack.getAttackEffect(chr, skillLevel, skill);
             if (skill_effect == null) {
@@ -1009,11 +1008,11 @@ public class ReqCUser {
         if (!ContentState.CS_LOCK_LOSING_THRWOING.get()) {
             // consume star code.
         }
-        ISkill eaterSkill = SkillFactory.getSkill(GameConstants.getMPEaterForJob(chr.getJob()));
+        Skill eaterSkill = SkillFactory.getSkill(GameConstants.getMPEaterForJob(chr.getJob()));
         int eaterLevel = chr.getSkillLevel(eaterSkill);
         boolean is_meso_explosion = attack.skill == OpsSkill.THIEFMASTER_MESO_EXPLOSION.get();
         boolean is_pick_pocket = false;
-        ISkill skill_pick_pocket = null;
+        Skill skill_pick_pocket = null;
         MapleStatEffect skill_effect_pick_pocket = null;
         if (is_pick_pocket) {
             skill_pick_pocket = SkillFactory.getSkill(OpsSkill.THIEFMASTER_PICKPOCKET.get());
@@ -1465,7 +1464,7 @@ public class ReqCUser {
         int target_item_id = cp.Decode4();
         int timestamp = cp.Decode4();
 
-        IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(owl_slot);
+        Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(owl_slot);
         if (item_used == null || item_used.getItemId() != 2310000) {
             DebugLogger.ErrorLog("OnUserShopScannerItemUseRequest : invalid owl.");
             return false;
@@ -1522,7 +1521,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserPortalScrollUseRequest(MapleCharacter chr, short item_slot, int item_id) {
-        final IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        final Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null || item_used.getQuantity() < 1 || item_used.getItemId() != item_id) {
             return false;
         }
@@ -1540,13 +1539,13 @@ public class ReqCUser {
         boolean legendarySpirit = false; // legendary spirit skill
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
-        IEquip toScroll;
+        Equip toScroll;
         if (equip_slot < 0) {
-            toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot);
+            toScroll = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot);
         } else {
             // legendary spirit
             legendarySpirit = true;
-            toScroll = (IEquip) chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
+            toScroll = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
         }
         if (toScroll == null) {
             return false;
@@ -1556,7 +1555,7 @@ public class ReqCUser {
         final byte oldState = (byte) toScroll.getHidden();
         final byte oldFlag = (byte) toScroll.getFlag();
         final byte oldSlots = (byte) toScroll.getUpgradeSlots();
-        IItem scroll = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (scroll == null) {
             chr.updateInv();
             return false;
@@ -1572,7 +1571,7 @@ public class ReqCUser {
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
             chr.SendPacket(ResWrapper.scrolledItem(scroll, toHammer, false, false));
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), IEquip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
+            chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
             return true;
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
@@ -1607,7 +1606,7 @@ public class ReqCUser {
             chr.updateInv();
             return false;
         }
-        IItem wscroll = null;
+        Item wscroll = null;
         // Anti cheat and validation
         List<Integer> scrollReqs = ii.getScrollReqs(scroll.getItemId());
         if (scrollReqs.size() > 0 && !scrollReqs.contains(toScroll.getItemId())) {
@@ -1668,23 +1667,23 @@ public class ReqCUser {
             }
         }
         // Scroll Success/ Failure/ Curse
-        final IEquip scrolled = (IEquip) ii.scrollEquipWithId(toScroll, scroll, whiteScroll, chr, vegas);
-        IEquip.ScrollResult scrollSuccess;
+        final Equip scrolled = (Equip) ii.scrollEquipWithId(toScroll, scroll, whiteScroll, chr, vegas);
+        Equip.ScrollResult scrollSuccess;
         if (scrolled == null) {
-            scrollSuccess = IEquip.ScrollResult.CURSE;
+            scrollSuccess = Equip.ScrollResult.CURSE;
         } else if (scrolled.getLevel() > oldLevel || scrolled.getEnhance() > oldEnhance || scrolled.getHidden() > oldState || scrolled.getFlag() > oldFlag) {
-            scrollSuccess = IEquip.ScrollResult.SUCCESS;
+            scrollSuccess = Equip.ScrollResult.SUCCESS;
         } else if (GameConstants.isCleanSlate(scroll.getItemId()) && scrolled.getUpgradeSlots() > oldSlots) {
-            scrollSuccess = IEquip.ScrollResult.SUCCESS;
+            scrollSuccess = Equip.ScrollResult.SUCCESS;
         } else {
-            scrollSuccess = IEquip.ScrollResult.FAIL;
+            scrollSuccess = Equip.ScrollResult.FAIL;
         }
         // Update
         chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
         if (whiteScroll) {
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
         }
-        if (scrollSuccess == IEquip.ScrollResult.CURSE) {
+        if (scrollSuccess == Equip.ScrollResult.CURSE) {
             chr.SendPacket(ResWrapper.scrolledItem(scroll, toScroll, true, false));
             if (equip_slot < 0) {
                 chr.getInventory(MapleInventoryType.EQUIPPED).removeItem(toScroll.getPosition());
@@ -1696,14 +1695,14 @@ public class ReqCUser {
         }
         chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), scrollSuccess, legendarySpirit), vegas == 0);
         // equipped item was scrolled and changed
-        if (equip_slot < 0 && (scrollSuccess == IEquip.ScrollResult.SUCCESS || scrollSuccess == IEquip.ScrollResult.CURSE) && vegas == 0) {
+        if (equip_slot < 0 && (scrollSuccess == Equip.ScrollResult.SUCCESS || scrollSuccess == Equip.ScrollResult.CURSE) && vegas == 0) {
             chr.equipChanged();
         }
         // ベガの呪文書
         if (vegas != 0) {
             chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, toScroll));
             chr.SendPacket(ResCUIVega.VegaResult(OpsCashItem.CashItemRes_VegaSuccess1));
-            chr.SendPacket(ResCUIVega.VegaResult(scrollSuccess == IEquip.ScrollResult.SUCCESS ? OpsCashItem.CashItemRes_VegaSuccess2 : OpsCashItem.CashItemRes_VegaErr2));
+            chr.SendPacket(ResCUIVega.VegaResult(scrollSuccess == Equip.ScrollResult.SUCCESS ? OpsCashItem.CashItemRes_VegaSuccess2 : OpsCashItem.CashItemRes_VegaErr2));
         }
         return true;
     }
@@ -1719,8 +1718,8 @@ public class ReqCUser {
     }
 
     public static boolean OnUserItemReleaseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
-        final IItem magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
-        IItem toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
+        final Item magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
 
         if (magnify == null || toReveal == null) {
             chr.updateInv();
@@ -1807,7 +1806,7 @@ public class ReqCUser {
                         maxhp += Randomizer.rand(8, 12);
                     } else if ((job >= 100 && job <= 132) || (job >= 3200 && job <= 3212)) {
                         // Warrior
-                        ISkill improvingMaxHP = SkillFactory.getSkill(1000001);
+                        Skill improvingMaxHP = SkillFactory.getSkill(1000001);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(20, 25);
                         if (improvingMaxHPLevel >= 1) {
@@ -1821,7 +1820,7 @@ public class ReqCUser {
                         maxhp += Randomizer.rand(16, 20);
                     } else if ((job >= 500 && job <= 522) || (job >= 3500 && job <= 3512)) {
                         // Pirate
-                        ISkill improvingMaxHP = SkillFactory.getSkill(5100000);
+                        Skill improvingMaxHP = SkillFactory.getSkill(5100000);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(18, 22);
                         if (improvingMaxHPLevel >= 1) {
@@ -1829,7 +1828,7 @@ public class ReqCUser {
                         }
                     } else if (job >= 1500 && job <= 1512) {
                         // Pirate
-                        ISkill improvingMaxHP = SkillFactory.getSkill(15100000);
+                        Skill improvingMaxHP = SkillFactory.getSkill(15100000);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(18, 22);
                         if (improvingMaxHPLevel >= 1) {
@@ -1837,7 +1836,7 @@ public class ReqCUser {
                         }
                     } else if (job >= 1100 && job <= 1112) {
                         // Soul Master
-                        ISkill improvingMaxHP = SkillFactory.getSkill(11000000);
+                        Skill improvingMaxHP = SkillFactory.getSkill(11000000);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(36, 42);
                         if (improvingMaxHPLevel >= 1) {
@@ -1871,7 +1870,7 @@ public class ReqCUser {
                         maxmp += Randomizer.rand(2, 4);
                     } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job)) || (job >= 3200 && job <= 3212)) {
                         // Magician
-                        ISkill improvingMaxMP = SkillFactory.getSkill(2000001);
+                        Skill improvingMaxMP = SkillFactory.getSkill(2000001);
                         int improvingMaxMPLevel = chr.getSkillLevel(improvingMaxMP);
                         maxmp += Randomizer.rand(18, 20);
                         if (improvingMaxMPLevel >= 1) {
@@ -1885,7 +1884,7 @@ public class ReqCUser {
                         maxmp += Randomizer.rand(6, 9);
                     } else if (job >= 1200 && job <= 1212) {
                         // Flame Wizard
-                        ISkill improvingMaxMP = SkillFactory.getSkill(12000000);
+                        Skill improvingMaxMP = SkillFactory.getSkill(12000000);
                         int improvingMaxMPLevel = chr.getSkillLevel(improvingMaxMP);
                         maxmp += Randomizer.rand(18, 20);
                         if (improvingMaxMPLevel >= 1) {
@@ -2094,7 +2093,7 @@ public class ReqCUser {
                 break;
             }
         }
-        final ISkill skill = SkillFactory.getSkill(skill_id);
+        final Skill skill = SkillFactory.getSkill(skill_id);
         if (skill.hasRequiredSkill()) {
             if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
                 DebugLogger.ErrorLog("Use SP 1 = " + skill_id);
@@ -2210,7 +2209,7 @@ public class ReqCUser {
         }
         byte attack_speed_degree = cp.Decode1();
 
-        ISkill skill = SkillFactory.getSkill(nSkillID);
+        Skill skill = SkillFactory.getSkill(nSkillID);
         if (chr == null) {
             return false;
         }
@@ -2411,7 +2410,7 @@ public class ReqCUser {
         MapleInventory mi = chr.getInventory(mit);
         short slot_limit = (short) mi.getSlotLimit();
         for (short slot_to = 1; slot_to <= slot_limit; slot_to++) {
-            IItem item_to = mi.getItem(slot_to);
+            Item item_to = mi.getItem(slot_to);
             if (item_to == null) {
                 break;
             }
@@ -2420,7 +2419,7 @@ public class ReqCUser {
             short slot_from = slot_to;
 
             for (short slot = slot_to; slot <= slot_limit; slot++) {
-                IItem item = mi.getItem(slot);
+                Item item = mi.getItem(slot);
                 if (item == null) {
                     break;
                 }
@@ -2503,7 +2502,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserMobSummonItemUseRequest(MapleCharacter chr, short item_slot, int item_id) {
-        IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null) {
             return false;
         }
@@ -2538,7 +2537,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserTamingMobFoodItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id) {
-        final IItem item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        final Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         final MapleMount mount = chr.getMount();
 
         if (item_used != null && item_used.getQuantity() > 0 && item_used.getItemId() == item_id && mount != null) {
@@ -2571,7 +2570,7 @@ public class ReqCUser {
             return false;
         }
 
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == item_id && mob != null) {
             switch (item_id) {
                 case 2270004: {
@@ -2636,7 +2635,7 @@ public class ReqCUser {
         boolean bUsed = false;
         boolean bSucceed = false;
 
-        final IItem item_used = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
+        final Item item_used = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
         if (item_used == null || item_used.getQuantity() < 1 || item_used.getItemId() != item_id) {
             chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
             return false;
@@ -2660,7 +2659,7 @@ public class ReqCUser {
             if (CurrentLoopedSkillId == null) {
                 break; // End of data
             }
-            final ISkill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
+            final Skill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
             if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
                 bUsed = true;
                 if (Randomizer.nextInt(100) <= SuccessRate && SuccessRate != 0) {
@@ -2685,7 +2684,7 @@ public class ReqCUser {
         List<Equip> equips = new ArrayList<>();
         List<Equip> equippeds = new ArrayList<>();
         int total_price = 0;
-        for (IItem item : chr.getInventory(MapleInventoryType.EQUIPPED)) {
+        for (Item item : chr.getInventory(MapleInventoryType.EQUIPPED)) {
             Equip equip = (Equip) item;
             if (0 <= equip.getDurability()) {
                 int price = TacosShared.getRepairPrice(equip);
@@ -2696,7 +2695,7 @@ public class ReqCUser {
                 }
             }
         }
-        for (IItem item : chr.getInventory(MapleInventoryType.EQUIP)) {
+        for (Item item : chr.getInventory(MapleInventoryType.EQUIP)) {
             Equip equip = (Equip) item;
             if (0 <= equip.getDurability()) {
                 int price = TacosShared.getRepairPrice(equip);
@@ -3104,7 +3103,7 @@ public class ReqCUser {
                 String msg = cp.DecodeStr();
                 boolean fame = cp.Decode1() > 0;
                 int unk = cp.Decode4();
-                IItem itemz = chr.getCashInventory().findByCashId(cp.Decode8());
+                Item itemz = chr.getCashInventory().findByCashId(cp.Decode8());
                 if (itemz == null || !itemz.getGiftFrom().equalsIgnoreCase(name) || !chr.getCashInventory().canSendNote(itemz.getUniqueId())) {
                     return false;
                 }
@@ -3217,7 +3216,7 @@ public class ReqCUser {
             case MarriageReq_BreakUp: {
                 int item_id = cp.Decode4();
                 MapleInventoryType type = GameConstants.getInventoryType(item_id);
-                IItem item = chr.getInventory(type).findById(item_id);
+                Item item = chr.getInventory(type).findById(item_id);
                 if (item != null && type == MapleInventoryType.ETC && item_id / 10000 == 421) {
                     MapleInventoryManipulator.drop(client, type, item.getPosition(), item.getQuantity());
                 }
@@ -3254,7 +3253,7 @@ public class ReqCUser {
     }
 
     private static boolean OnUserExpUpItemUseRequest(MapleCharacter chr, short nPOS, int nItemID) {
-        IItem item = chr.getInventory(MapleInventoryType.USE).getItem(nPOS);
+        Item item = chr.getInventory(MapleInventoryType.USE).getItem(nPOS);
         if (item == null || chr.getGashaEXP() > 0 || item.getItemId() != nItemID || (nItemID / 10000) != 237) {
             chr.sendStatChanged(true);
             return false;

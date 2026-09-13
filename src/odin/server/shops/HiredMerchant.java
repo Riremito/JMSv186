@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.concurrent.ScheduledFuture;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
@@ -97,8 +97,8 @@ public class HiredMerchant extends AbstractPlayerStore {
     public void buy(TacosClient client, int item, short quantity) {
         MapleCharacter chr = client.getPlayer();
         final MaplePlayerShopItem pItem = items.get(item);
-        final IItem shopItem = pItem.item;
-        final IItem newItem = shopItem.copy();
+        final Item shopItem = pItem.item;
+        final Item newItem = shopItem.copy();
         final short perbundle = newItem.getQuantity();
         newItem.setQuantity((short) (quantity * perbundle));
 

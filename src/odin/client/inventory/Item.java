@@ -22,7 +22,7 @@ package odin.client.inventory;
 
 import odin.constants.GameConstants;
 
-public class Item implements IItem {
+public class Item {
 
     protected MapleRing ring = null;
     private final int id;
@@ -60,7 +60,7 @@ public class Item implements IItem {
         this.quantity = quantity;
     }
 
-    public IItem copy() {
+    public Item copy() {
         final Item ret = new Item(id, position, quantity, flag, uniqueid);
         ret.pet = pet;
         ret.owner = owner;
@@ -70,7 +70,6 @@ public class Item implements IItem {
         return ret;
     }
 
-    @Override
     public final void setPosition(final short position) {
         this.position = position;
 
@@ -79,17 +78,14 @@ public class Item implements IItem {
         }
     }
 
-    @Override
     public void setQuantity(final short quantity) {
         this.quantity = quantity;
     }
 
-    @Override
     public final int getItemId() {
         return id;
     }
 
-    @Override
     public final short getPosition() {
         return position;
     }
@@ -101,67 +97,54 @@ public class Item implements IItem {
         0x0008
         0x0010 1回交換可能
      */
-    @Override
     public final byte getFlag() {
         return flag;
     }
 
-    @Override
     public final short getQuantity() {
         return quantity;
     }
 
-    @Override
     public byte getType() {
         return 2; // An Item
     }
 
-    @Override
     public final String getOwner() {
         return owner;
     }
 
-    @Override
     public final void setOwner(final String owner) {
         this.owner = owner;
     }
 
-    @Override
     public final void setFlag(final byte flag) {
         this.flag = flag;
     }
 
-    @Override
     public final long getExpiration() {
         return expiration;
     }
 
-    @Override
     public final void setExpiration(final long expire) {
         this.expiration = expire;
     }
 
-    @Override
     public final String getGMLog() {
         return GameMaster_log;
     }
 
-    @Override
     public void setGMLog(final String GameMaster_log) {
         this.GameMaster_log = GameMaster_log;
     }
 
-    @Override
     public final int getUniqueId() {
         return uniqueid;
     }
 
-    @Override
     public final void setUniqueId(final int id) {
         this.uniqueid = id;
     }
 
-    @Override
     public final MaplePet getPet() {
         return pet;
     }
@@ -170,17 +153,14 @@ public class Item implements IItem {
         this.pet = pet;
     }
 
-    @Override
     public void setGiftFrom(String gf) {
         this.giftFrom = gf;
     }
 
-    @Override
     public String getGiftFrom() {
         return giftFrom;
     }
 
-    @Override
     public MapleRing getRing() {
         if (!GameConstants.isEffectRing(id) || getUniqueId() <= 0) {
             return null;
@@ -193,5 +173,15 @@ public class Item implements IItem {
 
     public void setRing(MapleRing ring) {
         this.ring = ring;
+    }
+
+    public static int comparePosition(Item item1, Item item2) {
+        if (Math.abs(item1.getPosition()) < Math.abs(item2.getPosition())) {
+            return -1;
+        }
+        if (Math.abs(item1.getPosition()) == Math.abs(item2.getPosition())) {
+            return 0;
+        }
+        return 1;
     }
 }

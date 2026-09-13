@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import odin.client.inventory.Equip;
-import odin.client.ISkill;
-import odin.client.inventory.IItem;
+import odin.client.Skill;
+import odin.client.inventory.Item;
 import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
 import odin.client.inventory.ItemFlag;
@@ -483,7 +483,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             if (!MapleItemInformationProvider.getInstance().itemExists(id)) {
                 return -1;
             }
-            final IItem item = MapleInventoryManipulator.addbyId_Gachapon(client, id, (short) quantity);
+            final Item item = MapleInventoryManipulator.addbyId_Gachapon(client, id, (short) quantity);
 
             if (item == null) {
                 return -1;
@@ -559,7 +559,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         MapleInventory equipped = getPlayer().getInventory(MapleInventoryType.EQUIPPED);
         MapleInventory equip = getPlayer().getInventory(MapleInventoryType.EQUIP);
         List<Short> ids = new LinkedList<>();
-        for (IItem item : equipped.list()) {
+        for (Item item : equipped.list()) {
             ids.add(item.getPosition());
         }
         for (short id : ids) {
@@ -568,14 +568,14 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public final void clearSkills() {
-        Map<ISkill, SkillEntry> skills = getPlayer().getSkills();
-        for (Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
+        Map<Skill, SkillEntry> skills = getPlayer().getSkills();
+        for (Entry<Skill, SkillEntry> skill : skills.entrySet()) {
             getPlayer().changeSkillLevel(skill.getKey(), (byte) 0, (byte) 0);
         }
     }
 
     public boolean hasSkill(int skillid) {
-        ISkill theSkill = SkillFactory.getSkill(skillid);
+        Skill theSkill = SkillFactory.getSkill(skillid);
         if (theSkill != null) {
             return client.getPlayer().getSkillLevel(theSkill) > 0;
         }
@@ -1020,8 +1020,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean addFromDrop(Object statsSel) {
-        if (statsSel instanceof IItem) {
-            final IItem it = (IItem) statsSel;
+        if (statsSel instanceof Item) {
+            final Item it = (Item) statsSel;
             return MapleInventoryManipulator.checkSpace(getClient(), it.getItemId(), it.getQuantity(), it.getOwner()) && MapleInventoryManipulator.addFromDrop(getClient(), it, false);
         }
         return false;
@@ -1036,9 +1036,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (inv == null) {
             return false;
         }
-        IItem item = getPlayer().getInventory(inv).getItem((byte) slot);
-        if (item == null || statsSel instanceof IItem) {
-            item = (IItem) statsSel;
+        Item item = getPlayer().getInventory(inv).getItem((byte) slot);
+        if (item == null || statsSel instanceof Item) {
+            item = (Item) statsSel;
         }
         if (offset > 0) {
             if (inv != MapleInventoryType.EQUIP) {
@@ -1181,7 +1181,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public final void maxAllSkills() {
-        for (ISkill skil : SkillFactory.getAllSkills()) {
+        for (Skill skil : SkillFactory.getAllSkills()) {
             if (GameConstants.isApplicableSkill(skil.getId())) { //no db/additionals/resistance skills
                 teachSkill(skil.getId(), skil.getMaxLevel(), skil.getMaxLevel());
             }

@@ -18,7 +18,7 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
@@ -50,7 +50,7 @@ public class RD_AvatarLook {
         final Map<Byte, Integer> myEquip = new LinkedHashMap<>();
         final Map<Byte, Integer> maskedEquip = new LinkedHashMap<>();
         MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIPPED);
-        for (final IItem item : equip.list()) {
+        for (final Item item : equip.list()) {
             if (item.getPosition() < -128) {
                 //not visible
                 continue;
@@ -86,7 +86,7 @@ public class RD_AvatarLook {
         if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 116)) {
             data.Encode1(255); // ending markers
         }
-        final IItem cWeapon = equip.getItem((byte) -111);
+        final Item cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
         if (Region.BMS.check() || Region.VMS.check()) {
             data.Encode4(0);

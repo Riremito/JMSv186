@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import tacos.shared.SharedDate;
@@ -91,7 +91,7 @@ public class ReqCCashShop {
     private static int FREE_COUPON_ITEM_ID = 5221000;
 
     public static void updateFreeCouponDate(MapleCharacter chr) {
-        IItem item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
+        Item item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
         if (item != null) {
             chr.SendPacket(ResCCashShop.FreeCouponDialog(true, SharedDate.getMagicalExpirationDate()));
         } else {
@@ -250,7 +250,7 @@ public class ReqCCashShop {
             return false;
         }
 
-        IItem item = chr.getCashInventory().toItem(cashitem);
+        Item item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
             client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, client, new ResCCashShop.CashItemStruct(item)));
@@ -287,7 +287,7 @@ public class ReqCCashShop {
             return false;
         }
 
-        IItem item = chr.getCashInventory().toItem(cashitem);
+        Item item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
             client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_FreeCashItem_Done, client, new ResCCashShop.CashItemStruct(item)));
@@ -347,12 +347,12 @@ public class ReqCCashShop {
     // ポイントショップからアイテム欄へ移動
     private static boolean MoveLtoS(TacosClient client, long cash_item_SN, byte inv_type, short inv_slot) {
         MapleCharacter chr = client.getPlayer();
-        IItem item_src = chr.getCashInventory().findByCashId(cash_item_SN);
+        Item item_src = chr.getCashInventory().findByCashId(cash_item_SN);
         if (item_src == null || item_src.getQuantity() < 1) {
             chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Failed, client));
             return false;
         }
-        IItem item_dst = item_src.copy();
+        Item item_dst = item_src.copy();
         item_dst.setUniqueId(item_src.getUniqueId());
         // アイテム欄へ移動
         short dst_slot = MapleInventoryManipulator.addbyItem(chr.getClient(), item_dst, true);
@@ -373,13 +373,13 @@ public class ReqCCashShop {
         }
 
         MapleInventory inv = chr.getInventory(inv_item_type);
-        IItem item_src = inv.findByUniqueId(inv_item_SN);
+        Item item_src = inv.findByUniqueId(inv_item_SN);
 
         if (item_src == null || item_src.getQuantity() < 1) {
             chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Failed, client));
             return false;
         }
-        IItem item_dst = item_src.copy();
+        Item item_dst = item_src.copy();
         item_dst.setUniqueId(item_src.getUniqueId());
         // ポイントショップへ移動
         chr.getCashInventory().addToInventory(item_dst);
@@ -390,7 +390,7 @@ public class ReqCCashShop {
     }
 
     private static boolean DestoryItem(MapleCharacter chr, String nexon_id, long item_unique_id) {
-        IItem item = chr.getCashInventory().findByCashId(item_unique_id);
+        Item item = chr.getCashInventory().findByCashId(item_unique_id);
 
         if (item == null || item.getQuantity() < 1 || !chr.getClient().getMapleId().equals(nexon_id)) {
             chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Destroy_Failed, chr.getClient()));
@@ -436,13 +436,13 @@ public class ReqCCashShop {
 
         // use
         if (character_name.equals("")) {
-            ArrayList<IItem> items_cash = new ArrayList<>();
-            ArrayList<IItem> items_normal = new ArrayList<>();
+            ArrayList<Item> items_cash = new ArrayList<>();
+            ArrayList<Item> items_normal = new ArrayList<>();
             // test
             {
                 int test_item_SN = CashItemFactory.getInstance().getItemSN(1002239); // test
                 CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
-                IItem item = chr.getCashInventory().toItem(cashitem);
+                Item item = chr.getCashInventory().toItem(cashitem);
 
                 if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && WzDataStorage.ITEM.check(item.getItemId())) {
                     chr.getCashInventory().addToInventory(item);
@@ -481,7 +481,7 @@ public class ReqCCashShop {
             return false;
         }
 
-        IItem box_item = chr.getCashInventory().findByCashId(box_SN);
+        Item box_item = chr.getCashInventory().findByCashId(box_SN);
 
         if (box_item == null || box_item.getQuantity() < 1) {
             return false;
@@ -489,7 +489,7 @@ public class ReqCCashShop {
 
         int test_item_SN = CashItemFactory.getInstance().getItemSN(1002239); // test
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(test_item_SN);
-        IItem item = chr.getCashInventory().toItem(cashitem);
+        Item item = chr.getCashInventory().toItem(cashitem);
 
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && WzDataStorage.ITEM.check(item.getItemId())) {
             chr.getCashInventory().removeFromInventory(box_item);

@@ -25,13 +25,13 @@ import java.util.List;
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.MapleQuestStatus;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.guild.MapleGuild;
@@ -396,30 +396,30 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void Gashapon(final int id, final short quantity) {
-        IItem item_info = gainItem(id, quantity, true, 0, -1, "");
+        Item item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
             this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info));
         }
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final int slots) {
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final int slots) {
         return gainItem(id, quantity, randomStats, 0, slots, "");
     }
 
-    public final IItem gainItem(final int id, final short quantity, final long period) {
+    public final Item gainItem(final int id, final short quantity, final long period) {
         return gainItem(id, quantity, false, period, -1, "");
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots) {
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots) {
         return gainItem(id, quantity, randomStats, period, slots, "");
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
         return gainItem(id, quantity, randomStats, period, slots, owner, client);
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final TacosClient target) {
-        IItem item_info = null;
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final TacosClient target) {
+        Item item_info = null;
         if (quantity >= 0) {
             final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             final MapleInventoryType type = GameConstants.getInventoryType(id);
@@ -798,7 +798,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void teachSkill(final int id, byte level) {
-        final ISkill skil = SkillFactory.getSkill(id);
+        final Skill skil = SkillFactory.getSkill(id);
         if (getPlayer().getSkillLevel(skil) > level) {
             level = getPlayer().getSkillLevel(skil);
         }

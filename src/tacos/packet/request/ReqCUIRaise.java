@@ -22,7 +22,7 @@ import java.util.List;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
@@ -129,7 +129,7 @@ public class ReqCUIRaise {
         int nQuestID = cp.Decode4();
         int exp = cp.Decode4();
 
-        IItem item_dropped = chr.getInventory(MapleInventoryType.ETC).getItem(nSlotPosition);
+        Item item_dropped = chr.getInventory(MapleInventoryType.ETC).getItem(nSlotPosition);
         if (item_dropped.getItemId() != nItemID) {
             return false;
         }
@@ -148,7 +148,7 @@ public class ReqCUIRaise {
         chr.DebugMsg("OnRaiseIncExp : nItemID = " + nItemID + ", nQuestID = " + nQuestID + ", exp = " + exp);
 
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        for (IItem item : chr.getInventory(MapleInventoryType.ETC)) {
+        for (Item item : chr.getInventory(MapleInventoryType.ETC)) {
             if (item.getItemId() / 10000 != 422) {
                 continue;
             }

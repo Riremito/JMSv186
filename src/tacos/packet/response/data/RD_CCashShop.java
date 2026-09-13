@@ -19,7 +19,7 @@
 package tacos.packet.response.data;
 
 import tacos.client.TacosClient;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import tacos.shared.SharedDate;
 import tacos.packet.ServerPacket;
 import odin.server.CashItemFactory;
@@ -31,7 +31,7 @@ import odin.server.CashItemFactory;
 public class RD_CCashShop {
 
     // buffer.
-    public static byte[] GW_CashItemInfo_Encode(IItem item, TacosClient client) {
+    public static byte[] GW_CashItemInfo_Encode(Item item, TacosClient client) {
         ServerPacket data = new ServerPacket();
 
         data.Encode8(item.getUniqueId());

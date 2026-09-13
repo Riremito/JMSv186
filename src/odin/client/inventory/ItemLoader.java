@@ -57,7 +57,7 @@ public enum ItemLoader {
         this.arg = Arrays.asList(arg);
     }
 
-    public Map<Integer, OdinPair<IItem, MapleInventoryType>> loadItems(boolean login, Integer... id) throws SQLException {
+    public Map<Integer, OdinPair<Item, MapleInventoryType>> loadItems(boolean login, Integer... id) throws SQLException {
         switch (this) {
             case CASHSHOP_EXPLORER:
             case CASHSHOP_CYGNUS:
@@ -79,12 +79,12 @@ public enum ItemLoader {
         }
     }
 
-    public void saveItems(List<OdinPair<IItem, MapleInventoryType>> items, Integer... id) throws SQLException {
+    public void saveItems(List<OdinPair<Item, MapleInventoryType>> items, Integer... id) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         saveItems(items, con, id);
     }
 
-    public void saveItems(List<OdinPair<IItem, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
+    public void saveItems(List<OdinPair<Item, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
         switch (this) {
             case CASHSHOP_EXPLORER:
             case CASHSHOP_CYGNUS:

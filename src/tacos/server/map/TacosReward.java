@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.TreeMap;
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -111,7 +110,7 @@ public class TacosReward {
                     if (reward.money != 0) {
                         map.spawnMobMesoDrop(reward.money, map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, false, (byte) 0);
                     } else {
-                        IItem idrop = null;
+                        Item idrop = null;
                         // 装備
 
                         if (GameConstants.getInventoryType(reward.item) == MapleInventoryType.EQUIP) {
@@ -186,7 +185,7 @@ public class TacosReward {
                         dropped_count++;
                     }
                 } else {
-                    IItem idrop = null;
+                    Item idrop = null;
                     // 装備
 
                     if (GameConstants.getInventoryType(de.itemId) == MapleInventoryType.EQUIP) {

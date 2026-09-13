@@ -1,10 +1,10 @@
 package odin.server.quest;
 
-import odin.client.ISkill;
+import odin.client.Skill;
 import java.util.Calendar;
 import java.util.List;
 import java.util.LinkedList;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
@@ -140,7 +140,7 @@ public class MapleQuestRequirement {
                 for (OdinPair<Integer, Integer> a : dataStore) {
                     final boolean acquire = a.getRight() > 0;
                     final int skill = a.getLeft();
-                    final ISkill skil = SkillFactory.getSkill(skill);
+                    final Skill skil = SkillFactory.getSkill(skill);
                     if (acquire) {
                         if (skil.isFourthJob()) {
                             if (chr.getMasterLevel(skil) == 0) {
@@ -182,7 +182,7 @@ public class MapleQuestRequirement {
                     itemId = a.getLeft();
                     quantity = 0;
                     iType = GameConstants.getInventoryType(itemId);
-                    for (IItem item : chr.getInventory(iType).listById(itemId)) {
+                    for (Item item : chr.getInventory(iType).listById(itemId)) {
                         quantity += item.getQuantity();
                     }
                     final int count = a.getRight();

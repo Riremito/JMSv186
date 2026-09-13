@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
@@ -356,7 +356,7 @@ public final class MapleMap extends TacosMap {
         }, duration);
     }
 
-    public void spawnMobDrop(IItem idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short questid) {
+    public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short questid) {
         MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, questid);
         addMapObject(mdrop);
         spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, dropPos, mob.getPosition(), mob.getObjectId()));
@@ -367,7 +367,7 @@ public final class MapleMap extends TacosMap {
         activateItemReactors(mdrop, chr.getClient());
     }
 
-    public void spawnItemDrop(MapleMapObject dropper, MapleCharacter owner, IItem item, Point pos, boolean ffaDrop, boolean playerDrop) {
+    public void spawnItemDrop(MapleMapObject dropper, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
         MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
         addMapObject(drop);
@@ -472,7 +472,7 @@ public final class MapleMap extends TacosMap {
     }
 
     private void activateItemReactors(final MapleMapItem drop, final TacosClient client) {
-        final IItem item = drop.getItem();
+        final Item item = drop.getItem();
 
         mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
         try {

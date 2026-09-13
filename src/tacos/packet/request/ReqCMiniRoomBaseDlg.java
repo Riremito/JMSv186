@@ -21,7 +21,7 @@ package tacos.packet.request;
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -117,7 +117,7 @@ public class ReqCMiniRoomBaseDlg {
                         byte unk2 = cp.Decode1();
                         short item_slot = cp.Decode2();
                         int item_id = cp.Decode4();
-                        IItem shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
+                        Item shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
 
                         if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
                             return true;
@@ -134,7 +134,7 @@ public class ReqCMiniRoomBaseDlg {
                         byte unk2 = cp.Decode1();
                         short item_slot = cp.Decode2();
                         int item_id = cp.Decode4();
-                        IItem shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
+                        Item shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
 
                         if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
                             return true;
@@ -342,7 +342,7 @@ public class ReqCMiniRoomBaseDlg {
 
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 MapleInventoryType ivType = MapleInventoryType.getByType(item_type);
-                IItem item = chr.getInventory(ivType).getItem(item_slot);
+                Item item = chr.getInventory(ivType).getItem(item_slot);
 
                 if (item == null) {
                     DebugLogger.ErrorLog("OnMiniRoom : TRP_PutItem, item");
@@ -387,7 +387,7 @@ public class ReqCMiniRoomBaseDlg {
                 if (shop == null || !shop.isOwner(chr) || shop instanceof MapleMiniGame) {
                     return true;
                 }
-                final IItem ivItem = chr.getInventory(type).getItem(slot);
+                final Item ivItem = chr.getInventory(type).getItem(slot);
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 if (ivItem != null) {
                     long check = bundles * perBundle;
@@ -414,12 +414,12 @@ public class ReqCMiniRoomBaseDlg {
                             // Ignore the bundles
                             MapleInventoryManipulator.removeFromSlot(chr.getClient(), type, slot, ivItem.getQuantity(), true);
 
-                            final IItem sellItem = ivItem.copy();
+                            final Item sellItem = ivItem.copy();
                             shop.addItem(new MaplePlayerShopItem(sellItem, (short) 1, price));
                         } else {
                             MapleInventoryManipulator.removeFromSlot(chr.getClient(), type, slot, bundles_perbundle, true);
 
-                            final IItem sellItem = ivItem.copy();
+                            final Item sellItem = ivItem.copy();
                             sellItem.setQuantity(perBundle);
                             shop.addItem(new MaplePlayerShopItem(sellItem, bundles, price));
                         }
@@ -468,7 +468,7 @@ public class ReqCMiniRoomBaseDlg {
 
                 if (item != null) {
                     if (item.bundles > 0) {
-                        IItem item_get = item.item.copy();
+                        Item item_get = item.item.copy();
                         long check = item.bundles * item.item.getQuantity();
                         if (check <= 0 || check > 32767) {
                             return true;
@@ -540,7 +540,7 @@ public class ReqCMiniRoomBaseDlg {
                     // アイテム回収
                     for (MaplePlayerShopItem items : ips.getItems()) {
                         if (items.bundles > 0) {
-                            IItem newItem = items.item.copy();
+                            Item newItem = items.item.copy();
                             newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
                             if (MapleInventoryManipulator.addFromDrop(chr.getClient(), newItem, false)) {
                                 items.bundles = 0;

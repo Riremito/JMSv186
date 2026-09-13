@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server;
 
 import odin.constants.GameConstants;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
 import odin.client.inventory.MapleInventoryType;
 import java.sql.SQLException;
@@ -92,7 +92,7 @@ public class MTSStorage {
         }
     }
 
-    public final void addToBuyNow(final MTSCart cart, final IItem item, final int price, final int cid, final String seller, final long expiration) {
+    public final void addToBuyNow(final MTSCart cart, final Item item, final int price, final int cid, final String seller, final long expiration) {
         final int id;
         mutex.writeLock().lock();
         try {
@@ -105,7 +105,7 @@ public class MTSStorage {
     }
 
     public final boolean removeFromBuyNow(final int id, final int cidBought, final boolean check) {
-        IItem item = null;
+        Item item = null;
         mutex.writeLock().lock();
         try {
             if (buyNow.containsKey(id)) {
@@ -138,7 +138,7 @@ public class MTSStorage {
     public final void loadBuyNow() {
         int lastPackage = 0;
         int cId;
-        Map<Integer, OdinPair<IItem, MapleInventoryType>> items;
+        Map<Integer, OdinPair<Item, MapleInventoryType>> items;
         try {
             for (DQ_MtsItems.TabOneRow row : DQ_MtsItems.getTabOneRows()) {
                 lastPackage = row.id;
@@ -148,7 +148,7 @@ public class MTSStorage {
                 }
                 items = ItemLoader.MTS.loadItems(false, lastPackage);
                 if (items != null && !items.isEmpty()) {
-                    for (OdinPair<IItem, MapleInventoryType> i : items.values()) {
+                    for (OdinPair<Item, MapleInventoryType> i : items.values()) {
                         buyNow.put(lastPackage, new MTSItemInfo(row.price, i.getLeft(), row.seller, lastPackage, cId, row.expiration));
                     }
                 }
@@ -167,10 +167,10 @@ public class MTSStorage {
         if (isShutDown) {
             System.out.println("Saving MTS...");
         }
-        final Map<Integer, ArrayList<IItem>> expire = new HashMap<>();
+        final Map<Integer, ArrayList<Item>> expire = new HashMap<>();
         final List<Integer> toRemove = new ArrayList<>();
         final long now = System.currentTimeMillis();
-        final Map<Integer, ArrayList<OdinPair<IItem, MapleInventoryType>>> items = new HashMap<>();
+        final Map<Integer, ArrayList<OdinPair<Item, MapleInventoryType>>> items = new HashMap<>();
         final List<DQ_MtsItems.TabOneRow> rowsToSave = new ArrayList<>();
         mutex.writeLock().lock(); //lock wL so rL will also be locked
         try {
@@ -201,7 +201,7 @@ public class MTSStorage {
             System.out.println("Saving MTS items...");
         }
         try {
-            for (Entry<Integer, ArrayList<OdinPair<IItem, MapleInventoryType>>> ite : items.entrySet()) {
+            for (Entry<Integer, ArrayList<OdinPair<Item, MapleInventoryType>>> ite : items.entrySet()) {
                 ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
             }
         } catch (SQLException e) {
@@ -218,7 +218,7 @@ public class MTSStorage {
                     c.getValue().removeFromNotYetSold(i);
                 }
                 if (expire.containsKey(c.getKey())) {
-                    for (IItem item : expire.get(c.getKey())) {
+                    for (Item item : expire.get(c.getKey())) {
                         c.getValue().addToInventory(item);
                     }
                 }
@@ -322,11 +322,11 @@ public class MTSStorage {
         private int price;
         private int id; //packageid
         private int cid;
-        private IItem item;
+        private Item item;
         private String seller;
         private long date;
 
-        public MTSItemInfo(int price, IItem item, String seller, int id, int cid, long date) {
+        public MTSItemInfo(int price, Item item, String seller, int id, int cid, long date) {
             this.item = item;
             this.price = price;
             this.seller = seller;
@@ -335,7 +335,7 @@ public class MTSStorage {
             this.date = date;
         }
 
-        public IItem getItem() {
+        public Item getItem() {
             return item;
         }
 

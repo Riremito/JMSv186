@@ -20,7 +20,7 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import java.util.ArrayList;
@@ -137,22 +137,22 @@ public class ResCCashShop {
     public static class CashItemStruct {
 
         public MapleInventoryType inc_slot_type;
-        public IItem item;
+        public Item item;
         // coupon
-        public ArrayList<IItem> coupon_items_cash;
+        public ArrayList<Item> coupon_items_cash;
         public int coupon_maple_point;
-        public ArrayList<IItem> coupon_items_normal;
+        public ArrayList<Item> coupon_items_normal;
         public int coupon_meso;
 
         public CashItemStruct(MapleInventoryType inc_slot_type) {
             this.inc_slot_type = inc_slot_type;
         }
 
-        public CashItemStruct(IItem item) {
+        public CashItemStruct(Item item) {
             this.item = item;
         }
 
-        public CashItemStruct(ArrayList<IItem> coupon_items_cash, int coupon_maple_point, ArrayList<IItem> coupon_items_normal, int coupon_meso) {
+        public CashItemStruct(ArrayList<Item> coupon_items_cash, int coupon_maple_point, ArrayList<Item> coupon_items_normal, int coupon_meso) {
             this.coupon_items_cash = coupon_items_cash;
             this.coupon_maple_point = coupon_maple_point;
             this.coupon_items_normal = coupon_items_normal;
@@ -176,7 +176,7 @@ public class ResCCashShop {
                 CashShop csi = client.getPlayer().getCashInventory();
 
                 sp.Encode2(csi.getItemsSize()); // cash item count
-                for (IItem item : csi.getInventory()) {
+                for (Item item : csi.getInventory()) {
                     sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, client));
                 }
                 sp.Encode2(client.getPlayer().getStorage().getSlot()); // m_nTrunkCount
@@ -209,7 +209,7 @@ public class ResCCashShop {
                 sp.Encode1(cash_item_count);
                 if (0 < cash_item_count) {
                     // buffer 55 bytes
-                    for (IItem item : cis.coupon_items_cash) {
+                    for (Item item : cis.coupon_items_cash) {
                         sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, client));
                     }
                 }
@@ -217,7 +217,7 @@ public class ResCCashShop {
                 sp.Encode4(normal_item_count);
                 if (0 < normal_item_count) {
                     // buffer 8 bytes
-                    for (IItem item : cis.coupon_items_normal) {
+                    for (Item item : cis.coupon_items_normal) {
                         sp.Encode2(item.getQuantity());
                         sp.Encode2(0); // inventory will be scrolled to the slot id. but this packet does not insert item to your inventory.
                         sp.Encode4(item.getItemId());
@@ -387,7 +387,7 @@ public class ResCCashShop {
     }
 
     // アバターランダムボックス
-    public static ServerPacket OnCashItemGachaponResult(IItem box_item, IItem item, TacosClient client) {
+    public static ServerPacket OnCashItemGachaponResult(Item box_item, Item item, TacosClient client) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemGachaponResult);
 
         sp.Encode1(OpsCashItem.CashItemRes_CashItemGachapon_Done.get());

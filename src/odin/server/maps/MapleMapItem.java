@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCDropPool;
@@ -31,7 +31,7 @@ import tacos.server.map.TacosMap;
 
 public class MapleMapItem extends AbstractMapleMapObject {
 
-    protected IItem item;
+    protected Item item;
     protected MapleMapObject dropper;
     protected int character_ownerid;
     protected int meso = 0;
@@ -44,7 +44,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
     protected long nextFFA = 0;
     private long time = 0;
 
-    public MapleMapItem(IItem item, Point position, MapleMapObject dropper, MapleCharacter owner, byte type, boolean playerDrop) {
+    public MapleMapItem(Item item, Point position, MapleMapObject dropper, MapleCharacter owner, byte type, boolean playerDrop) {
         setPosition(position);
         this.item = item;
         this.dropper = dropper;
@@ -53,7 +53,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
         this.playerDrop = playerDrop;
     }
 
-    public MapleMapItem(IItem item, Point position, MapleMapObject dropper, MapleCharacter owner, byte type, boolean playerDrop, int questid) {
+    public MapleMapItem(Item item, Point position, MapleMapObject dropper, MapleCharacter owner, byte type, boolean playerDrop, int questid) {
         setPosition(position);
         this.item = item;
         this.dropper = dropper;
@@ -73,7 +73,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
         this.playerDrop = playerDrop;
     }
 
-    public MapleMapItem(Point position, IItem item) {
+    public MapleMapItem(Point position, Item item) {
         setPosition(position);
         this.item = item;
         this.character_ownerid = 0;
@@ -82,7 +82,7 @@ public class MapleMapItem extends AbstractMapleMapObject {
         this.randDrop = true;
     }
 
-    public final IItem getItem() {
+    public final Item getItem() {
         return item;
     }
 

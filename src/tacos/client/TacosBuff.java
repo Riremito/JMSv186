@@ -19,7 +19,7 @@
 package tacos.client;
 
 import java.util.ArrayList;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.SkillFactory;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
@@ -134,7 +134,7 @@ public class TacosBuff {
         // skill or item.
         if (0 < buff_id) {
             OpsSkill ops_skill = OpsSkill.find(buff_id);
-            ISkill skill = SkillFactory.getSkill(buff_id);
+            Skill skill = SkillFactory.getSkill(buff_id);
             if (skill == null) {
                 DebugLogger.ErrorLog("TacosBuff - update : skill.");
                 return false;

@@ -18,7 +18,7 @@
  */
 package tacos.debug;
 
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
@@ -79,7 +79,7 @@ public class DebugJob {
     }
 
     public static int GetSkillEffect(MapleCharacter chr, int skill_id) {
-        ISkill skill = SkillFactory.getSkill(skill_id);
+        Skill skill = SkillFactory.getSkill(skill_id);
         if (skill == null) {
             return 0;
         }
@@ -443,7 +443,7 @@ public class DebugJob {
 
         for (Integer v : job_list) {
             for (Integer skill_id : SkillFactory.getSkillsByJob(v)) {
-                ISkill skill = SkillFactory.getSkill(skill_id);
+                Skill skill = SkillFactory.getSkill(skill_id);
                 chr.changeSkillLevel(skill, reset ? 0 : skill.getMaxLevel(), (v % 10 == 2) ? (byte) skill.getMaxLevel() : (byte) 0);
             }
         }

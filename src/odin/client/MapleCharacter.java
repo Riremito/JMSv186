@@ -25,7 +25,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryIdentifier;
-import odin.client.inventory.IItem;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.ItemFlag;
@@ -314,7 +313,7 @@ public class MapleCharacter extends TacosCharacter {
 
                 ret.questinfo.putAll(DQ_Questinfo.loadAll(character_id));
 
-                ISkill skil;
+                Skill skil;
                 for (DQ_Skills.SkillRow row : DQ_Skills.loadAll(character_id)) {
                     skil = SkillFactory.getSkill(row.skillId);
                     if (skil != null && GameConstants.isApplicableSkill(row.skillId)) {
@@ -349,7 +348,7 @@ public class MapleCharacter extends TacosCharacter {
                 }
 
                 // 精霊の祝福
-                final ISkill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
+                final Skill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
 
                 if (bofskill != null) {
                     ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
@@ -399,7 +398,7 @@ public class MapleCharacter extends TacosCharacter {
                 }
 
                 final DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
-                final IItem mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
+                final Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
                 ret.mount = new MapleMount(ret, mount != null ? mount.getItemId() : 0, ret.job > 1000 && ret.job < 2000 ? 10001004 : (ret.job >= 2000 ? (ret.job == 2001 || ret.job >= 2200 ? 20011004 : (ret.job >= 3000 ? 30001004 : 20001004)) : 1004), mountRow.fatigue, mountRow.level, mountRow.exp);
 
                 ret.stats.recalcLocalStats(true);
@@ -1007,7 +1006,7 @@ public class MapleCharacter extends TacosCharacter {
             List<Integer> skills = SkillFactory.getSkillsByJob(job);
             if (skills != null) {
                 for (int i : skills) {
-                    final ISkill skil = SkillFactory.getSkill(i);
+                    final Skill skil = SkillFactory.getSkill(i);
                     if (skil != null && !skil.isInvisible() && skil.isFourthJob() && getSkillLevel(skil) <= 0 && getMasterLevel(skil) <= 0 && skil.getMasterLevel() > 0) {
                         changeSkillLevel(skil, (byte) 0, (byte) skil.getMasterLevel()); //usually 10 master
                     }
@@ -1041,14 +1040,14 @@ public class MapleCharacter extends TacosCharacter {
         sendStatChanged();
     }
 
-    public void changeSkillLevel(final ISkill skill, byte newLevel, byte newMasterlevel) { //1 month
+    public void changeSkillLevel(final Skill skill, byte newLevel, byte newMasterlevel) { //1 month
         if (skill == null) {
             return;
         }
         changeSkillLevel(skill, newLevel, newMasterlevel, skill.isTimeLimited() ? (System.currentTimeMillis() + (long) (30L * 24L * 60L * 60L * 1000L)) : -1);
     }
 
-    public void changeSkillLevel(final ISkill skill, byte newLevel, byte newMasterlevel, long expiration) {
+    public void changeSkillLevel(final Skill skill, byte newLevel, byte newMasterlevel, long expiration) {
         if (skill == null || (!GameConstants.isApplicableSkill(skill.getId()) && !GameConstants.isApplicableSkill_(skill.getId()))) {
             DebugLogger.ErrorLog("changeSkillLevel : error = " + skill.getId());
             return;
@@ -1271,7 +1270,7 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void forceReAddItem_NoUpdate(IItem item, MapleInventoryType type) {
+    public void forceReAddItem_NoUpdate(Item item, MapleInventoryType type) {
         getInventory(type).removeSlot(item.getPosition());
         getInventory(type).addFromDB(item);
     }
@@ -1283,7 +1282,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // removeFromSlot like
-    private boolean useItemDone(MapleInventoryType type, IItem item_used, short item_quantity) {
+    private boolean useItemDone(MapleInventoryType type, Item item_used, short item_quantity) {
         boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
 
         getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
@@ -1300,7 +1299,7 @@ public class MapleCharacter extends TacosCharacter {
     // removeFromSlot like
     public Runnable checkItemSlot(short item_slot, int item_id, short item_quantity) {
         MapleInventoryType type = GameConstants.getInventoryType(item_id);
-        IItem item_used = getInventory(type).getItem(item_slot);
+        Item item_used = getInventory(type).getItem(item_slot);
 
         if (item_used == null) {
             return null;
@@ -1344,44 +1343,44 @@ public class MapleCharacter extends TacosCharacter {
         long expiration;
         final List<Integer> ret = new ArrayList<>();
         final long currenttime = System.currentTimeMillis();
-        final List<OdinPair<MapleInventoryType, IItem>> toberemove = new ArrayList<>(); // This is here to prevent deadlock.
-        final List<IItem> tobeunlock = new ArrayList<>(); // This is here to prevent deadlock.
+        final List<OdinPair<MapleInventoryType, Item>> toberemove = new ArrayList<>(); // This is here to prevent deadlock.
+        final List<Item> tobeunlock = new ArrayList<>(); // This is here to prevent deadlock.
 
         for (final MapleInventoryType inv : MapleInventoryType.values()) {
-            for (final IItem item : getInventory(inv)) {
+            for (final Item item : getInventory(inv)) {
                 expiration = item.getExpiration();
 
                 if (expiration != -1 && !GameConstants.isPet(item.getItemId()) && currenttime > expiration) {
                     if (ItemFlag.LOCK.check(item.getFlag())) {
                         tobeunlock.add(item);
                     } else if (currenttime > expiration) {
-                        toberemove.add(new OdinPair<MapleInventoryType, IItem>(inv, item));
+                        toberemove.add(new OdinPair<MapleInventoryType, Item>(inv, item));
                     }
                 } else if (item.getItemId() == 5000054 && item.getPet() != null && item.getPet().getSecondsLeft() <= 0) {
-                    toberemove.add(new OdinPair<MapleInventoryType, IItem>(inv, item));
+                    toberemove.add(new OdinPair<MapleInventoryType, Item>(inv, item));
                 }
             }
         }
-        IItem item;
-        for (final OdinPair<MapleInventoryType, IItem> itemz : toberemove) {
+        Item item;
+        for (final OdinPair<MapleInventoryType, Item> itemz : toberemove) {
             item = itemz.getRight();
             ret.add(item.getItemId());
             getInventory(itemz.getLeft()).removeItem(item.getPosition(), item.getQuantity(), false);
         }
-        for (final IItem itemz : tobeunlock) {
+        for (final Item itemz : tobeunlock) {
             itemz.setExpiration(-1);
             itemz.setFlag((byte) (itemz.getFlag() - ItemFlag.LOCK.getValue()));
         }
         this.pendingExpiration = ret;
 
         final List<Integer> skilz = new ArrayList<>();
-        final List<ISkill> toberem = new ArrayList<>();
-        for (Entry<ISkill, SkillEntry> skil : skills.entrySet()) {
+        final List<Skill> toberem = new ArrayList<>();
+        for (Entry<Skill, SkillEntry> skil : skills.entrySet()) {
             if (skil.getValue().expiration != -1 && currenttime > skil.getValue().expiration) {
                 toberem.add(skil.getKey());
             }
         }
-        for (ISkill skil : toberem) {
+        for (Skill skil : toberem) {
             skilz.add(skil.getId());
             this.skills.remove(skil);
         }
@@ -1509,11 +1508,11 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    public Map<ISkill, SkillEntry> getSkills() {
+    public Map<Skill, SkillEntry> getSkills() {
         return Collections.unmodifiableMap(skills);
     }
 
-    public byte getSkillLevel(final ISkill skill) {
+    public byte getSkillLevel(final Skill skill) {
         // 存在しないスキルID
         if (skill == null) {
             return 0;
@@ -1530,7 +1529,7 @@ public class MapleCharacter extends TacosCharacter {
         return getMasterLevel(SkillFactory.getSkill(skill));
     }
 
-    public byte getMasterLevel(final ISkill skill) {
+    public byte getMasterLevel(final Skill skill) {
         // 存在しないスキルID
         if (skill == null) {
             return 0;
@@ -1559,7 +1558,7 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(12, 16);
             maxmp += Randomizer.rand(10, 12);
         } else if (job >= 100 && job <= 132) { // Warrior
-            final ISkill improvingMaxHP = SkillFactory.getSkill(1000001);
+            final Skill improvingMaxHP = SkillFactory.getSkill(1000001);
             final int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -1567,7 +1566,7 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 200 && job <= 232) { // Magician
-            final ISkill improvingMaxMP = SkillFactory.getSkill(2000001);
+            final Skill improvingMaxMP = SkillFactory.getSkill(2000001);
             final int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
@@ -1581,7 +1580,7 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(20, 24);
             maxmp += Randomizer.rand(14, 16);
         } else if ((job >= 500 && job <= 522) || (job >= 3500 && job <= 3512)) { // Pirate
-            final ISkill improvingMaxHP = SkillFactory.getSkill(5100000);
+            final Skill improvingMaxHP = SkillFactory.getSkill(5100000);
             final int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -1589,7 +1588,7 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(22, 26);
             maxmp += Randomizer.rand(18, 22);
         } else if (job >= 1100 && job <= 1111) { // Soul Master
-            final ISkill improvingMaxHP = SkillFactory.getSkill(11000000);
+            final Skill improvingMaxHP = SkillFactory.getSkill(11000000);
             final int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -1597,7 +1596,7 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 1200 && job <= 1211) { // Flame Wizard
-            final ISkill improvingMaxMP = SkillFactory.getSkill(12000000);
+            final Skill improvingMaxMP = SkillFactory.getSkill(12000000);
             final int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
@@ -1605,7 +1604,7 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(10, 14);
             maxmp += Randomizer.rand(22, 24);
         } else if (job >= 1500 && job <= 1512) { // Pirate
-            final ISkill improvingMaxHP = SkillFactory.getSkill(15100000);
+            final Skill improvingMaxHP = SkillFactory.getSkill(15100000);
             final int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2151,7 +2150,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean IsBerserk() {
-        final ISkill BerserkX = SkillFactory.getSkill(1320006);
+        final Skill BerserkX = SkillFactory.getSkill(1320006);
         final int skilllevel = getSkillLevel(BerserkX);
 
         if (skilllevel < 1) {
@@ -2386,12 +2385,12 @@ public class MapleCharacter extends TacosCharacter {
     //TODO: more than one crush/friendship ring at a time
     public OdinPair<List<MapleRing>, List<MapleRing>> getRings(boolean equip) {
         MapleInventory iv = getInventory(MapleInventoryType.EQUIPPED);
-        Collection<IItem> equippedC = iv.list();
+        Collection<Item> equippedC = iv.list();
         List<Item> equipped = new ArrayList<>(equippedC.size());
-        for (IItem item : equippedC) {
+        for (Item item : equippedC) {
             equipped.add((Item) item);
         }
-        Collections.sort(equipped, (item1, item2) -> IItem.comparePosition(item1, item2));
+        Collections.sort(equipped, (item1, item2) -> Item.comparePosition(item1, item2));
         List<MapleRing> crings = new ArrayList<>();
         List<MapleRing> frings = new ArrayList<>();
         MapleRing ring;
@@ -2419,7 +2418,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         if (equip) {
             iv = getInventory(MapleInventoryType.EQUIP);
-            for (IItem item : iv.list()) {
+            for (Item item : iv.list()) {
                 if (item.getRing() != null && GameConstants.isCrushRing(item.getItemId())) {
                     ring = item.getRing();
                     ring.setEquipped(false);
@@ -2490,7 +2489,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void spawnPet(short slot, boolean lead, boolean broadcast) {
-        final IItem item = getInventory(MapleInventoryType.CASH).getItem(slot);
+        final Item item = getInventory(MapleInventoryType.CASH).getItem(slot);
         if (item == null || item.getItemId() > 5000100 || item.getItemId() < 5000000) {
             return;
         }
@@ -3068,7 +3067,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.guildrank = guildrank;
         ret.allianceRank = allianceRank;
         ret.setPosition(new Point(getPosition()));
-        for (IItem equip : getInventory(MapleInventoryType.EQUIPPED)) {
+        for (Item equip : getInventory(MapleInventoryType.EQUIPPED)) {
             ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
         }
         ret.skillMacros = skillMacros;
@@ -3117,7 +3116,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean useItem(short item_slot, int item_id) {
-        IItem toUse = this.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item toUse = this.getInventory(MapleInventoryType.USE).getItem(item_slot);
 
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
             updateInv();

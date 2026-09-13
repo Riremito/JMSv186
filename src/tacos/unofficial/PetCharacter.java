@@ -19,7 +19,7 @@
 package tacos.unofficial;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
@@ -95,7 +95,7 @@ public class PetCharacter implements IPetEx {
         }
 
         this.clone.getInventory(MapleInventoryType.EQUIPPED).resetForClone();
-        for (IItem equip : this.character.getInventory(MapleInventoryType.EQUIPPED)) {
+        for (Item equip : this.character.getInventory(MapleInventoryType.EQUIPPED)) {
             this.clone.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
         }
 

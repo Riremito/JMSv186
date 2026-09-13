@@ -21,7 +21,7 @@ package tacos.client;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import tacos.config.DeveloperMode;
@@ -42,7 +42,7 @@ public class TacosStorage {
     private int account_id;
     private int meso = 0;
     private int slot = DeveloperMode.DM_INV_SLOT_STORAGE.getInt();
-    private ArrayList<IItem> items = new ArrayList<>();
+    private ArrayList<Item> items = new ArrayList<>();
     private boolean changed = false;
 
     public TacosStorage(TacosCharacter chr) {
@@ -73,14 +73,14 @@ public class TacosStorage {
         return true;
     }
 
-    public ArrayList<IItem> getItems() {
+    public ArrayList<Item> getItems() {
         return this.items;
     }
 
     public boolean load() {
         if (DQ_Storages.load(this)) {
             DebugLogger.DebugLog("storage is found.");
-            for (OdinPair<IItem, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Trunk, this.account_id).values()) {
+            for (OdinPair<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Trunk, this.account_id).values()) {
                 this.items.add(mit.getLeft());
             }
             return true;
@@ -152,10 +152,10 @@ public class TacosStorage {
         this.lastModified = lastModified;
     }
 
-    public List<IItem> filterItems(MapleInventoryType type) {
-        List<IItem> ret = new LinkedList<>();
+    public List<Item> filterItems(MapleInventoryType type) {
+        List<Item> ret = new LinkedList<>();
 
-        for (IItem item : this.items) {
+        for (Item item : this.items) {
             if (GameConstants.getInventoryType(item.getItemId()) == type) {
                 ret.add(item);
             }
@@ -167,8 +167,8 @@ public class TacosStorage {
         return this.items.size() >= this.slot;
     }
 
-    public IItem findById(int itemId) {
-        for (IItem item : this.items) {
+    public Item findById(int itemId) {
+        for (Item item : this.items) {
             if (item.getItemId() == itemId) {
                 return item;
             }
@@ -176,7 +176,7 @@ public class TacosStorage {
         return null;
     }
 
-    public IItem getItem(int type, int slot) {
+    public Item getItem(int type, int slot) {
         MapleInventoryType mit = MapleInventoryType.getByType((byte) type);
 
         if (mit == MapleInventoryType.UNDEFINED) {
@@ -189,7 +189,7 @@ public class TacosStorage {
 
         int count = 0;
 
-        for (IItem item : this.items) {
+        for (Item item : this.items) {
             if (GameConstants.getInventoryType(item.getItemId()) == mit) {
                 if (count == slot) {
                     this.changed = true;
@@ -203,7 +203,7 @@ public class TacosStorage {
         return null;
     }
 
-    public void putItem(IItem item) {
+    public void putItem(Item item) {
         this.changed = true;
         this.items.add(item);
     }

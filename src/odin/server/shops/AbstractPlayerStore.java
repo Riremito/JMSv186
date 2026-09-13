@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.lang.ref.WeakReference;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
@@ -143,8 +143,8 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         if (packageid == null) {
             return false;
         }
-        List<OdinPair<IItem, MapleInventoryType>> iters = new ArrayList<>();
-        IItem item;
+        List<OdinPair<Item, MapleInventoryType>> iters = new ArrayList<>();
+        Item item;
         for (MaplePlayerShopItem pItems : items) {
             if (pItems.item == null || pItems.bundles <= 0) {
                 continue;

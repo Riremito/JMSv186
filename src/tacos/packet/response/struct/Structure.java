@@ -1,7 +1,7 @@
 package tacos.packet.response.struct;
 
 import tacos.packet.ServerPacket;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.client.SkillEntry;
@@ -260,9 +260,9 @@ public class Structure {
         if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode1(1);
         }
-        final Map<ISkill, SkillEntry> skills = chr.getSkills();
+        final Map<Skill, SkillEntry> skills = chr.getSkills();
         data.Encode2(skills.size());
-        for (final Map.Entry<ISkill, SkillEntry> skill : skills.entrySet()) {
+        for (final Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
             data.Encode4(skill.getKey().getId());
             data.Encode4(skill.getValue().skillevel);
 

@@ -2,7 +2,7 @@ package odin.server;
 
 import java.util.LinkedList;
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
@@ -15,8 +15,8 @@ import tacos.packet.response.wrapper.ResWrapper;
 public class MapleTrade {
 
     private MapleTrade partner = null;
-    private final List<IItem> items = new LinkedList<>();
-    private List<IItem> exchangeItems;
+    private final List<Item> items = new LinkedList<>();
+    private List<Item> exchangeItems;
     private int meso = 0;
     private int exchangeMeso = 0;
     private boolean locked = false;
@@ -41,7 +41,7 @@ public class MapleTrade {
 
     public final void CompleteTrade() {
         if (exchangeItems != null) { // just to be on the safe side...
-            for (final IItem item : exchangeItems) {
+            for (final Item item : exchangeItems) {
                 byte flag = item.getFlag();
 
                 if (ItemFlag.KARMA_EQ.check(flag)) {
@@ -67,7 +67,7 @@ public class MapleTrade {
 
     public final void cancel(final TacosClient client, final int unsuccessful) {
         if (items != null) { // just to be on the safe side...
-            for (final IItem item : items) {
+            for (final Item item : items) {
                 MapleInventoryManipulator.addFromDrop(client, item, false);
             }
             items.clear();
@@ -98,7 +98,7 @@ public class MapleTrade {
         }
     }
 
-    public final void addItem(final IItem item) {
+    public final void addItem(final Item item) {
         if (locked || partner == null) {
             return;
         }
@@ -136,7 +136,7 @@ public class MapleTrade {
             return -1;
         }
         int ret = 1; //first slot
-        for (IItem item : items) {
+        for (Item item : items) {
             if (item.getPosition() == ret) {
                 ret++;
             }
@@ -144,7 +144,7 @@ public class MapleTrade {
         return ret;
     }
 
-    public final boolean setItems(final TacosClient client, final IItem item, byte targetSlot, final int quantity) {
+    public final boolean setItems(final TacosClient client, final Item item, byte targetSlot, final int quantity) {
         MapleCharacter chr = client.getPlayer();
         int target = getNextTargetSlot();
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -162,7 +162,7 @@ public class MapleTrade {
                 return false;
             }
         }
-        IItem tradeItem = item.copy();
+        Item tradeItem = item.copy();
         if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
             tradeItem.setQuantity(item.getQuantity());
             MapleInventoryManipulator.removeFromSlot(client, GameConstants.getInventoryType(item.getItemId()), item.getPosition(), item.getQuantity(), true);
@@ -173,7 +173,7 @@ public class MapleTrade {
         if (targetSlot < 0) {
             targetSlot = (byte) target;
         } else {
-            for (IItem itemz : items) {
+            for (Item itemz : items) {
                 if (itemz.getPosition() == targetSlot) {
                     targetSlot = (byte) target;
                     break;
@@ -191,7 +191,7 @@ public class MapleTrade {
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
-        for (final IItem item : exchangeItems) {
+        for (final Item item : exchangeItems) {
             switch (GameConstants.getInventoryType(item.getItemId())) {
                 case EQUIP:
                     eq++;

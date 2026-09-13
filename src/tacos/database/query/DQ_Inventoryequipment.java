@@ -23,7 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IEquip;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 
@@ -35,7 +34,7 @@ public class DQ_Inventoryequipment {
 
     public static final String DB_TABLE_NAME = "inventoryequipment";
 
-    public static boolean add(int unique_id, IEquip equip) {
+    public static boolean add(int unique_id, Equip equip) {
         /*
         if (!DatabaseConnection.setManual()) {
             return false;

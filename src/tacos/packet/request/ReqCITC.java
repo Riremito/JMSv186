@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
@@ -104,7 +104,7 @@ public class ReqCITC {
                     return true;
                 }
                 MapleInventoryType inv_type = GameConstants.getInventoryType(item_id);
-                IItem item = chr.getInventory(inv_type).getItem((short) inv_slot);
+                Item item = chr.getInventory(inv_type).getItem((short) inv_slot);
                 if (GameConstants.isRechargable(item_id)) {
                     item_quantity = item.getQuantity();
                 }
@@ -116,7 +116,7 @@ public class ReqCITC {
                     return true;
                 }
 
-                IItem item_copy = item.copy();
+                Item item_copy = item.copy();
                 item_copy.setQuantity((short) item_quantity);
                 long expiration = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
                 MTSStorage.getInstance().addToBuyNow(cart, item_copy, price, chr.getId(), chr.getName(), expiration);
@@ -173,7 +173,7 @@ public class ReqCITC {
                     sendMTSPackets(client, cart, true);
                     return true;
                 }
-                IItem item = cart.getInventory().get(id);
+                Item item = cart.getInventory().get(id);
                 if (item == null || item.getQuantity() <= 0 || !MapleInventoryManipulator.checkSpace(client, item.getItemId(), item.getQuantity(), item.getOwner())) {
                     PB_ITC pb = PB_ITC.builder()
                             .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
@@ -182,7 +182,7 @@ public class ReqCITC {
                     return true;
                 }
 
-                IItem item_ = item.copy();
+                Item item_ = item.copy();
                 short pos = MapleInventoryManipulator.addbyItem(client, item_, true);
                 if (pos < 0) {
                     PB_ITC pb = PB_ITC.builder()

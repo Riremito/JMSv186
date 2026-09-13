@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
@@ -53,7 +53,7 @@ public class InventoryHandler {
         cp.Decode4();
         final byte slot = (byte) cp.Decode2();
         final int itemId = cp.Decode4();
-        final IItem toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
+        final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         long expiration_days = 0;
         int mountid = 0;
 
@@ -267,7 +267,7 @@ public class InventoryHandler {
     }
 
     public static final int UseTreasureChest(MapleCharacter chr, short slot, int item_id) {
-        final IItem toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
+        final Item toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
         if (toUse == null || toUse.getQuantity() <= 0 || toUse.getItemId() != item_id) {
             return 0;
         }
@@ -304,7 +304,7 @@ public class InventoryHandler {
             return 0;
         }
 
-        final IItem item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
+        final Item item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
 
         if (item == null) {
             return 0;
