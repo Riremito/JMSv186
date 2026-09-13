@@ -22,8 +22,6 @@ package odin.client.inventory;
 
 public class InventoryException extends RuntimeException {
 
-    private static final long serialVersionUID = 1L;
-
     /**
      * Creates a new instance of InventoryException
      */

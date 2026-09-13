@@ -29,7 +29,7 @@ public class MapleBBSThread {
     public String name, text;
     public long timestamp;
     public int localthreadID, guildID, ownerID, icon;
-    public Map<Integer, MapleBBSReply> replies = new HashMap<Integer, MapleBBSReply>();
+    public Map<Integer, MapleBBSReply> replies = new HashMap<>();
 
     public MapleBBSThread(final int localthreadID, final String name, final String text, final long timestamp,
             final int guildID, final int ownerID, final int icon) {
@@ -50,7 +50,7 @@ public class MapleBBSThread {
         return localthreadID == 0;
     }
 
-    public static class MapleBBSReply  {
+    public static class MapleBBSReply {
 
         public int replyid, ownerID;
         public long timestamp;

@@ -136,16 +136,48 @@ import tacos.wz.opt.FieldOpt;
 
 public class MapleCharacter extends TacosCharacter {
 
-    private String chalktext, BlessOfFairy_Origin;
+    private String chalktext;
+    private String BlessOfFairy_Origin;
+    private String teleportname = "";
     private long lastfametime;
-    private byte dojoRecord, fairyExp = 10;
-    private int mulung_energy, availableCP, totalCP, hpApUsed;
-    private int dojo, maplePoint, nexonPoint, chair, points, vpoints;
-    private boolean smega, hasSummon = false;
-    private int[] wishlist, rocks, savedLocations, regrocks;
+    private long nextConsume = 0;
+    private long pqStartTime = 0;
+    private byte dojoRecord;
+    private byte fairyExp = 10;
+    private int mulung_energy;
+    private int availableCP;
+    private int totalCP;
+    private int hpApUsed;
+    private int dojo;
+    private int maplePoint;
+    private int nexonPoint;
+    private int chair;
+    private int points;
+    private int vpoints;
+    // パチンコ
+    private int beansRange;
+    private int beansNum;
+    // ポータルカウント
+    private int portal_count = 1;
+    // ペット回復薬
+    private int pet_auto_hp_item_id = 0;
+    private int pet_auto_mp_item_id = 0;
+    private int pet_auto_cure_item_id = 0;
+    // foothold
+    private int foothold_id = 0;
+    private boolean smega;
+    private boolean hasSummon = false;
+    private boolean canSetBeansNum;
+    private int[] wishlist;
+    private int[] rocks;
+    private int[] savedLocations;
+    private int[] regrocks;
     private transient AtomicInteger inst;
     private List<Integer> lastmonthfameids;
+    private transient List<Integer> pendingExpiration = null;
+    private transient List<Integer> pendingSkills = null;
     private List<MapleDoor> doors;
+    private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient Set<MapleMonster> controlled;
     private transient Set<MapleMapObject> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
@@ -158,26 +190,15 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleTrade trade;
     private byte[] petStore;
     private transient IMaplePlayerShop playerShop;
-    private MapleParty party;
-    private SkillMacro[] skillMacros = new SkillMacro[5];
-    private transient ScheduledFuture<?> fairySchedule, mapTimeLimitTask, fishing;
-    private long nextConsume = 0, pqStartTime = 0;
-    private transient Event_PyramidSubway pyramidSubway = null;
-    private transient List<Integer> pendingExpiration = null, pendingSkills = null;
-    private String teleportname = "";
-    // パチンコ
-    private int beansRange, beansNum;
-    private boolean canSetBeansNum;
     // 雇用商人
     private IMaplePlayerShop remoteStore = null;
-    // ポータルカウント
-    private int portal_count = 1;
-    // ペット回復薬
-    private int pet_auto_hp_item_id = 0;
-    private int pet_auto_mp_item_id = 0;
-    private int pet_auto_cure_item_id = 0;
-    // foothold
-    private int foothold_id = 0;
+    private MapleParty party;
+    private transient ScheduledFuture<?> fairySchedule;
+    private transient ScheduledFuture<?> mapTimeLimitTask;
+    private transient ScheduledFuture<?> fishing;
+    private transient Event_PyramidSubway pyramidSubway = null;
+    private IDebugMan debugMan = null;
+    private DebugShop debugShop = null;
 
     public int getPortalCount() {
         portal_count += 1;
@@ -1334,10 +1355,10 @@ public class MapleCharacter extends TacosCharacter {
             return;
         }
         long expiration;
-        final List<Integer> ret = new ArrayList<Integer>();
+        final List<Integer> ret = new ArrayList<>();
         final long currenttime = System.currentTimeMillis();
-        final List<OdinPair<MapleInventoryType, IItem>> toberemove = new ArrayList<OdinPair<MapleInventoryType, IItem>>(); // This is here to prevent deadlock.
-        final List<IItem> tobeunlock = new ArrayList<IItem>(); // This is here to prevent deadlock.
+        final List<OdinPair<MapleInventoryType, IItem>> toberemove = new ArrayList<>(); // This is here to prevent deadlock.
+        final List<IItem> tobeunlock = new ArrayList<>(); // This is here to prevent deadlock.
 
         for (final MapleInventoryType inv : MapleInventoryType.values()) {
             for (final IItem item : getInventory(inv)) {
@@ -1366,8 +1387,8 @@ public class MapleCharacter extends TacosCharacter {
         }
         this.pendingExpiration = ret;
 
-        final List<Integer> skilz = new ArrayList<Integer>();
-        final List<ISkill> toberem = new ArrayList<ISkill>();
+        final List<Integer> skilz = new ArrayList<>();
+        final List<ISkill> toberem = new ArrayList<>();
         for (Entry<ISkill, SkillEntry> skil : skills.entrySet()) {
             if (skil.getValue().expiration != -1 && currenttime > skil.getValue().expiration) {
                 toberem.add(skil.getKey());
@@ -1482,7 +1503,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public final List<MapleQuestStatus> getStartedQuests() {
-        List<MapleQuestStatus> ret = new LinkedList<MapleQuestStatus>();
+        List<MapleQuestStatus> ret = new LinkedList<>();
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() == 1 && !(q.isCustom())) {
                 ret.add(q);
@@ -1492,7 +1513,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public final List<MapleQuestStatus> getCompletedQuests() {
-        List<MapleQuestStatus> ret = new LinkedList<MapleQuestStatus>();
+        List<MapleQuestStatus> ret = new LinkedList<>();
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() == 2 && !(q.isCustom())) {
                 ret.add(q);
@@ -2388,13 +2409,13 @@ public class MapleCharacter extends TacosCharacter {
     public OdinPair<List<MapleRing>, List<MapleRing>> getRings(boolean equip) {
         MapleInventory iv = getInventory(MapleInventoryType.EQUIPPED);
         Collection<IItem> equippedC = iv.list();
-        List<Item> equipped = new ArrayList<Item>(equippedC.size());
+        List<Item> equipped = new ArrayList<>(equippedC.size());
         for (IItem item : equippedC) {
             equipped.add((Item) item);
         }
         Collections.sort(equipped);
-        List<MapleRing> crings = new ArrayList<MapleRing>();
-        List<MapleRing> frings = new ArrayList<MapleRing>();
+        List<MapleRing> crings = new ArrayList<>();
+        List<MapleRing> frings = new ArrayList<>();
         MapleRing ring;
         for (Item item : equipped) {
             if (item.getRing() != null) {
@@ -2896,7 +2917,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public List<OdinPair<Integer, Integer>> usedBuffs() {
         //assume count = 1
-        List<OdinPair<Integer, Integer>> used = new ArrayList<OdinPair<Integer, Integer>>();
+        List<OdinPair<Integer, Integer>> used = new ArrayList<>();
         for (MapleFamilyBuffEntry buff : MapleFamilyBuff.getBuffEntry()) {
             if (!canUseFamilyBuff(buff)) {
                 used.add(new OdinPair<Integer, Integer>(buff.index, buff.count));
@@ -3093,8 +3114,6 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    private IDebugMan debugMan = null;
-
     public IDebugMan getDebugMan() {
         return this.debugMan;
     }
@@ -3106,8 +3125,6 @@ public class MapleCharacter extends TacosCharacter {
         this.debugMan = debugMan;
         return true;
     }
-
-    private DebugShop debugShop = null;
 
     public DebugShop getDebugShop() {
         return this.debugShop;

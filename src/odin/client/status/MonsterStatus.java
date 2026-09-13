@@ -54,7 +54,7 @@ public enum MonsterStatus {
     MAGIC_DAMAGE_REFLECT(0x4000000000000000L),
     SUMMON(0x8000000000000000L) //all summon bag mobs have.
     ;
-    static final long serialVersionUID = 0L;
+
     private final long i;
     private final boolean first;
 

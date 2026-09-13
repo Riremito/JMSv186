@@ -22,13 +22,12 @@ package odin.handling.channel;
 
 import java.util.List;
 import java.util.LinkedList;
-
 import tacos.database.query.DQ_Guilds;
 
 public class MapleGuildRanking {
 
     private static MapleGuildRanking instance = new MapleGuildRanking();
-    private List<GuildRankingInfo> ranks = new LinkedList<GuildRankingInfo>();
+    private List<GuildRankingInfo> ranks = new LinkedList<>();
 
     public static MapleGuildRanking getInstance() {
         return instance;

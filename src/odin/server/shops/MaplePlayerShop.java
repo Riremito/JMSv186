@@ -32,7 +32,7 @@ import tacos.packet.response.ResCMiniRoomBaseDlg;
 public class MaplePlayerShop extends AbstractPlayerStore {
 
     private int boughtnumber = 0;
-    private List<String> bannedList = new ArrayList<String>();
+    private List<String> bannedList = new ArrayList<>();
 
     public MaplePlayerShop(MapleCharacter owner, int itemId, String desc) {
         super(owner, itemId, desc, "", 3);

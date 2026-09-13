@@ -456,7 +456,7 @@ public class ItemMakerHandler {
 
     private static final int getRandomGem(final List<OdinPair<Integer, Integer>> rewards) {
         int itemid;
-        final List<Integer> items = new ArrayList<Integer>();
+        final List<Integer> items = new ArrayList<>();
 
         for (final OdinPair p : rewards) {
             itemid = (Integer) p.getLeft();

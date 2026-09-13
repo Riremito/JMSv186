@@ -22,7 +22,6 @@ package odin.client.inventory;
 
 import java.lang.ref.WeakReference;
 import java.sql.SQLException;
-
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
 import tacos.database.query.DQ_Mountdata;

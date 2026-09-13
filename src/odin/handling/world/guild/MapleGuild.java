@@ -54,15 +54,27 @@ public class MapleGuild {
 
         NONE, DISBAND, EMBELMCHANGE
     }
-    private final List<MapleGuildCharacter> members = new CopyOnWriteArrayList<MapleGuildCharacter>();
+    private final List<MapleGuildCharacter> members = new CopyOnWriteArrayList<>();
     private final String rankTitles[] = new String[5]; // 1 = master, 2 = jr, 5 = lowest member
-    private String name, notice;
-    private int id, gp, logo, logoColor, leader, capacity, logoBG, logoBGColor, signature;
-    private boolean bDirty = true, proper = true;
-    private int allianceid = 0, invitedid = 0;
-    private final Map<Integer, MapleBBSThread> bbs = new HashMap<Integer, MapleBBSThread>();
+    private String name;
+    private String notice;
+    private int id;
+    private int gp;
+    private int logo;
+    private int logoColor;
+    private int leader;
+    private int capacity;
+    private int logoBG;
+    private int logoBGColor;
+    private int signature;
+    private int allianceid = 0;
+    private int invitedid = 0;
+    private boolean bDirty = true;
+    private boolean proper = true;
+    private final Map<Integer, MapleBBSThread> bbs = new HashMap<>();
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final Lock rL = lock.readLock(), wL = lock.writeLock();
+    private final Lock rL = lock.readLock();
+    private final Lock wL = lock.writeLock();
     private boolean init = false;
 
     public MapleGuild(final int guildid) {
@@ -123,7 +135,7 @@ public class MapleGuild {
     }
 
     public static final Collection<MapleGuild> loadAll() {
-        final Collection<MapleGuild> ret = new ArrayList<MapleGuild>();
+        final Collection<MapleGuild> ret = new ArrayList<>();
         MapleGuild g;
         for (int guildid : DQ_Guilds.getAllGuildIds()) {
             g = new MapleGuild(guildid);
@@ -248,7 +260,7 @@ public class MapleGuild {
         if (!bDirty) {
             return;
         }
-        final List<Integer> mem = new LinkedList<Integer>();
+        final List<Integer> mem = new LinkedList<>();
         final Iterator<MapleGuildCharacter> toRemove = members.iterator();
         while (toRemove.hasNext()) {
             MapleGuildCharacter mgc = toRemove.next();
@@ -597,7 +609,7 @@ public class MapleGuild {
     }
 
     public final List<MapleBBSThread> getBBS() {
-        final List<MapleBBSThread> ret = new ArrayList<MapleBBSThread>(bbs.values());
+        final List<MapleBBSThread> ret = new ArrayList<>(bbs.values());
         Collections.sort(ret, new MapleBBSThread.ThreadComparator());
         return ret;
     }

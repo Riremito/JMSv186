@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.SkillFactory;
@@ -24,7 +23,7 @@ import tacos.wz.WzDataStorage;
 
 public class MapleShop {
 
-    private static final Set<Integer> rechargeableItems = new LinkedHashSet<Integer>();
+    private static final Set<Integer> rechargeableItems = new LinkedHashSet<>();
     private int id;
     private int npcId;
     private List<MapleShopItem> items;
@@ -216,7 +215,7 @@ public class MapleShop {
             return null;
         }
 
-        List<Integer> recharges = new ArrayList<Integer>(rechargeableItems);
+        List<Integer> recharges = new ArrayList<>(rechargeableItems);
         for (DQ_Shopitems.Row row : DQ_Shopitems.loadByShopId(ret.getId())) {
             if (GameConstants.isThrowingStar(row.itemId) || GameConstants.isBullet(row.itemId)) {
                 MapleShopItem starItem = new MapleShopItem((short) 1, row.itemId, row.price, row.reqItem, row.reqItemQ);

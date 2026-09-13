@@ -42,26 +42,74 @@ import tacos.packet.response.builder.PB_UserEffect;
 
 public class PlayerStats {
 
-    private WeakReference<MapleCharacter> chr;
+    public int str;
     private Map<Integer, Integer> setHandling = new HashMap<>();
-    private List<Equip> durabilityHandling = new ArrayList<>(), equipLevelHandling = new ArrayList<>();
-    private float shouldHealHP, shouldHealMP;
-    public int str, dex, luk, int_, hp, maxhp, mp, maxmp;
-    private short localmaxhp, localmaxmp;
-    private byte passive_mastery = 0;
-    private int localstr, localdex, localluk, localint_;
-    private int magic, watk, hands, accuracy;
-    public boolean equippedWelcomeBackRing, equippedFairy, hasMeso, hasItem, hasVac, hasClone, hasPartyBonus, isRecalc = false;
-    public int equipmentBonusExp, expMod, dropMod, cashMod, levelBonus;
-    public double expBuff, dropBuff, mesoBuff, cashBuff;
+    private List<Equip> durabilityHandling = new ArrayList<>();
+    private List<Equip> equipLevelHandling = new ArrayList<>();
+    public int dex;
+    public int luk;
+    public int int_;
+    public int hp;
+    public int maxhp;
+    public int mp;
+    public int maxmp;
+    public int equipmentBonusExp;
+    public int expMod;
+    public int dropMod;
+    public int cashMod;
+    public int levelBonus;
+    public int recoverHP;
+    public int recoverMP;
+    public int mpconReduce;
+    public int incMesoProp;
+    public int incRewardProp;
+    public int DAMreflect;
+    public int DAMreflect_rate;
+    public int mpRestore;
+    public int hpRecover;
+    public int hpRecoverProp;
+    public int mpRecover;
+    public int mpRecoverProp;
+    public int RecoveryUP;
+    public int incAllskill;
+    // Elemental properties
+    public int def;
+    public int element_ice;
+    public int element_fire;
+    public int element_light;
+    public int element_psn;
+    public boolean equippedWelcomeBackRing;
+    public boolean equippedFairy;
+    public boolean hasMeso;
+    public boolean hasItem;
+    public boolean hasVac;
+    public boolean hasClone;
+    public boolean hasPartyBonus;
+    public boolean isRecalc = false;
+    public double expBuff;
+    public double dropBuff;
+    public double mesoBuff;
+    public double cashBuff;
     //restore/recovery are separate variables because i dont know jack shit what it even does
     //same with incMesoProp/incRewardProp for now
-    public double dam_r, bossdam_r;
-    public int recoverHP, recoverMP, mpconReduce, incMesoProp, incRewardProp, DAMreflect, DAMreflect_rate, mpRestore,
-            hpRecover, hpRecoverProp, mpRecover, mpRecoverProp, RecoveryUP, incAllskill;
-    private float speedMod, jumpMod;
-    // Elemental properties
-    public int def, element_ice, element_fire, element_light, element_psn;
+    public double dam_r;
+    public double bossdam_r;
+    private WeakReference<MapleCharacter> chr;
+    private float shouldHealHP;
+    private float shouldHealMP;
+    private float speedMod;
+    private float jumpMod;
+    private short localmaxhp;
+    private short localmaxmp;
+    private byte passive_mastery = 0;
+    private int localstr;
+    private int localdex;
+    private int localluk;
+    private int localint_;
+    private int magic;
+    private int watk;
+    private int hands;
+    private int accuracy;
     public ReentrantLock lock = new ReentrantLock(); //we're getting concurrentmodificationexceptions, but would this slow things down?
 
     public PlayerStats(final MapleCharacter chr) {

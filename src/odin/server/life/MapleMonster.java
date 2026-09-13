@@ -67,19 +67,30 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private OverrideMonsterStats ostats = null;
     private long hp;
     private int mp;
-    private byte venom_counter, carnivalTeam;
-    private MapleMap map;
+    private int linkoid = 0;
+    private int lastNode = -1;
+    private int lastNodeController = -1;
     private WeakReference<MapleMonster> sponge = new WeakReference<>(null);
-    private int linkoid = 0, lastNode = -1, lastNodeController = -1, highestDamageChar = 0; // Just a reference for monster EXP distribution after dead
+    private int highestDamageChar = 0; // Just a reference for monster EXP distribution after dead
+    private int stolen = -1; //monster can only be stolen ONCE
+    private int nAppearType = -1;
+    private byte venom_counter;
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
-    private boolean fake, dropsDisabled, controllerHasAggro, controllerKnowsAboutAggro;
+    private byte carnivalTeam;
+    private MapleMap map;
+    private boolean fake;
+    private boolean dropsDisabled;
     private final Collection<AttackerEntry> attackers = new LinkedList<>();
+    private boolean controllerHasAggro;
+    private boolean controllerKnowsAboutAggro;
     private OdinEventInstanceManager eventInstance;
     private MonsterListener listener = null;
-    private ServerPacket reflectpack = null, nodepack = null;
+    private ServerPacket reflectpack = null;
+    private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
-    private int stolen = -1; //monster can only be stolen ONCE
+    private OpsMobAppear appear_type = OpsMobAppear.MOBAPPEAR_NORMAL;
     private ScheduledFuture<?> dropItemSchedule;
+
     public MapleMonster(final int id, final MapleMonsterStats stats) {
         super(id);
         initWithStats(stats);
@@ -454,7 +465,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
             case 8820011:
             case 8820012:
             case 8820013: {
-                final List<MapleMonster> mobs = new ArrayList<MapleMonster>();
+                final List<MapleMonster> mobs = new ArrayList<>();
 
                 for (final int i : toSpawn) {
                     final MapleMonster mob = MapleLifeFactory.getMonster(i);
@@ -883,8 +894,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private final class SingleAttackerEntry implements AttackerEntry {
 
         private long damage = 0;
-        private int chrid;
         private long lastAttackTime;
+        private int chrid;
         private int channel;
 
         public SingleAttackerEntry(final MapleCharacter from, final int cserv) {
@@ -984,7 +995,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private class PartyAttackerEntry implements AttackerEntry {
 
         private long totDamage;
-        private final Map<Integer, OnePartyAttacker> attackers = new HashMap<Integer, OnePartyAttacker>(6);
+        private final Map<Integer, OnePartyAttacker> attackers = new HashMap<>(6);
         private int partyid;
         private int channel;
 
@@ -994,7 +1005,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
 
         public List<AttackingMapleCharacter> getAttackers() {
-            final List<AttackingMapleCharacter> ret = new ArrayList<AttackingMapleCharacter>(attackers.size());
+            final List<AttackingMapleCharacter> ret = new ArrayList<>(attackers.size());
             for (final Entry<Integer, OnePartyAttacker> entry : attackers.entrySet()) {
                 final MapleCharacter chr = map.getCharacterById(entry.getKey());
                 if (chr != null) {
@@ -1005,7 +1016,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         }
 
         private final Map<MapleCharacter, OnePartyAttacker> resolveAttackers() {
-            final Map<MapleCharacter, OnePartyAttacker> ret = new HashMap<MapleCharacter, OnePartyAttacker>(attackers.size());
+            final Map<MapleCharacter, OnePartyAttacker> ret = new HashMap<>(attackers.size());
             for (final Entry<Integer, OnePartyAttacker> aentry : attackers.entrySet()) {
                 final MapleCharacter chr = map.getCharacterById(aentry.getKey());
                 if (chr != null) {
@@ -1206,9 +1217,6 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     public void setNodePacket(ServerPacket np) {
         this.nodepack = np;
     }
-
-    private OpsMobAppear appear_type = OpsMobAppear.MOBAPPEAR_NORMAL;
-    private int nAppearType = -1;
 
     public OpsMobAppear getAT() {
         return this.appear_type;

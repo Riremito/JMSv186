@@ -24,8 +24,8 @@ public class MapleGuildSummary {
 
     private String name;
     private short logoBG;
-    private byte logoBGColor;
     private short logo;
+    private byte logoBGColor;
     private byte logoColor;
     private int allianceid;
 

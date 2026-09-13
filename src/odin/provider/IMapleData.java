@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.provider;
 
 import java.util.List;
-
 import odin.provider.WzXML.MapleDataType;
 
 public interface IMapleData extends IMapleDataEntity, Iterable<IMapleData> {

@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
@@ -15,7 +14,6 @@ import odin.client.inventory.ItemFlag;
 import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import tacos.packet.ops.OpsCashItem;

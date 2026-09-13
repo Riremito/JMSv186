@@ -28,13 +28,15 @@ public class MapleQuest {
     protected List<MapleQuestRequirement> completeReqs;
     protected List<MapleQuestAction> startActs;
     protected List<MapleQuestAction> completeActs;
-    protected Map<String, List<OdinPair<String, OdinPair<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
     protected Map<Integer, Integer> relevantMobs;
+    protected String name = "";
     private boolean autoStart = false;
     private boolean autoPreComplete = false;
-    private boolean repeatable = false, customend = false;
-    private int viewMedalItem = 0, selectedSkillID = 0;
-    protected String name = "";
+    private boolean repeatable = false;
+    private boolean customend = false;
+    private int viewMedalItem = 0;
+    private int selectedSkillID = 0;
+    protected Map<String, List<OdinPair<String, OdinPair<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
 
     protected MapleQuest(final int id) {
         relevantMobs = new LinkedHashMap<>();

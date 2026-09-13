@@ -62,7 +62,7 @@ public class MapleGuildAlliance {
     }
 
     public static final Collection<MapleGuildAlliance> loadAll() {
-        final Collection<MapleGuildAlliance> ret = new ArrayList<MapleGuildAlliance>();
+        final Collection<MapleGuildAlliance> ret = new ArrayList<>();
         MapleGuildAlliance g;
         for (int id : DQ_Alliances.getAllAllianceIds()) {
             g = new MapleGuildAlliance(id);

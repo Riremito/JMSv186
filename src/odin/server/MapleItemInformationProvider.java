@@ -24,29 +24,29 @@ import tacos.wz.WzXML;
 public class MapleItemInformationProvider {
 
     private final static MapleItemInformationProvider instance = new MapleItemInformationProvider();
-    protected final Map<Integer, List<Integer>> scrollReqCache = new HashMap<Integer, List<Integer>>();
-    protected final Map<Integer, Short> slotMaxCache = new HashMap<Integer, Short>();
-    protected final Map<Integer, MapleStatEffect> itemEffects = new HashMap<Integer, MapleStatEffect>();
-    protected final Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<Integer, Map<String, Integer>>();
-    protected final Map<Integer, Map<String, Byte>> itemMakeStatsCache = new HashMap<Integer, Map<String, Byte>>();
-    protected final Map<Integer, Short> itemMakeLevel = new HashMap<Integer, Short>();
-    protected final Map<Integer, Equip> equipCache = new HashMap<Integer, Equip>();
-    protected final Map<Integer, Double> priceCache = new HashMap<Integer, Double>();
-    protected final Map<Integer, Integer> wholePriceCache = new HashMap<Integer, Integer>();
-    protected final Map<Integer, Integer> monsterBookID = new HashMap<Integer, Integer>();
-    protected final Map<Integer, String> nameCache = new HashMap<Integer, String>();
-    protected final Map<Integer, String> msgCache = new HashMap<Integer, String>();
-    protected final Map<Integer, Map<String, Integer>> SkillStatsCache = new HashMap<Integer, Map<String, Integer>>();
-    protected final Map<Integer, Byte> consumeOnPickupCache = new HashMap<Integer, Byte>();
-    protected final Map<Integer, Boolean> dropRestrictionCache = new HashMap<Integer, Boolean>();
-    protected final Map<Integer, Boolean> accCache = new HashMap<Integer, Boolean>();
-    protected final Map<Integer, Boolean> pickupRestrictionCache = new HashMap<Integer, Boolean>();
-    protected final Map<Integer, Integer> stateChangeCache = new HashMap<Integer, Integer>();
-    protected final Map<Integer, Integer> mesoCache = new HashMap<Integer, Integer>();
-    protected final Map<Integer, Boolean> notSaleCache = new HashMap<Integer, Boolean>();
-    protected final Map<Integer, Integer> karmaEnabledCache = new HashMap<Integer, Integer>();
-    protected final Map<Integer, Boolean> blockPickupCache = new HashMap<Integer, Boolean>();
-    protected final Map<Integer, List<Integer>> petsCanConsumeCache = new HashMap<Integer, List<Integer>>();
+    protected final Map<Integer, List<Integer>> scrollReqCache = new HashMap<>();
+    protected final Map<Integer, Short> slotMaxCache = new HashMap<>();
+    protected final Map<Integer, MapleStatEffect> itemEffects = new HashMap<>();
+    protected final Map<Integer, Map<String, Integer>> equipStatsCache = new HashMap<>();
+    protected final Map<Integer, Map<String, Byte>> itemMakeStatsCache = new HashMap<>();
+    protected final Map<Integer, Short> itemMakeLevel = new HashMap<>();
+    protected final Map<Integer, Equip> equipCache = new HashMap<>();
+    protected final Map<Integer, Double> priceCache = new HashMap<>();
+    protected final Map<Integer, Integer> wholePriceCache = new HashMap<>();
+    protected final Map<Integer, Integer> monsterBookID = new HashMap<>();
+    protected final Map<Integer, String> nameCache = new HashMap<>();
+    protected final Map<Integer, String> msgCache = new HashMap<>();
+    protected final Map<Integer, Map<String, Integer>> SkillStatsCache = new HashMap<>();
+    protected final Map<Integer, Byte> consumeOnPickupCache = new HashMap<>();
+    protected final Map<Integer, Boolean> dropRestrictionCache = new HashMap<>();
+    protected final Map<Integer, Boolean> accCache = new HashMap<>();
+    protected final Map<Integer, Boolean> pickupRestrictionCache = new HashMap<>();
+    protected final Map<Integer, Integer> stateChangeCache = new HashMap<>();
+    protected final Map<Integer, Integer> mesoCache = new HashMap<>();
+    protected final Map<Integer, Boolean> notSaleCache = new HashMap<>();
+    protected final Map<Integer, Integer> karmaEnabledCache = new HashMap<>();
+    protected final Map<Integer, Boolean> blockPickupCache = new HashMap<>();
+    protected final Map<Integer, List<Integer>> petsCanConsumeCache = new HashMap<>();
     protected final Map<Integer, List<OdinPair<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<OdinPair<Integer, Integer>>>();
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
@@ -316,7 +316,7 @@ public class MapleItemInformationProvider {
         if (equipIncsCache.containsKey(itemId)) {
             return equipIncsCache.get(itemId);
         }
-        final Map<Integer, Map<String, Integer>> ret = new LinkedHashMap<Integer, Map<String, Integer>>();
+        final Map<Integer, Map<String, Integer>> ret = new LinkedHashMap<>();
         final IMapleData item = getItemData(itemId);
         if (item == null) {
             return null;
@@ -326,7 +326,7 @@ public class MapleItemInformationProvider {
             return null;
         }
         for (IMapleData dat : info.getChildren()) {
-            Map<String, Integer> incs = new HashMap<String, Integer>();
+            Map<String, Integer> incs = new HashMap<>();
             for (IMapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
                 if (data.getName().length() > 3) {
                     incs.put(data.getName().substring(3), WzDataTool.getIntPath(data.getName(), dat, 0));
@@ -342,7 +342,7 @@ public class MapleItemInformationProvider {
         if (equipSkillsCache.containsKey(itemId)) {
             return equipSkillsCache.get(itemId);
         }
-        final Map<Integer, List<Integer>> ret = new LinkedHashMap<Integer, List<Integer>>();
+        final Map<Integer, List<Integer>> ret = new LinkedHashMap<>();
         final IMapleData item = getItemData(itemId);
         if (item == null) {
             return null;
@@ -354,7 +354,7 @@ public class MapleItemInformationProvider {
         for (IMapleData dat : info.getChildren()) {
             for (IMapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
                 if (data.getName().length() == 1) { //the numbers all them are one digit. everything else isnt so we're lucky here..
-                    List<Integer> adds = new ArrayList<Integer>();
+                    List<Integer> adds = new ArrayList<>();
                     for (IMapleData skil : data.getChildByPath("Skill").getChildren()) {
                         adds.add(WzDataTool.getIntPath("id", skil, 0));
                     }
@@ -448,7 +448,7 @@ public class MapleItemInformationProvider {
         if (scrollReqCache.containsKey(itemId)) {
             return scrollReqCache.get(itemId);
         }
-        final List<Integer> ret = new ArrayList<Integer>();
+        final List<Integer> ret = new ArrayList<>();
         final IMapleData data = getItemData(itemId).getChildByPath("req");
 
         if (data == null) {
@@ -1157,7 +1157,7 @@ public class MapleItemInformationProvider {
         if (petsCanConsumeCache.get(itemId) != null) {
             return petsCanConsumeCache.get(itemId);
         }
-        final List<Integer> ret = new ArrayList<Integer>();
+        final List<Integer> ret = new ArrayList<>();
         final IMapleData data = getItemData(itemId);
         if (data == null || data.getChildByPath("spec") == null) {
             return ret;
@@ -1190,7 +1190,7 @@ public class MapleItemInformationProvider {
         if (itemD == null || itemD.getChildByPath("consumeItem") == null) {
             return null;
         }
-        final List<Integer> consumeItems = new ArrayList<Integer>();
+        final List<Integer> consumeItems = new ArrayList<>();
         for (IMapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(WzDataTool.getInt(consume, 0));
         }

@@ -23,7 +23,6 @@ package odin.server.life;
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicInteger;
 import tacos.packet.response.wrapper.ResWrapper;
-
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.maps.MapleReactor;

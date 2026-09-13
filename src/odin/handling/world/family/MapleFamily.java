@@ -23,7 +23,6 @@ package odin.handling.world.family;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
-
 import odin.client.MapleCharacter;
 import tacos.database.query.DQ_Characters;
 import tacos.database.query.DQ_Families;
@@ -42,7 +41,7 @@ public class MapleFamily {
         NONE, DISBAND;
     }
     //does not need to be in order :) CID -> MFC
-    private final Map<Integer, MapleFamilyCharacter> members = new ConcurrentHashMap<Integer, MapleFamilyCharacter>();
+    private final Map<Integer, MapleFamilyCharacter> members = new ConcurrentHashMap<>();
     private String leadername = null, notice;
     private int id, leaderid, generations = 0;
     private boolean proper = true, bDirty = false;
@@ -108,7 +107,7 @@ public class MapleFamily {
     }
 
     public static final Collection<MapleFamily> loadAll() {
-        final Collection<MapleFamily> ret = new ArrayList<MapleFamily>();
+        final Collection<MapleFamily> ret = new ArrayList<>();
         MapleFamily g;
         for (int familyid : DQ_Families.getAllFamilyIds()) {
             g = new MapleFamily(familyid);
@@ -214,7 +213,7 @@ public class MapleFamily {
             //mgc.setCurrentRep(mgc.getCurrentRep()+addrep);
             //mgc.setTotalRep(mgc.getTotalRep()+addrep);
             if (mgc.isOnline()) {
-                List<Integer> dummy = new ArrayList<Integer>();
+                List<Integer> dummy = new ArrayList<>();
                 dummy.add(mgc.getId());
                 broadcast(ResCWvsContext.changeRep(addrep), -1, dummy);
                 OdinWorld.Family.setFamily(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
@@ -265,7 +264,7 @@ public class MapleFamily {
             if (mgc.getJunior2() > 0) {
                 splitFamily(mgc.getJunior2()); //junior2 makes his own family
             }
-            List<Integer> dummy = new ArrayList<Integer>();
+            List<Integer> dummy = new ArrayList<>();
             dummy.add(mgc.getId());
             broadcast(null, -1, FCOp.DISBAND, dummy);
             resetPedigree(); //ex but eh

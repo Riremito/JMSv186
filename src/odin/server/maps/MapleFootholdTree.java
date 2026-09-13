@@ -27,16 +27,16 @@ import java.util.List;
 
 public class MapleFootholdTree {
 
+    private static final byte maxDepth = 8;
     private MapleFootholdTree nw = null;
     private MapleFootholdTree ne = null;
     private MapleFootholdTree sw = null;
-    private MapleFootholdTree se = null;
     private List<MapleFoothold> footholds = new LinkedList<>();
+    private MapleFootholdTree se = null;
     private Point p1;
     private Point p2;
     private Point center;
     private int depth = 0;
-    private static final byte maxDepth = 8;
     private int maxDropX;
     private int minDropX;
 

@@ -40,9 +40,9 @@ public class HiredMerchant extends AbstractPlayerStore {
     public ScheduledFuture<?> schedule;
     private List<String> blacklist;
     private int storeid;
-    private long start;
     private int foothold_id;
     private int item_sub_type;
+    private long start;
 
     public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
         super(owner, itemId, desc, "", 3);
@@ -84,7 +84,7 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     public List<MaplePlayerShopItem> searchItem(final int itemSearch) {
-        final List<MaplePlayerShopItem> itemz = new LinkedList<MaplePlayerShopItem>();
+        final List<MaplePlayerShopItem> itemz = new LinkedList<>();
         for (MaplePlayerShopItem item : items) {
             if (item.item.getItemId() == itemSearch && item.bundles > 0) {
                 itemz.add(item);

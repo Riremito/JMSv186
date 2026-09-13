@@ -27,11 +27,20 @@ import java.util.List;
 
 public class MapleFamilyCharacter {
 
-    private int level, id, channel = -1, jobid, familyid, seniorid, currentrep, totalrep, junior1, junior2;
-    private boolean online;
-    private String name;
-    private List<Integer> pedigree = new ArrayList<Integer>(); //recalculate
+    private int level;
+    private int id;
+    private int channel = -1;
+    private int jobid;
+    private int familyid;
+    private int seniorid;
+    private int currentrep;
+    private int totalrep;
+    private int junior1;
+    private int junior2;
     private int descendants = 0;
+    private boolean online;
+    private List<Integer> pedigree = new ArrayList<>(); //recalculate
+    private String name;
 
     // either read from active character...
     // if it's online
@@ -167,7 +176,7 @@ public class MapleFamilyCharacter {
     }
 
     public List<MapleFamilyCharacter> getAllJuniors(MapleFamily fam) { //to be used scarcely
-        List<MapleFamilyCharacter> ret = new ArrayList<MapleFamilyCharacter>();
+        List<MapleFamilyCharacter> ret = new ArrayList<>();
         ret.add(this);
         if (junior1 > 0) {
             MapleFamilyCharacter chr = fam.getMFC(junior1);

@@ -42,10 +42,10 @@ public class MTSStorage {
     //stores all carts all mts items, updates every hour
 
     private long lastUpdate = System.currentTimeMillis();
+    private static MTSStorage instance;
     private final Map<Integer, MTSCart> idToCart;
     private final AtomicInteger packageId;
     private final Map<Integer, MTSItemInfo> buyNow; //packageid to mtsiteminfo
-    private static MTSStorage instance;
     private boolean end = false;
     private ReentrantReadWriteLock mutex;
     private ReentrantReadWriteLock cart_mutex;
@@ -320,10 +320,10 @@ public class MTSStorage {
     public static class MTSItemInfo {
 
         private int price;
-        private IItem item;
-        private String seller;
         private int id; //packageid
         private int cid;
+        private IItem item;
+        private String seller;
         private long date;
 
         public MTSItemInfo(int price, IItem item, String seller, int id, int cid, long date) {

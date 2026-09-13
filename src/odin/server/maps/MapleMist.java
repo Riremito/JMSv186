@@ -22,7 +22,6 @@ package odin.server.maps;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-
 import odin.client.ISkill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;

@@ -24,7 +24,6 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import odin.client.inventory.Equip;
 import odin.client.inventory.IItem;
 import odin.client.inventory.Item;

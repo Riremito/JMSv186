@@ -24,17 +24,17 @@ import odin.constants.GameConstants;
 
 public class Item implements IItem {
 
+    protected MapleRing ring = null;
     private final int id;
+    private int uniqueid = -1;
     private short position;
     private short quantity;
     private byte flag;
     private long expiration = -1;
     private MaplePet pet = null;
-    private int uniqueid = -1;
     private String owner = "";
     private String GameMaster_log = null;
     private String giftFrom = "";
-    protected MapleRing ring = null;
 
     public Item(final int id, final short position, final short quantity, final byte flag, final int uniqueid) {
         super();

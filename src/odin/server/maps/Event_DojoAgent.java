@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
-
 import odin.client.MapleCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import tacos.packet.response.wrapper.ResWrapper;

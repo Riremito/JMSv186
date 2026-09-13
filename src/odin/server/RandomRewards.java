@@ -3,7 +3,6 @@ package odin.server;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import odin.constants.GameConstants;
 
 public class RandomRewards {
@@ -24,7 +23,7 @@ public class RandomRewards {
     protected RandomRewards() {
         //System.out.println("Loading RandomRewards :::");
         // Gold Box
-        List<Integer> returnArray = new ArrayList<Integer>();
+        List<Integer> returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.goldrewards);
 

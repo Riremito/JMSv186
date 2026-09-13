@@ -24,7 +24,6 @@ import tacos.config.ContentCustom;
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicBoolean;
 import tacos.packet.response.wrapper.ResWrapper;
-
 import odin.server.Randomizer;
 import tacos.server.map.TacosMap;
 

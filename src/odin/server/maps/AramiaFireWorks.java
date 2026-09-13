@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
-
 import odin.client.MapleCharacter;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -32,15 +31,18 @@ import odin.server.life.MapleLifeFactory;
 
 public class AramiaFireWorks {
 
-    public final static int KEG_ID = 4001128, SUN_ID = 4001246, DEC_ID = 4001473;
-    public final static int MAX_KEGS = 10000, MAX_SUN = 14000, MAX_DEC = 18000;
-    private short kegs = 0;
-    private short sunshines = MAX_SUN / 6; //start at 1/6 then go from that
-    private short decorations = MAX_DEC / 6;
-    private static final AramiaFireWorks instance = new AramiaFireWorks();
+    public final static int KEG_ID = 4001128;
+    public final static int SUN_ID = 4001246;
+    public final static int DEC_ID = 4001473;
+    public final static int MAX_KEGS = 10000;
+    public final static int MAX_SUN = 14000;
+    public final static int MAX_DEC = 18000;
     private static final int[] arrayMob = {9500168, 9500169, 9500170, 9500171, 9500173,
         9500174, 9500175, 9500176, 9500170, 9500171, 9500172, 9500173, 9500174, 9500175,
         9400569};
+    private short sunshines = MAX_SUN / 6; //start at 1/6 then go from that
+    private short decorations = MAX_DEC / 6;
+    private static final AramiaFireWorks instance = new AramiaFireWorks();
     private static final int[] arrayX = {2100, 2605, 1800, 2600, 3120, 2700, 2320, 2062,
         2800, 3100, 2300, 2840, 2700, 2320, 1950};
     private static final int[] arrayY = {574, 364, 574, 316, 574, 574, 403, 364, 574, 574,
@@ -50,6 +52,7 @@ public class AramiaFireWorks {
     private static final int[] array_Y = {1234, 1234, 1174, 1234, 1174, 1174, 1174, 1260,
         1234, 1234, 1234, 1234, 1234, 1114, 1114, 1140};
     private static final int flake_Y = 149;
+    private short kegs = 0;
 
     public static final AramiaFireWorks getInstance() {
         return instance;

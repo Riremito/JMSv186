@@ -31,12 +31,13 @@ import tacos.script.TacosScriptReactor;
 public class MapleReactor extends AbstractMapleMapObject {
 
     private int rid;
+    private int delay;
     private MapleReactorStats stats;
     private byte state;
-    private int delay;
     private MapleMap map;
     private String name = "";
-    private boolean timerActive, alive;
+    private boolean timerActive;
+    private boolean alive;
 
     public MapleReactor(MapleReactorStats stats, int rid) {
         this.stats = stats;

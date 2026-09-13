@@ -22,7 +22,6 @@ package odin.server.maps;
 
 import java.awt.Point;
 import odin.client.MapleCharacter;
-
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;

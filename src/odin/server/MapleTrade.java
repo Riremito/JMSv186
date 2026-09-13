@@ -17,11 +17,12 @@ public class MapleTrade {
     private MapleTrade partner = null;
     private final List<IItem> items = new LinkedList<>();
     private List<IItem> exchangeItems;
-    private int meso = 0, exchangeMeso = 0;
+    private int meso = 0;
+    private int exchangeMeso = 0;
     private boolean locked = false;
+    private boolean isPointTrade = false;
     private final WeakReference<MapleCharacter> wrchr;
     private final byte tradingslot;
-    private boolean isPointTrade = false;
 
     public MapleTrade(final byte tradingslot, final MapleCharacter chr) {
         this.tradingslot = tradingslot;

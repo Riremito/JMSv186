@@ -75,7 +75,7 @@ public class GuildHandler {
             return (gid == oth.gid && name.equals(oth.name));
         }
     }
-    private static final java.util.List<Invited> invited = new java.util.LinkedList<Invited>();
+    private static final java.util.List<Invited> invited = new java.util.LinkedList<>();
     private static long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
     public static final void Guild(ClientPacket cp, final TacosClient c) {

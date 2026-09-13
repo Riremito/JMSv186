@@ -26,7 +26,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.lang.ref.WeakReference;
-
 import odin.client.inventory.IItem;
 import odin.client.inventory.ItemLoader;
 import odin.client.MapleCharacter;

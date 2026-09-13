@@ -38,16 +38,65 @@ import tacos.wz.WzDataTool;
 
 public class MapleStatEffect {
 
-    private byte mastery, mhpR, mmpR, mobCount, attackCount, bulletCount;
-    private short hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, mpCon, hpCon, damage, prop, ehp, emp, ewatk, ewdef, emdef;
-    private double hpR, mpR;
-    private int duration, sourceid, moveTo, x, y, z, itemCon, itemConNo, bulletConsume, moneyCon, cooldown, morphId = 0, expinc;
-    private boolean overTime, skill, partyBuff = true;
-    private Map<MonsterStatus, Integer> monsterStatus;
-    private Point lt, rb;
-    private int expBuff, itemup, mesoup, cashup, berserk, illusion, booster, berserk2, cp, nuffSkill;
+    private byte mastery;
+    private byte mhpR;
+    private byte mmpR;
+    private byte mobCount;
+    private byte attackCount;
+    private byte bulletCount;
     private byte level;
+    private short hp;
+    private short mp;
+    private short watk;
+    private short matk;
+    private short wdef;
+    private short mdef;
+    private short acc;
+    private short avoid;
+    private short hands;
+    private short speed;
+    private short jump;
+    private short mpCon;
+    private short hpCon;
+    private short damage;
+    private short prop;
+    private short ehp;
+    private short emp;
+    private short ewatk;
+    private short ewdef;
+    private short emdef;
+    private double hpR;
+    private double mpR;
+    private int duration;
+    private int sourceid;
+    private int moveTo;
+    private int x;
+    private int y;
+    private int z;
+    private int itemCon;
+    private int itemConNo;
+    private int bulletConsume;
+    private int moneyCon;
+    private int cooldown;
+    private int morphId = 0;
+    private int expinc;
+    private int expBuff;
+    private int itemup;
+    private int mesoup;
+    private int cashup;
+    private int berserk;
+    private int illusion;
+    private int booster;
+    private int berserk2;
+    private int cp;
+    private int nuffSkill;
     private int exp; // gashaEXP, consume 237
+    private boolean overTime;
+    private boolean skill;
+    private boolean partyBuff = true;
+    private Map<MonsterStatus, Integer> monsterStatus;
+    private Point lt;
+    private Point rb;
     private ArrayList<OdinPair<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
     public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level) {
@@ -517,7 +566,7 @@ public class MapleStatEffect {
                         membrs++;
                     }
                 }
-                List<MapleCharacter> awarded = new ArrayList<MapleCharacter>();
+                List<MapleCharacter> awarded = new ArrayList<>();
                 while (awarded.size() < Math.min(membrs, y)) {
                     for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {

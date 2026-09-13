@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import java.awt.Point;
-
 import odin.server.MapleItemInformationProvider;
 import tacos.database.query.DQ_Pets;
 
@@ -31,18 +30,23 @@ public class MaplePet {
     private static int pet_closeness_limit = 30000;
     private static int pet_fullness_limit = 100;
     private static final int[] closeness_table = {0, 1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22547, 26074, 30000};
+    private String name;
+    private int Fh = 0;
+    private int stance = 0;
+    private int uniqueid;
+    private int petitemid;
+    private int secondsLeft = 0;
+    private Point pos;
+    private byte fullness = 100;
+    private byte level = 1;
+    private short inventorypos = 0;
+    private short closeness = 0;
+    private short skill_mask = -1; // 0xFFFF
+    private boolean summoned = false;
 
     public static int getClosenessNeededForLevel(final int level) {
         return closeness_table[level - 1];
     }
-
-    private String name;
-    private int Fh = 0, stance = 0, uniqueid, petitemid, secondsLeft = 0;
-    private Point pos;
-    private byte fullness = 100, level = 1;
-    private short inventorypos = 0, closeness = 0;
-    private boolean summoned = false;
-    private short skill_mask = -1; // 0xFFFF
 
     private MaplePet(final int petitemid, final int uniqueid) {
         this.petitemid = petitemid;

@@ -73,8 +73,8 @@ public abstract class Timer {
         }
     }
 
-    private ScheduledThreadPoolExecutor ses;
     protected String name;
+    private ScheduledThreadPoolExecutor ses;
 
     public void start() {
         if (ses != null && !ses.isShutdown() && !ses.isTerminated()) {

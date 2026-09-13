@@ -33,8 +33,8 @@ public class MapleQuestStatus {
     private byte status;
     private Map<Integer, Integer> killedMobs = null;
     private int npc;
-    private long completionTime;
     private int forfeited = 0;
+    private long completionTime;
     private String customData;
 
     public MapleQuestStatus(MapleQuest quest, byte status) {

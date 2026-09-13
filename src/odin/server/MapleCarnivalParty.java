@@ -14,7 +14,7 @@ import odin.server.maps.MapleMap;
  */
 public class MapleCarnivalParty {
 
-    private List<Integer> members = new LinkedList<Integer>();
+    private List<Integer> members = new LinkedList<>();
     private WeakReference<MapleCharacter> leader;
     private byte team;
     private int channel;

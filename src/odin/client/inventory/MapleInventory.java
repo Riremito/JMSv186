@@ -99,7 +99,7 @@ public class MapleInventory implements Iterable<IItem> {
     }
 
     public List<IItem> listById(int itemId) {
-        List<IItem> ret = new ArrayList<IItem>();
+        List<IItem> ret = new ArrayList<>();
         for (IItem item : inventory.values()) {
             if (item.getItemId() == itemId) {
                 ret.add(item);

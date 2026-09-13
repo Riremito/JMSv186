@@ -22,7 +22,6 @@ package odin.client.inventory;
 
 import odin.client.MapleCharacter;
 import java.sql.SQLException;
-
 import java.util.Comparator;
 import odin.server.MapleInventoryManipulator;
 import tacos.database.query.DQ_Rings;

@@ -19,11 +19,11 @@ public class MapleSquad {
     private final String leaderName;
     private Map<String, String> members = new LinkedHashMap<>();
     private Map<String, String> bannedMembers = new LinkedHashMap<>();
+    private final String type;
     private final int ch;
-    private final long startTime;
     private final int expiration;
     private final int beginMapId;
-    private final String type;
+    private final long startTime;
     private byte status = 0;
     private ScheduledFuture<?> removal;
 

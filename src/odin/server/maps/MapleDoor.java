@@ -35,13 +35,14 @@ public class MapleDoor extends AbstractMapleMapObject {
 
     private WeakReference<MapleCharacter> owner;
     private MapleMap map_town;
-    private TacosPortal townPortal;
     private MapleMap map_field;
-    private int skillId, ownerId;
+    private MapleMap map;
+    private TacosPortal townPortal;
+    private int skillId;
+    private int ownerId;
+    private int map_id;
     private boolean is_town_door;
     MapleDoor linked_door = null;
-    private int map_id;
-    private MapleMap map;
 
     public MapleDoor(final MapleCharacter owner, final Point targetPosition, final int skillId) {
         super();

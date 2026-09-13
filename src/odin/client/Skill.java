@@ -23,7 +23,6 @@ package odin.client;
 import odin.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
-
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
 import odin.provider.IMapleData;
@@ -34,7 +33,7 @@ public class Skill implements ISkill {
 
     //public static final int[] skills = new int[]{4311003, 4321000, 4331002, 4331005, 4341004, 4341007};
     private String name = "";
-    private final List<MapleStatEffect> effects = new ArrayList<MapleStatEffect>();
+    private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
     private byte level;
     private int id, animationTime, requiredSkill, masterLevel;

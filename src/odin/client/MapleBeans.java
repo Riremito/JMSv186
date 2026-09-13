@@ -1,5 +1,6 @@
 // CMS v72のソースを流用
 package odin.client;
+
 public class MapleBeans {
 
     private final int number;

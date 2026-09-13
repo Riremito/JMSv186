@@ -24,7 +24,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import odin.client.inventory.Equip;
 import odin.client.ISkill;
 import odin.client.inventory.IItem;
@@ -559,7 +558,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void unequipEverything() {
         MapleInventory equipped = getPlayer().getInventory(MapleInventoryType.EQUIPPED);
         MapleInventory equip = getPlayer().getInventory(MapleInventoryType.EQUIP);
-        List<Short> ids = new LinkedList<Short>();
+        List<Short> ids = new LinkedList<>();
         for (IItem item : equipped.list()) {
             ids.add(item.getPosition());
         }

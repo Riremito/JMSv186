@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.util.List;
-
 import odin.client.inventory.IItem;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
