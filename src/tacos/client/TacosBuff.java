@@ -27,7 +27,7 @@ import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import static tacos.packet.ops.OpsSkill.CITIZEN_MYSTIC_DOOR;
@@ -189,10 +189,10 @@ public class TacosBuff {
 
         long time = System.currentTimeMillis();
         int count = 0;
-        for (OdinPair<OpsSecondaryStat, Integer> oi : effect.getOss()) {
+        for (SimpleImmutableEntry<OpsSecondaryStat, Integer> oi : effect.getOss()) {
             for (Buff buff : buffs) {
-                if (buff.ops == oi.getLeft()) {
-                    buff.buff_effect = oi.getRight();
+                if (buff.ops == oi.getKey()) {
+                    buff.buff_effect = oi.getValue();
                     buff.buff_id = buff_id;
                     buff.buff_time = effect.getDuration();
                     buff.server_time = time;

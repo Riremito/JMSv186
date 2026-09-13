@@ -22,7 +22,7 @@ import tacos.config.Content;
 import java.util.HashMap;
 import java.util.Map;
 import odin.server.maps.MapleReactorStats;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 
 /**
@@ -78,10 +78,10 @@ public class ReactorWz extends WzXML {
             IMapleData reactorInfoData_ = reactorD.getChildByPath("event");
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
                 IMapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
-                OdinPair<Integer, Integer> reactItem = null;
+                SimpleImmutableEntry<Integer, Integer> reactItem = null;
                 int type = WzDataTool.getIntPath("type", reactorInfoData, 0);
                 if (type == 100) { //reactor waits for item
-                    reactItem = new OdinPair<>(WzDataTool.getIntPath("0", reactorInfoData, 0), WzDataTool.getIntPath("1", reactorInfoData, 1));
+                    reactItem = new SimpleImmutableEntry<>(WzDataTool.getIntPath("0", reactorInfoData, 0), WzDataTool.getIntPath("1", reactorInfoData, 1));
                     if (!areaSet) { //only set area of effect for item-triggered reactors once
                         stats.setTL(WzDataTool.getPoint(reactorInfoData.getChildByPath("lt")));
                         stats.setBR(WzDataTool.getPoint(reactorInfoData.getChildByPath("rb")));

@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
@@ -144,9 +144,9 @@ public class MapleLifeFactory {
             final IMapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
             if (monsterSkillData != null) {
                 int i = 0;
-                List<OdinPair<Integer, Integer>> skills = new ArrayList<>();
+                List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
                 while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
-                    skills.add(new OdinPair<>(WzDataTool.getIntPath(i + "/skill", monsterSkillData, 0), WzDataTool.getIntPath(i + "/level", monsterSkillData, 0)));
+                    skills.add(new SimpleImmutableEntry<>(WzDataTool.getIntPath(i + "/skill", monsterSkillData, 0), WzDataTool.getIntPath(i + "/level", monsterSkillData, 0)));
                     i++;
                 }
                 stats.setSkills(skills);

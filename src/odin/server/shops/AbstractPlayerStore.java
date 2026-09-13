@@ -38,7 +38,7 @@ import tacos.packet.response.ResCUser;
 import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosWorld;
@@ -143,7 +143,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
         if (packageid == null) {
             return false;
         }
-        List<OdinPair<Item, MapleInventoryType>> iters = new ArrayList<>();
+        List<SimpleImmutableEntry<Item, MapleInventoryType>> iters = new ArrayList<>();
         Item item;
         for (MaplePlayerShopItem pItems : items) {
             if (pItems.item == null || pItems.bundles <= 0) {
@@ -154,7 +154,7 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
             }
             item = pItems.item.copy();
             item.setQuantity((short) (item.getQuantity() * pItems.bundles));
-            iters.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
+            iters.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
         try {
             ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, ownerId);
@@ -264,11 +264,11 @@ public abstract class AbstractPlayerStore extends AbstractMapleMapObject impleme
     }
 
     @Override
-    public List<OdinPair<Byte, MapleCharacter>> getVisitors() {
-        List<OdinPair<Byte, MapleCharacter>> chrz = new LinkedList<>();
+    public List<SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors() {
+        List<SimpleImmutableEntry<Byte, MapleCharacter>> chrz = new LinkedList<>();
         for (byte i = 0; i < chrs.length; i++) { //include owner or no
             if (chrs[i] != null && chrs[i].get() != null) {
-                chrz.add(new OdinPair<>((byte) (i + 1), chrs[i].get()));
+                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i].get()));
             }
         }
         return chrz;

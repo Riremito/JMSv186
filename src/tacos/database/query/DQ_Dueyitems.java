@@ -36,7 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import tacos.database.DatabaseConnection;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
  * Extracted from the former generic {@code odin.client.inventory.ItemLoader}
@@ -55,9 +55,9 @@ public class DQ_Dueyitems {
     public static final String DB_TABLE_NAME = "dueyitems";
     public static final String DB_TABLE_NAME_EQUIP = "dueyequipment";
 
-    public static Map<Integer, OdinPair<Item, MapleInventoryType>> load(int value, List<String> arg, boolean login, Integer... id) throws SQLException {
+    public static Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> load(int value, List<String> arg, boolean login, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
-        Map<Integer, OdinPair<Item, MapleInventoryType>> items = new LinkedHashMap<>();
+        Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> items = new LinkedHashMap<>();
         if (lulz.size() != arg.size()) {
             return items;
         }
@@ -135,7 +135,7 @@ public class DQ_Dueyitems {
                         }
                     }
                 }
-                items.put(rs.getInt("inventoryitemid"), new OdinPair<>(equip.copy(), mit));
+                items.put(rs.getInt("inventoryitemid"), new SimpleImmutableEntry<>(equip.copy(), mit));
             } else {
                 Item item = new Item(rs.getInt("itemid"), rs.getShort("position"), rs.getShort("quantity"), rs.getByte("flag"));
                 item.setUniqueId(rs.getInt("uniqueid"));
@@ -156,7 +156,7 @@ public class DQ_Dueyitems {
                         item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
                     }
                 }
-                items.put(rs.getInt("inventoryitemid"), new OdinPair<>(item.copy(), mit));
+                items.put(rs.getInt("inventoryitemid"), new SimpleImmutableEntry<>(item.copy(), mit));
             }
         }
 
@@ -165,12 +165,12 @@ public class DQ_Dueyitems {
         return items;
     }
 
-    public static void save(int value, List<String> arg, List<OdinPair<Item, MapleInventoryType>> items, Integer... id) throws SQLException {
+    public static void save(int value, List<String> arg, List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Integer... id) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         save(value, arg, items, con, id);
     }
 
-    public static void save(int value, List<String> arg, List<OdinPair<Item, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
+    public static void save(int value, List<String> arg, List<SimpleImmutableEntry<Item, MapleInventoryType>> items, Connection con, Integer... id) throws SQLException {
         List<Integer> lulz = Arrays.asList(id);
         if (lulz.size() != arg.size()) {
             return;
@@ -214,12 +214,12 @@ public class DQ_Dueyitems {
         query_2.append(")");
         ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
         PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        final Iterator<OdinPair<Item, MapleInventoryType>> iter = items.iterator();
-        OdinPair<Item, MapleInventoryType> pair;
+        final Iterator<SimpleImmutableEntry<Item, MapleInventoryType>> iter = items.iterator();
+        SimpleImmutableEntry<Item, MapleInventoryType> pair;
         while (iter.hasNext()) {
             pair = iter.next();
-            Item item = pair.getLeft();
-            MapleInventoryType mit = pair.getRight();
+            Item item = pair.getKey();
+            MapleInventoryType mit = pair.getValue();
             int i = 1;
             for (int x = 0; x < lulz.size(); x++) {
                 ps.setInt(i, lulz.get(x));

@@ -84,7 +84,7 @@ import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
 import tacos.debug.DebugCommand;
 import tacos.debug.DebugShop;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsCashItem;
@@ -2519,13 +2519,13 @@ public class ReqCUser {
         // used
         MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         // spawn mobs
-        List<OdinPair<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
+        List<SimpleImmutableEntry<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
         if (summon_info == null) {
             return true;
         }
-        for (OdinPair<Integer, Integer> summon_data : summon_info) {
-            if (Randomizer.nextInt(100) < summon_data.getRight()) {
-                MapleMonster monster = MapleLifeFactory.getMonster(summon_data.getLeft());
+        for (SimpleImmutableEntry<Integer, Integer> summon_data : summon_info) {
+            if (Randomizer.nextInt(100) < summon_data.getValue()) {
+                MapleMonster monster = MapleLifeFactory.getMonster(summon_data.getKey());
                 chr.getMap().spawnMonster_sSack(monster, chr.getPosition(), 0);
             }
         }

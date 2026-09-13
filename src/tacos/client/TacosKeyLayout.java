@@ -20,7 +20,7 @@ package tacos.client;
 
 import java.util.HashMap;
 import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
  *
@@ -29,7 +29,7 @@ import tacos.odin.OdinPair;
 public class TacosKeyLayout {
 
     private boolean changed = false;
-    private Map<Integer, OdinPair<Byte, Integer>> keymap = new HashMap<>();
+    private Map<Integer, SimpleImmutableEntry<Byte, Integer>> keymap = new HashMap<>();
 
     public TacosKeyLayout() {
     }
@@ -38,12 +38,12 @@ public class TacosKeyLayout {
         return this.changed;
     }
 
-    public Map<Integer, OdinPair<Byte, Integer>> get() {
+    public Map<Integer, SimpleImmutableEntry<Byte, Integer>> get() {
         return keymap;
     }
 
     public void put(int key, byte type, int action) {
-        this.keymap.put(key, new OdinPair<>(type, action));
+        this.keymap.put(key, new SimpleImmutableEntry<>(type, action));
         this.changed = true;
     }
 

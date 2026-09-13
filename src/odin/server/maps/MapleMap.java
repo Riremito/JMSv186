@@ -49,7 +49,7 @@ import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.response.ResCUserLocal;
@@ -480,7 +480,7 @@ public final class MapleMap extends TacosMap {
                 final MapleReactor react = (MapleReactor) o;
 
                 if (react.getReactorType() == 100) {
-                    if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getLeft()) && react.getReactItem().getRight() == item.getQuantity()) {
+                    if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getKey()) && react.getReactItem().getValue() == item.getQuantity()) {
                         if (react.getArea().contains(drop.getPosition())) {
                             if (!react.isTimerActive()) {
                                 MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, client), 5000);
@@ -552,17 +552,17 @@ public final class MapleMap extends TacosMap {
         }
         Point guardz = null;
         final List<MapleReactor> react = getAllReactors();
-        for (OdinPair<Point, Integer> guard : getNodeInfo().getGuardians()) {
-            if (guard.getRight() == team || guard.getRight() == -1) {
+        for (SimpleImmutableEntry<Point, Integer> guard : getNodeInfo().getGuardians()) {
+            if (guard.getValue() == team || guard.getValue() == -1) {
                 boolean found = false;
                 for (MapleReactor r : react) {
-                    if (r.getPosition().x == guard.getLeft().x && r.getPosition().y == guard.getLeft().y && r.getState() < 5) {
+                    if (r.getPosition().x == guard.getKey().x && r.getPosition().y == guard.getKey().y && r.getState() < 5) {
                         found = true;
                         break; //already used
                     }
                 }
                 if (!found) {
-                    guardz = guard.getLeft(); //this point is safe for use.
+                    guardz = guard.getKey(); //this point is safe for use.
                     break;
                 }
             }

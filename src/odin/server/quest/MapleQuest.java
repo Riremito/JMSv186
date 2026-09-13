@@ -10,7 +10,7 @@ import odin.client.MapleQuestStatus;
 import tacos.config.Region;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import tacos.config.Config;
 import tacos.packet.response.ResCUserLocal;
@@ -36,7 +36,7 @@ public class MapleQuest {
     private boolean customend = false;
     private int viewMedalItem = 0;
     private int selectedSkillID = 0;
-    protected Map<String, List<OdinPair<String, OdinPair<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
+    protected Map<String, List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
 
     protected MapleQuest(final int id) {
         relevantMobs = new LinkedHashMap<>();
@@ -133,11 +133,11 @@ public class MapleQuest {
             final IMapleData pquestInfo = WzXML.QUEST.getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
                 for (IMapleData d : pquestInfo.getChildByPath("rank")) {
-                    List<OdinPair<String, OdinPair<String, Integer>>> pInfo = new ArrayList<>();
+                    List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> pInfo = new ArrayList<>();
                     //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
                     for (IMapleData c : d) {
                         for (IMapleData b : c) {
-                            pInfo.add(new OdinPair<>(c.getName(), new OdinPair<>(b.getName(), WzDataTool.getInt(b, 0))));
+                            pInfo.add(new SimpleImmutableEntry<>(c.getName(), new SimpleImmutableEntry<>(b.getName(), WzDataTool.getInt(b, 0))));
                         }
                     }
                     ret.partyQuestInfo.put(d.getName(), pInfo);
@@ -148,7 +148,7 @@ public class MapleQuest {
         return true;
     }
 
-    public List<OdinPair<String, OdinPair<String, Integer>>> getInfoByRank(String rank) {
+    public List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> getInfoByRank(String rank) {
         return partyQuestInfo.get(rank);
     }
 

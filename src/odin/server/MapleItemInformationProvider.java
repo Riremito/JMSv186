@@ -16,7 +16,7 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
 import tacos.config.ContentState;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
@@ -45,11 +45,11 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Integer> mesoCache = new HashMap<>();
     protected final Map<Integer, Boolean> notSaleCache = new HashMap<>();
     protected final Map<Integer, Boolean> blockPickupCache = new HashMap<>();
-    protected final Map<Integer, List<OdinPair<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<OdinPair<Integer, Integer>>>();
+    protected final Map<Integer, List<SimpleImmutableEntry<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<SimpleImmutableEntry<Integer, Integer>>>();
     protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
     protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
-    protected Map<Integer, OdinPair<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
-    protected final Map<Integer, OdinPair<Integer, List<Integer>>> questItems = new HashMap<>();
+    protected Map<Integer, SimpleImmutableEntry<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
+    protected final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
 
     public static final MapleItemInformationProvider getInstance() {
         return instance;
@@ -885,7 +885,7 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final List<OdinPair<Integer, Integer>> getSummonMobs(final int itemId) {
+    public final List<SimpleImmutableEntry<Integer, Integer>> getSummonMobs(final int itemId) {
         if (summonMobCache.containsKey(itemId)) {
             return summonMobCache.get(itemId);
         }
@@ -896,10 +896,10 @@ public class MapleItemInformationProvider {
         if (data == null) {
             return null;
         }
-        final List<OdinPair<Integer, Integer>> mobPairs = new ArrayList<>();
+        final List<SimpleImmutableEntry<Integer, Integer>> mobPairs = new ArrayList<>();
 
         for (final IMapleData child : data.getChildren()) {
-            mobPairs.add(new OdinPair<>(
+            mobPairs.add(new SimpleImmutableEntry<>(
                     WzDataTool.getIntPath("id", child, 0),
                     WzDataTool.getIntPath("prob", child, 0)));
         }
@@ -1063,7 +1063,7 @@ public class MapleItemInformationProvider {
         return bRestricted;
     }
 
-    public OdinPair<Integer, List<StructRewardItem>> getRewardItem(final int itemid) {
+    public SimpleImmutableEntry<Integer, List<StructRewardItem>> getRewardItem(final int itemid) {
         if (RewardItem.containsKey(itemid)) {
             return RewardItem.get(itemid);
         }
@@ -1092,7 +1092,7 @@ public class MapleItemInformationProvider {
 
             all.add(struct);
         }
-        OdinPair<Integer, List<StructRewardItem>> toreturn = new OdinPair<>(totalprob, all);
+        SimpleImmutableEntry<Integer, List<StructRewardItem>> toreturn = new SimpleImmutableEntry<>(totalprob, all);
         RewardItem.put(itemid, toreturn);
         return toreturn;
     }
@@ -1131,7 +1131,7 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public OdinPair<Integer, List<Integer>> questItemInfo(int itemId) {
+    public SimpleImmutableEntry<Integer, List<Integer>> questItemInfo(int itemId) {
         if (questItems.containsKey(itemId)) {
             return questItems.get(itemId);
         }
@@ -1146,7 +1146,7 @@ public class MapleItemInformationProvider {
         for (IMapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(WzDataTool.getInt(consume, 0));
         }
-        final OdinPair<Integer, List<Integer>> questItem = new OdinPair<>(WzDataTool.getIntPath("questId", itemD, 0), consumeItems);
+        final SimpleImmutableEntry<Integer, List<Integer>> questItem = new SimpleImmutableEntry<>(WzDataTool.getIntPath("questId", itemD, 0), consumeItems);
         questItems.put(itemId, questItem);
         return questItem;
     }

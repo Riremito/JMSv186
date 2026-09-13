@@ -29,7 +29,7 @@ import tacos.database.InvTypeDB;
 import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Storages;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsDBCHAR;
 import tacos.wz.WzDataStorage;
 
@@ -80,8 +80,8 @@ public class TacosStorage {
     public boolean load() {
         if (DQ_Storages.load(this)) {
             DebugLogger.DebugLog("storage is found.");
-            for (OdinPair<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Trunk, this.account_id).values()) {
-                this.items.add(mit.getLeft());
+            for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Trunk, this.account_id).values()) {
+                this.items.add(mit.getKey());
             }
             return true;
         }

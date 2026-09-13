@@ -62,7 +62,7 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleDoor;
 import tacos.client.TacosBuff;
 import tacos.client.TacosBuff.Buff;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.client.TacosMonsterBook;
@@ -2359,11 +2359,11 @@ public class ResCWvsContext {
                 }
             }
         }
-        List<OdinPair<Integer, Integer>> b = chr.usedBuffs();
+        List<SimpleImmutableEntry<Integer, Integer>> b = chr.usedBuffs();
         sp.Encode4(b.size());
-        for (OdinPair<Integer, Integer> ii : b) {
-            sp.Encode4(ii.getLeft()); //buffid
-            sp.Encode4(ii.getRight()); //times used
+        for (SimpleImmutableEntry<Integer, Integer> ii : b) {
+            sp.Encode4(ii.getKey()); //buffid
+            sp.Encode4(ii.getValue()); //times used
         }
         sp.Encode2(2);
         return sp;
@@ -2386,11 +2386,11 @@ public class ResCWvsContext {
         } else {
             sp.Encode8(0);
         }
-        List<OdinPair<Integer, Integer>> b = chr.usedBuffs();
+        List<SimpleImmutableEntry<Integer, Integer>> b = chr.usedBuffs();
         sp.Encode4(b.size());
-        for (OdinPair<Integer, Integer> ii : b) {
-            sp.Encode4(ii.getLeft()); //buffid
-            sp.Encode4(ii.getRight()); //times used
+        for (SimpleImmutableEntry<Integer, Integer> ii : b) {
+            sp.Encode4(ii.getKey()); //buffid
+            sp.Encode4(ii.getValue()); //times used
         }
         return sp;
     }

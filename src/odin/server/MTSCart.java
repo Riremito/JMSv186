@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import tacos.database.query.DQ_MtsCart;
 import tacos.database.query.DQ_MtsItems;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 public class MTSCart {
 
@@ -48,8 +48,8 @@ public class MTSCart {
 
     public MTSCart(int characterId) throws SQLException {
         this.characterId = characterId;
-        for (OdinPair<Item, MapleInventoryType> item : ItemLoader.MTS_TRANSFER.loadItems(false, characterId).values()) {
-            transfer.add(item.getLeft());
+        for (SimpleImmutableEntry<Item, MapleInventoryType> item : ItemLoader.MTS_TRANSFER.loadItems(false, characterId).values()) {
+            transfer.add(item.getKey());
         }
         loadCart();
         loadNotYetSold();
@@ -114,10 +114,10 @@ public class MTSCart {
     }
 
     public void save() throws SQLException {
-        List<OdinPair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
+        List<SimpleImmutableEntry<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (Item item : getInventory()) {
-            itemsWithType.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
+            itemsWithType.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
         ItemLoader.MTS_TRANSFER.saveItems(itemsWithType, characterId);

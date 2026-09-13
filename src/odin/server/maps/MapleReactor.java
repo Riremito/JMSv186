@@ -25,7 +25,7 @@ import java.awt.Rectangle;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
 import odin.server.Timer.MapTimer;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.script.TacosScriptReactor;
 
 public class MapleReactor extends AbstractMapleMapObject {
@@ -102,7 +102,7 @@ public class MapleReactor extends AbstractMapleMapObject {
         return map;
     }
 
-    public OdinPair<Integer, Integer> getReactItem() {
+    public SimpleImmutableEntry<Integer, Integer> getReactItem() {
         return stats.getReactItem(state);
     }
 

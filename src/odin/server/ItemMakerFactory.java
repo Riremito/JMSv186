@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
@@ -105,8 +105,8 @@ public class ItemMakerFactory {
         private int reqMakerLevel;
         private int cost;
         private int quantity;
-        private List<OdinPair<Integer, Integer>> randomReward = new ArrayList<>();
-        private List<OdinPair<Integer, Integer>> reqRecipe = new ArrayList<>();
+        private List<SimpleImmutableEntry<Integer, Integer>> randomReward = new ArrayList<>();
+        private List<SimpleImmutableEntry<Integer, Integer>> reqRecipe = new ArrayList<>();
 
         public GemCreateEntry(int cost, int reqLevel, int reqMakerLevel, int quantity) {
             this.cost = cost;
@@ -115,11 +115,11 @@ public class ItemMakerFactory {
             this.quantity = quantity;
         }
 
-        public List<OdinPair<Integer, Integer>> getRandomReward() {
+        public List<SimpleImmutableEntry<Integer, Integer>> getRandomReward() {
             return randomReward;
         }
 
-        public List<OdinPair<Integer, Integer>> getReqRecipes() {
+        public List<SimpleImmutableEntry<Integer, Integer>> getReqRecipes() {
             return reqRecipe;
         }
 
@@ -136,11 +136,11 @@ public class ItemMakerFactory {
         }
 
         protected void addRandomReward(int itemId, int prob) {
-            randomReward.add(new OdinPair<Integer, Integer>(itemId, prob));
+            randomReward.add(new SimpleImmutableEntry<Integer, Integer>(itemId, prob));
         }
 
         protected void addReqRecipe(int itemId, int count) {
-            reqRecipe.add(new OdinPair<Integer, Integer>(itemId, count));
+            reqRecipe.add(new SimpleImmutableEntry<Integer, Integer>(itemId, count));
         }
     }
 
@@ -152,7 +152,7 @@ public class ItemMakerFactory {
         private int stimulator;
         private byte tuc;
         private byte reqMakerLevel;
-        private List<OdinPair<Integer, Integer>> reqItems = new ArrayList<>(); // itemId / amount
+        private List<SimpleImmutableEntry<Integer, Integer>> reqItems = new ArrayList<>(); // itemId / amount
 
         public ItemMakerCreateEntry(int cost, int reqLevel, byte reqMakerLevel, int quantity, byte tuc, int stimulator) {
             this.cost = cost;
@@ -167,7 +167,7 @@ public class ItemMakerFactory {
             return tuc;
         }
 
-        public List<OdinPair<Integer, Integer>> getReqItems() {
+        public List<SimpleImmutableEntry<Integer, Integer>> getReqItems() {
             return reqItems;
         }
 
@@ -188,7 +188,7 @@ public class ItemMakerFactory {
         }
 
         protected void addReqItem(int itemId, int amount) {
-            reqItems.add(new OdinPair<Integer, Integer>(itemId, amount));
+            reqItems.add(new SimpleImmutableEntry<Integer, Integer>(itemId, amount));
         }
     }
 }

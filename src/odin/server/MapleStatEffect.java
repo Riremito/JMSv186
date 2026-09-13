@@ -28,7 +28,7 @@ import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleSummon;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import tacos.packet.ops.OpsMoveAbility;
 import tacos.packet.response.ResCUserLocal;
@@ -97,7 +97,7 @@ public class MapleStatEffect {
     private Map<MonsterStatus, Integer> monsterStatus;
     private Point lt;
     private Point rb;
-    private ArrayList<OdinPair<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
+    private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
     public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level) {
         return loadFromData(source, skillid, true, overtime, level, 0);
@@ -114,44 +114,44 @@ public class MapleStatEffect {
 
     private boolean checkData() {
         if (watk != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_PAD, (int) watk));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_PAD, (int) watk));
         }
         if (wdef != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_PDD, (int) wdef));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_PDD, (int) wdef));
         }
         if (matk != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MAD, (int) matk));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MAD, (int) matk));
         }
         if (mdef != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MDD, (int) mdef));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MDD, (int) mdef));
         }
         if (acc != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_ACC, (int) acc));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_ACC, (int) acc));
         }
         if (avoid != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_EVA, (int) avoid));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_EVA, (int) avoid));
         }
         if (hands != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Craft, (int) hands)); // not coded
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Craft, (int) hands)); // not coded
         }
         if (speed != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Speed, (int) speed));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Speed, (int) speed));
         }
         if (jump != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Jump, (int) jump));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Jump, (int) jump));
         }
 
         switch (OpsSkill.find(sourceid)) {
             case MAGICIAN_MAGIC_GUARD:
             case FLAMEWIZARD_MAGIC_GUARD:
             case EVAN_MAGIC_GUARD: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MagicGuard, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MagicGuard, (int) x));
                 return true;
             }
             case ROGUE_DARK_SIGHT:
             case DUAL4_ADVANCED_DARK_SIGHT:
             case NIGHTWALKER_DARK_SIGHT: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_DarkSight, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_DarkSight, (int) x));
                 return true;
             }
             case FIGHTER_WEAPON_BOOSTER:
@@ -176,29 +176,29 @@ public class MapleStatEffect {
             case BMAGE_STAFF_BOOSTER:
             case WILDHUNTER_CROSSBOW_BOOSTER:
             case MECHANIC_BOOSTER: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Booster, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Booster, (int) x));
                 return true;
             }
             case FIGHTER_POWER_GUARD:
             case PAGE_POWER_GUARD: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_PowerGuard, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_PowerGuard, x));
                 return true;
             }
             case SPEARMAN_HYPER_BODY: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MaxHP, x));
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MaxMP, y));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MaxHP, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MaxMP, y));
                 return true;
             }
             case HUNTER_SOUL_ARROW_BOW:
             case CROSSBOWMAN_SOUL_ARROW_CROSSBOW:
             case WINDBREAKER_SOUL_ARROW_BOW: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_SoulArrow, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_SoulArrow, x));
                 return true;
             }
             case HERMIT_SHADOW_PARTNER:
             case THIEFMASTER_SHADOW_PARTNER:
             case NIGHTWALKER_SHADOW_PARTNER: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_ShadowPartner, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_ShadowPartner, x));
                 return true;
             }
             case BOWMASTER_SHARP_EYES:
@@ -208,7 +208,7 @@ public class MapleStatEffect {
             case NOBLESSE_SHARP_EYES:
             case EVANJR_SHARP_EYES:
             case CITIZEN_SHARP_EYES: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_SharpEyes, (x << 8) | y));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_SharpEyes, (x << 8) | y));
                 return true;
             }
             case HERO_MAPLE_HERO:
@@ -229,43 +229,43 @@ public class MapleStatEffect {
             case BMAGE_MAPLE_HERO:
             case WILDHUNTER_MAPLE_HERO:
             case MECHANIC_MAPLE_HERO: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_BasicStatUp, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_BasicStatUp, x));
                 return true;
             }
             case BOWMASTER_HAMSTRING: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_HamString, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_HamString, x));
                 return true;
             }
             case BOWMASTER_CONCENTRATION: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Concentration, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Concentration, x));
                 return true;
             }
             case HERMIT_MESO_UP: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MesoUp, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MesoUp, x));
                 return true;
             }
             case NIGHTLORD_SPIRIT_JAVELIN: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_SpiritJavelin, 0));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_SpiritJavelin, 0));
                 return true;
             }
             case BMAGE_AURA_DARK: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_DarkAura, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_DarkAura, x));
                 return true;
             }
             case BMAGE_AURA_BLUE: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_BlueAura, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_BlueAura, x));
                 return true;
             }
             case BMAGE_AURA_YELLOW: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_YellowAura, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_YellowAura, x));
                 return true;
             }
             case BMAGE_CYCLONE: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Cyclone, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Cyclone, x));
                 return true;
             }
             case NOVICE_MONSTER_RIDING: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_RideVehicle, 1));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_RideVehicle, 1));
                 return true;
             }
             default: {
@@ -907,7 +907,7 @@ public class MapleStatEffect {
         return jump;
     }
 
-    public ArrayList<OdinPair<OpsSecondaryStat, Integer>> getOss() {
+    public ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> getOss() {
         return oss;
     }
 

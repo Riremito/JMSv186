@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 public class MapleMonsterStats {
 
@@ -61,7 +61,7 @@ public class MapleMonsterStats {
     private String name;
     private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
     private List<Integer> revives = new ArrayList<>();
-    private List<OdinPair<Integer, Integer>> skills = new ArrayList<>();
+    private List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
     private BanishInfo banish;
 
     public int getExp() {
@@ -237,13 +237,13 @@ public class MapleMonsterStats {
         this.tagBgColor = (byte) tagBgColor;
     }
 
-    public void setSkills(List<OdinPair<Integer, Integer>> skill_) {
-        for (OdinPair<Integer, Integer> skill : skill_) {
+    public void setSkills(List<SimpleImmutableEntry<Integer, Integer>> skill_) {
+        for (SimpleImmutableEntry<Integer, Integer> skill : skill_) {
             skills.add(skill);
         }
     }
 
-    public List<OdinPair<Integer, Integer>> getSkills() {
+    public List<SimpleImmutableEntry<Integer, Integer>> getSkills() {
         return Collections.unmodifiableList(this.skills);
     }
 
@@ -252,8 +252,8 @@ public class MapleMonsterStats {
     }
 
     public boolean hasSkill(int skillId, int level) {
-        for (OdinPair<Integer, Integer> skill : skills) {
-            if (skill.getLeft() == skillId && skill.getRight() == level) {
+        for (SimpleImmutableEntry<Integer, Integer> skill : skills) {
+            if (skill.getKey() == skillId && skill.getValue() == level) {
                 return true;
             }
         }

@@ -12,7 +12,7 @@ import java.util.Map;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
 import tacos.config.Config;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.shared.SharedDate;
 
 public class Structure {
@@ -338,8 +338,8 @@ public class Structure {
     // v165, v186
     public static final byte[] addRingInfo(final MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        OdinPair<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
-        List<MapleRing> cRing = aRing.getLeft();
+        SimpleImmutableEntry<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
+        List<MapleRing> cRing = aRing.getKey();
 
         data.Encode2(cRing.size());
         // GW_CoupleRecord::Decode, 33 bytes.
@@ -354,7 +354,7 @@ public class Structure {
             // nothing
         } else {
             // GW_FriendRecord::Decode, 37 bytes.
-            List<MapleRing> fRing = aRing.getRight();
+            List<MapleRing> fRing = aRing.getValue();
             data.Encode2(fRing.size());
             for (MapleRing ring : fRing) {
                 data.Encode4(ring.getPartnerChrId()); // dwPairCharacterID

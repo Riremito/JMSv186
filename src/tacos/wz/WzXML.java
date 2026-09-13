@@ -33,7 +33,7 @@ import odin.provider.WzXML.WZDirectoryEntry;
 import odin.provider.WzXML.WZEntry;
 import odin.provider.WzXML.XMLDomMapleData;
 import tacos.config.ContentCustom;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
  *
@@ -58,7 +58,7 @@ public class WzXML {
     // TamingMob
     public static final UIWz UI = new UIWz();
 
-    private static List<OdinPair<String, IMapleData>> xml_cache = new ArrayList<>();
+    private static List<SimpleImmutableEntry<String, IMapleData>> xml_cache = new ArrayList<>();
     private String root_path = null;
     private File root_dir;
     protected WZDirectoryEntry rootDirectory;
@@ -112,13 +112,13 @@ public class WzXML {
     }
 
     private static void addXmlCache(String data_path, IMapleData md) {
-        xml_cache.add(new OdinPair<>(data_path, md));
+        xml_cache.add(new SimpleImmutableEntry<>(data_path, md));
     }
 
     private static IMapleData getXmlCache(String data_path) {
-        for (OdinPair<String, IMapleData> pair : xml_cache) {
-            if (pair.getLeft().equals(data_path)) {
-                return pair.getRight();
+        for (SimpleImmutableEntry<String, IMapleData> pair : xml_cache) {
+            if (pair.getKey().equals(data_path)) {
+                return pair.getValue();
             }
         }
         return null;

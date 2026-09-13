@@ -31,7 +31,7 @@ import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.config.Config;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -170,9 +170,9 @@ public class ReqCMobPool {
             boolean used = false;
 
             if (size > 0) {
-                OdinPair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
-                realskill = skillToUse.getLeft();
-                level = skillToUse.getRight();
+                SimpleImmutableEntry<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
+                realskill = skillToUse.getKey();
+                level = skillToUse.getValue();
                 // Skill ID and Level
                 MobSkill mobSkill = WzXML.SKILL.getMobSkillData(realskill, level);
 

@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import tacos.database.query.DQ_MtsItems;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.server.TacosITC;
 
 public class MTSStorage {
@@ -138,7 +138,7 @@ public class MTSStorage {
     public final void loadBuyNow() {
         int lastPackage = 0;
         int cId;
-        Map<Integer, OdinPair<Item, MapleInventoryType>> items;
+        Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> items;
         try {
             for (DQ_MtsItems.TabOneRow row : DQ_MtsItems.getTabOneRows()) {
                 lastPackage = row.id;
@@ -148,8 +148,8 @@ public class MTSStorage {
                 }
                 items = ItemLoader.MTS.loadItems(false, lastPackage);
                 if (items != null && !items.isEmpty()) {
-                    for (OdinPair<Item, MapleInventoryType> i : items.values()) {
-                        buyNow.put(lastPackage, new MTSItemInfo(row.price, i.getLeft(), row.seller, lastPackage, cId, row.expiration));
+                    for (SimpleImmutableEntry<Item, MapleInventoryType> i : items.values()) {
+                        buyNow.put(lastPackage, new MTSItemInfo(row.price, i.getKey(), row.seller, lastPackage, cId, row.expiration));
                     }
                 }
             }
@@ -170,7 +170,7 @@ public class MTSStorage {
         final Map<Integer, ArrayList<Item>> expire = new HashMap<>();
         final List<Integer> toRemove = new ArrayList<>();
         final long now = System.currentTimeMillis();
-        final Map<Integer, ArrayList<OdinPair<Item, MapleInventoryType>>> items = new HashMap<>();
+        final Map<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> items = new HashMap<>();
         final List<DQ_MtsItems.TabOneRow> rowsToSave = new ArrayList<>();
         mutex.writeLock().lock(); //lock wL so rL will also be locked
         try {
@@ -187,7 +187,7 @@ public class MTSStorage {
                     if (!items.containsKey(m.getId())) {
                         items.put(m.getId(), new ArrayList<>());
                     }
-                    items.get(m.getId()).add(new OdinPair<>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
+                    items.get(m.getId()).add(new SimpleImmutableEntry<>(m.getItem(), GameConstants.getInventoryType(m.getItem().getItemId())));
                 }
             }
             for (int i : toRemove) {
@@ -201,7 +201,7 @@ public class MTSStorage {
             System.out.println("Saving MTS items...");
         }
         try {
-            for (Entry<Integer, ArrayList<OdinPair<Item, MapleInventoryType>>> ite : items.entrySet()) {
+            for (Entry<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> ite : items.entrySet()) {
                 ItemLoader.MTS.saveItems(ite.getValue(), ite.getKey());
             }
         } catch (SQLException e) {

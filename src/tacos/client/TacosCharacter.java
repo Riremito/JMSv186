@@ -55,7 +55,7 @@ import tacos.database.query.DQ_Inventoryslot;
 import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
@@ -1136,9 +1136,9 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         // login server.
         if (!is_channel_server) {
             // avatar look.
-            for (OdinPair<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
-                if (mit.getRight() == MapleInventoryType.EQUIPPED) {
-                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getLeft());
+            for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
+                if (mit.getValue() == MapleInventoryType.EQUIPPED) {
+                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getKey());
                 }
             }
             return true;
@@ -1146,14 +1146,14 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         // channel server.
         // inventory.
         DQ_Inventoryslot.load(this);
-        for (OdinPair<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
-            if (!WzDataStorage.ITEM.check(mit.getLeft().getItemId())) {
-                DebugLogger.ErrorLog("Invalid item id : " + mit.getLeft().getItemId());
+        for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
+            if (!WzDataStorage.ITEM.check(mit.getKey().getItemId())) {
+                DebugLogger.ErrorLog("Invalid item id : " + mit.getKey().getItemId());
                 continue;
             }
-            getInventory(mit.getRight()).addFromDB(mit.getLeft());
-            if (mit.getLeft().getPet() != null) {
-                this.pets.add(mit.getLeft().getPet());
+            getInventory(mit.getValue()).addFromDB(mit.getKey());
+            if (mit.getKey().getPet() != null) {
+                this.pets.add(mit.getKey().getPet());
             }
         }
         DQ_KeyMap.loadKeyMap(this);

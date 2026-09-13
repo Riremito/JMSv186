@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.util.LinkedList;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -989,11 +990,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         getPlayer().sendStatChanged();
     }
 
-    public OdinPair<String, Map<Integer, String>> getSpeedRun(String typ) {
+    public SimpleImmutableEntry<String, Map<Integer, String>> getSpeedRun(String typ) {
         return null;
     }
 
-    public boolean getSR(OdinPair<String, Map<Integer, String>> ma, int sel) {
+    public boolean getSR(SimpleImmutableEntry<String, Map<Integer, String>> ma, int sel) {
         sendOk("removed.");
         return true;
     }

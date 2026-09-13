@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataEntity;
 
@@ -139,7 +139,7 @@ public class SkillWz extends WzXML {
         return list;
     }
     // Mob
-    private Map<OdinPair<Integer, Integer>, MobSkill> map_mobSkills = null;
+    private Map<SimpleImmutableEntry<Integer, Integer>, MobSkill> map_mobSkills = null;
 
     private IMapleData getMobSkill() {
         return getData("MobSkill.img");
@@ -150,7 +150,7 @@ public class SkillWz extends WzXML {
             map_mobSkills = new HashMap<>();
         }
 
-        MobSkill ms_found = map_mobSkills.get(new OdinPair<>(skillId, level));
+        MobSkill ms_found = map_mobSkills.get(new SimpleImmutableEntry<>(skillId, level));
         if (ms_found != null) {
             return ms_found;
         }
@@ -198,7 +198,7 @@ public class SkillWz extends WzXML {
         ret.setLimit((short) WzDataTool.getIntPath("limit", skillData, 0));
         ret.setLtRb(lt, rb);
 
-        map_mobSkills.put(new OdinPair<>(skillId, level), ret);
+        map_mobSkills.put(new SimpleImmutableEntry<>(skillId, level), ret);
 
         return ret;
     }

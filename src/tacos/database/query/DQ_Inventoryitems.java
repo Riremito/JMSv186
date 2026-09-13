@@ -36,7 +36,7 @@ import odin.client.inventory.MapleRing;
 import odin.constants.GameConstants;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
  *
@@ -128,12 +128,12 @@ public class DQ_Inventoryitems {
         return false;
     }
 
-    public static Map<Integer, OdinPair<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id) {
+    public static Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id) {
         return load(itb, owner_id, false);
     }
 
-    public static Map<Integer, OdinPair<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id, boolean is_avatar_look) {
-        Map<Integer, OdinPair<Item, MapleInventoryType>> items = new LinkedHashMap<>();
+    public static Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> load(InvTypeDB itb, int owner_id, boolean is_avatar_look) {
+        Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> items = new LinkedHashMap<>();
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE type = ? AND characterid = ?;")) {
@@ -171,7 +171,7 @@ public class DQ_Inventoryitems {
                                 }
                             }
                         }
-                        items.put(inventory_item_uid, new OdinPair<>(equip.copy(), mit));
+                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(equip.copy(), mit));
                     } else {
                         Item item = new Item(item_id, (short) item_slot, (short) item_quantity, (byte) item_flag);
                         item.setUniqueId(item_uid);
@@ -191,7 +191,7 @@ public class DQ_Inventoryitems {
                                 item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
                             }
                         }
-                        items.put(inventory_item_uid, new OdinPair<>(item.copy(), mit));
+                        items.put(inventory_item_uid, new SimpleImmutableEntry<>(item.copy(), mit));
                     }
                 }
                 return items;

@@ -93,7 +93,7 @@ import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.IMaplePlayerShop;
 import odin.server.CashShop;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.MapleCarnivalChallenge;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
@@ -1343,7 +1343,7 @@ public class MapleCharacter extends TacosCharacter {
         long expiration;
         final List<Integer> ret = new ArrayList<>();
         final long currenttime = System.currentTimeMillis();
-        final List<OdinPair<MapleInventoryType, Item>> toberemove = new ArrayList<>(); // This is here to prevent deadlock.
+        final List<SimpleImmutableEntry<MapleInventoryType, Item>> toberemove = new ArrayList<>(); // This is here to prevent deadlock.
         final List<Item> tobeunlock = new ArrayList<>(); // This is here to prevent deadlock.
 
         for (final MapleInventoryType inv : MapleInventoryType.values()) {
@@ -1354,18 +1354,18 @@ public class MapleCharacter extends TacosCharacter {
                     if (ItemFlag.LOCK.check(item.getFlag())) {
                         tobeunlock.add(item);
                     } else if (currenttime > expiration) {
-                        toberemove.add(new OdinPair<MapleInventoryType, Item>(inv, item));
+                        toberemove.add(new SimpleImmutableEntry<MapleInventoryType, Item>(inv, item));
                     }
                 } else if (item.getItemId() == 5000054 && item.getPet() != null && item.getPet().getSecondsLeft() <= 0) {
-                    toberemove.add(new OdinPair<MapleInventoryType, Item>(inv, item));
+                    toberemove.add(new SimpleImmutableEntry<MapleInventoryType, Item>(inv, item));
                 }
             }
         }
         Item item;
-        for (final OdinPair<MapleInventoryType, Item> itemz : toberemove) {
-            item = itemz.getRight();
+        for (final SimpleImmutableEntry<MapleInventoryType, Item> itemz : toberemove) {
+            item = itemz.getValue();
             ret.add(item.getItemId());
-            getInventory(itemz.getLeft()).removeItem(item.getPosition(), item.getQuantity(), false);
+            getInventory(itemz.getKey()).removeItem(item.getPosition(), item.getQuantity(), false);
         }
         for (final Item itemz : tobeunlock) {
             itemz.setExpiration(-1);
@@ -2383,7 +2383,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     //TODO: more than one crush/friendship ring at a time
-    public OdinPair<List<MapleRing>, List<MapleRing>> getRings(boolean equip) {
+    public SimpleImmutableEntry<List<MapleRing>, List<MapleRing>> getRings(boolean equip) {
         MapleInventory iv = getInventory(MapleInventoryType.EQUIPPED);
         Collection<Item> equippedC = iv.list();
         List<Item> equipped = new ArrayList<>(equippedC.size());
@@ -2432,7 +2432,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         Collections.sort(frings, new MapleRing.RingComparator());
         Collections.sort(crings, new MapleRing.RingComparator());
-        return new OdinPair<List<MapleRing>, List<MapleRing>>(crings, frings);
+        return new SimpleImmutableEntry<List<MapleRing>, List<MapleRing>>(crings, frings);
     }
 
     public int getFH() {
@@ -2707,10 +2707,10 @@ public class MapleCharacter extends TacosCharacter {
             } else {
                 return;
             }
-            final List<OdinPair<String, OdinPair<String, Integer>>> questInfo = MapleQuest.getInstance(questid).getInfoByRank(newRank);
-            for (OdinPair<String, OdinPair<String, Integer>> q : questInfo) {
+            final List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> questInfo = MapleQuest.getInstance(questid).getInfoByRank(newRank);
+            for (SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>> q : questInfo) {
                 boolean found = false;
-                final String val = getOneInfo(questid, q.getRight().getLeft());
+                final String val = getOneInfo(questid, q.getValue().getKey());
                 if (val == null) {
                     return;
                 }
@@ -2720,12 +2720,12 @@ public class MapleCharacter extends TacosCharacter {
                 } catch (NumberFormatException e) {
                     return;
                 }
-                if (q.getLeft().equals("less")) {
-                    found = vall < q.getRight().getRight();
-                } else if (q.getLeft().equals("more")) {
-                    found = vall > q.getRight().getRight();
-                } else if (q.getLeft().equals("equal")) {
-                    found = vall == q.getRight().getRight();
+                if (q.getKey().equals("less")) {
+                    found = vall < q.getValue().getValue();
+                } else if (q.getKey().equals("more")) {
+                    found = vall > q.getValue().getValue();
+                } else if (q.getKey().equals("equal")) {
+                    found = vall == q.getValue().getValue();
                 }
                 if (!found) {
                     return;
@@ -2892,12 +2892,12 @@ public class MapleCharacter extends TacosCharacter {
         stat.setCustomData(String.valueOf(System.currentTimeMillis()));
     }
 
-    public List<OdinPair<Integer, Integer>> usedBuffs() {
+    public List<SimpleImmutableEntry<Integer, Integer>> usedBuffs() {
         //assume count = 1
-        List<OdinPair<Integer, Integer>> used = new ArrayList<>();
+        List<SimpleImmutableEntry<Integer, Integer>> used = new ArrayList<>();
         for (MapleFamilyBuffEntry buff : MapleFamilyBuff.getBuffEntry()) {
             if (!canUseFamilyBuff(buff)) {
-                used.add(new OdinPair<Integer, Integer>(buff.index, buff.count));
+                used.add(new SimpleImmutableEntry<Integer, Integer>(buff.index, buff.count));
             }
         }
         return used;

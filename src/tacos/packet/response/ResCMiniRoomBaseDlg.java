@@ -39,7 +39,7 @@ import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import tacos.config.Config;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.config.Region;
 import tacos.packet.ServerPacketHeader;
 import tacos.wz.WzDataStorage;
@@ -59,18 +59,18 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(OpsMiniRoomType.MR_EntrustedShop.get());
         sp.Encode1(hm.getMaxSize()); // m_nMaxUsers (max 8)
         sp.Encode1(m_nMyPosition); // m_nMyPosition
-        List<OdinPair<Byte, MapleCharacter>> visitors = hm.getVisitors();
+        List<SimpleImmutableEntry<Byte, MapleCharacter>> visitors = hm.getVisitors();
         // VisitorSlot
         for (int visitor_index = 0; visitor_index <= visitors.size(); visitor_index++) {
             boolean isEmployer = false;
-            sp.Encode1(visitor_index == 0 ? visitor_index : visitors.get(visitor_index).getLeft()); // first slot is employer
+            sp.Encode1(visitor_index == 0 ? visitor_index : visitors.get(visitor_index).getKey()); // first slot is employer
             if (1 <= visitor_index) {
-                sp.EncodeBuffer(RD_AvatarLook.Encode(visitors.get(visitor_index).getRight())); // CMiniRoomBaseDlg::DecodeAvatar
+                sp.EncodeBuffer(RD_AvatarLook.Encode(visitors.get(visitor_index).getValue())); // CMiniRoomBaseDlg::DecodeAvatar
             } else {
                 sp.Encode4(hm.getItemId()); // dwTemplateID
                 isEmployer = true;
             }
-            sp.EncodeStr(isEmployer ? "Employer" : visitors.get(visitor_index).getRight().getName());
+            sp.EncodeStr(isEmployer ? "Employer" : visitors.get(visitor_index).getValue().getName());
             if (!isEmployer) {
                 // GMS95
                 //sp.Encode2(chr.getJob()); // m_anJobCode[i]
@@ -449,12 +449,12 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode2(merch.getVisitorSlot(chr));
         sp.Encode4(merch.getItemId());
         sp.EncodeStr("\u96c7\u7528\u5546\u4eba");
-        for (final OdinPair<Byte, MapleCharacter> storechr : merch.getVisitors()) {
-            sp.Encode1(storechr.getLeft());
-            sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getRight()));
-            sp.EncodeStr(storechr.getRight().getName());
+        for (final SimpleImmutableEntry<Byte, MapleCharacter> storechr : merch.getVisitors()) {
+            sp.Encode1(storechr.getKey());
+            sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getValue()));
+            sp.EncodeStr(storechr.getValue().getName());
             if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-                sp.Encode2(storechr.getRight().getJob());
+                sp.Encode2(storechr.getValue().getJob());
             }
         }
         sp.Encode1(-1);
@@ -523,20 +523,20 @@ public class ResCMiniRoomBaseDlg {
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(minigame.getMCOwner().getJob());
         }
-        for (OdinPair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
-            sp.Encode1(visitorz.getLeft());
-            sp.EncodeBuffer(RD_AvatarLook.Encode(visitorz.getRight()));
-            sp.EncodeStr(visitorz.getRight().getName());
+        for (SimpleImmutableEntry<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
+            sp.Encode1(visitorz.getKey());
+            sp.EncodeBuffer(RD_AvatarLook.Encode(visitorz.getValue()));
+            sp.EncodeStr(visitorz.getValue().getName());
             if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-                sp.Encode2(visitorz.getRight().getJob());
+                sp.Encode2(visitorz.getValue().getJob());
             }
         }
         sp.Encode1(-1);
         sp.Encode1(0);
         sp.EncodeBuffer(GW_MiniGameRecord_Encode(minigame.getMCOwner(), minigame));
-        for (OdinPair<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
-            sp.Encode1(visitorz.getLeft());
-            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.getRight(), minigame));
+        for (SimpleImmutableEntry<Byte, MapleCharacter> visitorz : minigame.getVisitors()) {
+            sp.Encode1(visitorz.getKey());
+            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.getValue(), minigame));
         }
         sp.Encode1(-1);
         sp.EncodeStr(minigame.getDescription());
@@ -591,12 +591,12 @@ public class ResCMiniRoomBaseDlg {
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
             sp.Encode2(((MaplePlayerShop) ips).getMCOwner().getJob());
         }
-        for (final OdinPair<Byte, MapleCharacter> storechr : ips.getVisitors()) {
-            sp.Encode1(storechr.getLeft());
-            sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getRight()));
-            sp.EncodeStr(storechr.getRight().getName());
+        for (final SimpleImmutableEntry<Byte, MapleCharacter> storechr : ips.getVisitors()) {
+            sp.Encode1(storechr.getKey());
+            sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getValue()));
+            sp.EncodeStr(storechr.getValue().getName());
             if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-                sp.Encode2(storechr.getRight().getJob());
+                sp.Encode2(storechr.getValue().getJob());
             }
         }
         sp.Encode1(-1);
@@ -681,8 +681,8 @@ public class ResCMiniRoomBaseDlg {
             }
         }
         sp.EncodeBuffer(GW_MiniGameRecord_Encode(game.getMCOwner(), game));
-        for (OdinPair<Byte, MapleCharacter> visitorz : game.getVisitors()) {
-            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.getRight(), game));
+        for (SimpleImmutableEntry<Byte, MapleCharacter> visitorz : game.getVisitors()) {
+            sp.EncodeBuffer(GW_MiniGameRecord_Encode(visitorz.getValue(), game));
         }
         return sp;
     }

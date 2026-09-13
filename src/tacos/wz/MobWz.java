@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
@@ -46,13 +46,13 @@ public class MobWz extends WzXML {
         return getData(target_img_path);
     }
 
-    private Map<OdinPair<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
+    private Map<SimpleImmutableEntry<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
 
     public MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
         if (map_mobAttacks == null) {
             map_mobAttacks = new HashMap<>();
         }
-        MobAttackInfo mai_found = map_mobAttacks.get(new OdinPair<>(mob.getId(), attack));
+        MobAttackInfo mai_found = map_mobAttacks.get(new SimpleImmutableEntry<>(mob.getId(), attack));
         if (mai_found != null) {
             return mai_found;
         }
@@ -74,7 +74,7 @@ public class MobWz extends WzXML {
                 ret.setMpCon(WzDataTool.getIntPath("conMP", attackData, 0));
             }
         }
-        map_mobAttacks.put(new OdinPair<>(mob.getId(), attack), ret);
+        map_mobAttacks.put(new SimpleImmutableEntry<>(mob.getId(), attack), ret);
         return ret;
     }
 

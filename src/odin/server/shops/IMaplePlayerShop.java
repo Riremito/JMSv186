@@ -24,7 +24,7 @@ import java.util.List;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.server.shops.AbstractPlayerStore.BoughtItem;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 
 public interface IMaplePlayerShop {
@@ -38,7 +38,7 @@ public interface IMaplePlayerShop {
 
     public String getDescription();
 
-    public List<OdinPair<Byte, MapleCharacter>> getVisitors();
+    public List<SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors();
 
     public List<MaplePlayerShopItem> getItems();
 

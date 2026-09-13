@@ -55,7 +55,7 @@ import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
@@ -773,7 +773,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         return map;
     }
 
-    public final List<OdinPair<Integer, Integer>> getSkills() {
+    public final List<SimpleImmutableEntry<Integer, Integer>> getSkills() {
         return stats.getSkills();
     }
 

@@ -35,7 +35,7 @@ import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.query.DQ_Gifts;
 import tacos.packet.response.ResCCashShop;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 public class CashShop {
 
@@ -63,8 +63,8 @@ public class CashShop {
             factory = ItemLoader.CASHSHOP_EXPLORER;
         }
 
-        for (OdinPair<Item, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
-            inventory.add(item.getLeft());
+        for (SimpleImmutableEntry<Item, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
+            inventory.add(item.getKey());
         }
     }
 
@@ -188,10 +188,10 @@ public class CashShop {
     }
 
     public void save() throws SQLException {
-        List<OdinPair<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
+        List<SimpleImmutableEntry<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
         for (Item item : inventory) {
-            itemsWithType.add(new OdinPair<>(item, GameConstants.getInventoryType(item.getItemId())));
+            itemsWithType.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
         factory.saveItems(itemsWithType, accountId);

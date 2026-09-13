@@ -29,7 +29,7 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.response.wrapper.ResWrapper;
@@ -152,14 +152,14 @@ public class ReqCUIRaise {
             if (item.getItemId() / 10000 != 422) {
                 continue;
             }
-            OdinPair<Integer, List<Integer>> questItemInfo = ii.questItemInfo(item.getItemId());
+            SimpleImmutableEntry<Integer, List<Integer>> questItemInfo = ii.questItemInfo(item.getItemId());
             if (questItemInfo == null) {
                 continue;
             }
-            if (questItemInfo.getLeft() != nQuestID) {
+            if (questItemInfo.getKey() != nQuestID) {
                 continue;
             }
-            if (!questItemInfo.getRight().contains(nItemID)) {
+            if (!questItemInfo.getValue().contains(nItemID)) {
                 continue;
             }
             // found.

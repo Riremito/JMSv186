@@ -24,7 +24,7 @@ import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.provider.IMapleData;
 import odin.provider.IMapleDataDirectoryEntry;
 import odin.provider.IMapleDataEntity;
@@ -286,14 +286,14 @@ public class ItemWz extends WzXML {
     }
 
     // Pet
-    private Map<OdinPair<Integer, Integer>, PetCommand> map_petCommands = null;
+    private Map<SimpleImmutableEntry<Integer, Integer>, PetCommand> map_petCommands = null;
     private Map<Integer, Integer> map_petHunger = null;
 
     public PetCommand getPetCommand(final int petId, final int skillId) {
         if (map_petCommands == null) {
             map_petCommands = new HashMap<>();
         }
-        PetCommand pc_found = map_petCommands.get(new OdinPair<>(petId, skillId));
+        PetCommand pc_found = map_petCommands.get(new SimpleImmutableEntry<>(petId, skillId));
         if (pc_found != null) {
             return pc_found;
         }
@@ -306,7 +306,7 @@ public class ItemWz extends WzXML {
             inc = WzDataTool.getIntPath("interact/" + skillId + "/inc", skillData, 0);
         }
         PetCommand ret = new PetCommand(petId, skillId, prob, inc);
-        map_petCommands.put(new OdinPair<>(petId, skillId), ret);
+        map_petCommands.put(new SimpleImmutableEntry<>(petId, skillId), ret);
         return ret;
     }
 

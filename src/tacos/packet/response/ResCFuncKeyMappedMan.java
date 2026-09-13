@@ -23,7 +23,7 @@ import odin.client.SkillMacro;
 import tacos.config.Region;
 import java.util.Map;
 import tacos.config.Config;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
@@ -79,8 +79,8 @@ public class ResCFuncKeyMappedMan {
             }
 
             for (int i = 0; i < KEY_MAP_SIZE; i++) {
-                Map<Integer, OdinPair<Byte, Integer>> keymap = chr.getKeyLayout().get();
-                OdinPair<Byte, Integer> binding = keymap.get(i);
+                Map<Integer, SimpleImmutableEntry<Byte, Integer>> keymap = chr.getKeyLayout().get();
+                SimpleImmutableEntry<Byte, Integer> binding = keymap.get(i);
                 if (binding == null) {
                     sp.Encode1(0);
                     sp.Encode4(0);
