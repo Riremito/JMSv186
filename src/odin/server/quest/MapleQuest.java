@@ -11,7 +11,7 @@ import tacos.config.Region;
 import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.config.Config;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -49,32 +49,32 @@ public class MapleQuest {
     }
 
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
-        IMapleData check_img = WzXML.QUEST.getCheck();
-        IMapleData act_img = WzXML.QUEST.getAct();
+        MapleData check_img = WzXML.QUEST.getCheck();
+        MapleData act_img = WzXML.QUEST.getAct();
         // KMS1
         if (check_img == null || act_img == null) {
             return false;
         }
 
-        IMapleData basedata1 = check_img.getChildByPath(String.valueOf(id));
-        IMapleData basedata2 = act_img.getChildByPath(String.valueOf(id));
+        MapleData basedata1 = check_img.getChildByPath(String.valueOf(id));
+        MapleData basedata2 = act_img.getChildByPath(String.valueOf(id));
 
         if (basedata1 == null || basedata2 == null) {
             return false;
         }
         //-------------------------------------------------
-        final IMapleData startReqData = basedata1.getChildByPath("0");
+        final MapleData startReqData = basedata1.getChildByPath("0");
         if (startReqData != null) {
-            final List<IMapleData> startC = startReqData.getChildren();
+            final List<MapleData> startC = startReqData.getChildren();
             if (startC != null && !startC.isEmpty()) {
-                for (IMapleData startReq : startC) {
+                for (MapleData startReq : startC) {
                     final MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
                     if (type.equals(MapleQuestRequirementType.interval)) {
                         ret.repeatable = true;
                     }
                     final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
-                        for (IMapleData mob : startReq.getChildren()) {
+                        for (MapleData mob : startReq.getChildren()) {
                             ret.relevantMobs.put(WzDataTool.getInt(mob.getChildByPath("id")),
                                     WzDataTool.getInt(mob.getChildByPath("count"), 0));
                         }
@@ -84,14 +84,14 @@ public class MapleQuest {
             }
         }
         //-------------------------------------------------
-        final IMapleData completeReqData = basedata1.getChildByPath("1");
+        final MapleData completeReqData = basedata1.getChildByPath("1");
         if (completeReqData != null) {
-            final List<IMapleData> completeC = completeReqData.getChildren();
+            final List<MapleData> completeC = completeReqData.getChildren();
             if (completeC != null && !completeC.isEmpty()) {
-                for (IMapleData completeReq : completeC) {
+                for (MapleData completeReq : completeC) {
                     MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
-                        for (IMapleData mob : completeReq.getChildren()) {
+                        for (MapleData mob : completeReq.getChildren()) {
                             ret.relevantMobs.put(WzDataTool.getInt(mob.getChildByPath("id")),
                                     WzDataTool.getInt(mob.getChildByPath("count"), 0));
                         }
@@ -103,23 +103,23 @@ public class MapleQuest {
             }
         }
         // read acts
-        final IMapleData startActData = basedata2.getChildByPath("0");
+        final MapleData startActData = basedata2.getChildByPath("0");
         if (startActData != null) {
-            final List<IMapleData> startC = startActData.getChildren();
-            for (IMapleData startAct : startC) {
+            final List<MapleData> startC = startActData.getChildren();
+            for (MapleData startAct : startC) {
                 ret.startActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(startAct.getName()), startAct, ret));
             }
         }
-        final IMapleData completeActData = basedata2.getChildByPath("1");
+        final MapleData completeActData = basedata2.getChildByPath("1");
 
         if (completeActData != null) {
-            final List<IMapleData> completeC = completeActData.getChildren();
-            for (IMapleData completeAct : completeC) {
+            final List<MapleData> completeC = completeActData.getChildren();
+            for (MapleData completeAct : completeC) {
                 ret.completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, ret));
             }
         }
 
-        final IMapleData questInfo = WzXML.QUEST.getQuestInfo().getChildByPath(String.valueOf(id));
+        final MapleData questInfo = WzXML.QUEST.getQuestInfo().getChildByPath(String.valueOf(id));
         if (questInfo != null) {
             ret.name = WzDataTool.getStringPath("name", questInfo, "");
             ret.autoStart = WzDataTool.getIntPath("autoStart", questInfo, 0) == 1;
@@ -130,13 +130,13 @@ public class MapleQuest {
 
         // not in KMS55
         if (Config.GreaterOrEqual(Region.KMS, 65)) {
-            final IMapleData pquestInfo = WzXML.QUEST.getPQuest().getChildByPath(String.valueOf(id));
+            final MapleData pquestInfo = WzXML.QUEST.getPQuest().getChildByPath(String.valueOf(id));
             if (pquestInfo != null) {
-                for (IMapleData d : pquestInfo.getChildByPath("rank")) {
+                for (MapleData d : pquestInfo.getChildByPath("rank")) {
                     List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> pInfo = new ArrayList<>();
                     //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
-                    for (IMapleData c : d) {
-                        for (IMapleData b : c) {
+                    for (MapleData c : d) {
+                        for (MapleData b : c) {
                             pInfo.add(new SimpleImmutableEntry<>(c.getName(), new SimpleImmutableEntry<>(b.getName(), WzDataTool.getInt(b, 0))));
                         }
                     }

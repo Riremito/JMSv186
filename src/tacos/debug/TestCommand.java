@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Random;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
@@ -93,9 +93,9 @@ public class TestCommand {
             }
             case "/hm": {
                 List<Integer> ids = new ArrayList<>();
-                IMapleData md_item_sub_type = WzXML.ITEM.getItemImg(503);
+                MapleData md_item_sub_type = WzXML.ITEM.getItemImg(503);
                 if (md_item_sub_type != null) {
-                    for (IMapleData md_item : md_item_sub_type.getChildren()) {
+                    for (MapleData md_item : md_item_sub_type.getChildren()) {
                         int item_id = Integer.parseInt(md_item.getName());
                         ids.add(item_id);
                     }

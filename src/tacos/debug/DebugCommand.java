@@ -49,7 +49,7 @@ import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
 import tacos.database.query.DQ_Accounts;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
@@ -332,7 +332,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                IMapleData npc_location = WzXML.ETC.getNpcLocation();
+                MapleData npc_location = WzXML.ETC.getNpcLocation();
                 if (npc_location == null) {
                     chr.DebugMsg("npclocation : NpcLocation.img is not found.");
                     return true;
@@ -351,7 +351,7 @@ public class DebugCommand {
                 }
 
                 nd_npc.sendDebugMsg(chr);
-                for (IMapleData data : npc_location) {
+                for (MapleData data : npc_location) {
                     int map_id = WzDataTool.getInt(data);
                     WzName nd_map = WzNameStorage.MAP.get(map_id);
                     if (nd_map == null) {
@@ -523,19 +523,19 @@ public class DebugCommand {
             // monster card.
             case "/monsterbook": {
                 // Item.wz/Consume/0238.img/info/mob
-                IMapleData monster_card_items = WzXML.ITEM.getItemImg(238);
+                MapleData monster_card_items = WzXML.ITEM.getItemImg(238);
                 // String.wz/MonsterBook.img
-                IMapleData monster_book_mobs = WzXML.STRING.getMonsterBook();
+                MapleData monster_book_mobs = WzXML.STRING.getMonsterBook();
                 if (monster_card_items == null || monster_book_mobs == null) {
                     return true;
                 }
 
                 TacosMonsterBook monster_book = chr.getMonsterBook();
 
-                for (IMapleData mb_mob : monster_book_mobs.getChildren()) {
+                for (MapleData mb_mob : monster_book_mobs.getChildren()) {
                     int mob_id = Integer.parseInt(mb_mob.getName());
 
-                    for (IMapleData mc_item : monster_card_items.getChildren()) {
+                    for (MapleData mc_item : monster_card_items.getChildren()) {
                         if (WzDataTool.getIntPath("info/mob", mc_item, 0) == mob_id) {
                             int card_item_id = Integer.parseInt(mc_item.getName());
                             monster_book.add(card_item_id, 5, false);
@@ -886,7 +886,7 @@ public class DebugCommand {
             case "/townmap": {
                 int count = 0;
                 for (int map_id : WzDataStorage.MAP.getIds()) {
-                    IMapleData data = WzXML.MAP.getImg(map_id);
+                    MapleData data = WzXML.MAP.getImg(map_id);
                     if (data != null) {
                         if (WzDataTool.getIntPath("info/town", data, 0) != 0) {
                             int return_map_id = WzDataTool.getIntPath("info/returnMap", data, 0);
@@ -1194,7 +1194,7 @@ public class DebugCommand {
         for (int i = 0; i < mob_ids.size(); i++) {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
-            IMapleData md_mob = WzXML.STRING.getMob().getChildByPath(Integer.toString(mob_id));
+            MapleData md_mob = WzXML.STRING.getMob().getChildByPath(Integer.toString(mob_id));
             String mob_name = md_mob != null ? WzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
             if (!WzDataStorage.MOB.check(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");

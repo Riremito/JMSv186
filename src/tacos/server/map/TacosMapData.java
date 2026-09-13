@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import odin.server.life.AbstractLoadedMapleLife;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -72,7 +72,7 @@ public class TacosMapData {
     private int link_id;
 
     public boolean loadData() {
-        IMapleData mapData = WzXML.MAP.getImg(this.map_id);
+        MapleData mapData = WzXML.MAP.getImg(this.map_id);
         if (mapData == null) {
             DebugLogger.ErrorLog("loadData : invalid map id = " + this.map_id);
             return false;
@@ -105,9 +105,9 @@ public class TacosMapData {
     // portal node.
     private Map<Integer, TacosPortal> portals = new HashMap<>();
 
-    public boolean loadPortals(IMapleData mapData) {
+    public boolean loadPortals(MapleData mapData) {
         int nextDoorPortal = 0x80;
-        for (IMapleData portal_data : mapData.getChildByPath("portal")) {
+        for (MapleData portal_data : mapData.getChildByPath("portal")) {
             TacosPortal portal = new TacosPortal(WzDataTool.getInt(portal_data.getChildByPath("pt")));
 
             portal.setName(WzDataTool.getString(portal_data.getChildByPath("pn")));
@@ -170,14 +170,14 @@ public class TacosMapData {
     private MapleFootholdTree footholds;
     protected TacosMapSplit map_split = new TacosMapSplit();
 
-    public boolean loadFootHolds(IMapleData mapData) {
+    public boolean loadFootHolds(MapleData mapData) {
         List<MapleFoothold> allFootholds = new LinkedList<>();
         Point lBound = new Point();
         Point uBound = new Point();
 
-        for (IMapleData footRoot : mapData.getChildByPath("foothold")) {
-            for (IMapleData footCat : footRoot) {
-                for (IMapleData footHold : footCat) {
+        for (MapleData footRoot : mapData.getChildByPath("foothold")) {
+            for (MapleData footCat : footRoot) {
+                for (MapleData footHold : footCat) {
                     Point p1 = new Point(WzDataTool.getInt(footHold.getChildByPath("x1")), WzDataTool.getInt(footHold.getChildByPath("y1")));
                     Point p2 = new Point(WzDataTool.getInt(footHold.getChildByPath("x2")), WzDataTool.getInt(footHold.getChildByPath("y2")));
                     MapleFoothold fh = new MapleFoothold(p1, p2, Integer.parseInt(footHold.getName()));
@@ -259,7 +259,7 @@ public class TacosMapData {
     private int fixedMob;
     private int consumeItemCoolTime;
 
-    public boolean loadInfo(IMapleData mapData) {
+    public boolean loadInfo(MapleData mapData) {
         this.clock = mapData.getChildByPath("clock") != null;
         this.returnMapId = WzDataTool.getIntPath("info/returnMap", mapData, 0);
         this.createMobInterval = WzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000);
@@ -365,7 +365,7 @@ public class TacosMapData {
     }
 
     // life node.
-    public boolean loadLife(IMapleData mapData) {
+    public boolean loadLife(MapleData mapData) {
         int bossid = -1;
         String msg = null;
         if (mapData.getChildByPath("info/timeMob") != null) {
@@ -373,7 +373,7 @@ public class TacosMapData {
             msg = WzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
         }
 
-        for (IMapleData life : mapData.getChildByPath("life")) {
+        for (MapleData life : mapData.getChildByPath("life")) {
             String type = WzDataTool.getString(life.getChildByPath("type"));
             int npc_id = WzDataTool.getInt(life.getChildByPath("id"), -1);
             if (npc_id == -1) {
@@ -388,7 +388,7 @@ public class TacosMapData {
             }
 
             myLife.setCy(WzDataTool.getInt(life.getChildByPath("cy")));
-            IMapleData dF = life.getChildByPath("f");
+            MapleData dF = life.getChildByPath("f");
             if (dF != null) {
                 myLife.setF(WzDataTool.getInt(dF));
             }
@@ -422,13 +422,13 @@ public class TacosMapData {
     }
 
     // reactor node.
-    public boolean loadReactor(IMapleData mapData) {
-        IMapleData reactors = mapData.getChildByPath("reactor");
+    public boolean loadReactor(MapleData mapData) {
+        MapleData reactors = mapData.getChildByPath("reactor");
         if (reactors == null) {
             return true;
         }
 
-        for (IMapleData reactor : reactors) {
+        for (MapleData reactor : reactors) {
             int reactor_id = WzDataTool.getInt(reactor.getChildByPath("id"), -1);
             if (reactor_id == -1) {
                 DebugLogger.ErrorLog("loadReactor : failed" + mapData.getParent().getName());
@@ -455,10 +455,10 @@ public class TacosMapData {
     // nodes nodeInfo.
     private MapleNodes nodeInfo;
 
-    public boolean loadNodeInfo(IMapleData mapData) {
+    public boolean loadNodeInfo(MapleData mapData) {
         this.nodeInfo = new MapleNodes(this.map_id);
         if (mapData.getChildByPath("nodeInfo") != null) {
-            for (IMapleData node : mapData.getChildByPath("nodeInfo")) {
+            for (MapleData node : mapData.getChildByPath("nodeInfo")) {
                 try {
                     if (node.getName().equals("start")) {
                         nodeInfo.setNodeStart(WzDataTool.getInt(node, 0));
@@ -469,7 +469,7 @@ public class TacosMapData {
                     }
                     List<Integer> edges = new ArrayList<>();
                     if (node.getChildByPath("edge") != null) {
-                        for (IMapleData edge : node.getChildByPath("edge")) {
+                        for (MapleData edge : node.getChildByPath("edge")) {
                             edges.add(WzDataTool.getInt(edge, -1));
                         }
                     }
@@ -487,7 +487,7 @@ public class TacosMapData {
         }
         for (int i = 1; i <= 7; i++) {
             if (mapData.getChildByPath(String.valueOf(i)) != null && mapData.getChildByPath(i + "/obj") != null) {
-                for (IMapleData node : mapData.getChildByPath(i + "/obj")) {
+                for (MapleData node : mapData.getChildByPath(i + "/obj")) {
                     int sn_count = WzDataTool.getIntPath("SN_count", node, 0);
                     String name = WzDataTool.getStringPath("name", node, "");
                     int speed = WzDataTool.getIntPath("speed", node, 0);
@@ -513,7 +513,7 @@ public class TacosMapData {
         if (mapData.getChildByPath("area") != null) {
             int x1, y1, x2, y2;
             Rectangle mapArea;
-            for (IMapleData area : mapData.getChildByPath("area")) {
+            for (MapleData area : mapData.getChildByPath("area")) {
                 x1 = WzDataTool.getInt(area.getChildByPath("x1"));
                 y1 = WzDataTool.getInt(area.getChildByPath("y1"));
                 x2 = WzDataTool.getInt(area.getChildByPath("x2"));
@@ -523,9 +523,9 @@ public class TacosMapData {
             }
         }
         if (mapData.getChildByPath("monsterCarnival") != null) {
-            final IMapleData mc = mapData.getChildByPath("monsterCarnival");
+            final MapleData mc = mapData.getChildByPath("monsterCarnival");
             if (mc.getChildByPath("mobGenPos") != null) {
-                for (IMapleData area : mc.getChildByPath("mobGenPos")) {
+                for (MapleData area : mc.getChildByPath("mobGenPos")) {
                     nodeInfo.addMonsterPoint(WzDataTool.getInt(area.getChildByPath("x")),
                             WzDataTool.getInt(area.getChildByPath("y")),
                             WzDataTool.getInt(area.getChildByPath("fh")),
@@ -534,17 +534,17 @@ public class TacosMapData {
                 }
             }
             if (mc.getChildByPath("mob") != null) {
-                for (IMapleData area : mc.getChildByPath("mob")) {
+                for (MapleData area : mc.getChildByPath("mob")) {
                     nodeInfo.addMobSpawn(WzDataTool.getInt(area.getChildByPath("id")), WzDataTool.getInt(area.getChildByPath("spendCP")));
                 }
             }
             if (mc.getChildByPath("guardianGenPos") != null) {
-                for (IMapleData area : mc.getChildByPath("guardianGenPos")) {
+                for (MapleData area : mc.getChildByPath("guardianGenPos")) {
                     nodeInfo.addGuardianSpawn(new Point(WzDataTool.getInt(area.getChildByPath("x")), WzDataTool.getInt(area.getChildByPath("y"))), WzDataTool.getIntPath("team", area, -1));
                 }
             }
             if (mc.getChildByPath("skill") != null) {
-                for (IMapleData area : mc.getChildByPath("skill")) {
+                for (MapleData area : mc.getChildByPath("skill")) {
                     nodeInfo.addSkillId(WzDataTool.getInt(area));
                 }
             }

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.config.Config;
 import tacos.wz.WzDataTool;
 
@@ -62,7 +62,7 @@ public class Skill {
         return name;
     }
 
-    public static final Skill loadFromData(final int id, final IMapleData data) {
+    public static final Skill loadFromData(final int id, final MapleData data) {
         Skill ret = new Skill(id);
 
         boolean isBuff = false;
@@ -76,15 +76,15 @@ public class Skill {
         ret.invisible = WzDataTool.getIntPath("invisible", data, 0) > 0;
         ret.timeLimited = WzDataTool.getIntPath("timeLimited", data, 0) > 0;
         ret.masterLevel = WzDataTool.getIntPath("masterLevel", data, 0);
-        final IMapleData effect = data.getChildByPath("effect");
+        final MapleData effect = data.getChildByPath("effect");
         if (skillType != -1) {
             if (skillType == 2) {
                 isBuff = true;
             }
         } else {
-            final IMapleData action_ = data.getChildByPath("action");
-            final IMapleData hit = data.getChildByPath("hit");
-            final IMapleData ball = data.getChildByPath("ball");
+            final MapleData action_ = data.getChildByPath("action");
+            final MapleData hit = data.getChildByPath("hit");
+            final MapleData ball = data.getChildByPath("ball");
 
             boolean action = false;
             if (action_ == null) {
@@ -201,12 +201,12 @@ public class Skill {
         ret.chargeskill = data.getChildByPath("keydown") != null;
 
         if (Config.PreBB()) {
-            for (final IMapleData level : data.getChildByPath("level")) {
+            for (final MapleData level : data.getChildByPath("level")) {
                 ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
             }
         } else {
             // v188+
-            IMapleData common = data.getChildByPath("common");
+            MapleData common = data.getChildByPath("common");
             if (common != null) {
                 // after bigbang updates
                 int max_level = WzDataTool.getIntPath("maxLevel", common, -1);
@@ -215,22 +215,22 @@ public class Skill {
                 }
             } else {
                 // old skills
-                for (final IMapleData level : data.getChildByPath("level")) {
+                for (final MapleData level : data.getChildByPath("level")) {
                     ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
                 }
             }
         }
 
-        final IMapleData reqDataRoot = data.getChildByPath("req");
+        final MapleData reqDataRoot = data.getChildByPath("req");
         if (reqDataRoot != null) {
-            for (final IMapleData reqData : reqDataRoot.getChildren()) {
+            for (final MapleData reqData : reqDataRoot.getChildren()) {
                 ret.requiredSkill = Integer.parseInt(reqData.getName());
                 ret.level = (byte) WzDataTool.getInt(reqData, 1);
             }
         }
         ret.animationTime = 0;
         if (effect != null) {
-            for (final IMapleData effectEntry : effect) {
+            for (final MapleData effectEntry : effect) {
                 ret.animationTime += WzDataTool.getIntPath("delay", effectEntry, 0);
             }
         }

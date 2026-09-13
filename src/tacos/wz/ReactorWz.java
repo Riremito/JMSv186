@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import odin.server.maps.MapleReactorStats;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
 
 /**
  *
@@ -35,7 +34,7 @@ public class ReactorWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz");
     }
 
-    public IMapleData getImg(int reactor_id) {
+    public MapleData getImg(int reactor_id) {
         String target_img_path = String.format("%07d.img", reactor_id);
         return getData(target_img_path);
     }
@@ -52,8 +51,8 @@ public class ReactorWz extends WzXML {
         }
 
         int link_id = reactor_id;
-        IMapleData reactorData = getImg(reactor_id);
-        IMapleData link = reactorData.getChildByPath("info/link");
+        MapleData reactorData = getImg(reactor_id);
+        MapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
             link_id = WzDataTool.getIntPath("info/link", reactorData, 0);
             MapleReactorStats mrs_link = map_reactorStats.get(link_id);
@@ -71,13 +70,13 @@ public class ReactorWz extends WzXML {
         boolean areaSet = false;
         boolean foundState = false;
         for (byte i = 0; true; i++) {
-            IMapleData reactorD = reactorData.getChildByPath(String.valueOf(i));
+            MapleData reactorD = reactorData.getChildByPath(String.valueOf(i));
             if (reactorD == null) {
                 break;
             }
-            IMapleData reactorInfoData_ = reactorD.getChildByPath("event");
+            MapleData reactorInfoData_ = reactorD.getChildByPath("event");
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
-                IMapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
+                MapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
                 SimpleImmutableEntry<Integer, Integer> reactItem = null;
                 int type = WzDataTool.getIntPath("type", reactorInfoData, 0);
                 if (type == 100) { //reactor waits for item

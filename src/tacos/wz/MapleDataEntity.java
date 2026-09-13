@@ -1,6 +1,6 @@
 /*
 This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
+Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc>
 Matthias Butz <matze@odinms.de>
 Jan Christian Meyer <vimes@odinms.de>
 
@@ -18,11 +18,11 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package odin.provider;
+package tacos.wz;
 
-public interface IMapleDataEntity {
+public interface MapleDataEntity {
 
     public String getName();
 
-    public IMapleDataEntity getParent();
+    public MapleDataEntity getParent();
 }

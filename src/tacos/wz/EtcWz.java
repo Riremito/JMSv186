@@ -21,7 +21,6 @@ package tacos.wz;
 import tacos.config.Content;
 import java.util.ArrayList;
 import java.util.List;
-import odin.provider.IMapleData;
 import tacos.config.ContentCustom;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsCommodity;
@@ -36,27 +35,27 @@ public class EtcWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Etc" : "Etc.wz");
     }
 
-    public IMapleData getForbiddenName() {
+    public MapleData getForbiddenName() {
         return getData("ForbiddenName.img");
     }
 
-    public IMapleData getNpcLocation() {
+    public MapleData getNpcLocation() {
         return getData("NpcLocation.img");
     }
 
-    public IMapleData getItemMake() {
+    public MapleData getItemMake() {
         return getData("ItemMake.img");
     }
 
-    public IMapleData getCommodity() {
+    public MapleData getCommodity() {
         return getData("Commodity.img");
     }
 
-    public IMapleData getCashPackage() {
+    public MapleData getCashPackage() {
         return getData("CashPackage.img");
     }
 
-    public IMapleData getSetItemInfo() {
+    public MapleData getSetItemInfo() {
         return getData("SetItemInfo.img");
     }
 
@@ -68,7 +67,7 @@ public class EtcWz extends WzXML {
         }
 
         list_fn = new ArrayList<>();
-        for (final IMapleData data : getForbiddenName().getChildren()) {
+        for (final MapleData data : getForbiddenName().getChildren()) {
             list_fn.add(WzDataTool.getString(data));
         }
 
@@ -125,7 +124,7 @@ public class EtcWz extends WzXML {
             return ONSALE_LIST;
         }
         // remove all onsale items.
-        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
+        for (MapleData field : WzXML.ETC.getCommodity().getChildren()) {
             int nItemId = WzDataTool.getIntPath("ItemId", field, 0);
             int nSN = WzDataTool.getIntPath("SN", field, 0);
             int bOnSale = WzDataTool.getIntPath("OnSale", field, 0);

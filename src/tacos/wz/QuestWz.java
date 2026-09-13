@@ -19,7 +19,6 @@
 package tacos.wz;
 
 import tacos.config.Content;
-import odin.provider.IMapleData;
 
 /**
  *
@@ -31,19 +30,19 @@ public class QuestWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Quest" : "Quest.wz");
     }
 
-    public IMapleData getAct() {
+    public MapleData getAct() {
         return getData("Act.img");
     }
 
-    public IMapleData getCheck() {
+    public MapleData getCheck() {
         return getData("Check.img");
     }
 
-    public IMapleData getQuestInfo() {
+    public MapleData getQuestInfo() {
         return getData("QuestInfo.img");
     }
 
-    public IMapleData getPQuest() {
+    public MapleData getPQuest() {
         return getData("PQuest.img");
     }
 }

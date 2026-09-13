@@ -1,6 +1,6 @@
 /*
 This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
+Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc>
 Matthias Butz <matze@odinms.de>
 Jan Christian Meyer <vimes@odinms.de>
 
@@ -18,27 +18,21 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package odin.provider.WzXML;
+package tacos.wz;
 
-import odin.provider.IMapleDataEntity;
+import java.util.List;
 
-public class WZEntry implements IMapleDataEntity {
+/**
+ *
+ * @author Matze
+ */
+public interface MapleDataDirectoryEntry extends MapleDataEntity {
 
-    private String name;
-    private IMapleDataEntity parent;
+    public List<MapleDataDirectoryEntry> getSubDirectories();
 
-    public WZEntry(String name, int size, int checksum, IMapleDataEntity parent) {
-        this.name = name;
-        this.parent = parent;
-    }
+    public MapleDataDirectoryEntry getSubDirectory(String path);
 
-    @Override
-    public String getName() {
-        return name;
-    }
+    public List<MapleDataEntity> getFiles();
 
-    @Override
-    public IMapleDataEntity getParent() {
-        return parent;
-    }
+    public MapleDataEntity getEntry(String name);
 }

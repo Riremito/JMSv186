@@ -21,7 +21,7 @@ package tacos.server.map;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import odin.client.MapleCharacter;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.wz.ServerImg;
@@ -69,10 +69,10 @@ public class TacosNpcShop {
         }
         
         if (!SHOPS.containsKey(npc_id)) {
-            IMapleData md_npc_shop = ServerImg.SI.getNpcShop().getChildByPath(String.format("%07d", npc_id));
+            MapleData md_npc_shop = ServerImg.SI.getNpcShop().getChildByPath(String.format("%07d", npc_id));
             if (md_npc_shop != null) {
                 items = new ArrayList<>();
-                for (IMapleData md_data : md_npc_shop.getChildren()) {
+                for (MapleData md_data : md_npc_shop.getChildren()) {
                     ShopItem item = new ShopItem();
                     item.item = WzDataTool.getIntPath("item", md_data, 0);
                     item.price = WzDataTool.getIntPath("price", md_data, 0);

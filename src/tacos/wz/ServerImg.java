@@ -23,8 +23,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.TreeMap;
-import odin.provider.IMapleData;
-import odin.provider.WzXML.XMLDomMapleData;
+import tacos.wz.WzXML.XmlDomData;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
 
@@ -47,32 +46,32 @@ public class ServerImg {
     }
 
     // 船
-    public IMapleData getContinent() {
+    public MapleData getContinent() {
         return getData("Continent.img");
     }
 
     // イベント
-    public IMapleData getFieldSet() {
+    public MapleData getFieldSet() {
         return getData("FieldSet.img");
     }
 
     // ガチャポン
-    public IMapleData getGachapon() {
+    public MapleData getGachapon() {
         return getData("Gachapon.img");
     }
 
     // NPC商店
-    public IMapleData getNpcShop() {
+    public MapleData getNpcShop() {
         return getData("NpcShop.img");
     }
 
     // Reactor
-    public IMapleData getReactorAction() {
+    public MapleData getReactorAction() {
         return getData("ReactorAction.img");
     }
 
     // ドロップ
-    public IMapleData getReward() {
+    public MapleData getReward() {
         return getData("Reward.img");
     }
 
@@ -96,10 +95,10 @@ public class ServerImg {
         return true;
     }
 
-    private TreeMap<String, IMapleData> xml_cache = new TreeMap<>();
+    private TreeMap<String, MapleData> xml_cache = new TreeMap<>();
 
-    private IMapleData getData(String data_path) {
-        IMapleData data = this.xml_cache.get(data_path);
+    private MapleData getData(String data_path) {
+        MapleData data = this.xml_cache.get(data_path);
         if (data != null) {
             return data;
         }
@@ -121,7 +120,7 @@ public class ServerImg {
             return null;
         }
 
-        XMLDomMapleData domMapleData = new XMLDomMapleData(fis, imageDataDir.getParentFile());
+        XmlDomData domMapleData = new XmlDomData(fis, imageDataDir.getParentFile());
         try {
             fis.close();
         } catch (IOException ex) {

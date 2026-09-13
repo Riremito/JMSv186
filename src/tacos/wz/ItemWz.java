@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
-import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataEntity;
 import tacos.unofficial.PotentialOptimization;
 import tacos.unofficial.PotentialOptimization.PotentialOptionData;
 
@@ -43,7 +40,7 @@ public class ItemWz extends WzXML {
 
     private static final int item_sub_type_pet = 500;
 
-    public IMapleData getItemData(int id) {
+    public MapleData getItemData(int id) {
         int item_type = id / 1000000;
         if (item_type <= 1) {
             return null;
@@ -58,15 +55,15 @@ public class ItemWz extends WzXML {
         String target_img_name = String.format("%04d.img", item_sub_type);
         String target_dir_name = String.format("%08d", id);
 
-        for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
-            for (IMapleDataEntity mdfe : mdde.getFiles()) {
+        for (MapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
+            for (MapleDataEntity mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
+                    MapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid item type = " + item_sub_type);
                         return null;
                     }
-                    IMapleData md_item = md_item_sub_type.getChildByPath(target_dir_name);
+                    MapleData md_item = md_item_sub_type.getChildByPath(target_dir_name);
                     if (md_item == null) {
                         DebugLogger.ErrorLog("getItemData : Invalid item id = " + id);
                         return null;
@@ -80,7 +77,7 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    public IMapleData getItemImg(int item_sub_type) {
+    public MapleData getItemImg(int item_sub_type) {
         if (item_sub_type < 200) {
             return null;
         }
@@ -92,10 +89,10 @@ public class ItemWz extends WzXML {
 
         String target_img_name = String.format("%04d.img", item_sub_type);
 
-        for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
-            for (IMapleDataEntity mdfe : mdde.getFiles()) {
+        for (MapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
+            for (MapleDataEntity mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
+                    MapleData md_item_sub_type = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_item_sub_type == null) {
                         DebugLogger.ErrorLog("getItemImg : Invalid item type = " + item_sub_type);
                         return null;
@@ -109,18 +106,18 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    public IMapleData getItemData_Pet(int id) {
+    public MapleData getItemData_Pet(int id) {
         int item_sub_type = id / 10000;
         if (item_sub_type != item_sub_type_pet) {
             return null;
         }
         String target_img_name = String.format("%d.img", id);
 
-        for (IMapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
+        for (MapleDataDirectoryEntry mdde : getRootDirectory().getSubDirectories()) {
             if (mdde.getName().equals("Pet")) {
-                for (IMapleDataEntity mdfe : mdde.getFiles()) {
+                for (MapleDataEntity mdfe : mdde.getFiles()) {
                     if (mdfe.getName().equals(target_img_name)) {
-                        IMapleData md_pet = getData(mdde.getName() + "/" + mdfe.getName());
+                        MapleData md_pet = getData(mdde.getName() + "/" + mdfe.getName());
                         if (md_pet == null) {
                             DebugLogger.ErrorLog("getItemData_Pet : Invalid pet id 1 = " + id);
                             return null;
@@ -141,7 +138,7 @@ public class ItemWz extends WzXML {
     ArrayList<Integer> list_UniquePotential = null;
     ArrayList<Integer> list_LegendaryPotential = null;
 
-    public IMapleData getItemOption() {
+    public MapleData getItemOption() {
         return getData("ItemOption.img");
     }
 
@@ -159,9 +156,9 @@ public class ItemWz extends WzXML {
             return false;
         }
 
-        for (IMapleData dat : getItemOption()) {
+        for (MapleData dat : getItemOption()) {
             ArrayList<PotentialOptionData> pods = new ArrayList<>();
-            for (IMapleData level : dat.getChildByPath("level")) {
+            for (MapleData level : dat.getChildByPath("level")) {
                 PotentialOptionData pod = new PotentialOptionData();
 
                 pod.optionType = WzDataTool.getIntPath("info/optionType", dat, 0);
@@ -298,7 +295,7 @@ public class ItemWz extends WzXML {
             return pc_found;
         }
 
-        IMapleData skillData = getData("Pet/" + petId + ".img");
+        MapleData skillData = getData("Pet/" + petId + ".img");
         int prob = 0;
         int inc = 0;
         if (skillData != null) {
@@ -319,7 +316,7 @@ public class ItemWz extends WzXML {
             return found;
         }
 
-        IMapleData hungerData = getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
+        MapleData hungerData = getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
         Integer ret = WzDataTool.getInt(hungerData, 1);
         map_petHunger.put(petId, ret);
         return ret;

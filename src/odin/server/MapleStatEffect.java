@@ -29,7 +29,7 @@ import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleSummon;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.packet.ops.OpsMoveAbility;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -99,16 +99,16 @@ public class MapleStatEffect {
     private Point rb;
     private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
-    public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level) {
+    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level) {
         return loadFromData(source, skillid, true, overtime, level, 0);
     }
 
     // after bigbang
-    public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
+    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
         return loadFromData(source, skillid, true, overtime, level, common_level);
     }
 
-    public static final MapleStatEffect loadItemEffectFromData(final IMapleData source, final int itemid) {
+    public static final MapleStatEffect loadItemEffectFromData(final MapleData source, final int itemid) {
         return loadFromData(source, itemid, false, false, (byte) 1, 0);
     }
 
@@ -276,7 +276,7 @@ public class MapleStatEffect {
         return true;
     }
 
-    private static MapleStatEffect loadFromData(final IMapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
+    private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
         final MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
         ret.skill = skill;
@@ -348,7 +348,7 @@ public class MapleStatEffect {
         ret.booster = 0;
         ret.illusion = WzDataTool.getIntExpression("illusion", source, 0, common_level);
 
-        final IMapleData ltd = source.getChildByPath("lt");
+        final MapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
             ret.lt = WzDataTool.getPoint(source.getChildByPath("lt"));
             ret.rb = WzDataTool.getPoint(source.getChildByPath("rb"));

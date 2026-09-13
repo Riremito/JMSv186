@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import odin.server.CashItemInfo.CashModInfo;
 import tacos.database.query.DQ_CashshopModifiedItems;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
@@ -34,7 +34,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
+        for (MapleData field : WzXML.ETC.getCommodity().getChildren()) {
             int SN = WzDataTool.getIntPath("SN", field, 0);
 
             if (SN <= 0 || item_SN != SN) {
@@ -66,7 +66,7 @@ public class CashItemFactory {
         }
 
         // Load
-        for (IMapleData field : WzXML.ETC.getCommodity().getChildren()) {
+        for (MapleData field : WzXML.ETC.getCommodity().getChildren()) {
             int ItemId = WzDataTool.getIntPath("ItemId", field, 0);
             if (ItemId != itemid) {
                 continue;

@@ -1,6 +1,6 @@
 /*
 This file is part of the OdinMS Maple Story Server
-Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc> 
+Copyright (C) 2008 ~ 2010 Patrick Huy <patrick.huy@frz.cc>
 Matthias Butz <matze@odinms.de>
 Jan Christian Meyer <vimes@odinms.de>
 
@@ -18,24 +18,20 @@ GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package odin.provider.WzXML;
+package tacos.wz;
 
-public enum MapleDataType {
+import java.util.List;
 
-    NONE,
-    IMG_0x00,
-    SHORT,
-    INT,
-    FLOAT,
-    DOUBLE,
-    STRING,
-    EXTENDED,
-    PROPERTY,
-    CANVAS,
-    VECTOR,
-    CONVEX,
-    SOUND,
-    UOL,
-    UNKNOWN_TYPE,
-    UNKNOWN_EXTENDED_TYPE;
+public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
+
+    @Override
+    public String getName();
+
+    public WzXML.DataType getType();
+
+    public List<MapleData> getChildren();
+
+    public MapleData getChildByPath(String path);
+
+    public Object getData();
 }

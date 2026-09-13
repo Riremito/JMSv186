@@ -22,7 +22,7 @@ package odin.client;
 
 import java.util.Collection;
 import java.util.List;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
@@ -45,7 +45,7 @@ public class SkillFactory {
     }
 
     public static String getName(int skill_id) {
-        IMapleData skillroot = WzXML.STRING.getSkill().getChildByPath(String.format("%07d", skill_id));
+        MapleData skillroot = WzXML.STRING.getSkill().getChildByPath(String.format("%07d", skill_id));
         if (skillroot != null) {
             return WzDataTool.getString(skillroot.getChildByPath("name"), "");
         }

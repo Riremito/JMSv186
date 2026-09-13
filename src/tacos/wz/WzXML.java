@@ -19,6 +19,19 @@
 package tacos.wz;
 
 import tacos.property.Property_Java;
+import java.awt.Point;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 import tacos.debug.DebugLogger;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,12 +39,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import odin.provider.IMapleData;
-import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataEntity;
-import odin.provider.WzXML.WZDirectoryEntry;
-import odin.provider.WzXML.WZEntry;
-import odin.provider.WzXML.XMLDomMapleData;
 import tacos.config.ContentCustom;
 import java.util.AbstractMap.SimpleImmutableEntry;
 
@@ -58,10 +65,10 @@ public class WzXML {
     // TamingMob
     public static final UIWz UI = new UIWz();
 
-    private static List<SimpleImmutableEntry<String, IMapleData>> xml_cache = new ArrayList<>();
+    private static List<SimpleImmutableEntry<String, MapleData>> xml_cache = new ArrayList<>();
     private String root_path = null;
     private File root_dir;
-    protected WZDirectoryEntry rootDirectory;
+    protected DirectoryEntry rootDirectory;
 
     public WzXML(String path) {
         this.root_path = path;
@@ -84,12 +91,12 @@ public class WzXML {
         DebugLogger.XmlLog("setWzRoot : " + this.root_path);
 
         this.root_dir = file;
-        this.rootDirectory = new WZDirectoryEntry(this.root_dir.getName(), 0, 0, null);
+        this.rootDirectory = new DirectoryEntry(this.root_dir.getName(), 0, 0, null);
         createEntry(this.root_dir, this.rootDirectory);
         return true;
     }
 
-    private void createEntry(File dir, WZDirectoryEntry entry) {
+    private void createEntry(File dir, DirectoryEntry entry) {
         for (File file : dir.listFiles()) {
             String fn = file.getName();
             if (fn.endsWith(".img")) {
@@ -97,26 +104,26 @@ public class WzXML {
                 continue;
             }
             if (file.isDirectory()) {
-                WZDirectoryEntry sub_entry = new WZDirectoryEntry(fn, 0, 0, entry);
+                DirectoryEntry sub_entry = new DirectoryEntry(fn, 0, 0, entry);
                 entry.addDirectory(sub_entry);
                 createEntry(file, sub_entry);
                 continue;
             }
             if (fn.endsWith(".xml")) {
                 String fn_img = fn.substring(0, fn.length() - 4);
-                entry.addFile(new WZEntry(fn_img, 0, 0, entry));
+                entry.addFile(new Entry(fn_img, 0, 0, entry));
                 continue;
             }
             DebugLogger.XmlLog("what's this2? " + file.getName());
         }
     }
 
-    private static void addXmlCache(String data_path, IMapleData md) {
+    private static void addXmlCache(String data_path, MapleData md) {
         xml_cache.add(new SimpleImmutableEntry<>(data_path, md));
     }
 
-    private static IMapleData getXmlCache(String data_path) {
-        for (SimpleImmutableEntry<String, IMapleData> pair : xml_cache) {
+    private static MapleData getXmlCache(String data_path) {
+        for (SimpleImmutableEntry<String, MapleData> pair : xml_cache) {
             if (pair.getKey().equals(data_path)) {
                 return pair.getValue();
             }
@@ -148,10 +155,10 @@ public class WzXML {
         return null;
     }
 
-    public IMapleData getData(String data_path) {
+    public MapleData getData(String data_path) {
         String full_path = this.root_path + "/" + data_path;
         // data is already loaded.
-        IMapleData md_cache = getXmlCache(full_path);
+        MapleData md_cache = getXmlCache(full_path);
         if (md_cache != null) {
             //DebugLogger.XmlLog("getData : cached, " + path);
             return md_cache;
@@ -181,7 +188,7 @@ public class WzXML {
             return null;
         }
 
-        XMLDomMapleData domMapleData = new XMLDomMapleData(fis, imageDataDir.getParentFile());
+        XmlDomData domMapleData = new XmlDomData(fis, imageDataDir.getParentFile());
 
         try {
             fis.close();
@@ -192,15 +199,264 @@ public class WzXML {
         return domMapleData;
     }
 
-    public IMapleDataDirectoryEntry getRootDirectory() {
+    public MapleDataDirectoryEntry getRootDirectory() {
         return this.rootDirectory;
     }
 
-    public IMapleDataDirectoryEntry getSubDirectory(String path) {
+    public MapleDataDirectoryEntry getSubDirectory(String path) {
         return this.rootDirectory.getSubDirectory(path);
     }
 
-    public List<IMapleDataEntity> getSubDirectoryFiles(String path) {
+    public List<MapleDataEntity> getSubDirectoryFiles(String path) {
         return this.rootDirectory.getSubDirectory(path).getFiles();
+    }
+
+    public enum DataType {
+
+        NONE,
+        IMG_0x00,
+        SHORT,
+        INT,
+        FLOAT,
+        DOUBLE,
+        STRING,
+        EXTENDED,
+        PROPERTY,
+        CANVAS,
+        VECTOR,
+        CONVEX,
+        SOUND,
+        UOL,
+        UNKNOWN_TYPE,
+        UNKNOWN_EXTENDED_TYPE;
+    }
+
+    public static class Entry implements MapleDataEntity {
+
+        private String name;
+        private MapleDataEntity parent;
+
+        public Entry(String name, int size, int checksum, MapleDataEntity parent) {
+            this.name = name;
+            this.parent = parent;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public MapleDataEntity getParent() {
+            return parent;
+        }
+    }
+
+    public static class DirectoryEntry extends Entry implements MapleDataDirectoryEntry {
+
+        private List<MapleDataDirectoryEntry> subdirs = new ArrayList<>();
+        private List<MapleDataEntity> files = new ArrayList<>();
+        private Map<String, MapleDataEntity> entries = new HashMap<>();
+
+        public DirectoryEntry(String name, int size, int checksum, MapleDataEntity parent) {
+            super(name, size, checksum, parent);
+        }
+
+        public DirectoryEntry() {
+            super(null, 0, 0, null);
+        }
+
+        public void addDirectory(MapleDataDirectoryEntry dir) {
+            subdirs.add(dir);
+            entries.put(dir.getName(), dir);
+        }
+
+        public void addFile(MapleDataEntity fileEntry) {
+            files.add(fileEntry);
+            entries.put(fileEntry.getName(), fileEntry);
+        }
+
+        @Override
+        public List<MapleDataDirectoryEntry> getSubDirectories() {
+            return Collections.unmodifiableList(subdirs);
+        }
+
+        @Override
+        public MapleDataDirectoryEntry getSubDirectory(String path) {
+            for (MapleDataDirectoryEntry mde : this.subdirs) {
+                if (mde.getName().equals(path)) {
+                    return mde;
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        public List<MapleDataEntity> getFiles() {
+            return Collections.unmodifiableList(files);
+        }
+
+        @Override
+        public MapleDataEntity getEntry(String name) {
+            return entries.get(name);
+        }
+    }
+
+    public static class XmlDomData implements MapleData {
+
+        private Node node;
+        private File imageDataDir;
+
+        private XmlDomData(final Node node) {
+            this.node = node;
+        }
+
+        public XmlDomData(final FileInputStream fis, final File imageDataDir) {
+            try {
+                DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+                Document document = documentBuilder.parse(fis);
+                this.node = document.getFirstChild();
+
+            } catch (ParserConfigurationException | IOException e) {
+                throw new RuntimeException(e);
+            } catch (SAXException e) {
+                //throw new RuntimeException(e);
+            }
+            this.imageDataDir = imageDataDir;
+        }
+
+        @Override
+        public MapleData getChildByPath(final String path) {
+            final String segments[] = path.split("/");
+            if (segments[0].equals("..")) {
+                return ((MapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
+            }
+
+            Node myNode = node;
+            for (String segment : segments) {
+                NodeList childNodes = myNode.getChildNodes();
+                boolean foundChild = false;
+                for (int i = 0; i < childNodes.getLength(); i++) {
+                    try {
+                        final Node childNode = childNodes.item(i);
+                        if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segment)) {
+                            myNode = childNode;
+                            foundChild = true;
+                            break;
+                        }
+                    } catch (NullPointerException e) {
+                    }
+                }
+                if (!foundChild) {
+                    return null;
+                }
+            }
+            final XmlDomData ret = new XmlDomData(myNode);
+            ret.imageDataDir = new File(imageDataDir, getName() + "/" + path).getParentFile();
+            return ret;
+        }
+
+        @Override
+        public List<MapleData> getChildren() {
+            final List<MapleData> ret = new ArrayList<>();
+            final NodeList childNodes = node.getChildNodes();
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                final Node childNode = childNodes.item(i);
+                if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE) {
+                    final XmlDomData child = new XmlDomData(childNode);
+                    child.imageDataDir = new File(imageDataDir, getName());
+                    ret.add(child);
+                }
+            }
+            return ret;
+        }
+
+        @Override
+        public Object getData() {
+            final NamedNodeMap attributes = node.getAttributes();
+            final DataType type = getType();
+            switch (type) {
+                case DOUBLE: {
+                    return Double.valueOf(attributes.getNamedItem("value").getNodeValue());
+                }
+                case FLOAT: {
+                    return Float.valueOf(attributes.getNamedItem("value").getNodeValue());
+                }
+                case INT: {
+                    return Integer.valueOf(attributes.getNamedItem("value").getNodeValue());
+                }
+                case SHORT: {
+                    return Short.valueOf(attributes.getNamedItem("value").getNodeValue());
+                }
+                case STRING:
+                case UOL: {
+                    return attributes.getNamedItem("value").getNodeValue();
+                }
+                case VECTOR: {
+                    return new Point(Integer.parseInt(attributes.getNamedItem("x").getNodeValue()), Integer.parseInt(attributes.getNamedItem("y").getNodeValue()));
+                }
+                default: {
+                    break;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public final DataType getType() {
+            final String nodeName = node.getNodeName();
+            switch (nodeName) {
+                case "imgdir":
+                    return DataType.PROPERTY;
+                case "canvas":
+                    return DataType.CANVAS;
+                case "convex":
+                    return DataType.CONVEX;
+                case "sound":
+                    return DataType.SOUND;
+                case "uol":
+                    return DataType.UOL;
+                case "double":
+                    return DataType.DOUBLE;
+                case "float":
+                    return DataType.FLOAT;
+                case "int":
+                    return DataType.INT;
+                case "short":
+                    return DataType.SHORT;
+                case "string":
+                    return DataType.STRING;
+                case "vector":
+                    return DataType.VECTOR;
+                case "null":
+                    return DataType.IMG_0x00;
+                default:
+                    break;
+            }
+            return null;
+        }
+
+        @Override
+        public MapleDataEntity getParent() {
+            final Node parentNode = node.getParentNode();
+            if (parentNode.getNodeType() == Node.DOCUMENT_NODE) {
+                return null; // can't traverse outside the img file - TODO is this a problem?
+            }
+            final XmlDomData parentData = new XmlDomData(parentNode);
+            parentData.imageDataDir = imageDataDir.getParentFile();
+            return parentData;
+        }
+
+        @Override
+        public String getName() {
+            return node.getAttributes().getNamedItem("name").getNodeValue();
+        }
+
+        @Override
+        public Iterator<MapleData> iterator() {
+            return getChildren().iterator();
+        }
     }
 }

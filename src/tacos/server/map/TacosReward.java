@@ -28,7 +28,7 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
@@ -69,10 +69,10 @@ public class TacosReward {
         }
 
         list_reward = new ArrayList<>();
-        IMapleData mob_drop_table = ServerImg.SI.getReward().getChildByPath(String.format("m%07d", mob_id));
+        MapleData mob_drop_table = ServerImg.SI.getReward().getChildByPath(String.format("m%07d", mob_id));
         // found.
         if (mob_drop_table != null) {
-            for (IMapleData mob_drop : mob_drop_table.getChildren()) {
+            for (MapleData mob_drop : mob_drop_table.getChildren()) {
                 Reward reward = new Reward();
                 reward.money = WzDataTool.getIntPath("money", mob_drop, 0);
                 reward.item = WzDataTool.getIntPath("item", mob_drop, 0);

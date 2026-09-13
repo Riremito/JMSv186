@@ -27,9 +27,6 @@ import java.util.Map;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobAttackInfo;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
-import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataEntity;
 
 /**
  *
@@ -41,7 +38,7 @@ public class MobWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Mob" : "Mob.wz");
     }
 
-    public IMapleData getImg(int mob_id) {
+    public MapleData getImg(int mob_id) {
         String target_img_path = String.format("%07d.img", mob_id);
         return getData(target_img_path);
     }
@@ -58,14 +55,14 @@ public class MobWz extends WzXML {
         }
 
         MobAttackInfo ret = new MobAttackInfo();
-        IMapleData mobData = getImg(mob.getId());
+        MapleData mobData = getImg(mob.getId());
         if (mobData != null) {
-            IMapleData infoData = mobData.getChildByPath("info/link");
+            MapleData infoData = mobData.getChildByPath("info/link");
             if (infoData != null) {
                 int link_id = WzDataTool.getIntPath("info/link", mobData, 0);
                 mobData = getImg(link_id);
             }
-            IMapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
+            MapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
             if (attackData != null) {
                 ret.setDeadlyAttack(attackData.getChildByPath("deadlyAttack") != null);
                 ret.setMpBurn(WzDataTool.getIntPath("mpBurn", attackData, 0));
@@ -85,14 +82,14 @@ public class MobWz extends WzXML {
             return map_QuestCountGroup;
         }
         map_QuestCountGroup = new HashMap<>();
-        for (IMapleDataDirectoryEntry mapz : getRootDirectory().getSubDirectories()) {
+        for (MapleDataDirectoryEntry mapz : getRootDirectory().getSubDirectories()) {
             if (mapz.getName().equals("QuestCountGroup")) {
-                for (IMapleDataEntity entry : mapz.getFiles()) {
+                for (MapleDataEntity entry : mapz.getFiles()) {
                     final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
-                    IMapleData dat = getData("QuestCountGroup/" + entry.getName());
+                    MapleData dat = getData("QuestCountGroup/" + entry.getName());
                     if (dat != null && dat.getChildByPath("info") != null) {
                         List<Integer> z = new ArrayList<>();
-                        for (IMapleData da : dat.getChildByPath("info")) {
+                        for (MapleData da : dat.getChildByPath("info")) {
                             z.add(WzDataTool.getInt(da, 0));
                         }
                         map_QuestCountGroup.put(id, z);

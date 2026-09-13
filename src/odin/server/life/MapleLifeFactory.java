@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
@@ -72,11 +72,11 @@ public class MapleLifeFactory {
         MapleMonsterStats stats = monsterStats.get(mob_id);
 
         if (stats == null) {
-            IMapleData monsterData = WzXML.MOB.getImg(mob_id);
+            MapleData monsterData = WzXML.MOB.getImg(mob_id);
             if (monsterData == null) {
                 return null;
             }
-            IMapleData monsterInfoData = monsterData.getChildByPath("info");
+            MapleData monsterInfoData = monsterData.getChildByPath("info");
             stats = new MapleMonsterStats();
 
             stats.setHp(WzDataTool.getIntPath("maxHP", monsterInfoData, 0));
@@ -106,7 +106,7 @@ public class MapleLifeFactory {
             stats.setMagicDefense((short) WzDataTool.getIntPath("MDDamage", monsterInfoData, 0));
             stats.setEva((short) WzDataTool.getIntPath("eva", monsterInfoData, 0));
             final boolean hideHP = WzDataTool.getIntPath("HPgaugeHide", monsterInfoData, 0) > 0 || WzDataTool.getIntPath("hideHP", monsterInfoData, 0) > 0;
-            final IMapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
+            final MapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
             if (selfd != null) {
                 stats.setSelfDHP(WzDataTool.getIntPath("hp", selfd, 0));
                 stats.setSelfD((byte) WzDataTool.getIntPath("action", selfd, -1));
@@ -124,7 +124,7 @@ public class MapleLifeFactory {
                 }
             }
 
-            final IMapleData banishData = monsterInfoData.getChildByPath("ban");
+            final MapleData banishData = monsterInfoData.getChildByPath("ban");
             if (banishData != null) {
                 stats.setBanishInfo(new BanishInfo(
                         WzDataTool.getStringPath("banMsg", banishData, ""),
@@ -132,16 +132,16 @@ public class MapleLifeFactory {
                         WzDataTool.getStringPath("banMap/0/portal", banishData, "sp")));
             }
 
-            final IMapleData reviveInfo = monsterInfoData.getChildByPath("revive");
+            final MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
             if (reviveInfo != null) {
                 List<Integer> revives = new LinkedList<>();
-                for (IMapleData bdata : reviveInfo) {
+                for (MapleData bdata : reviveInfo) {
                     revives.add(WzDataTool.getInt(bdata));
                 }
                 stats.setRevives(revives);
             }
 
-            final IMapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
+            final MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
             if (monsterSkillData != null) {
                 int i = 0;
                 List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
@@ -160,7 +160,7 @@ public class MapleLifeFactory {
                 monsterData = WzXML.MOB.getImg(link_id);
             }
 
-            for (IMapleData idata : monsterData) {
+            for (MapleData idata : monsterData) {
                 if (idata.getName().equals("fly")) {
                     stats.setFly(true);
                     stats.setMobile(true);

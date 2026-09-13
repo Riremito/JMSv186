@@ -26,7 +26,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.config.Config;
 import tacos.packet.ClientPacket;
 
@@ -153,7 +153,7 @@ public class DebugLogger {
         return true;
     }
 
-    public static boolean XmlDataLog(IMapleData data, String text) {
+    public static boolean XmlDataLog(MapleData data, String text) {
         if (!DeveloperMode.DM_LOG_WZ.get()) {
             return false;
         }
@@ -161,10 +161,10 @@ public class DebugLogger {
 
         if (data != null) {
             data_path = data.getName();
-            IMapleData parent_data = (IMapleData) data.getParent();
+            MapleData parent_data = (MapleData) data.getParent();
             while (parent_data != null) {
                 data_path = parent_data.getName() + "/" + data_path;
-                parent_data = (IMapleData) parent_data.getParent();
+                parent_data = (MapleData) parent_data.getParent();
             }
         }
 

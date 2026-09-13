@@ -19,8 +19,7 @@
 package tacos.wz;
 
 import java.awt.Point;
-import odin.provider.IMapleData;
-import odin.provider.WzXML.MapleDataType;
+import tacos.wz.WzXML.DataType;
 import tacos.debug.DebugLogger;
 
 /**
@@ -30,38 +29,38 @@ import tacos.debug.DebugLogger;
 public class WzDataTool {
 
     // no default value.
-    public static int getInt(IMapleData data) {
+    public static int getInt(MapleData data) {
         return (Integer) data.getData();
     }
 
-    public static String getString(IMapleData data) {
+    public static String getString(MapleData data) {
         return (String) data.getData();
     }
 
     // with path.
-    public static int getIntPath(String path, IMapleData data, int def) {
+    public static int getIntPath(String path, MapleData data, int def) {
         return getInt(data.getChildByPath(path), def);
     }
 
-    public static Float getFloatPath(String path, IMapleData data, float def) {
+    public static Float getFloatPath(String path, MapleData data, float def) {
         return getFloat(data.getChildByPath(path), def);
     }
 
-    public static String getStringPath(String path, IMapleData data, String def) {
+    public static String getStringPath(String path, MapleData data, String def) {
         return getString(data.getChildByPath(path), def);
     }
 
     // PostBB Skill.wz
-    public static int getIntExpression(String path, IMapleData source, int def, int common_level) {
+    public static int getIntExpression(String path, MapleData source, int def, int common_level) {
         if (common_level == 0) {
             return getIntPath(path, source, def);
         }
-        IMapleData data = source.getChildByPath(path);
+        MapleData data = source.getChildByPath(path);
         if (data == null) {
             //DebugLogger.XmlDataLog(null, "getIntExpression");
             return def;
         }
-        if (data.getType() != MapleDataType.STRING) {
+        if (data.getType() != DataType.STRING) {
             return getIntPath(path, source, def);
         }
         // post bb
@@ -69,7 +68,7 @@ public class WzDataTool {
     }
 
     // get data.
-    public static int getInt(IMapleData data, int def) {
+    public static int getInt(MapleData data, int def) {
         if (data == null) {
             //DebugLogger.XmlDataLog(null, "getInt");
             return def;
@@ -107,12 +106,12 @@ public class WzDataTool {
     }
 
     // for Map.wz, 749050100.img, info/decHP, pinkbean cake map
-    public static long getLong(IMapleData data, long def) {
+    public static long getLong(MapleData data, long def) {
         if (data == null) {
             DebugLogger.XmlDataLog(null, "getLong");
             return def;
         }
-        if (data.getType() != MapleDataType.STRING) {
+        if (data.getType() != DataType.STRING) {
             return (long) getInt(data, (int) def);
         }
         String ret = (String) data.getData();
@@ -124,7 +123,7 @@ public class WzDataTool {
     }
 
     // for Map.wz, info/recovery
-    public static Float getFloat(IMapleData data, float def) {
+    public static Float getFloat(MapleData data, float def) {
         if (data == null) {
             DebugLogger.XmlDataLog(null, "getFloat");
             return def;
@@ -138,7 +137,7 @@ public class WzDataTool {
     }
 
     // for Item.wz, unitPrice star/bullet
-    public static Double getDouble(IMapleData data, double def) {
+    public static Double getDouble(MapleData data, double def) {
         if (data == null) {
             DebugLogger.XmlDataLog(null, "getDouble");
             return def;
@@ -151,7 +150,7 @@ public class WzDataTool {
         return ret;
     }
 
-    public static String getString(IMapleData data, String def) {
+    public static String getString(MapleData data, String def) {
         if (data == null) {
             //DebugLogger.XmlDataLog(null, "getString");
             return def;
@@ -165,7 +164,7 @@ public class WzDataTool {
     }
 
     // for Reactor.wz, lt, rb
-    public static Point getPoint(IMapleData data) {
+    public static Point getPoint(MapleData data) {
         if (data == null) {
             DebugLogger.XmlDataLog(null, "getPoint");
             return null;

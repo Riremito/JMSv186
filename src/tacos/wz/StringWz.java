@@ -22,7 +22,6 @@ import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
-import odin.provider.IMapleData;
 
 /**
  *
@@ -34,8 +33,8 @@ public class StringWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/String" : "String.wz");
     }
 
-    private IMapleData checkSubDirectory(IMapleData md, String dir_name) {
-        IMapleData sub_dir = md.getChildByPath(dir_name);
+    private MapleData checkSubDirectory(MapleData md, String dir_name) {
+        MapleData sub_dir = md.getChildByPath(dir_name);
         if (sub_dir != null) {
             DebugLogger.XmlLog("SubDir OK : " + dir_name);
             return sub_dir;
@@ -43,38 +42,38 @@ public class StringWz extends WzXML {
         return md;
     }
 
-    public IMapleData getMob() {
+    public MapleData getMob() {
         return getData("Mob.img");
     }
 
-    public IMapleData getNpc() {
+    public MapleData getNpc() {
         return getData("Npc.img");
     }
 
-    public IMapleData getMap() {
+    public MapleData getMap() {
         return getData("Map.img");
     }
 
-    public IMapleData getSkill() {
+    public MapleData getSkill() {
         return getData("Skill.img");
     }
 
-    private IMapleData img_Item = null; // JMS131
-    private IMapleData img_Cash = null;
-    private IMapleData img_Consume = null;
-    private IMapleData img_Eqp = null;
-    private IMapleData img_Etc = null;
-    private IMapleData img_Ins = null;
-    private IMapleData img_Pet = null;
+    private MapleData img_Item = null; // JMS131
+    private MapleData img_Cash = null;
+    private MapleData img_Consume = null;
+    private MapleData img_Eqp = null;
+    private MapleData img_Etc = null;
+    private MapleData img_Ins = null;
+    private MapleData img_Pet = null;
 
-    public IMapleData getItem() {
+    public MapleData getItem() {
         if (img_Item == null) {
             img_Item = getData("Item.img");
         }
         return img_Item;
     }
 
-    public IMapleData getCash() {
+    public MapleData getCash() {
         if (img_Cash == null) {
             if (getItem() == null) {
                 img_Cash = getData("Cash.img");
@@ -86,7 +85,7 @@ public class StringWz extends WzXML {
         return img_Cash;
     }
 
-    public IMapleData getConsume() {
+    public MapleData getConsume() {
         if (img_Consume == null) {
             if (getItem() == null) {
                 img_Consume = getData("Consume.img");
@@ -98,7 +97,7 @@ public class StringWz extends WzXML {
         return img_Consume;
     }
 
-    public IMapleData getEqp() {
+    public MapleData getEqp() {
         if (img_Eqp == null) {
             if (getItem() == null) {
                 img_Eqp = getData("Eqp.img");
@@ -110,7 +109,7 @@ public class StringWz extends WzXML {
         return img_Eqp;
     }
 
-    public IMapleData getEtc() {
+    public MapleData getEtc() {
         if (img_Etc == null) {
             if (getItem() == null) {
                 img_Etc = getData("Etc.img");
@@ -122,7 +121,7 @@ public class StringWz extends WzXML {
         return img_Etc;
     }
 
-    public IMapleData getIns() {
+    public MapleData getIns() {
         if (img_Ins == null) {
             if (getItem() == null) {
                 img_Ins = getData("Ins.img");
@@ -134,7 +133,7 @@ public class StringWz extends WzXML {
         return img_Ins;
     }
 
-    public IMapleData getPet() {
+    public MapleData getPet() {
         if (img_Pet == null) {
             // please do not use old PetDialog.img (Pet.img)
             if (getItem() == null) {
@@ -148,7 +147,7 @@ public class StringWz extends WzXML {
     }
 
     // MonsterBook
-    private IMapleData img_MonsterBook = null;
+    private MapleData img_MonsterBook = null;
     private List<DropMonsterBook> list_drop_monsterbook = null;
     private boolean bookAvailable = true;
 
@@ -162,7 +161,7 @@ public class StringWz extends WzXML {
         return bookAvailable;
     }
 
-    public IMapleData getMonsterBook() {
+    public MapleData getMonsterBook() {
         if (img_MonsterBook == null) {
             img_MonsterBook = getData("MonsterBook.img");
             if (img_MonsterBook == null) {
@@ -187,15 +186,15 @@ public class StringWz extends WzXML {
         DropMonsterBook dmb = new DropMonsterBook();
         dmb.mob_id = mob_id;
 
-        IMapleData md_book = getMonsterBook();
+        MapleData md_book = getMonsterBook();
         if (md_book != null) {
-            for (IMapleData md_mob : md_book.getChildren()) {
+            for (MapleData md_mob : md_book.getChildren()) {
                 if (Integer.parseInt(md_mob.getName()) == mob_id) {
-                    IMapleData md_reward = md_mob.getChildByPath("reward");
+                    MapleData md_reward = md_mob.getChildByPath("reward");
                     if (md_reward == null) {
                         break;
                     }
-                    for (IMapleData md_drop_item : md_reward.getChildren()) {
+                    for (MapleData md_drop_item : md_reward.getChildren()) {
                         int item_id = WzDataTool.getInt(md_drop_item);
                         if (!WzDataStorage.ITEM.check(item_id)) {
                             DebugLogger.ErrorLog("invalid monsterbook drop : " + item_id);

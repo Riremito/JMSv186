@@ -17,7 +17,7 @@ import tacos.config.ContentCustom;
 import tacos.config.ContentState;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
@@ -55,9 +55,9 @@ public class MapleItemInformationProvider {
         return instance;
     }
 
-    protected final IMapleData getStringData(final int itemId) {
+    protected final MapleData getStringData(final int itemId) {
         String cat = null;
-        IMapleData data;
+        MapleData data;
 
         if (itemId >= 5010000) {
             data = WzXML.STRING.getCash();
@@ -130,16 +130,16 @@ public class MapleItemInformationProvider {
         }
     }
 
-    protected final IMapleData getItemData(int id) {
+    protected final MapleData getItemData(int id) {
         //DebugLoadTime dlt = new DebugLoadTime("getItemData : " + id);
 
-        IMapleData md_character = WzXML.CHARACTER.getItemData(id);
+        MapleData md_character = WzXML.CHARACTER.getItemData(id);
         if (md_character != null) {
             //dlt.End();
             return md_character;
         }
 
-        IMapleData md_item = WzXML.ITEM.getItemData(id);
+        MapleData md_item = WzXML.ITEM.getItemData(id);
         if (md_item != null) {
             //dlt.End();
             return md_item;
@@ -158,9 +158,9 @@ public class MapleItemInformationProvider {
             return slotMaxCache.get(itemId);
         }
         short ret = 0;
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item != null) {
-            final IMapleData smEntry = item.getChildByPath("info/slotMax");
+            final MapleData smEntry = item.getChildByPath("info/slotMax");
             if (smEntry == null) {
                 if (GameConstants.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
                     ret = 1;
@@ -183,12 +183,12 @@ public class MapleItemInformationProvider {
         if (wholePriceCache.containsKey(itemId)) {
             return wholePriceCache.get(itemId);
         }
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item == null) {
             return -1;
         }
         int pEntry = 0;
-        final IMapleData pData = item.getChildByPath("info/price");
+        final MapleData pData = item.getChildByPath("info/price");
         if (pData == null) {
             return -1;
         }
@@ -202,12 +202,12 @@ public class MapleItemInformationProvider {
         if (priceCache.containsKey(itemId)) {
             return priceCache.get(itemId);
         }
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item == null) {
             return -1;
         }
         Double pEntry = null;
-        IMapleData pData = item.getChildByPath("info/unitPrice");
+        MapleData pData = item.getChildByPath("info/unitPrice");
         if (pData != null) {
             pEntry = WzDataTool.getDouble(pData, 1.0);
         } else {
@@ -232,11 +232,11 @@ public class MapleItemInformationProvider {
             return null;
         }
         final Map<String, Byte> ret = new LinkedHashMap<>();
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item == null) {
             return null;
         }
-        final IMapleData info = item.getChildByPath("info");
+        final MapleData info = item.getChildByPath("info");
         if (info == null) {
             return null;
         }
@@ -315,17 +315,17 @@ public class MapleItemInformationProvider {
             return equipIncsCache.get(itemId);
         }
         final Map<Integer, Map<String, Integer>> ret = new LinkedHashMap<>();
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item == null) {
             return null;
         }
-        final IMapleData info = item.getChildByPath("info/level/info");
+        final MapleData info = item.getChildByPath("info/level/info");
         if (info == null) {
             return null;
         }
-        for (IMapleData dat : info.getChildren()) {
+        for (MapleData dat : info.getChildren()) {
             Map<String, Integer> incs = new HashMap<>();
-            for (IMapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
+            for (MapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
                 if (data.getName().length() > 3) {
                     incs.put(data.getName().substring(3), WzDataTool.getIntPath(data.getName(), dat, 0));
                 }
@@ -341,19 +341,19 @@ public class MapleItemInformationProvider {
             return equipSkillsCache.get(itemId);
         }
         final Map<Integer, List<Integer>> ret = new LinkedHashMap<>();
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item == null) {
             return null;
         }
-        final IMapleData info = item.getChildByPath("info/level/case");
+        final MapleData info = item.getChildByPath("info/level/case");
         if (info == null) {
             return null;
         }
-        for (IMapleData dat : info.getChildren()) {
-            for (IMapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
+        for (MapleData dat : info.getChildren()) {
+            for (MapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
                 if (data.getName().length() == 1) { //the numbers all them are one digit. everything else isnt so we're lucky here..
                     List<Integer> adds = new ArrayList<>();
-                    for (IMapleData skil : data.getChildByPath("Skill").getChildren()) {
+                    for (MapleData skil : data.getChildByPath("Skill").getChildren()) {
                         adds.add(WzDataTool.getIntPath("id", skil, 0));
                     }
                     ret.put(Integer.valueOf(data.getName()), adds);
@@ -369,15 +369,15 @@ public class MapleItemInformationProvider {
             return equipStatsCache.get(itemId);
         }
         final Map<String, Integer> ret = new LinkedHashMap<>();
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item == null) {
             return null;
         }
-        final IMapleData info = item.getChildByPath("info");
+        final MapleData info = item.getChildByPath("info");
         if (info == null) {
             return null;
         }
-        for (final IMapleData data : info.getChildren()) {
+        for (final MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
                 ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
@@ -447,12 +447,12 @@ public class MapleItemInformationProvider {
             return scrollReqCache.get(itemId);
         }
         final List<Integer> ret = new ArrayList<>();
-        final IMapleData data = getItemData(itemId).getChildByPath("req");
+        final MapleData data = getItemData(itemId).getChildByPath("req");
 
         if (data == null) {
             return ret;
         }
-        for (final IMapleData req : data.getChildren()) {
+        for (final MapleData req : data.getChildren()) {
             ret.add(WzDataTool.getInt(req));
         }
         scrollReqCache.put(itemId, ret);
@@ -875,7 +875,7 @@ public class MapleItemInformationProvider {
     public MapleStatEffect getItemEffect(int itemId) {
         MapleStatEffect ret = itemEffects.get(itemId);
         if (ret == null) {
-            IMapleData item = getItemData(itemId);
+            MapleData item = getItemData(itemId);
             if (item == null) {
                 return null;
             }
@@ -892,13 +892,13 @@ public class MapleItemInformationProvider {
         if (!GameConstants.isSummonSack(itemId)) {
             return null;
         }
-        final IMapleData data = getItemData(itemId).getChildByPath("mob");
+        final MapleData data = getItemData(itemId).getChildByPath("mob");
         if (data == null) {
             return null;
         }
         final List<SimpleImmutableEntry<Integer, Integer>> mobPairs = new ArrayList<>();
 
-        for (final IMapleData child : data.getChildren()) {
+        for (final MapleData child : data.getChildren()) {
             mobPairs.add(new SimpleImmutableEntry<>(
                     WzDataTool.getIntPath("id", child, 0),
                     WzDataTool.getIntPath("prob", child, 0)));
@@ -914,7 +914,7 @@ public class MapleItemInformationProvider {
         if (monsterBookID.containsKey(id)) {
             return monsterBookID.get(id);
         }
-        IMapleData data = getItemData(id);
+        MapleData data = getItemData(id);
         int monsterid = WzDataTool.getIntPath("info/mob", data, 0);
 
         if (monsterid == 0) { // Hack.
@@ -932,7 +932,7 @@ public class MapleItemInformationProvider {
         if (nameCache.containsKey(itemId)) {
             return nameCache.get(itemId);
         }
-        final IMapleData strings = getStringData(itemId);
+        final MapleData strings = getStringData(itemId);
         if (strings == null) {
             return null;
         }
@@ -945,7 +945,7 @@ public class MapleItemInformationProvider {
         if (msgCache.containsKey(itemId)) {
             return msgCache.get(itemId);
         }
-        final IMapleData strings = getStringData(itemId);
+        final MapleData strings = getStringData(itemId);
         if (strings == null) {
             return null;
         }
@@ -971,7 +971,7 @@ public class MapleItemInformationProvider {
         if (consumeOnPickupCache.containsKey(itemId)) {
             return consumeOnPickupCache.get(itemId);
         }
-        final IMapleData data = getItemData(itemId);
+        final MapleData data = getItemData(itemId);
         byte consume = (byte) WzDataTool.getIntPath("spec/consumeOnPickup", data, 0);
         if (consume == 0) {
             consume = (byte) WzDataTool.getIntPath("specEx/consumeOnPickup", data, 0);
@@ -989,7 +989,7 @@ public class MapleItemInformationProvider {
         if (dropRestrictionCache.containsKey(itemId)) {
             return dropRestrictionCache.get(itemId);
         }
-        final IMapleData data = getItemData(itemId);
+        final MapleData data = getItemData(itemId);
 
         boolean trade = false;
         if (WzDataTool.getIntPath("info/tradeBlock", data, 0) == 1 || WzDataTool.getIntPath("info/quest", data, 0) == 1) {
@@ -1067,18 +1067,18 @@ public class MapleItemInformationProvider {
         if (RewardItem.containsKey(itemid)) {
             return RewardItem.get(itemid);
         }
-        final IMapleData data = getItemData(itemid);
+        final MapleData data = getItemData(itemid);
         if (data == null) {
             return null;
         }
-        final IMapleData rewards = data.getChildByPath("reward");
+        final MapleData rewards = data.getChildByPath("reward");
         if (rewards == null) {
             return null;
         }
         int totalprob = 0; // As there are some rewards with prob above 2000, we can't assume it's always 100
         List<StructRewardItem> all = new ArrayList<>();
 
-        for (final IMapleData reward : rewards) {
+        for (final MapleData reward : rewards) {
             StructRewardItem struct = new StructRewardItem();
 
             struct.itemid = WzDataTool.getIntPath("item", reward, 0);
@@ -1104,16 +1104,16 @@ public class MapleItemInformationProvider {
         if (!(itemId / 10000 == 228 || itemId / 10000 == 229 || itemId / 10000 == 562)) { // Skillbook and mastery book
             return null;
         }
-        final IMapleData item = getItemData(itemId);
+        final MapleData item = getItemData(itemId);
         if (item == null) {
             return null;
         }
-        final IMapleData info = item.getChildByPath("info");
+        final MapleData info = item.getChildByPath("info");
         if (info == null) {
             return null;
         }
         final Map<String, Integer> ret = new LinkedHashMap<>();
-        for (final IMapleData data : info.getChildren()) {
+        for (final MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
                 ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
@@ -1122,7 +1122,7 @@ public class MapleItemInformationProvider {
         ret.put("reqSkillLevel", WzDataTool.getIntPath("reqSkillLevel", info, 0));
         ret.put("success", WzDataTool.getIntPath("success", info, 0));
 
-        final IMapleData skill = info.getChildByPath("skill");
+        final MapleData skill = info.getChildByPath("skill");
 
         for (int i = 0; i < skill.getChildren().size(); i++) { // List of allowed skillIds
             ret.put("skillid" + i, WzDataTool.getIntPath(Integer.toString(i), skill, 0));
@@ -1138,12 +1138,12 @@ public class MapleItemInformationProvider {
         if (itemId / 10000 != 422 || getItemData(itemId) == null) {
             return null;
         }
-        final IMapleData itemD = getItemData(itemId).getChildByPath("info");
+        final MapleData itemD = getItemData(itemId).getChildByPath("info");
         if (itemD == null || itemD.getChildByPath("consumeItem") == null) {
             return null;
         }
         final List<Integer> consumeItems = new ArrayList<>();
-        for (IMapleData consume : itemD.getChildByPath("consumeItem")) {
+        for (MapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(WzDataTool.getInt(consume, 0));
         }
         final SimpleImmutableEntry<Integer, List<Integer>> questItem = new SimpleImmutableEntry<>(WzDataTool.getIntPath("questId", itemD, 0), consumeItems);

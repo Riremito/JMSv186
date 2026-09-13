@@ -36,7 +36,7 @@ import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.WzDataTool;
@@ -44,16 +44,16 @@ import tacos.wz.WzDataTool;
 public class MapleQuestAction {
 
     private MapleQuestActionType type;
-    private IMapleData data;
+    private MapleData data;
     private MapleQuest quest;
 
-    public MapleQuestAction(MapleQuestActionType type, IMapleData data, MapleQuest quest) {
+    public MapleQuestAction(MapleQuestActionType type, MapleData data, MapleQuest quest) {
         this.type = type;
         this.data = data;
         this.quest = quest;
     }
 
-    private static boolean canGetItem(IMapleData item, MapleCharacter client) {
+    private static boolean canGetItem(MapleData item, MapleCharacter client) {
         if (item.getChildByPath("gender") != null) {
             final int gender = WzDataTool.getInt(item.getChildByPath("gender"));
             if (gender != 2 && gender != client.getGender()) {
@@ -89,7 +89,7 @@ public class MapleQuestAction {
         if (type == MapleQuestActionType.item) {
             int retitem;
 
-            for (IMapleData iEntry : data.getChildren()) {
+            for (MapleData iEntry : data.getChildren()) {
                 retitem = WzDataTool.getInt(iEntry.getChildByPath("id"), -1);
                 if (retitem == item_id) {
                     if (!client.haveItem(retitem, 1, true, false)) {
@@ -115,8 +115,8 @@ public class MapleQuestAction {
             case item:
                 // first check for randomness in item selection
                 Map<Integer, Integer> props = new HashMap<>();
-                IMapleData prop;
-                for (IMapleData iEntry : data.getChildren()) {
+                MapleData prop;
+                for (MapleData iEntry : data.getChildren()) {
                     prop = iEntry.getChildByPath("prop");
                     if (prop != null && WzDataTool.getInt(prop) != -1 && canGetItem(iEntry, chr)) {
                         for (int i = 0; i < WzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
@@ -129,7 +129,7 @@ public class MapleQuestAction {
                 if (!props.isEmpty()) {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
-                for (IMapleData iEntry : data.getChildren()) {
+                for (MapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, chr)) {
                         continue;
                     }
@@ -190,20 +190,20 @@ public class MapleQuestAction {
                 chr.gainMeso(WzDataTool.getInt(data, 0), true, false, true);
                 break;
             case quest:
-                for (IMapleData qEntry : data) {
+                for (MapleData qEntry : data) {
                     chr.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(WzDataTool.getInt(qEntry.getChildByPath("id"))),
                             (byte) WzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             case skill:
                 //TODO needs gain/lost message?
-                for (IMapleData sEntry : data) {
+                for (MapleData sEntry : data) {
                     final int skillid = WzDataTool.getInt(sEntry.getChildByPath("id"));
                     int skillLevel = WzDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
                     int masterLevel = WzDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
                     final Skill skillObject = SkillFactory.getSkill(skillid);
 
-                    for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
+                    for (MapleData applicableJob : sEntry.getChildByPath("job")) {
                         if (skillObject.isBeginnerSkill() || chr.getJob() == WzDataTool.getInt(applicableJob)) {
                             chr.changeSkillLevel(skillObject,
                                     (byte) Math.max(skillLevel, chr.getSkillLevel(skillObject)),
@@ -244,11 +244,11 @@ public class MapleQuestAction {
                 if (status.getForfeited() > 0) {
                     break;
                 }
-                for (IMapleData iEntry : data.getChildren()) {
+                for (MapleData iEntry : data.getChildren()) {
                     final int sp_val = WzDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
                     if (iEntry.getChildByPath("job") != null) {
                         int finalJob = 0;
-                        for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
+                        for (MapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
                             final int job_val = WzDataTool.getInt(jEntry, 0);
                             if (chr.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;
@@ -276,8 +276,8 @@ public class MapleQuestAction {
                 // first check for randomness in item selection
                 final Map<Integer, Integer> props = new HashMap<>();
 
-                for (IMapleData iEntry : data.getChildren()) {
-                    final IMapleData prop = iEntry.getChildByPath("prop");
+                for (MapleData iEntry : data.getChildren()) {
+                    final MapleData prop = iEntry.getChildByPath("prop");
                     if (prop != null && WzDataTool.getInt(prop) != -1 && canGetItem(iEntry, chr)) {
                         for (int i = 0; i < WzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
                             props.put(props.size(), WzDataTool.getInt(iEntry.getChildByPath("id")));
@@ -291,7 +291,7 @@ public class MapleQuestAction {
                 }
                 byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
 
-                for (IMapleData iEntry : data.getChildren()) {
+                for (MapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, chr)) {
                         continue;
                     }
@@ -378,8 +378,8 @@ public class MapleQuestAction {
                 // first check for randomness in item selection
                 Map<Integer, Integer> props = new HashMap<>();
 
-                for (IMapleData iEntry : data.getChildren()) {
-                    final IMapleData prop = iEntry.getChildByPath("prop");
+                for (MapleData iEntry : data.getChildren()) {
+                    final MapleData prop = iEntry.getChildByPath("prop");
                     if (prop != null && WzDataTool.getInt(prop) != -1 && canGetItem(iEntry, chr)) {
                         for (int i = 0; i < WzDataTool.getInt(iEntry.getChildByPath("prop")); i++) {
                             props.put(props.size(), WzDataTool.getInt(iEntry.getChildByPath("id")));
@@ -391,7 +391,7 @@ public class MapleQuestAction {
                 if (!props.isEmpty()) {
                     selection = props.get(Randomizer.nextInt(props.size()));
                 }
-                for (IMapleData iEntry : data.getChildren()) {
+                for (MapleData iEntry : data.getChildren()) {
                     if (!canGetItem(iEntry, chr)) {
                         continue;
                     }
@@ -442,20 +442,20 @@ public class MapleQuestAction {
                 break;
             }
             case quest: {
-                for (IMapleData qEntry : data) {
+                for (MapleData qEntry : data) {
                     chr.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(WzDataTool.getInt(qEntry.getChildByPath("id"))),
                             (byte) WzDataTool.getInt(qEntry.getChildByPath("state"), 0)));
                 }
                 break;
             }
             case skill: {
-                for (IMapleData sEntry : data) {
+                for (MapleData sEntry : data) {
                     final int skillid = WzDataTool.getInt(sEntry.getChildByPath("id"));
                     int skillLevel = WzDataTool.getInt(sEntry.getChildByPath("skillLevel"), 0);
                     int masterLevel = WzDataTool.getInt(sEntry.getChildByPath("masterLevel"), 0);
                     final Skill skillObject = SkillFactory.getSkill(skillid);
 
-                    for (IMapleData applicableJob : sEntry.getChildByPath("job")) {
+                    for (MapleData applicableJob : sEntry.getChildByPath("job")) {
                         if (skillObject.isBeginnerSkill() || chr.getJob() == WzDataTool.getInt(applicableJob)) {
                             chr.changeSkillLevel(skillObject,
                                     (byte) Math.max(skillLevel, chr.getSkillLevel(skillObject)),
@@ -487,11 +487,11 @@ public class MapleQuestAction {
                 break;
             }
             case sp: {
-                for (IMapleData iEntry : data.getChildren()) {
+                for (MapleData iEntry : data.getChildren()) {
                     final int sp_val = WzDataTool.getInt(iEntry.getChildByPath("sp_value"), 0);
                     if (iEntry.getChildByPath("job") != null) {
                         int finalJob = 0;
-                        for (IMapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
+                        for (MapleData jEntry : iEntry.getChildByPath("job").getChildren()) {
                             final int job_val = WzDataTool.getInt(jEntry, 0);
                             if (chr.getJob() >= job_val && job_val > finalJob) {
                                 finalJob = job_val;

@@ -32,8 +32,6 @@ import java.util.Map;
 import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.provider.IMapleData;
-import odin.provider.IMapleDataEntity;
 
 /**
  *
@@ -72,13 +70,13 @@ public class SkillWz extends WzXML {
         map_SummonSkillInformation = new HashMap<>();
 
         int skillid;
-        IMapleData summon_data;
+        MapleData summon_data;
         SummonSkillEntry sse;
-        for (IMapleDataEntity topDir : getRootDirectory().getFiles()) { // Loop thru jobs
+        for (MapleDataEntity topDir : getRootDirectory().getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
-                for (IMapleData data : getData(topDir.getName())) { // Loop thru each jobs
+                for (MapleData data : getData(topDir.getName())) { // Loop thru each jobs
                     if (data.getName().equals("skill")) {
-                        for (IMapleData data2 : data) { // Loop thru each jobs
+                        for (MapleData data2 : data) { // Loop thru each jobs
                             if (data2 != null) {
                                 skillid = Integer.parseInt(data2.getName());
 
@@ -121,15 +119,15 @@ public class SkillWz extends WzXML {
     public ArrayList<Integer> getBasicSkill(MapleCharacter chr, String job_img_name) {
         ArrayList<Integer> list = new ArrayList<>();
 
-        IMapleData md_job = getData(job_img_name);
+        MapleData md_job = getData(job_img_name);
         if (md_job == null) {
             return list;
         }
-        IMapleData md_skill_dir = md_job.getChildByPath("skill");
+        MapleData md_skill_dir = md_job.getChildByPath("skill");
         if (md_skill_dir == null) {
             return list;
         }
-        for (IMapleData md_skill : md_skill_dir.getChildren()) {
+        for (MapleData md_skill : md_skill_dir.getChildren()) {
             int skill_id = Integer.parseInt(md_skill.getName());
             if (skill_id == 0) {
                 continue;
@@ -141,7 +139,7 @@ public class SkillWz extends WzXML {
     // Mob
     private Map<SimpleImmutableEntry<Integer, Integer>, MobSkill> map_mobSkills = null;
 
-    private IMapleData getMobSkill() {
+    private MapleData getMobSkill() {
         return getData("MobSkill.img");
     }
 
@@ -159,7 +157,7 @@ public class SkillWz extends WzXML {
             return null;
         }
 
-        final IMapleData skillData = getMobSkill().getChildByPath(skillId + "/level/" + level);
+        final MapleData skillData = getMobSkill().getChildByPath(skillId + "/level/" + level);
 
         if (skillData == null) {
             return null;
@@ -177,7 +175,7 @@ public class SkillWz extends WzXML {
             toSummon.add(WzDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
         }
 
-        final IMapleData ltd = skillData.getChildByPath("lt");
+        final MapleData ltd = skillData.getChildByPath("lt");
         Point lt = null;
         Point rb = null;
         if (ltd != null) {
@@ -213,7 +211,7 @@ public class SkillWz extends WzXML {
         }
 
         map_MCSkill = new HashMap<>();
-        for (IMapleData md : getData("MCSkill.img")) {
+        for (MapleData md : getData("MCSkill.img")) {
             // THMS meme
             int mobSkillID = 0;
             try {
@@ -234,7 +232,7 @@ public class SkillWz extends WzXML {
         }
 
         map_MCGuardian = new HashMap<>();
-        for (IMapleData md : getData("MCGuardian.img")) {
+        for (MapleData md : getData("MCGuardian.img")) {
             map_MCGuardian.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(WzDataTool.getIntPath("spendCP", md, 0), WzDataTool.getIntPath("mobSkillID", md, 0), WzDataTool.getIntPath("level", md, 0), true));
         }
         return map_MCGuardian;
