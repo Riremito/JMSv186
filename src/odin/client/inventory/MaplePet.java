@@ -21,14 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import java.awt.Point;
-import java.io.Serializable;
 
 import odin.server.MapleItemInformationProvider;
 import tacos.database.query.DQ_Pets;
 
-public class MaplePet implements Serializable {
-
-    private static final long serialVersionUID = 9179541993413738569L;
+public class MaplePet {
 
     private static int pet_level_limit = 30;
     private static int pet_closeness_limit = 30000;

@@ -20,9 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.status;
 
-import java.io.Serializable;
-
-public enum MonsterStatus implements Serializable {
+public enum MonsterStatus {
 
     NEUTRALISE(0x02), // first int on v.87 or else it won't work.
 

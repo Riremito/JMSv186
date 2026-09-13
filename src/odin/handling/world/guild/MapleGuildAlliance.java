@@ -30,13 +30,12 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.wrapper.ResWrapper;
 
-public class MapleGuildAlliance implements java.io.Serializable {
+public class MapleGuildAlliance {
 
     private static enum GAOp {
 
         NONE, DISBAND, NEWGUILD
     }
-    public static final long serialVersionUID = 24081985245L;
     public static final int CHANGE_CAPACITY_COST = 10000000;
     private final int[] guilds = new int[5];
     private int allianceid, leaderid, capacity; //make SQL for this auto-increment
@@ -99,15 +98,15 @@ public class MapleGuildAlliance implements java.io.Serializable {
         return DQ_Alliances.delete(allianceid);
     }
 
-    public  void broadcast( ServerPacket packet) {
+    public void broadcast(ServerPacket packet) {
         broadcast(packet, -1, GAOp.NONE, false);
     }
 
-    public  void broadcast( ServerPacket packet,  int exception) {
+    public void broadcast(ServerPacket packet, int exception) {
         broadcast(packet, exception, GAOp.NONE, false);
     }
 
-    public  void broadcast( ServerPacket packet,  int exceptionId,  GAOp op,  boolean expelled) {
+    public void broadcast(ServerPacket packet, int exceptionId, GAOp op, boolean expelled) {
         if (op == GAOp.DISBAND) {
             OdinWorld.Alliance.setOldAlliance(exceptionId, expelled, allianceid); //-1 = alliance gone, exceptionId = guild left/expelled
         } else if (op == GAOp.NEWGUILD) {

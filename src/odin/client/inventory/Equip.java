@@ -23,11 +23,10 @@ package odin.client.inventory;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.wz.ids.DWI_Random;
-import java.io.Serializable;
 import odin.server.Randomizer;
 import tacos.config.Config;
 
-public class Equip extends Item implements IEquip, Serializable {
+public class Equip extends Item implements IEquip {
 
     private int upgradeSlots = 0, level = 0, vicioushammer = 0, enhance = 0;
     private int str = 0, dex = 0, _int = 0, luk = 0, hp = 0, mp = 0, watk = 0, matk = 0, wdef = 0, mdef = 0, acc = 0, avoid = 0, hands = 0, speed = 0, jump = 0, hpR = 0, mpR = 0;

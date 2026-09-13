@@ -35,13 +35,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
 
-public class MapleFamily implements java.io.Serializable {
+public class MapleFamily {
 
     public static enum FCOp {
 
         NONE, DISBAND;
     }
-    public static final long serialVersionUID = 6322150443228168192L;
     //does not need to be in order :) CID -> MFC
     private final Map<Integer, MapleFamilyCharacter> members = new ConcurrentHashMap<Integer, MapleFamilyCharacter>();
     private String leadername = null, notice;

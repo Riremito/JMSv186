@@ -21,9 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import odin.constants.GameConstants;
-import java.io.Serializable;
 
-public class Item implements IItem, Serializable {
+public class Item implements IItem {
 
     private final int id;
     private short position;

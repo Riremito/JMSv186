@@ -3,7 +3,6 @@ package odin.server;
 import odin.client.ISkill;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,9 +36,8 @@ import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.WzDataTool;
 
-public class MapleStatEffect implements Serializable {
+public class MapleStatEffect {
 
-    private static final long serialVersionUID = 9179541993413738569L;
     private byte mastery, mhpR, mmpR, mobCount, attackCount, bulletCount;
     private short hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, mpCon, hpCon, damage, prop, ehp, emp, ewatk, ewdef, emdef;
     private double hpR, mpR;

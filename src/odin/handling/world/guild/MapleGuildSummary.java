@@ -20,9 +20,8 @@
  */
 package odin.handling.world.guild;
 
-public class MapleGuildSummary implements java.io.Serializable {
+public class MapleGuildSummary {
 
-    public static final long serialVersionUID = 3565477792085301248L;
     private String name;
     private short logoBG;
     private byte logoBGColor;
