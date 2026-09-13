@@ -22,7 +22,7 @@ package odin.server.maps;
 
 import java.awt.Point;
 
-public class MapleFoothold implements Comparable<MapleFoothold> {
+public class MapleFoothold {
 
     private Point p1;
     private Point p2;
@@ -66,26 +66,5 @@ public class MapleFoothold implements Comparable<MapleFoothold> {
 
     public void setPrev(short prev) {
         this.prev = prev;
-    }
-
-    @Override
-    public int compareTo(MapleFoothold o) {
-        MapleFoothold other = (MapleFoothold) o;
-        if (p2.y < other.getY1()) {
-            return -1;
-        } else if (p1.y > other.getY2()) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof MapleFoothold)) {
-            return false;
-        }
-        final MapleFoothold oth = (MapleFoothold) o;
-        return oth.getY1() == p1.y && oth.getY2() == p2.y && oth.getX1() == p1.x && oth.getX2() == p2.x && id == oth.getId();
     }
 }

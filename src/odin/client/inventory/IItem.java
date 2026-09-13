@@ -20,7 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-public interface IItem extends Comparable<IItem> {
+public interface IItem {
+
+    public static int comparePosition(IItem item1, IItem item2) {
+        if (Math.abs(item1.getPosition()) < Math.abs(item2.getPosition())) {
+            return -1;
+        }
+        if (Math.abs(item1.getPosition()) == Math.abs(item2.getPosition())) {
+            return 0;
+        }
+        return 1;
+    }
 
     byte getType();
 

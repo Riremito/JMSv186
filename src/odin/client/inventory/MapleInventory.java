@@ -109,7 +109,7 @@ public class MapleInventory implements Iterable<IItem> {
         // correct order - blargh, we could empty the map and reinsert in the correct order after each inventory
         // addition, or we could use an array/list, it's only 255 entries anyway...
         if (ret.size() > 1) {
-            Collections.sort(ret);
+            Collections.sort(ret, (item1, item2) -> IItem.comparePosition(item1, item2));
         }
         return ret;
     }

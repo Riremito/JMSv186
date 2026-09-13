@@ -70,6 +70,7 @@ public class Item implements IItem {
         return ret;
     }
 
+    @Override
     public final void setPosition(final short position) {
         this.position = position;
 
@@ -78,6 +79,7 @@ public class Item implements IItem {
         }
     }
 
+    @Override
     public void setQuantity(final short quantity) {
         this.quantity = quantity;
     }
@@ -119,10 +121,12 @@ public class Item implements IItem {
         return owner;
     }
 
+    @Override
     public final void setOwner(final String owner) {
         this.owner = owner;
     }
 
+    @Override
     public final void setFlag(final byte flag) {
         this.flag = flag;
     }
@@ -132,6 +136,7 @@ public class Item implements IItem {
         return expiration;
     }
 
+    @Override
     public final void setExpiration(final long expire) {
         this.expiration = expire;
     }
@@ -156,6 +161,7 @@ public class Item implements IItem {
         this.uniqueid = id;
     }
 
+    @Override
     public final MaplePet getPet() {
         return pet;
     }
@@ -172,31 +178,6 @@ public class Item implements IItem {
     @Override
     public String getGiftFrom() {
         return giftFrom;
-    }
-
-    @Override
-    public int compareTo(IItem other) {
-        if (Math.abs(position) < Math.abs(other.getPosition())) {
-            return -1;
-        } else if (Math.abs(position) == Math.abs(other.getPosition())) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof IItem)) {
-            return false;
-        }
-        final IItem ite = (IItem) obj;
-        return uniqueid == ite.getUniqueId() && id == ite.getItemId() && quantity == ite.getQuantity() && Math.abs(position) == Math.abs(ite.getPosition());
-    }
-
-    @Override
-    public String toString() {
-        return "Item: " + id + " quantity: " + quantity;
     }
 
     @Override

@@ -2391,7 +2391,7 @@ public class MapleCharacter extends TacosCharacter {
         for (IItem item : equippedC) {
             equipped.add((Item) item);
         }
-        Collections.sort(equipped);
+        Collections.sort(equipped, (item1, item2) -> IItem.comparePosition(item1, item2));
         List<MapleRing> crings = new ArrayList<>();
         List<MapleRing> frings = new ArrayList<>();
         MapleRing ring;

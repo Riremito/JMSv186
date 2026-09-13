@@ -519,7 +519,7 @@ public class RD_CharacterData {
             for (IItem item : equippedC) {
                 equipped.add((Item) item);
             }
-            Collections.sort(equipped);
+            Collections.sort(equipped, (item1, item2) -> IItem.comparePosition(item1, item2));
             // 装備済みアイテム
             for (Item item : equipped) {
                 if (item.getPosition() < 0 && item.getPosition() > -100) {

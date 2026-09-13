@@ -146,6 +146,16 @@ public class MapleFootholdTree {
         return null;
     }
 
+    private static int compareFH(MapleFoothold fh1, MapleFoothold fh2) {
+        if (fh1.getY2() < fh2.getY1()) {
+            return -1;
+        }
+        if (fh1.getY1() > fh2.getY2()) {
+            return 1;
+        }
+        return 0;
+    }
+
     public MapleFoothold findBelow(Point p) {
         List<MapleFoothold> relevants = getRelevants(p);
         List<MapleFoothold> xMatches = new LinkedList<>();
@@ -154,7 +164,7 @@ public class MapleFootholdTree {
                 xMatches.add(fh);
             }
         }
-        Collections.sort(xMatches);
+        Collections.sort(xMatches, (fh1, fh2) -> compareFH(fh1, fh2));
         for (MapleFoothold fh : xMatches) {
             if (!fh.isWall() && fh.getY1() != fh.getY2()) {
                 int calcY;
