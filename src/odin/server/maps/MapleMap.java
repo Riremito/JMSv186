@@ -37,7 +37,6 @@ import tacos.packet.response.ResCDropPool.EnterType;
 import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
-import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
@@ -414,7 +413,7 @@ public final class MapleMap extends TacosMap {
 
             @Override
             public void run() {
-                broadcastMessage(ResWrapper.removeMapEffect());
+                broadcastMessage(ResCField.BlowWeather(null, 0, false));
                 broadcastMessage(ResCField.BlowWeather(msg, itemId, false));
                 //dont remove mapeffect.
             }

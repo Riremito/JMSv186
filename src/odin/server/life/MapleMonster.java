@@ -47,7 +47,9 @@ import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.odin.OdinEventInstanceManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -564,7 +566,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
 
     public final void resetShammos(TacosClient client) {
         map.killAllMonsters(true);
-        map.broadcastMessage(ResWrapper.BroadCastMsgEvent("A player has moved too far from Shammos. Shammos is going back to the start."));
+        map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
         for (MapleCharacter chr : map.getCharacters()) {
             chr.changeMap(chr.getMap(), chr.getMap().getPortal(0));
         }

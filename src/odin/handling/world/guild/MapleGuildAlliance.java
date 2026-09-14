@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 
 public class MapleGuildAlliance {
 
@@ -149,7 +150,7 @@ public class MapleGuildAlliance {
     public void setNotice(String newNotice) {
         this.notice = newNotice;
         broadcast(ResCWvsContext.getAllianceUpdate(this));
-        broadcast(ResWrapper.BroadCastMsgEvent("Alliance Notice : " + newNotice));
+        broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Alliance Notice : " + newNotice).build()));
         saveToDb();
     }
 
@@ -254,7 +255,7 @@ public class MapleGuildAlliance {
         guilds[g] = guilds[0];
         guilds[0] = oldGuild;
         if (leaderName != null) {
-            broadcast(ResWrapper.BroadCastMsgEvent(leaderName + " has become the leader of the alliance."));
+            broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(leaderName + " has become the leader of the alliance.").build()));
         }
         broadcast(ResCWvsContext.changeAllianceLeader(allianceid, leaderid, c));
         broadcast(ResCWvsContext.updateAllianceLeader(allianceid, leaderid, c));

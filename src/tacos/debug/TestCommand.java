@@ -42,7 +42,8 @@ import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosChannel;
 import tacos.wz.WzXML;
 
@@ -165,11 +166,11 @@ public class TestCommand {
                 TacosChannel srv_channel = chr.getChannelServer();
                 if (!dcmd.check(1)) {
                     srv_channel.setServerMessage("");
-                    srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
+                    srv_channel.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(srv_channel.getServerMessage()).build()));
                     return true;
                 }
                 srv_channel.setServerMessage(dcmd.get(1));
-                srv_channel.broadcastPacket(ResWrapper.BroadCastMsgSlide(srv_channel.getServerMessage()));
+                srv_channel.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(srv_channel.getServerMessage()).build()));
                 return true;
             }
             case "/repair": {

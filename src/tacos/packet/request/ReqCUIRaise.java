@@ -32,7 +32,10 @@ import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsQuestRecordMessage;
+import tacos.packet.response.builder.PB_Message;
 
 /**
  *
@@ -93,7 +96,7 @@ public class ReqCUIRaise {
             return false;
         }
 
-        chr.SendPacket(ResWrapper.updateQuest(quest_status));
+        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest_status.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest_status.getStatus())).str(quest_status.getCustomData() != null ? quest_status.getCustomData() : "").build()));
         chr.DebugMsg("OnRaiseRefesh : nQuestID = " + uQuestID);
         return true;
     }

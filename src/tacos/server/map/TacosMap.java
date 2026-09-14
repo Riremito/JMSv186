@@ -86,7 +86,10 @@ import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCUser_SkillPet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
+import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 
@@ -268,7 +271,7 @@ public class TacosMap extends TacosMapData {
     public void setChangeBGM(String wz_path) {
         this.fe_change_bgm = wz_path;
         if (!getChangeBGM().equals("")) {
-            broadcastMessage(ResWrapper.musicChange(getChangeBGM()));
+            broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, getChangeBGM())));
         }
     }
 
@@ -278,7 +281,7 @@ public class TacosMap extends TacosMapData {
 
     public void sendChangeBGM(TacosCharacter chr) {
         if (!getChangeBGM().equals("")) {
-            chr.SendPacket(ResWrapper.musicChange(getChangeBGM()));
+            chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, getChangeBGM())));
         }
     }
 
@@ -371,7 +374,7 @@ public class TacosMap extends TacosMapData {
                 if (boss_id == TacosConstants.MOB_ID_HORNTAIL) {
                     // 大変な挑戦の終わりにホンテールを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS164)
                     // 大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS302)
-                    world.broadcastPacket(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！"));
+                    world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").build()));
                     broadcastMessage(ResCField.Clock(exit_timer));
                     broadcastMessage(ResCField.HontaleTimer(true, 5));
                     return true;
@@ -382,7 +385,7 @@ public class TacosMap extends TacosMapData {
             case TacosConstants.MAP_ID_PINKBEAN: {
                 if (boss_id == TacosConstants.MOB_ID_PINKBEAN) {
                     // 不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！ (JMS164-302)
-                    world.broadcastPacket(ResWrapper.BroadCastMsgNotice("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！"));
+                    world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").build()));
                     broadcastMessage(ResCField.Clock(exit_timer));
                     return true;
                 }
@@ -399,7 +402,7 @@ public class TacosMap extends TacosMapData {
             }
             case TacosConstants.MAP_ID_CHAOS_HORNTAIL: {
                 if (boss_id == TacosConstants.MOB_ID_CHAOS_HORNTAIL) {
-                    world.broadcastPacket(ResWrapper.BroadCastMsgNotice("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！"));
+                    world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").build()));
                     broadcastMessage(ResCField.Clock(exit_timer));
                     broadcastMessage(ResCField.HontaleTimer(true, 5));
                     return true;

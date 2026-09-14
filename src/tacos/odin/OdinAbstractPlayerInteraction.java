@@ -58,7 +58,10 @@ import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.response.builder.PB_Message;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.response.struct.InvOp;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
@@ -302,7 +305,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void showQuestMsg(final String msg) {
-        client.SendPacket(ResWrapper.showQuestMsg(msg));
+        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_SystemMessage, PB_Message.builder().str(msg).build()));
     }
 
     public final void forceStartQuest(final int id, final String data) {
@@ -399,7 +402,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void Gashapon(final int id, final short quantity) {
         Item item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
-            this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info));
+            this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_GACHAPONANNOUNCE, PB_BroadcastMsg.builder().chr(client.getPlayer()).message("をガシャポンで手に入れました。おめでとうございます！").item(item_info).build()));
         }
     }
 
@@ -468,31 +471,31 @@ public abstract class OdinAbstractPlayerInteraction {
 
     // npc/9201006.js
     public final void worldMessage(final int type, final String message) {
-        this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgEvent(message));
+        this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void mapMessage(final String message) {
-        client.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(message));
+        client.getPlayer().getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void guildMessage(final String message) {
-        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsgEvent(message));
+        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void playerMessage(final int type, final String message) {
         DebugLogger.DebugLog("playerMessage is called.");
-        client.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
+        client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void mapMessage(final int type, final String message) {
         DebugLogger.DebugLog("mapMessage is called.");
-        client.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsg_SN(type, message));
+        client.getPlayer().getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void guildMessage(final int type, final String message) {
         DebugLogger.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
-            OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsg_SN(type, message));
+            OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
         }
     }
 
@@ -729,7 +732,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void useItem(final int id) {
         MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(client.getPlayer());
-        client.SendPacket(ResWrapper.getStatusMsg(id));
+        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(id).build()));
     }
 
     public void cancelItem(int id) {
@@ -807,7 +810,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void dojo_getUp() {
-        client.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
+        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) 1207).str("pt=1;min=4;belt=1;tuto=1").build())); //todo
         client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
         client.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
     }
@@ -1035,7 +1038,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void playerMessage(String message) {
-        client.SendPacket(ResWrapper.BroadCastMsgEvent(message));
+        client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public OdinEventManager getEventManager(String event) {

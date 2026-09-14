@@ -32,7 +32,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsDropPickUpMessage;
+import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
 import odin.server.MapleInventoryManipulator;
@@ -656,7 +658,7 @@ public class PlayerStats {
             if (eqq.getDurability() == 0) { //> 0 went to negative
                 if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                     chr.updateInv();
-                    chr.SendPacket(ResWrapper.getShowInventoryFull());
+                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                     return false;
                 }
                 durabilityHandling.remove(eqq);

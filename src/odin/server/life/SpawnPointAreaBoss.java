@@ -23,7 +23,9 @@ package odin.server.life;
 import tacos.config.ContentCustom;
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicBoolean;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
 import tacos.server.map.TacosMap;
 
@@ -105,9 +107,9 @@ public class SpawnPointAreaBoss extends Spawns {
         map.spawnMonster(mob, -2);
 
         if (msg != null) {
-            map.broadcastMessage(ResWrapper.BroadCastMsgNotice(msg));
+            map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(msg).build()));
             // TODO : replace to DebugMsg
-            map.broadcastMessage(ResWrapper.BroadCastMsgNotice("Master Monster = " + monster.getId() + ", MapID = " + map.getId()));
+            map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("Master Monster = " + monster.getId() + ", MapID = " + map.getId()).build()));
         }
         return mob;
     }

@@ -40,7 +40,13 @@ import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCFuncKeyMappedMan;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsQuestRecordMessage;
+import tacos.packet.response.builder.PB_Message;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
+import tacos.packet.ops.OpsFriend;
+import tacos.packet.response.builder.PB_Friend;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
 import tacos.config.Config;
@@ -296,13 +302,19 @@ public class ReqCClientSocket {
                 // quest
                 for (MapleQuestStatus status : chr.getStartedQuests()) {
                     if (status.hasMobKills()) {
-                        chr.SendPacket(ResWrapper.updateQuestMobKills(status));
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            for (int kills : status.getMobKills().values()) {
+                                sb.append(String.format("%03d", kills));
+                            }
+                            chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) status.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(sb.toString()).build()));
+                        }
                     }
                 }
                 // group
                 chr.updatePartyMemberHP();
                 // friend
-                chr.SendPacket(ResWrapper.updateBuddylist(chr));
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_LoadFriend_Done, PB_Friend.builder().chr(chr).build()));
                 // guild
                 if (0 < chr.getGuildId()) {
                     chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
@@ -333,7 +345,7 @@ public class ReqCClientSocket {
                     chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
                 }
                 // 上部スライドメッセージ
-                chr.SendPacket(ResWrapper.BroadCastMsgSlide(chr.getChannelServer().getServerMessage()));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(chr.getChannelServer().getServerMessage()).build()));
                 // [other players]
                 // your pet
                 // [entering map]

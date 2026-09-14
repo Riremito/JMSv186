@@ -29,7 +29,9 @@ import tacos.packet.ops.arg.ArgFieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -324,7 +326,7 @@ public class MapScriptMethods {
                 break;
             }
             case boss_Ravana: { //event handles this so nothing for now until i find out something to do with it
-                client.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent("Ravana has appeared!"));
+                client.getPlayer().getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
                 break;
             }
             case killing_BonusSetting: { //spawns monsters according to mapid
@@ -335,8 +337,8 @@ public class MapScriptMethods {
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
                 client.getPlayer().getMap().resetFully();
-                client.SendPacket(ResWrapper.showEffect("killing/bonus/bonus"));
-                client.SendPacket(ResWrapper.showEffect("killing/bonus/stage"));
+                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/bonus/bonus")));
+                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/bonus/stage")));
                 Point pos1 = null, pos2 = null, pos3 = null;
                 int spawnPer = 0;
                 int mobId = 0;
@@ -448,7 +450,7 @@ public class MapScriptMethods {
                 break;
             }
             case shammos_Enter: { //nothing to go on inside the map
-                client.SendPacket(ResWrapper.sendPyramidEnergy("shammos_LastStage", String.valueOf((client.getPlayer().getMapId() % 1000) / 100)));
+                client.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((client.getPlayer().getMapId() % 1000) / 100)));
                 if (client.getPlayer().getMapId() == 921120500) {
                     TacosScriptNPC.getInstance().dispose(client);
                     TacosScriptQuest.getInstance().dispose(client);
@@ -460,13 +462,13 @@ public class MapScriptMethods {
                 break;
             }
             case PRaid_W_Enter: {
-                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_expPenalty", "0"));
-                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_ElapssedTimeAtField", "0"));
-                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Point", "-1"));
-                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Bonus", "-1"));
-                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Total", "-1"));
-                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_Team", ""));
-                client.SendPacket(ResWrapper.sendPyramidEnergy("PRaid_IsRevive", "0"));
+                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_expPenalty", "0"));
+                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_ElapssedTimeAtField", "0"));
+                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Point", "-1"));
+                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Bonus", "-1"));
+                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Total", "-1"));
+                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Team", ""));
+                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_IsRevive", "0"));
                 client.getPlayer().writePoint("PRaid_Point", "-1");
                 client.getPlayer().writeStatus("Red_Stage", "1");
                 client.getPlayer().writeStatus("Blue_Stage", "1");
@@ -590,7 +592,7 @@ public class MapScriptMethods {
             case go1010200:
             case go1010300:
             case go1010400: {
-                client.SendPacket(ResWrapper.MapNameDisplay(client.getPlayer().getMapId()));
+                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "maplemap/enter/" + client.getPlayer().getMapId())));
                 break;
             }
             case goArcher: {
@@ -690,7 +692,7 @@ public class MapScriptMethods {
                 break;
             }
             case Massacre_result: { //clear, give exp, etc.
-                client.SendPacket(ResWrapper.showEffect("killing/fail"));
+                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/fail")));
                 break;
             }
             default: {

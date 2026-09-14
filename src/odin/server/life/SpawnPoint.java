@@ -22,7 +22,9 @@ package odin.server.life;
 
 import java.awt.Point;
 import java.util.concurrent.atomic.AtomicInteger;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.maps.MapleReactor;
@@ -129,10 +131,10 @@ public class SpawnPoint extends Spawns {
             }
         }
         if (msg != null) {
-            map.broadcastMessage(ResWrapper.BroadCastMsgNotice(msg));
+            map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(msg).build()));
             if (mob.getStats().isBoss()) {
                 // TODO : replace to DebugMsg
-                map.broadcastMessage(ResWrapper.BroadCastMsgNotice("Normal Boss Mob = " + monster.getId() + ", MapID = " + map.getId()));
+                map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("Normal Boss Mob = " + monster.getId() + ", MapID = " + map.getId()).build()));
             }
         }
         return mob;

@@ -47,12 +47,15 @@ import java.util.Collection;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
-import tacos.packet.ops.arg.ArgBroadcastMsg;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsEntrustedShop;
 import tacos.packet.ops.OpsMapTransfer;
-import tacos.packet.ops.arg.ArgFriend;
-import tacos.packet.ops.arg.ArgMessage;
+import tacos.packet.ops.OpsFriend;
+import tacos.packet.response.builder.PB_Friend;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.response.data.RD_CWvsContext;
 import tacos.packet.response.data.RD_CharacterStat;
@@ -408,23 +411,23 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMessage
-    public static ServerPacket Message(ArgMessage ma) {
+    public static ServerPacket Message(OpsMessage mt, PB_Message pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Message);
-        sp.Encode1(ma.mt.get());
-        switch (ma.mt) {
+        sp.Encode1(mt.get());
+        switch (mt) {
             case MS_DropPickUpMessage: {
-                sp.Encode1(ma.dt.get());
-                switch (ma.dt) {
+                sp.Encode1(pb.dt.get());
+                switch (pb.dt) {
                     case PICKUP_ITEM: {
-                        sp.Encode4(ma.ItemID);
-                        sp.Encode4(ma.Inc_ItemCount);
+                        sp.Encode4(pb.ItemID);
+                        sp.Encode4(pb.Inc_ItemCount);
                         break;
                     }
                     case PICKUP_MESO: {
                         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
                             sp.Encode1(0);
                         }
-                        sp.Encode4(ma.Inc_Meso);
+                        sp.Encode4(pb.Inc_Meso);
                         if (Config.LessOrEqual(Region.JMS, 131)) {
                             sp.Encode2(0); // Internet cafe bonus
                         } else {
@@ -433,7 +436,7 @@ public class ResCWvsContext {
                         break;
                     }
                     case PICKUP_MONSTER_CARD: {
-                        sp.Encode4(ma.ItemID);
+                        sp.Encode4(pb.ItemID);
                         break;
                     }
                     case PICKUP_INVENTORY_FULL:
@@ -444,7 +447,7 @@ public class ResCWvsContext {
                         break;
                     }
                     default: {
-                        DebugLogger.ErrorLog("Unknown DropPickUp Type" + ma.dt.get());
+                        DebugLogger.ErrorLog("Unknown DropPickUp Type" + pb.dt.get());
                         break;
                     }
                 }
@@ -452,15 +455,15 @@ public class ResCWvsContext {
             }
             // updateQuest, updateQuestMobKills
             case MS_QuestRecordMessage: {
-                sp.Encode2(ma.QuestID);
-                sp.Encode1(ma.qt.get());
-                switch (ma.qt) {
+                sp.Encode2(pb.QuestID);
+                sp.Encode1(pb.qt.get());
+                switch (pb.qt) {
                     case QUEST_START: {
                         sp.Encode1(0); // 0 or not
                         break;
                     }
                     case QUEST_UPDATE: {
-                        sp.EncodeStr(ma.str);
+                        sp.EncodeStr(pb.str);
                         break;
                     }
                     case QUEST_COMPLETE: {
@@ -468,7 +471,7 @@ public class ResCWvsContext {
                         break;
                     }
                     default: {
-                        DebugLogger.ErrorLog("Unknown QuestRecord Type" + ma.dt.get());
+                        DebugLogger.ErrorLog("Unknown QuestRecord Type" + pb.dt.get());
                         break;
                     }
                 }
@@ -476,38 +479,38 @@ public class ResCWvsContext {
             }
             // itemExpired
             case MS_CashItemExpireMessage: {
-                sp.Encode4(ma.ItemID);
+                sp.Encode4(pb.ItemID);
                 break;
             }
             case MS_IncEXPMessage: {
-                sp.Encode1(ma.Inc_EXP_TextColor);
-                sp.Encode4(ma.Inc_EXP);
-                sp.Encode1(ma.InChat); // bOnQuest
+                sp.Encode1(pb.Inc_EXP_TextColor);
+                sp.Encode4(pb.Inc_EXP);
+                sp.Encode1(pb.InChat); // bOnQuest
                 sp.Encode4(0);
-                sp.Encode1(ma.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
+                sp.Encode1(pb.Inc_EXP_MobEventBonusPercentage); // nMobEventBonusPercentage
                 sp.Encode1(0);
                 if (Config.Equal(Region.THMS, 87)) {
-                    sp.Encode4(ma.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
+                    sp.Encode4(pb.Inc_EXP_WeddingBonus); // Wedding Bonus EXP(+%d)
                     sp.Encode4(0); // Party Ring Bonus EXP(+%d)
                     sp.Encode4(0); // EXP Bonus Internet Cafe(+ %d)
                     sp.Encode4(0); // Rainbow Week Bonus EXP(+%d)
                 } else if (Config.GreaterOrEqual(Region.GMS, 111)) {
                     sp.Encode4(0);
                 } else {
-                    sp.Encode4(ma.Inc_EXP_WeddingBonus); // 結婚ボーナス経験値
+                    sp.Encode4(pb.Inc_EXP_WeddingBonus); // 結婚ボーナス経験値
                     sp.Encode4(0); // グループリングボーナスEXP (?)
                 }
-                if (0 < ma.Inc_EXP_MobEventBonusPercentage) {
-                    sp.Encode1(ma.Inc_EXP_PlayTimeHour);
+                if (0 < pb.Inc_EXP_MobEventBonusPercentage) {
+                    sp.Encode1(pb.Inc_EXP_PlayTimeHour);
                 }
-                if (ma.InChat != 0) {
+                if (pb.InChat != 0) {
                     sp.Encode1(0);
                 }
                 sp.Encode1(0); // nPartyBonusEventRate
-                sp.Encode4(ma.Inc_EXP_PartyBonus); // グループボーナス経験値
-                sp.Encode4(ma.Inc_EXP_EquipmentBonus); // アイテム装着ボーナス経験値
+                sp.Encode4(pb.Inc_EXP_PartyBonus); // グループボーナス経験値
+                sp.Encode4(pb.Inc_EXP_EquipmentBonus); // アイテム装着ボーナス経験値
                 sp.Encode4(0); // not used
-                sp.Encode4(ma.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
+                sp.Encode4(pb.Inc_EXP_RainbowWeekBonus); // レインボーウィークボーナス経験値
 
                 if (Config.Equal(Region.GMS, 95)) {
                     sp.Encode4(0);
@@ -525,7 +528,7 @@ public class ResCWvsContext {
                     sp.Encode4(0);
                     sp.Encode4(0);
                     sp.Encode4(0);
-                    if (ma.InChat != 0) {
+                    if (pb.InChat != 0) {
                         sp.Encode4(0);
                     }
                     break;
@@ -547,18 +550,18 @@ public class ResCWvsContext {
             }
             // getSPMsg
             case MS_IncSPMessage: {
-                sp.Encode2(ma.JobID);
-                sp.Encode1(ma.Inc_SP);
+                sp.Encode2(pb.JobID);
+                sp.Encode1(pb.Inc_SP);
                 break;
             }
             // getShowFameGain
             case MS_IncPOPMessage: {
-                sp.Encode4(ma.Inc_Fame);
+                sp.Encode4(pb.Inc_Fame);
                 break;
             }
             // showMesoGain
             case MS_IncMoneyMessage: {
-                sp.Encode4(ma.Inc_Meso);
+                sp.Encode4(pb.Inc_Meso);
                 if (Config.GreaterOrEqual(Region.JMS, 302)) {
                     sp.Encode4(-1); // 別の数値だとメッセージ非表示
                 }
@@ -566,12 +569,12 @@ public class ResCWvsContext {
             }
             // getGPMsg
             case MS_IncGPMessage: {
-                sp.Encode4(ma.Inc_GP);
+                sp.Encode4(pb.Inc_GP);
                 break;
             }
             // getStatusMsg
             case MS_GiveBuffMessage: {
-                sp.Encode4(ma.ItemID);
+                sp.Encode4(pb.ItemID);
                 break;
             }
             case MS_GeneralItemExpireMessage: {
@@ -579,13 +582,13 @@ public class ResCWvsContext {
             }
             // showQuestMsg
             case MS_SystemMessage: {
-                sp.EncodeStr(ma.str);
+                sp.EncodeStr(pb.str);
                 break;
             }
             // updateInfoQuest
             case MS_QuestRecordExMessage: {
-                sp.Encode2(ma.QuestID);
-                sp.EncodeStr(ma.str);
+                sp.Encode2(pb.QuestID);
+                sp.EncodeStr(pb.str);
                 break;
             }
             case MS_ItemProtectExpireMessage: {
@@ -599,7 +602,7 @@ public class ResCWvsContext {
             }
             // updateBeansMSG, GainTamaMessage
             case MS_JMS_Pachinko: {
-                sp.Encode4(ma.Inc_Tama);
+                sp.Encode4(pb.Inc_Tama);
                 break;
             }
             default: {
@@ -1186,30 +1189,30 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnFriendResult
-    public static ServerPacket FriendResult(ArgFriend frs) {
+    public static ServerPacket FriendResult(OpsFriend flag, PB_Friend pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FriendResult);
-        sp.Encode1(frs.flag.get());
-        switch (frs.flag) {
+        sp.Encode1(flag.get());
+        switch (flag) {
             case FriendRes_LoadFriend_Done:
             case FriendRes_SetFriend_Done:
             case FriendRes_DeleteFriend_Done: {
-                sp.EncodeBuffer(RD_CWvsContext.CFriend_Reset(frs.chr));
+                sp.EncodeBuffer(RD_CWvsContext.CFriend_Reset(pb.chr));
                 break;
             }
             case FriendRes_NotifyChange_FriendInfo: {
                 break;
             }
             case FriendRes_Invite: {
-                sp.Encode4(frs.friend_id); // dwFriendID
-                sp.EncodeStr(frs.friend_name);
-                sp.Encode4(frs.friend_level); // nLevel
-                sp.Encode4(frs.friend_job); // nJobCode
+                sp.Encode4(pb.friend_id); // dwFriendID
+                sp.EncodeStr(pb.friend_name);
+                sp.Encode4(pb.friend_level); // nLevel
+                sp.Encode4(pb.friend_job); // nJobCode
                 // CWvsContext::CFriend::Insert, 39 bytes
-                sp.Encode4(frs.friend_id);
-                sp.EncodeBuffer(frs.friend_name, 13);
+                sp.Encode4(pb.friend_id);
+                sp.EncodeBuffer(pb.friend_name, 13);
                 sp.Encode1(0);
-                sp.Encode4(frs.friend_channel == -1 ? -1 : frs.friend_channel - 1); // please add channel
-                sp.EncodeBuffer(frs.friend_tag, 17);
+                sp.Encode4(pb.friend_channel == -1 ? -1 : pb.friend_channel - 1); // please add channel
+                sp.EncodeBuffer(pb.friend_tag, 17);
                 // 1 byte
                 sp.Encode1(1);
                 break;
@@ -1242,13 +1245,13 @@ public class ResCWvsContext {
                 break;
             }
             case FriendRes_Notify: {
-                sp.Encode4(frs.friend_id);
+                sp.Encode4(pb.friend_id);
                 sp.Encode1(0);
-                sp.Encode4(frs.friend_channel);
+                sp.Encode4(pb.friend_channel);
                 break;
             }
             case FriendRes_IncMaxCount_Done: {
-                sp.Encode1(frs.nFriendMax);
+                sp.Encode1(pb.nFriendMax);
                 break;
             }
             case FriendRes_IncMaxCount_Unknown: {
@@ -1258,7 +1261,7 @@ public class ResCWvsContext {
                 break;
             }
             default: {
-                DebugLogger.ErrorLog("FriendResult not coded : " + frs.flag);
+                DebugLogger.ErrorLog("FriendResult not coded : " + flag);
                 break;
             }
         }
@@ -1273,36 +1276,36 @@ public class ResCWvsContext {
     // CWvsContext::OnTownPortal
     // CWvsContext::OnOpenGate
     // CWvsContext::OnBroadcastMsg
-    public static ServerPacket BroadcastMsg(ArgBroadcastMsg bma) {
+    public static ServerPacket BroadcastMsg(OpsBroadcastMsg bm, PB_BroadcastMsg pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BroadcastMsg);
-        sp.Encode1(bma.bm.get());
+        sp.Encode1(bm.get());
 
-        switch (bma.bm) {
+        switch (bm) {
             case BM_NOTICE: // 青文字 [告知事項]
             case BM_ALERT: // ダイアログ
             case BM_EVENT: // ピンク文字
             {
-                sp.EncodeStr(bma.message);
+                sp.EncodeStr(pb.message);
                 break;
             }
             case BM_SLIDE: // 画面上部の横スクロールメッセージ
             {
-                boolean show_msg = bma.message.length() != 0;
+                boolean show_msg = pb.message.length() != 0;
                 sp.Encode1(show_msg ? 1 : 0);
                 if (show_msg) {
-                    sp.EncodeStr(bma.message);
+                    sp.EncodeStr(pb.message);
                 }
                 break;
             }
             case BM_NOTICEWITHOUTPREFIX: // 青文字, アイテム情報
             {
-                sp.EncodeStr(bma.message);
-                sp.Encode4(bma.item_id);
+                sp.EncodeStr(pb.message);
+                sp.Encode4(pb.item_id);
                 break;
             }
             case BM_SPEAKERCHANNEL: // 5070000, メガホン
             {
-                String text = bma.chr.getPlayerNameWithMedal() + " : " + bma.message;
+                String text = pb.chr.getPlayerNameWithMedal() + " : " + pb.message;
                 sp.EncodeStr(text);
                 break;
             }
@@ -1310,47 +1313,47 @@ public class ResCWvsContext {
             case BM_HEARTSPEAKER: // 5073000, ハート拡声器
             case BM_SKULLSPEAKER: // 5074000, ドクロ拡声器
             {
-                String text = bma.chr.getPlayerNameWithMedal() + " : " + bma.message;
-                int channel = bma.chr.getClient().getChannelId() - 1;
+                String text = pb.chr.getPlayerNameWithMedal() + " : " + pb.message;
+                int channel = pb.chr.getClient().getChannelId() - 1;
                 sp.EncodeStr(text);
                 sp.Encode1(channel);
-                sp.Encode1(bma.ear);
+                sp.Encode1(pb.ear);
                 break;
             }
             case BM_ITEMSPEAKER: // 5076000, アイテム拡声器
             {
-                String text = bma.chr.getPlayerNameWithMedal() + " : " + bma.message;
-                int channel = bma.chr.getClient().getChannelId() - 1;
-                boolean show_item = bma.item != null;
+                String text = pb.chr.getPlayerNameWithMedal() + " : " + pb.message;
+                int channel = pb.chr.getClient().getChannelId() - 1;
+                boolean show_item = pb.item != null;
                 sp.EncodeStr(text);
                 sp.Encode1(channel);
-                sp.Encode1(bma.ear);
+                sp.Encode1(pb.ear);
                 sp.Encode1(show_item ? 1 : 0);
                 if (show_item) {
-                    sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(bma.item));
+                    sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(pb.item));
                 }
                 break;
             }
             case MEGAPHONE_TRIPLE: // 5077000, 三連拡声器
             {
-                String name = bma.chr.getPlayerNameWithMedal();
-                int channel = bma.chr.getClient().getChannelId() - 1;
-                String text1 = bma.messages.get(0); // ?_?
+                String name = pb.chr.getPlayerNameWithMedal();
+                int channel = pb.chr.getClient().getChannelId() - 1;
+                String text1 = pb.messages.get(0); // ?_?
 
                 sp.EncodeStr(name + " : " + text1);
-                sp.Encode1(bma.messages.size());
-                for (int i = 1; i < bma.messages.size(); i++) {
-                    sp.EncodeStr(name + " : " + bma.messages.get(i));
+                sp.Encode1(pb.messages.size());
+                for (int i = 1; i < pb.messages.size(); i++) {
+                    sp.EncodeStr(name + " : " + pb.messages.get(i));
                 }
                 sp.Encode1(channel);
-                sp.Encode1(bma.ear);
+                sp.Encode1(pb.ear);
                 break;
             }
             case BM_GACHAPONANNOUNCE: {
-                String text = bma.chr.getName() + " : " + bma.message;
+                String text = pb.chr.getName() + " : " + pb.message;
                 sp.EncodeStr(text);
-                sp.Encode4(bma.gashapon_type); // 緑 (0) or 茶色 (-1)
-                sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(bma.item));
+                sp.Encode4(pb.gashapon_type); // 緑 (0) or 茶色 (-1)
+                sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(pb.item));
                 break;
             }
             default: {

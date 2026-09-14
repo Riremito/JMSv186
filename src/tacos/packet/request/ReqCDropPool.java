@@ -43,7 +43,9 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsDropPickUpMessage;
+import tacos.packet.response.builder.PB_Message;
 
 /**
  *
@@ -141,12 +143,12 @@ public class ReqCDropPool {
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
                     chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), false);
 
-                    chr.SendPacket(ResWrapper.showGainCard(nCardID));
+                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MONSTER_CARD).ItemID(nCardID).build()));
                 } else {
                     chr.SendPacket(ResCWvsContext.MonsterBookSetCard(false, 0, 0));
                 }
                 removeDropItem(chr, mapitem);
-                chr.SendPacket(ResWrapper.DropPickUpMessage(drop_item_id, mapitem.getItem().getQuantity()));
+                chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_ITEM).ItemID(drop_item_id).Inc_ItemCount(mapitem.getItem().getQuantity()).build()));
                 chr.updateInv();
                 return true;
             }
@@ -157,7 +159,7 @@ public class ReqCDropPool {
             return true;
         }
         if (!MapleInventoryManipulator.checkSpace(chr.getClient(), mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-            chr.SendPacket(ResWrapper.getShowInventoryFull());
+            chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
             DebugLogger.ErrorLog("PickUp : checkSpace");
             return false;
         }
@@ -197,7 +199,7 @@ public class ReqCDropPool {
                 } else {
                     ii.getItemEffect(id).applyTo(chr);
                 }
-                chr.SendPacket(ResWrapper.DropPickUpMessage(id, (byte) 1));
+                chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_ITEM).ItemID(id).Inc_ItemCount((byte) 1).build()));
                 return true;
             }
         }

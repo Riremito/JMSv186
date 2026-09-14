@@ -10,7 +10,9 @@ import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import java.lang.ref.WeakReference;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 
 public class MapleTrade {
 
@@ -265,7 +267,7 @@ public class MapleTrade {
             player.setTrade(new MapleTrade((byte) 0, player, isPointTrade));
             player.SendPacket(ResCMiniRoomBaseDlg.getTradeStart(player.getClient(), player.getTrade(), (byte) 0, isPointTrade));
         } else {
-            player.SendPacket(ResWrapper.BroadCastMsgEvent("You are already in a trade"));
+            player.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You are already in a trade").build()));
         }
     }
 
@@ -279,7 +281,7 @@ public class MapleTrade {
             player1.getTrade().setPartner(player2.getTrade());
             player2.SendPacket(ResCMiniRoomBaseDlg.getTradeInvite(player1, player1.getTrade().IsPointTrading()));
         } else {
-            player1.SendPacket(ResWrapper.BroadCastMsgEvent("The other player is already trading with someone else."));
+            player1.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The other player is already trading with someone else.").build()));
             cancelTrade(player1.getTrade(), player1.getClient());
         }
     }
@@ -292,7 +294,7 @@ public class MapleTrade {
             //c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
             //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
         } else {
-            player1.SendPacket(ResWrapper.BroadCastMsgEvent("The other player has already closed the trade"));
+            player1.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The other player has already closed the trade").build()));
         }
     }
 

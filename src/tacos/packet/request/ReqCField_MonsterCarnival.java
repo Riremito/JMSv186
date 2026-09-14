@@ -23,7 +23,9 @@ import tacos.client.TacosClient;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_MonsterCarnival;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleCarnivalFactory;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -72,7 +74,7 @@ public class ReqCField_MonsterCarnival {
         if (tab == 0) {
             final List<SimpleImmutableEntry<Integer, Integer>> mobs = chr.getMap().getNodeInfo().getMobsToSpawn();
             if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getValue()) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
@@ -86,20 +88,20 @@ public class ReqCField_MonsterCarnival {
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the monster."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You may no longer summon the monster.").build()));
                 chr.sendStatChanged(true);
             }
 
         } else if (tab == 1) { //debuff
             final List<Integer> skillid = chr.getMap().getNodeInfo().getSkillIds();
             if (num >= skillid.size()) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("An error occurred.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
             final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(skillid.get(num)); //ugh wtf
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
@@ -114,13 +116,13 @@ public class ReqCField_MonsterCarnival {
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("An error occurred.").build()));
                 chr.sendStatChanged(true);
             }
         } else if (tab == 2) { //skill
             final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
@@ -133,7 +135,7 @@ public class ReqCField_MonsterCarnival {
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the being."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You may no longer summon the being.").build()));
                 chr.sendStatChanged(true);
             }
         }

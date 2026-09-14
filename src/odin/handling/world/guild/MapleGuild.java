@@ -45,7 +45,8 @@ import tacos.database.query.DQ_Notes;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ServerPacket;
 
 public class MapleGuild {
@@ -561,7 +562,7 @@ public class MapleGuild {
         gp += amount;
         broadcast(ResCWvsContext.updateGP(id, gp));
         if (broadcast) {
-            broadcast(ResWrapper.getGPMsg(amount));
+            broadcast(ResCWvsContext.Message(OpsMessage.MS_IncGPMessage, PB_Message.builder().Inc_GP(amount).build()));
         }
     }
 

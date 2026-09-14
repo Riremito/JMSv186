@@ -35,7 +35,7 @@ import java.util.Random;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsShopScanner;
-import tacos.packet.ops.arg.ArgBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.response.ResCMapleTVMan;
@@ -328,11 +328,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 5070000: {
                 String message = cp.DecodeStr();
 
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_SPEAKERCHANNEL;
-                bma.chr = chr;
-                bma.message = message;
-                chr.getChannelServer().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
+                chr.getChannelServer().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SPEAKERCHANNEL, PB_BroadcastMsg.builder().chr(chr).message(message).build()));
                 return true;
             }
             // 拡声器
@@ -340,12 +336,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String message = cp.DecodeStr();
                 byte ear = Config.LessOrEqual(Region.KMS, 31) ? 1 : cp.Decode1();
 
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_SPEAKERWORLD;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SPEAKERWORLD, PB_BroadcastMsg.builder().chr(chr).message(message).ear(ear).build()));
                 return true;
             }
             // 高機能拡声器 (使えない)
@@ -357,12 +348,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
 
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_HEARTSPEAKER;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_HEARTSPEAKER, PB_BroadcastMsg.builder().chr(chr).message(message).ear(ear).build()));
                 return true;
             }
             // ドクロ拡声器
@@ -370,12 +356,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String message = cp.DecodeStr();
                 byte ear = cp.Decode1();
 
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_SKULLSPEAKER;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SKULLSPEAKER, PB_BroadcastMsg.builder().chr(chr).message(message).ear(ear).build()));
                 return true;
             }
             case 5075000: // メッセージ送信機 (MapleTV)
@@ -468,13 +449,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     item = chr.getInventory(MapleInventoryType.getByType((byte) type)).getItem((short) slot);
                 }
 
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.BM_ITEMSPEAKER;
-                bma.chr = chr;
-                bma.message = message;
-                bma.ear = ear;
-                bma.item = item;
-                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_ITEMSPEAKER, PB_BroadcastMsg.builder().chr(chr).message(message).ear(ear).item(item).build()));
                 return true;
             }
             // 三連拡声器
@@ -496,14 +471,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 byte ear = cp.Decode1();
 
-                ArgBroadcastMsg bma = new ArgBroadcastMsg();
-                bma.bm = OpsBroadcastMsg.MEGAPHONE_TRIPLE;
-                bma.chr = chr;
-                bma.ear = ear;
-                bma.multi_line = true;
-                bma.messages = messages;
-
-                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(bma));
+                chr.getWorld().broadcastMegaphonePacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.MEGAPHONE_TRIPLE, PB_BroadcastMsg.builder().chr(chr).ear(ear).messages(messages).build()));
                 return true;
             }
             default: {

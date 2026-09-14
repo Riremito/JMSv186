@@ -76,7 +76,12 @@ import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsDropPickUpMessage;
+import tacos.packet.ops.OpsQuestRecordMessage;
+import tacos.packet.response.builder.PB_Message;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.response.struct.InvOp;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
@@ -543,7 +548,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public final void updateInfoQuest(final int questid, final String data) {
         questinfo.put(questid, data);
-        client.SendPacket(ResWrapper.updateInfoQuest(questid, data));
+        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) questid).str(data).build()));
     }
 
     public final String getInfoQuest(final int questid) {
@@ -602,7 +607,7 @@ public class MapleCharacter extends TacosCharacter {
     public final void updateQuest(final MapleQuestStatus quest, final boolean update) {
         quests.put(quest.getQuest(), quest);
         if (!(quest.isCustom())) {
-            client.SendPacket(ResWrapper.updateQuest(quest));
+            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
             if (quest.getStatus() == 1 && !update) {
                 SendPacket(ResCUserLocal.UserQuestResult(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
             }
@@ -892,7 +897,7 @@ public class MapleCharacter extends TacosCharacter {
             if (newJob != 0 && newJob != 1000 && newJob != 2000 && newJob != 2001 && newJob != 3000) {
                 if (isEv) {
                     remainingSp[GameConstants.getSkillBook(newJob)] += 5;
-                    SendPacket(ResWrapper.getSPMsg((byte) 5, (short) newJob));
+                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncSPMessage, PB_Message.builder().JobID((short) newJob).Inc_SP((byte) 5).build()));
                 } else {
                     remainingSp[GameConstants.getSkillBook(newJob)]++;
                     if (newJob % 10 >= 2) {
@@ -1024,13 +1029,13 @@ public class MapleCharacter extends TacosCharacter {
     public void gainSP(int sp) {
         this.remainingSp[GameConstants.getSkillBook(job)] += sp; //default
         sendStatChanged(false);
-        SendPacket(ResWrapper.getSPMsg((byte) sp, (short) job));
+        SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncSPMessage, PB_Message.builder().JobID((short) job).Inc_SP((byte) sp).build()));
     }
 
     public void gainSP(int sp, final int skillbook) {
         this.remainingSp[skillbook] += sp; //default
         sendStatChanged(false);
-        SendPacket(ResWrapper.getSPMsg((byte) sp, (short) job));
+        SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncSPMessage, PB_Message.builder().JobID((short) job).Inc_SP((byte) sp).build()));
     }
 
     public void resetAPSP() {
@@ -1193,7 +1198,7 @@ public class MapleCharacter extends TacosCharacter {
                 }
                 sendStatChanged();
                 if (show) { // still show the expgain even if it's not there
-                    client.SendPacket(ResWrapper.GainEXP_Others(total, inChat, white));
+                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
                 }
                 if (total > 0) {
                     stats.checkEquipLevels(this, total); //gms like
@@ -1265,7 +1270,7 @@ public class MapleCharacter extends TacosCharacter {
             }
             sendStatChanged();
             if (show) { // still show the expgain even if it's not there
-                client.SendPacket(ResWrapper.GainEXP_Monster(gain, white, partyinc, Class_Bonus_EXP, Equipment_Bonus_EXP, Premium_Bonus_EXP));
+                client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
             }
             stats.checkEquipLevels(this, total);
         }
@@ -1328,14 +1333,14 @@ public class MapleCharacter extends TacosCharacter {
         if (pending) {
             if (pendingExpiration != null) {
                 for (Integer z : pendingExpiration) {
-                    SendPacket(ResWrapper.itemExpired(z.intValue()));
+                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_CashItemExpireMessage, PB_Message.builder().ItemID(z.intValue()).build()));
                 }
             }
             pendingExpiration = null;
             if (pendingSkills != null) {
                 for (Integer z : pendingSkills) {
                     SendPacket(ResCWvsContext.ChangeSkillRecordResult(z, 0, 0, -1));
-                    SendPacket(ResWrapper.BroadCastMsgEvent("[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use."));
+                    SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use.").build()));
                 }
             } //not real msg
             pendingSkills = null;
@@ -1433,7 +1438,9 @@ public class MapleCharacter extends TacosCharacter {
         meso += gain;
         sendStatChanged(enableActions);
         if (show) {
-            client.SendPacket(ResWrapper.showMesoGain(gain, inChat));
+            client.SendPacket((!inChat
+                ? ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MESO).Inc_Meso(gain).build())
+                : ResCWvsContext.Message(OpsMessage.MS_IncMoneyMessage, PB_Message.builder().Inc_Meso(gain).build())));
         }
         return true;
     }
@@ -1445,7 +1452,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         gainTama(gain);
         if (show) {
-            SendPacket(ResWrapper.GainTamaMessage(gain));
+            SendPacket(ResCWvsContext.Message(OpsMessage.MS_JMS_Pachinko, PB_Message.builder().Inc_Tama(gain).build()));
         }
         return true;
     }
@@ -1481,7 +1488,13 @@ public class MapleCharacter extends TacosCharacter {
                 continue;
             }
             if (q.mobKilled(id, skillID)) {
-                client.SendPacket(ResWrapper.updateQuestMobKills(q));
+                {
+                    StringBuilder sb = new StringBuilder();
+                    for (int kills : q.getMobKills().values()) {
+                        sb.append(String.format("%03d", kills));
+                    }
+                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) q.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(sb.toString()).build()));
+                }
                 if (q.getQuest().canComplete(this, null)) {
                     SendPacket(ResCWvsContext.QuestClear(q.getQuest().getId()));
                 }
@@ -2120,7 +2133,7 @@ public class MapleCharacter extends TacosCharacter {
         if (gift != null && gift == fame && fame > 0) { //not exploited! hurray
             addFame(fame);
             sendStatChanged();
-            client.SendPacket(ResWrapper.getShowFameGain(fame));
+            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fame).build()));
         }
         DQ_Notes.deleteById(id);
     }
@@ -2135,19 +2148,19 @@ public class MapleCharacter extends TacosCharacter {
         } else {
             mulung_energy = 0;
         }
-        SendPacket(ResWrapper.MulungEnergy(mulung_energy));
+        SendPacket(ResCWvsContext.sendString(1, "energy", String.valueOf(mulung_energy)));
     }
 
     public void writeMulungEnergy() {
-        SendPacket(ResWrapper.MulungEnergy(mulung_energy));
+        SendPacket(ResCWvsContext.sendString(1, "energy", String.valueOf(mulung_energy)));
     }
 
     public void writeStatus(String type, String inc) {
-        SendPacket(ResWrapper.sendGhostStatus(type, inc));
+        SendPacket(ResCWvsContext.sendString(3, type, inc));
     }
 
     public void writePoint(String type, String inc) {
-        SendPacket(ResWrapper.sendGhostPoint(type, inc));
+        SendPacket(ResCWvsContext.sendString(2, type, inc));
     }
 
     public boolean IsBerserk() {
@@ -2269,7 +2282,7 @@ public class MapleCharacter extends TacosCharacter {
         } else if (type == -2) {
             SendPacket(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
         } else {
-            client.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
+            client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
         }
     }
 

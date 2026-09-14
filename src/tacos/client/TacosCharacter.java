@@ -70,7 +70,10 @@ import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
+import tacos.packet.ops.OpsFriend;
+import tacos.packet.response.builder.PB_Friend;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
 import tacos.server.TacosChannel;
@@ -821,17 +824,17 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     // debug
     // 青文字
     public void DebugMsg(String text) {
-        SendPacket(ResWrapper.BroadCastMsgNotice(text));
+        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     // 青文字 & アイテム表示
     public void DebugMsgItem(String text, int item_id) {
-        SendPacket(ResWrapper.BroadCastMsgNoticeItem(text, item_id));
+        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(text).item_id(item_id).build()));
     }
 
     // ピンク
     public void DebugMsg2(String text) {
-        SendPacket(ResWrapper.BroadCastMsgEvent(text));
+        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     // 黄色
@@ -840,7 +843,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
     }
 
     public void Notice(String text) {
-        SendPacket(ResWrapper.BroadCastMsgEvent(text));
+        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public FreeMarketPortal getFreeMarketPortal() {
@@ -872,7 +875,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
 
     public void setBuddyCapacity(int capacity) {
         this.buddylist.setCapacity(capacity);
-        SendPacket(ResWrapper.updateBuddyCapacity(capacity));
+        SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_IncMaxCount_Done, PB_Friend.builder().nFriendMax(capacity).build()));
     }
 
     // 相互にフレンド登録されているフレンドにチャンネル情報を通知
@@ -888,7 +891,7 @@ public class TacosCharacter extends AbstractAnimatedMapleMapObject {
         // フレンドのチャンネル情報を更新
         ble.setChannel(isOnline ? friend.getChannelId() : -1);
         this.buddylist.put(ble);
-        SendPacket(ResWrapper.updateBuddyChannel(ble.getCharacterId(), isOnline ? (ble.getChannel() - 1) : -1)); // from 0.
+        SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_Notify, PB_Friend.builder().friend_id(ble.getCharacterId()).friend_channel(isOnline ? (ble.getChannel() - 1) : -1).build())); // from 0.
         return true;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,26 +16,24 @@
  *
  *
  */
-package tacos.packet.ops.arg;
+package tacos.packet.response.builder;
 
+import lombok.Builder;
 import odin.client.MapleCharacter;
-import odin.client.inventory.Item;
-import java.util.List;
-import tacos.packet.ops.OpsBroadcastMsg;
 
 /**
  *
  * @author Riremito
  */
-public class ArgBroadcastMsg {
+@Builder
+public class PB_Friend {
 
-    public OpsBroadcastMsg bm = OpsBroadcastMsg.UNKNOWN;
-    public MapleCharacter chr = null;
-    public String message = "";
-    public byte ear = 0; // 拡声器系統専用
-    public Item item = null; // アイテム拡声器, ガシャポン専用
-    public boolean multi_line = false; // 3連拡声器専用
-    public List<String> messages = null; // 3連拡声器専用
-    public int item_id = 0; // 青文字クリック時にアイテム情報を表示可能
-    public int gashapon_type = 0;
+    public int nFriendMax;
+    public MapleCharacter chr;
+    public int friend_id;
+    public int friend_channel;
+    public int friend_level;
+    public int friend_job;
+    public String friend_name;
+    public String friend_tag;
 }

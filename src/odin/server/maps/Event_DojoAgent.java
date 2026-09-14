@@ -23,7 +23,9 @@ package odin.server.maps;
 import java.awt.Point;
 import odin.client.MapleCharacter;
 import odin.handling.world.MaplePartyCharacter;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.response.builder.PB_Message;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MapleLifeFactory;
@@ -125,7 +127,7 @@ public class Event_DojoAgent {
 
     public static ServerPacket Mulung_Pts(int recv, int total) {
         // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
-        return ResWrapper.showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
+        return ResCWvsContext.Message(OpsMessage.MS_SystemMessage, PB_Message.builder().str("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。").build());
     }
 
     // Resting rooms :

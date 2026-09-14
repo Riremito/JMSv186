@@ -17,7 +17,9 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCCashShop;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsDropPickUpMessage;
+import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.struct.InvOp;
 import odin.server.maps.AramiaFireWorks;
@@ -50,7 +52,7 @@ public class MapleInventoryManipulator {
         if (newSlot == -1) {
             if (!fromcs) {
                 chr.updateInv();
-                client.SendPacket(ResWrapper.getShowInventoryFull());
+                client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
             }
             return newSlot;
         }
@@ -100,7 +102,7 @@ public class MapleInventoryManipulator {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && client.getPlayer().haveItem(itemId, 1, true, false)) {
             chr.updateInv();
-            client.SendPacket(ResWrapper.showItemUnavailable());
+            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
             return -1;
         }
         final MapleInventoryType type = GameConstants.getInventoryType(itemId);
@@ -138,7 +140,7 @@ public class MapleInventoryManipulator {
                         newSlot = client.getPlayer().getInventory(type).addItem(nItem);
                         if (newSlot == -1) {
                             chr.updateInv();
-                            client.SendPacket(ResWrapper.getShowInventoryFull());
+                            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                             return -1;
                         }
                         if (owner != null) {
@@ -169,7 +171,7 @@ public class MapleInventoryManipulator {
 
                 if (newSlot == -1) {
                     chr.updateInv();
-                    client.SendPacket(ResWrapper.getShowInventoryFull());
+                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                     return -1;
                 }
                 if (period > 0) {
@@ -192,7 +194,7 @@ public class MapleInventoryManipulator {
                 newSlot = client.getPlayer().getInventory(type).addItem(nEquip);
                 if (newSlot == -1) {
                     chr.updateInv();
-                    client.SendPacket(ResWrapper.getShowInventoryFull());
+                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                     return -1;
                 }
                 client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nEquip).build()));
@@ -212,7 +214,7 @@ public class MapleInventoryManipulator {
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && client.getPlayer().haveItem(itemId, 1, true, false)) {
             chr.updateInv();
-            client.SendPacket(ResWrapper.showItemUnavailable());
+            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
             return null;
         }
         final MapleInventoryType type = GameConstants.getInventoryType(itemId);
@@ -310,7 +312,7 @@ public class MapleInventoryManipulator {
 
         if (ii.isPickupRestricted(item.getItemId()) && client.getPlayer().haveItem(item.getItemId(), 1, true, false)) {
             chr.updateInv();
-            client.SendPacket(ResWrapper.showItemUnavailable());
+            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
             return false;
         }
         final int before = client.getPlayer().itemQuantity(item.getItemId());
@@ -322,7 +324,7 @@ public class MapleInventoryManipulator {
             final List<Item> existing = client.getPlayer().getInventory(type).listById(item.getItemId());
             if (!GameConstants.isRechargable(item.getItemId())) {
                 if (quantity <= 0) { //wthchr.updateInv();
-                    client.SendPacket(ResWrapper.showItemUnavailable());
+                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
                     return false;
                 }
                 if (existing.size() > 0) { // first update all existing slots to slotMax
@@ -353,7 +355,7 @@ public class MapleInventoryManipulator {
                     short newSlot = client.getPlayer().getInventory(type).addItem(nItem);
                     if (newSlot == -1) {
                         chr.updateInv();
-                        client.SendPacket(ResWrapper.getShowInventoryFull());
+                        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                         item.setQuantity((short) (quantity + newQ));
                         return false;
                     }
@@ -368,7 +370,7 @@ public class MapleInventoryManipulator {
                 final short newSlot = client.getPlayer().getInventory(type).addItem(nItem);
                 if (newSlot == -1) {
                     chr.updateInv();
-                    client.SendPacket(ResWrapper.getShowInventoryFull());
+                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                     return false;
                 }
                 client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, nItem).build()));
@@ -383,7 +385,7 @@ public class MapleInventoryManipulator {
 
                 if (newSlot == -1) {
                     chr.updateInv();
-                    client.SendPacket(ResWrapper.getShowInventoryFull());
+                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                     return false;
                 }
                 client.SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().add(type, item).build()));
@@ -406,7 +408,7 @@ public class MapleInventoryManipulator {
         }
         client.getPlayer().havePartyQuest(item.getItemId());
         if (show) {
-            client.SendPacket(ResWrapper.DropPickUpMessage(item.getItemId(), item.getQuantity()));
+            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_ITEM).ItemID(item.getItemId()).Inc_ItemCount(item.getQuantity()).build()));
         }
         return true;
     }
@@ -596,7 +598,7 @@ public class MapleInventoryManipulator {
                 if (top != null && GameConstants.isOverall(top.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                         chr.updateInv();
-                        client.SendPacket(ResWrapper.getShowInventoryFull());
+                        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                         return;
                     }
                     unequip(client, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -609,7 +611,7 @@ public class MapleInventoryManipulator {
                 if (top != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull(bottom != null && GameConstants.isOverall(source.getItemId()) ? 1 : 0)) {
                         chr.updateInv();
-                        client.SendPacket(ResWrapper.getShowInventoryFull());
+                        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                         return;
                     }
                     unequip(client, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -617,7 +619,7 @@ public class MapleInventoryManipulator {
                 if (bottom != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                         chr.updateInv();
-                        client.SendPacket(ResWrapper.getShowInventoryFull());
+                        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                         return;
                     }
                     unequip(client, (byte) -6, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -629,13 +631,13 @@ public class MapleInventoryManipulator {
                 if (GameConstants.isKatara(source.getItemId())) {
                     if ((chr.getJob() != 900 && (chr.getJob() < 430 || chr.getJob() > 434)) || weapon == null || !GameConstants.isDagger(weapon.getItemId())) {
                         chr.updateInv();
-                        client.SendPacket(ResWrapper.getShowInventoryFull());
+                        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                         return;
                     }
                 } else if (weapon != null && GameConstants.isTwoHanded(weapon.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                         chr.updateInv();
-                        client.SendPacket(ResWrapper.getShowInventoryFull());
+                        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                         return;
                     }
                     unequip(client, (byte) -11, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -647,7 +649,7 @@ public class MapleInventoryManipulator {
                 if (shield != null && GameConstants.isTwoHanded(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                         chr.updateInv();;
-                        client.SendPacket(ResWrapper.getShowInventoryFull());
+                        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                         return;
                     }
                     unequip(client, (byte) -10, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());

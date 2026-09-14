@@ -62,7 +62,8 @@ import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.response.struct.InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
@@ -2618,7 +2619,7 @@ public class ReqCUser {
                         MapleInventoryManipulator.addById(chr.getClient(), 4001169, (short) 1);
                     } else {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
-                        chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
+                        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
                     }
                     break;
                 }
@@ -2629,7 +2630,7 @@ public class ReqCUser {
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
-                        chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
+                        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
                     }
                     break;
                 }
@@ -2655,7 +2656,7 @@ public class ReqCUser {
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
-                        chr.SendPacket(ResWrapper.BroadCastMsgEvent("The monster has too much physical strength, so you cannot catch it."));
+                        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
                     }
                     break;
                 }

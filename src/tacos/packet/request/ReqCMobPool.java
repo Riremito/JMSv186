@@ -34,7 +34,9 @@ import tacos.config.Config;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.wz.WzXML;
 
 /**
@@ -341,7 +343,7 @@ public class ReqCMobPool {
 
                 }
                 if (newMap > 0) {
-                    map.broadcastMessage(ResWrapper.BroadCastMsgEvent("Proceed to the next stage."));
+                    map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Proceed to the next stage.").build()));
                     map.removeMonster(monster);
                 }
             }

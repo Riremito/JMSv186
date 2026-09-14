@@ -26,9 +26,8 @@ import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsFriend;
-import tacos.packet.ops.arg.ArgFriend;
+import tacos.packet.response.builder.PB_Friend;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
 import tacos.server.TacosFriend;
 
 /**
@@ -53,52 +52,46 @@ public class ReqSub_FriendRequest {
                 String friend_tag = (Config.LessOrEqual(Region.KMS, 55) || Config.LessOrEqual(Region.JMS, 147)) ? "" : cp.DecodeStr(); // KMS65, JMS164
 
                 if (12 < friend_name.length() || 16 < friend_tag.length()) {
-                    chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_Unknown));
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Unknown, PB_Friend.builder().build()));
                     return true;
                 }
                 if (buddylist.isFull()) {
-                    chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_FullMe, PB_Friend.builder().build()));
                     return true;
                 }
                 BuddylistEntry ble_found = buddylist.get(friend_name);
                 if (ble_found != null) {
                     if (ble_found.getGroup().equals(friend_tag)) {
-                        chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_AlreadySet));
+                        chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_AlreadySet, PB_Friend.builder().build()));
                         return true;
                     }
                     ble_found.setGroup(friend_tag);
-                    chr.SendPacket(ResWrapper.updateBuddylist(chr));
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_LoadFriend_Done, PB_Friend.builder().chr(chr).build()));
                     return true;
                 }
 
                 TacosFriend friend = TacosFriend.findByName(chr, friend_name);
                 // invalid character name
                 if (friend == null) {
-                    chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_UnknownUser));
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_UnknownUser, PB_Friend.builder().build()));
                     return true;
                 }
                 if (friend.getOnline()) {
                     if (friend.getCharacter().getBuddylist().isFull()) {
-                        chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullOther));
+                        chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_FullOther, PB_Friend.builder().build()));
                         return true;
                     }
                     MapleCharacter online_friend = friend.getCharacter();
                     BuddylistEntry ble_hidden = new BuddylistEntry(chr.getName(), chr.getId(), friend_tag, chr.getChannelId(), true, chr.getLevel(), chr.getJob());
                     ble_hidden.setHidden(true);
                     online_friend.getBuddylist().put(ble_hidden);
-                    ArgFriend arg = new ArgFriend();
-                    arg.flag = OpsFriend.FriendRes_SetFriend_Done;
-                    arg.chr = online_friend;
-                    online_friend.SendPacket(ResCWvsContext.FriendResult(arg));
+                    online_friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(online_friend).build()));
                     // 事前に友達リストに追加しないと拒否を押した場合に無限ループが発生する
-                    online_friend.SendPacket(ResWrapper.requestBuddylistAdd(chr.getId(), chr.getName(), chr.getLevel(), chr.getJob()));
+                    online_friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_Invite, PB_Friend.builder().friend_id(chr.getId()).friend_name(chr.getName()).friend_level(chr.getLevel()).friend_job(chr.getJob()).friend_tag("\u30de\u30a4\u53cb\u672a\u6307\u5b9a").build()));
                 }
                 BuddylistEntry ble_new = new BuddylistEntry(friend.getName(), friend.getId(), friend_tag, 0, true, friend.getLevel(), friend.getJob());
                 chr.getBuddylist().put(ble_new);
-                ArgFriend arg = new ArgFriend();
-                arg.flag = OpsFriend.FriendRes_SetFriend_Done;
-                arg.chr = chr;
-                chr.SendPacket(ResCWvsContext.FriendResult(arg));
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(chr).build()));
                 return true;
             }
             case FriendReq_AcceptFriend: {
@@ -106,7 +99,7 @@ public class ReqSub_FriendRequest {
                 int friend_id = cp.Decode4();
 
                 if (buddylist.isFull()) {
-                    chr.SendPacket(ResWrapper.buddylistMessage(OpsFriend.FriendRes_SetFriend_FullMe));
+                    chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_FullMe, PB_Friend.builder().build()));
                     return true;
                 }
                 BuddylistEntry ble_hidden = chr.getBuddylist().get(friend_id);
@@ -121,17 +114,11 @@ public class ReqSub_FriendRequest {
                     if (ble_offline != null) {
                         ble_offline.setChannel(chr.getChannelId());
                     }
-                    ArgFriend arg = new ArgFriend();
-                    arg.flag = OpsFriend.FriendRes_SetFriend_Done;
-                    arg.chr = friend;
-                    friend.SendPacket(ResCWvsContext.FriendResult(arg));
+                    friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(friend).build()));
                 }
 
                 ble_hidden.setHidden(false);
-                ArgFriend arg = new ArgFriend();
-                arg.flag = OpsFriend.FriendRes_SetFriend_Done;
-                arg.chr = chr;
-                chr.SendPacket(ResCWvsContext.FriendResult(arg));
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(chr).build()));
                 return true;
             }
             case FriendReq_DeleteFriend: {
@@ -145,16 +132,10 @@ public class ReqSub_FriendRequest {
                     if (ble_offline != null) {
                         ble_offline.setChannel(0);
                     }
-                    ArgFriend arg = new ArgFriend();
-                    arg.flag = OpsFriend.FriendRes_SetFriend_Done;
-                    arg.chr = friend;
-                    friend.SendPacket(ResCWvsContext.FriendResult(arg));
+                    friend.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_Done, PB_Friend.builder().chr(friend).build()));
                 }
 
-                ArgFriend arg = new ArgFriend();
-                arg.flag = OpsFriend.FriendRes_DeleteFriend_Done;
-                arg.chr = chr;
-                chr.SendPacket(ResCWvsContext.FriendResult(arg));
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_DeleteFriend_Done, PB_Friend.builder().chr(chr).build()));
                 return true;
             }
             case FriendReq_NotifyLogin: {

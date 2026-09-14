@@ -32,7 +32,9 @@ import odin.client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.response.ResCUserLocal;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.response.builder.PB_Message;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -221,7 +223,7 @@ public class MapleQuestAction {
                 final int fameGain = WzDataTool.getInt(data, 0);
                 chr.addFame(fameGain);
                 chr.sendStatChanged();
-                chr.SendPacket(ResWrapper.getShowFameGain(fameGain));
+                chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fameGain).build()));
                 break;
             case buffItemID:
                 status = chr.getQuest(quest);
@@ -470,7 +472,7 @@ public class MapleQuestAction {
                 final int fameGain = WzDataTool.getInt(data, 0);
                 chr.addFame(fameGain);
                 chr.sendStatChanged();
-                chr.SendPacket(ResWrapper.getShowFameGain(fameGain));
+                chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fameGain).build()));
                 break;
             }
             case buffItemID: {

@@ -21,7 +21,8 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosWorld;
 
 public class OdinWorld extends TacosWorld {
@@ -655,7 +656,7 @@ public class OdinWorld extends TacosWorld {
                         guild.setAllianceId(0);
                         guild.broadcast(ResCWvsContext.disbandAlliance(allianceid));
                     } else if (g_ != null) {
-                        guild.broadcast(ResWrapper.BroadCastMsgEvent("[" + g_.getName() + "] Guild has left the alliance."));
+                        guild.broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("[" + g_.getName() + "] Guild has left the alliance.").build()));
                         guild.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, g_, false));
                         guild.broadcast(ResCWvsContext.removeGuildFromAlliance(alliance, g_, expelled));
                     }

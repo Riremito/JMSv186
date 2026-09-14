@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.odin;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
@@ -64,7 +65,8 @@ import tacos.packet.response.ResCRPSGameDlg;
 import tacos.packet.response.ResCStoreBankDlg;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleShop;
 import odin.server.MapleShopItem;
 import odin.server.MapleStatEffect;
@@ -127,11 +129,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void WorldMessage(String text) {
-        this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice(text));
+        this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public void Broadcast(String text) {
-        this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgNotice(text));
+        this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public int getQuest() {
@@ -155,7 +157,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        client.SendPacket(ResWrapper.getMapSelection(npc, sel));
+        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKSLIDEMENU, (byte) 0, sel, false, false));
         lastMsg = OpsScriptMan.SM_ASKSLIDEMENU.get();
     }
 
@@ -325,7 +327,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        client.SendPacket(ResWrapper.getNPCTalkStyle(npc, text, args));
+        ArrayList<Integer> ids = new ArrayList<>(args.length);
+        for (int num : args) {
+            ids.add(num);
+        }
+        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, text, false, false, ids));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -359,7 +365,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (lastMsg > -1) {
             return;
         }
-        client.SendPacket(ResWrapper.getNPCTalkStyle(npc, text, styles));
+        ArrayList<Integer> ids = new ArrayList<>(styles.length);
+        for (int num : styles) {
+            ids.add(num);
+        }
+        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKAVATAR, (byte) 0, text, false, false, ids));
         lastMsg = OpsScriptMan.SM_ASKAVATAR.get();
     }
 
@@ -371,7 +381,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             sendSimple(text);
             return;
         }
-        client.SendPacket(ResWrapper.getNPCTalkNum(npc, text, def, min, max));
+        client.SendPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_ASKNUMBER, (byte) 0, text, false, false));
         lastMsg = OpsScriptMan.SM_ASKNUMBER.get();
     }
 
@@ -491,7 +501,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             }
             final byte rareness = GameConstants.gachaponRareItem(item.getItemId());
             if (rareness > 0) {
-                this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item));
+                this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_GACHAPONANNOUNCE, PB_BroadcastMsg.builder().chr(client.getPlayer()).message("をガシャポンで手に入れました。おめでとうございます！").item(item).build()));
             }
             return item.getItemId();
         } catch (Exception e) {
@@ -585,17 +595,17 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void showEffect(boolean broadcast, String effect) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResWrapper.showEffect(effect));
+            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, effect)));
         } else {
-            client.SendPacket(ResWrapper.showEffect(effect));
+            client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, effect)));
         }
     }
 
     public void playSound(boolean broadcast, String sound) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResWrapper.playSound(sound));
+            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, sound)));
         } else {
-            client.SendPacket(ResWrapper.playSound(sound));
+            client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, sound)));
         }
     }
 
@@ -677,7 +687,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             final MapleMap map = client.getPlayer().getMap();
 
             map.broadcastMessage(ResCField.Clock(minutes * 60));
-            map.broadcastMessage(ResWrapper.BroadCastMsgNotice(client.getPlayer().getName() + startText));
+            map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(client.getPlayer().getName() + startText).build()));
         } else {
             squad.clear();
         }
@@ -775,7 +785,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void increaseGuildCapacity() {
         if (client.getPlayer().getMeso() < 5000000) {
-            client.SendPacket(ResWrapper.BroadCastMsgAlert("You do not have enough mesos."));
+            client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_ALERT, PB_BroadcastMsg.builder().message("You do not have enough mesos.").build()));
             return;
         }
         final int gid = client.getPlayer().getGuildId();

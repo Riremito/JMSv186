@@ -24,7 +24,9 @@ import odin.constants.GameConstants;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 
 /**
  *
@@ -306,7 +308,7 @@ public class TacosWorld {
             return false;
         }
 
-        broadcastPacket(ResWrapper.BroadCastMsgNotice("[お祝い] " + player.getPlayerNameWithMedal() + "様がレベル" + max_level + "になりました。おめでとうございます。"));
+        broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("[お祝い] " + player.getPlayerNameWithMedal() + "様がレベル" + max_level + "になりました。おめでとうございます。").build()));
         return true;
     }
 }

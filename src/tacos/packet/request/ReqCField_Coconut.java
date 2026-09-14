@@ -22,7 +22,9 @@ import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_Coconut;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
@@ -168,10 +170,10 @@ public class ReqCField_Coconut {
                 coconut_map.fallCoconut();
                 if (chr.getCoconutTeam() == 0) {
                     coconut_map.addMapleScore();
-                    chr.getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(chr.getName() + " of Team Maple knocks down a coconut."));
+                    chr.getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(chr.getName() + " of Team Maple knocks down a coconut.").build()));
                 } else {
                     coconut_map.addStoryScore();
-                    chr.getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(chr.getName() + " of Team Story knocks down a coconut."));
+                    chr.getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(chr.getName() + " of Team Story knocks down a coconut.").build()));
                 }
                 chr.getMap().broadcastMessage(ResCField_Coconut.CoconutScore(coconut_map.getCoconutScore()));
             }

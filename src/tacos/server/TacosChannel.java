@@ -29,7 +29,9 @@ import odin.server.MapleSquad;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.network.PacketHandler_Game;
 import tacos.packet.ServerPacket;
 import tacos.property.Property_Dummy_World;
@@ -60,7 +62,7 @@ public class TacosChannel extends TacosServer {
 
     @Override
     public void shutdown() {
-        broadcastPacket(ResWrapper.BroadCastMsgNoticeOld("This channel will now shut down."));
+        broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICE, PB_BroadcastMsg.builder().message("This channel will now shut down.").build()));
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving hired merchants...");
         closeAllMerchant();
         DebugLogger.InfoLog("Channel " + this.channel + ", Saving characters...");
