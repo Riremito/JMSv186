@@ -27,9 +27,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.server.TacosWorld;
 import tacos.config.Region;
-import odin.handling.world.Guild;
-import odin.handling.world.Alliance;
 import odin.handling.world.guild.MapleBBSThread.MapleBBSReply;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -161,7 +160,7 @@ public class MapleGuild {
             DQ_Guilds.delete(id);
 
             if (allianceid > 0) {
-                final MapleGuildAlliance alliance = Alliance.getAlliance(allianceid);
+                final MapleGuildAlliance alliance = TacosWorld.find(0).getAlliance().getAlliance(allianceid);
                 if (alliance != null) {
                     alliance.removeGuild(id, false);
                 }
@@ -240,15 +239,15 @@ public class MapleGuild {
             for (MapleGuildCharacter mgc : members) {
                 if (bcop == BCOp.DISBAND) {
                     if (mgc.isOnline()) {
-                        Guild.setGuildAndRank(mgc.getId(), 0, 5, 5);
+                        TacosWorld.find(0).getGuild().setGuildAndRank(mgc.getId(), 0, 5, 5);
                     } else {
                         setOfflineGuildStatus(0, (byte) 5, (byte) 5, mgc.getId());
                     }
                 } else if (mgc.isOnline() && mgc.getId() != exceptionId) {
                     if (bcop == BCOp.EMBELMCHANGE) {
-                        Guild.changeEmblem(id, mgc.getId(), new MapleGuildSummary(this));
+                        TacosWorld.find(0).getGuild().changeEmblem(id, mgc.getId(), new MapleGuildSummary(this));
                     } else {
-                        Guild.sendGuildPacket(mgc.getId(), packet, exceptionId, id);
+                        TacosWorld.find(0).getGuild().sendGuildPacket(mgc.getId(), packet, exceptionId, id);
                     }
                 }
             }
@@ -294,7 +293,7 @@ public class MapleGuild {
         if (bBroadcast) {
             broadcast(ResCWvsContext.guildMemberOnline(id, cid, online), cid);
             if (allianceid > 0) {
-                Alliance.sendGuild(ResCWvsContext.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
+                TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.allianceMemberOnline(allianceid, id, cid, online), id, allianceid);
             }
         }
         bDirty = true; // member formation has changed, update notifications
@@ -362,7 +361,7 @@ public class MapleGuild {
         gainGP(50);
         broadcast(ResCWvsContext.newGuildMember(mgc));
         if (allianceid > 0) {
-            Alliance.sendGuild(allianceid);
+            TacosWorld.find(0).getAlliance().sendGuild(allianceid);
         }
         return 1;
     }
@@ -375,12 +374,12 @@ public class MapleGuild {
             bDirty = true;
             members.remove(mgc);
             if (mgc.isOnline()) {
-                Guild.setGuildAndRank(mgc.getId(), 0, 5, 5);
+                TacosWorld.find(0).getGuild().setGuildAndRank(mgc.getId(), 0, 5, 5);
             } else {
                 setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, mgc.getId());
             }
             if (allianceid > 0) {
-                Alliance.sendGuild(allianceid);
+                TacosWorld.find(0).getAlliance().sendGuild(allianceid);
             }
         } finally {
             wL.unlock();
@@ -401,10 +400,10 @@ public class MapleGuild {
 
                     gainGP(-50);
                     if (allianceid > 0) {
-                        Alliance.sendGuild(allianceid);
+                        TacosWorld.find(0).getAlliance().sendGuild(allianceid);
                     }
                     if (mgc.isOnline()) {
-                        Guild.setGuildAndRank(cid, 0, 5, 5);
+                        TacosWorld.find(0).getGuild().setGuildAndRank(cid, 0, 5, 5);
                     } else {
                         DQ_Notes.sendNote(mgc.getName(), initiator.getName(), "You have been expelled from the guild.", 0);
                         setOfflineGuildStatus((short) 0, (byte) 5, (byte) 5, cid);
@@ -445,14 +444,14 @@ public class MapleGuild {
         for (final MapleGuildCharacter mgc : members) {
             if (cid == mgc.getId()) {
                 if (mgc.isOnline()) {
-                    Guild.setGuildAndRank(cid, this.id, mgc.getGuildRank(), newRank);
+                    TacosWorld.find(0).getGuild().setGuildAndRank(cid, this.id, mgc.getGuildRank(), newRank);
                 } else {
                     setOfflineGuildStatus((short) this.id, (byte) mgc.getGuildRank(), (byte) newRank, cid);
                 }
                 mgc.setAllianceRank((byte) newRank);
                 //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.changeAllianceRank(allianceid, mgc), -1, allianceid);
                 //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.updateAllianceRank(allianceid, mgc), -1, allianceid);
-                Alliance.sendGuild(allianceid);
+                TacosWorld.find(0).getAlliance().sendGuild(allianceid);
                 return;
             }
         }
@@ -464,7 +463,7 @@ public class MapleGuild {
         for (final MapleGuildCharacter mgc : members) {
             if (cid == mgc.getId()) {
                 if (mgc.isOnline()) {
-                    Guild.setGuildAndRank(cid, this.id, newRank, mgc.getAllianceRank());
+                    TacosWorld.find(0).getGuild().setGuildAndRank(cid, this.id, newRank, mgc.getAllianceRank());
                 } else {
                     setOfflineGuildStatus((short) this.id, (byte) newRank, (byte) mgc.getAllianceRank(), cid);
                 }
@@ -500,7 +499,7 @@ public class MapleGuild {
                 }
                 broadcast(ResCWvsContext.guildMemberLevelJobUpdate(mgc));
                 if (allianceid > 0) {
-                    Alliance.sendGuild(ResCWvsContext.updateAlliance(mgc, allianceid), id, allianceid);
+                    TacosWorld.find(0).getAlliance().sendGuild(ResCWvsContext.updateAlliance(mgc, allianceid), id, allianceid);
                 }
                 break;
             }

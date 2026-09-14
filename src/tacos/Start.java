@@ -23,10 +23,6 @@ import tacos.property.Property;
 import tacos.shared.SharedExpTable;
 import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
-import odin.handling.world.OdinWorld;
-import odin.handling.world.Guild;
-import odin.handling.world.Alliance;
-import odin.handling.world.Family;
 import java.sql.SQLException;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
@@ -104,7 +100,6 @@ public class Start {
             System.exit(0);
         }
         DQ_Accounts.resetLoginState();
-        OdinWorld.init();
 
         EtcTimer.getInstance().start();
         MapTimer.getInstance().start();
@@ -146,9 +141,11 @@ public class Start {
                     for (TacosServer server : TacosServer.get()) {
                         server.shutdown();
                     }
-                    Guild.save();
-                    Alliance.save();
-                    Family.save();
+                    for (TacosWorld w : TacosWorld.getWorlds()) {
+                        w.getGuild().save();
+                        w.getAlliance().save();
+                        w.getFamily().save();
+                    }
                     try {
                         DatabaseConnection.closeAll();
                     } catch (SQLException ex) {

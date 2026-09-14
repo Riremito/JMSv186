@@ -21,6 +21,10 @@ package tacos.server;
 import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
+import odin.handling.world.Alliance;
+import odin.handling.world.Family;
+import odin.handling.world.Guild;
+import odin.handling.world.Party;
 import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
@@ -62,6 +66,10 @@ public class TacosWorld {
     private TacosCashShop cashshop = null;
     private TacosITC itc = null;
     private ArrayList<MapleCharacter> player_migrating = new ArrayList<>();
+    private final Party party = new Party();
+    private final Guild guild = new Guild();
+    private final Alliance alliance = new Alliance();
+    private final Family family = new Family();
 
     public TacosWorld(int id, String name, int flag, String event_desc) {
         this.id = id;
@@ -100,6 +108,22 @@ public class TacosWorld {
 
     public String getEvent() {
         return this.event_desc;
+    }
+
+    public Party getParty() {
+        return this.party;
+    }
+
+    public Guild getGuild() {
+        return this.guild;
+    }
+
+    public Alliance getAlliance() {
+        return this.alliance;
+    }
+
+    public Family getFamily() {
+        return this.family;
     }
 
     public void addChannel(TacosChannel channel) {

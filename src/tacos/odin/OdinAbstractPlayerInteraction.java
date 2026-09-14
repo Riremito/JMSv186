@@ -48,7 +48,6 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.quest.MapleQuest;
 import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.debug.DebugLogger;
-import odin.handling.world.Guild;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.ops.OpsScriptMan;
@@ -479,7 +478,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void guildMessage(final String message) {
-        Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
+        client.getWorld().getGuild().guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void playerMessage(final int type, final String message) {
@@ -495,7 +494,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void guildMessage(final int type, final String message) {
         DebugLogger.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
-            Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
+            client.getWorld().getGuild().guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
         }
     }
 
@@ -504,7 +503,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final MapleGuild getGuild(int guildid) {
-        return Guild.getGuild(guildid);
+        return client.getWorld().getGuild().getGuild(guildid);
     }
 
     public final MapleParty getParty() {
@@ -959,14 +958,14 @@ public abstract class OdinAbstractPlayerInteraction {
         if (getPlayer().getGuildId() <= 0) {
             return;
         }
-        Guild.gainGP(getPlayer().getGuildId(), gp); //1 for
+        client.getWorld().getGuild().gainGP(getPlayer().getGuildId(), gp); //1 for
     }
 
     public int getGP() {
         if (getPlayer().getGuildId() <= 0) {
             return 0;
         }
-        return Guild.getGP(getPlayer().getGuildId()); //1 for
+        return client.getWorld().getGuild().getGP(getPlayer().getGuildId()); //1 for
     }
 
     public void showMapEffect(String path) {

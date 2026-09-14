@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
-import odin.handling.world.Guild;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
@@ -78,7 +77,7 @@ public class RD_CUser {
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
-            gs = Guild.getGuild(chr.getGuildId());
+            gs = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
         if (gs != null) {
             // guild info
@@ -168,7 +167,7 @@ public class RD_CUser {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
-            guild = Guild.getGuild(chr.getGuildId());
+            guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
         ServerPacket data = new ServerPacket();
 
@@ -245,7 +244,7 @@ public class RD_CUser {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
-            guild = Guild.getGuild(chr.getGuildId());
+            guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
 
         ServerPacket data = new ServerPacket();

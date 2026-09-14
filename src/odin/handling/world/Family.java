@@ -23,7 +23,6 @@ package odin.handling.world;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyCharacter;
@@ -32,11 +31,9 @@ import tacos.server.TacosWorld;
 
 public class Family {
 
+    private final Map<Integer, MapleFamily> families = new LinkedHashMap<>();
 
-    private static final Map<Integer, MapleFamily> families = new LinkedHashMap<>();
-    static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
-    static {
+    public Family() {
         //System.out.println("[MapleFamily] Loading Families");
         Collection<MapleFamily> allGuilds = MapleFamily.loadAll();
         for (MapleFamily g : allGuilds) {
@@ -46,44 +43,33 @@ public class Family {
         }
     }
 
-    public static MapleFamily getFamily(int id) {
-        MapleFamily ret = null;
-        lock.readLock().lock();
-        try {
-            ret = families.get(id);
-        } finally {
-            lock.readLock().unlock();
-        }
+    public MapleFamily getFamily(int id) {
+        MapleFamily ret = families.get(id);
         if (ret == null) {
-            lock.writeLock().lock();
-            try {
-                ret = new MapleFamily(id);
-                if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
-                    return null;
-                }
-                families.put(id, ret);
-            } finally {
-                lock.writeLock().unlock();
+            ret = new MapleFamily(id);
+            if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
+                return null;
             }
+            families.put(id, ret);
         }
         return ret;
     }
 
-    public static void memberFamilyUpdate(MapleFamilyCharacter mfc, MapleCharacter mc) {
+    public void memberFamilyUpdate(MapleFamilyCharacter mfc, MapleCharacter mc) {
         MapleFamily f = getFamily(mfc.getFamilyId());
         if (f != null) {
             f.memberLevelJobUpdate(mc);
         }
     }
 
-    public static void setFamilyMemberOnline(MapleFamilyCharacter mfc, boolean bOnline, int channel) {
+    public void setFamilyMemberOnline(MapleFamilyCharacter mfc, boolean bOnline, int channel) {
         MapleFamily f = getFamily(mfc.getFamilyId());
         if (f != null) {
             f.setOnline(mfc.getId(), bOnline, channel);
         }
     }
 
-    public static int setRep(int fid, int cid, int addrep, int oldLevel) {
+    public int setRep(int fid, int cid, int addrep, int oldLevel) {
         MapleFamily f = getFamily(fid);
         if (f != null) {
             return f.setRep(cid, addrep, oldLevel);
@@ -91,19 +77,14 @@ public class Family {
         return 0;
     }
 
-    public static void save() {
+    public void save() {
         System.out.println("Saving families...");
-        lock.writeLock().lock();
-        try {
-            for (MapleFamily a : families.values()) {
-                a.writeToDB(false);
-            }
-        } finally {
-            lock.writeLock().unlock();
+        for (MapleFamily a : families.values()) {
+            a.writeToDB(false);
         }
     }
 
-    public static void setFamily(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {
+    public void setFamily(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {
         MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
         if (mc == null) {
             return;
@@ -117,27 +98,22 @@ public class Family {
         }
     }
 
-    public static void familyPacket(int gid, ServerPacket message, int cid) {
+    public void familyPacket(int gid, ServerPacket message, int cid) {
         MapleFamily f = getFamily(gid);
         if (f != null) {
             f.broadcast(message, -1, f.getMFC(cid).getPedigree());
         }
     }
 
-    public static void disbandFamily(int gid) {
+    public void disbandFamily(int gid) {
         MapleFamily g = getFamily(gid);
-        lock.writeLock().lock();
-        try {
-            if (g != null) {
-                g.disbandFamily();
-                families.remove(gid);
-            }
-        } finally {
-            lock.writeLock().unlock();
+        if (g != null) {
+            g.disbandFamily();
+            families.remove(gid);
         }
     }
 
-    public static void sendFamilyPacket(int targetIds, ServerPacket packet, int exception, int guildid) {
+    public void sendFamilyPacket(int targetIds, ServerPacket packet, int exception, int guildid) {
         if (targetIds == exception) {
             return;
         }

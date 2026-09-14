@@ -53,9 +53,6 @@ import tacos.database.DatabaseException;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.Party;
-import odin.handling.world.Guild;
-import odin.handling.world.Family;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
@@ -273,7 +270,7 @@ public class MapleCharacter extends TacosCharacter {
 
                 int partyid = extras.party;
                 if (partyid >= 0) {
-                    MapleParty party = Party.getParty(partyid);
+                    MapleParty party = client.getWorld().getParty().getParty(partyid);
                     if (party != null && party.getMemberById(ret.id) != null) {
                         ret.party = party;
                     }
@@ -1218,9 +1215,9 @@ public class MapleCharacter extends TacosCharacter {
                 percentrep = 100 - percentrep + (level / 2);
             }
             if (percentrep > 0) {
-                int sensen = Family.setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
+                int sensen = getWorld().getFamily().setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
                 if (sensen > 0) {
-                    Family.setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
+                    getWorld().getFamily().setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
                 }
             }
         }
@@ -1285,7 +1282,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void silentPartyUpdate() {
         if (party != null) {
-            Party.updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
+            getWorld().getParty().updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
         }
     }
 
@@ -1947,7 +1944,7 @@ public class MapleCharacter extends TacosCharacter {
         if (getGuildId() <= 0) {
             return null;
         }
-        return Guild.getGuild(getGuildId());
+        return getWorld().getGuild().getGuild(getGuildId());
     }
 
     public void guildUpdate() {
@@ -1956,7 +1953,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         mgc.setLevel((short) level);
         mgc.setJobId(job);
-        Guild.memberLevelJobUpdate(mgc);
+        getWorld().getGuild().memberLevelJobUpdate(mgc);
     }
 
     public void saveGuildStatus() {
@@ -1967,7 +1964,7 @@ public class MapleCharacter extends TacosCharacter {
         if (mfc == null) {
             return;
         }
-        Family.memberFamilyUpdate(mfc, this);
+        getWorld().getFamily().memberFamilyUpdate(mfc, this);
     }
 
     public void saveFamilyStatus() {
@@ -2940,7 +2937,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void makeMFC(final int familyid, final int seniorid, final int junior1, final int junior2) {
         if (familyid > 0) {
-            MapleFamily f = Family.getFamily(familyid);
+            MapleFamily f = getWorld().getFamily().getFamily(familyid);
             if (f == null) {
                 mfc = null;
             } else {
@@ -3217,7 +3214,7 @@ public class MapleCharacter extends TacosCharacter {
                 }
                 if (party != null) {
                     chrp.setOnline(false);
-                    Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                    getWorld().getParty().updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
                     if (map != null && party.getLeader().getId() == idz) {
                         MaplePartyCharacter lchr = null;
                         for (MaplePartyCharacter pchr : party.getMembers()) {
@@ -3226,15 +3223,15 @@ public class MapleCharacter extends TacosCharacter {
                             }
                         }
                         if (lchr != null) {
-                            Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER_DC, lchr);
+                            getWorld().getParty().updateParty(party.getId(), PartyOperation.CHANGE_LEADER_DC, lchr);
                         }
                     }
                 }
                 if (gid > 0) {
-                    Guild.setGuildMemberOnline(chrg, false, -1);
+                    getWorld().getGuild().setGuildMemberOnline(chrg, false, -1);
                 }
                 if (fid > 0) {
-                    Family.setFamilyMemberOnline(chrf, false, -1);
+                    getWorld().getFamily().setFamilyMemberOnline(chrf, false, -1);
                 }
             } catch (final Exception e) {
             } finally {
@@ -3250,10 +3247,10 @@ public class MapleCharacter extends TacosCharacter {
             try {
                 if (party != null) {
                     chrp.setOnline(false);
-                    Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                    getWorld().getParty().updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
                 }
                 if (gid > 0) {
-                    Guild.setGuildMemberOnline(chrg, false, -1);
+                    getWorld().getGuild().setGuildMemberOnline(chrg, false, -1);
                 }
             } catch (final Exception e) {
             }

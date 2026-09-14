@@ -32,15 +32,14 @@ import tacos.server.TacosWorld;
 
 public class Party {
 
+    private final Map<Integer, MapleParty> parties = new HashMap<>();
+    private final AtomicInteger runningPartyId = new AtomicInteger();
 
-    private static Map<Integer, MapleParty> parties = new HashMap<>();
-    private static final AtomicInteger runningPartyId = new AtomicInteger();
-
-    static {
-        runningPartyId.set(DQ_Characters.getNextRunningPartyId());
+    public Party() {
+        this.runningPartyId.set(DQ_Characters.getNextRunningPartyId());
     }
 
-    public static void partyChat(int partyid, String chattext, String namefrom) {
+    public void partyChat(int partyid, String chattext, String namefrom) {
         MapleParty party = getParty(partyid);
         if (party == null) {
             throw new IllegalArgumentException("no party with the specified partyid exists");
@@ -54,7 +53,7 @@ public class Party {
         }
     }
 
-    public static void updateParty(int partyid, PartyOperation operation, MaplePartyCharacter target) {
+    public void updateParty(int partyid, PartyOperation operation, MaplePartyCharacter target) {
         MapleParty party = getParty(partyid);
         if (party == null) {
             return; //Don't update, just return. And definitely don't throw a damn exception.
@@ -107,18 +106,18 @@ public class Party {
         }
     }
 
-    public static MapleParty createParty(MaplePartyCharacter chrfor) {
+    public MapleParty createParty(MaplePartyCharacter chrfor) {
         int partyid = runningPartyId.getAndIncrement();
         MapleParty party = new MapleParty(partyid, chrfor);
         parties.put(party.getId(), party);
         return party;
     }
 
-    public static MapleParty getParty(int partyid) {
+    public MapleParty getParty(int partyid) {
         return parties.get(partyid);
     }
 
-    public static MapleParty disbandParty(int partyid) {
+    public MapleParty disbandParty(int partyid) {
         return parties.remove(partyid);
     }
 }

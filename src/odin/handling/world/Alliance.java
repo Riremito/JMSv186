@@ -25,21 +25,19 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildAlliance;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_BroadcastMsg;
+import tacos.server.TacosWorld;
 
 public class Alliance {
 
+    private final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<>();
 
-    private static final Map<Integer, MapleGuildAlliance> alliances = new LinkedHashMap<>();
-    static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-
-    static {
+    public Alliance() {
         //System.out.println("[MapleGuildAlliance] Loading GuildAlliances");
         Collection<MapleGuildAlliance> allGuilds = MapleGuildAlliance.loadAll();
         for (MapleGuildAlliance g : allGuilds) {
@@ -47,30 +45,19 @@ public class Alliance {
         }
     }
 
-    public static MapleGuildAlliance getAlliance(final int allianceid) {
-        MapleGuildAlliance ret = null;
-        lock.readLock().lock();
-        try {
-            ret = alliances.get(allianceid);
-        } finally {
-            lock.readLock().unlock();
-        }
+    public MapleGuildAlliance getAlliance(final int allianceid) {
+        MapleGuildAlliance ret = alliances.get(allianceid);
         if (ret == null) {
-            lock.writeLock().lock();
-            try {
-                ret = new MapleGuildAlliance(allianceid);
-                if (ret == null || ret.getId() <= 0) { //failed to load
-                    return null;
-                }
-                alliances.put(allianceid, ret);
-            } finally {
-                lock.writeLock().unlock();
+            ret = new MapleGuildAlliance(allianceid);
+            if (ret == null || ret.getId() <= 0) { //failed to load
+                return null;
             }
+            alliances.put(allianceid, ret);
         }
         return ret;
     }
 
-    public static int getAllianceLeader(final int allianceid) {
+    public int getAllianceLeader(final int allianceid) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.getLeaderId();
@@ -78,21 +65,21 @@ public class Alliance {
         return 0;
     }
 
-    public static void updateAllianceRanks(final int allianceid, final String[] ranks) {
+    public void updateAllianceRanks(final int allianceid, final String[] ranks) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             mga.setRank(ranks);
         }
     }
 
-    public static void updateAllianceNotice(final int allianceid, final String notice) {
+    public void updateAllianceNotice(final int allianceid, final String notice) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             mga.setNotice(notice);
         }
     }
 
-    public static boolean canInvite(final int allianceid) {
+    public boolean canInvite(final int allianceid) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.getCapacity() > mga.getNoGuilds();
@@ -100,7 +87,7 @@ public class Alliance {
         return false;
     }
 
-    public static boolean changeAllianceLeader(final int allianceid, final int cid) {
+    public boolean changeAllianceLeader(final int allianceid, final int cid) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.setLeaderId(cid);
@@ -108,7 +95,7 @@ public class Alliance {
         return false;
     }
 
-    public static boolean changeAllianceRank(final int allianceid, final int cid, final int change) {
+    public boolean changeAllianceRank(final int allianceid, final int cid, final int change) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.changeAllianceRank(cid, change);
@@ -116,7 +103,7 @@ public class Alliance {
         return false;
     }
 
-    public static boolean changeAllianceCapacity(final int allianceid) {
+    public boolean changeAllianceCapacity(final int allianceid) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.setCapacity();
@@ -124,7 +111,7 @@ public class Alliance {
         return false;
     }
 
-    public static boolean disbandAlliance(final int allianceid) {
+    public boolean disbandAlliance(final int allianceid) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.disband();
@@ -132,7 +119,7 @@ public class Alliance {
         return false;
     }
 
-    public static boolean addGuildToAlliance(final int allianceid, final int gid) {
+    public boolean addGuildToAlliance(final int allianceid, final int gid) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.addGuild(gid);
@@ -140,7 +127,7 @@ public class Alliance {
         return false;
     }
 
-    public static boolean removeGuildFromAlliance(final int allianceid, final int gid, final boolean expelled) {
+    public boolean removeGuildFromAlliance(final int allianceid, final int gid, final boolean expelled) {
         final MapleGuildAlliance mga = getAlliance(allianceid);
         if (mga != null) {
             return mga.removeGuild(gid, expelled);
@@ -148,7 +135,7 @@ public class Alliance {
         return false;
     }
 
-    public static void sendGuild(final int allianceid) {
+    public void sendGuild(final int allianceid) {
         final MapleGuildAlliance alliance = getAlliance(allianceid);
         if (alliance != null) {
             sendGuild(ResCWvsContext.getAllianceUpdate(alliance), -1, allianceid);
@@ -156,24 +143,24 @@ public class Alliance {
         }
     }
 
-    public static void sendGuild(ServerPacket packet, final int exceptionId, final int allianceid) {
+    public void sendGuild(ServerPacket packet, final int exceptionId, final int allianceid) {
         final MapleGuildAlliance alliance = getAlliance(allianceid);
         if (alliance != null) {
             for (int i = 0; i < alliance.getNoGuilds(); i++) {
                 int gid = alliance.getGuildId(i);
                 if (gid > 0 && gid != exceptionId) {
-                    Guild.guildPacket(gid, packet);
+                    TacosWorld.find(0).getGuild().guildPacket(gid, packet);
                 }
             }
         }
     }
 
-    public static boolean createAlliance(final String alliancename, final int cid, final int cid2, final int gid, final int gid2) {
+    public boolean createAlliance(final String alliancename, final int cid, final int cid2, final int gid, final int gid2) {
         final int allianceid = MapleGuildAlliance.createToDb(cid, alliancename, gid, gid2);
         if (allianceid <= 0) {
             return false;
         }
-        final MapleGuild g = Guild.getGuild(gid), g_ = Guild.getGuild(gid2);
+        final MapleGuild g = TacosWorld.find(0).getGuild().getGuild(gid), g_ = TacosWorld.find(0).getGuild().getGuild(gid2);
         g.setAllianceId(allianceid);
         g_.setAllianceId(allianceid);
         g.changeARank(true);
@@ -188,13 +175,13 @@ public class Alliance {
         return true;
     }
 
-    public static void allianceChat(final int gid, final String name, final int cid, final String msg) {
-        final MapleGuild g = Guild.getGuild(gid);
+    public void allianceChat(final int gid, final String name, final int cid, final String msg) {
+        final MapleGuild g = TacosWorld.find(0).getGuild().getGuild(gid);
         if (g != null) {
             final MapleGuildAlliance ga = getAlliance(g.getAllianceId());
             if (ga != null) {
                 for (int i = 0; i < ga.getNoGuilds(); i++) {
-                    final MapleGuild g_ = Guild.getGuild(ga.getGuildId(i));
+                    final MapleGuild g_ = TacosWorld.find(0).getGuild().getGuild(ga.getGuildId(i));
                     if (g_ != null) {
                         g_.allianceChat(name, cid, msg);
                     }
@@ -203,9 +190,9 @@ public class Alliance {
         }
     }
 
-    public static void setNewAlliance(final int gid, final int allianceid) {
+    public void setNewAlliance(final int gid, final int allianceid) {
         final MapleGuildAlliance alliance = getAlliance(allianceid);
-        final MapleGuild guild = Guild.getGuild(gid);
+        final MapleGuild guild = TacosWorld.find(0).getGuild().getGuild(gid);
         if (alliance != null && guild != null) {
             for (int i = 0; i < alliance.getNoGuilds(); i++) {
                 if (gid == alliance.getGuildId(i)) {
@@ -216,7 +203,7 @@ public class Alliance {
                     guild.changeARank();
                     guild.writeToDB(false);
                 } else {
-                    final MapleGuild g_ = Guild.getGuild(alliance.getGuildId(i));
+                    final MapleGuild g_ = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
                     if (g_ != null) {
                         g_.broadcast(ResCWvsContext.addGuildToAlliance(alliance, guild));
                         g_.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, guild, true));
@@ -226,12 +213,12 @@ public class Alliance {
         }
     }
 
-    public static void setOldAlliance(final int gid, final boolean expelled, final int allianceid) {
+    public void setOldAlliance(final int gid, final boolean expelled, final int allianceid) {
         final MapleGuildAlliance alliance = getAlliance(allianceid);
-        final MapleGuild g_ = Guild.getGuild(gid);
+        final MapleGuild g_ = TacosWorld.find(0).getGuild().getGuild(gid);
         if (alliance != null) {
             for (int i = 0; i < alliance.getNoGuilds(); i++) {
-                final MapleGuild guild = Guild.getGuild(alliance.getGuildId(i));
+                final MapleGuild guild = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
                 if (guild == null) {
                     if (gid != alliance.getGuildId(i)) {
                         alliance.removeGuild(gid, false);
@@ -252,16 +239,11 @@ public class Alliance {
         }
 
         if (gid == -1) {
-            lock.writeLock().lock();
-            try {
-                alliances.remove(allianceid);
-            } finally {
-                lock.writeLock().unlock();
-            }
+            alliances.remove(allianceid);
         }
     }
 
-    public static List<ServerPacket> getAllianceInfo(final int allianceid, final boolean start) {
+    public List<ServerPacket> getAllianceInfo(final int allianceid, final boolean start) {
         List<ServerPacket> ret = new ArrayList<>();
         final MapleGuildAlliance alliance = getAlliance(allianceid);
         if (alliance != null) {
@@ -274,15 +256,10 @@ public class Alliance {
         return ret;
     }
 
-    public static void save() {
+    public void save() {
         System.out.println("Saving alliances...");
-        lock.writeLock().lock();
-        try {
-            for (MapleGuildAlliance a : alliances.values()) {
-                a.saveToDb();
-            }
-        } finally {
-            lock.writeLock().unlock();
+        for (MapleGuildAlliance a : alliances.values()) {
+            a.saveToDb();
         }
     }
 }

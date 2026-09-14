@@ -32,9 +32,6 @@ import odin.handling.channel.MapleGuildRanking;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.Guild;
-import odin.handling.world.Alliance;
-import odin.handling.world.Family;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyCharacter;
@@ -42,6 +39,7 @@ import odin.handling.world.guild.MapleBBSThread;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildAlliance;
 import odin.handling.world.guild.MapleGuildCharacter;
+import tacos.server.TacosWorld;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -785,12 +783,12 @@ public class ResCWvsContext {
         String sAlliance = "";
         // Guild
         if (player.getGuildId() <= 0) {
-            MapleGuild guild = Guild.getGuild(player.getGuildId());
+            MapleGuild guild = player.getWorld().getGuild().getGuild(player.getGuildId());
             if (guild != null) {
                 sCommunity = guild.getName();
                 // Alliance
                 if (guild.getAllianceId() > 0) {
-                    MapleGuildAlliance alliance = Alliance.getAlliance(guild.getAllianceId());
+                    MapleGuildAlliance alliance = player.getWorld().getAlliance().getAlliance(guild.getAllianceId());
                     if (alliance != null) {
                         sAlliance = alliance.getName();
                     }
@@ -1724,7 +1722,7 @@ public class ResCWvsContext {
         final int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < noGuilds; i++) {
-            g[i] = Guild.getGuild(alliance.getGuildId(i));
+            g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
                 //return WrapCWvsContext.updateStat();
                 return null;
@@ -1826,7 +1824,7 @@ public class ResCWvsContext {
         final int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
-            g[i] = Guild.getGuild(alliance.getGuildId(i));
+            g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
                 //return WrapCWvsContext.updateStat();
                 return null;
@@ -1893,7 +1891,7 @@ public class ResCWvsContext {
             sp.Encode1(0);
             return sp;
         }
-        MapleGuild g = Guild.getGuild(player.getGuildId());
+        MapleGuild g = player.getWorld().getGuild().getGuild(player.getGuildId());
         if (g == null) {
             //failed to read from DB - don't show a guild
             sp.Encode1(0);
@@ -2081,7 +2079,7 @@ public class ResCWvsContext {
         final int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
-            g[i] = Guild.getGuild(alliance.getGuildId(i));
+            g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
                 //return WrapCWvsContext.updateStat();
                 return null;
@@ -2275,7 +2273,7 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
         sp.Encode4(chr.getId());
-        MapleFamily family = Family.getFamily(chr.getFamilyId());
+        MapleFamily family = chr.getWorld().getFamily().getFamily(chr.getFamilyId());
         int descendants = 2;
         int gens = 0;
         int generations = 0;
@@ -2383,7 +2381,7 @@ public class ResCWvsContext {
         sp.Encode2(chr.getNoJuniors());
         sp.Encode2(2);
         sp.Encode2(chr.getNoJuniors());
-        MapleFamily family = Family.getFamily(chr.getFamilyId());
+        MapleFamily family = chr.getWorld().getFamily().getFamily(chr.getFamilyId());
         if (family != null) {
             sp.Encode4(family.getLeaderId()); //??? 9D 60 03 00
             sp.EncodeStr(family.getLeaderName());
