@@ -20,17 +20,129 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
+import java.awt.Point;
 import tacos.client.TacosClient;
 import odin.server.MapleShopFactory;
 import odin.server.maps.MapleMapObjectType;
 
-public class MapleNPC extends AbstractLoadedMapleLife {
+public class MapleNPC {
+
+    private Point position = new Point();
+    private int objectId;
+
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    public void setPosition(Point position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
+
+    private int stance;
+    private int foothold_id;
+    private int id;
+    private int f;
+    private int fh;
+    private int originFh;
+    private int cy;
+    private int rx0;
+    private int rx1;
+    private boolean hide;
+
+    public int getStance() {
+        return stance;
+    }
+
+    public void setStance(int stance) {
+        this.stance = stance;
+    }
+
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    public void setFH(int foothold_id) {
+        this.foothold_id = foothold_id;
+    }
+
+    public boolean isFacingLeft() {
+        return getStance() % 2 != 0;
+    }
+
+    public int getFacingDirection() {
+        return getStance() % 2;
+    }
+
+    public int getF() {
+        return f;
+    }
+
+    public void setF(int f) {
+        this.f = f;
+    }
+
+    public void setHide(boolean hide) {
+        this.hide = hide;
+    }
+
+    public int getOriginFh() {
+        return originFh;
+    }
+
+    public void setOriginFh(int originFh) {
+        this.originFh = originFh;
+    }
+
+    public int getFh() {
+        return fh;
+    }
+
+    public void setFh(int fh) {
+        this.fh = fh;
+    }
+
+    public void setCy(int cy) {
+        this.cy = cy;
+    }
+
+    public int getRx0() {
+        return rx0;
+    }
+
+    public void setRx0(int rx0) {
+        this.rx0 = rx0;
+    }
+
+    public int getRx1() {
+        return rx1;
+    }
+
+    public void setRx1(int rx1) {
+        this.rx1 = rx1;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     private String name = "MISSINGNO";
     private boolean custom = false;
 
     public MapleNPC(int npc_id, String name) {
-        super(npc_id);
+        this.id = npc_id;
         this.name = name;
     }
 
@@ -42,15 +154,12 @@ public class MapleNPC extends AbstractLoadedMapleLife {
         MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(client);
     }
 
-    @Override
     public void sendSpawnData(TacosClient client) {
     }
 
-    @Override
     public void sendDestroyData(TacosClient client) {
     }
 
-    @Override
     public MapleMapObjectType getType() {
         return MapleMapObjectType.NPC;
     }

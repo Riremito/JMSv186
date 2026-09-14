@@ -42,10 +42,9 @@ import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MapleNPC;
 import odin.server.life.MonsterDropEntry;
 import odin.server.life.PlayerNPC;
-import odin.server.life.Spawns;
+import odin.server.life.SpawnDispatch;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
 import tacos.database.query.DQ_Accounts;
@@ -59,7 +58,7 @@ import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
 import tacos.script.TacosScriptNPC;
@@ -458,8 +457,8 @@ public class DebugCommand {
             }
             case "/md2": {
                 ArrayList<Integer> mob_ids = new ArrayList<>();
-                for (Spawns sp : map.getMonsterSpawn()) {
-                    int mob_id = sp.getMonster().getId();
+                for (Object sp : map.getMonsterSpawn()) {
+                    int mob_id = SpawnDispatch.getMonster(sp).getId();
                     if (!mob_ids.contains(mob_id)) {
                         mob_ids.add(mob_id);
                     }
@@ -599,14 +598,14 @@ public class DebugCommand {
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
                 }
-                for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
+                for (Object mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
                     if (count <= 0) {
                         break;
                     }
                     MapleMonster mob = (MapleMonster) mmo;
                     if (mob.getStats().getHPDisplayType() == 0) {
                         mob.setHp(0);
-                        map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
+                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(mob).build()));
                     }
                     map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
                     count--;
@@ -1180,8 +1179,8 @@ public class DebugCommand {
 
         List<Integer> mob_ids = new ArrayList<>();
         List<Integer> mob_counts = new ArrayList<>();
-        for (Spawns s : map.getMonsterSpawn()) {
-            int id = s.getMonster().getId();
+        for (Object s : map.getMonsterSpawn()) {
+            int id = SpawnDispatch.getMonster(s).getId();
             int index = mob_ids.indexOf(id);
             if (index != -1) {
                 mob_counts.set(index, mob_counts.get(index) + 1);

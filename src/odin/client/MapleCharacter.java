@@ -53,7 +53,6 @@ import tacos.database.DatabaseException;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.OdinWorld;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
@@ -82,7 +81,7 @@ import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.packet.response.struct.InvOp;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
@@ -93,11 +92,10 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
-import odin.server.shops.IMaplePlayerShop;
+import odin.server.shops.ShopDispatch;
 import odin.server.CashShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.MapleCarnivalChallenge;
@@ -184,7 +182,7 @@ public class MapleCharacter extends TacosCharacter {
     private List<MapleDoor> doors;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient Set<MapleMonster> controlled;
-    private transient Set<MapleMapObject> visibleMapObjects;
+    private transient Set<Object> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
     private transient Map<Integer, MapleSummon> summons;
@@ -194,9 +192,9 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleShop shop;
     private transient MapleTrade trade;
     private byte[] petStore;
-    private transient IMaplePlayerShop playerShop;
+    private transient Object playerShop;
     // 雇用商人
-    private IMaplePlayerShop remoteStore = null;
+    private Object remoteStore = null;
     private MapleParty party;
     private transient ScheduledFuture<?> fairySchedule;
     private transient ScheduledFuture<?> mapTimeLimitTask;
@@ -271,7 +269,7 @@ public class MapleCharacter extends TacosCharacter {
 
                 int partyid = extras.party;
                 if (partyid >= 0) {
-                    MapleParty party = OdinWorld.Party.getParty(partyid);
+                    MapleParty party = client.getWorld().getParty().getParty(partyid);
                     if (party != null && party.getMemberById(ret.id) != null) {
                         ret.party = party;
                     }
@@ -1216,9 +1214,9 @@ public class MapleCharacter extends TacosCharacter {
                 percentrep = 100 - percentrep + (level / 2);
             }
             if (percentrep > 0) {
-                int sensen = OdinWorld.Family.setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
+                int sensen = getWorld().getFamily().setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
                 if (sensen > 0) {
-                    OdinWorld.Family.setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
+                    getWorld().getFamily().setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
                 }
             }
         }
@@ -1283,7 +1281,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void silentPartyUpdate() {
         if (party != null) {
-            OdinWorld.Party.updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
+            getWorld().getParty().updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
         }
     }
 
@@ -1294,9 +1292,9 @@ public class MapleCharacter extends TacosCharacter {
         getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
 
         if (item_used.getQuantity() == 0 && !isRecharge) {
-            SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().remove(type, item_used.getPosition()).build()));
+            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().remove(type, item_used.getPosition()).build()));
         } else {
-            SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().update(type, (Item) item_used).build()));
+            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, (Item) item_used).build()));
         }
 
         return true;
@@ -1360,10 +1358,10 @@ public class MapleCharacter extends TacosCharacter {
                     if (ItemFlag.LOCK.check(item.getFlag())) {
                         tobeunlock.add(item);
                     } else if (currenttime > expiration) {
-                        toberemove.add(new SimpleImmutableEntry<MapleInventoryType, Item>(inv, item));
+                        toberemove.add(new SimpleImmutableEntry<>(inv, item));
                     }
                 } else if (item.getItemId() == 5000054 && item.getPet() != null && item.getPet().getSecondsLeft() <= 0) {
-                    toberemove.add(new SimpleImmutableEntry<MapleInventoryType, Item>(inv, item));
+                    toberemove.add(new SimpleImmutableEntry<>(inv, item));
                 }
             }
         }
@@ -1722,11 +1720,11 @@ public class MapleCharacter extends TacosCharacter {
         throw new UnsupportedOperationException();
     }
 
-    public void addVisibleMapObject(MapleMapObject mo) {
+    public void addVisibleMapObject(Object mo) {
         visibleMapObjects.add(mo);
     }
 
-    public void removeVisibleMapObject(MapleMapObject mo) {
+    public void removeVisibleMapObject(Object mo) {
         visibleMapObjects.remove(mo);
     }
 
@@ -1945,7 +1943,7 @@ public class MapleCharacter extends TacosCharacter {
         if (getGuildId() <= 0) {
             return null;
         }
-        return OdinWorld.Guild.getGuild(getGuildId());
+        return getWorld().getGuild().getGuild(getGuildId());
     }
 
     public void guildUpdate() {
@@ -1954,7 +1952,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         mgc.setLevel((short) level);
         mgc.setJobId(job);
-        OdinWorld.Guild.memberLevelJobUpdate(mgc);
+        getWorld().getGuild().memberLevelJobUpdate(mgc);
     }
 
     public void saveGuildStatus() {
@@ -1965,7 +1963,7 @@ public class MapleCharacter extends TacosCharacter {
         if (mfc == null) {
             return;
         }
-        OdinWorld.Family.memberFamilyUpdate(mfc, this);
+        getWorld().getFamily().memberFamilyUpdate(mfc, this);
     }
 
     public void saveFamilyStatus() {
@@ -2286,25 +2284,23 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public IMaplePlayerShop getPlayerShop() {
+    public Object getPlayerShop() {
         return playerShop;
     }
 
     public HiredMerchant getMyHiredMerchant() {
-        if (playerShop == null) {
+        if (!(playerShop instanceof HiredMerchant)) {
             return null;
         }
-        if (playerShop.getShopType() != 1) {
-            return null;
-        }
-        if (!playerShop.isOwner(this)) {
+        final HiredMerchant merchant = (HiredMerchant) playerShop;
+        if (!merchant.isOwner(this)) {
             return null;
         }
 
-        return (HiredMerchant) playerShop;
+        return merchant;
     }
 
-    public void setPlayerShop(IMaplePlayerShop playerShop) {
+    public void setPlayerShop(Object playerShop) {
         this.playerShop = playerShop;
     }
 
@@ -2446,7 +2442,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         Collections.sort(frings, new MapleRing.RingComparator());
         Collections.sort(crings, new MapleRing.RingComparator());
-        return new SimpleImmutableEntry<List<MapleRing>, List<MapleRing>>(crings, frings);
+        return new SimpleImmutableEntry<>(crings, frings);
     }
 
     public int getFH() {
@@ -2881,9 +2877,9 @@ public class MapleCharacter extends TacosCharacter {
             getPyramidSubway().dispose(this);
         }
         if (playerShop != null && !dc) {
-            playerShop.removeVisitor(this);
-            if (playerShop.isOwner(this)) {
-                playerShop.setOpen(true);
+            ShopDispatch.removeVisitor(playerShop, this);
+            if (ShopDispatch.isOwner(playerShop, this)) {
+                ShopDispatch.setOpen(playerShop, true);
             }
         }
         if (!getDoors().isEmpty()) {
@@ -2911,7 +2907,7 @@ public class MapleCharacter extends TacosCharacter {
         List<SimpleImmutableEntry<Integer, Integer>> used = new ArrayList<>();
         for (MapleFamilyBuffEntry buff : MapleFamilyBuff.getBuffEntry()) {
             if (!canUseFamilyBuff(buff)) {
-                used.add(new SimpleImmutableEntry<Integer, Integer>(buff.index, buff.count));
+                used.add(new SimpleImmutableEntry<>(buff.index, buff.count));
             }
         }
         return used;
@@ -2938,7 +2934,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void makeMFC(final int familyid, final int seniorid, final int junior1, final int junior2) {
         if (familyid > 0) {
-            MapleFamily f = OdinWorld.Family.getFamily(familyid);
+            MapleFamily f = getWorld().getFamily().getFamily(familyid);
             if (f == null) {
                 mfc = null;
             } else {
@@ -3004,11 +3000,11 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // 雇用商人
-    public void setRemoteStore(IMaplePlayerShop playerShop) {
+    public void setRemoteStore(Object playerShop) {
         this.remoteStore = playerShop;
     }
 
-    public IMaplePlayerShop getRemoteStore() {
+    public Object getRemoteStore() {
         return this.remoteStore;
     }
 
@@ -3181,14 +3177,14 @@ public class MapleCharacter extends TacosCharacter {
                 this.getMap().userLeaveField(this);
             }
 
-            final IMaplePlayerShop shop = this.getPlayerShop();
+            final Object shop = this.getPlayerShop();
             if (shop != null) {
-                shop.removeVisitor(this);
-                if (shop.isOwner(this)) {
-                    if (shop.getShopType() == 1 && shop.isAvailable()) {
-                        shop.setOpen(true);
+                ShopDispatch.removeVisitor(shop, this);
+                if (ShopDispatch.isOwner(shop, this)) {
+                    if (ShopDispatch.getShopType(shop) == 1 && ShopDispatch.isAvailable(shop)) {
+                        ShopDispatch.setOpen(shop, true);
                     } else {
-                        shop.closeShop(true, true, 6);
+                        ShopDispatch.closeShop(shop, true, true, 6);
                     }
                 }
             }
@@ -3215,7 +3211,7 @@ public class MapleCharacter extends TacosCharacter {
                 }
                 if (party != null) {
                     chrp.setOnline(false);
-                    OdinWorld.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                    getWorld().getParty().updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
                     if (map != null && party.getLeader().getId() == idz) {
                         MaplePartyCharacter lchr = null;
                         for (MaplePartyCharacter pchr : party.getMembers()) {
@@ -3224,15 +3220,15 @@ public class MapleCharacter extends TacosCharacter {
                             }
                         }
                         if (lchr != null) {
-                            OdinWorld.Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER_DC, lchr);
+                            getWorld().getParty().updateParty(party.getId(), PartyOperation.CHANGE_LEADER_DC, lchr);
                         }
                     }
                 }
                 if (gid > 0) {
-                    OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);
+                    getWorld().getGuild().setGuildMemberOnline(chrg, false, -1);
                 }
                 if (fid > 0) {
-                    OdinWorld.Family.setFamilyMemberOnline(chrf, false, -1);
+                    getWorld().getFamily().setFamilyMemberOnline(chrf, false, -1);
                 }
             } catch (final Exception e) {
             } finally {
@@ -3248,10 +3244,10 @@ public class MapleCharacter extends TacosCharacter {
             try {
                 if (party != null) {
                     chrp.setOnline(false);
-                    OdinWorld.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                    getWorld().getParty().updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
                 }
                 if (gid > 0) {
-                    OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);
+                    getWorld().getGuild().setGuildMemberOnline(chrg, false, -1);
                 }
             } catch (final Exception e) {
             }

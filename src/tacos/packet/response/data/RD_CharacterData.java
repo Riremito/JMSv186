@@ -19,6 +19,10 @@
 package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
+import odin.client.MapleQuestStatus;
+import odin.client.Skill;
+import odin.client.SkillEntry;
+import odin.client.inventory.MapleRing;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -28,9 +32,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.struct.Structure;
+import tacos.shared.TacosShared;
 import tacos.shared.SharedDate;
 
 /**
@@ -139,25 +145,25 @@ public class RD_CharacterData {
             data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 111));
         }
         if ((datamask & 0x100L) != 0) {
-            data.EncodeBuffer(Structure.addSkillInfo(chr));
+            data.EncodeBuffer(addSkillInfo(chr));
         }
         if ((datamask & 0x8000L) != 0) {
             data.EncodeBuffer(chr.getCoolTime().getBufferForLogin(System.currentTimeMillis()), !Config.LessOrEqual(Region.KMS, 3));
         }
         if ((datamask & 0x200L) != 0) {
-            data.EncodeBuffer(Structure.addQuestInfo(chr));
+            data.EncodeBuffer(addQuestInfo(chr));
         }
         if ((datamask & 0x4000L) != 0) {
-            data.EncodeBuffer(Structure.addQuestComplete(chr), !Config.LessOrEqual(Region.KMS, 1));
+            data.EncodeBuffer(addQuestComplete(chr), !Config.LessOrEqual(Region.KMS, 1));
         }
         if ((datamask & 0x400L) != 0) {
             data.Encode2(0); // MiniGameRecord, not 0 -> Encode4 x5
         }
         if ((datamask & 0x800L) != 0) {
-            data.EncodeBuffer(Structure.addRingInfo(chr)); // 2x3
+            data.EncodeBuffer(addRingInfo(chr)); // 2x3
         }
         if ((datamask & 0x1000L) != 0) {
-            data.EncodeBuffer(Structure.addRocksInfo(chr));
+            data.EncodeBuffer(addRocksInfo(chr));
         }
         // please check the teleport rocks above info is in correct position or not.
         if (Config.LessOrEqual(Region.KMS, 46) || Config.LessOrEqual(Region.TWMS, 77)) {
@@ -210,7 +216,7 @@ public class RD_CharacterData {
                     data.Encode2(0, Config.GreaterOrEqual(Region.JMS, 194)); // not 0, Encode2
                 }
                 if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr)); // KMS65, JMS164
+                    data.EncodeBuffer(QuestInfoPacket(chr)); // KMS65, JMS164
                 }
                 if (Config.LessOrEqual(Region.GMS, 66)) {
                     return data.getBytes();
@@ -417,7 +423,7 @@ public class RD_CharacterData {
             case BMS: {
                 // encode order problem.
                 if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr), Config.GreaterOrEqual(Region.BMS, 24));
+                    data.EncodeBuffer(QuestInfoPacket(chr), Config.GreaterOrEqual(Region.BMS, 24));
                 }
                 if ((datamask & 0x80000L) != 0) {
                     data.Encode2(0, Config.GreaterOrEqual(Region.BMS, 24));
@@ -433,7 +439,7 @@ public class RD_CharacterData {
             case KMST: {
                 // KMST330-391
                 if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    data.EncodeBuffer(QuestInfoPacket(chr));
                 }
                 if ((datamask & 0x200000L) != 0 && (chr.getJob() / 100 == 33)) {
                     data.EncodeBuffer(RD_CStage.GW_WildHunterInfo_Encode());
@@ -470,7 +476,7 @@ public class RD_CharacterData {
                     data.Encode4(0); // 00517B60
                 }
                 if ((datamask & 0x40000L) != 0) {
-                    data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+                    data.EncodeBuffer(QuestInfoPacket(chr));
                 }
                 if ((datamask & 0x200000L) != 0 && (chr.getJob() / 100 == 33)) {
                     data.EncodeBuffer(RD_CStage.GW_WildHunterInfo_Encode());
@@ -694,7 +700,7 @@ public class RD_CharacterData {
             data.Encode1(0);
         }
         if ((datamask & 0x100L) != 0) {
-            data.EncodeBuffer(Structure.addSkillInfo(chr));
+            data.EncodeBuffer(addSkillInfo(chr));
         }
         if ((datamask & 0x8000) != 0) {
             data.EncodeBuffer(chr.getCoolTime().getBufferForLogin(System.currentTimeMillis()));
@@ -703,10 +709,10 @@ public class RD_CharacterData {
             data.Encode2(0); // not 0 -> Encode4 x5
         }
         if ((datamask & 0x800L) != 0) {
-            data.EncodeBuffer(Structure.addRingInfo(chr));
+            data.EncodeBuffer(addRingInfo(chr));
         }
         if ((datamask & 0x1000L) != 0) {
-            data.EncodeBuffer(Structure.addRocksInfo(chr));
+            data.EncodeBuffer(addRocksInfo(chr));
         }
         if ((datamask & 0x7CL) != 0) {
             data.Encode2(0); // not 0 -> Encode4, Encode4, Encode2, EncodeStr
@@ -832,19 +838,194 @@ public class RD_CharacterData {
         // 00552C00
         data.Encode8(datamask);
         if ((datamask & 0x200L) != 0) {
-            data.EncodeBuffer(Structure.addQuestInfo(chr));
+            data.EncodeBuffer(addQuestInfo(chr));
         }
         if ((datamask & 0x4000L) != 0) {
-            data.EncodeBuffer(Structure.addQuestComplete(chr));
+            data.EncodeBuffer(addQuestComplete(chr));
         }
         if ((datamask & 0x40000L) != 0) {
-            data.EncodeBuffer(Structure.QuestInfoPacket(chr));
+            data.EncodeBuffer(QuestInfoPacket(chr));
         }
         // 0x400000 QuestCompleteOld
         if ((datamask & 0x400000L) != 0) {
             data.Encode2(0);
         }
 
+        return data.getBytes();
+    }
+
+    public static byte[] addSkillInfo(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+            data.Encode1(1);
+        }
+        final Map<Skill, SkillEntry> skills = chr.getSkills();
+        data.Encode2(skills.size());
+        for (final Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
+            data.Encode4(skill.getKey().getId());
+            data.Encode4(skill.getValue().skillevel);
+
+            // not in v165
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 83)) {
+                data.Encode8(SharedDate.getTimestamp(skill.getValue().expiration));
+            }
+
+            if (TacosShared.is_skill_need_master_level(skill.getKey().getId())) {
+                data.Encode4(skill.getValue().masterlevel);
+            }
+            if (Config.GreaterOrEqual(Region.JMS, 302)) {
+                if (skill.getKey().getId() == 40020002 || skill.getKey().getId() == 80000004) {
+                    data.Encode4(0);
+                }
+            }
+        }
+        if (Config.GreaterOrEqual(Region.KMS, 197)) {
+            data.Encode2(0);
+        }
+        return data.getBytes();
+    }
+
+    public static byte[] addQuestInfo(final MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+        final List<MapleQuestStatus> started = chr.getStartedQuests();
+
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            data.Encode1(0);
+        }
+
+        data.Encode2(started.size());
+        for (final MapleQuestStatus q : started) {
+            data.Encode2(q.getQuest().getId());
+            data.EncodeStr(q.getCustomData() != null ? q.getCustomData() : "");
+        }
+
+        // not in v165, not in v188, but in v194 ???
+        if (Config.Between(Region.JMS, 184, 186)) {
+            data.Encode2(0); // not 0, EncodeStr, EncodeStr
+        }
+
+        if (Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            data.Encode2(0); // not 0, EncodeStr, EncodeStr
+        }
+
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
+            data.Encode2(0);
+        }
+
+        return data.getBytes();
+    }
+
+    public static byte[] addQuestComplete(MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+
+        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+            data.Encode1(0);
+        }
+
+        data.Encode2(chr.getCompletedQuests().size());
+        for (MapleQuestStatus mqs : chr.getCompletedQuests()) {
+            data.Encode2(mqs.getQuest().getId());
+            data.Encode8(SharedDate.getTimestamp(mqs.getCompletionTime()));
+        }
+
+        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+            data.Encode2(0);
+        }
+        return data.getBytes();
+    }
+
+    // v165, v186
+    public static final byte[] addRingInfo(final MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+        SimpleImmutableEntry<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
+        List<MapleRing> cRing = aRing.getKey();
+
+        data.Encode2(cRing.size());
+        // GW_CoupleRecord::Decode, 33 bytes.
+        for (MapleRing ring : cRing) {
+            data.Encode4(ring.getPartnerChrId()); // dwPairCharacterID
+            data.EncodeBuffer(ring.getPartnerName(), 13); // sPairCharacterName
+            data.Encode8(ring.getRingId()); // liSN
+            data.Encode8(ring.getPartnerRingId()); // liPairSN
+        }
+
+        if (Config.LessOrEqual(Region.KMS, 3)) {
+            // nothing
+        } else {
+            // GW_FriendRecord::Decode, 37 bytes.
+            List<MapleRing> fRing = aRing.getValue();
+            data.Encode2(fRing.size());
+            for (MapleRing ring : fRing) {
+                data.Encode4(ring.getPartnerChrId()); // dwPairCharacterID
+                data.EncodeBuffer(ring.getPartnerName(), 13); // sPairCharacterName
+                data.Encode8(ring.getRingId()); // liSN
+                data.Encode8(ring.getPartnerRingId()); // liPairSN
+                data.Encode4(ring.getItemId()); // dwFriendItemID
+            }
+        }
+
+        if (Config.LessOrEqual(Region.KMS, 41)) {
+            // nothing
+        } else {
+            int married = 0;
+            data.Encode2(married);
+            // GW_MarriageRecord::Decode, 48 bytes.
+            for (int i = 0; i < married; i++) {
+                data.Encode4(0); // dwMarriageNo
+                data.Encode4(0); // dwGroomID
+                data.Encode4(0); // dwBrideID
+                data.Encode2(0); // usStatus
+                data.Encode4(0); // nGroomItemID
+                data.Encode4(0); // nBrideItemID
+                data.EncodeBuffer("", 13); // sGroomName
+                data.EncodeBuffer("", 13); // sBrideName
+            }
+        }
+
+        return data.getBytes();
+    }
+
+    public static final byte[] addRocksInfo(final MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+        final int[] mapz = chr.getRegRocks();
+        for (int i = 0; i < 5; i++) { // VIP teleport map
+            data.Encode4(mapz[i]);
+        }
+
+        if (Config.LessOrEqual(Region.KMS, 3)) {
+            return data.getBytes();
+        }
+
+        final int[] map = chr.getRocks();
+        for (int i = 0; i < 10; i++) { // VIP teleport map
+            data.Encode4(map[i]);
+        }
+
+        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+            for (int i = 0; i < 13; i++) {
+                data.Encode4(999999999);
+            }
+        }
+
+        if (Config.GreaterOrEqual(Region.EMS, 73) || Config.GreaterOrEqual(Region.GMS, 111)) {
+            for (int i = 0; i < 13; i++) {
+                data.Encode4(999999999);
+            }
+        }
+
+        return data.getBytes();
+    }
+
+    public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
+        ServerPacket data = new ServerPacket();
+        Map<Integer, String> questinfo = chr.getInfoQuest_Map();
+
+        data.Encode2(questinfo.size());
+        for (final Map.Entry<Integer, String> q : questinfo.entrySet()) {
+            data.Encode2(q.getKey());
+            data.EncodeStr(q.getValue() == null ? "" : q.getValue());
+        }
         return data.getBytes();
     }
 }

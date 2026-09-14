@@ -24,8 +24,10 @@ import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMovePathAttr;
-import odin.server.life.AbstractLoadedMapleLife;
-import odin.server.maps.AnimatedMapleMapObject;
+import odin.server.life.MapleNPC;
+import odin.server.life.MapleMonster;
+import odin.server.maps.MapleSummon;
+import tacos.client.TacosCharacter;
 import tacos.config.Config;
 
 /**
@@ -44,8 +46,15 @@ public class ParseCMovePath {
 
     }
 
-    // mob, player
-    public void update(AbstractLoadedMapleLife life) {
+    // mob
+    public void update(MapleMonster life) {
+        life.setStance(move_end_action);
+        life.setPosition(move_end);
+        life.setFh(move_end_foothold_id);
+    }
+
+    // player (npc)
+    public void update(MapleNPC life) {
         life.setStance(move_end_action);
         life.setPosition(move_end);
         life.setFh(move_end_foothold_id);
@@ -58,8 +67,15 @@ public class ParseCMovePath {
         life.setFh(move_end_foothold_id);
     }
 
-    // dragon, summon
-    public void update(AnimatedMapleMapObject life) {
+    // summon
+    public void update(MapleSummon life) {
+        life.setStance(move_end_action);
+        life.setPosition(move_end);
+        life.setFH(move_end_foothold_id);
+    }
+
+    // dragon
+    public void update(TacosCharacter life) {
         life.setStance(move_end_action);
         life.setPosition(move_end);
         life.setFH(move_end_foothold_id);

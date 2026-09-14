@@ -251,7 +251,12 @@ public class DQ_Guilds {
     public static final class GuildRow {
 
         public final String name;
-        public final int gp, logo, logoColor, logoBG, logoBGColor, capacity;
+        public final int gp;
+        public final int logo;
+        public final int logoColor;
+        public final int logoBG;
+        public final int logoBGColor;
+        public final int capacity;
         public final String[] rankTitles;
         public final int leader;
         public final String notice;

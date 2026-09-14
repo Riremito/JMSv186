@@ -49,19 +49,20 @@ import odin.server.Timer.MapTimer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
-import odin.server.life.Spawns;
+import odin.server.life.SpawnDispatch;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleSummon;
 import odin.server.shops.HiredMerchant;
+import odin.server.shops.MapleMiniGame;
+import odin.server.shops.MaplePlayerShop;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosDragon;
 import tacos.client.TacosSkillPet;
@@ -89,7 +90,7 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 
@@ -100,10 +101,10 @@ import tacos.server.TacosWorld;
 public class TacosMap extends TacosMapData {
 
     protected int channel;
-    protected Map<MapleMapObjectType, LinkedHashMap<Integer, MapleMapObject>> mapobjects;
+    protected Map<MapleMapObjectType, LinkedHashMap<Integer, Object>> mapobjects;
     protected int runningOid = 100000;
     protected List<MapleCharacter> characters = new ArrayList<>();
-    protected List<Spawns> monsterSpawn = new ArrayList<>();
+    protected List<Object> monsterSpawn = new ArrayList<>();
     protected AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
     protected long lastSpawnTime = 0;
     protected boolean isSpawns = true;
@@ -122,7 +123,7 @@ public class TacosMap extends TacosMapData {
         super(mapid);
         this.channel = channel;
 
-        EnumMap<MapleMapObjectType, LinkedHashMap<Integer, MapleMapObject>> objsMap = new EnumMap<>(MapleMapObjectType.class);
+        EnumMap<MapleMapObjectType, LinkedHashMap<Integer, Object>> objsMap = new EnumMap<>(MapleMapObjectType.class);
         EnumMap<MapleMapObjectType, ReentrantReadWriteLock> objlockmap = new EnumMap<>(MapleMapObjectType.class);
         for (MapleMapObjectType type : MapleMapObjectType.values()) {
             objsMap.put(type, new LinkedHashMap<>());
@@ -130,6 +131,126 @@ public class TacosMap extends TacosMapData {
         }
         this.mapobjects = Collections.unmodifiableMap(objsMap);
         this.mapobjectlocks = Collections.unmodifiableMap(objlockmap);
+    }
+
+    // AbstractMapleMapObjectとAbstractPlayerStoreの統合(フラット化)に伴い、
+    // mapobjectsはObject型で格納されるようになったため、位置/ID/種別の取得はここでinstanceof分岐して行う。
+    // 新しくmapobjectsに格納される型を追加した場合は、この4メソッドにも分岐を追加すること。
+    public static Point dispatchGetPosition(Object o) {
+        if (o instanceof MapleMonster) {
+            return ((MapleMonster) o).getPosition();
+        } else if (o instanceof MapleNPC) {
+            return ((MapleNPC) o).getPosition();
+        } else if (o instanceof MapleSummon) {
+            return ((MapleSummon) o).getPosition();
+        } else if (o instanceof TacosCharacter) {
+            return ((TacosCharacter) o).getPosition();
+        } else if (o instanceof MapleMist) {
+            return ((MapleMist) o).getPosition();
+        } else if (o instanceof MapleDynamicPortal) {
+            return ((MapleDynamicPortal) o).getPosition();
+        } else if (o instanceof MapleMapItem) {
+            return ((MapleMapItem) o).getPosition();
+        } else if (o instanceof MapleReactor) {
+            return ((MapleReactor) o).getPosition();
+        } else if (o instanceof MapleDoor) {
+            return ((MapleDoor) o).getPosition();
+        } else if (o instanceof MapleMiniGame) {
+            return ((MapleMiniGame) o).getPosition();
+        } else if (o instanceof MaplePlayerShop) {
+            return ((MaplePlayerShop) o).getPosition();
+        } else if (o instanceof HiredMerchant) {
+            return ((HiredMerchant) o).getPosition();
+        }
+        throw new IllegalArgumentException("dispatchGetPosition: unknown map object type: " + o);
+    }
+
+    public static int dispatchGetObjectId(Object o) {
+        if (o instanceof MapleMonster) {
+            return ((MapleMonster) o).getObjectId();
+        } else if (o instanceof MapleNPC) {
+            return ((MapleNPC) o).getObjectId();
+        } else if (o instanceof MapleSummon) {
+            return ((MapleSummon) o).getObjectId();
+        } else if (o instanceof TacosCharacter) {
+            return ((TacosCharacter) o).getObjectId();
+        } else if (o instanceof MapleMist) {
+            return ((MapleMist) o).getObjectId();
+        } else if (o instanceof MapleDynamicPortal) {
+            return ((MapleDynamicPortal) o).getObjectId();
+        } else if (o instanceof MapleMapItem) {
+            return ((MapleMapItem) o).getObjectId();
+        } else if (o instanceof MapleReactor) {
+            return ((MapleReactor) o).getObjectId();
+        } else if (o instanceof MapleDoor) {
+            return ((MapleDoor) o).getObjectId();
+        } else if (o instanceof MapleMiniGame) {
+            return ((MapleMiniGame) o).getObjectId();
+        } else if (o instanceof MaplePlayerShop) {
+            return ((MaplePlayerShop) o).getObjectId();
+        } else if (o instanceof HiredMerchant) {
+            return ((HiredMerchant) o).getObjectId();
+        }
+        throw new IllegalArgumentException("dispatchGetObjectId: unknown map object type: " + o);
+    }
+
+    public static void dispatchSetObjectId(Object o, int id) {
+        if (o instanceof MapleMonster) {
+            ((MapleMonster) o).setObjectId(id);
+        } else if (o instanceof MapleNPC) {
+            ((MapleNPC) o).setObjectId(id);
+        } else if (o instanceof MapleSummon) {
+            ((MapleSummon) o).setObjectId(id);
+        } else if (o instanceof TacosCharacter) {
+            ((TacosCharacter) o).setObjectId(id);
+        } else if (o instanceof MapleMist) {
+            ((MapleMist) o).setObjectId(id);
+        } else if (o instanceof MapleDynamicPortal) {
+            ((MapleDynamicPortal) o).setObjectId(id);
+        } else if (o instanceof MapleMapItem) {
+            ((MapleMapItem) o).setObjectId(id);
+        } else if (o instanceof MapleReactor) {
+            ((MapleReactor) o).setObjectId(id);
+        } else if (o instanceof MapleDoor) {
+            ((MapleDoor) o).setObjectId(id);
+        } else if (o instanceof MapleMiniGame) {
+            ((MapleMiniGame) o).setObjectId(id);
+        } else if (o instanceof MaplePlayerShop) {
+            ((MaplePlayerShop) o).setObjectId(id);
+        } else if (o instanceof HiredMerchant) {
+            ((HiredMerchant) o).setObjectId(id);
+        } else {
+            throw new IllegalArgumentException("dispatchSetObjectId: unknown map object type: " + o);
+        }
+    }
+
+    public static MapleMapObjectType dispatchGetType(Object o) {
+        if (o instanceof MapleMonster) {
+            return ((MapleMonster) o).getType();
+        } else if (o instanceof MapleNPC) {
+            return ((MapleNPC) o).getType();
+        } else if (o instanceof MapleSummon) {
+            return ((MapleSummon) o).getType();
+        } else if (o instanceof TacosCharacter) {
+            return ((TacosCharacter) o).getType();
+        } else if (o instanceof MapleMist) {
+            return ((MapleMist) o).getType();
+        } else if (o instanceof MapleDynamicPortal) {
+            return ((MapleDynamicPortal) o).getType();
+        } else if (o instanceof MapleMapItem) {
+            return ((MapleMapItem) o).getType();
+        } else if (o instanceof MapleReactor) {
+            return ((MapleReactor) o).getType();
+        } else if (o instanceof MapleDoor) {
+            return ((MapleDoor) o).getType();
+        } else if (o instanceof MapleMiniGame) {
+            return ((MapleMiniGame) o).getType();
+        } else if (o instanceof MaplePlayerShop) {
+            return ((MaplePlayerShop) o).getType();
+        } else if (o instanceof HiredMerchant) {
+            return ((HiredMerchant) o).getType();
+        }
+        throw new IllegalArgumentException("dispatchGetType: unknown map object type: " + o);
     }
 
     public int getChannel() {
@@ -140,7 +261,7 @@ public class TacosMap extends TacosMapData {
         this.isSpawns = fm;
     }
 
-    public List<Spawns> getMonsterSpawn() {
+    public List<Object> getMonsterSpawn() {
         return this.monsterSpawn;
     }
 
@@ -168,27 +289,27 @@ public class TacosMap extends TacosMapData {
     }
 
     // object
-    public List<MapleMapObject> getMapObjects(MapleMapObjectType type) {
-        List<MapleMapObject> mmos = new ArrayList<>();
-        for (MapleMapObject mmo : this.mapobjects.get(type).values()) {
+    public List<Object> getMapObjects(MapleMapObjectType type) {
+        List<Object> mmos = new ArrayList<>();
+        for (Object mmo : this.mapobjects.get(type).values()) {
             mmos.add(mmo);
         }
         return mmos;
     }
 
-    public MapleMapObject getMapObject(int oid, MapleMapObjectType type) {
+    public Object getMapObject(int oid, MapleMapObjectType type) {
         return this.mapobjects.get(type).get(oid);
     }
 
-    public void addMapObject(MapleMapObject mapobject) {
+    public void addMapObject(Object mapobject) {
         this.runningOid++;
-        mapobject.setObjectId(this.runningOid);
-        this.mapobjects.get(mapobject.getType()).put(this.runningOid, mapobject);
+        dispatchSetObjectId(mapobject, this.runningOid);
+        this.mapobjects.get(dispatchGetType(mapobject)).put(this.runningOid, mapobject);
     }
 
-    public void spawnRangedMapObject(MapleMapObject mapobject, ServerPacket packet) {
+    public void spawnRangedMapObject(Object mapobject, ServerPacket packet) {
         for (MapleCharacter player : this.characters) {
-            if (player.getViewRangeSq() < player.getPosition().distanceSq(mapobject.getPosition())) {
+            if (player.getViewRangeSq() < player.getPosition().distanceSq(dispatchGetPosition(mapobject))) {
                 continue;
             }
             // visible object
@@ -197,13 +318,13 @@ public class TacosMap extends TacosMapData {
             if (packet == null) {
                 continue;
             }
-            if (mapobject.getType() == MapleMapObjectType.SUMMON) {
+            if (mapobject instanceof MapleSummon) {
                 MapleSummon summon = (MapleSummon) mapobject;
                 if (summon.isChangedMap() && summon.getOwnerId() != player.getId()) {
                     continue;
                 }
             }
-            if (mapobject.getType() == MapleMapObjectType.ITEM) {
+            if (mapobject instanceof MapleMapItem) {
                 MapleMapItem mitem = (MapleMapItem) mapobject;
                 if (0 < mitem.getQuest() && player.getQuestStatus(mitem.getQuest()) != 1) {
                     continue;
@@ -213,18 +334,18 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public void removeMapObject(MapleMapObject obj) {
-        this.mapobjects.get(obj.getType()).remove(obj.getObjectId());
+    public void removeMapObject(Object obj) {
+        this.mapobjects.get(dispatchGetType(obj)).remove(dispatchGetObjectId(obj));
     }
 
-    public List<MapleMapObject> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> MapObject_types) {
-        List<MapleMapObject> ret = new ArrayList<>();
+    public List<Object> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> MapObject_types) {
+        List<Object> ret = new ArrayList<>();
         for (MapleMapObjectType type : MapObject_types) {
-            Iterator<MapleMapObject> ltr = this.mapobjects.get(type).values().iterator();
-            MapleMapObject obj;
+            Iterator<Object> ltr = this.mapobjects.get(type).values().iterator();
+            Object obj;
             while (ltr.hasNext()) {
                 obj = ltr.next();
-                if (box.contains(obj.getPosition())) {
+                if (box.contains(dispatchGetPosition(obj))) {
                     ret.add(obj);
                 }
             }
@@ -271,7 +392,7 @@ public class TacosMap extends TacosMapData {
     public void setChangeBGM(String wz_path) {
         this.fe_change_bgm = wz_path;
         if (!getChangeBGM().equals("")) {
-            broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, getChangeBGM())));
+            broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
         }
     }
 
@@ -281,7 +402,7 @@ public class TacosMap extends TacosMapData {
 
     public void sendChangeBGM(TacosCharacter chr) {
         if (!getChangeBGM().equals("")) {
-            chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, getChangeBGM())));
+            chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
         }
     }
 
@@ -483,7 +604,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mob
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
             MapleMonster mob = (MapleMonster) mmo;
             int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -502,7 +623,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // npc
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
             MapleNPC npc = (MapleNPC) mmo;
             int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -515,7 +636,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
             HiredMerchant employee = (HiredMerchant) mmo;
             int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -527,7 +648,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // drop
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
             MapleMapItem drop = (MapleMapItem) mmo;
             // quest item.
             int quest_id = drop.getQuest();
@@ -546,7 +667,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mist
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
             MapleMist mist = (MapleMist) mmo;
             int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -558,7 +679,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mystic door
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
             MapleDoor door = (MapleDoor) mmo;
             int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -571,7 +692,7 @@ public class TacosMap extends TacosMapData {
         }
         // mechanic gate
         // pinkbean cake event portal
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
             MapleDynamicPortal instance_portal = (MapleDynamicPortal) mmo;
             int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -583,7 +704,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // reactor
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             MapleReactor reactor = (MapleReactor) mmo;
             int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -633,7 +754,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mob
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
             MapleMonster mob = (MapleMonster) mmo;
             int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -715,7 +836,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mob
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
             MapleMonster mob = (MapleMonster) mmo;
             int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -738,7 +859,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // npc
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
             MapleNPC npc = (MapleNPC) mmo;
             int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -754,7 +875,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
             HiredMerchant employee = (HiredMerchant) mmo;
             int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -769,7 +890,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // drop
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
             MapleMapItem drop = (MapleMapItem) mmo;
             // quest item.
             int quest_id = drop.getQuest();
@@ -791,7 +912,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mist
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
             MapleMist mist = (MapleMist) mmo;
             int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -806,7 +927,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mystic door
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
             MapleDoor door = (MapleDoor) mmo;
             int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -822,7 +943,7 @@ public class TacosMap extends TacosMapData {
         }
         // mechanic gate
         // pinkbean cake event portal
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
             MapleDynamicPortal instance_portal = (MapleDynamicPortal) mmo;
             int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -836,7 +957,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // reactor
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             MapleReactor reactor = (MapleReactor) mmo;
             int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
             if (this.map_split.getSplit() < number) {
@@ -881,7 +1002,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public MapleSummon getSummonByOid(int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
+        Object mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
         if (mmo == null) {
             return null;
         }
@@ -895,7 +1016,7 @@ public class TacosMap extends TacosMapData {
 
     public List<MapleMonster> getAllMonsters() {
         ArrayList<MapleMonster> ret = new ArrayList<>();
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
             ret.add((MapleMonster) mmo);
         }
         return ret;
@@ -903,7 +1024,7 @@ public class TacosMap extends TacosMapData {
 
     public MapleMonster getMonsterById(int id) {
         MapleMonster ret = null;
-        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
+        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
         while (itr.hasNext()) {
             MapleMonster n = (MapleMonster) itr.next();
             if (n.getId() == id) {
@@ -916,7 +1037,7 @@ public class TacosMap extends TacosMapData {
 
     public int countMonsterById(int id) {
         int ret = 0;
-        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
+        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
         while (itr.hasNext()) {
             MapleMonster n = (MapleMonster) itr.next();
             if (n.getId() == id) {
@@ -927,7 +1048,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public MapleMonster getMonsterByOid(int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.MONSTER);
+        Object mmo = getMapObject(oid, MapleMapObjectType.MONSTER);
         if (mmo == null) {
             return null;
         }
@@ -995,7 +1116,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void killAllMonsters(boolean animate) {
-        for (MapleMapObject monstermo : getAllMonsters()) {
+        for (Object monstermo : getAllMonsters()) {
             MapleMonster monster = (MapleMonster) monstermo;
             this.spawnedMonstersOnMap.decrementAndGet();
             monster.setHp(0);
@@ -1005,7 +1126,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public boolean killMonster(int monsId) {
-        for (MapleMapObject mmo : getAllMonsters()) {
+        for (Object mmo : getAllMonsters()) {
             if (((MapleMonster) mmo).getId() == monsId) {
                 this.spawnedMonstersOnMap.decrementAndGet();
                 removeMapObject(mmo);
@@ -1074,14 +1195,14 @@ public class TacosMap extends TacosMapData {
 
     public List<MapleNPC> getAllNPCs() {
         ArrayList<MapleNPC> ret = new ArrayList<>();
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
             ret.add((MapleNPC) mmo);
         }
         return ret;
     }
 
     public boolean containsNPC(int npcid) {
-        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
+        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
         while (itr.hasNext()) {
             MapleNPC n = (MapleNPC) itr.next();
             if (n.getId() == npcid) {
@@ -1092,7 +1213,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public MapleNPC getNPCById(int id) {
-        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
+        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
         while (itr.hasNext()) {
             MapleNPC n = (MapleNPC) itr.next();
             if (n.getId() == id) {
@@ -1103,7 +1224,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public MapleNPC getNPCByOid(int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.NPC);
+        Object mmo = getMapObject(oid, MapleMapObjectType.NPC);
         if (mmo == null) {
             return null;
         }
@@ -1123,7 +1244,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void removeNpc(int npcid) {
-        Iterator<MapleMapObject> itr = mapobjects.get(MapleMapObjectType.NPC).values().iterator();
+        Iterator<Object> itr = mapobjects.get(MapleMapObjectType.NPC).values().iterator();
         while (itr.hasNext()) {
             MapleNPC npc = (MapleNPC) itr.next();
             if (npc.isCustom() && npc.getId() == npcid) {
@@ -1133,23 +1254,23 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public List<MapleMapObject> getAllHiredMerchants() {
-        ArrayList<MapleMapObject> ret = new ArrayList<>();
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+    public List<Object> getAllHiredMerchants() {
+        ArrayList<Object> ret = new ArrayList<>();
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
             ret.add(mmo);
         }
         return ret;
     }
 
     public void spawnMerchant(MapleCharacter chr) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
-            obj.sendSpawnData(chr.getClient());
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
+            ((HiredMerchant) obj).sendSpawnData(chr.getClient());
         }
     }
 
     public List<MapleMapItem> getAllItems() {
         ArrayList<MapleMapItem> ret = new ArrayList<>();
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
             ret.add((MapleMapItem) mmo);
         }
         return ret;
@@ -1159,11 +1280,11 @@ public class TacosMap extends TacosMapData {
         return this.mapobjects.get(MapleMapObjectType.ITEM).size();
     }
 
-    public void spawnMesoDrop(int meso, Point position, MapleMapObject dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+    public void spawnMesoDrop(int meso, Point position, Object dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
         Point droppos = calcDropPos(position, position);
         MapleMapItem mdrop = new MapleMapItem(meso, droppos, dropper, owner, droptype, playerDrop);
         addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, droppos, dropper.getPosition()));
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, droppos, dispatchGetPosition(dropper)));
 
         if (!getEverlast()) {
             mdrop.registerExpire(120000);
@@ -1173,10 +1294,10 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public void spawnMobMesoDrop(int meso, Point position, MapleMapObject dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+    public void spawnMobMesoDrop(int meso, Point position, Object dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
         MapleMapItem mdrop = new MapleMapItem(meso, position, dropper, owner, droptype, playerDrop);
         addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, position, dropper.getPosition()));
+        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, position, dispatchGetPosition(dropper)));
         mdrop.registerExpire(120000);
         if (droptype == 0 || droptype == 1) {
             mdrop.registerFFA(30000);
@@ -1198,9 +1319,9 @@ public class TacosMap extends TacosMapData {
         mdrop.registerExpire(120000);
     }
 
-    public List<MapleMapObject> getAllDoors() {
-        ArrayList<MapleMapObject> ret = new ArrayList<>();
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
+    public List<Object> getAllDoors() {
+        ArrayList<Object> ret = new ArrayList<>();
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
             ret.add(mmo);
         }
         return ret;
@@ -1213,13 +1334,13 @@ public class TacosMap extends TacosMapData {
     }
 
     public void spawnDynamicPortal(MapleCharacter chr) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
             ((MapleDynamicPortal) obj).sendSpawnPacket(chr.getClient());
         }
     }
 
     public MapleDynamicPortal findDynamicPortal(int portal_id) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
             MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
             if (dynamic_portal.getObjectId() == portal_id) {
                 return dynamic_portal;
@@ -1230,7 +1351,7 @@ public class TacosMap extends TacosMapData {
 
     public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
         DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
             MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
 
             DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
@@ -1248,7 +1369,7 @@ public class TacosMap extends TacosMapData {
 
     public List<MapleReactor> getAllReactors() {
         ArrayList<MapleReactor> ret = new ArrayList<>();
-        for (MapleMapObject mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             ret.add((MapleReactor) mmo);
         }
         return ret;
@@ -1256,7 +1377,7 @@ public class TacosMap extends TacosMapData {
 
     public MapleReactor getReactorById(int id) {
         MapleReactor ret = null;
-        Iterator<MapleMapObject> itr = this.mapobjects.get(MapleMapObjectType.REACTOR).values().iterator();
+        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.REACTOR).values().iterator();
         while (itr.hasNext()) {
             MapleReactor n = (MapleReactor) itr.next();
             if (n.getReactorId() == id) {
@@ -1268,7 +1389,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public MapleReactor getReactorByOid(int oid) {
-        MapleMapObject mmo = getMapObject(oid, MapleMapObjectType.REACTOR);
+        Object mmo = getMapObject(oid, MapleMapObjectType.REACTOR);
         if (mmo == null) {
             return null;
         }
@@ -1276,7 +1397,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public MapleReactor getReactorByName(final String name) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             MapleReactor mr = ((MapleReactor) obj);
             if (mr.getName().equalsIgnoreCase(name)) {
                 return mr;
@@ -1295,7 +1416,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void setReactorState(byte state) {
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             ((MapleReactor) obj).forceHitReactor((byte) state);
         }
     }
@@ -1306,14 +1427,14 @@ public class TacosMap extends TacosMapData {
 
     public void shuffleReactors(int first, int last) {
         List<Point> points = new ArrayList<>();
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             MapleReactor mr = (MapleReactor) obj;
             if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
                 points.add(mr.getPosition());
             }
         }
         Collections.shuffle(points);
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             MapleReactor mr = (MapleReactor) obj;
             if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
                 mr.setPosition(points.remove(points.size() - 1));
@@ -1352,7 +1473,7 @@ public class TacosMap extends TacosMapData {
 
     public void reloadReactors() {
         List<MapleReactor> toSpawn = new ArrayList<>();
-        for (MapleMapObject obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
             final MapleReactor reactor = (MapleReactor) obj;
             broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
             reactor.setAlive(false);
@@ -1401,7 +1522,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void returnEverLastItem(final MapleCharacter chr) {
-        for (final MapleMapObject o : getAllItems()) {
+        for (final Object o : getAllItems()) {
             final MapleMapItem item = ((MapleMapItem) o);
             if (item.getOwner() == chr.getId()) {
                 broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.LeaveType.PICK_UP, chr, 0), item.getPosition());
@@ -1552,9 +1673,9 @@ public class TacosMap extends TacosMapData {
 
     public void resetSpawns() {
         boolean changed = false;
-        Iterator<Spawns> sss = monsterSpawn.iterator();
+        Iterator<Object> sss = monsterSpawn.iterator();
         while (sss.hasNext()) {
-            if (sss.next().getCarnivalId() > -1) {
+            if (SpawnDispatch.getCarnivalId(sss.next()) > -1) {
                 sss.remove();
                 changed = true;
             }
@@ -1576,13 +1697,13 @@ public class TacosMap extends TacosMapData {
         if (getFixedMob() > 0) {
             maxRegularSpawn = getFixedMob();
         }
-        Collection<Spawns> newSpawn = new LinkedList<>();
-        Collection<Spawns> newBossSpawn = new LinkedList<>();
-        for (final Spawns s : monsterSpawn) {
-            if (s.getCarnivalTeam() >= 2) {
+        Collection<Object> newSpawn = new LinkedList<>();
+        Collection<Object> newBossSpawn = new LinkedList<>();
+        for (final Object s : monsterSpawn) {
+            if (SpawnDispatch.getCarnivalTeam(s) >= 2) {
                 continue; // Remove carnival spawned mobs
             }
-            if (s.getMonster().getStats().isBoss()) {
+            if (SpawnDispatch.getMonster(s).getStats().isBoss()) {
                 newBossSpawn.add(s);
             } else {
                 newSpawn.add(s);
@@ -1605,8 +1726,8 @@ public class TacosMap extends TacosMapData {
             if (numShouldSpawn > 0) {
                 int spawned = 0;
 
-                for (Spawns spawnPoint : monsterSpawn) {
-                    spawnPoint.spawnMonster(this);
+                for (Object spawnPoint : monsterSpawn) {
+                    SpawnDispatch.spawnMonster(spawnPoint, this);
                     spawned++;
                     if (spawned >= numShouldSpawn) {
                         break;
@@ -1618,12 +1739,12 @@ public class TacosMap extends TacosMapData {
             if (numShouldSpawn > 0) {
                 int spawned = 0;
 
-                List<Spawns> randomSpawn = new ArrayList<>(monsterSpawn);
+                List<Object> randomSpawn = new ArrayList<>(monsterSpawn);
                 Collections.shuffle(randomSpawn);
 
-                for (Spawns spawnPoint : randomSpawn) {
-                    if (spawnPoint.shouldSpawn()) {
-                        spawnPoint.spawnMonster(this);
+                for (Object spawnPoint : randomSpawn) {
+                    if (SpawnDispatch.shouldSpawn(spawnPoint)) {
+                        SpawnDispatch.spawnMonster(spawnPoint, this);
                         spawned++;
                     }
                     if (spawned >= numShouldSpawn) {

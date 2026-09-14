@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import odin.handling.world.OdinWorld;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -392,10 +391,10 @@ public class DQ_Characters {
                             DebugLogger.ErrorLog("deleteCharacter : 2");
                             return false;
                         }
-                        OdinWorld.Guild.deleteGuildCharacter(rs.getInt("guildid"), character_id);
+                        client.getWorld().getGuild().deleteGuildCharacter(rs.getInt("guildid"), character_id);
                     }
                     if (rs.getInt("familyid") > 0) {
-                        OdinWorld.Family.getFamily(rs.getInt("familyid")).leaveFamily(character_id);
+                        client.getWorld().getFamily().getFamily(rs.getInt("familyid")).leaveFamily(character_id);
                     }
                 }
             }
@@ -666,16 +665,23 @@ public class DQ_Characters {
         public final int id;
         public final int level;
         public final int fame;
-        public final int str, dex, luk, intel;
+        public final int str;
+        public final int dex;
+        public final int luk;
+        public final int intel;
         public final int exp;
-        public final int hp, mp, maxhp, maxmp;
+        public final int hp;
+        public final int mp;
+        public final int maxhp;
+        public final int maxmp;
         public final String sp;
         public final int ap;
         public final byte gm;
         public final byte skinColor;
         public final byte gender;
         public final int job;
-        public final int hair, face;
+        public final int hair;
+        public final int face;
         public final int map;
         public final int meso;
         public final int hpApUsed;
@@ -688,7 +694,8 @@ public class DQ_Characters {
         public final String pets;
         public final int subcategory;
         public final int marriageId;
-        public final int currentrep, totalrep;
+        public final int currentrep;
+        public final int totalrep;
         public final String name;
         public final int tama;
 

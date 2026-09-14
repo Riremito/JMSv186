@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.packet.response.struct;
+package tacos.packet.response.builder;
 
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -28,11 +28,11 @@ import java.util.List;
  *
  * @author Riremito
  */
-public class InvOp {
+public class PB_InvOp {
 
     private final List<InvData> idv;
 
-    private InvOp(List<InvData> idv) {
+    private PB_InvOp(List<InvData> idv) {
         this.idv = idv;
     }
 
@@ -68,8 +68,8 @@ public class InvOp {
             return this;
         }
 
-        public InvOp build() {
-            return new InvOp(Collections.unmodifiableList(idv));
+        public PB_InvOp build() {
+            return new PB_InvOp(Collections.unmodifiableList(idv));
         }
     }
 
@@ -78,7 +78,8 @@ public class InvOp {
         public int mode;
         public MapleInventoryType type;
         public Item item;
-        public int src, dst;
+        public int src;
+        public int dst;
 
         public InvData(int mode, MapleInventoryType type, Item item) {
             this.mode = mode;

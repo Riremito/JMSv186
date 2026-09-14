@@ -25,9 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
-import tacos.wz.MapleData;
-import tacos.config.Config;
-import tacos.wz.WzDataTool;
 
 public class Skill {
 
@@ -54,187 +51,52 @@ public class Skill {
         this.name = name;
     }
 
+    public void setElement(final Element element) {
+        this.element = element;
+    }
+
+    public void setLevel(final byte level) {
+        this.level = level;
+    }
+
+    public void setAnimationTime(final int animationTime) {
+        this.animationTime = animationTime;
+    }
+
+    public void setRequiredSkill(final int requiredSkill) {
+        this.requiredSkill = requiredSkill;
+    }
+
+    public void setMasterLevel(final int masterLevel) {
+        this.masterLevel = masterLevel;
+    }
+
+    public void setAction(final boolean action) {
+        this.action = action;
+    }
+
+    public void setInvisible(final boolean invisible) {
+        this.invisible = invisible;
+    }
+
+    public void setChargeSkill(final boolean chargeskill) {
+        this.chargeskill = chargeskill;
+    }
+
+    public void setTimeLimited(final boolean timeLimited) {
+        this.timeLimited = timeLimited;
+    }
+
+    public void addEffect(final MapleStatEffect effect) {
+        this.effects.add(effect);
+    }
+
     public int getId() {
         return id;
     }
 
     public String getName() {
         return name;
-    }
-
-    public static final Skill loadFromData(final int id, final MapleData data) {
-        Skill ret = new Skill(id);
-
-        boolean isBuff = false;
-        final int skillType = WzDataTool.getIntPath("skillType", data, -1);
-        final String elem = WzDataTool.getStringPath("elemAttr", data, null);
-        if (elem != null) {
-            ret.element = Element.getFromChar(elem.charAt(0));
-        } else {
-            ret.element = Element.NEUTRAL;
-        }
-        ret.invisible = WzDataTool.getIntPath("invisible", data, 0) > 0;
-        ret.timeLimited = WzDataTool.getIntPath("timeLimited", data, 0) > 0;
-        ret.masterLevel = WzDataTool.getIntPath("masterLevel", data, 0);
-        final MapleData effect = data.getChildByPath("effect");
-        if (skillType != -1) {
-            if (skillType == 2) {
-                isBuff = true;
-            }
-        } else {
-            final MapleData action_ = data.getChildByPath("action");
-            final MapleData hit = data.getChildByPath("hit");
-            final MapleData ball = data.getChildByPath("ball");
-
-            boolean action = false;
-            if (action_ == null) {
-                if (data.getChildByPath("prepare/action") != null) {
-                    action = true;
-                } else {
-                    switch (id) {
-                        case 5201001:
-                        case 5221009:
-                        case 4221001:
-                        case 4321001:
-                        case 4321000:
-                        case 4331001: //o_o
-                        case 3101005: //or is this really hack
-                            action = true;
-                            break;
-                    }
-                }
-            } else {
-                action = true;
-            }
-            ret.action = action;
-            isBuff = effect != null && hit == null && ball == null;
-            isBuff |= action_ != null && WzDataTool.getStringPath("0", action_, "").equals("alert2");
-            switch (id) {
-                case 2301002: // heal is alert2 but not overtime...
-                case 2111003: // poison mist
-                case 12111005: // Flame Gear
-                case 2111002: // explosion
-                case 4211001: // chakra
-                case 2121001: // Big bang
-                case 2221001: // Big bang
-                case 2321001: // Big bang
-                    isBuff = false;
-                    break;
-                case 1004: // monster riding
-                case 10001004:
-                case 20001004:
-                case 20011004:
-                case 30001004:
-                case 1026: //Soaring
-                case 10001026:
-                case 20001026:
-                case 20011026:
-                case 30001026:
-                case 9101004: // hide is a buff -.- atleast for us o.o"
-                case 1111002: // combo
-                case 4211003: // pickpocket
-                case 4111001: // mesoup
-                case 15111002: // Super Transformation
-                case 5111005: // Transformation
-                case 5121003: // Super Transformation
-                case 13111005: // Alabtross
-                case 21000000: // Aran Combo
-                case 21101003: // Body Pressure
-                case 5211001: // Pirate octopus summon
-                case 5211002:
-                case 5220002: // wrath of the octopi
-                case 5001005: //dash
-                case 15001003:
-                case 5211006: //homing beacon
-                case 5220011: //bullseye
-                case 5110001: //energy charge
-                case 15100004:
-                case 5121009: //speed infusion
-                case 15111005:
-
-                case 22121001: //element reset
-                case 22131001: //magic shield
-                case 22141002: //magic booster
-                case 22151002: //killer wing
-                case 22151003: //magic resist
-                case 22171000: //maple warrior
-                case 22171004: //hero will
-                case 22181000: //onyx blessing
-                case 22181003: //soul stone
-                //case 22121000:
-                //case 22141003:
-                //case 22151001:
-                //case 22161002:
-                case 4331003: //owl spirit
-                case 15101006: //spark
-                case 15111006: //spark
-                case 4321000: //tornado spin
-                case 1320009: //beholder's buff.. passive
-                case 35120000:
-                case 35001002: //TEMP. mech
-                case 9001004: // hide
-                case 4341002:
-
-                case 32001003: //dark aura
-                case 32120000:
-                case 32101002: //blue aura
-                case 32110000:
-                case 32101003: //yellow aura
-                case 32120001:
-                case 35101007: //perfect armor
-                case 35121006: //satellite safety
-                case 35001001: //flame
-                case 35101009:
-                case 35111007: //TEMP
-                case 35121005: //missile
-                case 35121013:
-                //case 35111004: //siege
-                case 35101002: //TEMP
-                case 33111003: //puppet ?
-                case 1211009:
-                case 1111007:
-                case 1311007: //magic,armor,atk crash
-                    isBuff = true;
-                    break;
-            }
-        }
-        ret.chargeskill = data.getChildByPath("keydown") != null;
-
-        if (Config.PreBB()) {
-            for (final MapleData level : data.getChildByPath("level")) {
-                ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
-            }
-        } else {
-            // v188+
-            MapleData common = data.getChildByPath("common");
-            if (common != null) {
-                // after bigbang updates
-                int max_level = WzDataTool.getIntPath("maxLevel", common, -1);
-                for (int level = 1; level <= max_level; level++) {
-                    ret.effects.add(MapleStatEffect.loadSkillEffectFromData(common, id, isBuff, (byte) level, level)); // 変数
-                }
-            } else {
-                // old skills
-                for (final MapleData level : data.getChildByPath("level")) {
-                    ret.effects.add(MapleStatEffect.loadSkillEffectFromData(level, id, isBuff, Byte.parseByte(level.getName())));
-                }
-            }
-        }
-
-        final MapleData reqDataRoot = data.getChildByPath("req");
-        if (reqDataRoot != null) {
-            for (final MapleData reqData : reqDataRoot.getChildren()) {
-                ret.requiredSkill = Integer.parseInt(reqData.getName());
-                ret.level = (byte) WzDataTool.getInt(reqData, 1);
-            }
-        }
-        ret.animationTime = 0;
-        if (effect != null) {
-            for (final MapleData effectEntry : effect) {
-                ret.animationTime += WzDataTool.getIntPath("delay", effectEntry, 0);
-            }
-        }
-        return ret;
     }
 
     public MapleStatEffect getEffect(final int level) {

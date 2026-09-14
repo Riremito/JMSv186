@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import tacos.wz.MapleData;
-import odin.server.life.AbstractLoadedMapleLife;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
@@ -380,38 +379,55 @@ public class TacosMapData {
                 DebugLogger.ErrorLog("loadLife : failed" + mapData.getParent().getName());
                 continue;
             }
-            AbstractLoadedMapleLife myLife = MapleLifeFactory.getLife(npc_id, type);
+            Object myLife = MapleLifeFactory.getLife(npc_id, type);
 
             if (myLife == null) {
                 DebugLogger.ErrorLog("loadLife : failed, " + npc_id);
                 continue;
             }
 
-            myLife.setCy(WzDataTool.getInt(life.getChildByPath("cy")));
+            final int lifeCy = WzDataTool.getInt(life.getChildByPath("cy"));
             MapleData dF = life.getChildByPath("f");
-            if (dF != null) {
-                myLife.setF(WzDataTool.getInt(dF));
-            }
-            myLife.setFh(WzDataTool.getInt(life.getChildByPath("fh")));
-            myLife.setRx0(WzDataTool.getInt(life.getChildByPath("rx0")));
-            myLife.setRx1(WzDataTool.getInt(life.getChildByPath("rx1")));
-            myLife.setPosition(new Point(WzDataTool.getInt(life.getChildByPath("x")), WzDataTool.getInt(life.getChildByPath("y"))));
+            final Integer lifeF = dF != null ? WzDataTool.getInt(dF) : null;
+            final int lifeFh = WzDataTool.getInt(life.getChildByPath("fh"));
+            final int lifeRx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
+            final int lifeRx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
+            final Point lifePos = new Point(WzDataTool.getInt(life.getChildByPath("x")), WzDataTool.getInt(life.getChildByPath("y")));
 
             if (myLife instanceof MapleNPC) {
-                myLife.setF(myLife.getF() == 1 ? 0 : 1); // wz data left right to packet data left right.
+                MapleNPC npc = (MapleNPC) myLife;
+                npc.setCy(lifeCy);
+                if (lifeF != null) {
+                    npc.setF(lifeF);
+                }
+                npc.setFh(lifeFh);
+                npc.setRx0(lifeRx0);
+                npc.setRx1(lifeRx1);
+                npc.setPosition(lifePos);
+
+                npc.setF(npc.getF() == 1 ? 0 : 1); // wz data left right to packet data left right.
                 if (WzDataTool.getIntPath("hide", life, 0) == 1) {
-                    myLife.setHide(true);
+                    npc.setHide(true);
                     DebugLogger.InfoLog("loadLife : hidden npc, " + npc_id);
                 }
-                if (DWI_Block.checkNpc(myLife.getId())) {
+                if (DWI_Block.checkNpc(npc.getId())) {
                     DebugLogger.InfoLog("loadLife : blocked npc, " + npc_id);
                     continue;
                 }
-                ((MapleMap) this).addMapObject(myLife);
+                ((MapleMap) this).addMapObject(npc);
             }
             if (myLife instanceof MapleMonster) {
                 MapleMonster mob = (MapleMonster) myLife;
-                if (DWI_Block.checkMob(myLife.getId())) {
+                mob.setCy(lifeCy);
+                if (lifeF != null) {
+                    mob.setF(lifeF);
+                }
+                mob.setFh(lifeFh);
+                mob.setRx0(lifeRx0);
+                mob.setRx1(lifeRx1);
+                mob.setPosition(lifePos);
+
+                if (DWI_Block.checkMob(mob.getId())) {
                     DebugLogger.InfoLog("loadLife : blocked mob, " + npc_id);
                     continue;
                 }

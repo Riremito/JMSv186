@@ -29,7 +29,7 @@ import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
 import tacos.server.map.TacosMap;
 
-public class SpawnPointAreaBoss extends Spawns {
+public class SpawnPointAreaBoss {
 
     private MapleMonster monster;
     private Point pos1;
@@ -54,22 +54,18 @@ public class SpawnPointAreaBoss extends Spawns {
         }
     }
 
-    @Override
     public final MapleMonster getMonster() {
         return monster;
     }
 
-    @Override
     public final byte getCarnivalTeam() {
         return -1;
     }
 
-    @Override
     public final int getCarnivalId() {
         return -1;
     }
 
-    @Override
     public final boolean shouldSpawn() {
         if (mobTime < 0) {
             return false;
@@ -80,13 +76,11 @@ public class SpawnPointAreaBoss extends Spawns {
         return nextPossibleSpawn <= System.currentTimeMillis();
     }
 
-    @Override
     public final Point getPosition() {
         final int rand = Randomizer.nextInt(3);
         return rand == 0 ? pos1 : rand == 1 ? pos2 : pos3;
     }
 
-    @Override
     public final MapleMonster spawnMonster(TacosMap map) {
         final MapleMonster mob = new MapleMonster(monster);
 
@@ -114,7 +108,6 @@ public class SpawnPointAreaBoss extends Spawns {
         return mob;
     }
 
-    @Override
     public final int getMobTime() {
         return mobTime;
     }

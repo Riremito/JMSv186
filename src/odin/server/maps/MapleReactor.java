@@ -28,7 +28,27 @@ import odin.server.Timer.MapTimer;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.script.TacosScriptReactor;
 
-public class MapleReactor extends AbstractMapleMapObject {
+public class MapleReactor {
+
+    private Point position = new Point();
+    private int objectId;
+
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    public void setPosition(Point position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
 
     private int rid;
     private int delay;
@@ -85,7 +105,6 @@ public class MapleReactor extends AbstractMapleMapObject {
         return delay;
     }
 
-    @Override
     public MapleMapObjectType getType() {
         return MapleMapObjectType.REACTOR;
     }
@@ -106,12 +125,10 @@ public class MapleReactor extends AbstractMapleMapObject {
         return stats.getReactItem(state);
     }
 
-    @Override
     public void sendDestroyData(TacosClient client) {
         client.SendPacket(ResCReactorPool.ReactorLeaveField(this));
     }
 
-    @Override
     public void sendSpawnData(TacosClient client) {
         client.SendPacket(ResCReactorPool.ReactorEnterField(this));
     }

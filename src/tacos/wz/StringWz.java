@@ -42,6 +42,97 @@ public class StringWz extends WzXML {
         return md;
     }
 
+    public MapleData getItemStringData(final int itemId) {
+        String cat = null;
+        MapleData data;
+
+        if (itemId >= 5010000) {
+            data = getCash();
+        } else if (itemId >= 2000000 && itemId < 3000000) {
+            data = getConsume();
+        } else if ((itemId >= 1142000 && itemId < 1143000) || (itemId >= 1010000 && itemId < 1040000) || (itemId >= 1122000 && itemId < 1123000)) {
+            data = getEqp();
+            cat = "Accessory";
+        } else if (itemId >= 1000000 && itemId < 1010000) {
+            data = getEqp();
+            cat = "Cap";
+        } else if (itemId >= 1102000 && itemId < 1103000) {
+            data = getEqp();
+            cat = "Cape";
+        } else if (itemId >= 1040000 && itemId < 1050000) {
+            data = getEqp();
+            cat = "Coat";
+        } else if (itemId >= 20000 && itemId < 22000) {
+            data = getEqp();
+            cat = "Face";
+        } else if (itemId >= 1080000 && itemId < 1090000) {
+            data = getEqp();
+            cat = "Glove";
+        } else if (itemId >= 30000 && itemId < 32000) {
+            data = getEqp();
+            cat = "Hair";
+        } else if (itemId >= 1050000 && itemId < 1060000) {
+            data = getEqp();
+            cat = "Longcoat";
+        } else if (itemId >= 1060000 && itemId < 1070000) {
+            data = getEqp();
+            cat = "Pants";
+        } else if (itemId >= 1610000 && itemId < 1660000) {
+            data = getEqp();
+            cat = "Mechanic";
+        } else if (itemId >= 1802000 && itemId < 1810000) {
+            data = getEqp();
+            cat = "PetEquip";
+        } else if (itemId >= 1920000 && itemId < 2000000) {
+            data = getEqp();
+            cat = "Dragon";
+        } else if (itemId >= 1112000 && itemId < 1120000) {
+            data = getEqp();
+            cat = "Ring";
+        } else if (itemId >= 1092000 && itemId < 1100000) {
+            data = getEqp();
+            cat = "Shield";
+        } else if (itemId >= 1070000 && itemId < 1080000) {
+            data = getEqp();
+            cat = "Shoes";
+        } else if (itemId >= 1900000 && itemId < 1920000) {
+            data = getEqp();
+            cat = "Taming";
+        } else if (itemId >= 1300000 && itemId < 1800000) {
+            data = getEqp();
+            cat = "Weapon";
+        } else if (itemId >= 4000000 && itemId < 5000000) {
+            data = getEtc();
+        } else if (itemId >= 3000000 && itemId < 4000000) {
+            data = getIns();
+        } else if (itemId >= 5000000 && itemId < 5010000) {
+            data = getPet();
+        } else {
+            return null;
+        }
+        if (cat == null) {
+            return data.getChildByPath(String.valueOf(itemId));
+        } else {
+            return data.getChildByPath(cat + "/" + itemId);
+        }
+    }
+
+    public String loadItemName(final int itemId) {
+        final MapleData strings = getItemStringData(itemId);
+        if (strings == null) {
+            return null;
+        }
+        return WzDataTool.getStringPath("name", strings, null);
+    }
+
+    public String loadItemMsg(final int itemId) {
+        final MapleData strings = getItemStringData(itemId);
+        if (strings == null) {
+            return null;
+        }
+        return WzDataTool.getStringPath("msg", strings, null);
+    }
+
     public MapleData getMob() {
         return getData("Mob.img");
     }
@@ -50,12 +141,24 @@ public class StringWz extends WzXML {
         return getData("Npc.img");
     }
 
+    public String getNpcName(int npc_id) {
+        return WzDataTool.getStringPath(npc_id + "/name", getNpc(), "MISSINGNO");
+    }
+
     public MapleData getMap() {
         return getData("Map.img");
     }
 
     public MapleData getSkill() {
         return getData("Skill.img");
+    }
+
+    public String getSkillName(int skill_id) {
+        MapleData skillroot = getSkill().getChildByPath(String.format("%07d", skill_id));
+        if (skillroot != null) {
+            return WzDataTool.getString(skillroot.getChildByPath("name"), "");
+        }
+        return null;
     }
 
     private MapleData img_Item = null; // JMS131

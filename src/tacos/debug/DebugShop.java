@@ -29,7 +29,7 @@ import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.struct.InvOp;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.wz.MapleData;
@@ -349,7 +349,7 @@ public class DebugShop {
 
         chr.gainMeso(-rechager_price, false);
         item.setQuantity((short) ss.item_slot_max);
-        chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().update(MapleInventoryType.USE, item).build()));
+        chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, item).build()));
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeSuccess));
         return true;
     }

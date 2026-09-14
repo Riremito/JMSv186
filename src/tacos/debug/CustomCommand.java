@@ -25,7 +25,7 @@ import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.ResCField;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.ops.OpsFieldEffect;
 import odin.server.Randomizer;
 import tacos.wz.WzDataStorage;
@@ -77,11 +77,11 @@ public class CustomCommand {
                 return true;
             }
             case "/slot": {
-                chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "miro/frame")));
-                chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "miro/RR1/" + Randomizer.nextInt(4))));
-                chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "miro/RR2/" + Randomizer.nextInt(4))));
-                chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "miro/RR3/" + Randomizer.nextInt(5))));
-                chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "quest2288/" + Randomizer.nextInt(9)))); // test bgm
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/frame").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR1/" + Randomizer.nextInt(4)).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR2/" + Randomizer.nextInt(4)).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR3/" + Randomizer.nextInt(5)).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("quest2288/" + Randomizer.nextInt(9)).build())); // test bgm
                 return true;
             }
             case "/wh": {

@@ -17,7 +17,6 @@ import odin.client.status.MonsterStatusEffect;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
 import java.util.Arrays;
-import odin.server.maps.MapleMapObject;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
@@ -370,13 +369,13 @@ public class MapleStatEffect {
         return ret;
     }
 
-    public void applyPassive(MapleCharacter applyto, MapleMapObject obj) {
+    public void applyPassive(MapleCharacter applyto, Object obj) {
         if (makeChanceResult()) {
             switch (sourceid) { // MP eater
                 case 2100000:
                 case 2200000:
                 case 2300000:
-                    if (obj == null || obj.getType() != MapleMapObjectType.MONSTER) {
+                    if (!(obj instanceof MapleMonster)) {
                         return;
                     }
                     MapleMonster mob = (MapleMonster) obj; // x is absorb percentage
@@ -586,9 +585,9 @@ public class MapleStatEffect {
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            final List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
+            final List<Object> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
 
-            for (final MapleMapObject affectedmo : affecteds) {
+            for (final Object affectedmo : affecteds) {
                 final MapleCharacter affected = (MapleCharacter) affectedmo;
 
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
@@ -612,10 +611,10 @@ public class MapleStatEffect {
 
     private final void applyMonsterBuff(final MapleCharacter applyfrom) {
         final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        final List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
+        final List<Object> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
         int i = 0;
 
-        for (final MapleMapObject mo : affected) {
+        for (final Object mo : affected) {
             if (makeChanceResult()) {
                 for (Map.Entry<MonsterStatus, Integer> stat : getMonsterStati().entrySet()) {
                     ((MapleMonster) mo).applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);

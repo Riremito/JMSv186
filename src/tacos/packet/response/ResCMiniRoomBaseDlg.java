@@ -32,9 +32,9 @@ import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
-import odin.server.shops.AbstractPlayerStore;
+import odin.server.shops.ShopDispatch;
+import tacos.server.map.TacosMap;
 import odin.server.shops.HiredMerchant;
-import odin.server.shops.IMaplePlayerShop;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
@@ -86,7 +86,7 @@ public class ResCMiniRoomBaseDlg {
                 sp.Encode4((16 * 60 * 60 + 52 * 60) * 1000); // 商店終了 / 07:07
                 sp.Encode1(0); // 0 = already opened, 1 = open
                 sp.Encode1(hm.getBoughtItems().size());
-                for (AbstractPlayerStore.BoughtItem item_sold : hm.getBoughtItems()) {
+                for (HiredMerchant.BoughtItem item_sold : hm.getBoughtItems()) {
                     sp.Encode4(item_sold.id);
                     sp.Encode2(item_sold.quantity); // quanty
                     sp.Encode4(item_sold.totalPrice); // price
@@ -464,7 +464,7 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode4(merch.getTimeLeft());
             sp.Encode1(firstTime ? 1 : 0);
             sp.Encode1(merch.getBoughtItems().size());
-            for (AbstractPlayerStore.BoughtItem SoldItem : merch.getBoughtItems()) {
+            for (HiredMerchant.BoughtItem SoldItem : merch.getBoughtItems()) {
                 sp.Encode4(SoldItem.id);
                 sp.Encode2(SoldItem.quantity); // number of purchased
                 sp.Encode4(SoldItem.totalPrice); // total price
@@ -566,8 +566,8 @@ public class ResCMiniRoomBaseDlg {
     public static ServerPacket getPlayerStore(final MapleCharacter chr, final boolean firstTime) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
-        IMaplePlayerShop ips = chr.getPlayerShop();
-        switch (ips.getShopType()) {
+        Object ips = chr.getPlayerShop();
+        switch (ShopDispatch.getShopType(ips)) {
             case 2:
                 sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
                 sp.Encode1(OpsMiniRoomType.MR_PersonalShop.get());
@@ -585,13 +585,13 @@ public class ResCMiniRoomBaseDlg {
                 break;
         }
 
-        sp.Encode2(ips.getVisitorSlot(chr));
-        sp.EncodeBuffer(RD_AvatarLook.Encode(((MaplePlayerShop) ips).getMCOwner()));
-        sp.EncodeStr(ips.getOwnerName());
+        sp.Encode2(ShopDispatch.getVisitorSlot(ips, chr));
+        sp.EncodeBuffer(RD_AvatarLook.Encode(ShopDispatch.getMCOwner(ips)));
+        sp.EncodeStr(ShopDispatch.getOwnerName(ips));
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87) || Config.PostBB()) {
-            sp.Encode2(((MaplePlayerShop) ips).getMCOwner().getJob());
+            sp.Encode2(ShopDispatch.getMCOwner(ips).getJob());
         }
-        for (final SimpleImmutableEntry<Byte, MapleCharacter> storechr : ips.getVisitors()) {
+        for (final SimpleImmutableEntry<Byte, MapleCharacter> storechr : ShopDispatch.getVisitors(ips)) {
             sp.Encode1(storechr.getKey());
             sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getValue()));
             sp.EncodeStr(storechr.getValue().getName());
@@ -600,10 +600,10 @@ public class ResCMiniRoomBaseDlg {
             }
         }
         sp.Encode1(-1);
-        sp.EncodeStr(ips.getDescription());
+        sp.EncodeStr(ShopDispatch.getDescription(ips));
         sp.Encode1(10);
-        sp.Encode1(ips.getItems().size());
-        for (final MaplePlayerShopItem item : ips.getItems()) {
+        sp.Encode1(ShopDispatch.getItems(ips).size());
+        for (final MaplePlayerShopItem item : ShopDispatch.getItems(ips)) {
             sp.Encode2(item.bundles);
             sp.Encode2(item.item.getQuantity());
             sp.Encode4(item.price);
@@ -630,15 +630,15 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopItemUpdate(final IMaplePlayerShop shop) {
+    public static ServerPacket shopItemUpdate(final Object shop) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.PSP_Refresh.get());
-        if (shop.getShopType() == 1) {
+        if (ShopDispatch.getShopType(shop) == 1) {
             sp.Encode4(0);
         }
-        sp.Encode1(shop.getItems().size());
-        for (final MaplePlayerShopItem item : shop.getItems()) {
+        sp.Encode1(ShopDispatch.getItems(shop).size());
+        for (final MaplePlayerShopItem item : ShopDispatch.getItems(shop)) {
             sp.Encode2(item.bundles);
             sp.Encode2(item.item.getQuantity());
             sp.Encode4(item.price);
