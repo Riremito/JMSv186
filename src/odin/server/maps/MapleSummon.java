@@ -28,7 +28,27 @@ import odin.server.MapleStatEffect;
 import tacos.packet.ops.OpsAssist;
 import tacos.packet.ops.OpsMoveAbility;
 
-public class MapleSummon extends AbstractMapleMapObject {
+public class MapleSummon {
+
+    private Point position = new Point();
+    private int objectId;
+
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    public void setPosition(Point position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
 
     private int stance;
     private int foothold_id;
@@ -83,11 +103,9 @@ public class MapleSummon extends AbstractMapleMapObject {
         }
     }
 
-    @Override
     public final void sendSpawnData(final TacosClient client) {
     }
 
-    @Override
     public final void sendDestroyData(final TacosClient client) {
         client.SendPacket(ResCSummonedPool.SummonedLeaveField(this, false));
     }
@@ -183,7 +201,6 @@ public class MapleSummon extends AbstractMapleMapObject {
         return OpsAssist.ASSIST_ATTACK;
     }
 
-    @Override
     public final MapleMapObjectType getType() {
         return MapleMapObjectType.SUMMON;
     }

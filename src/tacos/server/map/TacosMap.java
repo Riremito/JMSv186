@@ -49,14 +49,13 @@ import odin.server.Timer.MapTimer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
-import odin.server.life.Spawns;
+import odin.server.life.SpawnDispatch;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleReactor;
@@ -105,7 +104,7 @@ public class TacosMap extends TacosMapData {
     protected Map<MapleMapObjectType, LinkedHashMap<Integer, Object>> mapobjects;
     protected int runningOid = 100000;
     protected List<MapleCharacter> characters = new ArrayList<>();
-    protected List<Spawns> monsterSpawn = new ArrayList<>();
+    protected List<Object> monsterSpawn = new ArrayList<>();
     protected AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
     protected long lastSpawnTime = 0;
     protected boolean isSpawns = true;
@@ -138,8 +137,14 @@ public class TacosMap extends TacosMapData {
     // mapobjectsはObject型で格納されるようになったため、位置/ID/種別の取得はここでinstanceof分岐して行う。
     // 新しくmapobjectsに格納される型を追加した場合は、この4メソッドにも分岐を追加すること。
     public static Point dispatchGetPosition(Object o) {
-        if (o instanceof AbstractMapleMapObject) {
-            return ((AbstractMapleMapObject) o).getPosition();
+        if (o instanceof MapleMonster) {
+            return ((MapleMonster) o).getPosition();
+        } else if (o instanceof MapleNPC) {
+            return ((MapleNPC) o).getPosition();
+        } else if (o instanceof MapleSummon) {
+            return ((MapleSummon) o).getPosition();
+        } else if (o instanceof TacosCharacter) {
+            return ((TacosCharacter) o).getPosition();
         } else if (o instanceof MapleMist) {
             return ((MapleMist) o).getPosition();
         } else if (o instanceof MapleDynamicPortal) {
@@ -161,8 +166,14 @@ public class TacosMap extends TacosMapData {
     }
 
     public static int dispatchGetObjectId(Object o) {
-        if (o instanceof AbstractMapleMapObject) {
-            return ((AbstractMapleMapObject) o).getObjectId();
+        if (o instanceof MapleMonster) {
+            return ((MapleMonster) o).getObjectId();
+        } else if (o instanceof MapleNPC) {
+            return ((MapleNPC) o).getObjectId();
+        } else if (o instanceof MapleSummon) {
+            return ((MapleSummon) o).getObjectId();
+        } else if (o instanceof TacosCharacter) {
+            return ((TacosCharacter) o).getObjectId();
         } else if (o instanceof MapleMist) {
             return ((MapleMist) o).getObjectId();
         } else if (o instanceof MapleDynamicPortal) {
@@ -184,8 +195,14 @@ public class TacosMap extends TacosMapData {
     }
 
     public static void dispatchSetObjectId(Object o, int id) {
-        if (o instanceof AbstractMapleMapObject) {
-            ((AbstractMapleMapObject) o).setObjectId(id);
+        if (o instanceof MapleMonster) {
+            ((MapleMonster) o).setObjectId(id);
+        } else if (o instanceof MapleNPC) {
+            ((MapleNPC) o).setObjectId(id);
+        } else if (o instanceof MapleSummon) {
+            ((MapleSummon) o).setObjectId(id);
+        } else if (o instanceof TacosCharacter) {
+            ((TacosCharacter) o).setObjectId(id);
         } else if (o instanceof MapleMist) {
             ((MapleMist) o).setObjectId(id);
         } else if (o instanceof MapleDynamicPortal) {
@@ -208,8 +225,14 @@ public class TacosMap extends TacosMapData {
     }
 
     public static MapleMapObjectType dispatchGetType(Object o) {
-        if (o instanceof AbstractMapleMapObject) {
-            return ((AbstractMapleMapObject) o).getType();
+        if (o instanceof MapleMonster) {
+            return ((MapleMonster) o).getType();
+        } else if (o instanceof MapleNPC) {
+            return ((MapleNPC) o).getType();
+        } else if (o instanceof MapleSummon) {
+            return ((MapleSummon) o).getType();
+        } else if (o instanceof TacosCharacter) {
+            return ((TacosCharacter) o).getType();
         } else if (o instanceof MapleMist) {
             return ((MapleMist) o).getType();
         } else if (o instanceof MapleDynamicPortal) {
@@ -238,7 +261,7 @@ public class TacosMap extends TacosMapData {
         this.isSpawns = fm;
     }
 
-    public List<Spawns> getMonsterSpawn() {
+    public List<Object> getMonsterSpawn() {
         return this.monsterSpawn;
     }
 
@@ -1650,9 +1673,9 @@ public class TacosMap extends TacosMapData {
 
     public void resetSpawns() {
         boolean changed = false;
-        Iterator<Spawns> sss = monsterSpawn.iterator();
+        Iterator<Object> sss = monsterSpawn.iterator();
         while (sss.hasNext()) {
-            if (sss.next().getCarnivalId() > -1) {
+            if (SpawnDispatch.getCarnivalId(sss.next()) > -1) {
                 sss.remove();
                 changed = true;
             }
@@ -1674,13 +1697,13 @@ public class TacosMap extends TacosMapData {
         if (getFixedMob() > 0) {
             maxRegularSpawn = getFixedMob();
         }
-        Collection<Spawns> newSpawn = new LinkedList<>();
-        Collection<Spawns> newBossSpawn = new LinkedList<>();
-        for (final Spawns s : monsterSpawn) {
-            if (s.getCarnivalTeam() >= 2) {
+        Collection<Object> newSpawn = new LinkedList<>();
+        Collection<Object> newBossSpawn = new LinkedList<>();
+        for (final Object s : monsterSpawn) {
+            if (SpawnDispatch.getCarnivalTeam(s) >= 2) {
                 continue; // Remove carnival spawned mobs
             }
-            if (s.getMonster().getStats().isBoss()) {
+            if (SpawnDispatch.getMonster(s).getStats().isBoss()) {
                 newBossSpawn.add(s);
             } else {
                 newSpawn.add(s);
@@ -1703,8 +1726,8 @@ public class TacosMap extends TacosMapData {
             if (numShouldSpawn > 0) {
                 int spawned = 0;
 
-                for (Spawns spawnPoint : monsterSpawn) {
-                    spawnPoint.spawnMonster(this);
+                for (Object spawnPoint : monsterSpawn) {
+                    SpawnDispatch.spawnMonster(spawnPoint, this);
                     spawned++;
                     if (spawned >= numShouldSpawn) {
                         break;
@@ -1716,12 +1739,12 @@ public class TacosMap extends TacosMapData {
             if (numShouldSpawn > 0) {
                 int spawned = 0;
 
-                List<Spawns> randomSpawn = new ArrayList<>(monsterSpawn);
+                List<Object> randomSpawn = new ArrayList<>(monsterSpawn);
                 Collections.shuffle(randomSpawn);
 
-                for (Spawns spawnPoint : randomSpawn) {
-                    if (spawnPoint.shouldSpawn()) {
-                        spawnPoint.spawnMonster(this);
+                for (Object spawnPoint : randomSpawn) {
+                    if (SpawnDispatch.shouldSpawn(spawnPoint)) {
+                        SpawnDispatch.spawnMonster(spawnPoint, this);
                         spawned++;
                     }
                     if (spawned >= numShouldSpawn) {

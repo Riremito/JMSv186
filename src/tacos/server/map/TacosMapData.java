@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import tacos.wz.MapleData;
-import odin.server.maps.AbstractMapleMapObject;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
@@ -380,7 +379,7 @@ public class TacosMapData {
                 DebugLogger.ErrorLog("loadLife : failed" + mapData.getParent().getName());
                 continue;
             }
-            AbstractMapleMapObject myLife = MapleLifeFactory.getLife(npc_id, type);
+            Object myLife = MapleLifeFactory.getLife(npc_id, type);
 
             if (myLife == null) {
                 DebugLogger.ErrorLog("loadLife : failed, " + npc_id);

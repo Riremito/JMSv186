@@ -30,7 +30,7 @@ import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.maps.MapleReactor;
 import tacos.server.map.TacosMap;
 
-public class SpawnPoint extends Spawns {
+public class SpawnPoint {
 
     private MapleMonster monster;
     private Point pos;
@@ -67,27 +67,22 @@ public class SpawnPoint extends Spawns {
         this.carnival = c;
     }
 
-    @Override
     public final Point getPosition() {
         return pos;
     }
 
-    @Override
     public final MapleMonster getMonster() {
         return monster;
     }
 
-    @Override
     public final byte getCarnivalTeam() {
         return carnivalTeam;
     }
 
-    @Override
     public final int getCarnivalId() {
         return carnival;
     }
 
-    @Override
     public final boolean shouldSpawn() {
         if (mobTime < 0) {
             return false;
@@ -100,7 +95,6 @@ public class SpawnPoint extends Spawns {
         return nextPossibleSpawn <= System.currentTimeMillis();
     }
 
-    @Override
     public final MapleMonster spawnMonster(TacosMap map) {
         final MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(pos);
@@ -140,7 +134,6 @@ public class SpawnPoint extends Spawns {
         return mob;
     }
 
-    @Override
     public final int getMobTime() {
         return mobTime;
     }

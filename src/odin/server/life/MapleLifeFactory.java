@@ -24,14 +24,13 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import tacos.wz.WzXML;
-import odin.server.maps.AbstractMapleMapObject;
 
 public class MapleLifeFactory {
 
     private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
     private static Map<Integer, String> npcNames = new HashMap<>();
 
-    public static AbstractMapleMapObject getLife(int id, String type) {
+    public static Object getLife(int id, String type) {
         if (type.equalsIgnoreCase("n")) {
             return getNPC(id);
         } else if (type.equalsIgnoreCase("m")) {

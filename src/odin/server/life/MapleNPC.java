@@ -20,12 +20,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
+import java.awt.Point;
 import tacos.client.TacosClient;
 import odin.server.MapleShopFactory;
 import odin.server.maps.MapleMapObjectType;
-import odin.server.maps.AbstractMapleMapObject;
 
-public class MapleNPC extends AbstractMapleMapObject {
+public class MapleNPC {
+
+    private Point position = new Point();
+    private int objectId;
+
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    public void setPosition(Point position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
 
     private int stance;
     private int foothold_id;
@@ -134,15 +154,12 @@ public class MapleNPC extends AbstractMapleMapObject {
         MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(client);
     }
 
-    @Override
     public void sendSpawnData(TacosClient client) {
     }
 
-    @Override
     public void sendDestroyData(TacosClient client) {
     }
 
-    @Override
     public MapleMapObjectType getType() {
         return MapleMapObjectType.NPC;
     }

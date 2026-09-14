@@ -55,14 +55,33 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
-import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
 
-public class MapleMonster extends AbstractMapleMapObject {
+public class MapleMonster {
+
+    private Point position = new Point();
+    private int objectId;
+
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    public void setPosition(Point position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
 
     private int stance;
     private int foothold_id;
@@ -493,8 +512,7 @@ public class MapleMonster extends AbstractMapleMapObject {
         sponge = new WeakReference<>(null);
         if (oldSponge != null && oldSponge.isAlive()) {
             boolean set = true;
-            for (AbstractMapleMapObject mon : map.getAllMonsters()) {
-                MapleMonster mons = (MapleMonster) mon;
+            for (MapleMonster mons : map.getAllMonsters()) {
                 if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getLinkOid() == oldSponge.getObjectId())) { //sponge was this, please update
                     set = false;
                     break;
@@ -547,8 +565,7 @@ public class MapleMonster extends AbstractMapleMapObject {
                 }
                 if (spongy != null) {
                     map.spawnRevives(spongy, this.getObjectId());
-                    for (AbstractMapleMapObject mon : map.getAllMonsters()) {
-                        MapleMonster mons = (MapleMonster) mon;
+                    for (MapleMonster mons : map.getAllMonsters()) {
                         if (mons.getObjectId() != spongy.getObjectId() && (mons.getSponge() == this || mons.getLinkOid() == this.getObjectId())) { //sponge was this, please update
                             mons.setSponge(spongy);
                             mons.setLinkOid(spongy.getObjectId());
@@ -687,7 +704,6 @@ public class MapleMonster extends AbstractMapleMapObject {
         this.controllerKnowsAboutAggro = controllerKnowsAboutAggro;
     }
 
-    @Override
     public void sendSpawnData(TacosClient client) {
         if (!isAlive()) {
             return;
@@ -708,7 +724,6 @@ public class MapleMonster extends AbstractMapleMapObject {
         }
     }
 
-    @Override
     public void sendDestroyData(TacosClient client) {
         if (lastNode == -1) {
             client.SendPacket(ResCMobPool.MobLeaveField(this, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
@@ -753,7 +768,6 @@ public class MapleMonster extends AbstractMapleMapObject {
         return sb.toString();
     }
 
-    @Override
     public final MapleMapObjectType getType() {
         return MapleMapObjectType.MONSTER;
     }

@@ -42,7 +42,7 @@ import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MapleNPC;
 import odin.server.life.MonsterDropEntry;
 import odin.server.life.PlayerNPC;
-import odin.server.life.Spawns;
+import odin.server.life.SpawnDispatch;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
@@ -457,8 +457,8 @@ public class DebugCommand {
             }
             case "/md2": {
                 ArrayList<Integer> mob_ids = new ArrayList<>();
-                for (Spawns sp : map.getMonsterSpawn()) {
-                    int mob_id = sp.getMonster().getId();
+                for (Object sp : map.getMonsterSpawn()) {
+                    int mob_id = SpawnDispatch.getMonster(sp).getId();
                     if (!mob_ids.contains(mob_id)) {
                         mob_ids.add(mob_id);
                     }
@@ -1179,8 +1179,8 @@ public class DebugCommand {
 
         List<Integer> mob_ids = new ArrayList<>();
         List<Integer> mob_counts = new ArrayList<>();
-        for (Spawns s : map.getMonsterSpawn()) {
-            int id = s.getMonster().getId();
+        for (Object s : map.getMonsterSpawn()) {
+            int id = SpawnDispatch.getMonster(s).getId();
             int index = mob_ids.indexOf(id);
             if (index != -1) {
                 mob_counts.set(index, mob_counts.get(index) + 1);

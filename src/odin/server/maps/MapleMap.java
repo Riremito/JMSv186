@@ -41,7 +41,7 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleLifeFactory;
-import odin.server.life.Spawns;
+import odin.server.life.SpawnDispatch;
 import odin.server.life.SpawnPoint;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
@@ -518,8 +518,8 @@ public final class MapleMap extends TacosMap {
                 final Point newpos = calcPointBelow(new Point(mp.x, mp.y));
                 newpos.y -= 1;
                 boolean found = false;
-                for (Spawns s : monsterSpawn) {
-                    if (s.getCarnivalId() > -1 && (mp.team == -1 || s.getCarnivalTeam() == mp.team) && s.getPosition().x == newpos.x && s.getPosition().y == newpos.y) {
+                for (Object s : monsterSpawn) {
+                    if (SpawnDispatch.getCarnivalId(s) > -1 && (mp.team == -1 || SpawnDispatch.getCarnivalTeam(s) == mp.team) && SpawnDispatch.getPosition(s).x == newpos.x && SpawnDispatch.getPosition(s).y == newpos.y) {
                         found = true;
                         break; //this point has already been used.
                     }
