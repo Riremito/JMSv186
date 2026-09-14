@@ -40,7 +40,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleReactor;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.SavedLocationType;
 import odin.server.maps.Event_DojoAgent;
 import odin.server.life.MapleMonster;
@@ -343,7 +342,7 @@ public abstract class OdinAbstractPlayerInteraction {
         MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactors()) {
+        for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
                 react.forceStartReactor(client);
@@ -356,7 +355,7 @@ public abstract class OdinAbstractPlayerInteraction {
         MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactors()) {
+        for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
                 react.hitReactor(client);
@@ -369,7 +368,7 @@ public abstract class OdinAbstractPlayerInteraction {
         MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactors()) {
+        for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
             if (react.getReactorId() == id) {
                 react.hitReactor(client);
@@ -779,7 +778,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean haveMonster(final int mobid) {
-        for (MapleMapObject obj : client.getPlayer().getMap().getAllMonsters()) {
+        for (Object obj : client.getPlayer().getMap().getAllMonsters()) {
             final MapleMonster mob = (MapleMonster) obj;
             if (mob.getId() == mobid) {
                 return true;

@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleDoor;
-import odin.server.maps.MapleMapObject;
 
 /**
  *
@@ -41,7 +40,7 @@ public class ReqCTownPortalPool {
         int door_character_id = cp.Decode4();
         byte unk1 = cp.Decode1();
 
-        for (MapleMapObject obj : chr.getMap().getAllDoors()) {
+        for (Object obj : chr.getMap().getAllDoors()) {
             final MapleDoor door = (MapleDoor) obj;
             if (door.getOwnerId() == door_character_id) {
                 chr.enterTownPortal(door);

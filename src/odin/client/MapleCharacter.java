@@ -92,11 +92,10 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleSummon;
 import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
-import odin.server.shops.IMaplePlayerShop;
+import odin.server.shops.ShopDispatch;
 import odin.server.CashShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.MapleCarnivalChallenge;
@@ -183,7 +182,7 @@ public class MapleCharacter extends TacosCharacter {
     private List<MapleDoor> doors;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private transient Set<MapleMonster> controlled;
-    private transient Set<MapleMapObject> visibleMapObjects;
+    private transient Set<Object> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
     private transient Map<Integer, MapleSummon> summons;
@@ -193,9 +192,9 @@ public class MapleCharacter extends TacosCharacter {
     private transient MapleShop shop;
     private transient MapleTrade trade;
     private byte[] petStore;
-    private transient IMaplePlayerShop playerShop;
+    private transient Object playerShop;
     // 雇用商人
-    private IMaplePlayerShop remoteStore = null;
+    private Object remoteStore = null;
     private MapleParty party;
     private transient ScheduledFuture<?> fairySchedule;
     private transient ScheduledFuture<?> mapTimeLimitTask;
@@ -1721,11 +1720,11 @@ public class MapleCharacter extends TacosCharacter {
         throw new UnsupportedOperationException();
     }
 
-    public void addVisibleMapObject(MapleMapObject mo) {
+    public void addVisibleMapObject(Object mo) {
         visibleMapObjects.add(mo);
     }
 
-    public void removeVisibleMapObject(MapleMapObject mo) {
+    public void removeVisibleMapObject(Object mo) {
         visibleMapObjects.remove(mo);
     }
 
@@ -2285,25 +2284,23 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public IMaplePlayerShop getPlayerShop() {
+    public Object getPlayerShop() {
         return playerShop;
     }
 
     public HiredMerchant getMyHiredMerchant() {
-        if (playerShop == null) {
+        if (!(playerShop instanceof HiredMerchant)) {
             return null;
         }
-        if (playerShop.getShopType() != 1) {
-            return null;
-        }
-        if (!playerShop.isOwner(this)) {
+        final HiredMerchant merchant = (HiredMerchant) playerShop;
+        if (!merchant.isOwner(this)) {
             return null;
         }
 
-        return (HiredMerchant) playerShop;
+        return merchant;
     }
 
-    public void setPlayerShop(IMaplePlayerShop playerShop) {
+    public void setPlayerShop(Object playerShop) {
         this.playerShop = playerShop;
     }
 
@@ -2880,9 +2877,9 @@ public class MapleCharacter extends TacosCharacter {
             getPyramidSubway().dispose(this);
         }
         if (playerShop != null && !dc) {
-            playerShop.removeVisitor(this);
-            if (playerShop.isOwner(this)) {
-                playerShop.setOpen(true);
+            ShopDispatch.removeVisitor(playerShop, this);
+            if (ShopDispatch.isOwner(playerShop, this)) {
+                ShopDispatch.setOpen(playerShop, true);
             }
         }
         if (!getDoors().isEmpty()) {
@@ -3003,11 +3000,11 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // 雇用商人
-    public void setRemoteStore(IMaplePlayerShop playerShop) {
+    public void setRemoteStore(Object playerShop) {
         this.remoteStore = playerShop;
     }
 
-    public IMaplePlayerShop getRemoteStore() {
+    public Object getRemoteStore() {
         return this.remoteStore;
     }
 
@@ -3180,14 +3177,14 @@ public class MapleCharacter extends TacosCharacter {
                 this.getMap().userLeaveField(this);
             }
 
-            final IMaplePlayerShop shop = this.getPlayerShop();
+            final Object shop = this.getPlayerShop();
             if (shop != null) {
-                shop.removeVisitor(this);
-                if (shop.isOwner(this)) {
-                    if (shop.getShopType() == 1 && shop.isAvailable()) {
-                        shop.setOpen(true);
+                ShopDispatch.removeVisitor(shop, this);
+                if (ShopDispatch.isOwner(shop, this)) {
+                    if (ShopDispatch.getShopType(shop) == 1 && ShopDispatch.isAvailable(shop)) {
+                        ShopDispatch.setOpen(shop, true);
                     } else {
-                        shop.closeShop(true, true, 6);
+                        ShopDispatch.closeShop(shop, true, true, 6);
                     }
                 }
             }

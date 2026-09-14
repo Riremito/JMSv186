@@ -19,9 +19,9 @@
 package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
-import odin.server.shops.AbstractPlayerStore;
-import odin.server.shops.IMaplePlayerShop;
+import odin.server.shops.ShopDispatch;
 import tacos.packet.ServerPacket;
+import tacos.server.map.TacosMap;
 
 /**
  *
@@ -33,7 +33,7 @@ public class RD_Structure {
     public static final byte[] AnnounceBox(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (chr.getPlayerShop() != null && chr.getPlayerShop().isOwner(chr) && chr.getPlayerShop().getShopType() != 1 && chr.getPlayerShop().isAvailable()) {
+        if (chr.getPlayerShop() != null && ShopDispatch.isOwner(chr.getPlayerShop(), chr) && ShopDispatch.getShopType(chr.getPlayerShop()) != 1 && ShopDispatch.isAvailable(chr.getPlayerShop())) {
             data.EncodeBuffer(Interaction(chr.getPlayerShop()));
         } else {
             data.Encode1(0);
@@ -43,20 +43,20 @@ public class RD_Structure {
     }
 
     // addInteraction
-    public static final byte[] Interaction(IMaplePlayerShop shop) {
+    public static final byte[] Interaction(Object shop) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode1(shop.getGameType());
-        data.Encode4(((AbstractPlayerStore) shop).getObjectId());
-        data.EncodeStr(shop.getDescription());
-        if (shop.getShopType() != 1) {
-            data.Encode1(shop.getPassword().length() > 0 ? 1 : 0); //password = false
+        data.Encode1(ShopDispatch.getGameType(shop));
+        data.Encode4(TacosMap.dispatchGetObjectId(shop));
+        data.EncodeStr(ShopDispatch.getDescription(shop));
+        if (ShopDispatch.getShopType(shop) != 1) {
+            data.Encode1(ShopDispatch.getPassword(shop).length() > 0 ? 1 : 0); //password = false
         }
-        data.Encode1(shop.getItemId() % 10);
-        data.Encode1(shop.getSize()); //current size
-        data.Encode1(shop.getMaxSize()); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
-        if (shop.getShopType() != 1) {
-            data.Encode1(shop.isOpen() ? 0 : 1);
+        data.Encode1(ShopDispatch.getItemId(shop) % 10);
+        data.Encode1(ShopDispatch.getSize(shop)); //current size
+        data.Encode1(ShopDispatch.getMaxSize(shop)); //full slots... 4 = 4-1=3 = has slots, 1-1=0 = no slots
+        if (ShopDispatch.getShopType(shop) != 1) {
+            data.Encode1(ShopDispatch.isOpen(shop) ? 0 : 1);
         }
 
         return data.getBytes();

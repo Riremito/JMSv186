@@ -55,14 +55,105 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObject;
+import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
 
-public class MapleMonster extends AbstractLoadedMapleLife {
+public class MapleMonster extends AbstractMapleMapObject {
+
+    private int stance;
+    private int foothold_id;
+    private int id;
+    private int f;
+    private int fh;
+    private int originFh;
+    private int cy;
+    private int rx0;
+    private int rx1;
+    private boolean hide;
+
+    public int getStance() {
+        return stance;
+    }
+
+    public void setStance(int stance) {
+        this.stance = stance;
+    }
+
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    public void setFH(int foothold_id) {
+        this.foothold_id = foothold_id;
+    }
+
+    public boolean isFacingLeft() {
+        return getStance() % 2 != 0;
+    }
+
+    public int getFacingDirection() {
+        return getStance() % 2;
+    }
+
+    public int getF() {
+        return f;
+    }
+
+    public void setF(int f) {
+        this.f = f;
+    }
+
+    public void setHide(boolean hide) {
+        this.hide = hide;
+    }
+
+    public int getOriginFh() {
+        return originFh;
+    }
+
+    public void setOriginFh(int originFh) {
+        this.originFh = originFh;
+    }
+
+    public int getFh() {
+        return fh;
+    }
+
+    public void setFh(int fh) {
+        this.fh = fh;
+    }
+
+    public void setCy(int cy) {
+        this.cy = cy;
+    }
+
+    public int getRx0() {
+        return rx0;
+    }
+
+    public void setRx0(int rx0) {
+        this.rx0 = rx0;
+    }
+
+    public int getRx1() {
+        return rx1;
+    }
+
+    public void setRx1(int rx1) {
+        this.rx1 = rx1;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     private MapleMonsterStats stats;
     private OverrideMonsterStats ostats = null;
@@ -93,12 +184,19 @@ public class MapleMonster extends AbstractLoadedMapleLife {
     private ScheduledFuture<?> dropItemSchedule;
 
     public MapleMonster(final int id, final MapleMonsterStats stats) {
-        super(id);
+        this.id = id;
         initWithStats(stats);
     }
 
     public MapleMonster(final MapleMonster monster) {
-        super(monster);
+        this.id = monster.id;
+        this.f = monster.f;
+        this.hide = monster.hide;
+        this.fh = monster.fh;
+        this.originFh = monster.fh;
+        this.cy = monster.cy;
+        this.rx0 = monster.rx0;
+        this.rx1 = monster.rx1;
         initWithStats(monster.stats);
     }
 
@@ -395,7 +493,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
         sponge = new WeakReference<>(null);
         if (oldSponge != null && oldSponge.isAlive()) {
             boolean set = true;
-            for (MapleMapObject mon : map.getAllMonsters()) {
+            for (AbstractMapleMapObject mon : map.getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mon;
                 if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getLinkOid() == oldSponge.getObjectId())) { //sponge was this, please update
                     set = false;
@@ -449,7 +547,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 }
                 if (spongy != null) {
                     map.spawnRevives(spongy, this.getObjectId());
-                    for (MapleMapObject mon : map.getAllMonsters()) {
+                    for (AbstractMapleMapObject mon : map.getAllMonsters()) {
                         MapleMonster mons = (MapleMonster) mon;
                         if (mons.getObjectId() != spongy.getObjectId() && (mons.getSponge() == this || mons.getLinkOid() == this.getObjectId())) { //sponge was this, please update
                             mons.setSponge(spongy);

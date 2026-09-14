@@ -28,7 +28,34 @@ import odin.server.MapleStatEffect;
 import tacos.packet.ops.OpsAssist;
 import tacos.packet.ops.OpsMoveAbility;
 
-public class MapleSummon extends AbstractAnimatedMapleMapObject {
+public class MapleSummon extends AbstractMapleMapObject {
+
+    private int stance;
+    private int foothold_id;
+
+    public int getStance() {
+        return stance;
+    }
+
+    public void setStance(int stance) {
+        this.stance = stance;
+    }
+
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    public void setFH(int foothold_id) {
+        this.foothold_id = foothold_id;
+    }
+
+    public boolean isFacingLeft() {
+        return getStance() % 2 != 0;
+    }
+
+    public int getFacingDirection() {
+        return getStance() % 2;
+    }
 
     private final int ownerid;
     private final int skillLevel;

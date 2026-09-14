@@ -39,7 +39,7 @@ import odin.constants.GameConstants;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.server.MapleItemInformationProvider;
-import odin.server.maps.AbstractAnimatedMapleMapObject;
+import odin.server.maps.AbstractMapleMapObject;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
 import tacos.config.Config;
@@ -91,7 +91,34 @@ import tacos.wz.WzDataStorage;
  *
  * @author Riremito
  */
-public class TacosCharacter extends AbstractAnimatedMapleMapObject {
+public class TacosCharacter extends AbstractMapleMapObject {
+
+    private int stance;
+    private int foothold_id;
+
+    public int getStance() {
+        return stance;
+    }
+
+    public void setStance(int stance) {
+        this.stance = stance;
+    }
+
+    public int getFH() {
+        return this.foothold_id;
+    }
+
+    public void setFH(int foothold_id) {
+        this.foothold_id = foothold_id;
+    }
+
+    public boolean isFacingLeft() {
+        return getStance() % 2 != 0;
+    }
+
+    public int getFacingDirection() {
+        return getStance() % 2;
+    }
 
     protected TacosClient client;
     protected int id;

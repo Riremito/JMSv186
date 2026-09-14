@@ -173,7 +173,7 @@ public final class MapleMap extends TacosMap {
                 }
             }
             if (makeZakReal) {
-                for (final MapleMapObject object : monsters) {
+                for (final Object object : monsters) {
                     final MapleMonster mons = ((MapleMonster) object);
                     if (mons.getId() == 8800000) {
                         final Point pos = mons.getPosition();
@@ -205,14 +205,14 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (mobid == 8820008) { //wipe out statues and respawn
-            for (final MapleMapObject mmo : getAllMonsters()) {
+            for (final Object mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
                 if (mons.getLinkOid() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
                 }
             }
         } else if (mobid >= 8820010 && mobid <= 8820014) {
-            for (final MapleMapObject mmo : getAllMonsters()) {
+            for (final Object mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
                 if (mons.getId() != 8820000 && mons.getObjectId() != monster.getObjectId() && mons.getLinkOid() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
@@ -316,7 +316,7 @@ public final class MapleMap extends TacosMap {
 
                     @Override
                     public void run() {
-                        for (final MapleMapObject mo : getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.MONSTER))) {
+                        for (final Object mo : getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.MONSTER))) {
                             if (mist.makeChanceResult()) {
                                 ((MapleMonster) mo).applyStatus(owner, new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, duration, false);
                             }
@@ -329,7 +329,7 @@ public final class MapleMap extends TacosMap {
 
                     @Override
                     public void run() {
-                        for (final MapleMapObject mo : getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
+                        for (final Object mo : getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
                             if (mist.makeChanceResult()) {
                                 final MapleCharacter chr = ((MapleCharacter) mo);
                                 chr.addMP((int) (mist.getSource().getX() * (chr.getStat().getMaxMp() / 100.0)));
@@ -366,12 +366,12 @@ public final class MapleMap extends TacosMap {
         activateItemReactors(mdrop, chr.getClient());
     }
 
-    public void spawnItemDrop(MapleMapObject dropper, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+    public void spawnItemDrop(Object dropper, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
         MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
         addMapObject(drop);
-        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, dropper.getPosition()));
-        broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, dropper.getPosition())); // enable pick up for new players
+        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, TacosMap.dispatchGetPosition(dropper)));
+        broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, TacosMap.dispatchGetPosition(dropper))); // enable pick up for new players
         if (!getEverlast()) {
             drop.registerExpire(120000);
             activateItemReactors(drop, owner.getClient());
@@ -475,7 +475,7 @@ public final class MapleMap extends TacosMap {
 
         mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
         try {
-            for (final MapleMapObject o : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            for (final Object o : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
                 final MapleReactor react = (MapleReactor) o;
 
                 if (react.getReactorType() == 100) {

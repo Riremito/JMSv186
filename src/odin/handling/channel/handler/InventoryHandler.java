@@ -39,10 +39,8 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.StructRewardItem;
 import odin.server.maps.SavedLocationType;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
-import odin.server.shops.IMaplePlayerShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
@@ -326,45 +324,36 @@ public class InventoryHandler {
                 final MapleMap mapp = chr.findMap(map);
                 client.getPlayer().changeMap(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
-                List<MapleMapObject> objects;
+                List<Object> objects;
                 switch (OWL_ID) {
                     case 0:
                         objects = mapp.getAllHiredMerchants();
-                        for (MapleMapObject ob : objects) {
-                            if (ob instanceof IMaplePlayerShop) {
-                                final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
-                                if (ips instanceof HiredMerchant) {
-                                    final HiredMerchant merch = (HiredMerchant) ips;
-                                    if (merch.getOwnerId() == id) {
-                                        merchant = merch;
-                                        break;
-                                    }
+                        for (Object ob : objects) {
+                            if (ob instanceof HiredMerchant) {
+                                final HiredMerchant merch = (HiredMerchant) ob;
+                                if (merch.getOwnerId() == id) {
+                                    merchant = merch;
+                                    break;
                                 }
                             }
                         }
                         break;
                     case 1:
                         objects = mapp.getAllHiredMerchants();
-                        for (MapleMapObject ob : objects) {
-                            if (ob instanceof IMaplePlayerShop) {
-                                final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
-                                if (ips instanceof HiredMerchant) {
-                                    final HiredMerchant merch = (HiredMerchant) ips;
-                                    if (merch.getStoreId() == id) {
-                                        merchant = merch;
-                                        break;
-                                    }
+                        for (Object ob : objects) {
+                            if (ob instanceof HiredMerchant) {
+                                final HiredMerchant merch = (HiredMerchant) ob;
+                                if (merch.getStoreId() == id) {
+                                    merchant = merch;
+                                    break;
                                 }
                             }
                         }
                         break;
                     default:
-                        final MapleMapObject ob = mapp.getMapObject(id, MapleMapObjectType.HIRED_MERCHANT);
-                        if (ob instanceof IMaplePlayerShop) {
-                            final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
-                            if (ips instanceof HiredMerchant) {
-                                merchant = (HiredMerchant) ips;
-                            }
+                        final Object ob = mapp.getMapObject(id, MapleMapObjectType.HIRED_MERCHANT);
+                        if (ob instanceof HiredMerchant) {
+                            merchant = (HiredMerchant) ob;
                         }
                         break;
                 }

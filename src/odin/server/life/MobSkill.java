@@ -31,7 +31,6 @@ import java.util.LinkedList;
 import odin.client.MapleCharacter;
 import odin.client.status.MonsterStatus;
 import java.util.EnumMap;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 
@@ -145,9 +144,9 @@ public class MobSkill {
                 break;
             case 114:
                 if (lt != null && rb != null && skill && monster != null) {
-                    List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
+                    List<Object> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
                     final int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
-                    for (MapleMapObject mons : objects) {
+                    for (Object mons : objects) {
                         ((MapleMonster) mons).heal(hp, getY(), true);
                     }
                 } else if (monster != null) {
@@ -336,7 +335,7 @@ public class MobSkill {
         return monster.getMap().getPlayersInRectAndInList(bounds, players);
     }
 
-    private List<MapleMapObject> getObjectsInRange(MapleMonster monster, MapleMapObjectType objectType) {
+    private List<Object> getObjectsInRange(MapleMonster monster, MapleMapObjectType objectType) {
         final Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
         List<MapleMapObjectType> objectTypes = new ArrayList<>();
         objectTypes.add(objectType);

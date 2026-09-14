@@ -31,7 +31,27 @@ import tacos.packet.response.ResCTownPortalPool;
 import odin.server.Randomizer;
 import tacos.server.map.TacosPortal;
 
-public class MapleDoor extends AbstractMapleMapObject {
+public class MapleDoor {
+
+    private Point position = new Point();
+    private int objectId;
+
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    public void setPosition(Point position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
 
     private WeakReference<MapleCharacter> owner;
     private MapleMap map_town;
@@ -108,7 +128,7 @@ public class MapleDoor extends AbstractMapleMapObject {
             }
         }
         // already used
-        for (final MapleMapObject obj : map_town.getAllDoors()) {
+        for (final Object obj : map_town.getAllDoors()) {
             MapleDoor door = (MapleDoor) obj;
             freePortals.remove(door.getTownPortal());
         }
@@ -119,7 +139,6 @@ public class MapleDoor extends AbstractMapleMapObject {
         return freePortals.get(Randomizer.nextInt(freePortals.size()));
     }
 
-    @Override
     public final void sendSpawnData(final TacosClient client) {
         if (getOwner() == null) {
             return;
@@ -133,7 +152,6 @@ public class MapleDoor extends AbstractMapleMapObject {
         }
     }
 
-    @Override
     public final void sendDestroyData(final TacosClient client) {
         if (getOwner() == null) {
             return;
@@ -162,7 +180,6 @@ public class MapleDoor extends AbstractMapleMapObject {
         return map_field;
     }
 
-    @Override
     public final MapleMapObjectType getType() {
         return MapleMapObjectType.DOOR;
     }

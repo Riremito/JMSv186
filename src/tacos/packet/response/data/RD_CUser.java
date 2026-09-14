@@ -23,8 +23,8 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
-import odin.server.shops.AbstractPlayerStore;
-import odin.server.shops.IMaplePlayerShop;
+import odin.server.shops.ShopDispatch;
+import tacos.server.map.TacosMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
@@ -165,7 +165,7 @@ public class RD_CUser {
 
     public static byte[] CUserRemote_Init_JMS147(MapleCharacter chr) {
         MapleGuild guild = null;
-        IMaplePlayerShop shop = chr.getPlayerShop();
+        Object shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
@@ -198,16 +198,16 @@ public class RD_CUser {
         data.Encode4(chr.getMount().getLevel()); // m_nTamingMobLevel
         data.Encode4(chr.getMount().getExp()); // m_nTamingMobExp
         data.Encode4(chr.getMount().getFatigue()); // m_nTamingMobFatigue
-        data.Encode1((shop != null) ? shop.getGameType() : 0); // m_nMiniRoomType
-        if (shop != null && shop.getGameType() != 0) {
+        data.Encode1((shop != null) ? ShopDispatch.getGameType(shop) : 0); // m_nMiniRoomType
+        if (shop != null && ShopDispatch.getGameType(shop) != 0) {
             // AnnounceBox & Interaction : TODO Remove
-            data.Encode4(((AbstractPlayerStore) shop).getObjectId()); // m_dwMiniRoomSN
-            data.EncodeStr(shop.getDescription()); // m_sMiniRoomTitle
-            data.Encode1((shop.getPassword().length() != 0) ? 1 : 0); // m_bPrivate
-            data.Encode1(shop.getItemId() % 10); // m_nGameKind
-            data.Encode1(shop.getSize()); // m_nCurUsers
-            data.Encode1(shop.getMaxSize()); // m_nMaxUsers
-            data.Encode1(shop.isOpen() ? 0 : 1); // m_bGameOn
+            data.Encode4(TacosMap.dispatchGetObjectId(shop)); // m_dwMiniRoomSN
+            data.EncodeStr(ShopDispatch.getDescription(shop)); // m_sMiniRoomTitle
+            data.Encode1((ShopDispatch.getPassword(shop).length() != 0) ? 1 : 0); // m_bPrivate
+            data.Encode1(ShopDispatch.getItemId(shop) % 10); // m_nGameKind
+            data.Encode1(ShopDispatch.getSize(shop)); // m_nCurUsers
+            data.Encode1(ShopDispatch.getMaxSize(shop)); // m_nMaxUsers
+            data.Encode1(ShopDispatch.isOpen(shop) ? 0 : 1); // m_bGameOn
         }
         boolean is_adboard = (chr.getADBoard() != null) && (0 < chr.getADBoard().length());
         data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote
@@ -242,7 +242,7 @@ public class RD_CUser {
 
     public static byte[] CUserRemote_Init_JMS302(MapleCharacter chr) {
         MapleGuild guild = null;
-        IMaplePlayerShop shop = chr.getPlayerShop();
+        Object shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
@@ -314,16 +314,16 @@ public class RD_CUser {
         data.Encode4(chr.getMount().getLevel()); // m_nTamingMobLevel
         data.Encode4(chr.getMount().getExp()); // m_nTamingMobExp
         data.Encode4(chr.getMount().getFatigue()); // m_nTamingMobFatigue
-        data.Encode1((shop != null) ? shop.getGameType() : 0); // m_nMiniRoomType
-        if (shop != null && shop.getGameType() != 0) {
+        data.Encode1((shop != null) ? ShopDispatch.getGameType(shop) : 0); // m_nMiniRoomType
+        if (shop != null && ShopDispatch.getGameType(shop) != 0) {
             // AnnounceBox & Interaction : TODO Remove
-            data.Encode4(((AbstractPlayerStore) shop).getObjectId()); // m_dwMiniRoomSN
-            data.EncodeStr(shop.getDescription()); // m_sMiniRoomTitle
-            data.Encode1((shop.getPassword().length() != 0) ? 1 : 0); // m_bPrivate
-            data.Encode1(shop.getItemId() % 10); // m_nGameKind
-            data.Encode1(shop.getSize()); // m_nCurUsers
-            data.Encode1(shop.getMaxSize()); // m_nMaxUsers
-            data.Encode1(shop.isOpen() ? 0 : 1); // m_bGameOn
+            data.Encode4(TacosMap.dispatchGetObjectId(shop)); // m_dwMiniRoomSN
+            data.EncodeStr(ShopDispatch.getDescription(shop)); // m_sMiniRoomTitle
+            data.Encode1((ShopDispatch.getPassword(shop).length() != 0) ? 1 : 0); // m_bPrivate
+            data.Encode1(ShopDispatch.getItemId(shop) % 10); // m_nGameKind
+            data.Encode1(ShopDispatch.getSize(shop)); // m_nCurUsers
+            data.Encode1(ShopDispatch.getMaxSize(shop)); // m_nMaxUsers
+            data.Encode1(ShopDispatch.isOpen(shop) ? 0 : 1); // m_bGameOn
         }
         boolean is_adboard = (chr.getADBoard() != null) && (0 < chr.getADBoard().length());
         data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote

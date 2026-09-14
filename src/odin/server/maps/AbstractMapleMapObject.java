@@ -21,31 +21,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.client.TacosClient;
 
-public abstract class AbstractMapleMapObject implements MapleMapObject {
+public abstract class AbstractMapleMapObject {
 
     private Point position = new Point();
     private int objectId;
 
     public abstract MapleMapObjectType getType();
 
-    @Override
+    public abstract void sendSpawnData(final TacosClient client);
+
+    public abstract void sendDestroyData(final TacosClient client);
+
     public Point getPosition() {
         return new Point(position);
     }
 
-    @Override
     public void setPosition(Point position) {
         this.position.x = position.x;
         this.position.y = position.y;
     }
 
-    @Override
     public int getObjectId() {
         return objectId;
     }
 
-    @Override
     public void setObjectId(int id) {
         this.objectId = id;
     }

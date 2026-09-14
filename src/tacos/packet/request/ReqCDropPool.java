@@ -31,7 +31,6 @@ import odin.server.life.MapleMonster;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import tacos.config.Config;
 import tacos.constants.TacosConstants;
@@ -87,7 +86,7 @@ public class ReqCDropPool {
     }
 
     public static boolean OnDropPickUpRequest(MapleCharacter chr, int object_id) {
-        MapleMapObject object = chr.getMap().getMapObject(object_id, MapleMapObjectType.ITEM);
+        Object object = chr.getMap().getMapObject(object_id, MapleMapObjectType.ITEM);
         if (object == null) {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;

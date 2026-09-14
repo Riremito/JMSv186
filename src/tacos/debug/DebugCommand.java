@@ -45,7 +45,6 @@ import odin.server.life.PlayerNPC;
 import odin.server.life.Spawns;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
 import tacos.database.query.DQ_Accounts;
@@ -599,7 +598,7 @@ public class DebugCommand {
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
                 }
-                for (MapleMapObject mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
+                for (Object mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
                     if (count <= 0) {
                         break;
                     }

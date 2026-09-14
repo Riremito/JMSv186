@@ -32,7 +32,17 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import tacos.packet.ServerPacket;
 
-public class MapleMist extends AbstractMapleMapObject {
+public class MapleMist {
+
+    private int objectId;
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
 
     private Rectangle mistPosition;
     private MapleStatEffect source;
@@ -89,12 +99,10 @@ public class MapleMist extends AbstractMapleMapObject {
         skillDelay = 8;
     }
 
-    @Override
     public MapleMapObjectType getType() {
         return MapleMapObjectType.MIST;
     }
 
-    @Override
     public Point getPosition() {
         return mistPosition.getLocation();
     }
@@ -135,7 +143,6 @@ public class MapleMist extends AbstractMapleMapObject {
         return source;
     }
 
-    @Override
     public void setPosition(Point position) {
     }
 
@@ -143,12 +150,10 @@ public class MapleMist extends AbstractMapleMapObject {
         return ResCAffectedAreaPool.AffectedAreaCreated(this);
     }
 
-    @Override
     public void sendSpawnData(TacosClient client) {
         client.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(this));
     }
 
-    @Override
     public void sendDestroyData(TacosClient client) {
         client.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(this));
     }

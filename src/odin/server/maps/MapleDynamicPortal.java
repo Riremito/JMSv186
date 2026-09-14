@@ -29,7 +29,27 @@ import tacos.server.map.TacosPortal;
  * @author Riremito
  */
 // Pink Bean Cake Event TWMS/CMS/JMS dynamic portal, this is like mystic door
-public class MapleDynamicPortal extends AbstractMapleMapObject {
+public class MapleDynamicPortal {
+
+    private Point position = new Point();
+    private int objectId;
+
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    public void setPosition(Point position) {
+        this.position.x = position.x;
+        this.position.y = position.y;
+    }
+
+    public int getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(int id) {
+        this.objectId = id;
+    }
 
     final private int item_id;
     final private int map_id;
@@ -77,16 +97,13 @@ public class MapleDynamicPortal extends AbstractMapleMapObject {
         client.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(this));
     }
 
-    @Override
     public final void sendSpawnData(final TacosClient client) {
         //client.SendPacket(ItemPacket.CreatePinkBeanEventPortal(this));
     }
 
-    @Override
     public final void sendDestroyData(final TacosClient client) {
     }
 
-    @Override
     public final MapleMapObjectType getType() {
         return MapleMapObjectType.DYNAMIC_PORTAL;
     }
