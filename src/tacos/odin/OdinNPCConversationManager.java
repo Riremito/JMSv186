@@ -87,7 +87,9 @@ import tacos.server.TacosChannel;
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     private TacosClient client;
-    private int npc, script_name, questid;
+    private int npc;
+    private int script_name;
+    private int questid;
     private String getText;
     private byte type; // -1 = NPC, 0 = start quest, 1 = end quest
     private int lastMsg = -1;

@@ -667,16 +667,23 @@ public class DQ_Characters {
         public final int id;
         public final int level;
         public final int fame;
-        public final int str, dex, luk, intel;
+        public final int str;
+        public final int dex;
+        public final int luk;
+        public final int intel;
         public final int exp;
-        public final int hp, mp, maxhp, maxmp;
+        public final int hp;
+        public final int mp;
+        public final int maxhp;
+        public final int maxmp;
         public final String sp;
         public final int ap;
         public final byte gm;
         public final byte skinColor;
         public final byte gender;
         public final int job;
-        public final int hair, face;
+        public final int hair;
+        public final int face;
         public final int map;
         public final int meso;
         public final int hpApUsed;
@@ -689,7 +696,8 @@ public class DQ_Characters {
         public final String pets;
         public final int subcategory;
         public final int marriageId;
-        public final int currentrep, totalrep;
+        public final int currentrep;
+        public final int totalrep;
         public final String name;
         public final int tama;
 

@@ -30,5 +30,6 @@ public class PB_FieldEffect {
 
     public String wz_path;
     public MapleMonster monster;
-    public int type, delay;
+    public int type;
+    public int delay;
 }

@@ -45,9 +45,9 @@ public class MapleItemInformationProvider {
     protected final Map<Integer, Integer> mesoCache = new HashMap<>();
     protected final Map<Integer, Boolean> notSaleCache = new HashMap<>();
     protected final Map<Integer, Boolean> blockPickupCache = new HashMap<>();
-    protected final Map<Integer, List<SimpleImmutableEntry<Integer, Integer>>> summonMobCache = new HashMap<Integer, List<SimpleImmutableEntry<Integer, Integer>>>();
-    protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<Integer, Map<Integer, Map<String, Integer>>>();
-    protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<Integer, Map<Integer, List<Integer>>>();
+    protected final Map<Integer, List<SimpleImmutableEntry<Integer, Integer>>> summonMobCache = new HashMap<>();
+    protected final Map<Integer, Map<Integer, Map<String, Integer>>> equipIncsCache = new HashMap<>();
+    protected final Map<Integer, Map<Integer, List<Integer>>> equipSkillsCache = new HashMap<>();
     protected Map<Integer, SimpleImmutableEntry<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
     protected final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
 

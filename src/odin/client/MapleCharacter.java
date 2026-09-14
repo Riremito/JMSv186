@@ -1362,10 +1362,10 @@ public class MapleCharacter extends TacosCharacter {
                     if (ItemFlag.LOCK.check(item.getFlag())) {
                         tobeunlock.add(item);
                     } else if (currenttime > expiration) {
-                        toberemove.add(new SimpleImmutableEntry<MapleInventoryType, Item>(inv, item));
+                        toberemove.add(new SimpleImmutableEntry<>(inv, item));
                     }
                 } else if (item.getItemId() == 5000054 && item.getPet() != null && item.getPet().getSecondsLeft() <= 0) {
-                    toberemove.add(new SimpleImmutableEntry<MapleInventoryType, Item>(inv, item));
+                    toberemove.add(new SimpleImmutableEntry<>(inv, item));
                 }
             }
         }
@@ -2448,7 +2448,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         Collections.sort(frings, new MapleRing.RingComparator());
         Collections.sort(crings, new MapleRing.RingComparator());
-        return new SimpleImmutableEntry<List<MapleRing>, List<MapleRing>>(crings, frings);
+        return new SimpleImmutableEntry<>(crings, frings);
     }
 
     public int getFH() {
@@ -2913,7 +2913,7 @@ public class MapleCharacter extends TacosCharacter {
         List<SimpleImmutableEntry<Integer, Integer>> used = new ArrayList<>();
         for (MapleFamilyBuffEntry buff : MapleFamilyBuff.getBuffEntry()) {
             if (!canUseFamilyBuff(buff)) {
-                used.add(new SimpleImmutableEntry<Integer, Integer>(buff.index, buff.count));
+                used.add(new SimpleImmutableEntry<>(buff.index, buff.count));
             }
         }
         return used;

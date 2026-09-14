@@ -136,11 +136,11 @@ public class ItemMakerFactory {
         }
 
         protected void addRandomReward(int itemId, int prob) {
-            randomReward.add(new SimpleImmutableEntry<Integer, Integer>(itemId, prob));
+            randomReward.add(new SimpleImmutableEntry<>(itemId, prob));
         }
 
         protected void addReqRecipe(int itemId, int count) {
-            reqRecipe.add(new SimpleImmutableEntry<Integer, Integer>(itemId, count));
+            reqRecipe.add(new SimpleImmutableEntry<>(itemId, count));
         }
     }
 
@@ -188,7 +188,7 @@ public class ItemMakerFactory {
         }
 
         protected void addReqItem(int itemId, int amount) {
-            reqItems.add(new SimpleImmutableEntry<Integer, Integer>(itemId, amount));
+            reqItems.add(new SimpleImmutableEntry<>(itemId, amount));
         }
     }
 }
