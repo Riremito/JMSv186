@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import odin.server.CashItemInfo.CashModInfo;
 import tacos.database.query.DQ_CashshopModifiedItems;
-import tacos.wz.MapleData;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 public class CashItemFactory {
@@ -34,28 +32,11 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : WzXML.ETC.getCommodity().getChildren()) {
-            int SN = WzDataTool.getIntPath("SN", field, 0);
-
-            if (SN <= 0 || item_SN != SN) {
-                continue;
-            }
-
-            int ItemId = WzDataTool.getIntPath("ItemId", field, 0);
-
-            CashItemInfo stats = new CashItemInfo(ItemId,
-                    WzDataTool.getIntPath("Count", field, 1),
-                    WzDataTool.getIntPath("Price", field, 0),
-                    SN,
-                    WzDataTool.getIntPath("Period", field, 0),
-                    WzDataTool.getIntPath("Gender", field, 2),
-                    WzDataTool.getIntPath("OnSale", field, 0) > 0);
-
-            itemStats.put(SN, stats);
-            return stats;
+        CashItemInfo stats = WzXML.ETC.findCommodityBySN(item_SN);
+        if (stats != null) {
+            itemStats.put(stats.getSN(), stats);
         }
-
-        return null;
+        return stats;
     }
 
     public final int getItemSN(int itemid) {
@@ -66,23 +47,10 @@ public class CashItemFactory {
         }
 
         // Load
-        for (MapleData field : WzXML.ETC.getCommodity().getChildren()) {
-            int ItemId = WzDataTool.getIntPath("ItemId", field, 0);
-            if (ItemId != itemid) {
-                continue;
-            }
-
-            int SN = WzDataTool.getIntPath("SN", field, 0);
-            CashItemInfo stats = new CashItemInfo(ItemId,
-                    WzDataTool.getIntPath("Count", field, 1),
-                    WzDataTool.getIntPath("Price", field, 0),
-                    SN,
-                    WzDataTool.getIntPath("Period", field, 0),
-                    WzDataTool.getIntPath("Gender", field, 2),
-                    WzDataTool.getIntPath("OnSale", field, 0) > 0);
-
-            itemStats.put(SN, stats);
-            return SN;
+        CashItemInfo stats = WzXML.ETC.findCommodityByItemId(itemid);
+        if (stats != null) {
+            itemStats.put(stats.getSN(), stats);
+            return stats.getSN();
         }
 
         return 0;

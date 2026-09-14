@@ -7,17 +7,14 @@ import java.util.List;
 import java.util.Map;
 import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
-import tacos.config.Region;
-import java.util.ArrayList;
 import tacos.packet.ops.OpsUserEffect;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.MapleData;
-import tacos.config.Config;
+import tacos.wz.QuestWz;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptQuest;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 public class MapleQuest {
@@ -49,19 +46,13 @@ public class MapleQuest {
     }
 
     private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
-        MapleData check_img = WzXML.QUEST.getCheck();
-        MapleData act_img = WzXML.QUEST.getAct();
-        // KMS1
-        if (check_img == null || act_img == null) {
+        QuestWz.QuestDefinition def = WzXML.QUEST.getQuestDefinition(id);
+        if (def == null) {
             return false;
         }
 
-        MapleData basedata1 = check_img.getChildByPath(String.valueOf(id));
-        MapleData basedata2 = act_img.getChildByPath(String.valueOf(id));
-
-        if (basedata1 == null || basedata2 == null) {
-            return false;
-        }
+        MapleData basedata1 = def.basedata1;
+        MapleData basedata2 = def.basedata2;
         //-------------------------------------------------
         final MapleData startReqData = basedata1.getChildByPath("0");
         if (startReqData != null) {
@@ -75,8 +66,8 @@ public class MapleQuest {
                     final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
                         for (MapleData mob : startReq.getChildren()) {
-                            ret.relevantMobs.put(WzDataTool.getInt(mob.getChildByPath("id")),
-                                    WzDataTool.getInt(mob.getChildByPath("count"), 0));
+                            SimpleImmutableEntry<Integer, Integer> mobEntry = WzXML.QUEST.parseMobRequirementEntry(mob);
+                            ret.relevantMobs.put(mobEntry.getKey(), mobEntry.getValue());
                         }
                     }
                     ret.startReqs.add(req);
@@ -92,8 +83,8 @@ public class MapleQuest {
                     MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
                     if (req.getType().equals(MapleQuestRequirementType.mob)) {
                         for (MapleData mob : completeReq.getChildren()) {
-                            ret.relevantMobs.put(WzDataTool.getInt(mob.getChildByPath("id")),
-                                    WzDataTool.getInt(mob.getChildByPath("count"), 0));
+                            SimpleImmutableEntry<Integer, Integer> mobEntry = WzXML.QUEST.parseMobRequirementEntry(mob);
+                            ret.relevantMobs.put(mobEntry.getKey(), mobEntry.getValue());
                         }
                     } else if (req.getType().equals(MapleQuestRequirementType.endscript)) {
                         ret.customend = true;
@@ -119,31 +110,16 @@ public class MapleQuest {
             }
         }
 
-        final MapleData questInfo = WzXML.QUEST.getQuestInfo().getChildByPath(String.valueOf(id));
-        if (questInfo != null) {
-            ret.name = WzDataTool.getStringPath("name", questInfo, "");
-            ret.autoStart = WzDataTool.getIntPath("autoStart", questInfo, 0) == 1;
-            ret.autoPreComplete = WzDataTool.getIntPath("autoPreComplete", questInfo, 0) == 1;
-            ret.viewMedalItem = WzDataTool.getIntPath("viewMedalItem", questInfo, 0);
-            ret.selectedSkillID = WzDataTool.getIntPath("selectedSkillID", questInfo, 0);
-        }
+        final MapleData questInfo = def.questInfo;
+        QuestWz.QuestInfoData questInfoData = WzXML.QUEST.parseQuestInfo(questInfo);
+        ret.name = questInfoData.name;
+        ret.autoStart = questInfoData.autoStart;
+        ret.autoPreComplete = questInfoData.autoPreComplete;
+        ret.viewMedalItem = questInfoData.viewMedalItem;
+        ret.selectedSkillID = questInfoData.selectedSkillID;
 
         // not in KMS55
-        if (Config.GreaterOrEqual(Region.KMS, 65)) {
-            final MapleData pquestInfo = WzXML.QUEST.getPQuest().getChildByPath(String.valueOf(id));
-            if (pquestInfo != null) {
-                for (MapleData d : pquestInfo.getChildByPath("rank")) {
-                    List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> pInfo = new ArrayList<>();
-                    //LinkedHashMap<String, List<Pair<String, Pair<String, Integer>>>>
-                    for (MapleData c : d) {
-                        for (MapleData b : c) {
-                            pInfo.add(new SimpleImmutableEntry<>(c.getName(), new SimpleImmutableEntry<>(b.getName(), WzDataTool.getInt(b, 0))));
-                        }
-                    }
-                    ret.partyQuestInfo.put(d.getName(), pInfo);
-                }
-            }
-        }
+        WzXML.QUEST.parsePartyQuestInfo(def.pquestInfo, ret.partyQuestInfo);
 
         return true;
     }

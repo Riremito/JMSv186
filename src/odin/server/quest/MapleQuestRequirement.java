@@ -13,7 +13,8 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.MapleData;
-import tacos.wz.WzDataTool;
+import tacos.wz.QuestWz;
+import tacos.wz.WzXML;
 
 public class MapleQuestRequirement {
 
@@ -27,104 +28,10 @@ public class MapleQuestRequirement {
         this.type = type;
         this.quest = quest;
 
-        switch (type) {
-            case job: {
-                final List<MapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    dataStore.add(new SimpleImmutableEntry<>(i, WzDataTool.getInt(child.get(i), -1)));
-                }
-                break;
-            }
-            case skill: {
-                final List<MapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
-                    dataStore.add(new SimpleImmutableEntry<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            WzDataTool.getInt(childdata.getChildByPath("acquire"), 0)));
-                }
-                break;
-            }
-            case quest: {
-                final List<MapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
-                    dataStore.add(new SimpleImmutableEntry<>(WzDataTool.getInt(childdata.getChildByPath("id")),
-                            WzDataTool.getInt(childdata.getChildByPath("state"), 0)));
-                }
-                break;
-            }
-            case item: {
-                final List<MapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
-                    dataStore.add(new SimpleImmutableEntry<>(WzDataTool.getInt(childdata.getChildByPath("id")),
-                            WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
-                }
-                break;
-            }
-            case pettamenessmin:
-            case npc:
-            case questComplete:
-            case pop:
-            case interval:
-            case mbmin:
-            case lvmax:
-            case lvmin: {
-                intStore = WzDataTool.getInt(data, -1);
-                break;
-            }
-            case end: {
-                stringStore = WzDataTool.getString(data, null);
-                break;
-            }
-            case mob: {
-                final List<MapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
-                    dataStore.add(new SimpleImmutableEntry<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
-                }
-                break;
-            }
-            case fieldEnter: {
-                final MapleData zeroField = data.getChildByPath("0");
-                if (zeroField != null) {
-                    intStore = WzDataTool.getInt(zeroField);
-                } else {
-                    intStore = -1;
-                }
-                break;
-            }
-            case mbcard: {
-                final List<MapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
-                    dataStore.add(new SimpleImmutableEntry<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            WzDataTool.getInt(childdata.getChildByPath("min"), 0)));
-                }
-                break;
-            }
-            case pet: {
-                dataStore = new LinkedList<>();
-
-                for (MapleData child : data) {
-                    dataStore.add(new SimpleImmutableEntry<>(-1, WzDataTool.getIntPath("id", child, 0)));
-                }
-                break;
-            }
-        }
+        QuestWz.QuestRequirementData parsed = WzXML.QUEST.parseQuestRequirement(type, data);
+        this.intStore = parsed.intStore;
+        this.stringStore = parsed.stringStore;
+        this.dataStore = parsed.dataStore;
     }
 
     public boolean check(MapleCharacter chr, Integer npc_id) {

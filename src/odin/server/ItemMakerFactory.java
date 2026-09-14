@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.wz.MapleData;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 public class ItemMakerFactory {
@@ -22,73 +20,7 @@ public class ItemMakerFactory {
 
     protected ItemMakerFactory() {
         //System.out.println("Loading ItemMakerFactory :::");
-        // 0 = Item upgrade crystals
-        // 1 / 2/ 4/ 8 = Item creation
-
-        if (WzXML.ETC.getItemMake() == null) {
-            return;
-        }
-
-        byte totalupgrades, reqMakerLevel;
-        int reqLevel, cost, quantity, stimulator;
-        GemCreateEntry ret;
-        ItemMakerCreateEntry imt;
-
-        for (MapleData dataType : WzXML.ETC.getItemMake().getChildren()) {
-            int type = Integer.parseInt(dataType.getName());
-            switch (type) {
-                case 0: { // Caching of gem
-                    for (MapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
-                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
-                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
-//			totalupgrades = MapleDataTool.getInt("tuc", itemFolder, 0); // Gem is always 0
-
-                        ret = new GemCreateEntry(cost, reqLevel, reqMakerLevel, quantity);
-
-                        for (MapleData rewardNRecipe : itemFolder.getChildren()) {
-                            for (MapleData ind : rewardNRecipe.getChildren()) {
-                                if (rewardNRecipe.getName().equals("randomReward")) {
-                                    ret.addRandomReward(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("prob", ind, 0));
-// MapleDataTool.getInt("itemNum", ind, 0)
-                                } else if (rewardNRecipe.getName().equals("recipe")) {
-                                    ret.addReqRecipe(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
-                                }
-                            }
-                        }
-                        gemCache.put(Integer.parseInt(itemFolder.getName()), ret);
-                    }
-                    break;
-                }
-                case 1: // Warrior
-                case 2: // Magician
-                case 4: // Bowman
-                case 8: // Thief
-                case 16: { // Pirate
-                    for (MapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
-                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
-                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
-                        totalupgrades = (byte) WzDataTool.getIntPath("tuc", itemFolder, 0);
-                        stimulator = WzDataTool.getIntPath("catalyst", itemFolder, 0);
-
-                        imt = new ItemMakerCreateEntry(cost, reqLevel, reqMakerLevel, quantity, totalupgrades, stimulator);
-
-                        for (MapleData Recipe : itemFolder.getChildren()) {
-                            for (MapleData ind : Recipe.getChildren()) {
-                                if (Recipe.getName().equals("recipe")) {
-                                    imt.addReqItem(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
-                                }
-                            }
-                        }
-                        createCache.put(Integer.parseInt(itemFolder.getName()), imt);
-                    }
-                    break;
-                }
-            }
-        }
+        WzXML.ETC.loadItemMake(gemCache, createCache);
     }
 
     public GemCreateEntry getGemInfo(int itemid) {
@@ -135,11 +67,11 @@ public class ItemMakerFactory {
             return cost;
         }
 
-        protected void addRandomReward(int itemId, int prob) {
+        public void addRandomReward(int itemId, int prob) {
             randomReward.add(new SimpleImmutableEntry<>(itemId, prob));
         }
 
-        protected void addReqRecipe(int itemId, int count) {
+        public void addReqRecipe(int itemId, int count) {
             reqRecipe.add(new SimpleImmutableEntry<>(itemId, count));
         }
     }
@@ -187,7 +119,7 @@ public class ItemMakerFactory {
             return stimulator;
         }
 
-        protected void addReqItem(int itemId, int amount) {
+        public void addReqItem(int itemId, int amount) {
             reqItems.add(new SimpleImmutableEntry<>(itemId, amount));
         }
     }

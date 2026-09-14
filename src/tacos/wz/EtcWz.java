@@ -24,6 +24,10 @@ import java.util.List;
 import tacos.config.ContentCustom;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsCommodity;
+import odin.server.CashItemInfo;
+import odin.server.ItemMakerFactory.GemCreateEntry;
+import odin.server.ItemMakerFactory.ItemMakerCreateEntry;
+import java.util.Map;
 
 /**
  *
@@ -47,8 +51,113 @@ public class EtcWz extends WzXML {
         return getData("ItemMake.img");
     }
 
+    public void loadItemMake(Map<Integer, GemCreateEntry> gemCache, Map<Integer, ItemMakerCreateEntry> createCache) {
+        // 0 = Item upgrade crystals
+        // 1 / 2/ 4/ 8 = Item creation
+
+        if (getItemMake() == null) {
+            return;
+        }
+
+        byte totalupgrades, reqMakerLevel;
+        int reqLevel, cost, quantity, stimulator;
+        GemCreateEntry ret;
+        ItemMakerCreateEntry imt;
+
+        for (MapleData dataType : getItemMake().getChildren()) {
+            int type = Integer.parseInt(dataType.getName());
+            switch (type) {
+                case 0: { // Caching of gem
+                    for (MapleData itemFolder : dataType.getChildren()) {
+                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
+                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
+                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
+                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
+//			totalupgrades = MapleDataTool.getInt("tuc", itemFolder, 0); // Gem is always 0
+
+                        ret = new GemCreateEntry(cost, reqLevel, reqMakerLevel, quantity);
+
+                        for (MapleData rewardNRecipe : itemFolder.getChildren()) {
+                            for (MapleData ind : rewardNRecipe.getChildren()) {
+                                if (rewardNRecipe.getName().equals("randomReward")) {
+                                    ret.addRandomReward(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("prob", ind, 0));
+// MapleDataTool.getInt("itemNum", ind, 0)
+                                } else if (rewardNRecipe.getName().equals("recipe")) {
+                                    ret.addReqRecipe(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
+                                }
+                            }
+                        }
+                        gemCache.put(Integer.parseInt(itemFolder.getName()), ret);
+                    }
+                    break;
+                }
+                case 1: // Warrior
+                case 2: // Magician
+                case 4: // Bowman
+                case 8: // Thief
+                case 16: { // Pirate
+                    for (MapleData itemFolder : dataType.getChildren()) {
+                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
+                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
+                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
+                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
+                        totalupgrades = (byte) WzDataTool.getIntPath("tuc", itemFolder, 0);
+                        stimulator = WzDataTool.getIntPath("catalyst", itemFolder, 0);
+
+                        imt = new ItemMakerCreateEntry(cost, reqLevel, reqMakerLevel, quantity, totalupgrades, stimulator);
+
+                        for (MapleData Recipe : itemFolder.getChildren()) {
+                            for (MapleData ind : Recipe.getChildren()) {
+                                if (Recipe.getName().equals("recipe")) {
+                                    imt.addReqItem(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
+                                }
+                            }
+                        }
+                        createCache.put(Integer.parseInt(itemFolder.getName()), imt);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     public MapleData getCommodity() {
         return getData("Commodity.img");
+    }
+
+    private CashItemInfo parseCommodityField(MapleData field) {
+        int SN = WzDataTool.getIntPath("SN", field, 0);
+        int ItemId = WzDataTool.getIntPath("ItemId", field, 0);
+
+        return new CashItemInfo(ItemId,
+                WzDataTool.getIntPath("Count", field, 1),
+                WzDataTool.getIntPath("Price", field, 0),
+                SN,
+                WzDataTool.getIntPath("Period", field, 0),
+                WzDataTool.getIntPath("Gender", field, 2),
+                WzDataTool.getIntPath("OnSale", field, 0) > 0);
+    }
+
+    public CashItemInfo findCommodityBySN(int item_SN) {
+        for (MapleData field : getCommodity().getChildren()) {
+            int SN = WzDataTool.getIntPath("SN", field, 0);
+            if (SN <= 0 || item_SN != SN) {
+                continue;
+            }
+            return parseCommodityField(field);
+        }
+        return null;
+    }
+
+    public CashItemInfo findCommodityByItemId(int itemid) {
+        for (MapleData field : getCommodity().getChildren()) {
+            int ItemId = WzDataTool.getIntPath("ItemId", field, 0);
+            if (ItemId != itemid) {
+                continue;
+            }
+            return parseCommodityField(field);
+        }
+        return null;
     }
 
     public MapleData getCashPackage() {
