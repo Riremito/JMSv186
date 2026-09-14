@@ -22,14 +22,13 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Guild;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.AbstractPlayerStore;
 import odin.server.shops.IMaplePlayerShop;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
-import tacos.packet.response.struct.Structure;
 
 /**
  *
@@ -79,7 +78,7 @@ public class RD_CUser {
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
-            gs = OdinWorld.Guild.getGuild(chr.getGuildId());
+            gs = Guild.getGuild(chr.getGuildId());
         }
         if (gs != null) {
             // guild info
@@ -134,7 +133,7 @@ public class RD_CUser {
         data.Encode4(chr.getMount().getExp()); // exp
         data.Encode4(chr.getMount().getFatigue()); // tiredness
         // MiniRoomBalloon (ゲーム) 1 byte flag + data
-        data.EncodeBuffer(Structure.AnnounceBox(chr)); // m_nMiniRoomType
+        data.EncodeBuffer(RD_Structure.AnnounceBox(chr)); // m_nMiniRoomType
         // ADBoardBalloon (黒板) 1 byte flag + data
         {
             data.Encode1(chr.getADBoard() != null && chr.getADBoard().length() > 0 ? 1 : 0); // m_bADBoardRemote
@@ -169,7 +168,7 @@ public class RD_CUser {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
-            guild = OdinWorld.Guild.getGuild(chr.getGuildId());
+            guild = Guild.getGuild(chr.getGuildId());
         }
         ServerPacket data = new ServerPacket();
 
@@ -246,7 +245,7 @@ public class RD_CUser {
         MapleGuild guild = null;
         IMaplePlayerShop shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
-            guild = OdinWorld.Guild.getGuild(chr.getGuildId());
+            guild = Guild.getGuild(chr.getGuildId());
         }
 
         ServerPacket data = new ServerPacket();

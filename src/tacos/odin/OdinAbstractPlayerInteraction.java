@@ -48,9 +48,9 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.quest.MapleQuest;
 import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.debug.DebugLogger;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Guild;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCField;
@@ -62,7 +62,7 @@ import tacos.packet.ops.OpsMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.packet.response.struct.InvOp;
+import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosChannel;
@@ -479,7 +479,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void guildMessage(final String message) {
-        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
+        Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void playerMessage(final int type, final String message) {
@@ -495,7 +495,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void guildMessage(final int type, final String message) {
         DebugLogger.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
-            OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
+            Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
         }
     }
 
@@ -504,7 +504,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final MapleGuild getGuild(int guildid) {
-        return OdinWorld.Guild.getGuild(guildid);
+        return Guild.getGuild(guildid);
     }
 
     public final MapleParty getParty() {
@@ -750,7 +750,7 @@ public abstract class OdinAbstractPlayerInteraction {
         final MaplePet pet = getPlayer().getPet(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
-            getClient().SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
+            getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         }
     }
 
@@ -758,7 +758,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (final MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
-                getClient().SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
+                getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
     }
@@ -895,7 +895,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
+        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Aran/balloon").build()));
     }
 
     public final void evanTutorial(final String data, final int v1) {
@@ -959,18 +959,18 @@ public abstract class OdinAbstractPlayerInteraction {
         if (getPlayer().getGuildId() <= 0) {
             return;
         }
-        OdinWorld.Guild.gainGP(getPlayer().getGuildId(), gp); //1 for
+        Guild.gainGP(getPlayer().getGuildId(), gp); //1 for
     }
 
     public int getGP() {
         if (getPlayer().getGuildId() <= 0) {
             return 0;
         }
-        return OdinWorld.Guild.getGP(getPlayer().getGuildId()); //1 for
+        return Guild.getGP(getPlayer().getGuildId()); //1 for
     }
 
     public void showMapEffect(String path) {
-        getClient().SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, path)));
+        getClient().SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(path).build()));
     }
 
     public int itemQuantity(int itemid) {

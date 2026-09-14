@@ -34,7 +34,9 @@ import odin.constants.GameConstants;
 import tacos.shared.SharedExpTable;
 import tacos.debug.DebugLogger;
 import odin.handling.world.MapleParty;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Party;
+import odin.handling.world.Guild;
+import odin.handling.world.Alliance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +66,7 @@ import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.packet.response.struct.InvOp;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
@@ -1572,7 +1574,7 @@ public class ReqCUser {
             toHammer.setViciousHammer((byte) (toHammer.getViciousHammer() + 1));
             toHammer.setUpgradeSlots((byte) (toHammer.getUpgradeSlots() + 1));
             {
-                InvOp.Builder io = InvOp.builder();
+                PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < scroll.getQuantity()) {
                     io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
                 } else {
@@ -1696,7 +1698,7 @@ public class ReqCUser {
         }
         if (scrollSuccess == Equip.ScrollResult.CURSE) {
             {
-                InvOp.Builder io = InvOp.builder();
+                PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < scroll.getQuantity()) {
                     io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
                 } else {
@@ -1712,7 +1714,7 @@ public class ReqCUser {
             }
         } else if (vegas == 0) {
             {
-                InvOp.Builder io = InvOp.builder();
+                PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < scroll.getQuantity()) {
                     io.update(GameConstants.getInventoryType(scroll.getItemId()), scroll);
                 } else {
@@ -1729,7 +1731,7 @@ public class ReqCUser {
         }
         // ベガの呪文書
         if (vegas != 0) {
-            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, toScroll).build()));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, toScroll).build()));
             chr.SendPacket(ResCUIVega.VegaResult(OpsCashItem.CashItemRes_VegaSuccess1));
             chr.SendPacket(ResCUIVega.VegaResult(scrollSuccess == Equip.ScrollResult.SUCCESS ? OpsCashItem.CashItemRes_VegaSuccess2 : OpsCashItem.CashItemRes_VegaErr2));
         }
@@ -1765,7 +1767,7 @@ public class ReqCUser {
                 && (magnify.getItemId() == 2460003 || (magnify.getItemId() == 2460002 && reqLevel <= 12) || (magnify.getItemId() == 2460001 && reqLevel <= 7) || (magnify.getItemId() == 2460000 && reqLevel <= 3))) {
             eqq.setHidden(0); // 未確認状態へ変更
             {
-                InvOp.Builder io = InvOp.builder();
+                PB_InvOp.Builder io = PB_InvOp.builder();
                 if (0 < magnify.getQuantity()) {
                     io.update(GameConstants.getInventoryType(magnify.getItemId()), magnify);
                 } else {
@@ -2754,11 +2756,11 @@ public class ReqCUser {
 
         for (Equip equip : equippeds) {
             equip.setDurability(TacosShared.getDurabilityMax(equip));
-            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIPPED, equip).build()));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, equip).build()));
         }
         for (Equip equip : equips) {
             equip.setDurability(TacosShared.getDurabilityMax(equip));
-            chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
         }
 
         return true;
@@ -2785,7 +2787,7 @@ public class ReqCUser {
 
         chr.gainMeso(-price, false);
         equip.setDurability(durability_max);
-        chr.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().add(type, equip).build()));
+        chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, equip).build()));
         return true;
     }
 
@@ -2884,7 +2886,7 @@ public class ReqCUser {
                 if (party != null) {
                     return true;
                 }
-                OdinWorld.Party.partyChat(party.getId(), sText, chr.getName());
+                Party.partyChat(party.getId(), sText, chr.getName());
                 return true;
             }
             case CG_Guild: {
@@ -2892,7 +2894,7 @@ public class ReqCUser {
                 if (guild_id <= 0) {
                     return true;
                 }
-                OdinWorld.Guild.guildChat(guild_id, chr.getName(), chr.getId(), sText);
+                Guild.guildChat(guild_id, chr.getName(), chr.getId(), sText);
                 return true;
             }
             case CG_Alliance: {
@@ -2900,7 +2902,7 @@ public class ReqCUser {
                 if (guild_id <= 0) {
                     return true;
                 }
-                OdinWorld.Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), sText);
+                Alliance.allianceChat(guild_id, chr.getName(), chr.getId(), sText);
                 return true;
             }
             case CG_Couple: {
@@ -2974,7 +2976,7 @@ public class ReqCUser {
                     return false;
                 }
 
-                party = OdinWorld.Party.createParty(partyplayer);
+                party = Party.createParty(partyplayer);
                 chr.setParty(party);
                 chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_CreateNewParty_Done, chr));
                 return true;
@@ -2988,11 +2990,11 @@ public class ReqCUser {
                 chr.setParty(null);
 
                 if (is_leader) {
-                    OdinWorld.Party.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
+                    Party.updateParty(party.getId(), PartyOperation.DISBAND, partyplayer);
                     return true;
                 }
 
-                OdinWorld.Party.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
+                Party.updateParty(party.getId(), PartyOperation.LEAVE, partyplayer);
                 return true;
             }
             case PartyReq_JoinParty: {
@@ -3002,7 +3004,7 @@ public class ReqCUser {
                     return false;
                 }
 
-                party = OdinWorld.Party.getParty(party_id);
+                party = Party.getParty(party_id);
                 if (party == null) {
                     chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_Unknown));
                     return false;
@@ -3013,7 +3015,7 @@ public class ReqCUser {
                     return false;
                 }
 
-                OdinWorld.Party.updateParty(party.getId(), PartyOperation.JOIN, partyplayer);
+                Party.updateParty(party.getId(), PartyOperation.JOIN, partyplayer);
                 chr.receivePartyMemberHP();
                 chr.updatePartyMemberHP();
                 return true;
@@ -3053,7 +3055,7 @@ public class ReqCUser {
                 }
 
                 MaplePartyCharacter member = party.getMemberById(character_id);
-                OdinWorld.Party.updateParty(party.getId(), PartyOperation.EXPEL, member);
+                Party.updateParty(party.getId(), PartyOperation.EXPEL, member);
                 return true;
             }
             case PartyReq_ChangePartyBoss: {
@@ -3065,7 +3067,7 @@ public class ReqCUser {
                 }
 
                 MaplePartyCharacter member = party.getMemberById(character_id);
-                OdinWorld.Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, member);
+                Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER, member);
                 return true;
             }
             default: {
@@ -3086,7 +3088,7 @@ public class ReqCUser {
             return false;
         }
 
-        MapleParty party = OdinWorld.Party.getParty(party_id);
+        MapleParty party = Party.getParty(party_id);
         if (party == null) {
             chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_Unknown));
             return false;
@@ -3118,7 +3120,7 @@ public class ReqCUser {
                     return true;
                 }
 
-                OdinWorld.Party.updateParty(party_id, PartyOperation.JOIN, new MaplePartyCharacter(chr));
+                Party.updateParty(party_id, PartyOperation.JOIN, new MaplePartyCharacter(chr));
                 chr.receivePartyMemberHP();
                 chr.updatePartyMemberHP();
                 return true;

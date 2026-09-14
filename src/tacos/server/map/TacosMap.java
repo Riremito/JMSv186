@@ -89,7 +89,7 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 
@@ -271,7 +271,7 @@ public class TacosMap extends TacosMapData {
     public void setChangeBGM(String wz_path) {
         this.fe_change_bgm = wz_path;
         if (!getChangeBGM().equals("")) {
-            broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, getChangeBGM())));
+            broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
         }
     }
 
@@ -281,7 +281,7 @@ public class TacosMap extends TacosMapData {
 
     public void sendChangeBGM(TacosCharacter chr) {
         if (!getChangeBGM().equals("")) {
-            chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, getChangeBGM())));
+            chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
         }
     }
 

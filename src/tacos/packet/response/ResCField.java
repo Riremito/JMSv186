@@ -27,7 +27,8 @@ import tacos.packet.ops.OpsLocationResult;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.Ops_Whisper;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import odin.server.maps.MapleNodes;
 import tacos.client.TacosCharacter;
 import tacos.constants.TacosConstants;
@@ -152,10 +153,10 @@ public class ResCField {
         return sp;
     }
 
-    public static ServerPacket FieldEffect(ArgFieldEffect st) {
+    public static ServerPacket FieldEffect(OpsFieldEffect flag, PB_FieldEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FieldEffect);
-        sp.Encode1(st.flag.get());
-        switch (st.flag) {
+        sp.Encode1(flag.get());
+        switch (flag) {
             case FieldEffect_Summon: {
                 sp.Encode1(0);
                 sp.Encode4(0);
@@ -164,40 +165,40 @@ public class ResCField {
             }
             // 道場
             case FieldEffect_Tremble: {
-                sp.Encode1((byte) st.type);
-                sp.Encode4(st.delay);
+                sp.Encode1((byte) pb.type);
+                sp.Encode4(pb.delay);
                 break;
             }
             case FieldEffect_Object: {
-                sp.EncodeStr(st.wz_path);
+                sp.EncodeStr(pb.wz_path);
                 break;
             }
             case FieldEffect_Screen: {
-                sp.EncodeStr(st.wz_path);
+                sp.EncodeStr(pb.wz_path);
                 break;
             }
             case FieldEffect_Sound: {
-                sp.EncodeStr(st.wz_path);
+                sp.EncodeStr(pb.wz_path);
                 break;
             }
             case FieldEffect_MobHPTag: {
-                sp.Encode4(st.monster.getId());
-                if (st.monster.getHp() > Integer.MAX_VALUE) {
-                    sp.Encode4((int) (((double) st.monster.getHp() / st.monster.getMobMaxHp()) * Integer.MAX_VALUE));
+                sp.Encode4(pb.monster.getId());
+                if (pb.monster.getHp() > Integer.MAX_VALUE) {
+                    sp.Encode4((int) (((double) pb.monster.getHp() / pb.monster.getMobMaxHp()) * Integer.MAX_VALUE));
                 } else {
-                    sp.Encode4((int) st.monster.getHp());
+                    sp.Encode4((int) pb.monster.getHp());
                 }
-                if (st.monster.getMobMaxHp() > Integer.MAX_VALUE) {
+                if (pb.monster.getMobMaxHp() > Integer.MAX_VALUE) {
                     sp.Encode4(Integer.MAX_VALUE);
                 } else {
-                    sp.Encode4((int) st.monster.getMobMaxHp());
+                    sp.Encode4((int) pb.monster.getMobMaxHp());
                 }
-                sp.Encode1(st.monster.getStats().getTagColor());
-                sp.Encode1(st.monster.getStats().getTagBgColor());
+                sp.Encode1(pb.monster.getStats().getTagColor());
+                sp.Encode1(pb.monster.getStats().getTagBgColor());
                 break;
             }
             case FieldEffect_ChangeBGM: {
-                sp.EncodeStr(st.wz_path);
+                sp.EncodeStr(pb.wz_path);
                 break;
             }
             case FieldEffect_RewordRullet: {
@@ -207,7 +208,7 @@ public class ResCField {
                 break;
             }
             default: {
-                DebugLogger.ErrorLog("FieldEffect not coded : " + st.flag);
+                DebugLogger.ErrorLog("FieldEffect not coded : " + flag);
                 break;
             }
         }

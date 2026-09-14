@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,35 +16,19 @@
  *
  *
  */
-package tacos.packet.ops.arg;
+package tacos.packet.response.builder;
 
-import tacos.packet.ops.OpsFieldEffect;
+import lombok.Builder;
 import odin.server.life.MapleMonster;
 
 /**
  *
  * @author Riremito
  */
-public class ArgFieldEffect {
+@Builder
+public class PB_FieldEffect {
 
-    public OpsFieldEffect flag;
     public String wz_path;
     public MapleMonster monster;
     public int type, delay;
-
-    public ArgFieldEffect(OpsFieldEffect flag, String wz_path) {
-        this.flag = flag;
-        this.wz_path = wz_path;
-    }
-
-    public ArgFieldEffect(OpsFieldEffect flag, MapleMonster monster) {
-        this.flag = flag;
-        this.monster = monster;
-    }
-
-    public ArgFieldEffect(OpsFieldEffect flag, int type, int delay) {
-        this.flag = flag;
-        this.type = type;
-        this.delay = delay;
-    }
 }

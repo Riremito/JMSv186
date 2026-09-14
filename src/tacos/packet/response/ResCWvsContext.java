@@ -32,7 +32,9 @@ import odin.handling.channel.MapleGuildRanking;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Guild;
+import odin.handling.world.Alliance;
+import odin.handling.world.Family;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyCharacter;
@@ -60,7 +62,7 @@ import tacos.packet.ops.OpsShopScanner;
 import tacos.packet.response.data.RD_CWvsContext;
 import tacos.packet.response.data.RD_CharacterStat;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
-import tacos.packet.response.struct.InvOp;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleDoor;
 import tacos.client.TacosBuff;
@@ -86,7 +88,7 @@ import tacos.server.map.TacosPortal;
 public class ResCWvsContext {
 
     // CWvsContext::OnInventoryOperation
-    public static ServerPacket InventoryOperation(boolean unlock, InvOp io) {
+    public static ServerPacket InventoryOperation(boolean unlock, PB_InvOp io) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_InventoryOperation);
         sp.Encode1(unlock ? 1 : 0);// m_bExclRequestSent, unlock
         sp.Encode1((io == null) ? 0 : io.get().size());
@@ -97,7 +99,7 @@ public class ResCWvsContext {
 
         boolean equip_changed = false;
         if (io != null) {
-            for (InvOp.InvData v : io.get()) {
+            for (PB_InvOp.InvData v : io.get()) {
                 sp.Encode1(v.mode);
                 switch (v.mode) {
                     // add
@@ -783,12 +785,12 @@ public class ResCWvsContext {
         String sAlliance = "";
         // Guild
         if (player.getGuildId() <= 0) {
-            MapleGuild guild = OdinWorld.Guild.getGuild(player.getGuildId());
+            MapleGuild guild = Guild.getGuild(player.getGuildId());
             if (guild != null) {
                 sCommunity = guild.getName();
                 // Alliance
                 if (guild.getAllianceId() > 0) {
-                    MapleGuildAlliance alliance = OdinWorld.Alliance.getAlliance(guild.getAllianceId());
+                    MapleGuildAlliance alliance = Alliance.getAlliance(guild.getAllianceId());
                     if (alliance != null) {
                         sAlliance = alliance.getName();
                     }
@@ -1722,7 +1724,7 @@ public class ResCWvsContext {
         final int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < noGuilds; i++) {
-            g[i] = OdinWorld.Guild.getGuild(alliance.getGuildId(i));
+            g[i] = Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
                 //return WrapCWvsContext.updateStat();
                 return null;
@@ -1824,7 +1826,7 @@ public class ResCWvsContext {
         final int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
-            g[i] = OdinWorld.Guild.getGuild(alliance.getGuildId(i));
+            g[i] = Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
                 //return WrapCWvsContext.updateStat();
                 return null;
@@ -1891,7 +1893,7 @@ public class ResCWvsContext {
             sp.Encode1(0);
             return sp;
         }
-        MapleGuild g = OdinWorld.Guild.getGuild(player.getGuildId());
+        MapleGuild g = Guild.getGuild(player.getGuildId());
         if (g == null) {
             //failed to read from DB - don't show a guild
             sp.Encode1(0);
@@ -2079,7 +2081,7 @@ public class ResCWvsContext {
         final int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
-            g[i] = OdinWorld.Guild.getGuild(alliance.getGuildId(i));
+            g[i] = Guild.getGuild(alliance.getGuildId(i));
             if (g[i] == null) {
                 //return WrapCWvsContext.updateStat();
                 return null;
@@ -2273,7 +2275,7 @@ public class ResCWvsContext {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
         sp.Encode4(chr.getId());
-        MapleFamily family = OdinWorld.Family.getFamily(chr.getFamilyId());
+        MapleFamily family = Family.getFamily(chr.getFamilyId());
         int descendants = 2;
         int gens = 0;
         int generations = 0;
@@ -2381,7 +2383,7 @@ public class ResCWvsContext {
         sp.Encode2(chr.getNoJuniors());
         sp.Encode2(2);
         sp.Encode2(chr.getNoJuniors());
-        MapleFamily family = OdinWorld.Family.getFamily(chr.getFamilyId());
+        MapleFamily family = Family.getFamily(chr.getFamilyId());
         if (family != null) {
             sp.Encode4(family.getLeaderId()); //??? 9D 60 03 00
             sp.EncodeStr(family.getLeaderName());

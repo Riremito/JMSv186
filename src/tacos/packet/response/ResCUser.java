@@ -24,7 +24,7 @@ import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.struct.Structure;
+import tacos.packet.response.data.RD_Structure;
 
 /**
  *
@@ -74,7 +74,7 @@ public class ResCUser {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMiniRoomBalloon);
 
         sp.Encode4(chr.getId());
-        sp.EncodeBuffer(Structure.AnnounceBox(chr));
+        sp.EncodeBuffer(RD_Structure.AnnounceBox(chr));
         return sp;
     }
 

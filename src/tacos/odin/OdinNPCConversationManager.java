@@ -51,13 +51,15 @@ import odin.handling.channel.MapleGuildRanking;
 import tacos.database.query.DQ_Hiredmerchants;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Guild;
+import odin.handling.world.Alliance;
+import odin.handling.world.Family;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.MapleCarnivalChallenge;
 import odin.handling.world.guild.MapleGuildAlliance;
 import javax.script.Invocable;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCParcelDlg;
 import tacos.packet.response.ResCField;
@@ -595,25 +597,25 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void showEffect(boolean broadcast, String effect) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, effect)));
+            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(effect).build()));
         } else {
-            client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, effect)));
+            client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(effect).build()));
         }
     }
 
     public void playSound(boolean broadcast, String sound) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, sound)));
+            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path(sound).build()));
         } else {
-            client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, sound)));
+            client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path(sound).build()));
         }
     }
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Object, env)));
+            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Object, PB_FieldEffect.builder().wz_path(env).build()));
         } else {
-            client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Object, env)));
+            client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Object, PB_FieldEffect.builder().wz_path(env).build()));
         }
     }
 
@@ -780,7 +782,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (gid <= 0 || client.getPlayer().getGuildRank() != 1) {
             return;
         }
-        OdinWorld.Guild.disbandGuild(gid);
+        Guild.disbandGuild(gid);
     }
 
     public void increaseGuildCapacity() {
@@ -792,7 +794,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (gid <= 0) {
             return;
         }
-        OdinWorld.Guild.increaseGuildCapacity(gid);
+        Guild.increaseGuildCapacity(gid);
         client.getPlayer().gainMeso(-5000000, true, false, true);
     }
 
@@ -1147,7 +1149,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             return false;
         }
         try {
-            return OdinWorld.Alliance.createAlliance(alliancename, client.getPlayer().getId(), player.getId(), client.getPlayer().getGuildId(), player.getGuildId());
+            return Alliance.createAlliance(alliancename, client.getPlayer().getId(), player.getId(), client.getPlayer().getGuildId(), player.getGuildId());
         } catch (Exception re) {
             re.printStackTrace();
             return false;
@@ -1156,9 +1158,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean addCapacityToAlliance() {
         try {
-            final MapleGuild gs = OdinWorld.Guild.getGuild(client.getPlayer().getGuildId());
+            final MapleGuild gs = Guild.getGuild(client.getPlayer().getGuildId());
             if (gs != null && client.getPlayer().getGuildRank() == 1 && client.getPlayer().getAllianceRank() == 1) {
-                if (OdinWorld.Alliance.getAllianceLeader(gs.getAllianceId()) == client.getPlayer().getId() && OdinWorld.Alliance.changeAllianceCapacity(gs.getAllianceId())) {
+                if (Alliance.getAllianceLeader(gs.getAllianceId()) == client.getPlayer().getId() && Alliance.changeAllianceCapacity(gs.getAllianceId())) {
                     gainMeso(-MapleGuildAlliance.CHANGE_CAPACITY_COST);
                     return true;
                 }
@@ -1171,9 +1173,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public boolean disbandAlliance() {
         try {
-            final MapleGuild gs = OdinWorld.Guild.getGuild(client.getPlayer().getGuildId());
+            final MapleGuild gs = Guild.getGuild(client.getPlayer().getGuildId());
             if (gs != null && client.getPlayer().getGuildRank() == 1 && client.getPlayer().getAllianceRank() == 1) {
-                if (OdinWorld.Alliance.getAllianceLeader(gs.getAllianceId()) == client.getPlayer().getId() && OdinWorld.Alliance.disbandAlliance(gs.getAllianceId())) {
+                if (Alliance.getAllianceLeader(gs.getAllianceId()) == client.getPlayer().getId() && Alliance.disbandAlliance(gs.getAllianceId())) {
                     return true;
                 }
             }
@@ -1250,16 +1252,16 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                     sendNPCText(getPlayer().getName() + " and " + chr.getName() + ", I wish you two all the best on your AsteriaSEA journey together!", 9201002);
                     getMap().startExtendedMapEffect("You may now kiss the bride, " + getPlayer().getName() + "!", 5120006);
                     if (chr.getGuildId() > 0) {
-                        OdinWorld.Guild.guildPacket(chr.getGuildId(), ResCWvsContext.NotifyWedding(false, chr.getName()));
+                        Guild.guildPacket(chr.getGuildId(), ResCWvsContext.NotifyWedding(false, chr.getName()));
                     }
                     if (chr.getFamilyId() > 0) {
-                        OdinWorld.Family.familyPacket(chr.getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), chr.getId());
+                        Family.familyPacket(chr.getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), chr.getId());
                     }
                     if (getPlayer().getGuildId() > 0) {
-                        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.NotifyWedding(false, getPlayer().getName()));
+                        Guild.guildPacket(getPlayer().getGuildId(), ResCWvsContext.NotifyWedding(false, getPlayer().getName()));
                     }
                     if (getPlayer().getFamilyId() > 0) {
-                        OdinWorld.Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), getPlayer().getId());
+                        Family.familyPacket(getPlayer().getFamilyId(), ResCWvsContext.NotifyWedding(true, chr.getName()), getPlayer().getId());
                     }
                 }
             }

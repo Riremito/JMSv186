@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import tacos.client.TacosClient;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Guild;
 import odin.handling.world.guild.MapleBBSThread;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
@@ -94,14 +94,14 @@ public class BBSHandler {
         if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        client.SendPacket(ResCWvsContext.BBSThreadList(OdinWorld.Guild.getBBS(client.getPlayer().getGuildId()), start));
+        client.SendPacket(ResCWvsContext.BBSThreadList(Guild.getBBS(client.getPlayer().getGuildId()), start));
     }
 
     private static void newBBSReply(final TacosClient client, final int localthreadid, final String text) {
         if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        OdinWorld.Guild.addBBSReply(client.getPlayer().getGuildId(), localthreadid, text, client.getPlayer().getId());
+        Guild.addBBSReply(client.getPlayer().getGuildId(), localthreadid, text, client.getPlayer().getId());
         displayThread(client, localthreadid);
     }
 
@@ -109,7 +109,7 @@ public class BBSHandler {
         if (client.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        OdinWorld.Guild.editBBSThread(client.getPlayer().getGuildId(), localthreadid, title, text, icon, client.getPlayer().getId(), client.getPlayer().getGuildRank());
+        Guild.editBBSThread(client.getPlayer().getGuildId(), localthreadid, title, text, icon, client.getPlayer().getId(), client.getPlayer().getGuildRank());
         displayThread(client, localthreadid);
     }
 
@@ -117,14 +117,14 @@ public class BBSHandler {
         if (client.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        displayThread(client, OdinWorld.Guild.addBBSThread(client.getPlayer().getGuildId(), title, text, icon, bNotice, client.getPlayer().getId()));
+        displayThread(client, Guild.addBBSThread(client.getPlayer().getGuildId(), title, text, icon, bNotice, client.getPlayer().getId()));
     }
 
     private static final void deleteBBSThread(final TacosClient client, final int localthreadid) {
         if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        OdinWorld.Guild.deleteBBSThread(client.getPlayer().getGuildId(), localthreadid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
+        Guild.deleteBBSThread(client.getPlayer().getGuildId(), localthreadid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
     }
 
     private static void deleteBBSReply(final TacosClient client, final int localthreadid, final int replyid) {
@@ -132,7 +132,7 @@ public class BBSHandler {
             return;
         }
 
-        OdinWorld.Guild.deleteBBSReply(client.getPlayer().getGuildId(), localthreadid, replyid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
+        Guild.deleteBBSReply(client.getPlayer().getGuildId(), localthreadid, replyid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
         displayThread(client, localthreadid);
     }
 
@@ -140,7 +140,7 @@ public class BBSHandler {
         if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        final List<MapleBBSThread> bbsList = OdinWorld.Guild.getBBS(client.getPlayer().getGuildId());
+        final List<MapleBBSThread> bbsList = Guild.getBBS(client.getPlayer().getGuildId());
         if (bbsList != null) {
             for (MapleBBSThread t : bbsList) {
                 if (t != null && t.localthreadID == localthreadid) {

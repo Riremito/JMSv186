@@ -59,7 +59,7 @@ import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
 import tacos.script.TacosScriptNPC;
@@ -606,7 +606,7 @@ public class DebugCommand {
                     MapleMonster mob = (MapleMonster) mmo;
                     if (mob.getStats().getHPDisplayType() == 0) {
                         mob.setHp(0);
-                        map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, mob)));
+                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(mob).build()));
                     }
                     map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
                     count--;

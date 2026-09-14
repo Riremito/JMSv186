@@ -29,7 +29,10 @@ import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Party;
+import odin.handling.world.Guild;
+import odin.handling.world.Alliance;
+import odin.handling.world.Family;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
 import odin.client.PlayerStats;
@@ -253,7 +256,7 @@ public class ReqCClientSocket {
                 chr.spawnSavedPets();
                 // group            
                 if (chr.getParty() != null) {
-                    OdinWorld.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
+                    Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
                 }
                 // friend
                 chr.setOnlineFriends();
@@ -261,8 +264,8 @@ public class ReqCClientSocket {
                 // guild
                 MapleGuild gs = null;
                 if (0 < chr.getGuildId()) {
-                    OdinWorld.Guild.setGuildMemberOnline(chr.getMGC(), true, client.getChannelId());
-                    gs = OdinWorld.Guild.getGuild(chr.getGuildId());
+                    Guild.setGuildMemberOnline(chr.getMGC(), true, client.getChannelId());
+                    gs = Guild.getGuild(chr.getGuildId());
                     if (gs == null) {
                         chr.setGuildId(0);
                         chr.setGuildRank((byte) 5);
@@ -272,7 +275,7 @@ public class ReqCClientSocket {
                 }
                 // family
                 if (0 < chr.getFamilyId()) {
-                    OdinWorld.Family.setFamilyMemberOnline(chr.getMFC(), true, client.getChannelId());
+                    Family.setFamilyMemberOnline(chr.getMFC(), true, client.getChannelId());
                 }
 
                 chr.sendSetField(true);
@@ -318,7 +321,7 @@ public class ReqCClientSocket {
                 // guild
                 if (0 < chr.getGuildId()) {
                     chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
-                    List<ServerPacket> packetList = OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true);
+                    List<ServerPacket> packetList = Alliance.getAllianceInfo(gs.getAllianceId(), true);
                     if (packetList != null) {
                         for (ServerPacket pack : packetList) {
                             if (pack != null) {

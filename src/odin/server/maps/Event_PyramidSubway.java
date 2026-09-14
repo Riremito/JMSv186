@@ -29,7 +29,7 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCField_Massacre;
 import tacos.packet.response.ResCField_MassacreResult;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCWvsContext;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
@@ -103,17 +103,17 @@ public class Event_PyramidSubway {
                 final MapleCharacter target = ourMap.getCharacterById(mpc.getId());
                 if (target != null) {
                     target.SendPacket(ResCField.Clock(time));
-                    target.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/first/number/" + stage)));
-                    target.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/first/stage")));
-                    target.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/first/start")));
+                    target.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/number/" + stage).build()));
+                    target.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/stage").build()));
+                    target.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/start").build()));
                     fullUpdate(target, stage);
                 }
             }
         } else {
             chr.SendPacket(ResCField.Clock(time));
-            chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/first/number/" + stage)));
-            chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/first/stage")));
-            chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/first/start")));
+            chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/number/" + stage).build()));
+            chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/stage").build()));
+            chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/start").build()));
             fullUpdate(chr, stage);
         }
         if (type != -1 && (stage == 4 || stage == 5)) { //yetis. temporary
@@ -310,7 +310,7 @@ public class Event_PyramidSubway {
             exp = (((kill * 2) + (cool * 10)) + pt) * player.getChannelServer().getExpRate();
             player.gainExp(exp, true, false, false);
         }
-        player.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/clear")));
+        player.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/clear").build()));
         player.SendPacket(ResCField_MassacreResult.MassacreResult(rank, exp));
         dispose(player);
     }
@@ -362,7 +362,7 @@ public class Event_PyramidSubway {
     }
 
     public final void broadcastEffect(final MapleCharacter player, final String effect) {
-        player.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, effect)));
+        player.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(effect).build()));
     }
 
     public final void broadcastEnergy(final MapleCharacter player, final String type, final int amount) {
@@ -492,18 +492,18 @@ public class Event_PyramidSubway {
                 final MapleCharacter chr = oldMap.getCharacterById(mpc.getId());
                 if (chr != null && chr.getId() != player.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
                     if (clear == 1) {
-                        chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/clear")));
+                        chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/clear").build()));
                     } else if (clear == 2) {
-                        chr.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/fail")));
+                        chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
                     }
                     chr.changeMap(map, map.getPortal(0));
                 }
             }
         }
         if (clear == 1) {
-            player.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/clear")));
+            player.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/clear").build()));
         } else if (clear == 2) {
-            player.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/fail")));
+            player.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
         }
         player.changeMap(map, map.getPortal(0));
     }

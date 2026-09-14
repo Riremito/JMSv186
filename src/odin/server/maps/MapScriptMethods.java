@@ -25,7 +25,7 @@ import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCUserLocal;
@@ -337,8 +337,8 @@ public class MapScriptMethods {
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
                 client.getPlayer().getMap().resetFully();
-                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/bonus/bonus")));
-                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/bonus/stage")));
+                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/bonus").build()));
+                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/stage").build()));
                 Point pos1 = null, pos2 = null, pos3 = null;
                 int spawnPer = 0;
                 int mobId = 0;
@@ -570,7 +570,7 @@ public class MapScriptMethods {
                 client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                 client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
-                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "temaD/enter/mushCatle")));
+                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("temaD/enter/mushCatle").build()));
                 break;
             }
             case explorationPoint: {
@@ -592,7 +592,7 @@ public class MapScriptMethods {
             case go1010200:
             case go1010300:
             case go1010400: {
-                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "maplemap/enter/" + client.getPlayer().getMapId())));
+                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("maplemap/enter/" + client.getPlayer().getMapId()).build()));
                 break;
             }
             case goArcher: {
@@ -692,7 +692,7 @@ public class MapScriptMethods {
                 break;
             }
             case Massacre_result: { //clear, give exp, etc.
-                client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "killing/fail")));
+                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
                 break;
             }
             default: {
@@ -751,10 +751,10 @@ public class MapScriptMethods {
     }
 
     private static void sendDojoStart(TacosClient client, int stage) {
-        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Dojang/start")));
-        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/stage")));
-        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/start/number/" + stage)));
-        client.SendPacket(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Tremble, 0, 1)));
+        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/start").build()));
+        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/start/stage").build()));
+        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/start/number/" + stage).build()));
+        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Tremble, PB_FieldEffect.builder().type(0).delay(1).build()));
     }
 
     private static void handlePinkBeanStart(TacosClient client) {

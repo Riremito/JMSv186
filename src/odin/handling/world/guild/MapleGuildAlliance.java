@@ -23,7 +23,8 @@ package odin.handling.world.guild;
 
 import tacos.database.query.DQ_Alliances;
 import tacos.database.query.DQ_Characters;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Guild;
+import odin.handling.world.Alliance;
 import java.util.ArrayList;
 import java.util.Collection;
 import tacos.packet.ServerPacket;
@@ -112,11 +113,11 @@ public class MapleGuildAlliance {
 
     public void broadcast(ServerPacket packet, int exceptionId, GAOp op, boolean expelled) {
         if (op == GAOp.DISBAND) {
-            OdinWorld.Alliance.setOldAlliance(exceptionId, expelled, allianceid); //-1 = alliance gone, exceptionId = guild left/expelled
+            Alliance.setOldAlliance(exceptionId, expelled, allianceid); //-1 = alliance gone, exceptionId = guild left/expelled
         } else if (op == GAOp.NEWGUILD) {
-            OdinWorld.Alliance.setNewAlliance(exceptionId, allianceid); //exceptionId = guild that just joined
+            Alliance.setNewAlliance(exceptionId, allianceid); //exceptionId = guild that just joined
         } else {
-            OdinWorld.Alliance.sendGuild(packet, exceptionId, allianceid); //exceptionId = guild to broadcast to only
+            Alliance.sendGuild(packet, exceptionId, allianceid); //exceptionId = guild to broadcast to only
         }
 
     }
@@ -231,7 +232,7 @@ public class MapleGuildAlliance {
         int g = -1; //this shall be leader
         String leaderName = null;
         for (int i = 0; i < getNoGuilds(); i++) {
-            MapleGuild g_ = OdinWorld.Guild.getGuild(guilds[i]);
+            MapleGuild g_ = Guild.getGuild(guilds[i]);
             if (g_ != null) {
                 MapleGuildCharacter newLead = g_.getMGC(c);
                 MapleGuildCharacter oldLead = g_.getMGC(leaderid);
@@ -271,7 +272,7 @@ public class MapleGuildAlliance {
             return false;
         }
         for (int i = 0; i < getNoGuilds(); i++) {
-            MapleGuild g_ = OdinWorld.Guild.getGuild(guilds[i]);
+            MapleGuild g_ = Guild.getGuild(guilds[i]);
             if (g_ != null) {
                 MapleGuildCharacter chr = g_.getMGC(cid);
                 if (chr != null && chr.getAllianceRank() > 2) {

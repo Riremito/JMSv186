@@ -18,7 +18,7 @@ import tacos.database.query.DQ_Shops;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.struct.InvOp;
+import tacos.packet.response.builder.PB_InvOp;
 import tacos.wz.WzDataStorage;
 
 public class MapleShop {
@@ -187,7 +187,7 @@ public class MapleShop {
             final int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
             if (client.getPlayer().getMeso() >= price) {
                 item.setQuantity(slotMax);
-                client.SendPacket(ResCWvsContext.InventoryOperation(false, InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));
+                client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));
                 client.getPlayer().gainMeso(-price, false, true, false);
                 client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
                 return true;

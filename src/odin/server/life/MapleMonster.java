@@ -44,7 +44,7 @@ import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCWvsContext;
@@ -276,7 +276,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     if (sponge.get().hp <= 0) {
                         map.killMonster(sponge.get(), from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                     } else {
-                        map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, sponge.get())));
+                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(sponge.get()).build()));
                     }
                 }
             }
@@ -285,7 +285,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (sponge.get() == null/* && hp > 0*/) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
-                            map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, this)), this.getPosition());
+                            map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()), this.getPosition());
                             break;
                         case 1:
                             map.broadcastMessage(from, ResCMobPool.MobDamaged(this, (int) damage, 1), false);
@@ -311,7 +311,7 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                 if (hp <= 0) {
                     if (stats.getHPDisplayType() == 0) {
                         this.setHp(0);
-                        map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, this)));
+                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
                     }
                     map.killMonster(this, from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                 }
@@ -512,8 +512,8 @@ public class MapleMonster extends AbstractLoadedMapleLife {
                     map.spawnRevives(mob, this.getObjectId());
 
                     if (mob.getId() == 9300216) {
-                        map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Dojang/clear")));
-                        map.broadcastMessage(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, "dojang/end/clear")));
+                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/clear").build()));
+                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/end/clear").build()));
                     }
                 }
                 break;

@@ -53,7 +53,9 @@ import tacos.database.DatabaseException;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Party;
+import odin.handling.world.Guild;
+import odin.handling.world.Family;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
@@ -82,7 +84,7 @@ import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.packet.response.struct.InvOp;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
@@ -271,7 +273,7 @@ public class MapleCharacter extends TacosCharacter {
 
                 int partyid = extras.party;
                 if (partyid >= 0) {
-                    MapleParty party = OdinWorld.Party.getParty(partyid);
+                    MapleParty party = Party.getParty(partyid);
                     if (party != null && party.getMemberById(ret.id) != null) {
                         ret.party = party;
                     }
@@ -1216,9 +1218,9 @@ public class MapleCharacter extends TacosCharacter {
                 percentrep = 100 - percentrep + (level / 2);
             }
             if (percentrep > 0) {
-                int sensen = OdinWorld.Family.setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
+                int sensen = Family.setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
                 if (sensen > 0) {
-                    OdinWorld.Family.setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
+                    Family.setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
                 }
             }
         }
@@ -1283,7 +1285,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void silentPartyUpdate() {
         if (party != null) {
-            OdinWorld.Party.updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
+            Party.updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
         }
     }
 
@@ -1294,9 +1296,9 @@ public class MapleCharacter extends TacosCharacter {
         getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
 
         if (item_used.getQuantity() == 0 && !isRecharge) {
-            SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().remove(type, item_used.getPosition()).build()));
+            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().remove(type, item_used.getPosition()).build()));
         } else {
-            SendPacket(ResCWvsContext.InventoryOperation(true, InvOp.builder().update(type, (Item) item_used).build()));
+            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, (Item) item_used).build()));
         }
 
         return true;
@@ -1945,7 +1947,7 @@ public class MapleCharacter extends TacosCharacter {
         if (getGuildId() <= 0) {
             return null;
         }
-        return OdinWorld.Guild.getGuild(getGuildId());
+        return Guild.getGuild(getGuildId());
     }
 
     public void guildUpdate() {
@@ -1954,7 +1956,7 @@ public class MapleCharacter extends TacosCharacter {
         }
         mgc.setLevel((short) level);
         mgc.setJobId(job);
-        OdinWorld.Guild.memberLevelJobUpdate(mgc);
+        Guild.memberLevelJobUpdate(mgc);
     }
 
     public void saveGuildStatus() {
@@ -1965,7 +1967,7 @@ public class MapleCharacter extends TacosCharacter {
         if (mfc == null) {
             return;
         }
-        OdinWorld.Family.memberFamilyUpdate(mfc, this);
+        Family.memberFamilyUpdate(mfc, this);
     }
 
     public void saveFamilyStatus() {
@@ -2938,7 +2940,7 @@ public class MapleCharacter extends TacosCharacter {
 
     public void makeMFC(final int familyid, final int seniorid, final int junior1, final int junior2) {
         if (familyid > 0) {
-            MapleFamily f = OdinWorld.Family.getFamily(familyid);
+            MapleFamily f = Family.getFamily(familyid);
             if (f == null) {
                 mfc = null;
             } else {
@@ -3215,7 +3217,7 @@ public class MapleCharacter extends TacosCharacter {
                 }
                 if (party != null) {
                     chrp.setOnline(false);
-                    OdinWorld.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                    Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
                     if (map != null && party.getLeader().getId() == idz) {
                         MaplePartyCharacter lchr = null;
                         for (MaplePartyCharacter pchr : party.getMembers()) {
@@ -3224,15 +3226,15 @@ public class MapleCharacter extends TacosCharacter {
                             }
                         }
                         if (lchr != null) {
-                            OdinWorld.Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER_DC, lchr);
+                            Party.updateParty(party.getId(), PartyOperation.CHANGE_LEADER_DC, lchr);
                         }
                     }
                 }
                 if (gid > 0) {
-                    OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);
+                    Guild.setGuildMemberOnline(chrg, false, -1);
                 }
                 if (fid > 0) {
-                    OdinWorld.Family.setFamilyMemberOnline(chrf, false, -1);
+                    Family.setFamilyMemberOnline(chrf, false, -1);
                 }
             } catch (final Exception e) {
             } finally {
@@ -3248,10 +3250,10 @@ public class MapleCharacter extends TacosCharacter {
             try {
                 if (party != null) {
                     chrp.setOnline(false);
-                    OdinWorld.Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
+                    Party.updateParty(party.getId(), PartyOperation.LOG_ONOFF, chrp);
                 }
                 if (gid > 0) {
-                    OdinWorld.Guild.setGuildMemberOnline(chrg, false, -1);
+                    Guild.setGuildMemberOnline(chrg, false, -1);
                 }
             } catch (final Exception e) {
             }

@@ -26,7 +26,7 @@ import java.util.Iterator;
 import odin.client.MapleCharacter;
 import tacos.database.query.DQ_Characters;
 import tacos.database.query.DQ_Families;
-import odin.handling.world.OdinWorld;
+import odin.handling.world.Family;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -170,12 +170,12 @@ public class MapleFamily {
             if (cids == null || cids.contains(mgc.getId())) {
                 if (bcop == FCOp.DISBAND) {
                     if (mgc.isOnline()) {
-                        OdinWorld.Family.setFamily(0, 0, 0, 0, mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
+                        Family.setFamily(0, 0, 0, 0, mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
                     } else {
                         setOfflineFamilyStatus(0, 0, 0, 0, mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
                     }
                 } else if (mgc.isOnline() && mgc.getId() != exceptionId) {
-                    OdinWorld.Broadcast.sendFamilyPacket(mgc.getId(), packet, exceptionId, id);
+                    Family.sendFamilyPacket(mgc.getId(), packet, exceptionId, id);
                 }
             }
         }
@@ -220,7 +220,7 @@ public class MapleFamily {
                 List<Integer> dummy = new ArrayList<>();
                 dummy.add(mgc.getId());
                 broadcast(ResCWvsContext.changeRep(addrep), -1, dummy);
-                OdinWorld.Family.setFamily(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
+                Family.setFamily(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
             } else {
                 setOfflineFamilyStatus(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
             }
@@ -259,7 +259,7 @@ public class MapleFamily {
         if (mgc.getId() == leaderid && !skipLeader) {
             //disband
             leadername = null; //to disband family completely
-            OdinWorld.Family.disbandFamily(id);
+            Family.disbandFamily(id);
         } else {
             //we also have to update anyone below us
             if (mgc.getJunior1() > 0) {
@@ -322,7 +322,7 @@ public class MapleFamily {
         for (MapleFamilyCharacter mgc : oldfam.members.values()) {
             mgc.setFamilyId(newfam.getId());
             if (mgc.isOnline()) {
-                OdinWorld.Family.setFamily(newfam.getId(), mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
+                Family.setFamily(newfam.getId(), mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
             } else {
                 setOfflineFamilyStatus(newfam.getId(), mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
             }
@@ -331,7 +331,7 @@ public class MapleFamily {
         }
         newfam.resetPedigree();
         //do not reset characters, so leadername is fine
-        OdinWorld.Family.disbandFamily(oldfam.getId()); //and remove it
+        Family.disbandFamily(oldfam.getId()); //and remove it
     }
 
     //return disbanded or not.
@@ -357,16 +357,16 @@ public class MapleFamily {
                 setOfflineFamilyStatus(newId, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
                 members.remove(mgc.getId()); //clean remove
             }
-            final MapleFamily newfam = OdinWorld.Family.getFamily(newId);
+            final MapleFamily newfam = Family.getFamily(newId);
             for (MapleFamilyCharacter mgc : all) {
                 if (mgc.isOnline()) { //NOW we change the char info
-                    OdinWorld.Family.setFamily(newId, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
+                    Family.setFamily(newId, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
                 }
                 newfam.setOnline(mgc.getId(), mgc.isOnline(), mgc.getChannel());
             }
         } finally {
             if (members.size() <= 1) { //only one person is left :|
-                OdinWorld.Family.disbandFamily(id); //disband us.
+                Family.disbandFamily(id); //disband us.
                 return true;
             }
         }
