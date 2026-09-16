@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import tacos.wz.MapleData;
 import odin.server.life.MapleLifeFactory;
-import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
@@ -50,6 +49,7 @@ import tacos.wz.ids.DWI_Block;
 public class TacosMapData {
 
     protected int map_id;
+    protected ArrayList<TacosSpawnPoint> monster_spawn_point = new ArrayList<>();
 
     public TacosMapData(int mapid) {
         this.map_id = mapid;
@@ -57,6 +57,10 @@ public class TacosMapData {
 
     public int getId() {
         return this.map_id;
+    }
+
+    public ArrayList<TacosSpawnPoint> getMonsterSpawnPoint() {
+        return this.monster_spawn_point;
     }
 
     public Point calcDropPos(Point initial, Point fallback) {
@@ -257,11 +261,13 @@ public class TacosMapData {
     private float recoveryRate;
     private int fixedMob;
     private int consumeItemCoolTime;
+    private int time_mob_id;
+    private String time_mob_message;
 
     public boolean loadInfo(MapleData mapData) {
         this.clock = mapData.getChildByPath("clock") != null;
         this.returnMapId = WzDataTool.getIntPath("info/returnMap", mapData, 0);
-        this.createMobInterval = WzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000);
+        this.createMobInterval = WzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 7000);
         this.monsterRate = WzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
         this.everlast = WzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0;
         this.town = WzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0;
@@ -284,6 +290,8 @@ public class TacosMapData {
             this.returnMapId = this.map_id;
         }
 
+        this.time_mob_id = WzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
+        this.time_mob_message = WzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
         return true;
     }
 
@@ -365,34 +373,42 @@ public class TacosMapData {
 
     // life node.
     public boolean loadLife(MapleData mapData) {
-        int bossid = -1;
-        String msg = null;
-        if (mapData.getChildByPath("info/timeMob") != null) {
-            bossid = WzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
-            msg = WzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
-        }
-
         for (MapleData life : mapData.getChildByPath("life")) {
             String type = WzDataTool.getString(life.getChildByPath("type"));
+
+            switch (type) {
+                case "m" -> {
+                    TacosSpawnPoint sp = new TacosSpawnPoint();
+                    if (sp.loadData(life)) {
+                        this.monster_spawn_point.add(sp);
+                    }
+                    continue;
+                }
+                case "n" -> {
+                }
+                default -> {
+                }
+            }
+
             int npc_id = WzDataTool.getInt(life.getChildByPath("id"), -1);
             if (npc_id == -1) {
                 DebugLogger.ErrorLog("loadLife : failed" + mapData.getParent().getName());
                 continue;
             }
-            Object myLife = MapleLifeFactory.getLife(npc_id, type);
+            Object myLife = MapleLifeFactory.getNPC(npc_id);
 
             if (myLife == null) {
                 DebugLogger.ErrorLog("loadLife : failed, " + npc_id);
                 continue;
             }
 
-            final int lifeCy = WzDataTool.getInt(life.getChildByPath("cy"));
+            int lifeCy = WzDataTool.getInt(life.getChildByPath("cy"));
             MapleData dF = life.getChildByPath("f");
-            final Integer lifeF = dF != null ? WzDataTool.getInt(dF) : null;
-            final int lifeFh = WzDataTool.getInt(life.getChildByPath("fh"));
-            final int lifeRx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
-            final int lifeRx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
-            final Point lifePos = new Point(WzDataTool.getInt(life.getChildByPath("x")), WzDataTool.getInt(life.getChildByPath("y")));
+            Integer lifeF = dF != null ? WzDataTool.getInt(dF) : null;
+            int lifeFh = WzDataTool.getInt(life.getChildByPath("fh"));
+            int lifeRx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
+            int lifeRx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
+            Point lifePos = new Point(WzDataTool.getInt(life.getChildByPath("x")), WzDataTool.getInt(life.getChildByPath("y")));
 
             if (myLife instanceof MapleNPC) {
                 MapleNPC npc = (MapleNPC) myLife;
@@ -415,23 +431,6 @@ public class TacosMapData {
                     continue;
                 }
                 ((MapleMap) this).addMapObject(npc);
-            }
-            if (myLife instanceof MapleMonster) {
-                MapleMonster mob = (MapleMonster) myLife;
-                mob.setCy(lifeCy);
-                if (lifeF != null) {
-                    mob.setF(lifeF);
-                }
-                mob.setFh(lifeFh);
-                mob.setRx0(lifeRx0);
-                mob.setRx1(lifeRx1);
-                mob.setPosition(lifePos);
-
-                if (DWI_Block.checkMob(mob.getId())) {
-                    DebugLogger.InfoLog("loadLife : blocked mob, " + npc_id);
-                    continue;
-                }
-                ((MapleMap) this).addMonsterSpawn(mob, WzDataTool.getIntPath("mobTime", life, 0), (byte) WzDataTool.getIntPath("team", life, -1), mob.getId() == bossid ? msg : null);
             }
         }
         return true;

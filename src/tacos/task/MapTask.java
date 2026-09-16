@@ -19,9 +19,13 @@
 package tacos.task;
 
 import odin.client.MapleCharacter;
+import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
+import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCMobPool;
+import tacos.server.map.TacosSpawnPoint;
 
 /**
  *
@@ -48,8 +52,20 @@ public class MapTask {
             }
         }
         // mob respawn.
-        long interval = map.getCreateMobInterval();
-        map.updateSpawn();
+        for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+            if (sp.getLastRegenTime() + map.getCreateMobInterval() <= time) {
+                MapleMonster monster = sp.regen(map);
+                if (monster != null) {
+                    map.addMonster(monster);
+                    map.broadcastMessage(ResCMobPool.MobEnterField(monster));
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, false));
+                    monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
+                    monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
+                }
+            }
+        }
+
+        //map.updateSpawn();
         return true;
     }
 }

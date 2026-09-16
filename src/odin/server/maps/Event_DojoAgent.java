@@ -46,7 +46,6 @@ public class Event_DojoAgent {
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMap(map, map.getPortal(0));
-                map.respawn(true);
                 return true;
             }
         }
@@ -58,7 +57,7 @@ public class Event_DojoAgent {
         final int thisStage = (currentmap - baseAgentMapId) / 100;
 
         MapleMap map = player.getMap();
-        if (map.getSpawnedMonstersOnMap() > 0) {
+        if (map.getNumMonsters() > 0) {
             return false;
         }
         if (!fromResting) {
@@ -76,7 +75,6 @@ public class Event_DojoAgent {
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMap(map, map.getPortal(0));
-                map.respawn(true);
                 return true;
             }
         }

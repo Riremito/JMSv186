@@ -30,19 +30,6 @@ public class MapleLifeFactory {
     private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
     private static Map<Integer, String> npcNames = new HashMap<>();
 
-    public static Object getLife(int id, String type) {
-        if (type.equalsIgnoreCase("n")) {
-            return getNPC(id);
-        } else if (type.equalsIgnoreCase("m")) {
-            // randomize mob
-            //id = DWI_LoadXML.getMob().getRandom();
-            return getMonster(id);
-        } else {
-            System.err.println("Unknown Life type: " + type + "");
-            return null;
-        }
-    }
-
     public static List<Integer> getQuestCount(int id) {
         return WzXML.MOB.getQuestCountGroup().get(id);
     }
@@ -59,7 +46,6 @@ public class MapleLifeFactory {
         }
         return new MapleMonster(mob_id, stats);
     }
-
 
     public static MapleNPC getNPC(int npc_id) {
         String name = npcNames.get(npc_id);

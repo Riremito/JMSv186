@@ -42,7 +42,7 @@ public class SpawnPoint {
     private String msg;
     private byte carnivalTeam;
 
-    public SpawnPoint(final MapleMonster monster, final Point pos, final int mobTime, final byte carnivalTeam, final String msg) {
+    public SpawnPoint(MapleMonster monster, Point pos, int mobTime, byte carnivalTeam, String msg) {
         this.monster = monster;
         this.pos = pos;
         // 10分間隔未満は通常処理
@@ -63,27 +63,27 @@ public class SpawnPoint {
         this.nextPossibleSpawn = System.currentTimeMillis();
     }
 
-    public final void setCarnival(int c) {
+    public void setCarnival(int c) {
         this.carnival = c;
     }
 
-    public final Point getPosition() {
+    public Point getPosition() {
         return pos;
     }
 
-    public final MapleMonster getMonster() {
+    public MapleMonster getMonster() {
         return monster;
     }
 
-    public final byte getCarnivalTeam() {
+    public byte getCarnivalTeam() {
         return carnivalTeam;
     }
 
-    public final int getCarnivalId() {
+    public int getCarnivalId() {
         return carnival;
     }
 
-    public final boolean shouldSpawn() {
+    public boolean shouldSpawn() {
         if (mobTime < 0) {
             return false;
         }
@@ -95,7 +95,7 @@ public class SpawnPoint {
         return nextPossibleSpawn <= System.currentTimeMillis();
     }
 
-    public final MapleMonster spawnMonster(TacosMap map) {
+    public MapleMonster spawnMonster(TacosMap map) {
         final MapleMonster mob = new MapleMonster(monster);
         mob.setPosition(pos);
         mob.setCarnivalTeam(carnivalTeam);
@@ -116,8 +116,8 @@ public class SpawnPoint {
         if (carnivalTeam > -1) {
             for (MapleReactor r : map.getAllReactors()) { //parsing through everytime a monster is spawned? not good idea
                 if (r.getName().startsWith(String.valueOf(carnivalTeam)) && r.getReactorId() == (9980000 + carnivalTeam) && r.getState() < 5) {
-                    final int num = Integer.parseInt(r.getName().substring(1, 2)); //00, 01, etc
-                    final MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
+                    int num = Integer.parseInt(r.getName().substring(1, 2)); //00, 01, etc
+                    MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
                     if (skil != null) {
                         skil.getSkill().applyEffect(null, mob, false);
                     }
@@ -134,7 +134,7 @@ public class SpawnPoint {
         return mob;
     }
 
-    public final int getMobTime() {
+    public int getMobTime() {
         return mobTime;
     }
 }

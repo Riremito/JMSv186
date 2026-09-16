@@ -21,7 +21,6 @@ package tacos.server.map;
 import java.awt.Point;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
-import odin.server.life.SpawnPointAreaBoss;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.wz.WzDataStorage;
@@ -279,6 +278,6 @@ public class MasterMonster {
                 pos2 = new Point(pos3);
             }
         }
-        map.getMonsterSpawn().add(new SpawnPointAreaBoss(monster, pos1, pos2, pos3, mobTime, msg));
+        //map.getMonsterSpawn().add(new SpawnPointAreaBoss(monster, pos1, pos2, pos3, mobTime, msg));
     }
 }

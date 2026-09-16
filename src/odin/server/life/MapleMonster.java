@@ -64,7 +64,7 @@ import tacos.packet.ops.OpsMobLeaveField;
 public class MapleMonster {
 
     private Point position = new Point();
-    private int objectId;
+    private int objectId = 0;
 
     public Point getPosition() {
         return new Point(position);

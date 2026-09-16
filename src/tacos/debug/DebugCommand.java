@@ -42,7 +42,6 @@ import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MapleNPC;
 import odin.server.life.MonsterDropEntry;
 import odin.server.life.PlayerNPC;
-import odin.server.life.SpawnDispatch;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapObjectType;
@@ -70,6 +69,7 @@ import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosReward.Reward;
+import tacos.server.map.TacosSpawnPoint;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 import tacos.wz.WzName;
@@ -455,10 +455,16 @@ public class DebugCommand {
                 checkMapData(chr);
                 return true;
             }
-            case "/md2": {
+            case "/msp": {
+                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+                    chr.DebugMsg(sp.getInfo());
+                }
+                return true;
+            }
+            case "/dropinfo": {
                 ArrayList<Integer> mob_ids = new ArrayList<>();
-                for (Object sp : map.getMonsterSpawn()) {
-                    int mob_id = SpawnDispatch.getMonster(sp).getId();
+                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+                    int mob_id = sp.getId();
                     if (!mob_ids.contains(mob_id)) {
                         mob_ids.add(mob_id);
                     }
@@ -1179,8 +1185,8 @@ public class DebugCommand {
 
         List<Integer> mob_ids = new ArrayList<>();
         List<Integer> mob_counts = new ArrayList<>();
-        for (Object s : map.getMonsterSpawn()) {
-            int id = SpawnDispatch.getMonster(s).getId();
+        for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+            int id = sp.getId();
             int index = mob_ids.indexOf(id);
             if (index != -1) {
                 mob_counts.set(index, mob_counts.get(index) + 1);

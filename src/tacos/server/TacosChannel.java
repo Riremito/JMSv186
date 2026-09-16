@@ -119,8 +119,6 @@ public class TacosChannel extends TacosServer {
         CustomMap.addNPCtoMap(map);
         // master monster.
         MasterMonster.addAreaBossSpawn(map);
-        map.loadMonsterRate(true);
-
         this.maps.put(map_id, map);
         return map;
     }

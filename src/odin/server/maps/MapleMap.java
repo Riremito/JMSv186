@@ -41,15 +41,12 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleLifeFactory;
-import odin.server.life.SpawnDispatch;
-import odin.server.life.SpawnPoint;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -121,8 +118,7 @@ public final class MapleMap extends TacosMap {
         } else if (monster.getId() == 9300166) { //ariant pq bomb
             animation = OpsMobLeaveField.MOBLEAVEFIELD_SWALLOW; //or is it 3?
         }
-        spawnedMonstersOnMap.decrementAndGet();
-        removeMapObject(monster);
+        removeMonster(monster.getObjectId());
         int dropOwner = monster.killBy(chr, lastSkill);
         broadcastMessage(ResCMobPool.MobLeaveField(monster, animation));
 
@@ -130,32 +126,27 @@ public final class MapleMap extends TacosMap {
             final int buffid = monster.getBuffToGive();
             final MapleStatEffect buff = MapleItemInformationProvider.getInstance().getItemEffect(buffid);
 
-            charactersLock.readLock().lock();
-            try {
-                for (final MapleCharacter mc : characters) {
-                    if (mc.isAlive()) {
-                        buff.applyTo(mc);
+            for (final MapleCharacter mc : characters) {
+                if (mc.isAlive()) {
+                    buff.applyTo(mc);
 
-                        switch (monster.getId()) {
-                            case 8810018:
-                            case 8810122:
-                            case 8820001: {
-                                PB_UserEffect pb = PB_UserEffect.builder()
-                                        .player(mc)
-                                        .skill_id(buffid)
-                                        .build();
-                                mc.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_BuffItemEffect, pb));
-                                broadcastMessage(mc, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, pb), false);
-                                break;
-                            }
-                            default: {
-                                break;
-                            }
+                    switch (monster.getId()) {
+                        case 8810018:
+                        case 8810122:
+                        case 8820001: {
+                            PB_UserEffect pb = PB_UserEffect.builder()
+                                    .player(mc)
+                                    .skill_id(buffid)
+                                    .build();
+                            mc.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_BuffItemEffect, pb));
+                            broadcastMessage(mc, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, pb), false);
+                            break;
+                        }
+                        default: {
+                            break;
                         }
                     }
                 }
-            } finally {
-                charactersLock.readLock().unlock();
             }
         }
 
@@ -424,18 +415,6 @@ public final class MapleMap extends TacosMap {
         startMapEffect(msg, itemId, true);
     }
 
-    public final SpawnPoint addMonsterSpawn(final MapleMonster monster, final int mobTime, final byte carnivalTeam, final String msg) {
-        final Point newpos = calcPointBelow(monster.getPosition());
-        newpos.y -= 1;
-        final SpawnPoint sp = new SpawnPoint(monster, newpos, mobTime, carnivalTeam, msg);
-        if (carnivalTeam > -1) {
-            monsterSpawn.add(0, sp); //at the beginning
-        } else {
-            monsterSpawn.add(sp);
-        }
-        return sp;
-    }
-
     private class ActivateItemReactor implements Runnable {
 
         private MapleMapItem mapitem;
@@ -470,28 +449,22 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    private void activateItemReactors(final MapleMapItem drop, final TacosClient client) {
-        final Item item = drop.getItem();
+    private void activateItemReactors(MapleMapItem drop, TacosClient client) {
+        Item item = drop.getItem();
+        for (Object o : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
+            MapleReactor react = (MapleReactor) o;
 
-        mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().lock();
-        try {
-            for (final Object o : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-                final MapleReactor react = (MapleReactor) o;
-
-                if (react.getReactorType() == 100) {
-                    if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getKey()) && react.getReactItem().getValue() == item.getQuantity()) {
-                        if (react.getArea().contains(drop.getPosition())) {
-                            if (!react.isTimerActive()) {
-                                MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, client), 5000);
-                                react.setTimerActive(true);
-                                break;
-                            }
+            if (react.getReactorType() == 100) {
+                if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getKey()) && react.getReactItem().getValue() == item.getQuantity()) {
+                    if (react.getArea().contains(drop.getPosition())) {
+                        if (!react.isTimerActive()) {
+                            MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, client), 5000);
+                            react.setTimerActive(true);
+                            break;
                         }
                     }
                 }
             }
-        } finally {
-            mapobjectlocks.get(MapleMapObjectType.REACTOR).readLock().unlock();
         }
     }
 
@@ -511,19 +484,21 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public final boolean makeCarnivalSpawn(final int team, final MapleMonster newMons, final int num) {
+    public boolean makeCarnivalSpawn(int team, MapleMonster newMons, int num) {
         MonsterPoint ret = null;
         for (MonsterPoint mp : getNodeInfo().getMonsterPoints()) {
             if (mp.team == team || mp.team == -1) {
-                final Point newpos = calcPointBelow(new Point(mp.x, mp.y));
+                Point newpos = calcPointBelow(new Point(mp.x, mp.y));
                 newpos.y -= 1;
                 boolean found = false;
+                /*
                 for (Object s : monsterSpawn) {
                     if (SpawnDispatch.getCarnivalId(s) > -1 && (mp.team == -1 || SpawnDispatch.getCarnivalTeam(s) == mp.team) && SpawnDispatch.getPosition(s).x == newpos.x && SpawnDispatch.getPosition(s).y == newpos.y) {
                         found = true;
                         break; //this point has already been used.
                     }
                 }
+                 */
                 if (!found) {
                     ret = mp; //this point is safe for use.
                     break;
@@ -538,8 +513,8 @@ public final class MapleMap extends TacosMap {
             newMons.setRx1(ret.x - 50); //does this matter
             newMons.setPosition(new Point(ret.x, ret.y));
             newMons.setHide(false);
-            final SpawnPoint sp = addMonsterSpawn(newMons, 1, (byte) team, null);
-            sp.setCarnival(num);
+            //SpawnPoint sp = addMonsterSpawn(newMons, 1, (byte) team, null);
+            //sp.setCarnival(num);
         }
         return ret != null;
     }
