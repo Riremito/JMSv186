@@ -45,26 +45,8 @@ public class MapleSquad {
         return this.leader.get().findMap(beginMapId);
     }
 
-    public void clear() {
-        if (removal != null) {
-            getBeginMap().broadcastMessage(ResCField.DestroyClock());
-            removal.cancel(false);
-            removal = null;
-        }
-        members.clear();
-        bannedMembers.clear();
-        leader = null;
-        TacosWorld.find(0).getChannelServer(ch).removeMapleSquad(type); // TODO : fix
-        this.status = 0;
-
-    }
-
     public MapleCharacter getChar(String name) {
         return this.leader.get().getChannelServer().getOnlinePlayers().findByName(name);
-    }
-
-    public long getTimeLeft() {
-        return expiration - (System.currentTimeMillis() - startTime);
     }
 
     private void scheduleRemoval(final int time) {
@@ -83,52 +65,12 @@ public class MapleSquad {
         return leaderName;
     }
 
-    public MapleCharacter getLeader() {
-        if (leader == null || leader.get() == null) {
-            if (members.size() > 0 && getChar(leaderName) != null) {
-                leader = new WeakReference<>(getChar(leaderName));
-            } else {
-                if (status != 0) {
-                    clear();
-                }
-                return null;
-            }
-        }
-        return leader.get();
-    }
-
-    public List<String> getMembers() {
-        return new LinkedList<>(members.keySet());
-    }
-
     public List<String> getBannedMembers() {
         return new LinkedList<>(bannedMembers.keySet());
     }
 
     public boolean isBanned(MapleCharacter member) {
         return bannedMembers.containsKey(member.getName());
-    }
-
-    public int addMember(MapleCharacter member, boolean join) {
-        final String job = MapleCarnivalChallenge.getJobBasicNameById(member.getJob());
-        if (join) {
-            if (!members.containsKey(member.getName())) {
-                if (members.size() <= 30) {
-                    members.put(member.getName(), job);
-                    getLeader().dropMessage(5, member.getName() + " (" + job + ") has joined the fight!");
-                    return 1;
-                }
-                return 2;
-            }
-            return -1;
-        } else {
-            if (members.containsKey(member.getName())) {
-                members.remove(member.getName());
-                getLeader().dropMessage(5, member.getName() + " (" + job + ") have withdrawed from the fight.");
-                return 1;
-            }
-            return -1;
-        }
     }
 
     public void acceptMember(int pos) {
@@ -142,18 +84,6 @@ public class MapleSquad {
             bannedMembers.remove(toadd);
 
             getChar(toadd).dropMessage(5, getLeaderName() + " has decided to add you back to the squad.");
-        }
-    }
-
-    public void removeMember(MapleCharacter chr) {
-        if (members.containsKey(chr.getName())) {
-            members.remove(chr.getName());
-        }
-    }
-
-    public void removeMember(String chr) {
-        if (members.containsKey(chr)) {
-            members.remove(chr);
         }
     }
 
@@ -274,4 +204,82 @@ public class MapleSquad {
         }
         return jobs;
     }
+
+    // used by script
+    public void clear() {
+        if (removal != null) {
+            getBeginMap().broadcastMessage(ResCField.DestroyClock());
+            removal.cancel(false);
+            removal = null;
+        }
+        members.clear();
+        bannedMembers.clear();
+        leader = null;
+        TacosWorld.find(0).getChannelServer(ch).removeMapleSquad(type); // TODO : fix
+        this.status = 0;
+
+    }
+
+    // used by script
+    public long getTimeLeft() {
+        return expiration - (System.currentTimeMillis() - startTime);
+    }
+
+    // used by script
+    public MapleCharacter getLeader() {
+        if (leader == null || leader.get() == null) {
+            if (members.size() > 0 && getChar(leaderName) != null) {
+                leader = new WeakReference<>(getChar(leaderName));
+            } else {
+                if (status != 0) {
+                    clear();
+                }
+                return null;
+            }
+        }
+        return leader.get();
+    }
+
+    // used by script
+    public List<String> getMembers() {
+        return new LinkedList<>(members.keySet());
+    }
+
+    // used by script
+    public int addMember(MapleCharacter member, boolean join) {
+        final String job = MapleCarnivalChallenge.getJobBasicNameById(member.getJob());
+        if (join) {
+            if (!members.containsKey(member.getName())) {
+                if (members.size() <= 30) {
+                    members.put(member.getName(), job);
+                    getLeader().dropMessage(5, member.getName() + " (" + job + ") has joined the fight!");
+                    return 1;
+                }
+                return 2;
+            }
+            return -1;
+        } else {
+            if (members.containsKey(member.getName())) {
+                members.remove(member.getName());
+                getLeader().dropMessage(5, member.getName() + " (" + job + ") have withdrawed from the fight.");
+                return 1;
+            }
+            return -1;
+        }
+    }
+
+    // used by script
+    public void removeMember(MapleCharacter chr) {
+        if (members.containsKey(chr.getName())) {
+            members.remove(chr.getName());
+        }
+    }
+
+    // used by script
+    public void removeMember(String chr) {
+        if (members.containsKey(chr)) {
+            members.remove(chr);
+        }
+    }
+
 }

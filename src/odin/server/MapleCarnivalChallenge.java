@@ -30,14 +30,6 @@ public class MapleCarnivalChallenge {
         challengeinfo += "#k";
     }
 
-    public MapleCharacter getChallenger() {
-        return challenger.get();
-    }
-
-    public String getChallengeInfo() {
-        return challengeinfo;
-    }
-
     public static final String getJobNameById(int job) {
         switch (job) {
             case 0:
@@ -334,4 +326,15 @@ public class MapleCarnivalChallenge {
                 return "Unknown Job";
         }
     }
+
+    // used by script
+    public MapleCharacter getChallenger() {
+        return challenger.get();
+    }
+
+    // used by script
+    public String getChallengeInfo() {
+        return challengeinfo;
+    }
+
 }

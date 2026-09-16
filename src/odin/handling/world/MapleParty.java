@@ -40,10 +40,6 @@ public class MapleParty {
         members.add(member);
     }
 
-    public void removeMember(MaplePartyCharacter member) {
-        members.remove(member);
-    }
-
     public void updateMember(MaplePartyCharacter member) {
         for (int i = 0; i < members.size(); i++) {
             MaplePartyCharacter chr = members.get(i);
@@ -66,23 +62,32 @@ public class MapleParty {
         return members.get(index);
     }
 
-    public Collection<MaplePartyCharacter> getMembers() {
-        return new LinkedList<>(members);
-    }
-
-    public int getId() {
-        return id;
-    }
-
     public void setId(int id) {
         this.id = id;
-    }
-
-    public MaplePartyCharacter getLeader() {
-        return leader;
     }
 
     public void setLeader(MaplePartyCharacter nLeader) {
         leader = nLeader;
     }
+
+    // used by script
+    public void removeMember(MaplePartyCharacter member) {
+        members.remove(member);
+    }
+
+    // used by script
+    public Collection<MaplePartyCharacter> getMembers() {
+        return new LinkedList<>(members);
+    }
+
+    // used by script
+    public int getId() {
+        return id;
+    }
+
+    // used by script
+    public MaplePartyCharacter getLeader() {
+        return leader;
+    }
+
 }

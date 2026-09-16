@@ -66,36 +66,12 @@ public class MaplePartyCharacter {
         //default values for everything
     }
 
-    public int getLevel() {
-        return level;
-    }
-
-    public int getChannel() {
-        return channel;
-    }
-
     public boolean isOnline() {
         return online;
     }
 
     public void setOnline(boolean online) {
         this.online = online;
-    }
-
-    public int getMapid() {
-        return mapid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getJobId() {
-        return jobid;
     }
 
     public int getDoorTown() {
@@ -113,4 +89,35 @@ public class MaplePartyCharacter {
     public Point getDoorPosition() {
         return doorPosition;
     }
+
+    // used by script
+    public int getLevel() {
+        return level;
+    }
+
+    // used by script
+    public int getChannel() {
+        return channel;
+    }
+
+    // used by script
+    public int getMapid() {
+        return mapid;
+    }
+
+    // used by script
+    public String getName() {
+        return name;
+    }
+
+    // used by script
+    public int getId() {
+        return id;
+    }
+
+    // used by script
+    public int getJobId() {
+        return jobid;
+    }
+
 }

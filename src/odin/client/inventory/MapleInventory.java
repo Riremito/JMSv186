@@ -55,10 +55,6 @@ public class MapleInventory implements Iterable<Item> {
         }
     }
 
-    public byte getSlotLimit() {
-        return slotLimit;
-    }
-
     public void setSlotLimit(byte slot) {
         if (slot > 96) {
             slot = 96;
@@ -70,14 +66,6 @@ public class MapleInventory implements Iterable<Item> {
      * Returns the item with its slot id if it exists within the inventory,
      * otherwise null is returned
      */
-    public Item findById(int itemId) {
-        for (Item item : inventory.values()) {
-            if (item.getItemId() == itemId) {
-                return item;
-            }
-        }
-        return null;
-    }
 
     public Item findByUniqueId(long itemId) {
         for (Item item : inventory.values()) {
@@ -96,22 +84,6 @@ public class MapleInventory implements Iterable<Item> {
             }
         }
         return possesed;
-    }
-
-    public List<Item> listById(int itemId) {
-        List<Item> ret = new ArrayList<>();
-        for (Item item : inventory.values()) {
-            if (item.getItemId() == itemId) {
-                ret.add(item);
-            }
-        }
-        // the linkedhashmap does impose insert order as returned order but we can not guarantee that this is still the
-        // correct order - blargh, we could empty the map and reinsert in the correct order after each inventory
-        // addition, or we could use an array/list, it's only 255 entries anyway...
-        if (ret.size() > 1) {
-            Collections.sort(ret, (item1, item2) -> Item.comparePosition(item1, item2));
-        }
-        return ret;
     }
 
     public Collection<Item> list() {
@@ -177,10 +149,6 @@ public class MapleInventory implements Iterable<Item> {
         inventory.put(target.getPosition(), target);
     }
 
-    public Item getItem(short slot) {
-        return inventory.get(slot);
-    }
-
     public void removeItem(short slot) {
         removeItem(slot, (short) 1, false);
     }
@@ -214,17 +182,6 @@ public class MapleInventory implements Iterable<Item> {
     /**
      * Returns the next empty slot id, -1 if the inventory is full
      */
-    public short getNextFreeSlot() {
-        if (isFull()) {
-            return -1;
-        }
-        for (short i = 1; i <= slotLimit; i++) {
-            if (!inventory.keySet().contains(i)) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
     public short getNextItem(short slot) {
         for (short i = slot; i <= slotLimit; i++) {
@@ -252,8 +209,60 @@ public class MapleInventory implements Iterable<Item> {
         return type;
     }
 
+    // used by script
+    public byte getSlotLimit() {
+        return slotLimit;
+    }
+
+    // used by script
+    public Item findById(int itemId) {
+        for (Item item : inventory.values()) {
+            if (item.getItemId() == itemId) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    // used by script
+    public List<Item> listById(int itemId) {
+        List<Item> ret = new ArrayList<>();
+        for (Item item : inventory.values()) {
+            if (item.getItemId() == itemId) {
+                ret.add(item);
+            }
+        }
+        // the linkedhashmap does impose insert order as returned order but we can not guarantee that this is still the
+        // correct order - blargh, we could empty the map and reinsert in the correct order after each inventory
+        // addition, or we could use an array/list, it's only 255 entries anyway...
+        if (ret.size() > 1) {
+            Collections.sort(ret, (item1, item2) -> Item.comparePosition(item1, item2));
+        }
+        return ret;
+    }
+
+    // used by script
+    public Item getItem(short slot) {
+        return inventory.get(slot);
+    }
+
+    // used by script
+    public short getNextFreeSlot() {
+        if (isFull()) {
+            return -1;
+        }
+        for (short i = 1; i <= slotLimit; i++) {
+            if (!inventory.keySet().contains(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // used by script
     @Override
     public Iterator<Item> iterator() {
         return Collections.unmodifiableCollection(inventory.values()).iterator();
     }
+
 }

@@ -74,12 +74,6 @@ public final class MapleMap extends TacosMap {
     }
 
     @Override
-    public void spawnMonster(MapleMonster monster, int spawnType) {
-        monster.setMap(this);
-        super.spawnMonster(monster, spawnType);
-    }
-
-    @Override
     public int spawnMonsterWithEffect(MapleMonster monster, int effect, Point pos) {
         monster.setMap(this);
         return super.spawnMonsterWithEffect(monster, effect, pos);
@@ -226,17 +220,8 @@ public final class MapleMap extends TacosMap {
         spawnMonster(mob, spawnType);
     }
 
-    public final void spawnMonsterOnGroundBelow(final MapleMonster mob, final Point pos) {
-        spawnMonster_sSack(mob, pos, -2);
-    }
-
     public void spawnMonsterOnGroundBelow(MapleMonster mob, Point pos, int type) {
         spawnMonster_sSack(mob, pos, type);
-    }
-
-    public final int spawnMonsterWithEffectBelow(final MapleMonster mob, final Point pos, final int effect) {
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
-        return spawnMonsterWithEffect(mob, effect, spos);
     }
 
     // 多分Reactorの中心座標とサイズが必要, Map上の座標を利用すると足場より下に設置されているように見えるので落下する
@@ -260,31 +245,6 @@ public final class MapleMap extends TacosMap {
             part.setPosition(zakum_pos);
             part.setFh(reactor_fh_id);
             mainb.setOriginFh(reactor_fh_id);
-            spawnMonster(part, -2);
-        }
-        if (squadSchedule != null) {
-            cancelSquadSchedule();
-            broadcastMessage(ResCField.DestroyClock());
-        }
-    }
-
-    public final void spawnChaosZakum(final int x, final int y) {
-        final Point pos = new Point(x, y);
-        final MapleMonster mainb = MapleLifeFactory.getMonster(8800100);
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
-        mainb.setPosition(spos);
-        mainb.setFake(true);
-
-        // Might be possible to use the map object for reference in future.
-        spawnFakeMonster(mainb);
-
-        final int[] zakpart = {8800103, 8800104, 8800105, 8800106, 8800107,
-            8800108, 8800109, 8800110};
-
-        for (final int i : zakpart) {
-            final MapleMonster part = MapleLifeFactory.getMonster(i);
-            part.setPosition(spos);
-
             spawnMonster(part, -2);
         }
         if (squadSchedule != null) {
@@ -355,18 +315,6 @@ public final class MapleMap extends TacosMap {
             mdrop.registerFFA(30000);
         }
         activateItemReactors(mdrop, chr.getClient());
-    }
-
-    public void spawnItemDrop(Object dropper, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
-        Point droppos = calcDropPos(pos, pos);
-        MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
-        addMapObject(drop);
-        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, TacosMap.dispatchGetPosition(dropper)));
-        broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, TacosMap.dispatchGetPosition(dropper))); // enable pick up for new players
-        if (!getEverlast()) {
-            drop.registerExpire(120000);
-            activateItemReactors(drop, owner.getClient());
-        }
     }
 
     public void talkMonster(String msg, int itemId, MapleMonster monster) {
@@ -560,4 +508,62 @@ public final class MapleMap extends TacosMap {
         }
         return guardz != null;
     }
+
+    // used by script
+    @Override
+    public void spawnMonster(MapleMonster monster, int spawnType) {
+        monster.setMap(this);
+        super.spawnMonster(monster, spawnType);
+    }
+
+    // used by script
+    public final void spawnMonsterOnGroundBelow(final MapleMonster mob, final Point pos) {
+        spawnMonster_sSack(mob, pos, -2);
+    }
+
+    // used by script
+    public final int spawnMonsterWithEffectBelow(final MapleMonster mob, final Point pos, final int effect) {
+        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+        return spawnMonsterWithEffect(mob, effect, spos);
+    }
+
+    // used by script
+    public final void spawnChaosZakum(final int x, final int y) {
+        final Point pos = new Point(x, y);
+        final MapleMonster mainb = MapleLifeFactory.getMonster(8800100);
+        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+        mainb.setPosition(spos);
+        mainb.setFake(true);
+
+        // Might be possible to use the map object for reference in future.
+        spawnFakeMonster(mainb);
+
+        final int[] zakpart = {8800103, 8800104, 8800105, 8800106, 8800107,
+            8800108, 8800109, 8800110};
+
+        for (final int i : zakpart) {
+            final MapleMonster part = MapleLifeFactory.getMonster(i);
+            part.setPosition(spos);
+
+            spawnMonster(part, -2);
+        }
+        if (squadSchedule != null) {
+            cancelSquadSchedule();
+            broadcastMessage(ResCField.DestroyClock());
+        }
+    }
+
+    // used by script
+    public void spawnItemDrop(Object dropper, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+        Point droppos = calcDropPos(pos, pos);
+        MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
+        addMapObject(drop);
+        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, TacosMap.dispatchGetPosition(dropper)));
+        broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, TacosMap.dispatchGetPosition(dropper))); // enable pick up for new players
+        if (!getEverlast()) {
+            drop.registerExpire(120000);
+            activateItemReactors(drop, owner.getClient());
+        }
+    }
+
 }

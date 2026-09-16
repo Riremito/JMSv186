@@ -158,14 +158,6 @@ public class MapleGuildAlliance {
         return guilds[i];
     }
 
-    public int getId() {
-        return allianceid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     public int getCapacity() {
         return this.capacity;
     }
@@ -285,4 +277,15 @@ public class MapleGuildAlliance {
         }
         return false;
     }
+
+    // used by script
+    public int getId() {
+        return allianceid;
+    }
+
+    // used by script
+    public String getName() {
+        return name;
+    }
+
 }

@@ -33,17 +33,9 @@ public class MapleReactor {
     private Point position = new Point();
     private int objectId;
 
-    public Point getPosition() {
-        return new Point(position);
-    }
-
     public void setPosition(Point position) {
         this.position.x = position.x;
         this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
     }
 
     public void setObjectId(int id) {
@@ -85,14 +77,6 @@ public class MapleReactor {
         this.state = state;
     }
 
-    public byte getState() {
-        return state;
-    }
-
-    public boolean isAlive() {
-        return alive;
-    }
-
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
@@ -113,14 +97,6 @@ public class MapleReactor {
         return stats.getType(state);
     }
 
-    public void setMap(MapleMap map) {
-        this.map = map;
-    }
-
-    public MapleMap getMap() {
-        return map;
-    }
-
     public SimpleImmutableEntry<Integer, Integer> getReactItem() {
         return stats.getReactItem(state);
     }
@@ -133,34 +109,7 @@ public class MapleReactor {
         client.SendPacket(ResCReactorPool.ReactorEnterField(this));
     }
 
-    public void forceStartReactor(TacosClient client) {
-        TacosScriptReactor.getInstance().act(client, this);
-    }
-
-    public void forceHitReactor(final byte newState) {
-        setState((byte) newState);
-        setTimerActive(false);
-        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
-    }
-
     //hitReactor command for item-triggered reactors
-    public void hitReactor(TacosClient client) {
-        hitReactor(0, (short) 0, client);
-    }
-
-    public void forceTrigger() {
-        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
-    }
-
-    public void delayedDestroyReactor(long delay) {
-        MapTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                map.destroyReactor(getObjectId());
-            }
-        }, delay);
-    }
 
     public void hitReactor(int charPos, short stance, TacosClient client) {
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
@@ -210,27 +159,8 @@ public class MapleReactor {
         return pos;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "Reactor " + getObjectId() + " of id " + rid + " at position " + getPosition().toString() + " state" + state + " type " + stats.getType(state);
-    }
-
-    public void delayedHitReactor(final TacosClient client, long delay) {
-        MapTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                hitReactor(client);
-            }
-        }, delay);
     }
 
     public void scheduleSetState(final byte oldState, final byte newState, long delay) {
@@ -244,4 +174,90 @@ public class MapleReactor {
             }
         }, delay);
     }
+
+    // used by script
+    public Point getPosition() {
+        return new Point(position);
+    }
+
+    // used by script
+    public int getObjectId() {
+        return objectId;
+    }
+
+    // used by script
+    public byte getState() {
+        return state;
+    }
+
+    // used by script
+    public boolean isAlive() {
+        return alive;
+    }
+
+    // used by script
+    public void setMap(MapleMap map) {
+        this.map = map;
+    }
+
+    // used by script
+    public MapleMap getMap() {
+        return map;
+    }
+
+    // used by script
+    public void forceStartReactor(TacosClient client) {
+        TacosScriptReactor.getInstance().act(client, this);
+    }
+
+    // used by script
+    public void forceHitReactor(final byte newState) {
+        setState((byte) newState);
+        setTimerActive(false);
+        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
+    }
+
+    // used by script
+    public void hitReactor(TacosClient client) {
+        hitReactor(0, (short) 0, client);
+    }
+
+    // used by script
+    public void forceTrigger() {
+        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
+    }
+
+    // used by script
+    public void delayedDestroyReactor(long delay) {
+        MapTimer.getInstance().schedule(new Runnable() {
+
+            @Override
+            public void run() {
+                map.destroyReactor(getObjectId());
+            }
+        }, delay);
+    }
+
+    // used by script
+    public String getName() {
+        return name;
+    }
+
+    // used by script
+    @Override
+    public String toString() {
+        return "Reactor " + getObjectId() + " of id " + rid + " at position " + getPosition().toString() + " state" + state + " type " + stats.getType(state);
+    }
+
+    // used by script
+    public void delayedHitReactor(final TacosClient client, long delay) {
+        MapTimer.getInstance().schedule(new Runnable() {
+
+            @Override
+            public void run() {
+                hitReactor(client);
+            }
+        }, delay);
+    }
+
 }

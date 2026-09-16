@@ -72,10 +72,6 @@ public class MapleQuestStatus {
         this.status = status;
     }
 
-    public final int getNpc() {
-        return npc;
-    }
-
     public final void setNpc(final int npc) {
         this.npc = npc;
     }
@@ -165,14 +161,6 @@ public class MapleQuestStatus {
         return killedMobs;
     }
 
-    public long getCompletionTime() {
-        return completionTime;
-    }
-
-    public void setCompletionTime(long completionTime) {
-        this.completionTime = completionTime;
-    }
-
     public int getForfeited() {
         return forfeited;
     }
@@ -185,11 +173,29 @@ public class MapleQuestStatus {
         }
     }
 
+    // used by script
+    public final int getNpc() {
+        return npc;
+    }
+
+    // used by script
+    public long getCompletionTime() {
+        return completionTime;
+    }
+
+    // used by script
+    public void setCompletionTime(long completionTime) {
+        this.completionTime = completionTime;
+    }
+
+    // used by script
     public void setCustomData(String customData) {
         this.customData = customData;
     }
 
+    // used by script
     public String getCustomData() {
         return customData;
     }
+
 }

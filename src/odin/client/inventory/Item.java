@@ -82,14 +82,6 @@ public class Item {
         this.quantity = quantity;
     }
 
-    public final int getItemId() {
-        return id;
-    }
-
-    public final short getPosition() {
-        return position;
-    }
-
     /*
         0x0001 封印
         0x0002 滑り防止効果
@@ -99,10 +91,6 @@ public class Item {
      */
     public final byte getFlag() {
         return flag;
-    }
-
-    public final short getQuantity() {
-        return quantity;
     }
 
     public byte getType() {
@@ -184,4 +172,20 @@ public class Item {
         }
         return 1;
     }
+
+    // used by script
+    public final int getItemId() {
+        return id;
+    }
+
+    // used by script
+    public final short getPosition() {
+        return position;
+    }
+
+    // used by script
+    public final short getQuantity() {
+        return quantity;
+    }
+
 }

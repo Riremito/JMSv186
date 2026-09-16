@@ -170,20 +170,12 @@ public class MapleGuild {
         }
     }
 
-    public final int getId() {
-        return id;
-    }
-
     public final int getLeaderId() {
         return leader;
     }
 
     public final MapleCharacter getLeader(final TacosClient client) {
         return client.getChannelServer().getOnlinePlayers().findById(leader);
-    }
-
-    public final int getGP() {
-        return gp;
     }
 
     public final int getLogo() {
@@ -207,10 +199,6 @@ public class MapleGuild {
             return "";
         }
         return notice;
-    }
-
-    public final String getName() {
-        return name;
     }
 
     public final int getCapacity() {
@@ -310,11 +298,6 @@ public class MapleGuild {
 
     public final String getRankTitle(final int rank) {
         return rankTitles[rank - 1];
-    }
-
-    public int getAllianceId() {
-        //return alliance.getId();
-        return this.allianceid;
     }
 
     public int getInvitedId() {
@@ -513,11 +496,6 @@ public class MapleGuild {
         broadcast(ResCWvsContext.rankTitleChange(id, ranks));
     }
 
-    public final void disbandGuild() {
-        writeToDB(true);
-        broadcast(null, -1, BCOp.DISBAND);
-    }
-
     public final void setGuildEmblem(final short bg, final byte bgcolor, final short logo, final byte logocolor) {
         this.logoBG = bg;
         this.logoBGColor = bgcolor;
@@ -546,10 +524,6 @@ public class MapleGuild {
 
         DQ_Guilds.updateCapacity(id, capacity);
         return true;
-    }
-
-    public final void gainGP(final int amount) {
-        gainGP(amount, true);
     }
 
     public final void gainGP(int amount, final boolean broadcast) {
@@ -605,10 +579,6 @@ public class MapleGuild {
         return null;
     }
 
-    public java.util.Collection<MapleGuildCharacter> getMembers() {
-        return java.util.Collections.unmodifiableCollection(members);
-    }
-
     public final List<MapleBBSThread> getBBS() {
         final List<MapleBBSThread> ret = new ArrayList<>(bbs.values());
         Collections.sort(ret, new MapleBBSThread.ThreadComparator());
@@ -656,4 +626,42 @@ public class MapleGuild {
     public static void setOfflineGuildStatus(int guildid, int guildrank, int alliancerank, int cid) {
         DQ_Characters.setOfflineGuildStatus(cid, guildid, guildrank, alliancerank);
     }
+
+    // used by script
+    public final int getId() {
+        return id;
+    }
+
+    // used by script
+    public final int getGP() {
+        return gp;
+    }
+
+    // used by script
+    public final String getName() {
+        return name;
+    }
+
+    // used by script
+    public int getAllianceId() {
+        //return alliance.getId();
+        return this.allianceid;
+    }
+
+    // used by script
+    public final void disbandGuild() {
+        writeToDB(true);
+        broadcast(null, -1, BCOp.DISBAND);
+    }
+
+    // used by script
+    public final void gainGP(final int amount) {
+        gainGP(amount, true);
+    }
+
+    // used by script
+    public java.util.Collection<MapleGuildCharacter> getMembers() {
+        return java.util.Collections.unmodifiableCollection(members);
+    }
+
 }

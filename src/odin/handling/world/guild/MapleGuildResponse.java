@@ -38,7 +38,9 @@ public enum MapleGuildResponse {
         return value;
     }
 
+    // used by script
     public ServerPacket getPacket() {
         return ResCWvsContext.genericGuildMessage((byte) value);
     }
+
 }
