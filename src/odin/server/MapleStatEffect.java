@@ -1095,4 +1095,12 @@ public class MapleStatEffect {
     public final int getExp() {
         return exp;
     }
+
+    public int getMpCon() {
+        return this.mpCon;
+    }
+
+    public int getHpCon() {
+        return this.hpCon;
+    }
 }

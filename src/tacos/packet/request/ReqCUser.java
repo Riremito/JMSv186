@@ -2169,9 +2169,34 @@ public class ReqCUser {
         MapleMap map = chr.getMap();
         int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int nSkillID = cp.Decode4();
-        byte nSLV = cp.Decode1();
+        byte nSLV = cp.Decode1(); // unused.
 
         chr.SendPacket(ResCWvsContext.SkillUseResult());
+
+        Skill skill = SkillFactory.getSkill(nSkillID);
+        if (skill != null) {
+            int nSLV_SS = chr.getSkillLevel(skill);
+            int con_mp = skill.getEffect(nSLV_SS).getMpCon();
+            int cur_mp = chr.getStat().getMp();
+            if (cur_mp < con_mp) {
+                DebugLogger.ErrorLog("OnUserSkillUseRequest : cur_mp");
+                return false;
+            }
+            chr.getStat().setMp(cur_mp - con_mp);
+
+            int con_hp = skill.getEffect(nSLV_SS).getHpCon();
+            int cur_hp = chr.getStat().getHp();
+            if (cur_hp < con_hp) {
+                DebugLogger.ErrorLog("OnUserSkillUseRequest : cur_hp");
+                return false;
+            }
+            if (cur_hp - con_hp <= 0) {
+                DebugLogger.ErrorLog("OnUserSkillUseRequest : cur_hp 0");
+                return false;
+            }
+            chr.getStat().setHp(cur_hp - con_hp);
+        }
+
         if (chr.getBuff().update(nSkillID)) {
             chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, nSkillID));
             return true;
