@@ -1167,6 +1167,10 @@ public class MapleCharacter extends TacosCharacter {
     public void controlMonster(MapleMonster monster, boolean aggro) {
         monster.setController(this);
         controlled.add(monster);
+        if (getMap().getMonsterByOid(monster.getObjectId()) == null) {
+            DebugLogger.ErrorLog("controlMonster");
+            return;
+        }
         client.SendPacket(ResCMobPool.MobChangeController(monster, aggro));
     }
 
@@ -1387,7 +1391,6 @@ public class MapleCharacter extends TacosCharacter {
     /**
      * Oid of players is always = the cid
      */
-
     /**
      * Throws unsupported operation exception, oid of players is read only
      */
@@ -2397,7 +2400,6 @@ public class MapleCharacter extends TacosCharacter {
 
     // パチンコ
     // CMS v72から流用
-
     public void gainTama(int s) {
         this.tama += s;
         SendPacket(ResCWvsContext.PachinkoResult(this));
@@ -2991,8 +2993,8 @@ public class MapleCharacter extends TacosCharacter {
         sendStatChanged(enableActions);
         if (show) {
             client.SendPacket((!inChat
-                ? ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MESO).Inc_Meso(gain).build())
-                : ResCWvsContext.Message(OpsMessage.MS_IncMoneyMessage, PB_Message.builder().Inc_Meso(gain).build())));
+                    ? ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MESO).Inc_Meso(gain).build())
+                    : ResCWvsContext.Message(OpsMessage.MS_IncMoneyMessage, PB_Message.builder().Inc_Meso(gain).build())));
         }
         return true;
     }

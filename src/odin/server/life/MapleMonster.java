@@ -56,6 +56,7 @@ import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
@@ -499,7 +500,11 @@ public class MapleMonster {
         }
         final MapleCharacter controll = controller.get();
         if (controll != null) { // this can/should only happen when a hidden gm attacks the monster
-            controll.SendPacket(ResCMobPool.MobChangeController(this));
+            if (getMap().getMonsterByOid(getObjectId()) == null) {
+                DebugLogger.ErrorLog("killBy : controlMonster");
+            } else {
+                controll.SendPacket(ResCMobPool.MobChangeController(this));
+            }
             controll.stopControllingMonster(this);
         }
 
@@ -661,7 +666,11 @@ public class MapleMonster {
             return;
         } else if (controllers != null) {
             controllers.stopControllingMonster(this);
-            controllers.SendPacket(ResCMobPool.MobChangeController(this));
+            if (getMap().getMonsterByOid(getObjectId()) == null) {
+                DebugLogger.ErrorLog("switchController : controlMonster");
+            } else {
+                controllers.SendPacket(ResCMobPool.MobChangeController(this));
+            }
         }
         newController.controlMonster(this, immediateAggro);
         setController(newController);
