@@ -2210,6 +2210,10 @@ public class ReqCUser {
                 //map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(chr.getId(), nSkillID, 1, slea.readByte()), chr.getPosition());
                 return true;
             }
+            case HERMIT_FLASH_JUMP: {
+                chr.sendStatChanged(true);
+                return true;
+            }
             default: {
                 break;
             }

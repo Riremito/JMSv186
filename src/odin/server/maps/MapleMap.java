@@ -267,9 +267,9 @@ public final class MapleMap extends TacosMap {
 
                     @Override
                     public void run() {
-                        for (final Object mo : getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.MONSTER))) {
+                        for (MapleMonster monster : getMonstersInRect(mist.getBox())) {
                             if (mist.makeChanceResult()) {
-                                ((MapleMonster) mo).applyStatus(owner, new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, duration, false);
+                                monster.applyStatus(owner, new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, duration, false);
                             }
                         }
                     }

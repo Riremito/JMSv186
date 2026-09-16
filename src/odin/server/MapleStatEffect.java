@@ -609,15 +609,14 @@ public class MapleStatEffect {
         }
     }
 
-    private final void applyMonsterBuff(final MapleCharacter applyfrom) {
-        final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        final List<Object> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
+    private void applyMonsterBuff(MapleCharacter applyfrom) {
+        Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
         int i = 0;
 
-        for (final Object mo : affected) {
+        for (MapleMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
             if (makeChanceResult()) {
                 for (Map.Entry<MonsterStatus, Integer> stat : getMonsterStati().entrySet()) {
-                    ((MapleMonster) mo).applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
+                    monster.applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
                 }
             }
             i++;
@@ -627,7 +626,7 @@ public class MapleStatEffect {
         }
     }
 
-    private final Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
+    private Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
         if (lt == null || rb == null) {
             return new Rectangle(posFrom.x, posFrom.y, facingLeft ? 1 : -1, 1);
         }

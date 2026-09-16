@@ -44,7 +44,6 @@ import odin.server.life.MonsterDropEntry;
 import odin.server.life.PlayerNPC;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.SavedLocationType;
 import tacos.database.query.DQ_Accounts;
 import tacos.wz.MapleData;
@@ -604,11 +603,10 @@ public class DebugCommand {
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
                 }
-                for (Object mmo : map.getMapObjects(MapleMapObjectType.MONSTER)) {
+                for (MapleMonster mob : map.getAllMonsters()) {
                     if (count <= 0) {
                         break;
                     }
-                    MapleMonster mob = (MapleMonster) mmo;
                     if (mob.getStats().getHPDisplayType() == 0) {
                         mob.setHp(0);
                         map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(mob).build()));

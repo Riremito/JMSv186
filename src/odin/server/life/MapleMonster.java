@@ -55,7 +55,6 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
@@ -766,10 +765,6 @@ public class MapleMonster {
         sb.append(getLinkOid());
 
         return sb.toString();
-    }
-
-    public final MapleMapObjectType getType() {
-        return MapleMapObjectType.MONSTER;
     }
 
     public final OdinEventInstanceManager getEventInstance() {
