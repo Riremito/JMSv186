@@ -27,6 +27,7 @@ import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
+import tacos.server.map.TacosNPCSpawnPoint;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -291,7 +292,8 @@ public class ReqSub_Admin {
         npc.setRx1(y - 50);
         npc.setFh(map.getFootholds().findBelow(npc_xy).getId());
         npc.setCustom(true);
-        map.addMapObject(npc);
+        TacosNPCSpawnPoint.setOBJECT_ID(npc);
+        map.addNPC(npc);
         map.broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
         return true;
     }

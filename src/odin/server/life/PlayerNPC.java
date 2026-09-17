@@ -22,8 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
-import tacos.packet.response.ResCNpcPool;
 
 public class PlayerNPC extends MapleNPC {
 
@@ -37,12 +35,4 @@ public class PlayerNPC extends MapleNPC {
     public MapleCharacter getCharacter() {
         return this.player;
     }
-
-    @Override
-    public void sendSpawnData(TacosClient client) {
-        client.SendPacket(ResCNpcPool.NpcEnterField(this, true));
-        client.SendPacket(ResCNpcPool.ImitatedNPCData(this));
-        client.SendPacket(ResCNpcPool.NpcChangeController(this, false, true));
-    }
-
 }

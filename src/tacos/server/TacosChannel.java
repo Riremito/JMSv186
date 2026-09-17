@@ -26,6 +26,8 @@ import odin.client.MapleCharacter;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.server.MapleSquad;
+import odin.server.life.MapleMonster;
+import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
@@ -34,8 +36,11 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.network.PacketHandler_Game;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMobAppear;
 import tacos.property.Property_Dummy_World;
 import tacos.server.map.MasterMonster;
+import tacos.server.map.TacosNPCSpawnPoint;
+import tacos.server.map.TacosSpawnPoint;
 import tacos.unofficial.CustomMap;
 
 /**
@@ -110,10 +115,25 @@ public class TacosChannel extends TacosServer {
         if (map != null) {
             return map;
         }
-
         map = new MapleMap(map_id, this.channel);
         if (!map.loadData()) {
             return null;
+        }
+        // mob spawn just after generating map for test.
+        for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
+            MapleMonster monster = sp.regen(map);
+            if (monster != null) {
+                map.addMonster(monster);
+                monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
+                monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
+            }
+        }
+        // npc is always spawned.
+        for (TacosNPCSpawnPoint sp : map.getNPCSpawnPoint()) {
+            MapleNPC npc = sp.regen(map);
+            if (npc != null) {
+                map.addNPC(npc);
+            }
         }
         // custom npc.
         CustomMap.addNPCtoMap(map);

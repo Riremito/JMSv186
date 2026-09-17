@@ -23,7 +23,6 @@ package odin.server.life;
 import java.awt.Point;
 import tacos.client.TacosClient;
 import odin.server.MapleShopFactory;
-import odin.server.maps.MapleMapObjectType;
 
 public class MapleNPC {
 
@@ -152,16 +151,6 @@ public class MapleNPC {
 
     public void sendShop(TacosClient client) {
         MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(client);
-    }
-
-    public void sendSpawnData(TacosClient client) {
-    }
-
-    public void sendDestroyData(TacosClient client) {
-    }
-
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.NPC;
     }
 
     public String getName() {

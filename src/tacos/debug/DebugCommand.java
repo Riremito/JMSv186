@@ -66,6 +66,7 @@ import tacos.script.TacosScriptReactor;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
+import tacos.server.map.TacosNPCSpawnPoint;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosReward.Reward;
 import tacos.server.map.TacosSpawnPoint;
@@ -303,7 +304,8 @@ public class DebugCommand {
                 npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getStance());
                 npc.setFh(chr.getFH());
                 npc.setCustom(true);
-                map.addMapObject(npc);
+                TacosNPCSpawnPoint.setOBJECT_ID(npc);
+                map.addNPC(npc);
                 map.broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
                 chr.DebugMsg("npc : " + npc_id);
                 return true;
@@ -316,8 +318,11 @@ public class DebugCommand {
                 pnpc.setRx1(chr.getPosition().x + 50);
                 pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getStance());
                 pnpc.setFh(chr.getFH());
-                map.addMapObject(pnpc);
-                pnpc.sendSpawnData(chr.getClient());
+                TacosNPCSpawnPoint.setOBJECT_ID(pnpc);
+                map.addNPC(pnpc);
+                chr.SendPacket(ResCNpcPool.NpcEnterField(pnpc, true));
+                chr.SendPacket(ResCNpcPool.ImitatedNPCData(pnpc));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false, true));
                 return true;
             }
             case "/npclocation": {

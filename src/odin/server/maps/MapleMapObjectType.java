@@ -27,8 +27,8 @@ public enum MapleMapObjectType {
     DRAGON,
     // FOX
     SUMMON,
-    MONSTER,
-    NPC,
+    //MONSTER,
+    //NPC,
     HIRED_MERCHANT,
     ITEM,
     MIST,

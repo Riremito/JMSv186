@@ -122,9 +122,7 @@ public class TacosMap extends TacosMapData {
     // mapobjectsはObject型で格納されるようになったため、位置/ID/種別の取得はここでinstanceof分岐して行う。
     // 新しくmapobjectsに格納される型を追加した場合は、この4メソッドにも分岐を追加すること。
     public static Point dispatchGetPosition(Object o) {
-        if (o instanceof MapleNPC) {
-            return ((MapleNPC) o).getPosition();
-        } else if (o instanceof MapleSummon) {
+        if (o instanceof MapleSummon) {
             return ((MapleSummon) o).getPosition();
         } else if (o instanceof TacosCharacter) {
             return ((TacosCharacter) o).getPosition();
@@ -149,9 +147,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public static int dispatchGetObjectId(Object o) {
-        if (o instanceof MapleNPC) {
-            return ((MapleNPC) o).getObjectId();
-        } else if (o instanceof MapleSummon) {
+        if (o instanceof MapleSummon) {
             return ((MapleSummon) o).getObjectId();
         } else if (o instanceof TacosCharacter) {
             return ((TacosCharacter) o).getObjectId();
@@ -176,9 +172,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public static void dispatchSetObjectId(Object o, int id) {
-        if (o instanceof MapleNPC) {
-            ((MapleNPC) o).setObjectId(id);
-        } else if (o instanceof MapleSummon) {
+        if (o instanceof MapleSummon) {
             ((MapleSummon) o).setObjectId(id);
         } else if (o instanceof TacosCharacter) {
             ((TacosCharacter) o).setObjectId(id);
@@ -204,9 +198,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public static MapleMapObjectType dispatchGetType(Object o) {
-        if (o instanceof MapleNPC) {
-            return ((MapleNPC) o).getType();
-        } else if (o instanceof MapleSummon) {
+        if (o instanceof MapleSummon) {
             return ((MapleSummon) o).getType();
         } else if (o instanceof TacosCharacter) {
             return ((TacosCharacter) o).getType();
@@ -591,8 +583,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // npc
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
-            MapleNPC npc = (MapleNPC) mmo;
+        for (MapleNPC npc : this.npcs.values()) {
             int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
             if (this.map_split.getSplit() < number) {
                 continue;
@@ -600,7 +591,7 @@ public class TacosMap extends TacosMapData {
             int state = enter_state.get(number);
             if ((state & 1) != 0) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
-                //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
             }
         }
         // hired merchant
@@ -825,8 +816,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // npc
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
-            MapleNPC npc = (MapleNPC) mmo;
+        for (MapleNPC npc : this.npcs.values()) {
             int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
             if (this.map_split.getSplit() < number) {
                 continue;
@@ -834,7 +824,7 @@ public class TacosMap extends TacosMapData {
             int state = move_state.get(number);
             if ((state & 1) != 0) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
-                //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
             }
             if ((state & 4) != 0) {
                 chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
@@ -1181,67 +1171,86 @@ public class TacosMap extends TacosMapData {
     }
 
     // npc.
+    private LinkedHashMap<Integer, MapleNPC> npcs = new LinkedHashMap<>();
+
+    public void addNPC(MapleNPC npc) {
+        if (npc.getObjectId() == 0) {
+            TacosNPCSpawnPoint.setOBJECT_ID(npc);
+        }
+        this.npcs.put(npc.getObjectId(), npc);
+    }
+
+    public boolean removeNPC(int object_id) {
+        this.monsters.remove(object_id);
+        // remove from spawn point.
+        for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
+            MapleNPC npc = sp.getNPC();
+            if (npc != null) {
+                if (npc.getObjectId() == object_id) {
+                    sp.removeNPC();
+                    return true;
+                }
+            }
+        }
+        // no spwan point.
+        return true;
+    }
+
     public List<MapleNPC> getAllNPCs() {
         ArrayList<MapleNPC> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
-            ret.add((MapleNPC) mmo);
+        for (MapleNPC npc : this.npcs.values()) {
+            ret.add(npc);
         }
         return ret;
     }
 
-    public boolean containsNPC(int npcid) {
-        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-        while (itr.hasNext()) {
-            MapleNPC n = (MapleNPC) itr.next();
-            if (n.getId() == npcid) {
+    public boolean containsNPC(int npc_id) {
+        for (MapleNPC npc : this.npcs.values()) {
+            if (npc.getId() == npc_id) {
                 return true;
             }
         }
         return false;
     }
 
-    public MapleNPC getNPCById(int id) {
-        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-        while (itr.hasNext()) {
-            MapleNPC n = (MapleNPC) itr.next();
-            if (n.getId() == id) {
-                return n;
+    public MapleNPC getNPCById(int npc_id) {
+        for (MapleNPC npc : this.npcs.values()) {
+            if (npc.getId() == npc_id) {
+                return npc;
             }
         }
         return null;
     }
 
-    public MapleNPC getNPCByOid(int oid) {
-        Object mmo = getMapObject(oid, MapleMapObjectType.NPC);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleNPC) mmo;
+    public MapleNPC getNPCByOid(int object_id) {
+        return this.npcs.get(object_id);
     }
 
-    public void spawnNpc(int id, Point pos) {
-        MapleNPC npc = MapleLifeFactory.getNPC(id);
+    public void spawnNpc(int npc_id, Point pos) {
+        MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
         npc.setPosition(pos);
         npc.setCy(pos.y);
         npc.setRx0(pos.x + 50);
         npc.setRx1(pos.x - 50);
         npc.setFh(getFootholds().findBelow(pos).getId());
         npc.setCustom(true);
-        addMapObject(npc);
+        TacosNPCSpawnPoint.setOBJECT_ID(npc);
+        addNPC(npc);
         broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
     }
 
-    public void removeNpc(int npcid) {
-        Iterator<Object> itr = mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-        while (itr.hasNext()) {
-            MapleNPC npc = (MapleNPC) itr.next();
-            if (npc.isCustom() && npc.getId() == npcid) {
-                broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
-                itr.remove();
-            }
+    public boolean removeNpc(int npc_id) {
+        MapleNPC npc = getNPCById(npc_id);
+        if (npc == null) {
+            return false;
         }
+
+        removeNPC(npc.getObjectId());
+        broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
+        return true;
     }
 
+    // merch
     public List<Object> getAllHiredMerchants() {
         ArrayList<Object> ret = new ArrayList<>();
         for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {

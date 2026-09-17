@@ -20,24 +20,24 @@ package tacos.server.map;
 
 import java.awt.Point;
 import odin.server.life.MapleLifeFactory;
-import odin.server.life.MapleMonster;
+import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
-import tacos.packet.ops.OpsMobAppear;
 import tacos.wz.MapleData;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzDataTool;
+import tacos.wz.ids.DWI_Block;
 
 /**
  *
  * @author Riremito
  */
-public class TacosSpawnPoint {
+public class TacosNPCSpawnPoint {
 
-    private static int OBJECT_ID = 100000;
+    private static int OBJECT_ID = 200000;
 
-    public static void setOBJECT_ID(MapleMonster monster) {
-        monster.setObjectId(OBJECT_ID++);
+    public static void setOBJECT_ID(MapleNPC npc) {
+        npc.setObjectId(OBJECT_ID++);
     }
 
     private int node_id;
@@ -61,19 +61,16 @@ public class TacosSpawnPoint {
         this.fh = WzDataTool.getInt(life.getChildByPath("fh"), 0);
         this.hide = WzDataTool.getInt(life.getChildByPath("hide"), 0);
         this.id = WzDataTool.getInt(life.getChildByPath("id"), 0);
-        this.mobTime = WzDataTool.getInt(life.getChildByPath("mobTime"), 0);
         this.rx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
         this.rx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
-        //this.type = WzDataTool.getString(life.getChildByPath("type"));
         this.x = WzDataTool.getInt(life.getChildByPath("x"));
         this.y = WzDataTool.getInt(life.getChildByPath("y"));
 
-        if (!WzDataStorage.MOB.check(this.id)) {
-            DebugLogger.ErrorLog("TacosSpawnPoint : invalid mob id, " + this.id);
+        if (!WzDataStorage.NPC.check(this.id)) {
+            DebugLogger.ErrorLog("TacosNPCSpawnPoint : invalid npc id, " + this.id);
             return false;
         }
 
-        //this.team = WzDataTool.getInt(life.getChildByPath("team"), -1);
         return true;
     }
 
@@ -81,43 +78,41 @@ public class TacosSpawnPoint {
         return this.id;
     }
 
-    private MapleMonster monster = null;
-    private long last_regen_time = 0;
+    private MapleNPC npc = null;
 
-    public MapleMonster regen(MapleMap map) {
-        if (this.monster != null) {
+    public MapleNPC regen(MapleMap map) {
+        if (this.npc != null) {
             return null;
         }
 
-        this.monster = MapleLifeFactory.getMonster(this.id);
-        this.monster.setObjectId(OBJECT_ID++);
-        this.monster.setMap(map); // TODO : remove from monster object.
-        this.monster.setPosition(new Point(this.x, this.y));
-        this.monster.setFh(this.fh);
-        this.monster.setOriginFh(this.fh);
-        this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
-        this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
+        this.npc = MapleLifeFactory.getNPC(this.id);
+        this.npc.setObjectId(OBJECT_ID++);
+        this.npc.setPosition(new Point(this.x, this.y));
+        this.npc.setFh(this.fh);
+        this.npc.setOriginFh(this.fh);
+        this.npc.setF(npc.getF() == 1 ? 0 : 1);
+        this.npc.setRx0(this.rx0);
+        this.npc.setRx1(this.rx1);
+        this.npc.setCy(this.cy);
 
-        //chr.SendPacket(ResCMobPool.MobEnterField(this.monster));
-        //chr.SendPacket(ResCMobPool.MobChangeController(this.monster, false));
-        this.last_regen_time = System.currentTimeMillis();
-        return this.monster;
+        if (this.hide != 0) {
+            this.npc.setHide(true);
+            DebugLogger.InfoLog("loadLife : hidden npc, " + this.id);
+        }
+
+        if (DWI_Block.checkNpc(this.id)) {
+            DebugLogger.InfoLog("loadLife : blocked npc, " + this.id);
+            return null;
+        }
+
+        return this.npc;
     }
 
-    public MapleMonster getMonster() {
-        return this.monster;
+    public MapleNPC getNPC() {
+        return this.npc;
     }
 
-    public void removeMonster() {
-        this.monster = null;
-        this.last_regen_time = System.currentTimeMillis();
-    }
-
-    public long getLastRegenTime() {
-        return this.last_regen_time;
-    }
-
-    public String getInfo() {
-        return String.format("%3d : id=%8d, f=%d, fh=%3d, xy=%5d,%5d, time=%d", node_id, id, f, fh, x, y, mobTime);
+    public void removeNPC() {
+        this.npc = null;
     }
 }

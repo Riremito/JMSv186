@@ -30,7 +30,6 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift;
 import tacos.client.TacosMapleGift.MapleGiftData;
@@ -192,8 +191,7 @@ public class TestCommand {
                 return true;
             }
             case "/npccon": {
-                for (Object mmo : map.getMapObjects(MapleMapObjectType.NPC)) {
-                    MapleNPC npc = map.getNPCByOid(((MapleNPC) mmo).getObjectId());
+                for (MapleNPC npc : map.getAllNPCs()) {
                     chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
                     chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
                 }
