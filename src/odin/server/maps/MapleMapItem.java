@@ -23,10 +23,8 @@ package odin.server.maps;
 import java.awt.Point;
 import odin.client.inventory.Item;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import tacos.packet.response.ResCDropPool;
-import tacos.packet.response.ResCDropPool.EnterType;
-import tacos.packet.response.ResCDropPool.LeaveType;
+import tacos.packet.response.ResCDropPool.DropLeaveType;
 import tacos.server.map.TacosMap;
 
 public class MapleMapItem {
@@ -137,36 +135,17 @@ public class MapleMapItem {
         return type;
     }
 
-    public final MapleMapObjectType getType() {
-        return MapleMapObjectType.ITEM;
-    }
-
-    public void sendSpawnData(final TacosClient client) {
-        if (questid <= 0 || client.getPlayer().getQuestStatus(questid) == 1) {
-            client.SendPacket(ResCDropPool.DropEnterField(this, EnterType.NO_ANIMATION, getPosition()));
-        }
-    }
-
-    public void sendDestroyData(final TacosClient client) {
-        client.SendPacket(ResCDropPool.DropLeaveField(this, LeaveType.NO_ANIMATION));
-    }
-
     public long getTime() {
         return this.time;
     }
 
-    public void registerExpire(final long time) {
+    public void setTime() {
         this.time = System.currentTimeMillis();
-        nextExpiry = this.time + time;
-    }
-
-    public void registerFFA(final long time) {
-        nextFFA = System.currentTimeMillis() + time;
     }
 
     public void expire(TacosMap map) {
         pickedUp = true;
-        map.broadcastMessage(ResCDropPool.DropLeaveField(this, LeaveType.EXPIRED));
-        map.removeMapObject(this);
+        map.removeDrop(getObjectId());
+        map.broadcastMessage(ResCDropPool.DropLeaveField(this, DropLeaveType.EXPIRED));
     }
 }

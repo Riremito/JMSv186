@@ -42,7 +42,6 @@ import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObjectType;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
@@ -220,7 +219,7 @@ public class ReqCUser_Pet {
             int drop_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
-        MapleMapItem mapitem = (MapleMapItem) chr.getMap().getMapObject(drop_id, MapleMapObjectType.ITEM);
+        MapleMapItem mapitem = chr.getMap().findDrop(drop_id);
         if (mapitem == null) {
             return false;
         }

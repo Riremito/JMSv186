@@ -32,89 +32,31 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCDropPool {
 
-    public enum EnterType {
-        PICK_UP_ENABLED(0),
-        ANIMATION(1),
-        NO_ANIMATION(2),
-        SPAWN(3),
-        NO_ROTATE(4), // idk
-        UNKNOWN;
-
-        private int value;
-
-        EnterType(int flag) {
-            value = flag;
-        }
-
-        EnterType() {
-            value = -1;
-        }
-
-        public boolean set(int flag) {
-            value = flag;
-            return true;
-        }
-
-        public int get() {
-            return value;
-        }
-    }
-
-    public enum LeaveType {
-        EXPIRED(0),
-        NO_ANIMATION(1), // not defined
-        PICK_UP(2),
-        PICK_UP_NO_SOUND(3),
-        MESO_EXPLOSION(4),
-        PICK_UP_PET(5),
-        UNKNOWN;
-
-        private int value;
-
-        LeaveType(int flag) {
-            value = flag;
-        }
-
-        LeaveType() {
-            value = -1;
-        }
-
-        public boolean set(int flag) {
-            value = flag;
-            return true;
-        }
-
-        public int get() {
-            return value;
-        }
-    }
-
     // CDropPool::OnDropEnterField
-    // dropItemFromMapObject
-    public static ServerPacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom, int mobid) {
+    public static ServerPacket DropEnterField(MapleMapItem drop, DropEnterType et, Point dropto, Point dropfrom, int mobid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropEnterField);
 
-        sp.Encode1(et.get());
-        sp.Encode4(drop.getObjectId());
-        sp.Encode1(drop.getMeso() > 0 ? 1 : 0);
-        sp.Encode4(drop.getItemId());
-        sp.Encode4(drop.getOwner());
-        sp.Encode1(drop.getDropType()); // 3 or not
-        sp.Encode2(dropto.x);
-        sp.Encode2(dropto.y);
-        sp.Encode4(mobid); // dwSourceID (MobID)
+        sp.Encode1(et.get()); // nEnterType
+        sp.Encode4(drop.getObjectId()); // dwId
+        sp.Encode1(drop.getMeso() > 0 ? 1 : 0); // bIsMoney
+        sp.Encode4(drop.getItemId()); // nInfo
+        sp.Encode4(drop.getOwner()); // dwOwnerID
+        sp.Encode1(drop.getDropType()); // nOwnType, 3 or not
+        sp.Encode2(dropto.x); // x
+        sp.Encode2(dropto.y); // y
+        sp.Encode4(mobid); // dwSourceID, MobID
 
         switch (et) {
-            case PICK_UP_ENABLED:
-            case ANIMATION:
+            case UPDATE:
+            case NORMAL:
             case SPAWN:
             case NO_ROTATE: {
-                sp.Encode2(dropfrom.x);
-                sp.Encode2(dropfrom.y);
-                sp.Encode2(0);
+                sp.Encode2(dropfrom.x); // x
+                sp.Encode2(dropfrom.y); // y
+                sp.Encode2(0); // tDelay
                 break;
             }
-            case NO_ANIMATION: {
+            case SILENT: {
                 break;
             }
             default: {
@@ -124,10 +66,10 @@ public class ResCDropPool {
 
         // meso does not have this data
         if (drop.getMeso() == 0) {
-            sp.Encode8(-1);
+            sp.Encode8(-1); // m_dateExpire
         }
 
-        sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // pet pick up?
+        sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // bByPet
         sp.Encode1(0);
 
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
@@ -138,30 +80,28 @@ public class ResCDropPool {
     }
 
     // CDropPool::OnDropLeaveField
-    // removeItemFromMap
-    // explodeDrop
-    public static ServerPacket DropLeaveField(MapleMapItem drop, LeaveType lt, MapleCharacter chr, int pet_slot) {
+    public static ServerPacket DropLeaveField(MapleMapItem drop, DropLeaveType lt, MapleCharacter chr, int pet_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropLeaveField);
 
-        sp.Encode1(lt.get());
-        sp.Encode4(drop.getObjectId());
+        sp.Encode1(lt.get()); // leave type
+        sp.Encode4(drop.getObjectId()); // id
 
         switch (lt) {
             case EXPIRED:
-            case NO_ANIMATION: {
+            case REMOVE: {
                 // no data is needed
                 break;
             }
-            case MESO_EXPLOSION: {
-                sp.Encode2(655); // explosion delay
+            case EXPLOSION: {
+                sp.Encode2(655); // tLeaveTime
                 break;
             }
-            case PICK_UP:
-            case PICK_UP_NO_SOUND: {
+            case NORMAL:
+            case SILENT: {
                 sp.Encode4(chr.getObjectId()); // dwPickupID
                 break;
             }
-            case PICK_UP_PET: {
+            case PET: {
                 sp.Encode4(chr.getObjectId()); // dwPickupID
                 sp.Encode4(pet_slot);
                 break;
@@ -174,15 +114,62 @@ public class ResCDropPool {
         return sp;
     }
 
-    public static ServerPacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto) {
+    public static ServerPacket DropEnterField(MapleMapItem drop, DropEnterType et, Point dropto) {
         return DropEnterField(drop, et, dropto, null, 0);
     }
 
-    public static ServerPacket DropEnterField(MapleMapItem drop, EnterType et, Point dropto, Point dropfrom) {
+    public static ServerPacket DropEnterField(MapleMapItem drop, DropEnterType et, Point dropto, Point dropfrom) {
         return DropEnterField(drop, et, dropto, dropfrom, 0);
     }
 
-    public static ServerPacket DropLeaveField(MapleMapItem drop, LeaveType lt) {
+    public static ServerPacket DropLeaveField(MapleMapItem drop, DropLeaveType lt) {
         return DropLeaveField(drop, lt, null, 0);
+    }
+
+    public enum DropEnterType {
+        UPDATE(0),
+        NORMAL(1),
+        SILENT(2),
+        SPAWN(3),
+        NO_ROTATE(4),
+        UNKNOWN;
+
+        private int value;
+
+        private DropEnterType(int value) {
+            this.value = value;
+        }
+
+        private DropEnterType() {
+            this.value = -1;
+        }
+
+        private int get() {
+            return this.value;
+        }
+    }
+
+    public enum DropLeaveType {
+        EXPIRED(0),
+        REMOVE(1),
+        NORMAL(2),
+        SILENT(3),
+        EXPLOSION(4),
+        PET(5),
+        UNKNOWN;
+
+        private int value;
+
+        private DropLeaveType(int value) {
+            this.value = value;
+        }
+
+        private DropLeaveType() {
+            this.value = -1;
+        }
+
+        private int get() {
+            return this.value;
+        }
     }
 }

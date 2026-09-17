@@ -130,8 +130,6 @@ public class TacosMap extends TacosMapData {
             return ((MapleMist) o).getPosition();
         } else if (o instanceof MapleDynamicPortal) {
             return ((MapleDynamicPortal) o).getPosition();
-        } else if (o instanceof MapleMapItem) {
-            return ((MapleMapItem) o).getPosition();
         } else if (o instanceof MapleReactor) {
             return ((MapleReactor) o).getPosition();
         } else if (o instanceof MapleDoor) {
@@ -155,8 +153,6 @@ public class TacosMap extends TacosMapData {
             return ((MapleMist) o).getObjectId();
         } else if (o instanceof MapleDynamicPortal) {
             return ((MapleDynamicPortal) o).getObjectId();
-        } else if (o instanceof MapleMapItem) {
-            return ((MapleMapItem) o).getObjectId();
         } else if (o instanceof MapleReactor) {
             return ((MapleReactor) o).getObjectId();
         } else if (o instanceof MapleDoor) {
@@ -180,8 +176,6 @@ public class TacosMap extends TacosMapData {
             ((MapleMist) o).setObjectId(id);
         } else if (o instanceof MapleDynamicPortal) {
             ((MapleDynamicPortal) o).setObjectId(id);
-        } else if (o instanceof MapleMapItem) {
-            ((MapleMapItem) o).setObjectId(id);
         } else if (o instanceof MapleReactor) {
             ((MapleReactor) o).setObjectId(id);
         } else if (o instanceof MapleDoor) {
@@ -206,8 +200,6 @@ public class TacosMap extends TacosMapData {
             return ((MapleMist) o).getType();
         } else if (o instanceof MapleDynamicPortal) {
             return ((MapleDynamicPortal) o).getType();
-        } else if (o instanceof MapleMapItem) {
-            return ((MapleMapItem) o).getType();
         } else if (o instanceof MapleReactor) {
             return ((MapleReactor) o).getType();
         } else if (o instanceof MapleDoor) {
@@ -282,12 +274,6 @@ public class TacosMap extends TacosMapData {
             if (mapobject instanceof MapleSummon) {
                 MapleSummon summon = (MapleSummon) mapobject;
                 if (summon.isChangedMap() && summon.getOwnerId() != player.getId()) {
-                    continue;
-                }
-            }
-            if (mapobject instanceof MapleMapItem) {
-                MapleMapItem mitem = (MapleMapItem) mapobject;
-                if (0 < mitem.getQuest() && player.getQuestStatus(mitem.getQuest()) != 1) {
                     continue;
                 }
             }
@@ -607,8 +593,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // drop
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
-            MapleMapItem drop = (MapleMapItem) mmo;
+        for (MapleMapItem drop : this.drops.values()) {
             // quest item.
             int quest_id = drop.getQuest();
             if (0 < quest_id) {
@@ -622,7 +607,7 @@ public class TacosMap extends TacosMapData {
             }
             int state = enter_state.get(number);
             if ((state & 1) != 0) {
-                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
             }
         }
         // mist
@@ -846,8 +831,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // drop
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
-            MapleMapItem drop = (MapleMapItem) mmo;
+        for (MapleMapItem drop : this.drops.values()) {
             // quest item.
             int quest_id = drop.getQuest();
             if (0 < quest_id) {
@@ -861,10 +845,10 @@ public class TacosMap extends TacosMapData {
             }
             int state = move_state.get(number);
             if ((state & 1) != 0) {
-                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
             }
             if ((state & 4) != 0) {
-                chr.SendPacket(ResCDropPool.DropLeaveField(drop, ResCDropPool.LeaveType.NO_ANIMATION));
+                chr.SendPacket(ResCDropPool.DropLeaveField(drop, ResCDropPool.DropLeaveType.REMOVE));
             }
         }
         // mist
@@ -1250,7 +1234,7 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    // merch
+    // merchant.
     public List<Object> getAllHiredMerchants() {
         ArrayList<Object> ret = new ArrayList<>();
         for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
@@ -1265,40 +1249,50 @@ public class TacosMap extends TacosMapData {
         }
     }
 
+    // drop item.
+    private LinkedHashMap<Integer, MapleMapItem> drops = new LinkedHashMap<>();
+    private int DROP_OBJECT_ID = 300000;
+
+    public void addDrop(MapleMapItem drop) {
+        if (drop.getObjectId() == 0) {
+            drop.setObjectId(DROP_OBJECT_ID++);
+            drop.setTime();
+        }
+        this.drops.put(drop.getObjectId(), drop);
+    }
+
+    public boolean removeDrop(int object_id) {
+        this.drops.remove(object_id);
+        return true;
+    }
+
+    public MapleMapItem findDrop(int object_id) {
+        return this.drops.get(object_id);
+    }
+
     public List<MapleMapItem> getAllItems() {
         ArrayList<MapleMapItem> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
-            ret.add((MapleMapItem) mmo);
+        for (MapleMapItem drop : this.drops.values()) {
+            ret.add(drop);
         }
         return ret;
     }
 
     public int getItemsSize() {
-        return this.mapobjects.get(MapleMapObjectType.ITEM).size();
+        return this.drops.size();
     }
 
     public void spawnMesoDrop(int meso, Point position, Object dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
         Point droppos = calcDropPos(position, position);
         MapleMapItem mdrop = new MapleMapItem(meso, droppos, dropper, owner, droptype, playerDrop);
-        addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, droppos, dispatchGetPosition(dropper)));
-
-        if (!getEverlast()) {
-            mdrop.registerExpire(120000);
-            if (droptype == 0 || droptype == 1) {
-                mdrop.registerFFA(30000);
-            }
-        }
+        addDrop(mdrop);
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, droppos, dispatchGetPosition(dropper)));
     }
 
     public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
         MapleMapItem mdrop = new MapleMapItem(meso, position, dropper, owner, droptype, playerDrop);
-        addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, position, dropper.getPosition()));
-        mdrop.registerExpire(120000);
-        if (droptype == 0 || droptype == 1) {
-            mdrop.registerFFA(30000);
-        }
+        addDrop(mdrop);
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, position, dropper.getPosition()));
     }
 
     public void spawnAutoDrop(int itemid, Point pos) {
@@ -1310,12 +1304,12 @@ public class TacosMap extends TacosMapData {
             idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
         }
         MapleMapItem mdrop = new MapleMapItem(pos, idrop);
-        addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, pos, pos));
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.PICK_UP_ENABLED, pos, pos));
-        mdrop.registerExpire(120000);
+        addDrop(mdrop);
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, pos, pos));
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.UPDATE, pos, pos));
     }
 
+    // mystic door.
     public List<Object> getAllDoors() {
         ArrayList<Object> ret = new ArrayList<>();
         for (Object mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
@@ -1522,7 +1516,7 @@ public class TacosMap extends TacosMapData {
         for (final Object o : getAllItems()) {
             final MapleMapItem item = ((MapleMapItem) o);
             if (item.getOwner() == chr.getId()) {
-                broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.LeaveType.PICK_UP, chr, 0), item.getPosition());
+                broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.DropLeaveType.NORMAL, chr, 0), item.getPosition());
                 if (item.getMeso() > 0) {
                     chr.gainMeso(item.getMeso(), false);
                 } else {

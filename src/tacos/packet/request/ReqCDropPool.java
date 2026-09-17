@@ -31,7 +31,6 @@ import odin.server.life.MapleMonster;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObjectType;
 import tacos.config.Config;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
@@ -86,12 +85,11 @@ public class ReqCDropPool {
     }
 
     public static boolean OnDropPickUpRequest(MapleCharacter chr, int object_id) {
-        Object object = chr.getMap().getMapObject(object_id, MapleMapObjectType.ITEM);
-        if (object == null) {
+        MapleMapItem mapitem = chr.getMap().findDrop(object_id);
+        if (mapitem == null) {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;
         }
-        MapleMapItem mapitem = (MapleMapItem) object;
         if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
             DebugLogger.ErrorLog("PickUp : getOwner");
             return false;
@@ -175,8 +173,8 @@ public class ReqCDropPool {
     }
 
     public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem, boolean is_pet, int pet_index) {
-        chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? ResCDropPool.LeaveType.PICK_UP_PET : ResCDropPool.LeaveType.PICK_UP, chr, pet_index), mapitem.getPosition());
-        chr.getMap().removeMapObject(mapitem);
+        chr.getMap().removeDrop(mapitem.getObjectId());
+        chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? ResCDropPool.DropLeaveType.PET : ResCDropPool.DropLeaveType.NORMAL, chr, pet_index), mapitem.getPosition());
     }
 
     public static boolean useDropItem(MapleCharacter chr, int id) {

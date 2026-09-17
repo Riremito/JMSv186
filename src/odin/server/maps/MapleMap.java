@@ -33,7 +33,7 @@ import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
-import tacos.packet.response.ResCDropPool.EnterType;
+import tacos.packet.response.ResCDropPool.DropEnterType;
 import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
@@ -308,12 +308,8 @@ public final class MapleMap extends TacosMap {
 
     public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short questid) {
         MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, questid);
-        addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, dropPos, mob.getPosition(), mob.getObjectId()));
-        mdrop.registerExpire(120000);
-        if (droptype == 0 || droptype == 1) {
-            mdrop.registerFFA(30000);
-        }
+        addDrop(mdrop);
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
         activateItemReactors(mdrop, chr.getClient());
     }
 
@@ -377,7 +373,7 @@ public final class MapleMap extends TacosMap {
 
         @Override
         public void run() {
-            if (mapitem != null && mapitem == getMapObject(mapitem.getObjectId(), mapitem.getType())) {
+            if (mapitem != null && mapitem == findDrop(mapitem.getObjectId())) {
                 mapitem.expire(MapleMap.this);
                 reactor.hitReactor(client);
                 reactor.setTimerActive(false);
@@ -557,13 +553,11 @@ public final class MapleMap extends TacosMap {
     public void spawnItemDrop(Object dropper, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
         MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
-        addMapObject(drop);
-        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, EnterType.ANIMATION, droppos, TacosMap.dispatchGetPosition(dropper)));
-        broadcastMessage(ResCDropPool.DropEnterField(drop, EnterType.PICK_UP_ENABLED, droppos, TacosMap.dispatchGetPosition(dropper))); // enable pick up for new players
+        addDrop(drop);
+        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, TacosMap.dispatchGetPosition(dropper)));
+        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, TacosMap.dispatchGetPosition(dropper))); // enable pick up for new players
         if (!getEverlast()) {
-            drop.registerExpire(120000);
             activateItemReactors(drop, owner.getClient());
         }
     }
-
 }

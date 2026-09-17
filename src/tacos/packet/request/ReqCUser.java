@@ -1056,13 +1056,13 @@ public class ReqCUser {
         // meso explosion.
         if (is_meso_explosion) {
             for (int drop_id : attack.allMeso) {
-                MapleMapItem mmi = (MapleMapItem) map.getMapObject(drop_id, MapleMapObjectType.ITEM);
+                MapleMapItem mmi = map.findDrop(drop_id);
                 if (mmi == null || mmi.getMeso() <= 0) {
                     DebugLogger.ErrorLog("attack : err meso explosion.");
                     continue;
                 }
-                map.removeMapObject(mmi);
-                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.LeaveType.MESO_EXPLOSION));
+                map.removeDrop(mmi.getObjectId());
+                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPLOSION));
             }
         }
         return true;

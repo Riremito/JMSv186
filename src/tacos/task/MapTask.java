@@ -33,7 +33,7 @@ import tacos.server.map.TacosSpawnPoint;
  */
 public class MapTask {
 
-    private static final int DROP_ITEM_EXPIRED = 15000;
+    private static final int DROP_ITEM_EXPIRED = 120000;
 
     public static boolean update(MapleCharacter chr, MapleMap map, long time) {
         if (!map.updateTime(time, 5000)) {
@@ -41,14 +41,9 @@ public class MapTask {
         }
         // drop removal.
         for (MapleMapItem mmi : map.getAllItems()) {
-            long object_created_time = mmi.getTime();
-            if (object_created_time == 0) {
-                continue;
-            }
-            long delta = time - object_created_time;
-            if (DROP_ITEM_EXPIRED <= delta) {
-                map.removeMapObject(mmi);
-                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.LeaveType.EXPIRED));
+            if (mmi.getTime() + DROP_ITEM_EXPIRED < time) {
+                map.removeDrop(mmi.getObjectId());
+                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
             }
         }
         // mob respawn.
@@ -64,8 +59,6 @@ public class MapTask {
                 }
             }
         }
-
-        //map.updateSpawn();
         return true;
     }
 }
