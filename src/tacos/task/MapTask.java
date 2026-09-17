@@ -22,7 +22,9 @@ import odin.client.MapleCharacter;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
+import odin.server.maps.MapleMist;
 import tacos.packet.ops.OpsMobAppear;
+import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCMobPool;
 import tacos.server.map.TacosSpawnPoint;
@@ -57,6 +59,46 @@ public class MapTask {
                     monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                     monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
                 }
+            }
+        }
+        // mist.
+        for (MapleMist mist : map.getAllMists()) {
+            // TODO : fix interval.
+            switch (mist.isPoisonMist()) {
+                case 1 -> {
+                    for (MapleMonster monster : map.getMonstersInRect(mist.getBox())) {
+                        if (mist.makeChanceResult()) {
+                            int max_hp = (int) monster.getMobMaxHp();
+                            int damage = max_hp / (70 - mist.getSkillLevel());
+                            //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, mist.getDuration(), false);
+                            monster.setHp(Math.max(1, monster.getHp() - damage));
+                            map.broadcastMessage(ResCMobPool.MobDamaged(monster, damage, 0));
+                            /*
+                            if (mist.getOwnerId() == chr.getId()) {
+                                chr.SendPacket(ResCMobPool.MobHPIndicator(monster, (int) Math.ceil(monster.getHp() * 100.0 / max_hp)));
+                            }
+                             */
+                        }
+                    }
+                }
+                case 2 -> {
+                    /*
+                    for (Object player : map.getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
+                        if (mist.makeChanceResult()) {
+                            ((MapleCharacter) player).addMP((int) (mist.getSource().getX() * (((MapleCharacter) player).getStat().getMaxMp() / 100.0)));
+                        }
+                    }
+                     */
+                }
+                case 3 -> {
+                }
+                default -> {
+                }
+            }
+            // mist removal.
+            if (mist.getTimeRemoval() < time) {
+                map.removeMist(mist.getObjectId());
+                map.broadcastMessage(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
             }
         }
         return true;

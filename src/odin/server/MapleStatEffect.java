@@ -527,9 +527,9 @@ public class MapleStatEffect {
             }
 
         } else if (isMist()) {
-            final Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
-            final MapleMist mist = new MapleMist(bounds, applyfrom, this);
-            applyfrom.getMap().spawnMist(mist, getDuration(), false);
+            Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
+            MapleMist mist = new MapleMist(bounds, applyfrom, this, getDuration());
+            applyfrom.getMap().addMist(mist);
 
         } else if (isTimeLeap()) {
             applyto.getCoolTime().timeLeap();

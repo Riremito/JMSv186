@@ -2235,6 +2235,9 @@ public class ReqCUser {
                 //map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(chr.getId(), nSkillID, 1, slea.readByte()), chr.getPosition());
                 return true;
             }
+            case WIZARD1_TELEPORT:
+            case WIZARD2_TELEPORT:
+            case CLERIC_TELEPORT:
             case HERMIT_FLASH_JUMP: {
                 chr.sendStatChanged(true);
                 return true;

@@ -126,8 +126,6 @@ public class TacosMap extends TacosMapData {
             return ((MapleSummon) o).getPosition();
         } else if (o instanceof TacosCharacter) {
             return ((TacosCharacter) o).getPosition();
-        } else if (o instanceof MapleMist) {
-            return ((MapleMist) o).getPosition();
         } else if (o instanceof MapleDynamicPortal) {
             return ((MapleDynamicPortal) o).getPosition();
         } else if (o instanceof MapleReactor) {
@@ -149,8 +147,6 @@ public class TacosMap extends TacosMapData {
             return ((MapleSummon) o).getObjectId();
         } else if (o instanceof TacosCharacter) {
             return ((TacosCharacter) o).getObjectId();
-        } else if (o instanceof MapleMist) {
-            return ((MapleMist) o).getObjectId();
         } else if (o instanceof MapleDynamicPortal) {
             return ((MapleDynamicPortal) o).getObjectId();
         } else if (o instanceof MapleReactor) {
@@ -172,8 +168,6 @@ public class TacosMap extends TacosMapData {
             ((MapleSummon) o).setObjectId(id);
         } else if (o instanceof TacosCharacter) {
             ((TacosCharacter) o).setObjectId(id);
-        } else if (o instanceof MapleMist) {
-            ((MapleMist) o).setObjectId(id);
         } else if (o instanceof MapleDynamicPortal) {
             ((MapleDynamicPortal) o).setObjectId(id);
         } else if (o instanceof MapleReactor) {
@@ -196,8 +190,6 @@ public class TacosMap extends TacosMapData {
             return ((MapleSummon) o).getType();
         } else if (o instanceof TacosCharacter) {
             return ((TacosCharacter) o).getType();
-        } else if (o instanceof MapleMist) {
-            return ((MapleMist) o).getType();
         } else if (o instanceof MapleDynamicPortal) {
             return ((MapleDynamicPortal) o).getType();
         } else if (o instanceof MapleReactor) {
@@ -611,8 +603,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mist
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
-            MapleMist mist = (MapleMist) mmo;
+        for (MapleMist mist : this.mists.values()) {
             int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
             if (this.map_split.getSplit() < number) {
                 continue;
@@ -852,8 +843,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mist
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
-            MapleMist mist = (MapleMist) mmo;
+        for (MapleMist mist : this.mists.values()) {
             int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
             if (this.map_split.getSplit() < number) {
                 continue;
@@ -1165,7 +1155,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public boolean removeNPC(int object_id) {
-        this.monsters.remove(object_id);
+        this.npcs.remove(object_id);
         // remove from spawn point.
         for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
             MapleNPC npc = sp.getNPC();
@@ -1232,6 +1222,30 @@ public class TacosMap extends TacosMapData {
         removeNPC(npc.getObjectId());
         broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
         return true;
+    }
+
+    // mist.
+    private LinkedHashMap<Integer, MapleMist> mists = new LinkedHashMap<>();
+
+    public void addMist(MapleMist mist) {
+        if (mist.getObjectId() == 0) {
+            //MapleMist.setOBJECT_ID(npc);
+        }
+        this.mists.put(mist.getObjectId(), mist);
+        broadcastMessage(ResCAffectedAreaPool.AffectedAreaCreated(mist));
+    }
+
+    public boolean removeMist(int object_id) {
+        this.mists.remove(object_id);
+        return true;
+    }
+
+    public List<MapleMist> getAllMists() {
+        ArrayList<MapleMist> ret = new ArrayList<>();
+        for (MapleMist mist : this.mists.values()) {
+            ret.add(mist);
+        }
+        return ret;
     }
 
     // merchant.

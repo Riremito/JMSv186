@@ -24,13 +24,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import odin.client.Skill;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import odin.client.SkillFactory;
-import tacos.packet.response.ResCAffectedAreaPool;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
-import tacos.packet.ServerPacket;
 
 public class MapleMist {
 
@@ -52,8 +49,11 @@ public class MapleMist {
     private int skilllevel;
     private int isPoisonMist;
     private int ownerId;
+    private long time_created;
+    private long time_removal;
+    private int duration;
 
-    public MapleMist(Rectangle mistPosition, MapleMonster mob, MobSkill skill) {
+    public MapleMist(Rectangle mistPosition, MapleMonster mob, MobSkill skill, int dur) {
         this.mistPosition = mistPosition;
         this.ownerId = mob.getId();
         this.skill = skill;
@@ -62,9 +62,13 @@ public class MapleMist {
         isMobMist = true;
         isPoisonMist = 0;
         skillDelay = 0;
+
+        this.time_created = System.currentTimeMillis();
+        this.time_removal = this.time_created + dur;
+        this.duration = dur;
     }
 
-    public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source) {
+    public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source, int dur) {
         this.mistPosition = mistPosition;
         this.ownerId = owner.getId();
         this.source = source;
@@ -73,34 +77,18 @@ public class MapleMist {
         this.skilllevel = owner.getSkillLevel(SkillFactory.getSkill(source.getSourceId()));
 
         switch (source.getSourceId()) {
-            case 4221006: // Smoke Screen
+            case 4221006 -> // Smoke Screen
                 isPoisonMist = 0;
-                break;
-            case 14111006:
-            case 2111003: // FP mist
-            case 12111005: // Flame wizard, [Flame Gear]
+            case 14111006, 2111003, 12111005 -> // Flame wizard, [Flame Gear]
                 isPoisonMist = 1;
-                break;
-            case 22161003: //Recovery Aura
+            case 22161003 -> // FP mist
+                //Recovery Aura
                 isPoisonMist = 2;
-                break;
         }
-    }
 
-    //fake
-    public MapleMist(Rectangle mistPosition, MapleCharacter owner) {
-        this.mistPosition = mistPosition;
-        this.ownerId = owner.getId();
-        this.source = new MapleStatEffect();
-        this.source.setSourceId(2111003);
-        this.skilllevel = 30;
-        isMobMist = false;
-        isPoisonMist = 0;
-        skillDelay = 8;
-    }
-
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.MIST;
+        this.time_created = System.currentTimeMillis();
+        this.time_removal = this.time_created + dur;
+        this.duration = dur;
     }
 
     public Point getPosition() {
@@ -143,22 +131,19 @@ public class MapleMist {
         return source;
     }
 
-    public void setPosition(Point position) {
-    }
-
-    public ServerPacket fakeSpawnData(int level) {
-        return ResCAffectedAreaPool.AffectedAreaCreated(this);
-    }
-
-    public void sendSpawnData(TacosClient client) {
-        client.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(this));
-    }
-
-    public void sendDestroyData(TacosClient client) {
-        client.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(this));
-    }
-
     public boolean makeChanceResult() {
         return source.makeChanceResult();
+    }
+
+    public long getTime() {
+        return this.time_created;
+    }
+
+    public long getTimeRemoval() {
+        return this.time_removal;
+    }
+
+    public int getDuration() {
+        return this.duration;
     }
 }

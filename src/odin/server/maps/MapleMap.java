@@ -22,19 +22,14 @@ package odin.server.maps;
 
 import java.awt.Point;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.DropEnterType;
-import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import odin.server.MapleItemInformationProvider;
@@ -251,59 +246,6 @@ public final class MapleMap extends TacosMap {
             cancelSquadSchedule();
             broadcastMessage(ResCField.DestroyClock());
         }
-    }
-
-    public void spawnMist(MapleMist mist, int duration, boolean fake) {
-        addMapObject(mist);
-        spawnRangedMapObject(mist, ResCAffectedAreaPool.AffectedAreaCreated(mist));
-
-        final MapTimer tMan = MapTimer.getInstance();
-        final ScheduledFuture<?> poisonSchedule;
-        switch (mist.isPoisonMist()) {
-            case 1:
-                //poison: 0 = none, 1 = poisonous, 2 = recovery aura
-                final MapleCharacter owner = getCharacterById(mist.getOwnerId());
-                poisonSchedule = tMan.register(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        for (MapleMonster monster : getMonstersInRect(mist.getBox())) {
-                            if (mist.makeChanceResult()) {
-                                monster.applyStatus(owner, new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, duration, false);
-                            }
-                        }
-                    }
-                }, 2000, 2500);
-                break;
-            case 2:
-                poisonSchedule = tMan.register(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        for (final Object mo : getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
-                            if (mist.makeChanceResult()) {
-                                final MapleCharacter chr = ((MapleCharacter) mo);
-                                chr.addMP((int) (mist.getSource().getX() * (chr.getStat().getMaxMp() / 100.0)));
-                            }
-                        }
-                    }
-                }, 2000, 2500);
-                break;
-            default:
-                poisonSchedule = null;
-                break;
-        }
-        tMan.schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                broadcastMessage(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
-                removeMapObject(mist);
-                if (poisonSchedule != null) {
-                    poisonSchedule.cancel(false);
-                }
-            }
-        }, duration);
     }
 
     public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short questid) {

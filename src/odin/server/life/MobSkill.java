@@ -171,7 +171,7 @@ public class MobSkill {
                 break;
             case 131: // Mist
                 if (monster != null) {
-                    monster.getMap().spawnMist(new MapleMist(calculateBoundingBox(monster.getPosition(), true), monster, this), x * 10, false);
+                    monster.getMap().addMist(new MapleMist(calculateBoundingBox(monster.getPosition(), true), monster, this, x * 10));
                 }
                 break;
             case 140:

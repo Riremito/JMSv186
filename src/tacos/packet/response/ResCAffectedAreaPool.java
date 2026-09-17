@@ -31,7 +31,6 @@ import tacos.packet.ServerPacketHeader;
 public class ResCAffectedAreaPool {
 
     // CAffectedAreaPool::OnAffectedAreaCreated
-    // CAffectedArea::MakeEnterFieldPacket
     public static ServerPacket AffectedAreaCreated(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaCreated);
 
@@ -50,17 +49,11 @@ public class ResCAffectedAreaPool {
         }
         // old ver = 1 byte m_bSmoke
         sp.Encode4(0); // nElemAttr
-
-        // not in JMS147-164
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            sp.Encode4(0); // nPhase
-        }
-
+        sp.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // nPhase
         return sp;
     }
 
     // CAffectedAreaPool::OnAffectedAreaRemoved
-    // CAffectedArea::MakeLeaveFieldPacket
     public static ServerPacket AffectedAreaRemoved(MapleMist mist) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AffectedAreaRemoved);
 
