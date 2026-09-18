@@ -337,8 +337,7 @@ public final class MapleMap extends TacosMap {
 
     private void activateItemReactors(MapleMapItem drop, TacosClient client) {
         Item item = drop.getItem();
-        for (Object o : mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            MapleReactor react = (MapleReactor) o;
+        for (MapleReactor react : getAllReactors()) {
 
             if (react.getReactorType() == 100) {
                 if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getKey()) && react.getReactItem().getValue() == item.getQuantity()) {
@@ -496,8 +495,16 @@ public final class MapleMap extends TacosMap {
         Point droppos = calcDropPos(pos, pos);
         MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
         addDrop(drop);
-        spawnRangedMapObject(drop, ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, TacosMap.dispatchGetPosition(dropper)));
-        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, TacosMap.dispatchGetPosition(dropper))); // enable pick up for new players
+        Point dropperPosition;
+        if (dropper instanceof MapleCharacter) {
+            dropperPosition = ((MapleCharacter) dropper).getPosition();
+        } else if (dropper instanceof MapleReactor) {
+            dropperPosition = ((MapleReactor) dropper).getPosition();
+        } else {
+            throw new IllegalArgumentException("spawnItemDrop: unknown dropper type: " + dropper);
+        }
+        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, dropperPosition));
+        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, dropperPosition)); // enable pick up for new players
         if (!getEverlast()) {
             activateItemReactors(drop, owner.getClient());
         }

@@ -24,7 +24,6 @@ import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.ShopDispatch;
-import tacos.server.map.TacosMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
@@ -201,7 +200,7 @@ public class RD_CUser {
         data.Encode1((shop != null) ? ShopDispatch.getGameType(shop) : 0); // m_nMiniRoomType
         if (shop != null && ShopDispatch.getGameType(shop) != 0) {
             // AnnounceBox & Interaction : TODO Remove
-            data.Encode4(TacosMap.dispatchGetObjectId(shop)); // m_dwMiniRoomSN
+            data.Encode4(ShopDispatch.getObjectId(shop)); // m_dwMiniRoomSN
             data.EncodeStr(ShopDispatch.getDescription(shop)); // m_sMiniRoomTitle
             data.Encode1((ShopDispatch.getPassword(shop).length() != 0) ? 1 : 0); // m_bPrivate
             data.Encode1(ShopDispatch.getItemId(shop) % 10); // m_nGameKind
@@ -317,7 +316,7 @@ public class RD_CUser {
         data.Encode1((shop != null) ? ShopDispatch.getGameType(shop) : 0); // m_nMiniRoomType
         if (shop != null && ShopDispatch.getGameType(shop) != 0) {
             // AnnounceBox & Interaction : TODO Remove
-            data.Encode4(TacosMap.dispatchGetObjectId(shop)); // m_dwMiniRoomSN
+            data.Encode4(ShopDispatch.getObjectId(shop)); // m_dwMiniRoomSN
             data.EncodeStr(ShopDispatch.getDescription(shop)); // m_sMiniRoomTitle
             data.Encode1((ShopDispatch.getPassword(shop).length() != 0) ? 1 : 0); // m_bPrivate
             data.Encode1(ShopDispatch.getItemId(shop) % 10); // m_nGameKind

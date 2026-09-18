@@ -420,7 +420,7 @@ public class MaplePlayerShop {
     public void closeShop(boolean saveItems, boolean remove, int reason) {
         MapleCharacter owner = getMCOwner();
         removeAllVisitors(reason, 1);
-        getMap().removeMapObject(this);
+        getMap().removePlayerShop(this.getObjectId());
 
         for (MaplePlayerShopItem items : getItems()) {
             if (items.bundles > 0) {

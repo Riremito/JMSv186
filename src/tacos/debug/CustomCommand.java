@@ -105,7 +105,7 @@ public class CustomCommand {
 
                 Point player_xy = chr.getPosition();
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
-                map.addMapObject(dynamic_portal);
+                map.addDynamicPortal(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);
                 return true;

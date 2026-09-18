@@ -152,7 +152,7 @@ public class TestCommand {
                     HiredMerchant hm = new HiredMerchant(chr, item_id, "DebugHiredMarchant");
                     hm.setTest(chr.getId() + id_inc, fh_id, ids.get(rand.nextInt(ids.size())), 7777 + id_inc);
                     hm.setPosition(new Point(fh_x, fh_y));
-                    map.addMapObject(hm);
+                    map.addHiredMerchant(hm);
                     chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(hm));
                     chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
                     hms.add(hm);

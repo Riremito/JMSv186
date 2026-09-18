@@ -16,7 +16,6 @@ import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
-import java.util.Arrays;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
@@ -24,7 +23,6 @@ import tacos.packet.response.ResCTownPortalPool;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleSummon;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -585,11 +583,9 @@ public class MapleStatEffect {
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            final List<Object> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
+            final List<MapleCharacter> affecteds = applyfrom.getMap().getPlayersInRect(bounds);
 
-            for (final Object affectedmo : affecteds) {
-                final MapleCharacter affected = (MapleCharacter) affectedmo;
-
+            for (final MapleCharacter affected : affecteds) {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);

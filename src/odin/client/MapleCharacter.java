@@ -2294,8 +2294,8 @@ public class MapleCharacter extends TacosCharacter {
             door.sendDestroyData(chr.getClient());
         }
         for (final MapleDoor destroyDoor : getDoors()) {
-            door.getTarget().removeMapObject(destroyDoor);
-            door.getTown().removeMapObject(destroyDoor);
+            door.getTarget().removeDoor(destroyDoor.getObjectId());
+            door.getTown().removeDoor(destroyDoor.getObjectId());
         }
         clearDoors();
     }

@@ -202,7 +202,7 @@ public class ReqCSummonedPool {
 
             if (summon.isGaviota()) {
                 chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
-                chr.getMap().removeMapObject(summon);
+                chr.getMap().removeSummon(summon.getObjectId());
                 chr.removeVisibleMapObject(summon);
             }
             return;
@@ -293,7 +293,7 @@ public class ReqCSummonedPool {
 
         if (summon.isGaviota()) {
             chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
-            chr.getMap().removeMapObject(summon);
+            chr.getMap().removeSummon(summon.getObjectId());
             chr.removeVisibleMapObject(summon);
         }
     }

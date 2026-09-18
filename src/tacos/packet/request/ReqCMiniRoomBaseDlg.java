@@ -33,7 +33,6 @@ import tacos.packet.ops.OpsMiniRoomProtocol;
 import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.ShopDispatch;
 import odin.server.shops.MapleMiniGame;
@@ -103,7 +102,7 @@ public class ReqCMiniRoomBaseDlg {
                         game.setAvailable(true);
                         game.setOpen(true);
                         game.send(chr.getClient());
-                        chr.getMap().addMapObject(game);
+                        chr.getMap().addMiniGame(game);
                         game.update();
                         return true;
                     }
@@ -124,7 +123,7 @@ public class ReqCMiniRoomBaseDlg {
 
                         MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(mps);
-                        chr.getMap().addMapObject(mps);
+                        chr.getMap().addPlayerShop(mps);
                         chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
                         return true;
                     }
@@ -142,7 +141,7 @@ public class ReqCMiniRoomBaseDlg {
                         HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(merch);
                         chr.setRemoteStore(merch);
-                        chr.getMap().addMapObject(merch);
+                        chr.getMap().addHiredMerchant(merch);
                         chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
                         return true;
                     }
@@ -191,9 +190,12 @@ public class ReqCMiniRoomBaseDlg {
                 // old code
                 {
                     int miniroom_id = cp.Decode4();
-                    Object ob = chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
+                    Object ob = chr.getMap().getHiredMerchantByOid(miniroom_id);
                     if (ob == null) {
-                        ob = chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.SHOP);
+                        ob = chr.getMap().getMiniGameByOid(miniroom_id);
+                    }
+                    if (ob == null) {
+                        ob = chr.getMap().getPlayerShopByOid(miniroom_id);
                     }
 
                     if ((ob instanceof HiredMerchant || ob instanceof MaplePlayerShop || ob instanceof MapleMiniGame) && chr.getPlayerShop() == null) {
@@ -811,7 +813,7 @@ public class ReqCMiniRoomBaseDlg {
             //chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
 
             HiredMerchant hm = new HiredMerchant(chr, 5030000, "DebugHiredMarchant");
-            chr.getMap().addMapObject(hm);
+            chr.getMap().addHiredMerchant(hm);
             chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
             return false;
         }

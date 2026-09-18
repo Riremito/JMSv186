@@ -87,7 +87,7 @@ public class CustomMap {
             npc.setRx1(npc_x - 50);
             npc.setFh(npc_fh);
             npc.setCustom(true);
-            map.addMapObject(npc);
+            map.addNPC(npc);
         }
 
         return true;

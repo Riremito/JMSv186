@@ -458,7 +458,7 @@ public class HiredMerchant {
             TacosWorld.find(0).getChannelServer(channel).removeMerchant(this); // TODO : fix
             getMap().broadcastMessage(ResCEmployeePool.EmployeeLeaveField(this));
         }
-        getMap().removeMapObject(this);
+        getMap().removeHiredMerchant(this.getObjectId());
         schedule = null;
     }
 

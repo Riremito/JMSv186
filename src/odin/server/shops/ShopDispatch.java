@@ -367,4 +367,15 @@ public final class ShopDispatch {
             throw new IllegalArgumentException("closeShop: unknown shop type: " + o);
         }
     }
+
+    public static int getObjectId(Object o) {
+        if (o instanceof HiredMerchant) {
+            return ((HiredMerchant) o).getObjectId();
+        } else if (o instanceof MaplePlayerShop) {
+            return ((MaplePlayerShop) o).getObjectId();
+        } else if (o instanceof MapleMiniGame) {
+            return ((MapleMiniGame) o).getObjectId();
+        }
+        throw new IllegalArgumentException("getObjectId: unknown shop type: " + o);
+    }
 }

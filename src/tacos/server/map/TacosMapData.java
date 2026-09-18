@@ -425,7 +425,7 @@ public class TacosMapData {
             myReactor.setName(WzDataTool.getString(reactor.getChildByPath("name"), ""));
 
             myReactor.setMap(((MapleMap) this));
-            ((MapleMap) this).addMapObject(myReactor);
+            ((MapleMap) this).addReactor(myReactor);
         }
 
         return true;

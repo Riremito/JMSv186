@@ -76,7 +76,6 @@ import odin.server.life.MobSkill;
 import odin.server.maps.MapleDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift.MapleGiftData;
@@ -601,7 +600,7 @@ public class ReqCUser {
                 short x = cp.Decode2();
                 short y = cp.Decode2();
                 MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
-                map.addMapObject(dynamic_portal);
+                map.addDynamicPortal(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.sendStatChanged(true);
                 return true;
@@ -1380,7 +1379,7 @@ public class ReqCUser {
         }
 
         int famechange = mode == 0 ? -1 : 1;
-        MapleCharacter target = (MapleCharacter) chr.getMap().getMapObject(target_id, MapleMapObjectType.PLAYER);
+        MapleCharacter target = chr.getMap().getPlayerByOid(target_id);
         switch (chr.canGiveFame(target)) {
             case OK:
                 if (Math.abs(target.getFame() + famechange) <= 30000) {

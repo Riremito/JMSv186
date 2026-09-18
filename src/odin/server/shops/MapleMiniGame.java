@@ -690,7 +690,7 @@ public class MapleMiniGame {
             getMCOwner().setPlayerShop(null);
         }
         update();
-        getMap().removeMapObject(this);
+        getMap().removeMiniGame(this.getObjectId());
     }
 
     public void buy(TacosClient client, int z, short i) {
