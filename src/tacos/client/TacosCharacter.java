@@ -40,7 +40,6 @@ import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.constants.TacosConstants;
@@ -267,18 +266,6 @@ public class TacosCharacter {
         } else {
             this.keylayout.remove(key);
         }
-    }
-
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.PLAYER;
-    }
-
-    public void sendSpawnData(TacosClient client) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public void sendDestroyData(TacosClient client) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     // enter game server.

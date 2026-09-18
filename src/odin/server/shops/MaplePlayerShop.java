@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.ItemLoader;
@@ -316,16 +315,6 @@ public class MaplePlayerShop {
             return "";
         }
         return pass;
-    }
-
-    public void sendDestroyData(TacosClient client) {
-    }
-
-    public void sendSpawnData(TacosClient client) {
-    }
-
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.SHOP;
     }
 
     public MapleCharacter getMCOwner() {

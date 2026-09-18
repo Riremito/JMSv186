@@ -22,8 +22,6 @@ package odin.server.maps;
 
 import java.awt.Point;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
-import tacos.packet.response.ResCSummonedPool;
 import odin.server.MapleStatEffect;
 import tacos.packet.ops.OpsAssist;
 import tacos.packet.ops.OpsMoveAbility;
@@ -101,13 +99,6 @@ public class MapleSummon {
         } catch (NullPointerException e) {
             this.fh = 0; //lol, it can be fixed by movement
         }
-    }
-
-    public final void sendSpawnData(final TacosClient client) {
-    }
-
-    public final void sendDestroyData(final TacosClient client) {
-        client.SendPacket(ResCSummonedPool.SummonedLeaveField(this, false));
     }
 
     public final void updateMap(final MapleMap map) {
@@ -199,10 +190,6 @@ public class MapleSummon {
             }
         }
         return OpsAssist.ASSIST_ATTACK;
-    }
-
-    public final MapleMapObjectType getType() {
-        return MapleMapObjectType.SUMMON;
     }
 
     public final boolean isChangedMap() {

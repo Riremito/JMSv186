@@ -1156,12 +1156,6 @@ public class TacosMap extends TacosMapData {
         return this.hiredMerchants.get(object_id);
     }
 
-    public void spawnMerchant(MapleCharacter chr) {
-        for (HiredMerchant employee : this.hiredMerchants.values()) {
-            employee.sendSpawnData(chr.getClient());
-        }
-    }
-
     // mini game.
     private LinkedHashMap<Integer, MapleMiniGame> miniGames = new LinkedHashMap<>();
 
@@ -1334,12 +1328,6 @@ public class TacosMap extends TacosMapData {
 
     public MapleDynamicPortal getDynamicPortalByOid(int object_id) {
         return this.dynamicPortals.get(object_id);
-    }
-
-    public void spawnDynamicPortal(MapleCharacter chr) {
-        for (MapleDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
-            dynamic_portal.sendSpawnPacket(chr.getClient());
-        }
     }
 
     public MapleDynamicPortal findDynamicPortal(int portal_id) {

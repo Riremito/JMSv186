@@ -91,20 +91,4 @@ public class MapleDynamicPortal {
     public int getMapID() {
         return map_id;
     }
-
-    // do not use spawn data
-    public final void sendSpawnPacket(final TacosClient client) {
-        client.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(this));
-    }
-
-    public final void sendSpawnData(final TacosClient client) {
-        //client.SendPacket(ItemPacket.CreatePinkBeanEventPortal(this));
-    }
-
-    public final void sendDestroyData(final TacosClient client) {
-    }
-
-    public final MapleMapObjectType getType() {
-        return MapleMapObjectType.DYNAMIC_PORTAL;
-    }
 }

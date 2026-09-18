@@ -179,8 +179,4 @@ public class MapleDoor {
     public final MapleMap getTarget() {
         return map_field;
     }
-
-    public final MapleMapObjectType getType() {
-        return MapleMapObjectType.DOOR;
-    }
 }

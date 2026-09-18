@@ -89,10 +89,6 @@ public class MapleReactor {
         return delay;
     }
 
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.REACTOR;
-    }
-
     public int getReactorType() {
         return stats.getType(state);
     }
@@ -101,16 +97,7 @@ public class MapleReactor {
         return stats.getReactItem(state);
     }
 
-    public void sendDestroyData(TacosClient client) {
-        client.SendPacket(ResCReactorPool.ReactorLeaveField(this));
-    }
-
-    public void sendSpawnData(TacosClient client) {
-        client.SendPacket(ResCReactorPool.ReactorEnterField(this));
-    }
-
     //hitReactor command for item-triggered reactors
-
     public void hitReactor(int charPos, short stance, TacosClient client) {
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
             //type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left

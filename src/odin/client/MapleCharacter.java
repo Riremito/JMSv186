@@ -805,8 +805,6 @@ public class MapleCharacter extends TacosCharacter {
             sendSetField(this, false);
             map_to.userEnterField(this);
             map_to.linkedObjectEnterField(this);
-            map_to.spawnMerchant(this); // show merchant
-            map_to.spawnDynamicPortal(this); // show dynamic portal;
             stats.relocHeal();
         }
 
@@ -1407,7 +1405,6 @@ public class MapleCharacter extends TacosCharacter {
         visibleMapObjects.remove(mo);
     }
 
-    @Override
     public void sendSpawnData(TacosClient client) {
         client.SendPacket(ResCUserPool.UserEnterField(this));
         // haku fox.

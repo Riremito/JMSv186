@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import tacos.packet.response.ResCEmployeePool;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -468,22 +467,6 @@ public class HiredMerchant {
 
     public final int getStoreId() {
         return storeid;
-    }
-
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.HIRED_MERCHANT;
-    }
-
-    public void sendDestroyData(TacosClient client) {
-        if (isAvailable()) {
-            client.SendPacket(ResCEmployeePool.EmployeeLeaveField(this));
-        }
-    }
-
-    public void sendSpawnData(TacosClient client) {
-        if (isAvailable()) {
-            client.SendPacket(ResCEmployeePool.EmployeeEnterField(this));
-        }
     }
 
     public final boolean isInBlackList(final String bl) {
