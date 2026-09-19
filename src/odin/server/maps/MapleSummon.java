@@ -106,7 +106,7 @@ public class MapleSummon {
     }
 
     public final MapleCharacter getOwner() {
-        return map.getCharacterById(ownerid);
+        return map.getPlayerById(ownerid);
     }
 
     public final int getFh() {

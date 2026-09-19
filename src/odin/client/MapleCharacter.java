@@ -2284,10 +2284,10 @@ public class MapleCharacter extends TacosCharacter {
 
     public void removeDoor() {
         final MapleDoor door = getDoors().iterator().next();
-        for (final MapleCharacter chr : door.getTarget().getCharacters()) {
+        for (final MapleCharacter chr : door.getTarget().getAllPlayers()) {
             door.sendDestroyData(chr.getClient());
         }
-        for (final MapleCharacter chr : door.getTown().getCharacters()) {
+        for (final MapleCharacter chr : door.getTown().getAllPlayers()) {
             door.sendDestroyData(chr.getClient());
         }
         for (final MapleDoor destroyDoor : getDoors()) {
@@ -2521,7 +2521,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.client.setMapleId(client.getMapleId());
         ret.nexonPoint = nexonPoint;
         ret.maplePoint = maplePoint;
-        while (map.getCharacterById(ret.id) != null || client.getChannelServer().getOnlinePlayers().findById(ret.id) != null) {
+        while (map.getPlayerById(ret.id) != null || client.getChannelServer().getOnlinePlayers().findById(ret.id) != null) {
             ret.id++;
         }
         ret.client.setPlayer(ret);
@@ -2642,7 +2642,7 @@ public class MapleCharacter extends TacosCharacter {
                     if (map != null && party.getLeader().getId() == idz) {
                         MaplePartyCharacter lchr = null;
                         for (MaplePartyCharacter pchr : party.getMembers()) {
-                            if (pchr != null && map.getCharacterById(pchr.getId()) != null && (lchr == null || lchr.getLevel() < pchr.getLevel())) {
+                            if (pchr != null && map.getPlayerById(pchr.getId()) != null && (lchr == null || lchr.getLevel() < pchr.getLevel())) {
                                 lchr = pchr;
                             }
                         }

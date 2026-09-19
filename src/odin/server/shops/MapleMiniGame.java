@@ -341,7 +341,7 @@ public class MapleMiniGame {
     }
 
     public MapleCharacter getMCOwner() {
-        return getMap().getCharacterById(ownerId);
+        return getMap().getPlayerById(ownerId);
     }
 
     public MapleMap getMap() {

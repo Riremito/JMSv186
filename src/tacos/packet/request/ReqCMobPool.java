@@ -203,7 +203,7 @@ public class ReqCMobPool {
     }
 
     public static boolean OnMobApplyCtrl(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
-        if (monster.getController() == null || map.getCharacterById(monster.getController().getId()) == null) {
+        if (monster.getController() == null || map.getPlayerById(monster.getController().getId()) == null) {
             monster.switchController(chr, true);
             return true;
         }

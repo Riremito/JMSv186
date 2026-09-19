@@ -690,7 +690,7 @@ public class MapleMonster {
     public final void resetShammos(TacosClient client) {
         map.killAllMonsters(true);
         map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
-        for (MapleCharacter chr : map.getCharacters()) {
+        for (MapleCharacter chr : map.getAllPlayers()) {
             chr.changeMap(chr.getMap(), chr.getMap().getPortal(0));
         }
         MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
@@ -1032,7 +1032,7 @@ public class MapleMonster {
 
         @Override
         public final List<AttackingMapleCharacter> getAttackers() {
-            final MapleCharacter chr = map.getCharacterById(chrid);
+            final MapleCharacter chr = map.getPlayerById(chrid);
             if (chr != null) {
                 return Collections.singletonList(new AttackingMapleCharacter(chr, lastAttackTime));
             } else {
@@ -1052,7 +1052,7 @@ public class MapleMonster {
 
         @Override
         public void killedMob(final MapleMap map, final int baseExp, final boolean mostDamage, final int lastSkill) {
-            final MapleCharacter chr = map.getCharacterById(chrid);
+            final MapleCharacter chr = map.getPlayerById(chrid);
             if (chr != null && chr.isAlive()) {
                 giveExpToCharacter(chr, baseExp, mostDamage, 1, (byte) 0, (byte) 0, (byte) 0, lastSkill);
             }
@@ -1124,7 +1124,7 @@ public class MapleMonster {
         public List<AttackingMapleCharacter> getAttackers() {
             final List<AttackingMapleCharacter> ret = new ArrayList<>(attackers.size());
             for (final Entry<Integer, OnePartyAttacker> entry : attackers.entrySet()) {
-                final MapleCharacter chr = map.getCharacterById(entry.getKey());
+                final MapleCharacter chr = map.getPlayerById(entry.getKey());
                 if (chr != null) {
                     ret.add(new AttackingMapleCharacter(chr, entry.getValue().lastAttackTime));
                 }
@@ -1135,7 +1135,7 @@ public class MapleMonster {
         private final Map<MapleCharacter, OnePartyAttacker> resolveAttackers() {
             final Map<MapleCharacter, OnePartyAttacker> ret = new HashMap<>(attackers.size());
             for (final Entry<Integer, OnePartyAttacker> aentry : attackers.entrySet()) {
-                final MapleCharacter chr = map.getCharacterById(aentry.getKey());
+                final MapleCharacter chr = map.getPlayerById(aentry.getKey());
                 if (chr != null) {
                     ret.put(chr, aentry.getValue());
                 }
@@ -1197,7 +1197,7 @@ public class MapleMonster {
                 expApplicable = new ArrayList<>();
                 for (final MaplePartyCharacter partychar : party.getMembers()) {
                     if (attacker.getKey().getLevel() - partychar.getLevel() <= 5 || stats.getLevel() - partychar.getLevel() <= 5) {
-                        pchr = map.getCharacterById(partychar.getId());
+                        pchr = map.getPlayerById(partychar.getId());
                         if (pchr != null) {
                             if (pchr.isAlive() && pchr.getMap() == map) {
                                 expApplicable.add(pchr);

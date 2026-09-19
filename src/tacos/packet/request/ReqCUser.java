@@ -912,7 +912,7 @@ public class ReqCUser {
 
         // follow.
         if (chr.getPassenger() != 0) {
-            MapleCharacter passenger = map.getCharacterById(chr.getPassenger());
+            MapleCharacter passenger = map.getPlayerById(chr.getPassenger());
             if (passenger != null) {
                 map.userMove(passenger, move_path); // test
                 move_path.update(passenger); // for when passenger cancels follow.
@@ -1410,7 +1410,7 @@ public class ReqCUser {
         // CCheatInspector::InspectExclRequestTime
         final int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         final int m_dwCharacterId = cp.Decode4();
-        final MapleCharacter player = map.getCharacterById(m_dwCharacterId); // CUser::FindUser
+        final MapleCharacter player = map.getPlayerById(m_dwCharacterId); // CUser::FindUser
 
         if (player == null) {
             chr.updateStat();
@@ -2828,7 +2828,7 @@ public class ReqCUser {
         MapleMap map = chr.getMap();
 
         if (bKeyInput != 0) {
-            MapleCharacter driver = map.getCharacterById(chr.getDriver());
+            MapleCharacter driver = map.getPlayerById(chr.getDriver());
             if (driver != null) {
                 driver.setPassenger(0);
             }
@@ -2837,7 +2837,7 @@ public class ReqCUser {
             return true;
         }
 
-        MapleCharacter driver = map.getCharacterById(dwDriverID);
+        MapleCharacter driver = map.getPlayerById(dwDriverID);
         if (driver == null) {
             return false;
         }
@@ -2862,7 +2862,7 @@ public class ReqCUser {
             error = cp.Decode4(); // always 5.
         }
 
-        MapleCharacter passenger = map.getCharacterById(m_dwFollowRequesterID);
+        MapleCharacter passenger = map.getPlayerById(m_dwFollowRequesterID);
         if (passenger == null) {
             return false;
         }

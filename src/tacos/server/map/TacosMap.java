@@ -94,7 +94,6 @@ public class TacosMap extends TacosMapData {
 
     protected int channel;
     protected int runningOid = 100000;
-    protected List<MapleCharacter> characters = new ArrayList<>();
     protected Map<String, Integer> environment = new LinkedHashMap<>();
     protected boolean squadTimer = false;
     protected String squad = "";
@@ -156,6 +155,15 @@ public class TacosMap extends TacosMapData {
         return this.players.get(object_id);
     }
 
+    public MapleCharacter getPlayerById(int id) {
+        for (MapleCharacter player : this.players.values()) {
+            if (player.getId() == id) {
+                return player;
+            }
+        }
+        return null;
+    }
+
     public List<MapleCharacter> getPlayersInRect(Rectangle box) {
         ArrayList<MapleCharacter> ret = new ArrayList<>();
         for (MapleCharacter chr : this.players.values()) {
@@ -168,7 +176,7 @@ public class TacosMap extends TacosMapData {
 
     public List<MapleCharacter> getPlayersInRectAndInList(Rectangle box, List<MapleCharacter> chrList) {
         List<MapleCharacter> character = new LinkedList<>();
-        Iterator<MapleCharacter> ltr = this.characters.iterator();
+        Iterator<MapleCharacter> ltr = this.players.values().iterator();
         MapleCharacter a;
         while (ltr.hasNext()) {
             a = ltr.next();
@@ -179,25 +187,8 @@ public class TacosMap extends TacosMapData {
         return character;
     }
 
-    public List<MapleCharacter> getCharacters() {
-        List<MapleCharacter> chars = new ArrayList<>();
-        for (MapleCharacter mc : this.characters) {
-            chars.add(mc);
-        }
-        return chars;
-    }
-
-    public MapleCharacter getCharacterById(int id) {
-        for (MapleCharacter mc : this.characters) {
-            if (mc.getId() == id) {
-                return mc;
-            }
-        }
-        return null;
-    }
-
     public int getCharactersSize() {
-        return this.characters.size();
+        return this.players.size();
     }
 
     private String fe_change_bgm = "";
@@ -220,15 +211,15 @@ public class TacosMap extends TacosMapData {
     }
 
     public void SplitSendPacket(int x, int y) {
-        int number = this.map_split.getSplitMap(x, y);
-        int row = number / this.map_split.getCol();
-        int col = number % this.map_split.getCol();
+        int number = this.split.find(x, y);
+        int row = number / this.split.getCol();
+        int col = number % this.split.getCol();
 
-        for (int i = 0; i < this.map_split.getRow(); i++) {
+        for (int i = 0; i < this.split.getRow(); i++) {
             if (i < (row - 1) || (row + 1) < i) {
                 continue;
             }
-            for (int j = 0; j < this.map_split.getCol(); j++) {
+            for (int j = 0; j < this.split.getCol(); j++) {
                 if (j < (col - 1) || (col + 1) < j) {
                     continue;
                 }
@@ -238,7 +229,7 @@ public class TacosMap extends TacosMapData {
 
     public List<Integer> getStateList() {
         List<Integer> state = new ArrayList<>();
-        for (int i = 0; i < this.map_split.getSplit(); i++) {
+        for (int i = 0; i < this.split.getSplit(); i++) {
             state.add(0);
         }
         return state;
@@ -360,7 +351,6 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userEnterField(MapleCharacter chr) {
-        this.characters.add(chr);
         addPlayer(chr); // object id.
 
         // no split.
@@ -386,28 +376,28 @@ public class TacosMap extends TacosMapData {
         List<Integer> enter_state = getStateList();
         int enter_x = chr.getPosition().x;
         int enter_y = chr.getPosition().y;
-        int enter_number = this.map_split.getSplitMap(enter_x, enter_y);
-        int enter_row = enter_number / this.map_split.getCol();
-        int enter_col = enter_number % this.map_split.getCol();
-        for (int row = 0; row < this.map_split.getRow(); row++) {
+        int enter_number = this.split.find(enter_x, enter_y);
+        int enter_row = enter_number / this.split.getCol();
+        int enter_col = enter_number % this.split.getCol();
+        for (int row = 0; row < this.split.getRow(); row++) {
             if (row < (enter_row - 1) || (enter_row + 1) < row) {
                 continue;
             }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
+            for (int col = 0; col < this.split.getCol(); col++) {
                 if (col < (enter_col - 1) || (enter_col + 1) < col) {
                     continue;
                 }
-                enter_state.set((row * this.map_split.getCol()) + col, 1);
+                enter_state.set((row * this.split.getCol()) + col, 1);
             }
         }
 
-        for (MapleCharacter player : this.characters) {
+        for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
-            if (this.map_split.getSplit() < player_number) {
+            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
+            if (this.split.getSplit() < player_number) {
                 continue;
             }
             int player_state = enter_state.get(player_number);
@@ -418,8 +408,8 @@ public class TacosMap extends TacosMapData {
         }
         // mob
         for (MapleMonster mob : this.monsters.values()) {
-            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(mob.getPosition().x, mob.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -436,8 +426,8 @@ public class TacosMap extends TacosMapData {
         }
         // npc
         for (MapleNPC npc : this.npcs.values()) {
-            int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(npc.getPosition().x, npc.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -448,8 +438,8 @@ public class TacosMap extends TacosMapData {
         }
         // hired merchant
         for (HiredMerchant employee : this.hiredMerchants.values()) {
-            int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(employee.getPosition().x, employee.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -466,8 +456,8 @@ public class TacosMap extends TacosMapData {
                     continue;
                 }
             }
-            int number = this.map_split.getSplitMap(drop.getPosition().x, drop.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(drop.getPosition().x, drop.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -477,8 +467,8 @@ public class TacosMap extends TacosMapData {
         }
         // mist
         for (MapleMist mist : this.mists.values()) {
-            int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(mist.getPosition().x, mist.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -488,8 +478,8 @@ public class TacosMap extends TacosMapData {
         }
         // mystic door
         for (MapleDoor door : this.doors.values()) {
-            int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(door.getPosition().x, door.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -500,8 +490,8 @@ public class TacosMap extends TacosMapData {
         // mechanic gate
         // pinkbean cake event portal
         for (MapleDynamicPortal instance_portal : this.dynamicPortals.values()) {
-            int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -511,8 +501,8 @@ public class TacosMap extends TacosMapData {
         }
         // reactor
         for (MapleReactor reactor : this.reactors.values()) {
-            int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(reactor.getPosition().x, reactor.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = enter_state.get(number);
@@ -523,34 +513,33 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userLeaveField(MapleCharacter chr) {
-        this.characters.remove(chr);
         removePlayer(chr.getObjectId());
 
         List<Integer> leave_state = getStateList();
         int leave_x = chr.getPosition().x;
         int leave_y = chr.getPosition().y;
-        int leave_number = this.map_split.getSplitMap(leave_x, leave_y);
-        int leave_row = leave_number / this.map_split.getCol();
-        int leave_col = leave_number % this.map_split.getCol();
-        for (int row = 0; row < this.map_split.getRow(); row++) {
+        int leave_number = this.split.find(leave_x, leave_y);
+        int leave_row = leave_number / this.split.getCol();
+        int leave_col = leave_number % this.split.getCol();
+        for (int row = 0; row < this.split.getRow(); row++) {
             if (row < (leave_row - 1) || (leave_row + 1) < row) {
                 continue;
             }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
+            for (int col = 0; col < this.split.getCol(); col++) {
                 if (col < (leave_col - 1) || (leave_col + 1) < col) {
                     continue;
                 }
-                leave_state.set((row * this.map_split.getCol()) + col, 4);
+                leave_state.set((row * this.split.getCol()) + col, 4);
             }
         }
 
-        for (MapleCharacter player : this.characters) {
+        for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
-            if (this.map_split.getSplit() < player_number) {
+            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
+            if (this.split.getSplit() < player_number) {
                 continue;
             }
             int player_state = leave_state.get(player_number);
@@ -560,8 +549,8 @@ public class TacosMap extends TacosMapData {
         }
         // mob
         for (MapleMonster mob : this.monsters.values()) {
-            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(mob.getPosition().x, mob.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = leave_state.get(number);
@@ -583,47 +572,47 @@ public class TacosMap extends TacosMapData {
         int next_x = move_path.getX();
         int next_y = move_path.getY();
 
-        int prev_number = this.map_split.getSplitMap(prev_x, prev_y);
-        int prev_row = prev_number / this.map_split.getCol();
-        int prev_col = prev_number % this.map_split.getCol();
+        int prev_number = this.split.find(prev_x, prev_y);
+        int prev_row = prev_number / this.split.getCol();
+        int prev_col = prev_number % this.split.getCol();
         // move & leave
-        for (int row = 0; row < this.map_split.getRow(); row++) {
+        for (int row = 0; row < this.split.getRow(); row++) {
             if (row < (prev_row - 1) || (prev_row + 1) < row) {
                 continue;
             }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
+            for (int col = 0; col < this.split.getCol(); col++) {
                 if (col < (prev_col - 1) || (prev_col + 1) < col) {
                     continue;
                 }
-                move_state.set((row * this.map_split.getCol()) + col, 2 | 4); // 2 = move, 4 = leave
+                move_state.set((row * this.split.getCol()) + col, 2 | 4); // 2 = move, 4 = leave
             }
         }
         // enter & move
-        int next_number = this.map_split.getSplitMap(next_x, next_y);
-        int next_row = next_number / this.map_split.getCol();
-        int next_col = next_number % this.map_split.getCol();
-        for (int row = 0; row < this.map_split.getRow(); row++) {
+        int next_number = this.split.find(next_x, next_y);
+        int next_row = next_number / this.split.getCol();
+        int next_col = next_number % this.split.getCol();
+        for (int row = 0; row < this.split.getRow(); row++) {
             if (row < (next_row - 1) || (next_row + 1) < row) {
                 continue;
             }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
+            for (int col = 0; col < this.split.getCol(); col++) {
                 if (col < (next_col - 1) || (next_col + 1) < col) {
                     continue;
                 }
-                if (move_state.get((row * this.map_split.getCol()) + col) != 0) {
-                    move_state.set((row * this.map_split.getCol()) + col, 2); // 2 = move
+                if (move_state.get((row * this.split.getCol()) + col) != 0) {
+                    move_state.set((row * this.split.getCol()) + col, 2); // 2 = move
                 } else {
-                    move_state.set((row * this.map_split.getCol()) + col, 1 | 2); // 1 = enter, 2 = move
+                    move_state.set((row * this.split.getCol()) + col, 1 | 2); // 1 = enter, 2 = move
                 }
             }
         }
-        for (MapleCharacter player : this.characters) {
+        for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
-            if (this.map_split.getSplit() < player_number) {
+            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
+            if (this.split.getSplit() < player_number) {
                 continue;
             }
             int player_state = move_state.get(player_number);
@@ -641,8 +630,8 @@ public class TacosMap extends TacosMapData {
         }
         // mob
         for (MapleMonster mob : this.monsters.values()) {
-            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(mob.getPosition().x, mob.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -663,8 +652,8 @@ public class TacosMap extends TacosMapData {
         }
         // npc
         for (MapleNPC npc : this.npcs.values()) {
-            int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(npc.getPosition().x, npc.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -678,8 +667,8 @@ public class TacosMap extends TacosMapData {
         }
         // hired merchant
         for (HiredMerchant employee : this.hiredMerchants.values()) {
-            int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(employee.getPosition().x, employee.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -699,8 +688,8 @@ public class TacosMap extends TacosMapData {
                     continue;
                 }
             }
-            int number = this.map_split.getSplitMap(drop.getPosition().x, drop.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(drop.getPosition().x, drop.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -713,8 +702,8 @@ public class TacosMap extends TacosMapData {
         }
         // mist
         for (MapleMist mist : this.mists.values()) {
-            int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(mist.getPosition().x, mist.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -727,8 +716,8 @@ public class TacosMap extends TacosMapData {
         }
         // mystic door
         for (MapleDoor door : this.doors.values()) {
-            int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(door.getPosition().x, door.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -742,8 +731,8 @@ public class TacosMap extends TacosMapData {
         // mechanic gate
         // pinkbean cake event portal
         for (MapleDynamicPortal instance_portal : this.dynamicPortals.values()) {
-            int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -755,8 +744,8 @@ public class TacosMap extends TacosMapData {
         }
         // reactor
         for (MapleReactor reactor : this.reactors.values()) {
-            int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = this.split.find(reactor.getPosition().x, reactor.getPosition().y);
+            if (this.split.getSplit() < number) {
                 continue;
             }
             int state = move_state.get(number);
@@ -922,7 +911,7 @@ public class TacosMap extends TacosMapData {
         int mincontrolled = -1;
         MapleCharacter newController = null;
 
-        Iterator<MapleCharacter> ltr = this.characters.iterator();
+        Iterator<MapleCharacter> ltr = this.players.values().iterator();
         MapleCharacter chr;
         while (ltr.hasNext()) {
             chr = ltr.next();
@@ -1502,7 +1491,7 @@ public class TacosMap extends TacosMapData {
     }
 
     private void broadcastMessageInternal(TacosCharacter source, ServerPacket packet, Point rangedFrom, boolean ignoreRange) {
-        Iterator<MapleCharacter> ltr = characters.iterator();
+        Iterator<MapleCharacter> ltr = this.players.values().iterator();
         TacosCharacter chr;
         while (ltr.hasNext()) {
             chr = ltr.next();

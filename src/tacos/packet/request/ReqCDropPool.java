@@ -104,7 +104,7 @@ public class ReqCDropPool {
             if (chr.getParty() != null && mapitem.getOwner() != chr.getId()) {
                 final List<MapleCharacter> toGive = new LinkedList<>();
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter player = chr.getMap().getCharacterById(z.getId());
+                    MapleCharacter player = chr.getMap().getPlayerById(z.getId());
                     if (player != null) {
                         toGive.add(player);
                     }
@@ -185,7 +185,7 @@ public class ReqCDropPool {
                 if (consumeval == 2) {
                     if (chr.getParty() != null) {
                         for (MaplePartyCharacter pc : chr.getParty().getMembers()) {
-                            MapleCharacter chr_to = chr.getMap().getCharacterById(pc.getId());
+                            MapleCharacter chr_to = chr.getMap().getPlayerById(pc.getId());
                             if (chr_to != null) {
                                 ii.getItemEffect(id).applyTo(chr_to);
                             }

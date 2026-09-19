@@ -82,7 +82,7 @@ public class ReqCField_MonsterCarnival {
             if (mons != null && chr.getMap().makeCarnivalSpawn(chr.getCarnivalParty().getTeam(), mons, num)) {
                 chr.getCarnivalParty().useCP(chr, mobs.get(num).getValue());
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : chr.getMap().getCharacters()) {
+                for (MapleCharacter player : chr.getMap().getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
@@ -109,7 +109,7 @@ public class ReqCField_MonsterCarnival {
             if (found) {
                 chr.getCarnivalParty().useCP(chr, skil.cpLoss);
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : chr.getMap().getCharacters()) {
+                for (MapleCharacter player : chr.getMap().getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                     //chr.dropMessage(5, "[" + (chr.getCarnivalParty().getTeam() == 0 ? "Red" : "Blue") + "] " + chr.getName() + " has used a skill. [" + dis.name() + "].");
                 }
@@ -129,7 +129,7 @@ public class ReqCField_MonsterCarnival {
             if (chr.getMap().makeCarnivalReactor(chr.getCarnivalParty().getTeam(), num)) {
                 chr.getCarnivalParty().useCP(chr, skil.cpLoss);
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : chr.getMap().getCharacters()) {
+                for (MapleCharacter player : chr.getMap().getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
                 chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));

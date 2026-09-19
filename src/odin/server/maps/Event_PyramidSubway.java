@@ -98,7 +98,7 @@ public class Event_PyramidSubway {
         final int time = (type == -1 ? 180 : (stage == 1 ? 240 : 300)) - 1;
         if (chr.getParty() != null && chr.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : chr.getParty().getMembers()) {
-                final MapleCharacter target = ourMap.getCharacterById(mpc.getId());
+                final MapleCharacter target = ourMap.getPlayerById(mpc.getId());
                 if (target != null) {
                     target.SendPacket(ResCField.Clock(time));
                     target.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/number/" + stage).build()));
@@ -349,7 +349,7 @@ public class Event_PyramidSubway {
         final MapleMap map = player.getMap();
         if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
-                final MapleCharacter chr = map.getCharacterById(mpc.getId());
+                final MapleCharacter chr = map.getPlayerById(mpc.getId());
                 if (chr != null) {
                     chr.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
                 }
@@ -487,7 +487,7 @@ public class Event_PyramidSubway {
         final MapleMap oldMap = player.getMap();
         if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
-                final MapleCharacter chr = oldMap.getCharacterById(mpc.getId());
+                final MapleCharacter chr = oldMap.getPlayerById(mpc.getId());
                 if (chr != null && chr.getId() != player.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
                     if (clear == 1) {
                         chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/clear").build()));

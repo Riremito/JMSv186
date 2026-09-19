@@ -61,7 +61,7 @@ public class TestCommand {
                 return true;
             }
             case "/split": {
-                map.getMapSplit().sendInfo(chr);
+                map.getSplit().sendInfo(chr);
                 return true;
             }
             case "/check": {

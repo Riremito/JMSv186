@@ -257,7 +257,7 @@ public class ReqCUser_Pet {
                 final List<MapleCharacter> toGive = new LinkedList<>();
                 final int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter player = chr.getMap().getCharacterById(z.getId());
+                    MapleCharacter player = chr.getMap().getPlayerById(z.getId());
                     if (player != null && player.getId() != chr.getId()) {
                         toGive.add(player);
                     }

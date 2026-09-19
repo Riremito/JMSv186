@@ -628,7 +628,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public int partyMembersInMap() {
         int inMap = 0;
-        for (MapleCharacter player : getPlayer().getMap().getCharacters()) {
+        for (MapleCharacter player : getPlayer().getMap().getAllPlayers()) {
             if (player.getParty() == getPlayer().getParty()) {
                 inMap++;
             }

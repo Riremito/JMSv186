@@ -128,7 +128,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 final int buff = miip.getStateChangeItem(cash_item_id);
                 if (buff != 0) {
-                    for (MapleCharacter mChar : map.getCharacters()) {
+                    for (MapleCharacter mChar : map.getAllPlayers()) {
                         miip.getItemEffect(buff).applyTo(mChar);
                     }
                 }

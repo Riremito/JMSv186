@@ -161,7 +161,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void warpMap(final int mapid, final int portal) {
         final MapleMap map = getMap(mapid);
-        for (MapleCharacter chr : client.getPlayer().getMap().getCharacters()) {
+        for (MapleCharacter chr : client.getPlayer().getMap().getAllPlayers()) {
             chr.changeMap(map, map.getPortal(portal));
         }
     }
@@ -533,7 +533,7 @@ public abstract class OdinAbstractPlayerInteraction {
             return false;
         }
         for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
-            final MapleCharacter chr = client.getPlayer().getMap().getCharacterById(mem.getId());
+            final MapleCharacter chr = client.getPlayer().getMap().getPlayerById(mem.getId());
             if (chr == null) {
                 return false;
             }
@@ -549,7 +549,7 @@ public abstract class OdinAbstractPlayerInteraction {
         final MapleMap target = getMap(mapId);
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getCharacterById(chr.getId());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.changeMap(target, target.getPortal(0));
             }
@@ -569,7 +569,7 @@ public abstract class OdinAbstractPlayerInteraction {
         final MapleMap target = getMap(mapId);
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getCharacterById(chr.getId());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 if (rand) {
                     try {
@@ -592,7 +592,7 @@ public abstract class OdinAbstractPlayerInteraction {
         final MapleMap target = getMap_Instanced(mapId);
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getCharacterById(chr.getId());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.changeMap(target, target.getPortal(0));
             }
@@ -638,7 +638,7 @@ public abstract class OdinAbstractPlayerInteraction {
         }
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getCharacterById(chr.getId());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 gainItem(id, (short) (removeAll ? -player.itemQuantity(id) : quantity), false, 0, 0, "", player.getClient());
             }
@@ -657,7 +657,7 @@ public abstract class OdinAbstractPlayerInteraction {
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getCharacterById(chr.getId());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.gainExp(amount * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
             }
@@ -676,7 +676,7 @@ public abstract class OdinAbstractPlayerInteraction {
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getCharacterById(chr.getId());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.modifyCSPoints(1, amount, true);
             }
@@ -695,7 +695,7 @@ public abstract class OdinAbstractPlayerInteraction {
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getCharacterById(chr.getId());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.endPartyQuest(amount);
             }

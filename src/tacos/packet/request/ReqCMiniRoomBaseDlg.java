@@ -161,7 +161,7 @@ public class ReqCMiniRoomBaseDlg {
             }
             case MRP_Invite: {
                 int character_id = cp.Decode4();
-                MapleTrade.inviteTrade(chr, chr.getMap().getCharacterById(character_id));
+                MapleTrade.inviteTrade(chr, chr.getMap().getPlayerById(character_id));
                 return true;
             }
             case MRP_InviteResult: {

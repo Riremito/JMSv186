@@ -474,7 +474,7 @@ public class MapleStatEffect {
         } else if (cp != 0 && applyto.getCarnivalParty() != null) {
             applyto.getCarnivalParty().addCP(applyto, cp);
             applyto.CPUpdate(false, applyto.getAvailableCP(), applyto.getTotalCP(), 0);
-            for (MapleCharacter chr : applyto.getMap().getCharacters()) {
+            for (MapleCharacter chr : applyto.getMap().getAllPlayers()) {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
             }
         }
@@ -558,14 +558,14 @@ public class MapleStatEffect {
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
-                for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
+                for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
                     if (chr.getParty() != null && chr.getParty().equals(applyfrom.getParty()) && chr.isAlive()) {
                         membrs++;
                     }
                 }
                 List<MapleCharacter> awarded = new ArrayList<>();
                 while (awarded.size() < Math.min(membrs, y)) {
-                    for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
+                    for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {
                             awarded.add(chr);
                         }

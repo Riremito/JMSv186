@@ -28,37 +28,55 @@ import tacos.client.TacosCharacter;
  */
 public class TacosMapSplit {
 
-    private static int SPLIT_WIDTH = 600; // 600 default.
-    private static int SPLIT_HEIGHT = 450; // 450 default.
-    private int wall_left = 0;
-    private int wall_top = 0;
-    private int wall_right = 0;
-    private int wall_bottom = 0;
-    private int map_width = 0;
-    private int map_height = 0;
-    private int split_col = 0;
-    private int split_row = 0;
-    private int split = 0;
+    // default is for 800x600.
+    private static final int SPLIT_WIDTH = 600;
+    private static final int SPLIT_HEIGHT = 450;
 
-    public TacosMapSplit() {
+    private class MapWall {
 
+        private int left = 0;
+        private int top = 0;
+        private int right = 0;
+        private int bottom = 0;
+    }
+
+    private class MapScreen {
+
+        private int width = 0;
+        private int height = 0;
+    }
+
+    private class MapSplit {
+
+        private int col = 0;
+        private int row = 0;
+        private int total = 0;
+    }
+
+    private final MapWall wall = new MapWall();
+    private final MapScreen screen = new MapScreen();
+    private final MapSplit split = new MapSplit();
+
+    public int find(int x, int y) {
+        int col = (x - this.wall.left) / SPLIT_WIDTH;
+        int row = (y - this.wall.top) / SPLIT_HEIGHT;
+        return (row * this.split.col) + col;
     }
 
     public int setSplit(List<MapleFoothold> footholds) {
         if (!setWall(footholds)) {
             return 0;
         }
-        // set width and height.
-        this.map_width = this.wall_right - this.wall_left;
-        this.map_height = this.wall_bottom - this.wall_top;
-        // set split col and row.
-        this.split_col = (this.map_width + SPLIT_WIDTH - 1) / SPLIT_WIDTH;
-        this.split_row = (this.map_height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT;
-        this.split = this.split_col * this.split_row;
-        return this.split;
+
+        this.screen.width = this.wall.right - this.wall.left;
+        this.screen.height = this.wall.bottom - this.wall.top;
+        this.split.col = (this.screen.width + SPLIT_WIDTH - 1) / SPLIT_WIDTH;
+        this.split.row = (this.screen.height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT;
+        this.split.total = this.split.col * this.split.row;
+        return this.split.total;
     }
 
-    public boolean setWall(List<MapleFoothold> footholds) {
+    private boolean setWall(List<MapleFoothold> footholds) {
         for (MapleFoothold foothold : footholds) {
             int fh_left = Math.min(foothold.getX1(), foothold.getX2());
             int fh_top = Math.min(foothold.getY1(), foothold.getY2());
@@ -66,54 +84,48 @@ public class TacosMapSplit {
             int fh_bottom = Math.max(foothold.getY1(), foothold.getY2()) + 10;
             int fh_width = fh_right - fh_left;
 
-            if (fh_left < (this.wall_left + 30)) {
-                this.wall_left = fh_left + 30;
+            if (fh_left < (this.wall.left + 30)) {
+                this.wall.left = fh_left + 30;
             }
-            if (fh_top < (this.wall_top - 300)) {
-                this.wall_top = fh_top - 300;
+            if (fh_top < (this.wall.top - 300)) {
+                this.wall.top = fh_top - 300;
             }
-            if ((this.wall_right - 30) < fh_right) {
-                this.wall_right = fh_right - 30;
+            if ((this.wall.right - 30) < fh_right) {
+                this.wall.right = fh_right - 30;
             }
             if (fh_width != 0) {
-                if (this.wall_bottom < fh_bottom) {
-                    this.wall_bottom = fh_bottom;
+                if (this.wall.bottom < fh_bottom) {
+                    this.wall.bottom = fh_bottom;
                 }
             }
         }
         return true;
     }
 
-    public int getSplitMap(int x, int y) {
-        int col = (x - this.wall_left) / SPLIT_WIDTH;
-        int row = (y - this.wall_top) / SPLIT_HEIGHT;
-        return (row * this.split_col) + col;
-    }
-
     public int getSplit() {
-        return this.split;
+        return this.split.total;
     }
 
     public int getCol() {
-        return this.split_col;
+        return this.split.col;
     }
 
     public int getRow() {
-        return this.split_row;
+        return this.split.row;
     }
 
     public void sendInfo(TacosCharacter chr) {
-        chr.DebugMsg("wall=" + this.wall_left + "," + this.wall_top + "," + this.wall_right + "," + this.wall_bottom);
-        chr.DebugMsg("size=" + this.map_width + "x" + this.map_height);
-        chr.DebugMsg("split=" + this.split_col + "x" + this.split_row);
+        chr.DebugMsg("wall=" + this.wall.left + "," + this.wall.top + "," + this.wall.right + "," + this.wall.bottom);
+        chr.DebugMsg("size=" + this.screen.width + "x" + this.screen.height);
+        chr.DebugMsg("split=" + this.split.col + "x" + this.split.row);
 
-        for (int i = 0; i < this.split_row; i++) {
+        for (int i = 0; i < this.split.row; i++) {
             String array_num = "";
-            for (int j = 0; j < this.split_col; j++) {
-                array_num += ((i * this.split_col) + j) + "|";
+            for (int j = 0; j < this.split.col; j++) {
+                array_num += ((i * this.split.col) + j) + "|";
             }
             chr.DebugMsg("index=" + array_num);
         }
-        chr.DebugMsg("current=" + getSplitMap(chr.getPosition().x, chr.getPosition().y));
+        chr.DebugMsg("current=" + find(chr.getPosition().x, chr.getPosition().y));
     }
 }

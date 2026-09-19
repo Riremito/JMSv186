@@ -112,10 +112,10 @@ public final class MapleMap extends TacosMap {
         broadcastMessage(ResCMobPool.MobLeaveField(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
-            final int buffid = monster.getBuffToGive();
-            final MapleStatEffect buff = MapleItemInformationProvider.getInstance().getItemEffect(buffid);
+            int buffid = monster.getBuffToGive();
+            MapleStatEffect buff = MapleItemInformationProvider.getInstance().getItemEffect(buffid);
 
-            for (final MapleCharacter mc : characters) {
+            for (MapleCharacter mc : getAllPlayers()) {
                 if (mc.isAlive()) {
                     buff.applyTo(mc);
 
@@ -202,7 +202,7 @@ public final class MapleMap extends TacosMap {
         if (!withDrops) {
             return;
         }
-        MapleCharacter killer = getCharacterById(dropOwner); // highest damage player
+        MapleCharacter killer = getPlayerById(dropOwner); // highest damage player
         if (killer == null) {
             killer = chr;
         }
@@ -355,7 +355,7 @@ public final class MapleMap extends TacosMap {
 
     public String getSnowballPortal() {
         int[] teamss = new int[2];
-        for (MapleCharacter chr : getCharacters()) {
+        for (MapleCharacter chr : getAllPlayers()) {
             if (chr.getPosition().y > -80) {
                 teamss[0]++;
             } else {
