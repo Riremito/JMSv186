@@ -18,6 +18,8 @@
  */
 package tacos.server.map;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import odin.server.maps.MapleFoothold;
 import tacos.client.TacosCharacter;
@@ -127,5 +129,46 @@ public class TacosMapSplit {
             chr.DebugMsg("index=" + array_num);
         }
         chr.DebugMsg("current=" + find(chr.getPosition().x, chr.getPosition().y));
+    }
+
+    public ArrayList<TacosMapSplitState> getArea(int x, int y, TacosMapSplitState state) {
+        ArrayList<TacosMapSplitState> area_states = new ArrayList<>(Collections.nCopies(this.split.total, TacosMapSplitState.UNKNOWN));
+
+        int area_number = find(x, y);
+        int area_row = area_number / this.split.col;
+        int area_col = area_number % this.split.col;
+
+        for (int row = 0; row < this.split.row; row++) {
+            if (row < (area_row - 1) || (area_row + 1) < row) {
+                continue;
+            }
+            for (int col = 0; col < this.split.col; col++) {
+                if (col < (area_col - 1) || (area_col + 1) < col) {
+                    continue;
+                }
+                area_states.set((row * this.split.col) + col, state);
+            }
+        }
+
+        return area_states;
+    }
+
+    public ArrayList<TacosMapSplitState> getMoveArea(int prev_x, int prev_y, int next_x, int next_y) {
+        ArrayList<TacosMapSplitState> area_states = getArea(prev_x, prev_y, TacosMapSplitState.MOVE_LEAVE);
+        ArrayList<TacosMapSplitState> area_enter_move = getArea(next_x, next_y, TacosMapSplitState.ENTER_MOVE);
+
+        for (int i = 0; i < area_states.size(); i++) {
+            // move only.
+            if (area_states.get(i) == TacosMapSplitState.MOVE_LEAVE) {
+                if (area_enter_move.get(i) == TacosMapSplitState.ENTER_MOVE) {
+                    area_states.set(i, TacosMapSplitState.MOVE);
+                }
+                continue;
+            }
+            // move & leave, move, enter & move
+            area_states.set(i, area_enter_move.get(i));
+        }
+
+        return area_states;
     }
 }

@@ -93,6 +93,7 @@ import tacos.server.TacosWorld;
 public class TacosMap extends TacosMapData {
 
     protected int channel;
+
     protected int runningOid = 100000;
     protected Map<String, Integer> environment = new LinkedHashMap<>();
     protected boolean squadTimer = false;
@@ -227,14 +228,6 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public List<Integer> getStateList() {
-        List<Integer> state = new ArrayList<>();
-        for (int i = 0; i < this.split.getSplit(); i++) {
-            state.add(0);
-        }
-        return state;
-    }
-
     public boolean sendInitialization(MapleCharacter chr) {
         // user enter script.
         if (!getFirstUserEnter().equals("")) {
@@ -350,7 +343,13 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
+    private ArrayList<Integer> getStateList() {
+        return new ArrayList<>(this.split.getSplit());
+    }
+
     public void userEnterField(MapleCharacter chr) {
+        ArrayList<TacosMapSplitState> area_states = getSplit().getArea(chr.getPosition().x, chr.getPosition().y, TacosMapSplitState.ACTIVE);
+
         addPlayer(chr); // object id.
 
         // no split.
@@ -372,25 +371,6 @@ public class TacosMap extends TacosMapData {
         }
         sendExpedition(chr, null);
 
-        // split.
-        List<Integer> enter_state = getStateList();
-        int enter_x = chr.getPosition().x;
-        int enter_y = chr.getPosition().y;
-        int enter_number = this.split.find(enter_x, enter_y);
-        int enter_row = enter_number / this.split.getCol();
-        int enter_col = enter_number % this.split.getCol();
-        for (int row = 0; row < this.split.getRow(); row++) {
-            if (row < (enter_row - 1) || (enter_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.split.getCol(); col++) {
-                if (col < (enter_col - 1) || (enter_col + 1) < col) {
-                    continue;
-                }
-                enter_state.set((row * this.split.getCol()) + col, 1);
-            }
-        }
-
         for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
@@ -400,8 +380,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < player_number) {
                 continue;
             }
-            int player_state = enter_state.get(player_number);
-            if ((player_state & 1) != 0) {
+            if (area_states.get(player_number) == TacosMapSplitState.ACTIVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
             }
@@ -412,8 +391,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(ResCMobPool.MobEnterField(mob));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
@@ -430,8 +408,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
             }
@@ -442,8 +419,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
             }
         }
@@ -460,8 +436,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
             }
         }
@@ -471,8 +446,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
             }
         }
@@ -482,8 +456,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
             }
         }
@@ -494,8 +467,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
             }
         }
@@ -505,33 +477,16 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
             }
         }
     }
 
     public void userLeaveField(MapleCharacter chr) {
-        removePlayer(chr.getObjectId());
+        ArrayList<TacosMapSplitState> area_states = getSplit().getArea(chr.getPosition().x, chr.getPosition().y, TacosMapSplitState.ACTIVE);
 
-        List<Integer> leave_state = getStateList();
-        int leave_x = chr.getPosition().x;
-        int leave_y = chr.getPosition().y;
-        int leave_number = this.split.find(leave_x, leave_y);
-        int leave_row = leave_number / this.split.getCol();
-        int leave_col = leave_number % this.split.getCol();
-        for (int row = 0; row < this.split.getRow(); row++) {
-            if (row < (leave_row - 1) || (leave_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.split.getCol(); col++) {
-                if (col < (leave_col - 1) || (leave_col + 1) < col) {
-                    continue;
-                }
-                leave_state.set((row * this.split.getCol()) + col, 4);
-            }
-        }
+        removePlayer(chr.getObjectId());
 
         for (MapleCharacter player : this.players.values()) {
             // self
@@ -542,8 +497,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < player_number) {
                 continue;
             }
-            int player_state = leave_state.get(player_number);
-            if ((player_state & 4) != 0) {
+            if (area_states.get(player_number) == TacosMapSplitState.ACTIVE) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr));
             }
         }
@@ -553,8 +507,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = leave_state.get(number);
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
                 if (mob.getController() == chr) {
                     mob.setController(null);
                     mob.setControllerHasAggro(false);
@@ -566,46 +519,8 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userMove(MapleCharacter chr, ParseCMovePath move_path) {
-        List<Integer> move_state = getStateList();
-        int prev_x = chr.getPosition().x;
-        int prev_y = chr.getPosition().y;
-        int next_x = move_path.getX();
-        int next_y = move_path.getY();
+        ArrayList<TacosMapSplitState> area_states = getSplit().getMoveArea(chr.getPosition().x, chr.getPosition().y, move_path.getX(), move_path.getY());
 
-        int prev_number = this.split.find(prev_x, prev_y);
-        int prev_row = prev_number / this.split.getCol();
-        int prev_col = prev_number % this.split.getCol();
-        // move & leave
-        for (int row = 0; row < this.split.getRow(); row++) {
-            if (row < (prev_row - 1) || (prev_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.split.getCol(); col++) {
-                if (col < (prev_col - 1) || (prev_col + 1) < col) {
-                    continue;
-                }
-                move_state.set((row * this.split.getCol()) + col, 2 | 4); // 2 = move, 4 = leave
-            }
-        }
-        // enter & move
-        int next_number = this.split.find(next_x, next_y);
-        int next_row = next_number / this.split.getCol();
-        int next_col = next_number % this.split.getCol();
-        for (int row = 0; row < this.split.getRow(); row++) {
-            if (row < (next_row - 1) || (next_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.split.getCol(); col++) {
-                if (col < (next_col - 1) || (next_col + 1) < col) {
-                    continue;
-                }
-                if (move_state.get((row * this.split.getCol()) + col) != 0) {
-                    move_state.set((row * this.split.getCol()) + col, 2); // 2 = move
-                } else {
-                    move_state.set((row * this.split.getCol()) + col, 1 | 2); // 1 = enter, 2 = move
-                }
-            }
-        }
         for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
@@ -615,15 +530,14 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < player_number) {
                 continue;
             }
-            int player_state = move_state.get(player_number);
-            if ((player_state & 1) != 0) {
+            if (area_states.get(player_number) == TacosMapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
             }
-            if ((player_state & 2) != 0) {
+            if (area_states.get(player_number) == TacosMapSplitState.MOVE) {
                 player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
             }
-            if ((player_state & 4) != 0) {
+            if (area_states.get(player_number) == TacosMapSplitState.MOVE_LEAVE) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr));
                 chr.SendPacket(ResCUserPool.UserLeaveField(player));
             }
@@ -634,9 +548,7 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCMobPool.MobEnterField(mob));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
@@ -646,7 +558,7 @@ public class TacosMap extends TacosMapData {
                     mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
                 }
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
             }
         }
@@ -656,12 +568,11 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
             }
         }
@@ -671,11 +582,10 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(employee));
             }
         }
@@ -692,11 +602,10 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCDropPool.DropLeaveField(drop, ResCDropPool.DropLeaveType.REMOVE));
             }
         }
@@ -706,11 +615,10 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
             }
         }
@@ -720,11 +628,10 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCTownPortalPool.TownPortalRemoved(door));
             }
         }
@@ -735,11 +642,10 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
             }
         }
         // reactor
@@ -748,11 +654,10 @@ public class TacosMap extends TacosMapData {
             if (this.split.getSplit() < number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCReactorPool.ReactorLeaveField(reactor));
             }
         }
