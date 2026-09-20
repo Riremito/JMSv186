@@ -60,10 +60,6 @@ public class TestCommand {
                 chr.SendPacket(ResCWvsContext.KOC_UI_Open());
                 return true;
             }
-            case "/split": {
-                map.getSplit().sendInfo(chr);
-                return true;
-            }
             case "/check": {
                 chr.DebugMsg("X  : " + chr.getPosition().x);
                 chr.DebugMsg("Y  : " + chr.getPosition().y);

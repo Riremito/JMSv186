@@ -211,23 +211,6 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public void SplitSendPacket(int x, int y) {
-        int number = this.split.find(x, y);
-        int row = number / this.split.getCol();
-        int col = number % this.split.getCol();
-
-        for (int i = 0; i < this.split.getRow(); i++) {
-            if (i < (row - 1) || (row + 1) < i) {
-                continue;
-            }
-            for (int j = 0; j < this.split.getCol(); j++) {
-                if (j < (col - 1) || (col + 1) < j) {
-                    continue;
-                }
-            }
-        }
-    }
-
     public boolean sendInitialization(MapleCharacter chr) {
         // user enter script.
         if (!getFirstUserEnter().equals("")) {
@@ -344,7 +327,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userEnterField(MapleCharacter chr) {
-        ArrayList<TacosMapSplitState> area_states = getSplit().getArea(chr.getPosition().x, chr.getPosition().y, TacosMapSplitState.ACTIVE);
+        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition().x, chr.getPosition().y, MapSplitState.ACTIVE);
 
         addPlayer(chr); // object id.
 
@@ -372,22 +355,22 @@ public class TacosMap extends TacosMapData {
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
-            if (this.split.getSplit() < player_number) {
+            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            if (split.getTotal() < player_number) {
                 continue;
             }
-            if (area_states.get(player_number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(player_number) == MapSplitState.ACTIVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
             }
         }
         // mob
         for (MapleMonster mob : this.monsters.values()) {
-            int number = this.split.find(mob.getPosition().x, mob.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(mob.getPosition().x, mob.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCMobPool.MobEnterField(mob));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
@@ -400,22 +383,22 @@ public class TacosMap extends TacosMapData {
         }
         // npc
         for (MapleNPC npc : this.npcs.values()) {
-            int number = this.split.find(npc.getPosition().x, npc.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(npc.getPosition().x, npc.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
             }
         }
         // hired merchant
         for (HiredMerchant employee : this.hiredMerchants.values()) {
-            int number = this.split.find(employee.getPosition().x, employee.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(employee.getPosition().x, employee.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
             }
         }
@@ -428,59 +411,59 @@ public class TacosMap extends TacosMapData {
                     continue;
                 }
             }
-            int number = this.split.find(drop.getPosition().x, drop.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(drop.getPosition().x, drop.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
             }
         }
         // mist
         for (MapleMist mist : this.mists.values()) {
-            int number = this.split.find(mist.getPosition().x, mist.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(mist.getPosition().x, mist.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
             }
         }
         // mystic door
         for (MapleDoor door : this.doors.values()) {
-            int number = this.split.find(door.getPosition().x, door.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(door.getPosition().x, door.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
             }
         }
         // mechanic gate
         // pinkbean cake event portal
         for (MapleDynamicPortal instance_portal : this.dynamicPortals.values()) {
-            int number = this.split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
             }
         }
         // reactor
         for (MapleReactor reactor : this.reactors.values()) {
-            int number = this.split.find(reactor.getPosition().x, reactor.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(reactor.getPosition().x, reactor.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
             }
         }
     }
 
     public void userLeaveField(MapleCharacter chr) {
-        ArrayList<TacosMapSplitState> area_states = getSplit().getArea(chr.getPosition().x, chr.getPosition().y, TacosMapSplitState.ACTIVE);
+        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition().x, chr.getPosition().y, MapSplitState.ACTIVE);
 
         removePlayer(chr.getObjectId());
 
@@ -489,21 +472,21 @@ public class TacosMap extends TacosMapData {
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
-            if (this.split.getSplit() < player_number) {
+            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            if (split.getTotal() < player_number) {
                 continue;
             }
-            if (area_states.get(player_number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(player_number) == MapSplitState.ACTIVE) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr));
             }
         }
         // mob
         for (MapleMonster mob : this.monsters.values()) {
-            int number = this.split.find(mob.getPosition().x, mob.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(mob.getPosition().x, mob.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 if (mob.getController() == chr) {
                     mob.setController(null);
                     mob.setControllerHasAggro(false);
@@ -515,36 +498,36 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userMove(MapleCharacter chr, ParseCMovePath move_path) {
-        ArrayList<TacosMapSplitState> area_states = getSplit().getMoveArea(chr.getPosition().x, chr.getPosition().y, move_path.getX(), move_path.getY());
+        ArrayList<MapSplitState> area_states = split.getMoveArea(chr.getPosition().x, chr.getPosition().y, move_path.getX(), move_path.getY());
 
         for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
-            if (this.split.getSplit() < player_number) {
+            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            if (split.getTotal() < player_number) {
                 continue;
             }
-            if (area_states.get(player_number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(player_number) == MapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
             }
-            if (area_states.get(player_number) == TacosMapSplitState.MOVE) {
+            if (area_states.get(player_number) == MapSplitState.MOVE) {
                 player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
             }
-            if (area_states.get(player_number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(player_number) == MapSplitState.MOVE_LEAVE) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr));
                 chr.SendPacket(ResCUserPool.UserLeaveField(player));
             }
         }
         // mob
         for (MapleMonster mob : this.monsters.values()) {
-            int number = this.split.find(mob.getPosition().x, mob.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(mob.getPosition().x, mob.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCMobPool.MobEnterField(mob));
                 if (mob.getController() == null || mob.getController() == chr) {
                     mob.setController(chr);
@@ -554,34 +537,34 @@ public class TacosMap extends TacosMapData {
                     mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
                 }
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
             }
         }
         // npc
         for (MapleNPC npc : this.npcs.values()) {
-            int number = this.split.find(npc.getPosition().x, npc.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(npc.getPosition().x, npc.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
             }
         }
         // hired merchant
         for (HiredMerchant employee : this.hiredMerchants.values()) {
-            int number = this.split.find(employee.getPosition().x, employee.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(employee.getPosition().x, employee.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(employee));
             }
         }
@@ -594,66 +577,66 @@ public class TacosMap extends TacosMapData {
                     continue;
                 }
             }
-            int number = this.split.find(drop.getPosition().x, drop.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(drop.getPosition().x, drop.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCDropPool.DropLeaveField(drop, ResCDropPool.DropLeaveType.REMOVE));
             }
         }
         // mist
         for (MapleMist mist : this.mists.values()) {
-            int number = this.split.find(mist.getPosition().x, mist.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(mist.getPosition().x, mist.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
             }
         }
         // mystic door
         for (MapleDoor door : this.doors.values()) {
-            int number = this.split.find(door.getPosition().x, door.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(door.getPosition().x, door.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCTownPortalPool.TownPortalRemoved(door));
             }
         }
         // mechanic gate
         // pinkbean cake event portal
         for (MapleDynamicPortal instance_portal : this.dynamicPortals.values()) {
-            int number = this.split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
             }
         }
         // reactor
         for (MapleReactor reactor : this.reactors.values()) {
-            int number = this.split.find(reactor.getPosition().x, reactor.getPosition().y);
-            if (this.split.getSplit() < number) {
+            int number = split.find(reactor.getPosition().x, reactor.getPosition().y);
+            if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == TacosMapSplitState.ENTER_MOVE) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
             }
-            if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCReactorPool.ReactorLeaveField(reactor));
             }
         }
@@ -664,18 +647,18 @@ public class TacosMap extends TacosMapData {
     }
 
     public void splitSendPacket(TacosMapObject object, ServerPacket packet, int sender_id) {
-        ArrayList<TacosMapSplitState> area_states = getSplit().getArea(object.getPosition().x, object.getPosition().y, TacosMapSplitState.ACTIVE);
+        ArrayList<MapSplitState> area_states = split.getArea(object.getPosition().x, object.getPosition().y, MapSplitState.ACTIVE);
 
         for (MapleCharacter player : this.players.values()) {
-            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
-            if (this.split.getSplit() < player_number) {
+            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            if (split.getTotal() < player_number) {
                 continue;
             }
             // ignore self
             if (player.getId() == sender_id) {
                 continue;
             }
-            if (area_states.get(player_number) == TacosMapSplitState.ACTIVE) {
+            if (area_states.get(player_number) == MapSplitState.ACTIVE) {
                 player.SendPacket(packet);
             }
         }

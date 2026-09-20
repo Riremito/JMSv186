@@ -45,9 +45,150 @@ import tacos.wz.WzXML;
  */
 public class TacosMapData {
 
+    // default is for 800x600.
+    private static final int SPLIT_WIDTH = 600;
+    private static final int SPLIT_HEIGHT = 450;
+
+    protected enum MapSplitState {
+        ACTIVE,
+        MOVE,
+        MOVE_LEAVE,
+        ENTER_MOVE,
+        UNKNOWN;
+    }
+
+    protected class MapWall {
+
+        private int left;
+        private int top;
+        private int right;
+        private int bottom;
+    }
+
+    protected class MapScreen {
+
+        private int width;
+        private int height;
+
+        protected int getWidth() {
+            return this.width;
+        }
+
+        protected int getHeight() {
+            return this.height;
+        }
+    }
+
+    protected class MapSplit {
+
+        private int col;
+        private int row;
+        private int total;
+
+        protected int getTotal() {
+            return this.total;
+        }
+
+        protected int find(int x, int y) {
+            int area_col = (x - wall.left) / SPLIT_WIDTH;
+            int area_row = (y - wall.top) / SPLIT_HEIGHT;
+            return (area_row * this.col) + area_col;
+        }
+
+        protected ArrayList<MapSplitState> getArea(int x, int y, MapSplitState state) {
+            ArrayList<MapSplitState> area_states = new ArrayList<>(Collections.nCopies(this.total, MapSplitState.UNKNOWN));
+
+            int area_number = find(x, y);
+            int area_row = area_number / this.col;
+            int area_col = area_number % this.col;
+
+            for (int row_index = 0; row_index < this.row; row_index++) {
+                if (row_index < (area_row - 1) || (area_row + 1) < row_index) {
+                    continue;
+                }
+                for (int col_index = 0; col_index < this.col; col_index++) {
+                    if (col_index < (area_col - 1) || (area_col + 1) < col_index) {
+                        continue;
+                    }
+                    area_states.set((row_index * this.col) + col_index, state);
+                }
+            }
+
+            return area_states;
+        }
+
+        protected ArrayList<MapSplitState> getMoveArea(int prev_x, int prev_y, int next_x, int next_y) {
+            ArrayList<MapSplitState> area_states = getArea(prev_x, prev_y, MapSplitState.MOVE_LEAVE);
+            ArrayList<MapSplitState> area_enter_move = getArea(next_x, next_y, MapSplitState.ENTER_MOVE);
+
+            for (int index = 0; index < area_states.size(); index++) {
+                // move only.
+                if (area_states.get(index) == MapSplitState.MOVE_LEAVE) {
+                    if (area_enter_move.get(index) == MapSplitState.ENTER_MOVE) {
+                        area_states.set(index, MapSplitState.MOVE);
+                    }
+                    continue;
+                }
+                // move & leave, move, enter & move
+                area_states.set(index, area_enter_move.get(index));
+            }
+
+            return area_states;
+        }
+    }
+
+    protected final MapWall wall = new MapWall();
+    protected final MapScreen screen = new MapScreen();
+    protected final MapSplit split = new MapSplit();
+
+    private boolean setSplitData() {
+        this.wall.left = 0;
+        this.wall.top = 0;
+        this.wall.right = 0;
+        this.wall.bottom = 0;
+        this.screen.width = 0;
+        this.screen.height = 0;
+        this.split.col = 0;
+        this.split.row = 0;
+        this.split.total = 0;
+
+        // calculate wall coordinates.
+        for (MapleFoothold foothold : this.footholds.getAll()) {
+            int fh_left = Math.min(foothold.getX1(), foothold.getX2());
+            int fh_top = Math.min(foothold.getY1(), foothold.getY2());
+            int fh_right = Math.max(foothold.getX1(), foothold.getX2());
+            int fh_bottom = Math.max(foothold.getY1(), foothold.getY2()) + 10;
+            int fh_width = fh_right - fh_left;
+
+            if (fh_left < (this.wall.left + 30)) {
+                this.wall.left = fh_left + 30;
+            }
+            if (fh_top < (this.wall.top - 300)) {
+                this.wall.top = fh_top - 300;
+            }
+            if ((this.wall.right - 30) < fh_right) {
+                this.wall.right = fh_right - 30;
+            }
+            if (fh_width != 0) {
+                if (this.wall.bottom < fh_bottom) {
+                    this.wall.bottom = fh_bottom;
+                }
+            }
+        }
+
+        // calculate screen width and height.
+        this.screen.width = this.wall.right - this.wall.left;
+        this.screen.height = this.wall.bottom - this.wall.top;
+
+        // split.
+        this.split.col = (this.screen.width + SPLIT_WIDTH - 1) / SPLIT_WIDTH;
+        this.split.row = (this.screen.height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT;
+        this.split.total = this.split.col * this.split.row;
+        return true;
+    }
+
     protected int map_id;
     private MapleFootholdTree footholds;
-    protected TacosMapSplit split = new TacosMapSplit();
     private Map<Integer, TacosPortal> portals = new HashMap<>();
     private ArrayList<TacosSpawnPoint> monster_spawn_point = new ArrayList<>();
     private ArrayList<TacosNPCSpawnPoint> npc_spawn_point = new ArrayList<>();
@@ -62,10 +203,6 @@ public class TacosMapData {
 
     public MapleFootholdTree getFootholds() {
         return this.footholds;
-    }
-
-    public TacosMapSplit getSplit() {
-        return this.split;
     }
 
     public ArrayList<TacosSpawnPoint> getMonsterSpawnPoint() {
@@ -107,6 +244,7 @@ public class TacosMapData {
         loadInfo(mapData);
         // load fh.
         loadFootHolds(mapData);
+        setSplitData();
         // load portal.
         loadPortals(mapData);
         // load life.
@@ -155,7 +293,6 @@ public class TacosMapData {
         }
 
         this.footholds = fTree;
-        this.split.setSplit(this.footholds.getAll());
         return true;
     }
 
