@@ -60,12 +60,14 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.server.map.TacosMapObject;
 
-public class MapleMonster {
+public class MapleMonster implements TacosMapObject {
 
     private Point position = new Point();
     private int objectId = 0;
 
+    @Override
     public Point getPosition() {
         return new Point(position);
     }

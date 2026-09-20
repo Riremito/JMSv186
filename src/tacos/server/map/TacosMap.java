@@ -343,10 +343,6 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    private ArrayList<Integer> getStateList() {
-        return new ArrayList<>(this.split.getSplit());
-    }
-
     public void userEnterField(MapleCharacter chr) {
         ArrayList<TacosMapSplitState> area_states = getSplit().getArea(chr.getPosition().x, chr.getPosition().y, TacosMapSplitState.ACTIVE);
 
@@ -659,6 +655,28 @@ public class TacosMap extends TacosMapData {
             }
             if (area_states.get(number) == TacosMapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCReactorPool.ReactorLeaveField(reactor));
+            }
+        }
+    }
+
+    public void splitSendPacket(TacosMapObject object, ServerPacket packet) {
+        splitSendPacket(object, packet, 0);
+    }
+
+    public void splitSendPacket(TacosMapObject object, ServerPacket packet, int sender_id) {
+        ArrayList<TacosMapSplitState> area_states = getSplit().getArea(object.getPosition().x, object.getPosition().y, TacosMapSplitState.ACTIVE);
+
+        for (MapleCharacter player : this.players.values()) {
+            int player_number = this.split.find(player.getPosition().x, player.getPosition().y);
+            if (this.split.getSplit() < player_number) {
+                continue;
+            }
+            // ignore self
+            if (player.getId() == sender_id) {
+                continue;
+            }
+            if (area_states.get(player_number) == TacosMapSplitState.ACTIVE) {
+                player.SendPacket(packet);
             }
         }
     }

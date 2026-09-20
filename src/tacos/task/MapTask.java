@@ -54,7 +54,7 @@ public class MapTask {
                 MapleMonster monster = sp.regen(map);
                 if (monster != null) {
                     map.addMonster(monster);
-                    map.broadcastMessage(ResCMobPool.MobEnterField(monster));
+                    map.splitSendPacket(monster, ResCMobPool.MobEnterField(monster));
                     chr.SendPacket(ResCMobPool.MobChangeController(monster, false));
                     monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                     monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
@@ -72,7 +72,7 @@ public class MapTask {
                             int damage = max_hp / (70 - mist.getSkillLevel());
                             //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, mist.getDuration(), false);
                             monster.setHp(Math.max(1, monster.getHp() - damage));
-                            map.broadcastMessage(ResCMobPool.MobDamaged(monster, damage, 0));
+                            map.splitSendPacket(monster, ResCMobPool.MobDamaged(monster, damage, 0));
                             /*
                             if (mist.getOwnerId() == chr.getId()) {
                                 chr.SendPacket(ResCMobPool.MobHPIndicator(monster, (int) Math.ceil(monster.getHp() * 100.0 / max_hp)));
@@ -98,7 +98,7 @@ public class MapTask {
             // mist removal.
             if (mist.getTimeRemoval() < time) {
                 map.removeMist(mist.getObjectId());
-                map.broadcastMessage(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
+                map.splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaRemoved(mist));
             }
         }
         return true;

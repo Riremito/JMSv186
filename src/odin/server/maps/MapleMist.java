@@ -28,8 +28,16 @@ import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
+import tacos.server.map.TacosMapObject;
 
-public class MapleMist {
+public class MapleMist implements TacosMapObject {
+
+    private Rectangle mistPosition;
+
+    @Override
+    public Point getPosition() {
+        return mistPosition.getLocation();
+    }
 
     private int objectId;
 
@@ -41,7 +49,6 @@ public class MapleMist {
         this.objectId = id;
     }
 
-    private Rectangle mistPosition;
     private MapleStatEffect source;
     private MobSkill skill;
     private boolean isMobMist;
@@ -89,10 +96,6 @@ public class MapleMist {
         this.time_created = System.currentTimeMillis();
         this.time_removal = this.time_created + dur;
         this.duration = dur;
-    }
-
-    public Point getPosition() {
-        return mistPosition.getLocation();
     }
 
     public Skill getSourceSkill() {
