@@ -1162,14 +1162,14 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
-    public void controlMonster(MapleMonster monster, boolean aggro) {
+    public void controlMonster(MapleMonster monster, boolean bChase) {
         monster.setController(this);
         controlled.add(monster);
         if (getMap().getMonsterByOid(monster.getObjectId()) == null) {
             DebugLogger.ErrorLog("controlMonster");
             return;
         }
-        client.SendPacket(ResCMobPool.MobChangeController(monster, aggro));
+        client.SendPacket(ResCMobPool.MobChangeController(monster, (bChase ? 1 : 0) + 1));
     }
 
     public void stopControllingMonster(MapleMonster monster) {

@@ -79,7 +79,7 @@ public class TacosMapData {
         }
     }
 
-    protected class MapSplit {
+    public class MapSplit {
 
         private int col;
         private int row;
@@ -89,7 +89,7 @@ public class TacosMapData {
             return this.total;
         }
 
-        protected int find(int x, int y) {
+        public int find(int x, int y) {
             int area_col = (x - wall.left) / SPLIT_WIDTH;
             int area_row = (y - wall.top) / SPLIT_HEIGHT;
             return (area_row * this.col) + area_col;
@@ -140,6 +140,10 @@ public class TacosMapData {
     protected final MapWall wall = new MapWall();
     protected final MapScreen screen = new MapScreen();
     protected final MapSplit split = new MapSplit();
+
+    public MapSplit getSplit() {
+        return this.split;
+    }
 
     private boolean setSplitData() {
         this.wall.left = 0;

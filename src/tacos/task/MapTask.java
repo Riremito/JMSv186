@@ -55,7 +55,7 @@ public class MapTask {
                 if (monster != null) {
                     map.addMonster(monster);
                     map.splitSendPacket(monster, ResCMobPool.MobEnterField(monster));
-                    chr.SendPacket(ResCMobPool.MobChangeController(monster, false));
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                     monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                     monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
                 }

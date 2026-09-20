@@ -505,7 +505,7 @@ public class MapleMonster implements TacosMapObject {
             if (getMap().getMonsterByOid(getObjectId()) == null) {
                 DebugLogger.ErrorLog("killBy : controlMonster");
             } else {
-                controll.SendPacket(ResCMobPool.MobChangeController(this));
+                controll.SendPacket(ResCMobPool.MobChangeController(this, 0));
             }
             controll.stopControllingMonster(this);
         }
@@ -671,7 +671,7 @@ public class MapleMonster implements TacosMapObject {
             if (getMap().getMonsterByOid(getObjectId()) == null) {
                 DebugLogger.ErrorLog("switchController : controlMonster");
             } else {
-                controllers.SendPacket(ResCMobPool.MobChangeController(this));
+                controllers.SendPacket(ResCMobPool.MobChangeController(this, 0));
             }
         }
         newController.controlMonster(this, immediateAggro);

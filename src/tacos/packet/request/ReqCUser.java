@@ -906,6 +906,12 @@ public class ReqCUser {
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
+            Point pos_prev = chr.getPosition();
+            int area_prev = map.getSplit().find(pos_prev.x, pos_prev.y);
+            int area_next = map.getSplit().find(move_path.getX(), move_path.getY());
+            if (area_prev != area_next) {
+                chr.DebugMsg("MapSplit : " + area_prev + " -> " + area_next);
+            }
             map.userMove(chr, move_path);
             move_path.update(chr);
         }

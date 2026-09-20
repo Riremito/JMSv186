@@ -147,11 +147,10 @@ public class ResCMobPool {
     }
 
     // CMobPool::OnMobChangeController
-    public static ServerPacket MobChangeController(MapleMonster monster, boolean aggro) {
+    public static ServerPacket MobChangeController(MapleMonster monster, int nLevel) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
 
-        int nLevel = aggro ? 2 : 1;
-        sp.Encode1(nLevel); // nLevel, local or not.
+        sp.Encode1(0); // nLevel, 2 = aggro, 1 = control, 0 = stop
 
         // GMS95
         if (Config.GreaterOrEqual(Region.GMS, 95)) {
@@ -189,14 +188,6 @@ public class ResCMobPool {
             // no packet data.
         }
 
-        return sp;
-    }
-
-    public static ServerPacket MobChangeController(MapleMonster monster) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
-
-        sp.Encode1(0);
-        sp.Encode4(monster.getObjectId());
         return sp;
     }
 
