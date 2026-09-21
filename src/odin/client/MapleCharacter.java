@@ -63,7 +63,6 @@ import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.Res_JMS_CField_Pachinko;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUser_Pet;
@@ -89,7 +88,6 @@ import odin.server.Randomizer;
 import odin.server.RandomRewards;
 import odin.server.MapleCarnivalParty;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleSummon;
@@ -181,7 +179,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient List<Integer> pendingSkills = null;
     private List<MapleDoor> doors;
     private SkillMacro[] skillMacros = new SkillMacro[5];
-    private transient Set<MapleMonster> controlled;
     private transient Set<Object> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
@@ -236,7 +233,6 @@ public class MapleCharacter extends TacosCharacter {
         inst = new AtomicInteger();
         inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
         doors = new ArrayList<>();
-        controlled = new LinkedHashSet<>();
         summons = new LinkedHashMap<>();
         visibleMapObjects = new LinkedHashSet<>();
         pendingCarnivalRequests = new LinkedList<>();
@@ -1160,35 +1156,6 @@ public class MapleCharacter extends TacosCharacter {
             SendPacket(ResCWvsContext.Message(OpsMessage.MS_JMS_Pachinko, PB_Message.builder().Inc_Tama(gain).build()));
         }
         return true;
-    }
-
-    public void controlMonster(MapleMonster monster, boolean bChase) {
-        monster.setController(this);
-        controlled.add(monster);
-        if (getMap().getMonsterByOid(monster.getObjectId()) == null) {
-            DebugLogger.ErrorLog("controlMonster");
-            return;
-        }
-        client.SendPacket(ResCMobPool.MobChangeController(monster, (bChase ? 1 : 0) + 1));
-    }
-
-    public void stopControllingMonster(MapleMonster monster) {
-        controlled.remove(monster);
-    }
-
-    public void checkMonsterAggro(MapleMonster monster) {
-        if (monster == null) {
-            return;
-        }
-        if (monster.getController() == this) {
-            monster.setControllerHasAggro(true);
-        } else {
-            monster.switchController(this, true);
-        }
-    }
-
-    public int getControlledSize() {
-        return controlled.size();
     }
 
     public void mobKilled(final int id, final int skillID) {

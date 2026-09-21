@@ -150,7 +150,7 @@ public class ResCMobPool {
     public static ServerPacket MobChangeController(MapleMonster monster, int nLevel) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
 
-        sp.Encode1(0); // nLevel, 2 = aggro, 1 = control, 0 = stop
+        sp.Encode1(nLevel); // nLevel, 2 = aggro, 1 = control, 0 = stop
 
         // GMS95
         if (Config.GreaterOrEqual(Region.GMS, 95)) {

@@ -389,7 +389,7 @@ public class MapScriptMethods {
                 if (client.getPlayer().getMapId() >= 921120100 && client.getPlayer().getMapId() < 921120500) {
                     final MapleMonster shammos = MapleLifeFactory.getMonster(9300275);
                     client.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(client.getPlayer().getMap().getPortal(0).getPosition()), 12);
-                    shammos.switchController(client.getPlayer(), false);
+                    shammos.switchShammosController(client.getPlayer(), false);
                     client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, client.getPlayer().getMap()));
 
                 }

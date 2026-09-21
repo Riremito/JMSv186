@@ -56,13 +56,22 @@ import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.server.map.TacosMapObject;
 
 public class MapleMonster implements TacosMapObject {
+
+    private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
+
+    public MapleCharacter getController() {
+        return controller.get();
+    }
+
+    public void setController(MapleCharacter controller) {
+        this.controller = new WeakReference<>(controller);
+    }
 
     private Point position = new Point();
     private int objectId = 0;
@@ -188,7 +197,6 @@ public class MapleMonster implements TacosMapObject {
     private int stolen = -1; //monster can only be stolen ONCE
     private int nAppearType = -1;
     private byte venom_counter;
-    private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
     private byte carnivalTeam;
     private MapleMap map;
     private boolean fake;
@@ -485,7 +493,7 @@ public class MapleMonster implements TacosMapObject {
         attacker.mobKilled(getId(), lastskillID);
     }
 
-    public final int killBy(final MapleCharacter killer, final int lastSkill) {
+    public int killBy(MapleCharacter killer, int lastSkill) {
         int totalBaseExp = getMobExp();
         AttackerEntry highest = null;
         long highdamage = 0;
@@ -499,15 +507,6 @@ public class MapleMonster implements TacosMapObject {
         for (final AttackerEntry attackEntry : attackers) {
             baseExp = (int) Math.ceil(totalBaseExp * ((double) attackEntry.getDamage() / getMobMaxHp()));
             attackEntry.killedMob(getMap(), baseExp, attackEntry == highest, lastSkill);
-        }
-        final MapleCharacter controll = controller.get();
-        if (controll != null) { // this can/should only happen when a hidden gm attacks the monster
-            if (getMap().getMonsterByOid(getObjectId()) == null) {
-                DebugLogger.ErrorLog("killBy : controlMonster");
-            } else {
-                controll.SendPacket(ResCMobPool.MobChangeController(this, 0));
-            }
-            controll.stopControllingMonster(this);
         }
 
         spawnRevives();
@@ -654,31 +653,7 @@ public class MapleMonster implements TacosMapObject {
         return carnivalTeam;
     }
 
-    public final MapleCharacter getController() {
-        return controller.get();
-    }
-
-    public final void setController(final MapleCharacter controller) {
-        this.controller = new WeakReference<>(controller);
-    }
-
-    public final void switchController(final MapleCharacter newController, final boolean immediateAggro) {
-        final MapleCharacter controllers = getController();
-        if (controllers == newController) {
-            return;
-        } else if (controllers != null) {
-            controllers.stopControllingMonster(this);
-            if (getMap().getMonsterByOid(getObjectId()) == null) {
-                DebugLogger.ErrorLog("switchController : controlMonster");
-            } else {
-                controllers.SendPacket(ResCMobPool.MobChangeController(this, 0));
-            }
-        }
-        newController.controlMonster(this, immediateAggro);
-        setController(newController);
-        if (immediateAggro) {
-            setControllerHasAggro(true);
-        }
+    public void switchShammosController(MapleCharacter newController, boolean immediateAggro) {
         setControllerKnowsAboutAggro(false);
         if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
             if (lastNodeController != -1 && lastNodeController != newController.getId()) { //new controller, please re update
@@ -741,41 +716,6 @@ public class MapleMonster implements TacosMapObject {
         if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
             resetShammos(client);
         }
-    }
-
-    @Override
-    public final String toString() {
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(stats.getName());
-        sb.append("(");
-        sb.append(getId());
-        sb.append(") at X");
-        sb.append(getPosition().x);
-        sb.append("/ Y");
-        sb.append(getPosition().y);
-        sb.append(" with ");
-        sb.append(getHp());
-        sb.append("/ ");
-        sb.append(getMobMaxHp());
-        sb.append("hp, ");
-        sb.append(getMp());
-        sb.append("/ ");
-        sb.append(getMobMaxMp());
-        sb.append(" mp (alive: ");
-        sb.append(isAlive());
-        sb.append(" oid: ");
-        sb.append(getObjectId());
-        sb.append(") || Controller name : ");
-        final MapleCharacter chr = controller.get();
-        sb.append(chr != null ? chr.getName() : "null");
-        sb.append(") || Sponge name : ");
-        final MapleMonster spnge = sponge.get();
-        sb.append(spnge != null ? spnge.stats.getName() : "null");
-        sb.append(" linkoid: ");
-        sb.append(getLinkOid());
-
-        return sb.toString();
     }
 
     public final OdinEventInstanceManager getEventInstance() {

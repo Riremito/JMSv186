@@ -1050,7 +1050,6 @@ public class ReqCUser {
                 continue;
             }
             monster.damage(chr, total_damage, true, attack.skill);
-            chr.checkMonsterAggro(monster);
             if (eaterSkill != null && 0 < eaterLevel) {
                 eaterSkill.getEffect(eaterLevel).applyPassive(chr, monster);
             }

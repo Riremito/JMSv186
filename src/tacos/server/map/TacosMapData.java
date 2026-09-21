@@ -49,7 +49,7 @@ public class TacosMapData {
     private static final int SPLIT_WIDTH = 600;
     private static final int SPLIT_HEIGHT = 450;
 
-    protected enum MapSplitState {
+    public enum MapSplitState {
         ACTIVE,
         MOVE,
         MOVE_LEAVE,
@@ -95,7 +95,7 @@ public class TacosMapData {
             return (area_row * this.col) + area_col;
         }
 
-        protected ArrayList<MapSplitState> getArea(int x, int y, MapSplitState state) {
+        public ArrayList<MapSplitState> getArea(int x, int y, MapSplitState state) {
             ArrayList<MapSplitState> area_states = new ArrayList<>(Collections.nCopies(this.total, MapSplitState.UNKNOWN));
 
             int area_number = find(x, y);

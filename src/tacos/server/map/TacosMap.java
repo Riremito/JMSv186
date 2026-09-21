@@ -366,18 +366,16 @@ public class TacosMap extends TacosMapData {
         }
         // mob
         for (MapleMonster mob : this.monsters.values()) {
+            chr.SendPacket(ResCMobPool.MobEnterField(mob));
+
             int number = split.find(mob.getPosition().x, mob.getPosition().y);
             if (split.getTotal() < number) {
                 continue;
             }
             if (area_states.get(number) == MapSplitState.ACTIVE) {
-                chr.SendPacket(ResCMobPool.MobEnterField(mob));
-                if (mob.getController() == null || mob.getController() == chr) {
+                if (mob.getController() == null || getPlayerByOid(mob.getController().getId()) == null) {
                     mob.setController(chr);
                     chr.SendPacket(ResCMobPool.MobChangeController(mob, (mob.isFirstAttack() ? 1 : 0) + 1));
-                    chr.controlMonster(mob, mob.isFirstAttack());
-                    mob.setControllerHasAggro(mob.isFirstAttack());
-                    mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
                 }
             }
         }
@@ -487,11 +485,9 @@ public class TacosMap extends TacosMapData {
                 continue;
             }
             if (area_states.get(number) == MapSplitState.ACTIVE) {
-                if (mob.getController() == chr) {
+                boolean controlled = mob.getController() != null && mob.getController().getId() == chr.getId();
+                if (controlled) {
                     mob.setController(null);
-                    mob.setControllerHasAggro(false);
-                    mob.setControllerKnowsAboutAggro(false);
-                    updateMonsterController(mob);
                 }
             }
         }
@@ -527,18 +523,19 @@ public class TacosMap extends TacosMapData {
             if (split.getTotal() < number) {
                 continue;
             }
+            boolean not_controlled = mob.getController() == null || getPlayerByOid(mob.getController().getId()) == null;
+            boolean controlled = mob.getController() != null && mob.getController().getId() == chr.getId();
             if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
-                chr.SendPacket(ResCMobPool.MobEnterField(mob));
-                if (mob.getController() == null || mob.getController() == chr) {
+                if (not_controlled) {
                     mob.setController(chr);
                     chr.SendPacket(ResCMobPool.MobChangeController(mob, (mob.isFirstAttack() ? 1 : 0) + 1));
-                    chr.controlMonster(mob, mob.isFirstAttack());
-                    mob.setControllerHasAggro(mob.isFirstAttack());
-                    mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
                 }
             }
             if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
+                if (controlled) {
+                    mob.setController(null);
+                    chr.SendPacket(ResCMobPool.MobChangeController(mob, 0));
+                }
             }
         }
         // npc
@@ -801,44 +798,6 @@ public class TacosMap extends TacosMapData {
         return this.monsters.size();
     }
 
-    public boolean updateMonsterController(MapleMonster monster) {
-        if (!monster.isAlive()) {
-            return false;
-        }
-
-        if (monster.getController() != null) {
-            if (monster.getController().getMap() != this) {
-                monster.getController().stopControllingMonster(monster);
-            } else { // Everything is fine :)
-                return false;
-            }
-        }
-
-        int mincontrolled = -1;
-        MapleCharacter newController = null;
-
-        Iterator<MapleCharacter> ltr = this.players.values().iterator();
-        MapleCharacter chr;
-        while (ltr.hasNext()) {
-            chr = ltr.next();
-            if ((chr.getControlledSize() < mincontrolled || mincontrolled == -1)) {
-                mincontrolled = chr.getControlledSize();
-                newController = chr;
-            }
-        }
-        if (newController != null) {
-            if (monster.isFirstAttack()) {
-                newController.controlMonster(monster, true);
-                monster.setControllerHasAggro(true);
-                monster.setControllerKnowsAboutAggro(true);
-            } else {
-                newController.controlMonster(monster, false);
-            }
-        }
-
-        return true;
-    }
-
     public void removeMonster(MapleMonster monster) {
         removeMonster(monster.getObjectId());
         broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
@@ -888,7 +847,6 @@ public class TacosMap extends TacosMapData {
         monster.setAT(OpsMobAppear.MOBAPPEAR_REVIVED);
         addMonster(monster);
         broadcastMessage(ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
     }
 
@@ -900,7 +858,6 @@ public class TacosMap extends TacosMapData {
         monster.setAT(ops_at != OpsMobAppear.UNKNOWN ? ops_at : OpsMobAppear.MOBAPPEAR_EFFECT);
         monster.setATEx(spawnType);
         broadcastMessage(ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
     }
 
@@ -909,7 +866,6 @@ public class TacosMap extends TacosMapData {
         monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         addMonster(monster);
         broadcastMessage(ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         return monster.getObjectId();
     }
@@ -919,7 +875,6 @@ public class TacosMap extends TacosMapData {
         monster.setAT(OpsMobAppear.MOBAPPEAR_SUSPENDED);
         addMonster(monster);
         broadcastMessage(ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
     }
 
     // npc.

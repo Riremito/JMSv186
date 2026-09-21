@@ -18,6 +18,7 @@
  */
 package tacos.task;
 
+import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
@@ -27,6 +28,7 @@ import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.response.ResCAffectedAreaPool;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCMobPool;
+import tacos.server.map.TacosMapData.MapSplitState;
 import tacos.server.map.TacosSpawnPoint;
 
 /**
@@ -41,6 +43,7 @@ public class MapTask {
         if (!map.updateTime(time, 5000)) {
             return false;
         }
+        ArrayList<MapSplitState> area_states = map.getSplit().getArea(chr.getPosition().x, chr.getPosition().y, MapSplitState.ACTIVE);
         // drop removal.
         for (MapleMapItem mmi : map.getAllItems()) {
             if (mmi.getTime() + DROP_ITEM_EXPIRED < time) {
@@ -54,10 +57,14 @@ public class MapTask {
                 MapleMonster monster = sp.regen(map);
                 if (monster != null) {
                     map.addMonster(monster);
-                    map.splitSendPacket(monster, ResCMobPool.MobEnterField(monster));
-                    chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                    map.broadcastMessage(ResCMobPool.MobEnterField(monster));
                     monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                     monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
+                    int number = map.getSplit().find(monster.getPosition().x, monster.getPosition().y);
+                    if (area_states.get(number) == MapSplitState.ACTIVE) {
+                        monster.setController(chr);
+                        chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                    }
                 }
             }
         }
