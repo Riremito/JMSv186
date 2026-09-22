@@ -18,6 +18,8 @@
  */
 package tacos.client;
 
+import tacos.server.map.object.TacosDragon;
+import tacos.server.map.object.TacosSkillPet;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

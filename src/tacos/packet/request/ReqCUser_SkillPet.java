@@ -21,7 +21,7 @@ package tacos.packet.request;
 import tacos.client.TacosClient;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosCharacter;
-import tacos.client.TacosSkillPet;
+import tacos.server.map.object.TacosSkillPet;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;

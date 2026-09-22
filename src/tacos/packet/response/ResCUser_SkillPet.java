@@ -18,7 +18,7 @@
  */
 package tacos.packet.response;
 
-import tacos.client.TacosSkillPet;
+import tacos.server.map.object.TacosSkillPet;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;

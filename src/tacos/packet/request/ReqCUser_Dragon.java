@@ -23,7 +23,7 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
-import tacos.client.TacosDragon;
+import tacos.server.map.object.TacosDragon;
 import tacos.packet.ClientPacketHeader;
 import tacos.server.map.TacosMap;
 

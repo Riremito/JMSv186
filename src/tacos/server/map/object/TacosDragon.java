@@ -16,8 +16,9 @@
  *
  *
  */
-package tacos.client;
+package tacos.server.map.object;
 
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMapObject;
 
 /**
