@@ -32,6 +32,7 @@ public class TacosMapObject {
     private static int OBJECT_ID = 100000;
 
     private int object_id = 0;
+    private long time_created = 0;
     private int owner_id = 0;
     private Point position = new Point();
     private int move_action = OpsMovePathAttr.MPA_NORMAL.get();
@@ -47,10 +48,30 @@ public class TacosMapObject {
 
     public void setObjectId(int object_id) {
         this.object_id = object_id;
+        setTimeCreated(); // TODO : move
+    }
+
+    public long getTimeCreated() {
+        return this.time_created;
+    }
+
+    public void setTimeCreated() {
+        this.time_created = System.currentTimeMillis();
+    }
+
+    public boolean checkTime(long time_current, int duration) {
+        if (this.time_created + duration <= time_current) {
+            return true;
+        }
+        return false;
     }
 
     public int getOwnerId() {
         return this.owner_id;
+    }
+
+    public void setOwnerId(int owner_id) {
+        this.owner_id = owner_id;
     }
 
     public Point getPosition() {

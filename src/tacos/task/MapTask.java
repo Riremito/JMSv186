@@ -46,7 +46,7 @@ public class MapTask {
         ArrayList<MapSplitState> area_states = map.getSplit().getArea(chr.getPosition().x, chr.getPosition().y, MapSplitState.ACTIVE);
         // drop removal.
         for (MapleMapItem mmi : map.getAllItems()) {
-            if (mmi.getTime() + DROP_ITEM_EXPIRED < time) {
+            if (mmi.checkTime(time, DROP_ITEM_EXPIRED)) {
                 map.removeDrop(mmi.getObjectId());
                 map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
             }

@@ -90,18 +90,18 @@ public class ReqCDropPool {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;
         }
-        if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
             DebugLogger.ErrorLog("PickUp : getOwner");
             return false;
         }
-        if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
+        if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwnerId() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwnerId()) == null)) {
             DebugLogger.ErrorLog("PickUp : isPlayerDrop");
             return false;
         }
         // Meso
         if (mapitem.getMeso() > 0) {
             // ?_?
-            if (chr.getParty() != null && mapitem.getOwner() != chr.getId()) {
+            if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
                 final List<MapleCharacter> toGive = new LinkedList<>();
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
                     MapleCharacter player = chr.getMap().getPlayerById(z.getId());

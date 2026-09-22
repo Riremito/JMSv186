@@ -26,78 +26,54 @@ import odin.client.MapleCharacter;
 import tacos.packet.response.ResCDropPool;
 import tacos.packet.response.ResCDropPool.DropLeaveType;
 import tacos.server.map.TacosMap;
+import tacos.server.map.object.TacosDrop;
 
-public class MapleMapItem {
-
-    private Point position = new Point();
-    private int objectId;
-
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
+public class MapleMapItem extends TacosDrop {
 
     protected Item item;
     protected Object dropper;
-    protected int character_ownerid;
     protected int meso = 0;
     protected int questid = -1;
     protected byte type;
-    protected boolean pickedUp = false;
     protected boolean playerDrop;
     protected boolean randDrop = false;
-    protected long nextExpiry = 0;
-    protected long nextFFA = 0;
-    private long time = 0;
 
     public MapleMapItem(Item item, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop) {
-        setPosition(position);
         this.item = item;
         this.dropper = dropper;
-        this.character_ownerid = owner.getId();
         this.type = type;
         this.playerDrop = playerDrop;
+        setOwnerId(owner.getId());
+        setPosition(position);
     }
 
     public MapleMapItem(Item item, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop, int questid) {
-        setPosition(position);
         this.item = item;
         this.dropper = dropper;
-        this.character_ownerid = owner.getId();
         this.type = type;
         this.playerDrop = playerDrop;
         this.questid = questid;
+        setOwnerId(owner.getId());
+        setPosition(position);
     }
 
     public MapleMapItem(int meso, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop) {
-        setPosition(position);
         this.item = null;
         this.dropper = dropper;
-        this.character_ownerid = owner.getId();
         this.meso = meso;
         this.type = type;
         this.playerDrop = playerDrop;
+        setOwnerId(owner.getId());
+        setPosition(position);
     }
 
     public MapleMapItem(Point position, Item item) {
-        setPosition(position);
         this.item = item;
-        this.character_ownerid = 0;
         this.type = 2;
         this.playerDrop = false;
         this.randDrop = true;
+        setOwnerId(0);
+        setPosition(position);
     }
 
     public final Item getItem() {
@@ -119,10 +95,6 @@ public class MapleMapItem {
         return dropper;
     }
 
-    public final int getOwner() {
-        return character_ownerid;
-    }
-
     public final int getMeso() {
         return meso;
     }
@@ -135,16 +107,7 @@ public class MapleMapItem {
         return type;
     }
 
-    public long getTime() {
-        return this.time;
-    }
-
-    public void setTime() {
-        this.time = System.currentTimeMillis();
-    }
-
     public void expire(TacosMap map) {
-        pickedUp = true;
         map.removeDrop(getObjectId());
         map.broadcastMessage(ResCDropPool.DropLeaveField(this, DropLeaveType.EXPIRED));
     }

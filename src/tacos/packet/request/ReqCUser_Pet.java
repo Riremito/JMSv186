@@ -240,20 +240,20 @@ public class ReqCUser_Pet {
 
     public static void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {
         TacosClient client = chr.getClient();
-        if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {
+        if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
-        if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
             chr.updateInv();
             return;
         }
-        if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
+        if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwnerId() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwnerId()) == null)) {
             chr.updateInv();
             return;
         }
 
         if (mapitem.getMeso() > 0) {
-            if (chr.getParty() != null && mapitem.getOwner() != chr.getId()) {
+            if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
                 final List<MapleCharacter> toGive = new LinkedList<>();
                 final int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {

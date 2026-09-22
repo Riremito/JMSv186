@@ -1059,12 +1059,10 @@ public class TacosMap extends TacosMapData {
 
     // drop item.
     private LinkedHashMap<Integer, MapleMapItem> drops = new LinkedHashMap<>();
-    private int DROP_OBJECT_ID = 300000;
 
     public void addDrop(MapleMapItem drop) {
         if (drop.getObjectId() == 0) {
-            drop.setObjectId(DROP_OBJECT_ID++);
-            drop.setTime();
+            drop.setObjectId();
         }
         this.drops.put(drop.getObjectId(), drop);
     }
@@ -1365,7 +1363,7 @@ public class TacosMap extends TacosMapData {
     public void returnEverLastItem(final MapleCharacter chr) {
         for (final Object o : getAllItems()) {
             final MapleMapItem item = ((MapleMapItem) o);
-            if (item.getOwner() == chr.getId()) {
+            if (item.getOwnerId() == chr.getId()) {
                 broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.DropLeaveType.NORMAL, chr, 0), item.getPosition());
                 if (item.getMeso() > 0) {
                     chr.gainMeso(item.getMeso(), false);

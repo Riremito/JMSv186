@@ -40,7 +40,7 @@ public class ResCDropPool {
         sp.Encode4(drop.getObjectId()); // dwId
         sp.Encode1(drop.getMeso() > 0 ? 1 : 0); // bIsMoney
         sp.Encode4(drop.getItemId()); // nInfo
-        sp.Encode4(drop.getOwner()); // dwOwnerID
+        sp.Encode4(drop.getOwnerId()); // dwOwnerID
         sp.Encode1(drop.getDropType()); // nOwnType, 3 or not
         sp.Encode2(dropto.x); // x
         sp.Encode2(dropto.y); // y
