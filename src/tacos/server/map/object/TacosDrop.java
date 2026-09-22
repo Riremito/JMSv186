@@ -18,26 +18,10 @@
  */
 package tacos.server.map.object;
 
-import tacos.client.TacosCharacter;
-
 /**
  *
  * @author Riremito
  */
-public class TacosDragon extends TacosMapObject {
-
-    private int job_code;
-
-    public TacosDragon(TacosCharacter chr) {
-        this.job_code = chr.getJob();
-        reset(chr);
-    }
-
-    public int getJobCode() {
-        return this.job_code;
-    }
-
-    public void setJobCode(TacosCharacter chr) {
-        this.job_code = chr.getJob();
-    }
+public class TacosDrop {
+    
 }

@@ -46,7 +46,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleDoor;
-import odin.server.maps.MapleDynamicPortal;
+import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
@@ -440,7 +440,7 @@ public class TacosMap extends TacosMapData {
         }
         // mechanic gate
         // pinkbean cake event portal
-        for (MapleDynamicPortal instance_portal : this.dynamicPortals.values()) {
+        for (TacosDynamicPortal instance_portal : this.dynamicPortals.values()) {
             int number = split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
             if (split.getTotal() < number) {
                 continue;
@@ -614,7 +614,7 @@ public class TacosMap extends TacosMapData {
         }
         // mechanic gate
         // pinkbean cake event portal
-        for (MapleDynamicPortal instance_portal : this.dynamicPortals.values()) {
+        for (TacosDynamicPortal instance_portal : this.dynamicPortals.values()) {
             int number = split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
             if (split.getTotal() < number) {
                 continue;
@@ -1157,9 +1157,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // dynamic portal.
-    private LinkedHashMap<Integer, MapleDynamicPortal> dynamicPortals = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosDynamicPortal> dynamicPortals = new LinkedHashMap<>();
 
-    public void addDynamicPortal(MapleDynamicPortal dynamic_portal) {
+    public void addDynamicPortal(TacosDynamicPortal dynamic_portal) {
         this.runningOid++;
         dynamic_portal.setObjectId(this.runningOid);
         this.dynamicPortals.put(dynamic_portal.getObjectId(), dynamic_portal);
@@ -1169,20 +1169,20 @@ public class TacosMap extends TacosMapData {
         return this.dynamicPortals.remove(object_id) != null;
     }
 
-    public List<MapleDynamicPortal> getAllDynamicPortals() {
-        ArrayList<MapleDynamicPortal> ret = new ArrayList<>();
-        for (MapleDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
+    public List<TacosDynamicPortal> getAllDynamicPortals() {
+        ArrayList<TacosDynamicPortal> ret = new ArrayList<>();
+        for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
             ret.add(dynamic_portal);
         }
         return ret;
     }
 
-    public MapleDynamicPortal getDynamicPortalByOid(int object_id) {
+    public TacosDynamicPortal getDynamicPortalByOid(int object_id) {
         return this.dynamicPortals.get(object_id);
     }
 
-    public MapleDynamicPortal findDynamicPortal(int portal_id) {
-        for (MapleDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
+    public TacosDynamicPortal findDynamicPortal(int portal_id) {
+        for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
             if (dynamic_portal.getObjectId() == portal_id) {
                 return dynamic_portal;
             }
@@ -1190,9 +1190,9 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
+    public TacosDynamicPortal findDynamicPortalLink(int map_id_to) {
         DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
-        for (MapleDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
+        for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
             DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
             if (dynamic_portal.getMapID() == map_id_to) {
                 return dynamic_portal;
@@ -1201,7 +1201,7 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public void spawnDynamicPortal(MapleDynamicPortal dynamic_portal) {
+    public void spawnDynamicPortal(TacosDynamicPortal dynamic_portal) {
         addDynamicPortal(dynamic_portal);
         broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
     }

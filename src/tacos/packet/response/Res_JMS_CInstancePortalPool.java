@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleDynamicPortal;
+import tacos.server.map.object.TacosDynamicPortal;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -28,7 +28,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class Res_JMS_CInstancePortalPool {
 
-    public static ServerPacket InstancePortalCreated(MapleDynamicPortal dynamic_portal) {
+    public static ServerPacket InstancePortalCreated(TacosDynamicPortal dynamic_portal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_InstancePortalCreated);
 
         sp.Encode1(1);

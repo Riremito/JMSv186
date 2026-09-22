@@ -16,20 +16,18 @@
  *
  *
  */
-package odin.server.maps;
+package tacos.server.map.object;
 
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import java.awt.Point;
-import tacos.packet.response.Res_JMS_CInstancePortalPool;
+import odin.server.maps.MapleMap;
 import tacos.server.map.TacosPortal;
 
 /**
  *
  * @author Riremito
  */
-// Pink Bean Cake Event TWMS/CMS/JMS dynamic portal, this is like mystic door
-public class MapleDynamicPortal {
+public class TacosDynamicPortal {
 
     private Point position = new Point();
     private int objectId;
@@ -54,34 +52,36 @@ public class MapleDynamicPortal {
     final private int item_id;
     final private int map_id;
 
-    public MapleDynamicPortal(int item_id, int map_id, int x, int y) {
-        super();
+    public TacosDynamicPortal(int item_id, int map_id, int x, int y) {
         this.item_id = item_id;
         this.map_id = map_id;
         setPosition(new Point(x, y));
     }
 
-    public MapleDynamicPortal(int map_id, int x, int y) {
-        super();
+    public TacosDynamicPortal(int map_id, int x, int y) {
         this.item_id = 2420004; // or 2420000
         this.map_id = map_id;
         setPosition(new Point(x, y));
     }
 
-    // test
-    public final void warp(MapleCharacter chr) {
+    public void warp(MapleCharacter chr) {
         int map_id_from = chr.getPosMap();
         MapleMap map_to = chr.findMap(map_id);
         map_to.findDynamicPortalLink(map_id_from);
 
-        /*
-        if (dynamic_portal_to != null) {
-            chr.changeMapDynamicPortal(map_to, dynamic_portal_to.getPosition());
-        }
-         */
         // no dynamic portal
         TacosPortal spawn_point = map_to.getPortal(0);
         chr.changeMapInternal(map_to, spawn_point.getPosition(), spawn_point);
+    }
+
+    public void test(MapleCharacter chr) {
+        int map_id_from = chr.getPosMap();
+        MapleMap map_to = chr.findMap(map_id);
+
+        TacosDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
+        if (dynamic_portal_to != null) {
+            chr.changeMapDynamicPortal(map_to, dynamic_portal_to.getPosition());
+        }
     }
 
     public int getItemID() {

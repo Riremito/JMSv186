@@ -21,7 +21,7 @@ package tacos.debug;
 import java.awt.Point;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.server.maps.MapleDynamicPortal;
+import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.ResCField;
@@ -104,7 +104,7 @@ public class CustomCommand {
                 }
 
                 Point player_xy = chr.getPosition();
-                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
+                TacosDynamicPortal dynamic_portal = new TacosDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
                 map.addDynamicPortal(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);

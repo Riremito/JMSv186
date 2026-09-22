@@ -73,7 +73,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.MobAttackInfo;
 import odin.server.life.MobSkill;
-import odin.server.maps.MapleDynamicPortal;
+import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import odin.server.quest.MapleQuest;
@@ -585,7 +585,7 @@ public class ReqCUser {
                 int portal_id = cp.Decode4();
                 byte flag = cp.Decode1();
                 // 749050200
-                MapleDynamicPortal dynamic_portal = chr.getMap().findDynamicPortal(portal_id);
+                TacosDynamicPortal dynamic_portal = chr.getMap().findDynamicPortal(portal_id);
                 if (dynamic_portal == null) {
                     chr.sendStatChanged(true);
                     return true;
@@ -599,7 +599,7 @@ public class ReqCUser {
                 int item_id = cp.Decode4(); // 2420004
                 short x = cp.Decode2();
                 short y = cp.Decode2();
-                MapleDynamicPortal dynamic_portal = new MapleDynamicPortal(item_id, 749050200, x, y);
+                TacosDynamicPortal dynamic_portal = new TacosDynamicPortal(item_id, 749050200, x, y);
                 map.addDynamicPortal(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.sendStatChanged(true);
