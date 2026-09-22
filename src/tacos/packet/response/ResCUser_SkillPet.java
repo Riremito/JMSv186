@@ -34,7 +34,7 @@ public class ResCUser_SkillPet {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetMove);
 
         sp.Encode4(skill_pet.getOwnerId()); // m_dwCharacterID
-        sp.Encode4(skill_pet.getId()); // pet id
+        sp.Encode4(skill_pet.getObjectId()); // pet id
         sp.EncodeBuffer(data.get());
         return sp;
     }
@@ -46,7 +46,7 @@ public class ResCUser_SkillPet {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetTransferField);
 
         sp.Encode4(skill_pet.getOwnerId()); // m_dwCharacterID
-        sp.Encode4(skill_pet.getId()); // pet id
+        sp.Encode4(skill_pet.getObjectId()); // pet id
         sp.EncodeBuffer(CSkillPet__Init(skill_pet));
         return sp;
     }

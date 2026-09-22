@@ -965,6 +965,7 @@ public class TacosCharacter {
         }
         if (TacosConstants.is_kanna(getJob())) {
             this.skill_pet = new TacosSkillPet(this, TacosConstants.KANNA_SKILL_PET_ID);
+            this.skill_pet.setObjectId();
             return true;
         }
         return false;

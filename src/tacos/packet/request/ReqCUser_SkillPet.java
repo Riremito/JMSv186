@@ -46,7 +46,7 @@ public class ReqCUser_SkillPet {
 
         int spet_id = cp.Decode4();
         TacosSkillPet skill_pet = chr.getSkillPet();
-        if (skill_pet == null || skill_pet.getId() != spet_id) {
+        if (skill_pet == null || skill_pet.getObjectId() != spet_id) {
             return false;
         }
 

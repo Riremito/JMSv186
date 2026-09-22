@@ -67,11 +67,7 @@ public class ResCNpcPool {
         data.Encode2(npc.getRx0()); // m_rgHorz.low
         data.Encode2(npc.getRx1()); // m_rgHorz.high
         data.Encode1(show ? 1 : 0); // m_bEnabled
-
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            data.Encode1(0);
-        }
-
+        data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         return data.getBytes();
     }
 
@@ -87,6 +83,7 @@ public class ResCNpcPool {
 
         sp.Encode1(is_local ? 1 : 0);
         sp.Encode4(npc.getObjectId());
+
         if (is_local) {
             sp.Encode4(npc.getId());
             sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
@@ -101,10 +98,7 @@ public class ResCNpcPool {
         sp.Encode4(npc.getObjectId());
         sp.Encode1(nChatIdx);
         sp.Encode1(m_nOneTimeAction);
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode4(0);
-        }
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302));
 
         if (move_path != null) {
             sp.EncodeBuffer(move_path.get());

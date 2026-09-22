@@ -18,17 +18,19 @@
  */
 package tacos.client;
 
+import tacos.server.map.object.TacosMapObject;
+
 /**
  *
  * @author Riremito
  */
-public class TacosSkillPet extends TacosObject {
+public class TacosSkillPet extends TacosMapObject {
 
     private int skill_id;
 
     public TacosSkillPet(TacosCharacter chr, int skill_id) {
         this.skill_id = skill_id;
-        super(chr);
+        reset(chr);
     }
 
     public int getSkillId() {

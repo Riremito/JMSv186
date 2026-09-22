@@ -19,6 +19,9 @@
 package tacos.server.map.object;
 
 import java.awt.Point;
+import tacos.client.TacosCharacter;
+import tacos.packet.ops.OpsMovePathAttr;
+import tacos.packet.request.parse.ParseCMovePath;
 
 /**
  *
@@ -29,10 +32,13 @@ public class TacosMapObject {
     private static int OBJECT_ID = 100000;
 
     private int object_id = 0;
+    private int owner_id = 0;
     private Point position = new Point();
+    private int move_action = OpsMovePathAttr.MPA_NORMAL.get();
+    private int foothold_id = 0;
 
     public int getObjectId() {
-        return object_id;
+        return this.object_id;
     }
 
     public void setObjectId() {
@@ -43,11 +49,48 @@ public class TacosMapObject {
         this.object_id = object_id;
     }
 
+    public int getOwnerId() {
+        return this.owner_id;
+    }
+
     public Point getPosition() {
         return this.position.getLocation();
     }
 
     public void setPosition(Point position) {
         this.position.setLocation(position);
+    }
+
+    public void setPosition(int x, int y) {
+        this.position.setLocation(x, y);
+    }
+
+    public int getX() {
+        return this.position.x;
+    }
+
+    public int getY() {
+        return this.position.y;
+    }
+
+    public int getMoveAction() {
+        return this.move_action;
+    }
+
+    public int getFootHoldId() {
+        return this.foothold_id;
+    }
+
+    public void update(ParseCMovePath move_path) {
+        setPosition(move_path.getX(), move_path.getY());
+        this.move_action = move_path.getMoveAction();
+        this.foothold_id = move_path.getFootHoldId();
+    }
+
+    public void reset(TacosCharacter chr) {
+        this.owner_id = chr.getId();
+        setPosition(chr.getPosition());
+        this.move_action = OpsMovePathAttr.MPA_NORMAL.get();
+        this.foothold_id = chr.getFH();
     }
 }
