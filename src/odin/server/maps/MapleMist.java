@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import odin.client.Skill;
 import odin.client.MapleCharacter;
@@ -28,26 +27,11 @@ import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
-import tacos.server.map.TacosMapObject;
+import tacos.server.map.object.TacosMapObject;
 
-public class MapleMist implements TacosMapObject {
+public class MapleMist extends TacosMapObject {
 
     private Rectangle mistPosition;
-
-    @Override
-    public Point getPosition() {
-        return mistPosition.getLocation();
-    }
-
-    private int objectId;
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
 
     private MapleStatEffect source;
     private MobSkill skill;
@@ -73,6 +57,8 @@ public class MapleMist implements TacosMapObject {
         this.time_created = System.currentTimeMillis();
         this.time_removal = this.time_created + dur;
         this.duration = dur;
+
+        setPosition(mistPosition.getLocation());
     }
 
     public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source, int dur) {
@@ -96,6 +82,8 @@ public class MapleMist implements TacosMapObject {
         this.time_created = System.currentTimeMillis();
         this.time_removal = this.time_created + dur;
         this.duration = dur;
+
+        setPosition(mistPosition.getLocation());
     }
 
     public Skill getSourceSkill() {

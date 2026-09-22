@@ -59,9 +59,9 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.server.map.TacosMapObject;
+import tacos.server.map.object.TacosMapObject;
 
-public class MapleMonster implements TacosMapObject {
+public class MapleMonster extends TacosMapObject {
 
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
 
@@ -71,27 +71,6 @@ public class MapleMonster implements TacosMapObject {
 
     public void setController(MapleCharacter controller) {
         this.controller = new WeakReference<>(controller);
-    }
-
-    private Point position = new Point();
-    private int objectId = 0;
-
-    @Override
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
     }
 
     private int stance;

@@ -34,10 +34,8 @@ import tacos.wz.WzDataTool;
  */
 public class TacosSpawnPoint {
 
-    private static int OBJECT_ID = 100000;
-
     public static void setOBJECT_ID(MapleMonster monster) {
-        monster.setObjectId(OBJECT_ID++);
+        monster.setObjectId();
     }
 
     private int node_id;
@@ -90,7 +88,7 @@ public class TacosSpawnPoint {
         }
 
         this.monster = MapleLifeFactory.getMonster(this.id);
-        this.monster.setObjectId(OBJECT_ID++);
+        this.monster.setObjectId();
         this.monster.setMap(map); // TODO : remove from monster object.
         this.monster.setPosition(new Point(this.x, this.y));
         this.monster.setFh(this.fh);

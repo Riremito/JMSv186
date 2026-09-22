@@ -18,6 +18,7 @@
  */
 package tacos.server.map;
 
+import tacos.server.map.object.TacosMapObject;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -746,7 +747,7 @@ public class TacosMap extends TacosMapData {
 
     public void addMonster(MapleMonster monster) {
         if (monster.getObjectId() == 0) {
-            TacosSpawnPoint.setOBJECT_ID(monster);
+            monster.setObjectId();
         }
         this.monsters.put(monster.getObjectId(), monster);
     }
@@ -962,7 +963,7 @@ public class TacosMap extends TacosMapData {
 
     public void addMist(MapleMist mist) {
         if (mist.getObjectId() == 0) {
-            //MapleMist.setOBJECT_ID(npc);
+            mist.setObjectId();
         }
         this.mists.put(mist.getObjectId(), mist);
         broadcastMessage(ResCAffectedAreaPool.AffectedAreaCreated(mist));

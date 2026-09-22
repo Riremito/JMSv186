@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.server.map;
+package tacos.server.map.object;
 
 import java.awt.Point;
 
@@ -24,7 +24,30 @@ import java.awt.Point;
  *
  * @author Riremito
  */
-public interface TacosMapObject {
+public class TacosMapObject {
 
-    public Point getPosition();
+    private static int OBJECT_ID = 100000;
+
+    private int object_id = 0;
+    private Point position = new Point();
+
+    public int getObjectId() {
+        return object_id;
+    }
+
+    public void setObjectId() {
+        this.object_id = OBJECT_ID++;
+    }
+
+    public void setObjectId(int object_id) {
+        this.object_id = object_id;
+    }
+
+    public Point getPosition() {
+        return this.position.getLocation();
+    }
+
+    public void setPosition(Point position) {
+        this.position.setLocation(position);
+    }
 }
