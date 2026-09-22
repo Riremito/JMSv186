@@ -540,7 +540,7 @@ public class MapleCharacter extends TacosCharacter {
         ps.close();
     }
 
-    public MapleQuestStatus getQuest(final MapleQuest quest) {
+    public MapleQuestStatus getQuest(MapleQuest quest) {
         if (!quests.containsKey(quest)) {
             return new MapleQuestStatus(quest, (byte) 0);
         }
@@ -2676,8 +2676,8 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public final byte getQuestStatus(final int quest) {
-        return getQuest(MapleQuest.getInstance(quest)).getStatus();
+    public byte getQuestStatus(int quest_id) {
+        return getQuest(MapleQuest.getInstance(quest_id)).getStatus();
     }
 
     // used by script

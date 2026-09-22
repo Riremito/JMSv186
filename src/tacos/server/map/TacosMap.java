@@ -404,7 +404,7 @@ public class TacosMap extends TacosMapData {
         // drop
         for (MapleMapItem drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuest();
+            int quest_id = drop.getQuestId();
             if (0 < quest_id) {
                 if (chr.getQuestStatus(quest_id) != 1) {
                     continue;
@@ -569,7 +569,7 @@ public class TacosMap extends TacosMapData {
         // drop
         for (MapleMapItem drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuest();
+            int quest_id = drop.getQuestId();
             if (0 < quest_id) {
                 if (chr.getQuestStatus(quest_id) != 1) {
                     continue;
@@ -1493,17 +1493,9 @@ public class TacosMap extends TacosMapData {
         setChangeBGM("");
         killAllMonsters(false);
         reloadReactors();
-        removeDrops();
         cancelSquadSchedule();
         resetPortals();
         environment.clear();
-    }
-
-    public void removeDrops() {
-        List<MapleMapItem> items = getAllItems();
-        for (MapleMapItem i : items) {
-            i.expire(this);
-        }
     }
 
     // compatbility

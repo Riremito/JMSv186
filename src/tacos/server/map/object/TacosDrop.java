@@ -18,10 +18,40 @@
  */
 package tacos.server.map.object;
 
+import odin.client.inventory.Item;
+
 /**
  *
  * @author Riremito
  */
 public class TacosDrop extends TacosMapObject {
 
+    private Item item = null;
+    private int quest_id = 0;
+    private int meso = 0;
+
+    public TacosDrop(Item item, int quest_id, int meso) {
+        this.item = item;
+        this.quest_id = quest_id;
+        this.meso = meso;
+    }
+
+    public Item getItem() {
+        return this.item;
+    }
+
+    public int getItemId() {
+        if (getMeso() > 0) {
+            return this.meso;
+        }
+        return this.item.getItemId();
+    }
+
+    public int getMeso() {
+        return this.meso;
+    }
+
+    public int getQuestId() {
+        return this.quest_id;
+    }
 }

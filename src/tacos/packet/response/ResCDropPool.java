@@ -71,11 +71,7 @@ public class ResCDropPool {
 
         sp.Encode1(drop.isPlayerDrop() ? 0 : 1); // bByPet
         sp.Encode1(0);
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode2(0);
-        }
-
+        sp.Encode2(0, Config.GreaterOrEqual(Region.JMS, 302));
         return sp;
     }
 

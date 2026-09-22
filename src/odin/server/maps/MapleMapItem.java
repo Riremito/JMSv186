@@ -23,80 +23,51 @@ package odin.server.maps;
 import java.awt.Point;
 import odin.client.inventory.Item;
 import odin.client.MapleCharacter;
-import tacos.packet.response.ResCDropPool;
-import tacos.packet.response.ResCDropPool.DropLeaveType;
-import tacos.server.map.TacosMap;
 import tacos.server.map.object.TacosDrop;
 
 public class MapleMapItem extends TacosDrop {
 
-    protected Item item;
-    protected Object dropper;
-    protected int meso = 0;
-    protected int questid = -1;
-    protected byte type;
-    protected boolean playerDrop;
-    protected boolean randDrop = false;
+    private Object dropper;
+    private byte type;
+    private boolean playerDrop;
 
     public MapleMapItem(Item item, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop) {
-        this.item = item;
         this.dropper = dropper;
         this.type = type;
         this.playerDrop = playerDrop;
+        super(item, 0, 0);
         setOwnerId(owner.getId());
         setPosition(position);
     }
 
-    public MapleMapItem(Item item, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop, int questid) {
-        this.item = item;
+    public MapleMapItem(Item item, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop, int quest_id) {
         this.dropper = dropper;
         this.type = type;
         this.playerDrop = playerDrop;
-        this.questid = questid;
+        super(item, quest_id, 0);
         setOwnerId(owner.getId());
         setPosition(position);
     }
 
     public MapleMapItem(int meso, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop) {
-        this.item = null;
         this.dropper = dropper;
-        this.meso = meso;
         this.type = type;
         this.playerDrop = playerDrop;
+        super(null, 0, meso);
         setOwnerId(owner.getId());
         setPosition(position);
     }
 
     public MapleMapItem(Point position, Item item) {
-        this.item = item;
         this.type = 2;
         this.playerDrop = false;
-        this.randDrop = true;
+        super(item, 0, 0);
         setOwnerId(0);
         setPosition(position);
     }
 
-    public final Item getItem() {
-        return item;
-    }
-
-    public final int getQuest() {
-        return questid;
-    }
-
-    public final int getItemId() {
-        if (getMeso() > 0) {
-            return meso;
-        }
-        return item.getItemId();
-    }
-
     public final Object getDropper() {
         return dropper;
-    }
-
-    public final int getMeso() {
-        return meso;
     }
 
     public final boolean isPlayerDrop() {
@@ -105,10 +76,5 @@ public class MapleMapItem extends TacosDrop {
 
     public byte getDropType() {
         return type;
-    }
-
-    public void expire(TacosMap map) {
-        map.removeDrop(getObjectId());
-        map.broadcastMessage(ResCDropPool.DropLeaveField(this, DropLeaveType.EXPIRED));
     }
 }

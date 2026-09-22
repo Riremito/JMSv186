@@ -43,6 +43,7 @@ import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.response.ResCDropPool.DropLeaveType;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -248,8 +249,8 @@ public final class MapleMap extends TacosMap {
         }
     }
 
-    public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short questid) {
-        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, questid);
+    public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short quest_id) {
+        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, quest_id);
         addDrop(mdrop);
         broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
         activateItemReactors(mdrop, chr.getClient());
@@ -316,7 +317,8 @@ public final class MapleMap extends TacosMap {
         @Override
         public void run() {
             if (mapitem != null && mapitem == findDrop(mapitem.getObjectId())) {
-                mapitem.expire(MapleMap.this);
+                removeDrop(mapitem.getObjectId());
+                broadcastMessage(ResCDropPool.DropLeaveField(mapitem, DropLeaveType.EXPIRED));
                 reactor.hitReactor(client);
                 reactor.setTimerActive(false);
 
