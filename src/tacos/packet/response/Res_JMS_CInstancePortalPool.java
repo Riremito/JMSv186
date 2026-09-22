@@ -32,7 +32,7 @@ public class Res_JMS_CInstancePortalPool {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_InstancePortalCreated);
 
         sp.Encode1(1);
-        sp.Encode4(dynamic_portal.getItemID()); // item id
+        sp.Encode4(dynamic_portal.getItemId()); // item id
         sp.Encode4(dynamic_portal.getObjectId()); // object id
         sp.Encode2(dynamic_portal.getPosition().x);
         sp.Encode2(dynamic_portal.getPosition().y);

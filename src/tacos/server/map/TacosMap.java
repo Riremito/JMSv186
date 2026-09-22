@@ -1160,8 +1160,7 @@ public class TacosMap extends TacosMapData {
     private LinkedHashMap<Integer, TacosDynamicPortal> dynamicPortals = new LinkedHashMap<>();
 
     public void addDynamicPortal(TacosDynamicPortal dynamic_portal) {
-        this.runningOid++;
-        dynamic_portal.setObjectId(this.runningOid);
+        dynamic_portal.setObjectId();
         this.dynamicPortals.put(dynamic_portal.getObjectId(), dynamic_portal);
     }
 
@@ -1191,10 +1190,8 @@ public class TacosMap extends TacosMapData {
     }
 
     public TacosDynamicPortal findDynamicPortalLink(int map_id_to) {
-        DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
         for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
-            DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
-            if (dynamic_portal.getMapID() == map_id_to) {
+            if (dynamic_portal.getMapId() == map_id_to) {
                 return dynamic_portal;
             }
         }

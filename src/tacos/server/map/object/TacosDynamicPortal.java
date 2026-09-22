@@ -19,7 +19,6 @@
 package tacos.server.map.object;
 
 import odin.client.MapleCharacter;
-import java.awt.Point;
 import odin.server.maps.MapleMap;
 import tacos.server.map.TacosPortal;
 
@@ -27,68 +26,54 @@ import tacos.server.map.TacosPortal;
  *
  * @author Riremito
  */
-public class TacosDynamicPortal {
+public class TacosDynamicPortal extends TacosMapObject {
 
-    private Point position = new Point();
-    private int objectId;
-
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
-
-    final private int item_id;
-    final private int map_id;
+    private int item_id; // 2420000 or 2420004
+    private int map_id; // 749050200
 
     public TacosDynamicPortal(int item_id, int map_id, int x, int y) {
         this.item_id = item_id;
         this.map_id = map_id;
-        setPosition(new Point(x, y));
+        setPosition(x, y);
     }
 
-    public TacosDynamicPortal(int map_id, int x, int y) {
-        this.item_id = 2420004; // or 2420000
-        this.map_id = map_id;
-        setPosition(new Point(x, y));
+    public int getItemId() {
+        return this.item_id;
     }
 
-    public void warp(MapleCharacter chr) {
-        int map_id_from = chr.getPosMap();
-        MapleMap map_to = chr.findMap(map_id);
-        map_to.findDynamicPortalLink(map_id_from);
+    public int getMapId() {
+        return this.map_id;
+    }
+
+    // official InstancePortal usage. 749050100 to 749050200.
+    public boolean leavePinkBeanCakeEvent(MapleCharacter chr) {
+        MapleMap map_to = chr.findMap(this.map_id);
+
+        if (map_to == null) {
+            return false;
+        }
 
         // no dynamic portal
         TacosPortal spawn_point = map_to.getPortal(0);
         chr.changeMapInternal(map_to, spawn_point.getPosition(), spawn_point);
+        return true;
     }
 
-    public void test(MapleCharacter chr) {
-        int map_id_from = chr.getPosMap();
-        MapleMap map_to = chr.findMap(map_id);
+    // unofficial usage.
+    public boolean enterDynamicPortal(MapleCharacter chr) {
+        MapleMap map_to = chr.findMap(this.map_id);
 
-        TacosDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
-        if (dynamic_portal_to != null) {
-            chr.changeMapDynamicPortal(map_to, dynamic_portal_to.getPosition());
+        if (map_to == null) {
+            return false;
         }
-    }
 
-    public int getItemID() {
-        return item_id;
-    }
+        int map_id_from = chr.getPosMap();
+        TacosDynamicPortal dynamic_portal_to = map_to.findDynamicPortalLink(map_id_from);
+        if (dynamic_portal_to == null) {
+            return false;
+        }
 
-    public int getMapID() {
-        return map_id;
+        chr.changeMapDynamicPortal(map_to, dynamic_portal_to.getPosition());
+        return true;
     }
 }

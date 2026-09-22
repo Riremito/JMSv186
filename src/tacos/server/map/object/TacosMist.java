@@ -22,6 +22,6 @@ package tacos.server.map.object;
  *
  * @author Riremito
  */
-public class TacosMist {
-    
+public class TacosMist extends TacosMapObject {
+
 }

@@ -20,7 +20,6 @@ package tacos.debug;
 
 import java.awt.Point;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
 import tacos.packet.response.Res_JMS_CInstancePortalPool;
@@ -37,7 +36,6 @@ import tacos.wz.WzDataStorage;
 public class CustomCommand {
 
     public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
-        TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
@@ -99,7 +97,7 @@ public class CustomCommand {
                 int map_id_to = dcmd.getInt(1);
 
                 if (map_id_to == 0 || !WzDataStorage.MAP.check(map_id_to)) {
-                    chr.DebugMsg("[AddPortal] Invalid MapID.");
+                    chr.DebugMsg("AddPortal : Invalid MapID.");
                     return true;
                 }
 
@@ -107,7 +105,7 @@ public class CustomCommand {
                 TacosDynamicPortal dynamic_portal = new TacosDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
                 map.addDynamicPortal(dynamic_portal);
                 map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
-                chr.DebugMsg("[AddPortal] " + chr.getPosMap() + " -> " + map_id_to);
+                chr.DebugMsg("AddPortal : " + chr.getPosMap() + " -> " + map_id_to);
                 return true;
             }
             default: {

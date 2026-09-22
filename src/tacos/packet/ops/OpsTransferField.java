@@ -92,5 +92,4 @@ public enum OpsTransferField implements IPacketOps {
             return;
         }
     }
-
 }

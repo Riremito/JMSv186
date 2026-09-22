@@ -585,12 +585,21 @@ public class ReqCUser {
                 int portal_id = cp.Decode4();
                 byte flag = cp.Decode1();
                 // 749050200
-                TacosDynamicPortal dynamic_portal = chr.getMap().findDynamicPortal(portal_id);
+                TacosDynamicPortal dynamic_portal = map.findDynamicPortal(portal_id);
+
                 if (dynamic_portal == null) {
-                    chr.sendStatChanged(true);
+                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
                     return true;
                 }
-                dynamic_portal.warp(chr);
+                // unofficial usage.
+                if (dynamic_portal.enterDynamicPortal(chr)) {
+                    return true;
+                }
+                // official usage.
+                if (!dynamic_portal.leavePinkBeanCakeEvent(chr)) {
+                    chr.SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));
+                    return true;
+                }
                 return true;
             }
             case CP_JMS_InstancePortalCreate: {
