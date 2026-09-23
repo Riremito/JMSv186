@@ -75,6 +75,7 @@ public class MapTask {
                 case 1 -> {
                     for (MapleMonster monster : map.getMonstersInRect(mist.getBox())) {
                         if (mist.makeChanceResult()) {
+                            chr.DebugMsg("Mist : " + mist.getObjectId() + " -> " + monster.getObjectId());
                             int max_hp = (int) monster.getMobMaxHp();
                             int damage = max_hp / (70 - mist.getSkillLevel());
                             //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, mist.getDuration(), false);
@@ -103,7 +104,8 @@ public class MapTask {
                 }
             }
             // mist removal.
-            if (mist.getTimeRemoval() < time) {
+            if (mist.checkTime(time, mist.getDuration())) {
+                chr.DebugMsg("Mist : removed, " + mist.getObjectId());
                 map.removeMist(mist.getObjectId());
                 map.splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaRemoved(mist));
             }

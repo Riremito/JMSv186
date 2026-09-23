@@ -27,11 +27,9 @@ import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
-import tacos.server.map.object.TacosMapObject;
+import tacos.server.map.object.TacosMist;
 
-public class MapleMist extends TacosMapObject {
-
-    private Rectangle mistPosition;
+public class MapleMist extends TacosMist {
 
     private MapleStatEffect source;
     private MobSkill skill;
@@ -39,14 +37,8 @@ public class MapleMist extends TacosMapObject {
     private int skillDelay;
     private int skilllevel;
     private int isPoisonMist;
-    private int ownerId;
-    private long time_created;
-    private long time_removal;
-    private int duration;
 
     public MapleMist(Rectangle mistPosition, MapleMonster mob, MobSkill skill, int dur) {
-        this.mistPosition = mistPosition;
-        this.ownerId = mob.getId();
         this.skill = skill;
         this.skilllevel = skill.getSkillLevel();
 
@@ -54,16 +46,13 @@ public class MapleMist extends TacosMapObject {
         isPoisonMist = 0;
         skillDelay = 0;
 
-        this.time_created = System.currentTimeMillis();
-        this.time_removal = this.time_created + dur;
-        this.duration = dur;
-
+        setOwnerId(mob.getId());
         setPosition(mistPosition.getLocation());
+        setDuration(dur);
+        setBox(mistPosition);
     }
 
     public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source, int dur) {
-        this.mistPosition = mistPosition;
-        this.ownerId = owner.getId();
         this.source = source;
         this.skillDelay = 8;
         this.isMobMist = false;
@@ -79,11 +68,10 @@ public class MapleMist extends TacosMapObject {
                 isPoisonMist = 2;
         }
 
-        this.time_created = System.currentTimeMillis();
-        this.time_removal = this.time_created + dur;
-        this.duration = dur;
-
+        setOwnerId(owner.getId());
         setPosition(mistPosition.getLocation());
+        setDuration(dur);
+        setBox(mistPosition);
     }
 
     public Skill getSourceSkill() {
@@ -106,16 +94,8 @@ public class MapleMist extends TacosMapObject {
         return skilllevel;
     }
 
-    public int getOwnerId() {
-        return ownerId;
-    }
-
     public MobSkill getMobSkill() {
         return this.skill;
-    }
-
-    public Rectangle getBox() {
-        return mistPosition;
     }
 
     public MapleStatEffect getSource() {
@@ -124,17 +104,5 @@ public class MapleMist extends TacosMapObject {
 
     public boolean makeChanceResult() {
         return source.makeChanceResult();
-    }
-
-    public long getTime() {
-        return this.time_created;
-    }
-
-    public long getTimeRemoval() {
-        return this.time_removal;
-    }
-
-    public int getDuration() {
-        return this.duration;
     }
 }

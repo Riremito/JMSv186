@@ -44,6 +44,7 @@ public class TacosMapObject {
 
     public void setObjectId() {
         this.object_id = OBJECT_ID++;
+        setTimeCreated();
     }
 
     public void setObjectId(int object_id) {

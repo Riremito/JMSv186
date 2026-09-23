@@ -18,10 +18,30 @@
  */
 package tacos.server.map.object;
 
+import java.awt.Rectangle;
+
 /**
  *
  * @author Riremito
  */
 public class TacosMist extends TacosMapObject {
 
+    private int duration;
+    private Rectangle box;
+
+    public int getDuration() {
+        return this.duration;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public Rectangle getBox() {
+        return this.box;
+    }
+
+    public void setBox(Rectangle box) {
+        this.box = box;
+    }
 }
