@@ -26,7 +26,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.response.data.RD_CharacterData;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.RD_CStage;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 
 /**
  *
@@ -90,7 +90,7 @@ public class ResCStage {
         }
 
         sp.Encode1(0, Config.GreaterOrEqual(Region.KMS, 197));
-        sp.Encode8(SharedDate.getTimestamp()); // ftServer
+        sp.Encode8(TacosSharedDate.getTimestamp()); // ftServer
         sp.Encode4(100, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 76)); // nMobStatAdjustRate
         sp.Encode1(0, Config.GreaterOrEqual(Region.KMS, 119) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         sp.Encode1(0, Config.GreaterOrEqual(Region.KMS, 127) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
@@ -142,7 +142,7 @@ public class ResCStage {
         if (part == 2) {
             // 008AAA80
             sp.EncodeBuffer(RD_CharacterData.Encode_302_2(chr, datamask_2));
-            sp.Encode8(SharedDate.getTimestamp());
+            sp.Encode8(TacosSharedDate.getTimestamp());
             sp.Encode4(100); // nMobStatAdjustRate
             sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 308));
             sp.Encode1(0);

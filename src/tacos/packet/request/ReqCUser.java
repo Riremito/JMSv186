@@ -31,7 +31,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
 import tacos.config.Region;
 import odin.constants.GameConstants;
-import tacos.shared.SharedExpTable;
+import tacos.shared.TacosSharedExpTable;
 import tacos.debug.DebugLogger;
 import odin.handling.world.MapleParty;
 import java.util.ArrayList;
@@ -109,7 +109,7 @@ import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
 import tacos.shared.TacosShared;
-import tacos.task.CharacterTask;
+import tacos.task.TacosPlayerTask;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
@@ -434,7 +434,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserTemporaryStatUpdateRequest: {
-                CharacterTask.updateBuff(chr, System.currentTimeMillis());
+                TacosPlayerTask.updateBuff(chr, System.currentTimeMillis());
                 return true;
             }
             case CP_UserPortalScriptRequest: {
@@ -3359,7 +3359,7 @@ public class ReqCUser {
     }
 
     private static boolean OnUserTempExpUseRequest(MapleCharacter chr) {
-        int exp_table = SharedExpTable.getExpNeededForLevel(chr.getLevel());
+        int exp_table = TacosSharedExpTable.getExpNeededForLevel(chr.getLevel());
         int exp_current = chr.getExp();
         int exp_temp = chr.getGashaEXP();
 

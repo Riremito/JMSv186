@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
-import tacos.shared.SharedExpTable;
+import tacos.shared.TacosSharedExpTable;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
 import odin.handling.world.MapleParty;
@@ -131,7 +131,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosPortal;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.wz.WzDataStorage;
 import tacos.wz.opt.FieldOpt;
 
@@ -651,7 +651,7 @@ public class MapleCharacter extends TacosCharacter {
                     }
                     case 1: // EXP
                     {
-                        final int required_exp = SharedExpTable.getExpNeededForLevel(level);
+                        final int required_exp = TacosSharedExpTable.getExpNeededForLevel(level);
                         int caught_exp = Randomizer.rand(required_exp / ((3 - bait_level) * 100), required_exp / ((3 - bait_level) * 10));
                         if (caught_exp == 0) {
                             caught_exp += 1;
@@ -870,7 +870,7 @@ public class MapleCharacter extends TacosCharacter {
                 SendPacket(ResCUserLocal.useCharm((byte) charms, (byte) 0));
             } else {
                 float diepercentage = 0.0f;
-                int expforlevel = SharedExpTable.getExpNeededForLevel(level);
+                int expforlevel = TacosSharedExpTable.getExpNeededForLevel(level);
                 if (map.isTown() || FieldOpt.FIELDOPT_PORTALSCROLLLIMIT.check(map.getFieldLimit())) {
                     diepercentage = 0.01f;
                 } else {
@@ -964,7 +964,7 @@ public class MapleCharacter extends TacosCharacter {
         if (gain > 0 && total < gain) { //just in case
             total = Integer.MAX_VALUE;
         }
-        int needed = SharedExpTable.getExpNeededForLevel(level);
+        int needed = TacosSharedExpTable.getExpNeededForLevel(level);
         if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
             if (exp + total > needed) {
                 setExp(needed);
@@ -977,7 +977,7 @@ public class MapleCharacter extends TacosCharacter {
                 exp += total;
                 levelUp();
                 leveled = true;
-                needed = SharedExpTable.getExpNeededForLevel(level);
+                needed = TacosSharedExpTable.getExpNeededForLevel(level);
                 if (exp > needed) {
                     setExp(needed);
                 }
@@ -991,7 +991,7 @@ public class MapleCharacter extends TacosCharacter {
         if (gain != 0) {
             if (exp < 0) { // After adding, and negative
                 if (gain > 0) {
-                    setExp(SharedExpTable.getExpNeededForLevel(level));
+                    setExp(TacosSharedExpTable.getExpNeededForLevel(level));
                 } else if (gain < 0) {
                     setExp(0);
                 }
@@ -1283,9 +1283,9 @@ public class MapleCharacter extends TacosCharacter {
             maxmp += Randomizer.rand(50, 100);
         }
         maxmp += stats.getTotalInt() / 10;
-        exp -= SharedExpTable.getExpNeededForLevel(level);
-        if (SharedExpTable.getExpNeededForLevel(level + 1) < exp) {
-            exp = SharedExpTable.getExpNeededForLevel(level + 1) - 1;
+        exp -= TacosSharedExpTable.getExpNeededForLevel(level);
+        if (TacosSharedExpTable.getExpNeededForLevel(level + 1) < exp) {
+            exp = TacosSharedExpTable.getExpNeededForLevel(level + 1) - 1;
         }
         if (exp < 0) {
             exp = 0;
@@ -2888,7 +2888,7 @@ public class MapleCharacter extends TacosCharacter {
     public void gainExp(final int total, final boolean show, final boolean inChat, final boolean white) {
         try {
             int prevexp = getExp();
-            int needed = SharedExpTable.getExpNeededForLevel(level);
+            int needed = TacosSharedExpTable.getExpNeededForLevel(level);
             if (level >= 200 || (GameConstants.isKOC(job) && level >= 120)) {
                 if (exp + total > needed) {
                     setExp(needed);
@@ -2901,7 +2901,7 @@ public class MapleCharacter extends TacosCharacter {
                     exp += total;
                     levelUp();
                     leveled = true;
-                    needed = SharedExpTable.getExpNeededForLevel(level);
+                    needed = TacosSharedExpTable.getExpNeededForLevel(level);
                     if (exp > needed) {
                         setExp(needed);
                     }
@@ -3242,7 +3242,7 @@ public class MapleCharacter extends TacosCharacter {
                 if (mins2 <= 0 || mins < mins2) {
                     updateOneInfo(questid, "min", String.valueOf(mins));
                     updateOneInfo(questid, "sec", String.valueOf(secs));
-                    updateOneInfo(questid, "date", SharedDate.getDateString());
+                    updateOneInfo(questid, "date", TacosSharedDate.getDateString());
                 }
                 final int newCmp = Integer.parseInt(getOneInfo(questid, "cmp")) + 1;
                 updateOneInfo(questid, "cmp", String.valueOf(newCmp));

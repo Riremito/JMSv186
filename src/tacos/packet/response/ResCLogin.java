@@ -34,7 +34,7 @@ import tacos.property.Property_World;
 import tacos.server.TacosChannel;
 import tacos.server.TacosServer;
 import tacos.server.TacosWorld;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.tools.TacosTools;
 
 /**
@@ -162,9 +162,9 @@ public class ResCLogin {
                             sp.Encode1(0);
                             sp.Encode1(0);
                             sp.Encode1(0, Config.Between(Region.CMS, 85, 88));
-                            sp.Encode8(SharedDate.getTimestamp());
+                            sp.Encode8(TacosSharedDate.getTimestamp());
                             sp.Encode1(0);
-                            sp.Encode8(SharedDate.getTimestamp());
+                            sp.Encode8(TacosSharedDate.getTimestamp());
                             sp.Encode8(0);
                             sp.EncodeStr("");
                             sp.Encode1(1); // 0 = open blue message box.

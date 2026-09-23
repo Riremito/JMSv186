@@ -20,7 +20,7 @@ package tacos;
 
 import tacos.config.Content;
 import tacos.property.Property;
-import tacos.shared.SharedExpTable;
+import tacos.shared.TacosSharedExpTable;
 import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
 import java.sql.SQLException;
@@ -86,7 +86,7 @@ public class Start {
         //Content.showContentList();
         // update exp table
         DebugLogger.SetupLog("EXP_TABLE");
-        SharedExpTable.init();
+        TacosSharedExpTable.init();
         // update packet enum values
         DebugLogger.SetupLog("PACKET_OPS");
         tacos.packet.ops.PacketOps.initAll();

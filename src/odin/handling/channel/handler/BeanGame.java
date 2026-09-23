@@ -6,7 +6,7 @@ import odin.client.MapleBeans;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.constants.BeansConstants;
-import tacos.shared.SharedExpTable;
+import tacos.shared.TacosSharedExpTable;
 import java.util.ArrayList;
 import java.util.List;
 import tacos.packet.ClientPacket;
@@ -287,7 +287,7 @@ public class BeanGame {
                         || (第一排 == 6 && 第三排 == 3 && 第二排 == 8)
                         || (第一排 == 3 && 第三排 == 6 && 第二排 == 9)) {
                     int itemId = 0;
-                    int exp = SharedExpTable.getExpNeededForLevel(client.getPlayer().getLevel() + 1) / 200;
+                    int exp = TacosSharedExpTable.getExpNeededForLevel(client.getPlayer().getLevel() + 1) / 200;
                     int x = Randomizer.nextInt(100) + 1;
                     int count = 1;
                     switch (第二排) {

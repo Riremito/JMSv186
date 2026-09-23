@@ -41,8 +41,8 @@ public class TacosTask {
 
         long time = System.currentTimeMillis();
 
-        MapTask.update(chr, map, time);
-        CharacterTask.update(chr, time);
+        TacosMapTask.update(chr, map, time);
+        TacosPlayerTask.update(chr, time);
         return true;
     }
 }

@@ -28,7 +28,7 @@ import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsITC;
 import tacos.packet.response.builder.PB_ITC;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 
 /**
  *
@@ -284,7 +284,7 @@ public class ResCITC {
             }
         }
 
-        data.Encode8(SharedDate.getTimestamp(mts_item.getEndingDate())); // ftITCDateExpired
+        data.Encode8(TacosSharedDate.getTimestamp(mts_item.getEndingDate())); // ftITCDateExpired
         data.EncodeStr(""); // sUserID
         data.EncodeStr(mts_item.getSeller()); // sGameID
         data.EncodeStr(""); // sComment

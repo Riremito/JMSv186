@@ -52,7 +52,7 @@ public class TacosChannel extends TacosServer {
     private TacosWorld world = null;
     private int channel;
     private int language = 0;
-    private OnlinePlayers onlines;
+    private TacosOnlinePlayers onlines;
     private String serverMessage;
     private int expRate;
     private int mesoRate;
@@ -143,7 +143,7 @@ public class TacosChannel extends TacosServer {
         return map;
     }
 
-    public OnlinePlayers getOnlinePlayers() {
+    public TacosOnlinePlayers getOnlinePlayers() {
         return this.onlines;
     }
 
@@ -241,7 +241,7 @@ public class TacosChannel extends TacosServer {
             String channel_name = Property_World.getName() + "-" + channel;
             int language = Region.EMS.check() ? i % Property_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
-            server.onlines = new OnlinePlayers();
+            server.onlines = new TacosOnlinePlayers();
             TacosServer.add(server);
             server.run(Property_World.getIP(), channel_port, new PacketHandler_Game(server, channel));
             server.setWorld(world);
@@ -269,7 +269,7 @@ public class TacosChannel extends TacosServer {
             TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.setWorld(dummy_world);
             dummy_world.addChannel(server);
-            server.onlines = new OnlinePlayers();
+            server.onlines = new TacosOnlinePlayers();
         }
     }
 

@@ -26,7 +26,7 @@ import tacos.debug.DebugLogger;
  *
  * @author Riremito
  */
-public class OnlinePlayers {
+public class TacosOnlinePlayers {
 
     private ArrayList<MapleCharacter> players = new ArrayList<>();
 

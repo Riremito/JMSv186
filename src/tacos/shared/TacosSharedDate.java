@@ -30,7 +30,7 @@ import java.util.Calendar;
  *
  * @author Riremito
  */
-public class SharedDate {
+public class TacosSharedDate {
 
     private static final String DATE_WINDOWS_BASE = "1601-01-01 00:00:00"; // UTC+9 (JST)
     private static final String DATE_MAGICAL = "2027-07-07 07:00:00";

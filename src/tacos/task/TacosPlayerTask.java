@@ -30,7 +30,7 @@ import tacos.wz.WzXML;
  *
  * @author Riremito
  */
-public class CharacterTask {
+public class TacosPlayerTask {
 
     public static void updateBuff(MapleCharacter chr, long time) {
         for (TacosBuff.Buff buff : chr.getBuff().getCTSTimeout(time)) {

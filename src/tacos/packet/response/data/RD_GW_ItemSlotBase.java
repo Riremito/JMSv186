@@ -23,7 +23,7 @@ import odin.client.inventory.Item;
 import tacos.config.Config;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.packet.ServerPacket;
 
 /**
@@ -255,7 +255,7 @@ public class RD_GW_ItemSlotBase {
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8(SharedDate.getMagicalExpirationDate()); // dateDead
+                data.Encode8(TacosSharedDate.getMagicalExpirationDate()); // dateDead
                 if (Config.LessOrEqual(Region.KMS, 3)) {
                     break;
                 }
@@ -603,7 +603,7 @@ public class RD_GW_ItemSlotBase {
             data.Encode8(item.getUniqueId());
         }
 
-        data.Encode8(SharedDate.getNoExpirationDate());
+        data.Encode8(TacosSharedDate.getNoExpirationDate());
 
         if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
             data.Encode4(0);

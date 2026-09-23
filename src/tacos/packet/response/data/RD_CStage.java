@@ -29,7 +29,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCommodity;
 import tacos.packet.response.ResCCashShop;
 import tacos.server.TacosITC;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.wz.EtcWz;
 import tacos.wz.EtcWz.CS_COMMODITY;
 
@@ -150,7 +150,7 @@ public class RD_CStage {
         data.Encode4(TacosITC.m_nCommissionBase); // m_nCommissionBase
         data.Encode4(TacosITC.m_nAuctionDurationMin); // m_nAuctionDurationMin
         data.Encode4(TacosITC.m_nAuctionDurationMax); // m_nAuctionDurationMax
-        data.Encode8(SharedDate.getTimestamp(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // ftServer
+        data.Encode8(TacosSharedDate.getTimestamp(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // ftServer
         return data.getBytes();
     }
 

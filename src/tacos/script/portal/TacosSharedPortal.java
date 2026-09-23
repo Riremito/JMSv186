@@ -27,7 +27,7 @@ import tacos.server.map.TacosPortal;
  *
  * @author Riremito
  */
-public class SharedPortal {
+public class TacosSharedPortal {
 
     // enter
     private int target_map_id;
@@ -36,7 +36,7 @@ public class SharedPortal {
     private int return_map_id = TacosConstants.MAP_ID_PERION; // PerionFM!
     private String return_portal_name = "";
 
-    public SharedPortal(int target_map_id, String target_portal_name) {
+    public TacosSharedPortal(int target_map_id, String target_portal_name) {
         this.target_map_id = target_map_id;
         this.target_portal_name = target_portal_name;
     }
@@ -93,5 +93,4 @@ public class SharedPortal {
     public void setReturnPortalName(String return_portal_name) {
         this.return_portal_name = return_portal_name;
     }
-
 }

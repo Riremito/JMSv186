@@ -37,7 +37,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.packet.ServerPacket;
 import tacos.shared.TacosShared;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 
 /**
  *
@@ -818,7 +818,7 @@ public class RD_CharacterData {
             }
         }
         data.Encode4(0);
-        data.Encode8(SharedDate.getTimestamp());
+        data.Encode8(TacosSharedDate.getTimestamp());
         if ((datamask & 0x400000000000L) != 0) {
             if (Config.GreaterOrEqual(Region.JMS, 308)) {
                 data.Encode4(0);
@@ -868,7 +868,7 @@ public class RD_CharacterData {
 
             // not in v165
             if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 83)) {
-                data.Encode8(SharedDate.getTimestamp(skill.getValue().expiration));
+                data.Encode8(TacosSharedDate.getTimestamp(skill.getValue().expiration));
             }
 
             if (TacosShared.is_skill_need_master_level(skill.getKey().getId())) {
@@ -926,7 +926,7 @@ public class RD_CharacterData {
         data.Encode2(chr.getCompletedQuests().size());
         for (MapleQuestStatus mqs : chr.getCompletedQuests()) {
             data.Encode2(mqs.getQuest().getId());
-            data.Encode8(SharedDate.getTimestamp(mqs.getCompletionTime()));
+            data.Encode8(TacosSharedDate.getTimestamp(mqs.getCompletionTime()));
         }
 
         if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {

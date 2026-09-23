@@ -20,7 +20,7 @@ package tacos.packet.response.data;
 
 import tacos.client.TacosClient;
 import odin.client.inventory.Item;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.packet.ServerPacket;
 import odin.server.CashItemFactory;
 
@@ -40,7 +40,7 @@ public class RD_CCashShop {
         data.Encode4(0); // first?
         data.Encode2(item.getQuantity());
         data.EncodeBuffer(item.getOwner(), 13);
-        data.Encode8(SharedDate.getMagicalExpirationDate());
+        data.Encode8(TacosSharedDate.getMagicalExpirationDate());
         data.Encode8(CashItemFactory.getInstance().getItemSN(item.getItemId()));
         return data.getBytes();
     }

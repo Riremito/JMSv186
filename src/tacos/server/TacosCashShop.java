@@ -28,12 +28,12 @@ import tacos.network.PacketHandler_CashShop;
 public class TacosCashShop extends TacosServer {
 
     private int world_id;
-    private OnlinePlayers onlines;
+    private TacosOnlinePlayers onlines;
 
     public TacosCashShop(String server_name) {
         super(server_name);
         setType(TacosServerType.CASHSHOP_SERVER);
-        this.onlines = new OnlinePlayers();
+        this.onlines = new TacosOnlinePlayers();
     }
 
     @Override
@@ -46,7 +46,7 @@ public class TacosCashShop extends TacosServer {
         return TacosWorld.find(this.world_id);
     }
 
-    public OnlinePlayers getOnlinePlayers() {
+    public TacosOnlinePlayers getOnlinePlayers() {
         return this.onlines;
     }
 

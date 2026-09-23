@@ -27,7 +27,7 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
-import tacos.shared.SharedExpTable;
+import tacos.shared.TacosSharedExpTable;
 import tacos.wz.ids.DWI_Random;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -796,7 +796,7 @@ public class DebugCommand {
                     }
                 }
 
-                chr.gainExp(SharedExpTable.getExpNeededForLevel(chr.getLevel()), true, true, true);
+                chr.gainExp(TacosSharedExpTable.getExpNeededForLevel(chr.getLevel()), true, true, true);
                 chr.DebugMsg("levelup : done.");
                 return true;
             }
@@ -821,7 +821,7 @@ public class DebugCommand {
                 }
 
                 for (int i = chr.getLevel(); i < new_level; i++) {
-                    chr.gainExp(SharedExpTable.getExpNeededForLevel(i), true, true, true);
+                    chr.gainExp(TacosSharedExpTable.getExpNeededForLevel(i), true, true, true);
                 }
 
                 chr.DebugMsg("level : done.");

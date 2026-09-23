@@ -36,13 +36,13 @@ public class TacosITC extends TacosServer {
     public static final int MIN_MTS = 110;
 
     private int world_id;
-    private OnlinePlayers onlines;
+    private TacosOnlinePlayers onlines;
 
     public TacosITC(String server_name) {
         super(server_name);
         setType(TacosServerType.ITC_SERVER);
 
-        this.onlines = new OnlinePlayers();
+        this.onlines = new TacosOnlinePlayers();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TacosITC extends TacosServer {
         return TacosWorld.find(this.world_id);
     }
 
-    public OnlinePlayers getOnlinePlayers() {
+    public TacosOnlinePlayers getOnlinePlayers() {
         return this.onlines;
     }
 

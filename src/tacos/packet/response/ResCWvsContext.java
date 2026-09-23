@@ -26,7 +26,7 @@ import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import tacos.config.Region;
 import odin.constants.GameConstants;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.MapleGuildRanking;
 import odin.handling.world.MapleParty;
@@ -371,7 +371,7 @@ public class ResCWvsContext {
         sp.Encode4(level);
         sp.Encode4(masterlevel);
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            sp.Encode8(SharedDate.getMagicalExpirationDate());
+            sp.Encode8(TacosSharedDate.getMagicalExpirationDate());
         }
         sp.Encode1(4);
         return sp;
@@ -467,7 +467,7 @@ public class ResCWvsContext {
                         break;
                     }
                     case QUEST_COMPLETE: {
-                        sp.Encode8(SharedDate.getTimestamp());
+                        sp.Encode8(TacosSharedDate.getTimestamp());
                         break;
                     }
                     default: {
@@ -622,7 +622,7 @@ public class ResCWvsContext {
             sp.Encode4(notes.getInt("id"));
             sp.EncodeStr(notes.getString("from"));
             sp.EncodeStr(notes.getString("message"));
-            sp.Encode8(SharedDate.getTimestamp(notes.getLong("timestamp")));
+            sp.Encode8(TacosSharedDate.getTimestamp(notes.getLong("timestamp")));
             sp.Encode1(notes.getInt("gift"));
             notes.next();
         }
@@ -2005,7 +2005,7 @@ public class ResCWvsContext {
         data.Encode4(rs.localthreadID);
         data.Encode4(rs.ownerID);
         data.EncodeStr(rs.name);
-        data.Encode8(SharedDate.getTimestamp(rs.timestamp));
+        data.Encode8(TacosSharedDate.getTimestamp(rs.timestamp));
         data.Encode4(rs.icon);
         data.Encode4(rs.getReplyCount());
         return data.getBytes();
@@ -2017,7 +2017,7 @@ public class ResCWvsContext {
         sp.Encode1(7);
         sp.Encode4(thread.localthreadID);
         sp.Encode4(thread.ownerID);
-        sp.Encode8(SharedDate.getTimestamp(thread.timestamp));
+        sp.Encode8(TacosSharedDate.getTimestamp(thread.timestamp));
         sp.EncodeStr(thread.name);
         sp.EncodeStr(thread.text);
         sp.Encode4(thread.icon);
@@ -2025,7 +2025,7 @@ public class ResCWvsContext {
         for (MapleBBSThread.MapleBBSReply reply : thread.replies.values()) {
             sp.Encode4(reply.replyid);
             sp.Encode4(reply.ownerID);
-            sp.Encode8(SharedDate.getTimestamp(reply.timestamp));
+            sp.Encode8(TacosSharedDate.getTimestamp(reply.timestamp));
             sp.EncodeStr(reply.content);
         }
         return sp;

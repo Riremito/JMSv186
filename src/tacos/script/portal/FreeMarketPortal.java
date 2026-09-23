@@ -24,7 +24,7 @@ import tacos.constants.TacosConstants;
  *
  * @author Riremito
  */
-public class FreeMarketPortal extends SharedPortal {
+public class FreeMarketPortal extends TacosSharedPortal {
 
     public FreeMarketPortal() {
         super(TacosConstants.MAP_ID_FREE_MARKET, TacosConstants.PORTAL_FREE_MARKET);

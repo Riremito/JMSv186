@@ -23,7 +23,7 @@ import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import tacos.packet.ClientPacket;
@@ -93,7 +93,7 @@ public class ReqCCashShop {
     public static void updateFreeCouponDate(MapleCharacter chr) {
         Item item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
         if (item != null) {
-            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, SharedDate.getMagicalExpirationDate()));
+            chr.SendPacket(ResCCashShop.FreeCouponDialog(true, TacosSharedDate.getMagicalExpirationDate()));
         } else {
             chr.SendPacket(ResCCashShop.FreeCouponDialog(false, 0));
         }

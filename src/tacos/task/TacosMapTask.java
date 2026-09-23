@@ -35,7 +35,7 @@ import tacos.server.map.TacosSpawnPoint;
  *
  * @author Riremito
  */
-public class MapTask {
+public class TacosMapTask {
 
     private static final int DROP_ITEM_EXPIRED = 120000;
 
