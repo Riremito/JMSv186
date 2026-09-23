@@ -26,10 +26,7 @@ import tacos.server.map.object.TacosNpc;
 
 public class MapleNPC extends TacosNpc {
 
-    private String name = "MISSINGNO";
-
-    public MapleNPC(int npc_id, String name) {
-        this.name = name;
+    public MapleNPC(int npc_id) {
         setId(npc_id);
     }
 
@@ -39,13 +36,5 @@ public class MapleNPC extends TacosNpc {
 
     public void sendShop(TacosClient client) {
         MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(client);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String n) {
-        this.name = n;
     }
 }

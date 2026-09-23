@@ -33,15 +33,15 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCNpcPool {
 
-    public static ServerPacket ImitatedNPCData(PlayerNPC npc) {
+    public static ServerPacket ImitatedNPCData(PlayerNPC pnpc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ImitatedNPCData);
 
-        int number_of_npcs = (npc.getCharacter() == null) ? 0 : 1;
+        int number_of_npcs = (pnpc.getPlayer() == null) ? 0 : 1;
         sp.Encode1(number_of_npcs); // number of npcs
         if (number_of_npcs != 0) {
-            sp.Encode4(npc.getId()); // dwTemplateID
-            sp.EncodeStr(npc.getName()); // sName
-            sp.EncodeBuffer(RD_AvatarLook.Encode(npc.getCharacter())); // AvatarLook::Decode
+            sp.Encode4(pnpc.getId()); // dwTemplateID
+            sp.EncodeStr(pnpc.getPlayerName()); // sName
+            sp.EncodeBuffer(RD_AvatarLook.Encode(pnpc.getPlayer())); // AvatarLook::Decode
         }
 
         return sp;

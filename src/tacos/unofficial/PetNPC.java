@@ -18,7 +18,6 @@
  */
 package tacos.unofficial;
 
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
@@ -45,14 +44,14 @@ public class PetNPC implements IPetEx {
     }
 
     @Override
-    public boolean spawn(int id) {
+    public boolean spawn(int npc_id) {
         remove();
 
-        if (!WzDataStorage.NPC.check(id)) {
+        if (!WzDataStorage.NPC.check(npc_id)) {
             return false;
         }
 
-        this.npc = MapleLifeFactory.getNPC(id);
+        this.npc = new MapleNPC(npc_id);
         this.npc.setCy(this.character.getPosition().y);
         this.npc.setRx0(this.character.getPosition().x + 50);
         this.npc.setRx1(this.character.getPosition().x - 50);

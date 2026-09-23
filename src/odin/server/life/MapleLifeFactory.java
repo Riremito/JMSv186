@@ -28,7 +28,6 @@ import tacos.wz.WzXML;
 public class MapleLifeFactory {
 
     private static Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
-    private static Map<Integer, String> npcNames = new HashMap<>();
 
     public static List<Integer> getQuestCount(int id) {
         return WzXML.MOB.getQuestCountGroup().get(id);
@@ -45,14 +44,5 @@ public class MapleLifeFactory {
             monsterStats.put(mob_id, stats);
         }
         return new MapleMonster(mob_id, stats);
-    }
-
-    public static MapleNPC getNPC(int npc_id) {
-        String name = npcNames.get(npc_id);
-        if (name == null) {
-            name = WzXML.STRING.getNpcName(npc_id);
-            npcNames.put(npc_id, name);
-        }
-        return new MapleNPC(npc_id, name);
     }
 }

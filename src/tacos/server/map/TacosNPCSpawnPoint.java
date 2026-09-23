@@ -19,7 +19,6 @@
 package tacos.server.map;
 
 import java.awt.Point;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
@@ -79,7 +78,7 @@ public class TacosNPCSpawnPoint {
             return null;
         }
 
-        this.npc = MapleLifeFactory.getNPC(this.id);
+        this.npc = new MapleNPC(this.id);
         this.npc.setPosition(new Point(this.x, this.y));
         this.npc.setFootholdId(this.fh);
         this.npc.setF(npc.getF() == 1 ? 0 : 1);

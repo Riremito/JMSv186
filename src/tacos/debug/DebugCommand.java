@@ -295,7 +295,7 @@ public class DebugCommand {
                     chr.DebugMsg("npc : invalid id.");
                     return true;
                 }
-                MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
+                MapleNPC npc = new MapleNPC(npc_id);
                 npc.setPosition(chr.getPosition());
                 npc.setCy(chr.getPosition().y);
                 npc.setRx0(chr.getPosition().x - 50);
@@ -1030,10 +1030,6 @@ public class DebugCommand {
     }
 
     public static boolean remoteNPCTalk(TacosClient client, int npc_script_id, int npc_id) {
-        MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
-        if (npc == null || npc.getName().equals("MISSINGNO")) {
-            return false;
-        }
         TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
         return true;
     }

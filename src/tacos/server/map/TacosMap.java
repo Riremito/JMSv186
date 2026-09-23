@@ -41,7 +41,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapScriptMethods;
@@ -937,7 +936,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void spawnNpc(int npc_id, Point pos) {
-        MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
+        MapleNPC npc = new MapleNPC(npc_id);
         npc.setPosition(pos);
         npc.setCy(pos.y);
         npc.setRx0(pos.x + 50);

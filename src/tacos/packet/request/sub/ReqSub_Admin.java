@@ -23,7 +23,6 @@ import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCNpcPool;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
@@ -202,7 +201,7 @@ public class ReqSub_Admin {
                 int x = cp.Decode4();
                 int y = cp.Decode4();
 
-                CreateNPC(chr, npcid, x, y);
+                createNPC(chr, npcid, x, y);
                 return true;
             }
             default: {
@@ -265,8 +264,8 @@ public class ReqSub_Admin {
         return true;
     }
 
-    private static boolean CreateNPC(MapleCharacter chr, int npcid, int x, int y) {
-        if (!WzDataStorage.NPC.check(npcid)) {
+    private static boolean createNPC(MapleCharacter chr, int npc_id, int x, int y) {
+        if (!WzDataStorage.NPC.check(npc_id)) {
             chr.DebugMsg("Invalid NPCID");
             return false;
         }
@@ -277,14 +276,8 @@ public class ReqSub_Admin {
             return false;
         }
 
-        MapleNPC npc = MapleLifeFactory.getNPC(npcid);
-
-        if (npc == null || npc.getName().equals("MISSINGNO")) {
-            return false;
-        }
-
+        MapleNPC npc = new MapleNPC(npc_id);
         Point npc_xy = new Point(x, y);
-
         npc.setPosition(npc_xy);
         npc.setCy(x);
         npc.setRx0(x + 50);

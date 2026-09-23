@@ -26,13 +26,19 @@ import odin.client.MapleCharacter;
 public class PlayerNPC extends MapleNPC {
 
     private MapleCharacter player = null;
+    private String player_name = "";
 
     public PlayerNPC(int npc_id, MapleCharacter player) {
-        super(npc_id, player.getName());
+        super(npc_id);
         this.player = player;
+        this.player_name = player.getName();
     }
 
-    public MapleCharacter getCharacter() {
+    public MapleCharacter getPlayer() {
         return this.player;
+    }
+
+    public String getPlayerName() {
+        return this.player_name;
     }
 }
