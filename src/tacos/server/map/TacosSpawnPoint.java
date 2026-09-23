@@ -59,7 +59,7 @@ public class TacosSpawnPoint {
         this.fh = WzDataTool.getInt(life.getChildByPath("fh"), 0);
         this.hide = WzDataTool.getInt(life.getChildByPath("hide"), 0);
         this.id = WzDataTool.getInt(life.getChildByPath("id"), 0);
-        this.mobTime = WzDataTool.getInt(life.getChildByPath("mobTime"), 0);
+        this.mobTime = WzDataTool.getInt(life.getChildByPath("mobTime"), 0) * 1000;
         this.rx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
         this.rx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
         //this.type = WzDataTool.getString(life.getChildByPath("type"));
@@ -77,6 +77,10 @@ public class TacosSpawnPoint {
 
     public int getId() {
         return this.id;
+    }
+
+    public int getMobTime() {
+        return this.mobTime;
     }
 
     private MapleMonster monster = null;

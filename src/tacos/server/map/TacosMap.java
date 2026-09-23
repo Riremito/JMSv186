@@ -57,6 +57,7 @@ import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import tacos.client.TacosCharacter;
+import tacos.config.DeveloperMode;
 import tacos.server.map.object.TacosDragon;
 import tacos.server.map.object.TacosSkillPet;
 import tacos.constants.TacosConstants;
@@ -86,7 +87,7 @@ import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
-import tacos.task.TacosMapTask;
+import tacos.server.TacosTask;
 
 /**
  *
@@ -1508,29 +1509,11 @@ public class TacosMap extends TacosMapData {
         return TacosWorld.find(0).getChannelServer(channel).findMap(getForcedReturnId());
     }
 
-    // update.
-    private long time_updated = 0;
-
-    public boolean updateTime(long time, long interval) {
-        if (this.time_updated == 0) {
-            this.time_updated = time;
-            return false;
-        }
-
-        long delta = time - this.time_updated;
-        if (interval <= delta) {
-            this.time_updated = time;
-            return true;
-        }
-
-        return false;
-    }
-
-    private static final int DROP_ITEM_EXPIRED = 120000;
-    private final TacosMapTask task_map = new TacosMapTask();
-    private final TacosMapTask task_drop_removal = new TacosMapTask();
-    private final TacosMapTask task_mob_regen = new TacosMapTask();
-    private final TacosMapTask task_mist = new TacosMapTask();
+    // update task.
+    private final TacosTask task_map = new TacosTask();
+    private final TacosTask task_drop_removal = new TacosTask();
+    private final TacosTask task_mob_regen = new TacosTask();
+    private final TacosTask task_mist = new TacosTask();
 
     public boolean update(MapleCharacter player, long time_current) {
         // map update.
@@ -1541,7 +1524,7 @@ public class TacosMap extends TacosMapData {
         // drop removal.
         if (this.task_drop_removal.check(time_current, 5000)) {
             for (MapleMapItem mmi : getAllItems()) {
-                if (mmi.checkTime(time_current, DROP_ITEM_EXPIRED)) {
+                if (mmi.checkTime(time_current, DeveloperMode.DM_TEST.get() ? 10000 : 120000)) {
                     removeDrop(mmi.getObjectId());
                     broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
                 }
@@ -1550,7 +1533,7 @@ public class TacosMap extends TacosMapData {
         // mob regen.
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : player.getMap().getMonsterSpawnPoint()) {
-                if (sp.getLastRegenTime() + getCreateMobInterval() <= time_current) {
+                if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
                     MapleMonster monster = sp.regen((MapleMap) this);
                     if (monster != null) {
                         addMonster(monster);

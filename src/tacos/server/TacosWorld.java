@@ -335,4 +335,15 @@ public class TacosWorld {
         broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("[お祝い] " + player.getPlayerNameWithMedal() + "様がレベル" + max_level + "になりました。おめでとうございます。").build()));
         return true;
     }
+
+    // update task.
+    private final TacosTask task_world = new TacosTask();
+
+    public boolean update(MapleCharacter player, long time_current) {
+        if (!this.task_world.check(time_current, 60000)) {
+            return false;
+        }
+
+        return true;
+    }
 }

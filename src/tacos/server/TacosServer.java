@@ -130,5 +130,4 @@ public class TacosServer {
     protected final void setType(TacosServerType server_type) {
         this.server_type = server_type;
     }
-
 }

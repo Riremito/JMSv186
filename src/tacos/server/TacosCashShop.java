@@ -58,5 +58,4 @@ public class TacosCashShop extends TacosServer {
         TacosWorld.find(server.world_id).setCashShop(server);
         return true;
     }
-
 }

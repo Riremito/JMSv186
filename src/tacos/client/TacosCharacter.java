@@ -74,6 +74,7 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFriend;
 import tacos.packet.response.builder.PB_Friend;
+import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
 import tacos.server.TacosChannel;
@@ -81,11 +82,13 @@ import tacos.server.TacosServer;
 import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
+import tacos.server.TacosTask;
 import tacos.unofficial.PetCharacter;
 import tacos.unofficial.PetMob;
 import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -1076,29 +1079,11 @@ public class TacosCharacter {
         this.m_nCntStraightVictories = m_nCntStraightVictories;
     }
 
-    // update.
-    private long time = 0;
-
-    public boolean updateTime(long time, long interval) {
-        if (this.time == 0) {
-            this.time = time;
-            return false;
-        }
-
-        long delta = time - this.time;
-        if (interval <= delta) {
-            this.time = time;
-            return true;
-        }
-
-        return false;
-    }
-
     // buff.
-    private final TacosBuff buff = new TacosBuff(this);
+    private final TacosBuff buffs = new TacosBuff(this);
 
     public TacosBuff getBuff() {
-        return this.buff;
+        return this.buffs;
     }
 
     // cool time.
@@ -1279,5 +1264,50 @@ public class TacosCharacter {
     public boolean EnterPointShop() {
         ReqCUser.OnUserMigrateToCashShopRequest(client, (MapleCharacter) this);
         return true;
+    }
+
+    // update task.
+    private final TacosTask task_player = new TacosTask();
+
+    public boolean update(long time_current) {
+        // player update.
+        if (!this.task_player.check(time_current, 3000)) {
+            return false;
+        }
+
+        // skill cool time.
+        getCoolTime().update(time_current);
+        // buff.
+        updateBuffs(time_current);
+        // pet.
+        for (MaplePet pet : ((MapleCharacter) this).getPets()) {
+            if (!pet.getSummoned()) {
+                continue;
+            }
+            if (pet.getPetItemId() == 5000054 && 0 < pet.getSecondsLeft()) {
+                pet.setSecondsLeft(pet.getSecondsLeft() - 1);
+                if (pet.getSecondsLeft() <= 0) {
+                    ((MapleCharacter) this).unequipPet(pet, true, true);
+                    continue;
+                }
+            }
+            int newFullness = pet.getFullness() - WzXML.ITEM.getHunger(pet.getPetItemId());
+            if (newFullness <= 5) {
+                pet.setFullness(15);
+                ((MapleCharacter) this).unequipPet(pet, true, true);
+                continue;
+            }
+            pet.setFullness(newFullness);
+            SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
+        }
+
+        return true;
+    }
+
+    public void updateBuffs(long time_current) {
+        for (TacosBuff.Buff buff : getBuff().getCTSTimeout(time_current)) {
+            SendPacket(ResCWvsContext.TemporaryStatReset(this, buff.buff_id));
+        }
+        getBuff().removeTimeout(time_current);
     }
 }

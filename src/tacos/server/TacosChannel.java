@@ -273,4 +273,14 @@ public class TacosChannel extends TacosServer {
         }
     }
 
+    // update task.
+    private final TacosTask task_channel = new TacosTask();
+
+    public boolean update(MapleCharacter player, long time_current) {
+        if (!this.task_channel.check(time_current, 60000)) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -109,7 +109,6 @@ import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
 import tacos.shared.TacosShared;
-import tacos.task.TacosPlayerTask;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
@@ -434,7 +433,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserTemporaryStatUpdateRequest: {
-                TacosPlayerTask.updateBuff(chr, System.currentTimeMillis());
+                chr.updateBuffs(System.currentTimeMillis());
                 return true;
             }
             case CP_UserPortalScriptRequest: {

@@ -16,17 +16,45 @@
  *
  *
  */
-package tacos.task;
+package tacos.server;
+
+import odin.client.MapleCharacter;
+import odin.server.maps.MapleMap;
+import tacos.client.TacosClient;
 
 /**
  *
  * @author Riremito
  */
-public class TacosMapTask {
+public class TacosTask {
+
+    // update task.
+    public static boolean update(TacosClient client) {
+        MapleCharacter player = client.getPlayer();
+        if (player == null) {
+            return false;
+        }
+
+        MapleMap map = player.getMap();
+        if (map == null) {
+            return false;
+        }
+
+        long time_current = System.currentTimeMillis();
+        // world.
+        player.getWorld().update(player, time_current);
+        // channel.
+        player.getChannelServer().update(player, time_current);
+        // map.
+        map.update(player, time_current);
+        // player.
+        player.update(time_current);
+        return true;
+    }
 
     private long time_updated;
 
-    public TacosMapTask() {
+    public TacosTask() {
         this.time_updated = System.currentTimeMillis();
     }
 
