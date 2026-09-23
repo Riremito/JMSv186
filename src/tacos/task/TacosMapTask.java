@@ -18,98 +18,23 @@
  */
 package tacos.task;
 
-import java.util.ArrayList;
-import odin.client.MapleCharacter;
-import odin.server.life.MapleMonster;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMist;
-import tacos.packet.ops.OpsMobAppear;
-import tacos.packet.response.ResCAffectedAreaPool;
-import tacos.packet.response.ResCDropPool;
-import tacos.packet.response.ResCMobPool;
-import tacos.server.map.TacosMapData.MapSplitState;
-import tacos.server.map.TacosSpawnPoint;
-
 /**
  *
  * @author Riremito
  */
 public class TacosMapTask {
 
-    private static final int DROP_ITEM_EXPIRED = 120000;
+    private long time_updated;
 
-    public static boolean update(MapleCharacter chr, MapleMap map, long time) {
-        if (!map.updateTime(time, 5000)) {
-            return false;
+    public TacosMapTask() {
+        this.time_updated = System.currentTimeMillis();
+    }
+
+    public boolean check(long current_time, long interval) {
+        if ((this.time_updated + interval) <= current_time) {
+            this.time_updated = current_time;
+            return true;
         }
-        ArrayList<MapSplitState> area_states = map.getSplit().getArea(chr.getPosition().x, chr.getPosition().y, MapSplitState.ACTIVE);
-        // drop removal.
-        for (MapleMapItem mmi : map.getAllItems()) {
-            if (mmi.checkTime(time, DROP_ITEM_EXPIRED)) {
-                map.removeDrop(mmi.getObjectId());
-                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
-            }
-        }
-        // mob respawn.
-        for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
-            if (sp.getLastRegenTime() + map.getCreateMobInterval() <= time) {
-                MapleMonster monster = sp.regen(map);
-                if (monster != null) {
-                    map.addMonster(monster);
-                    map.broadcastMessage(ResCMobPool.MobEnterField(monster));
-                    monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
-                    monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
-                    int number = map.getSplit().find(monster.getPosition().x, monster.getPosition().y);
-                    if (area_states.get(number) == MapSplitState.ACTIVE) {
-                        monster.setController(chr);
-                        chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
-                    }
-                }
-            }
-        }
-        // mist.
-        for (MapleMist mist : map.getAllMists()) {
-            // TODO : fix interval.
-            switch (mist.isPoisonMist()) {
-                case 1 -> {
-                    for (MapleMonster monster : map.getMonstersInRect(mist.getBox())) {
-                        if (mist.makeChanceResult()) {
-                            chr.DebugMsg("Mist : " + mist.getObjectId() + " -> " + monster.getObjectId());
-                            int max_hp = (int) monster.getMobMaxHp();
-                            int damage = max_hp / (70 - mist.getSkillLevel());
-                            //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, mist.getDuration(), false);
-                            monster.setHp(Math.max(1, monster.getHp() - damage));
-                            map.splitSendPacket(monster, ResCMobPool.MobDamaged(monster, damage, 0));
-                            /*
-                            if (mist.getOwnerId() == chr.getId()) {
-                                chr.SendPacket(ResCMobPool.MobHPIndicator(monster, (int) Math.ceil(monster.getHp() * 100.0 / max_hp)));
-                            }
-                             */
-                        }
-                    }
-                }
-                case 2 -> {
-                    /*
-                    for (Object player : map.getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
-                        if (mist.makeChanceResult()) {
-                            ((MapleCharacter) player).addMP((int) (mist.getSource().getX() * (((MapleCharacter) player).getStat().getMaxMp() / 100.0)));
-                        }
-                    }
-                     */
-                }
-                case 3 -> {
-                }
-                default -> {
-                }
-            }
-            // mist removal.
-            if (mist.checkTime(time, mist.getDuration())) {
-                chr.DebugMsg("Mist : removed, " + mist.getObjectId());
-                map.removeMist(mist.getObjectId());
-                map.splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaRemoved(mist));
-            }
-        }
-        return true;
+        return false;
     }
 }

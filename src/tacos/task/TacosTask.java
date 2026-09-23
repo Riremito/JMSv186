@@ -29,20 +29,20 @@ import odin.server.maps.MapleMap;
 public class TacosTask {
 
     public static boolean update(TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
-        if (chr == null) {
+        MapleCharacter player = client.getPlayer();
+        if (player == null) {
             return false;
         }
 
-        MapleMap map = chr.getMap();
+        MapleMap map = player.getMap();
         if (map == null) {
             return false;
         }
 
-        long time = System.currentTimeMillis();
+        long time_current = System.currentTimeMillis();
 
-        TacosMapTask.update(chr, map, time);
-        TacosPlayerTask.update(chr, time);
+        map.update(player, time_current);
+        TacosPlayerTask.update(player, time_current);
         return true;
     }
 }
