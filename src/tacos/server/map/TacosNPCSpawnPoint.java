@@ -34,12 +34,6 @@ import tacos.wz.ids.DWI_Block;
  */
 public class TacosNPCSpawnPoint {
 
-    private static int OBJECT_ID = 200000;
-
-    public static void setOBJECT_ID(MapleNPC npc) {
-        npc.setObjectId(OBJECT_ID++);
-    }
-
     private int node_id;
     private int cy;
     private int f;
@@ -86,20 +80,17 @@ public class TacosNPCSpawnPoint {
         }
 
         this.npc = MapleLifeFactory.getNPC(this.id);
-        this.npc.setObjectId(OBJECT_ID++);
         this.npc.setPosition(new Point(this.x, this.y));
-        this.npc.setFh(this.fh);
-        this.npc.setOriginFh(this.fh);
+        this.npc.setFootholdId(this.fh);
         this.npc.setF(npc.getF() == 1 ? 0 : 1);
         this.npc.setRx0(this.rx0);
         this.npc.setRx1(this.rx1);
         this.npc.setCy(this.cy);
+        this.npc.setHide((this.hide != 0));
 
         if (this.hide != 0) {
-            this.npc.setHide(true);
             DebugLogger.InfoLog("loadLife : hidden npc, " + this.id);
         }
-
         if (DWI_Block.checkNpc(this.id)) {
             DebugLogger.InfoLog("loadLife : blocked npc, " + this.id);
             return null;

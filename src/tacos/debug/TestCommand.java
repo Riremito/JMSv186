@@ -188,7 +188,7 @@ public class TestCommand {
             }
             case "/npccon": {
                 for (MapleNPC npc : map.getAllNPCs()) {
-                    chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+                    chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
                     chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
                 }
                 return true;

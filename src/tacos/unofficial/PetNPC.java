@@ -24,7 +24,6 @@ import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
-import tacos.server.map.TacosNPCSpawnPoint;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -58,12 +57,9 @@ public class PetNPC implements IPetEx {
         this.npc.setRx0(this.character.getPosition().x + 50);
         this.npc.setRx1(this.character.getPosition().x - 50);
         this.npc.setPosition(this.character.getPosition());
-        this.npc.setFH(this.character.getFH());
-        this.npc.setOriginFh(this.character.getFH());
-
-        TacosNPCSpawnPoint.setOBJECT_ID(this.npc);
+        this.npc.setFootholdId(this.character.getFH());
         this.character.getMap().addNPC(this.npc);
-        SendPacket(ResCNpcPool.NpcEnterField(this.npc, true));
+        SendPacket(ResCNpcPool.NpcEnterField(this.npc));
         return true;
     }
 
@@ -85,8 +81,7 @@ public class PetNPC implements IPetEx {
             return false;
         }
 
-        move_path.update(this.npc);
-        this.npc.setOriginFh(move_path.getFootHoldId());
+        this.npc.update(move_path);
 
         SendPacket(ResCNpcPool.NpcMove(this.npc, -1, -1, move_path));
         return true;

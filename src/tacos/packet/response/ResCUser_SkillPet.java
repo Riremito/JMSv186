@@ -59,7 +59,7 @@ public class ResCUser_SkillPet {
         data.Encode2(skill_pet.getX()); // m_ptPos.x
         data.Encode2(skill_pet.getY()); // m_ptPos.y
         data.Encode1(skill_pet.getMoveAction()); // m_nMoveAction
-        data.Encode2(skill_pet.getFootHoldId()); // sFootholdSN
+        data.Encode2(skill_pet.getFootholdId()); // sFootholdSN
         return data.getBytes();
     }
 }

@@ -66,7 +66,6 @@ import tacos.script.TacosScriptReactor;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
-import tacos.server.map.TacosNPCSpawnPoint;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosReward.Reward;
 import tacos.server.map.TacosSpawnPoint;
@@ -302,11 +301,9 @@ public class DebugCommand {
                 npc.setRx0(chr.getPosition().x - 50);
                 npc.setRx1(chr.getPosition().x + 50);
                 npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getStance());
-                npc.setFh(chr.getFH());
-                npc.setCustom(true);
-                TacosNPCSpawnPoint.setOBJECT_ID(npc);
+                npc.setFootholdId(chr.getFH());
                 map.addNPC(npc);
-                map.broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
+                map.broadcastMessage(ResCNpcPool.NpcEnterField(npc));
                 chr.DebugMsg("npc : " + npc_id);
                 return true;
             }
@@ -317,12 +314,11 @@ public class DebugCommand {
                 pnpc.setRx0(chr.getPosition().x - 50);
                 pnpc.setRx1(chr.getPosition().x + 50);
                 pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getStance());
-                pnpc.setFh(chr.getFH());
-                TacosNPCSpawnPoint.setOBJECT_ID(pnpc);
+                pnpc.setFootholdId(chr.getFH());
                 map.addNPC(pnpc);
-                chr.SendPacket(ResCNpcPool.NpcEnterField(pnpc, true));
+                chr.SendPacket(ResCNpcPool.NpcEnterField(pnpc));
                 chr.SendPacket(ResCNpcPool.ImitatedNPCData(pnpc));
-                chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false, true));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false));
                 return true;
             }
             case "/npclocation": {
@@ -587,8 +583,8 @@ public class DebugCommand {
                     if (count < 0) {
                         count = 1;
                     }
-                    if (15 < count) {
-                        count = 15;
+                    if (1000 < count) {
+                        count = 1000;
                     }
                 }
 
@@ -624,6 +620,10 @@ public class DebugCommand {
                 }
 
                 chr.DebugMsg("killmob : done.");
+                return true;
+            }
+            case "/mobinfo": {
+                chr.DebugMsg("mobinfo : " + map.getAllMonsters().size());
                 return true;
             }
             // mob skill.
@@ -977,8 +977,8 @@ public class DebugCommand {
                     mob_count = dcmd.getInt(1);
                 }
 
-                if (10 < mob_count) {
-                    mob_count = 10;
+                if (1000 < mob_count) {
+                    mob_count = 1000;
                 }
 
                 for (int i = 0; i < mob_count; i++) {

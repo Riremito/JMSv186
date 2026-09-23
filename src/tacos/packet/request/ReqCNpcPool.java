@@ -60,7 +60,7 @@ public class ReqCNpcPool {
 
                 ParseCMovePath move_path = new ParseCMovePath();
                 if (move_path.Decode(cp)) {
-                    move_path.update(npc);
+                    npc.update(move_path);
                 } else {
                     move_path = null;
                 }

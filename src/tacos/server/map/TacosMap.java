@@ -389,8 +389,8 @@ public class TacosMap extends TacosMapData {
                 continue;
             }
             if (area_states.get(number) == MapSplitState.ACTIVE) {
-                chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
-                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+                chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
             }
         }
         // hired merchant
@@ -548,8 +548,8 @@ public class TacosMap extends TacosMapData {
                 continue;
             }
             if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
-                chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
-                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+                chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
             }
             if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
@@ -885,7 +885,7 @@ public class TacosMap extends TacosMapData {
 
     public void addNPC(MapleNPC npc) {
         if (npc.getObjectId() == 0) {
-            TacosNPCSpawnPoint.setOBJECT_ID(npc);
+            npc.setObjectId();
         }
         this.npcs.put(npc.getObjectId(), npc);
     }
@@ -942,11 +942,9 @@ public class TacosMap extends TacosMapData {
         npc.setCy(pos.y);
         npc.setRx0(pos.x + 50);
         npc.setRx1(pos.x - 50);
-        npc.setFh(getFootholds().findBelow(pos).getId());
-        npc.setCustom(true);
-        TacosNPCSpawnPoint.setOBJECT_ID(npc);
+        npc.setFootholdId(getFootholds().findBelow(pos).getId());
         addNPC(npc);
-        broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
+        broadcastMessage(ResCNpcPool.NpcEnterField(npc));
     }
 
     public boolean removeNpc(int npc_id) {

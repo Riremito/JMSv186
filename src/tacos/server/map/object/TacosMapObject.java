@@ -99,8 +99,16 @@ public class TacosMapObject {
         return this.move_action;
     }
 
-    public int getFootHoldId() {
+    public void setMoveAction(int move_action) {
+        this.move_action = move_action;
+    }
+
+    public int getFootholdId() {
         return this.foothold_id;
+    }
+
+    public void setFootholdId(int foothold_id) {
+        this.foothold_id = foothold_id;
     }
 
     public void update(ParseCMovePath move_path) {

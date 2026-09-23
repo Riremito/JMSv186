@@ -47,26 +47,26 @@ public class ResCNpcPool {
         return sp;
     }
 
-    public static ServerPacket NpcEnterField(MapleNPC npc, boolean show) {
+    public static ServerPacket NpcEnterField(MapleNPC npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcEnterField);
 
         sp.Encode4(npc.getObjectId()); // dwNpcId
         sp.Encode4(npc.getId()); // NpcTemplate
-        sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
+        sp.EncodeBuffer(CNpc_Init(npc)); // CNpc::Init
         return sp;
     }
 
     // CNpc::Init
-    public static byte[] CNpc_Init(MapleNPC npc, boolean show) {
+    public static byte[] CNpc_Init(MapleNPC npc) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode2(npc.getPosition().x); // m_ptPos.x
-        data.Encode2(npc.getPosition().y); // m_ptPos.y
+        data.Encode2(npc.getX()); // m_ptPos.x
+        data.Encode2(npc.getY()); // m_ptPos.y
         data.Encode1(npc.getF()); // m_nMoveAction
-        data.Encode2(npc.getFh()); // Foothold
+        data.Encode2(npc.getFootholdId()); // Foothold
         data.Encode2(npc.getRx0()); // m_rgHorz.low
         data.Encode2(npc.getRx1()); // m_rgHorz.high
-        data.Encode1(show ? 1 : 0); // m_bEnabled
+        data.Encode1(npc.getHide() ? 0 : 1); // m_bEnabled
         data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         return data.getBytes();
     }
@@ -78,7 +78,7 @@ public class ResCNpcPool {
         return sp;
     }
 
-    public static ServerPacket NpcChangeController(MapleNPC npc, boolean is_local, boolean show) {
+    public static ServerPacket NpcChangeController(MapleNPC npc, boolean is_local) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcChangeController);
 
         sp.Encode1(is_local ? 1 : 0);
@@ -86,7 +86,7 @@ public class ResCNpcPool {
 
         if (is_local) {
             sp.Encode4(npc.getId());
-            sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
+            sp.EncodeBuffer(CNpc_Init(npc)); // CNpc::Init
         }
 
         return sp;

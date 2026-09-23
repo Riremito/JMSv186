@@ -82,7 +82,7 @@ public class PetMob implements IPetEx {
         }
 
         boolean is_left = (move_path.getMoveAction() & 1) != 0;
-        move_path.update(this.monster);
+        this.monster.update(move_path);
         this.monster.setOriginFh(move_path.getFootHoldId());
 
         SendPacket(ResCMobPool.MobMove(this.monster, false, is_left ? 1 : 0, 0, move_path));

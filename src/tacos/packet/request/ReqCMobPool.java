@@ -156,7 +156,7 @@ public class ReqCMobPool {
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
-            move_path.update(monster);
+            monster.update(move_path);
         }
 
         map.broadcastMessageTo(chr, ResCMobPool.MobMove(monster, bNextAttackPossible, bLeft, mob_skill, move_path), monster.getPosition());
