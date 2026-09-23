@@ -459,9 +459,11 @@ public class DebugCommand {
                 checkMapData(chr);
                 return true;
             }
-            case "/msp": {
+            case "/mobtime": {
                 for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
-                    chr.DebugMsg(sp.getInfo());
+                    if (sp.getMobTime() != 0) {
+                        chr.DebugMsg(String.format("mobtime : %.1f hours.", (double) sp.getMobTime() / 1000 / 3600));
+                    }
                 }
                 return true;
             }
@@ -603,7 +605,8 @@ public class DebugCommand {
                 chr.DebugMsg("mob : " + mob_id);
                 return true;
             }
-            case "/killmob": {
+            case "/killmob":
+            case "/killall": {
                 int count = 300;
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);

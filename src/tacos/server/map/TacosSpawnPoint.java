@@ -34,10 +34,6 @@ import tacos.wz.WzDataTool;
  */
 public class TacosSpawnPoint {
 
-    public static void setOBJECT_ID(MapleMonster monster) {
-        monster.setObjectId();
-    }
-
     private int node_id;
     private int cy;
     private int f;
