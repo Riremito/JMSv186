@@ -32,7 +32,7 @@ import tacos.packet.ServerPacket;
 public class GuildHandler {
 
     public static final void DenyGuildRequest(ClientPacket cp, final TacosClient client) {
-        cp.Decode1();
+        byte unk1 = cp.Decode1();
         String from = cp.DecodeStr();
 
         final MapleCharacter cfrom = client.getChannelServer().getOnlinePlayers().findByName(from);

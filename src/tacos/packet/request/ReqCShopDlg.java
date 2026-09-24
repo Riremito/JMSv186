@@ -52,11 +52,9 @@ public class ReqCShopDlg {
 
         switch (OpsShop.find(flag)) {
             case ShopReq_Buy: {
-                cp.Decode2();
+                short unk1 = cp.Decode2();
 
-                if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-                    cp.Decode1();
-                }
+                byte unk2 = cp.Decode1(Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
 
                 final int itemId = cp.Decode4();
                 final short quantity = cp.Decode2();

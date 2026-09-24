@@ -43,9 +43,7 @@ public class ReqCReactorPool {
                     return true;
                 }
 
-                if (Config.GreaterOrEqual(Region.JMS, 302)) {
-                    int unk = cp.Decode4();
-                }
+                int unk = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302));
                 int charPos = cp.Decode4();
                 short stance = cp.Decode2();
 

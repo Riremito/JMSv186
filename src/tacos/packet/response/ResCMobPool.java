@@ -52,11 +52,7 @@ public class ResCMobPool {
 
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(monster.getId());
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(0);
-        }
-
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
         sp.EncodeBuffer(CMob_SetTemporaryStat(monster));
         sp.EncodeBuffer(CMob_Init(monster)); // if mob is not found in the map, extra data is read.
         return sp;
@@ -120,15 +116,10 @@ public class ResCMobPool {
             return data.getBytes();
         }
         // JMS146
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
-            data.Encode4(0); // nEffectItemID
-        }
+        data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // nEffectItemID
         // JMS186, GMS95
         // not in KMST330, TWMS125
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 74) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55)) {
-            data.Encode4(0); // m_nPhase
-        }
-
+        data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 74) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55)); // m_nPhase
         return data.getBytes();
     }
 
@@ -172,10 +163,7 @@ public class ResCMobPool {
             }
             // CMobPool::SetLocalMob
             sp.Encode4(monster.getId()); // dwTemplateID
-
-            if (Config.GreaterOrEqual(Region.JMS, 302)) {
-                sp.Encode1(0);
-            }
+            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
 
             if (Config.LessOrEqual(Region.KMS, 3)) {
                 // none.
@@ -230,11 +218,7 @@ public class ResCMobPool {
         sp.Encode2(monster.getMp());
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
-
-        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            sp.Encode4(0);
-        }
-
+        sp.Encode4(0, Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         return sp;
     }
 

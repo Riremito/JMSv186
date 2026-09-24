@@ -131,11 +131,11 @@ public class ReqCMobPool {
 
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             // none
-            cp.Decode1();
-            cp.Decode1();
+            byte unk5 = cp.Decode1();
+            byte unk6 = cp.Decode1();
         } else if (Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            cp.Decode4(); // 0
-            cp.Decode4(); // 0
+            int unk7 = cp.Decode4(); // 0
+            int unk8 = cp.Decode4(); // 0
         }
 
         byte unk2 = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
@@ -148,9 +148,7 @@ public class ReqCMobPool {
                 DebugLogger.DebugLog("0x00FFDDCC... " + String.format("%08X", ffddcc_1) + " | " + String.format("%08X", ffddcc_2));
             }
         }
-        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            cp.Decode4();
-        }
+        int unk9 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
 
         byte unk4 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
 

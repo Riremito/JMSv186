@@ -585,18 +585,10 @@ public class RD_CharacterData {
                 }
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
             }
-            if (Config.GreaterOrEqual(Region.GMS, 126)) {
-                data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
-            }
-            if (Config.GreaterOrEqual(Region.GMS, 131)) {
-                data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
-            }
-            if (Config.GreaterOrEqual(Region.KMS, 169)) {
-                data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
-            }
-            if (Config.GreaterOrEqual(Region.KMS, 197)) {
-                data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
-            }
+            data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip), Config.GreaterOrEqual(Region.GMS, 126));
+            data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip), Config.GreaterOrEqual(Region.GMS, 131));
+            data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip), Config.GreaterOrEqual(Region.KMS, 169));
+            data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip), Config.GreaterOrEqual(Region.KMS, 197));
             if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.EMS, 89)) {
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
                 data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
@@ -646,11 +638,8 @@ public class RD_CharacterData {
             return data.getBytes();
         }
         // 不明
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-            // func 004FB8B0
-            data.Encode4(-1); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
-        }
-
+        // func 004FB8B0
+        data.Encode4(-1, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)); // not -1, Encode4, Encode4 not -1, Encode4, end  Encode4(-1)
         return data.getBytes();
     }
 
@@ -782,9 +771,7 @@ public class RD_CharacterData {
         if ((datamask & 0x100000000L) != 0) {
             data.Encode4(0);
             data.Encode4(0);
-            if (Config.GreaterOrEqual(Region.JMS, 308)) {
-                data.Encode4(0);
-            }
+            data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 308));
         }
         if ((datamask & 0x200000000L) != 0) {
             if (Config.GreaterOrEqual(Region.JMS, 308)) {
@@ -857,9 +844,7 @@ public class RD_CharacterData {
     public static byte[] addSkillInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-            data.Encode1(1);
-        }
+        data.Encode1(1, Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111));
         final Map<Skill, SkillEntry> skills = chr.getSkills();
         data.Encode2(skills.size());
         for (final Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
@@ -867,9 +852,7 @@ public class RD_CharacterData {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 83)) {
-                data.Encode8(TacosSharedDate.getTimestamp(skill.getValue().expiration));
-            }
+            data.Encode8(TacosSharedDate.getTimestamp(skill.getValue().expiration), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 83));
 
             if (TacosShared.is_skill_need_master_level(skill.getKey().getId())) {
                 data.Encode4(skill.getValue().masterlevel);
@@ -880,9 +863,7 @@ public class RD_CharacterData {
                 }
             }
         }
-        if (Config.GreaterOrEqual(Region.KMS, 197)) {
-            data.Encode2(0);
-        }
+        data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 197));
         return data.getBytes();
     }
 
@@ -890,10 +871,7 @@ public class RD_CharacterData {
         ServerPacket data = new ServerPacket();
         final List<MapleQuestStatus> started = chr.getStartedQuests();
 
-        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
-            data.Encode1(0);
-        }
-
+        data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         data.Encode2(started.size());
         for (final MapleQuestStatus q : started) {
             data.Encode2(q.getQuest().getId());
@@ -901,37 +879,23 @@ public class RD_CharacterData {
         }
 
         // not in v165, not in v188, but in v194 ???
-        if (Config.Between(Region.JMS, 184, 186)) {
-            data.Encode2(0); // not 0, EncodeStr, EncodeStr
-        }
-
-        if (Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
-            data.Encode2(0); // not 0, EncodeStr, EncodeStr
-        }
-
-        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
-            data.Encode2(0);
-        }
-
+        data.Encode2(0, Config.Between(Region.JMS, 184, 186)); // not 0, EncodeStr, EncodeStr
+        data.Encode2(0, Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)); // not 0, EncodeStr, EncodeStr
+        data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         return data.getBytes();
     }
 
     public static byte[] addQuestComplete(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-            data.Encode1(0);
-        }
-
+        data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111));
         data.Encode2(chr.getCompletedQuests().size());
         for (MapleQuestStatus mqs : chr.getCompletedQuests()) {
             data.Encode2(mqs.getQuest().getId());
             data.Encode8(TacosSharedDate.getTimestamp(mqs.getCompletionTime()));
         }
 
-        if (Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-            data.Encode2(0);
-        }
+        data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111));
         return data.getBytes();
     }
 

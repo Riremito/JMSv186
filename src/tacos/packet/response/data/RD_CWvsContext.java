@@ -144,10 +144,7 @@ public class RD_CWvsContext {
                 break;
             }
 
-            if (Config.PostBB()) {
-                data.Encode4(i);
-            }
-
+            data.Encode4(i, Config.PostBB());
             data.Encode4(pet.getPetItemId()); // dwTemplateID
             data.EncodeStr(pet.getName());
             data.Encode1(pet.getLevel()); // nLevel

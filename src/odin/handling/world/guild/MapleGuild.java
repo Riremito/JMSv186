@@ -555,10 +555,7 @@ public class MapleGuild {
             data.Encode4(mgc.getGuildRank());
             data.Encode4(mgc.isOnline() ? 1 : 0);
             data.Encode4(signature);
-
-            if (Config.GreaterOrEqual(Region.JMS, 164)) {
-                data.Encode4(mgc.getAllianceRank());
-            }
+            data.Encode4(mgc.getAllianceRank(), Config.GreaterOrEqual(Region.JMS, 164));
         }
         return data.getBytes();
     }

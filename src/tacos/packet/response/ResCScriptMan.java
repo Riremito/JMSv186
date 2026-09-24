@@ -44,10 +44,7 @@ public class ResCScriptMan {
         sp.Encode1(4); // nSpeakerTypeID, not used
         sp.Encode4(npcid); // nSpeakerTemplateID, npcid
         sp.Encode1(smt.get()); // nMsgType
-
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            sp.Encode1(param); // v186+, not used
-        }
+        sp.Encode1(param, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // v186+, not used
 
         switch (smt) {
             case SM_SAY: {
@@ -109,9 +106,7 @@ public class ResCScriptMan {
                         sp.Encode4(id);
                     }
                 }
-                if (Config.GreaterOrEqual(Region.CMS, 88)) {
-                    sp.Encode4(0);
-                }
+                sp.Encode4(0, Config.GreaterOrEqual(Region.CMS, 88));
                 break;
             }
             case SM_ASKMEMBERSHOPAVATAR: {

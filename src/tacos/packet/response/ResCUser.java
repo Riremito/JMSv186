@@ -40,15 +40,8 @@ public class ResCUser {
         sp.Encode4(chr.getId());
         sp.Encode1(chr.isGM() ? 1 : 0);
         sp.EncodeStr(message);
-
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
-            sp.Encode1(bOnlyBalloon ? 1 : 0); // skill macro
-        }
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(0);
-        }
-
+        sp.Encode1(bOnlyBalloon ? 1 : 0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // skill macro
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
         return sp;
     }
 
@@ -132,9 +125,7 @@ public class ResCUser {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUnreleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode1(1);
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode4(0); // 金印 2049500
-        }
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302)); // 金印 2049500
         return sp;
     }
 

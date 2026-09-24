@@ -153,15 +153,15 @@ public class ReqCSummonedPool {
             for (int i = 0; i < numAttacked; i++) {
                 int mob_object_id = cp.Decode4();
                 int mob_id = cp.Decode4();
-                cp.Decode1();
-                cp.Decode1();
-                cp.Decode1();
-                cp.Decode1();
-                cp.Decode2();
-                cp.Decode2();
-                cp.Decode2();
-                cp.Decode2();
-                cp.Decode2();
+                byte unk1 = cp.Decode1();
+                byte unk2 = cp.Decode1();
+                byte unk3 = cp.Decode1();
+                byte unk4 = cp.Decode1();
+                short unk5 = cp.Decode2();
+                short unk6 = cp.Decode2();
+                short unk7 = cp.Decode2();
+                short unk8 = cp.Decode2();
+                short unk9 = cp.Decode2();
                 int damage = cp.Decode4();
 
                 MapleMonster mob = map.getMonsterByOid(mob_object_id);
@@ -208,27 +208,27 @@ public class ReqCSummonedPool {
         }
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            cp.Decode4();
-            cp.Decode4();
+            int unk10 = cp.Decode4();
+            int unk11 = cp.Decode4();
             int tick = cp.Decode4();
-            cp.Decode4();
-            cp.Decode4();
+            int unk12 = cp.Decode4();
+            int unk13 = cp.Decode4();
         }
 
         byte animation = cp.Decode1();
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            cp.Decode4();
-            cp.Decode4();
+            int unk14 = cp.Decode4();
+            int unk15 = cp.Decode4();
         }
 
         byte numAttacked = cp.Decode1();
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            cp.Decode2(); // x
-            cp.Decode2(); // y
-            cp.Decode2(); // x
-            cp.Decode2(); // y
+            short unk16 = cp.Decode2(); // x
+            short unk17 = cp.Decode2(); // y
+            short unk18 = cp.Decode2(); // x
+            short unk19 = cp.Decode2(); // y
         }
 
         final List<SummonAttackEntry> allDamage = new ArrayList<>();
@@ -240,27 +240,25 @@ public class ReqCSummonedPool {
                 continue;
             }
 
-            if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-                cp.Decode4(); // MobID
-            }
+            int unk20 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // MobID
 
-            cp.Decode1();
-            cp.Decode1();
-            cp.Decode1();
-            cp.Decode1();
-            cp.Decode2();
-            cp.Decode2();
-            cp.Decode2();
-            cp.Decode2();
-            cp.Decode2();
+            byte unk21 = cp.Decode1();
+            byte unk22 = cp.Decode1();
+            byte unk23 = cp.Decode1();
+            byte unk24 = cp.Decode1();
+            short unk25 = cp.Decode2();
+            short unk26 = cp.Decode2();
+            short unk27 = cp.Decode2();
+            short unk28 = cp.Decode2();
+            short unk29 = cp.Decode2();
 
             final int damage = cp.Decode4();
             allDamage.add(new SummonAttackEntry(mob, damage));
         }
 
         if (Config.LessOrEqual(Region.JMS, 131)) {
-            cp.Decode2(); // X
-            cp.Decode2(); // Y
+            short unk30 = cp.Decode2(); // X
+            short unk31 = cp.Decode2(); // Y
         }
 
         if (!summon.isChangedMap()) {

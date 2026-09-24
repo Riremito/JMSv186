@@ -42,9 +42,7 @@ public class RD_AvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
         int demon_something = 0;
-        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
-            data.Encode4(demon_something); // demon something
-        }
+        data.Encode4(demon_something, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)); // demon something
         data.Encode1(0); // ignored byte
         data.Encode4(chr.getHair());
         final Map<Byte, Integer> myEquip = new LinkedHashMap<>();
@@ -83,9 +81,7 @@ public class RD_AvatarLook {
             }
             data.Encode1(255); // ending markers
         }
-        if (Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 116)) {
-            data.Encode1(255); // ending markers
-        }
+        data.Encode1(255, Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 116)); // ending markers
         final Item cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
         if (Region.BMS.check() || Region.VMS.check()) {
@@ -108,9 +104,7 @@ public class RD_AvatarLook {
                     data.Encode4(0);
                     data.Encode4(0);
                 }
-                if (Config.GreaterOrEqual(Region.KMS, 138)) {
-                    data.Encode1(0);
-                }
+                data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 138));
                 data.EncodeZeroBytes(12);
                 if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391)) {
                     if (chr.getJob() / 100 == 31 || chr.getJob() == 3001) {
@@ -133,16 +127,12 @@ public class RD_AvatarLook {
             // data.Encode4(0);
             return data.getBytes();
         }
-        if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-            data.Encode1(0); // mercedes ear
-        }
+        data.Encode1(0, Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)); // mercedes ear
         if (Region.THMS.check() || Region.TWMS.check() || Region.CMS.check() || Region.MSEA.check() || Region.EMS.check() || Config.GreaterOrEqual(Region.GMS, 83)) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?
-            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
-                data.Encode8(0); // pet 2 and 3?
-            }
+            data.Encode8(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // pet 2 and 3?
         }
         return data.getBytes();
     }

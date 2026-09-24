@@ -283,7 +283,7 @@ public class ItemMakerHandler {
             }
             case RECIPE_CLASS_EQUIP_DISASSEMBLE: {
                 int itemId = cp.Decode4();
-                cp.Decode4();
+                int unk1 = cp.Decode4();
                 int slot = cp.Decode4();
 
                 final Item toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);

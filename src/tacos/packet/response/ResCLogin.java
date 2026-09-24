@@ -88,14 +88,10 @@ public class ResCLogin {
                             sp.Encode4(client.getId()); // m_dwAccountId
                             sp.Encode1(client.getGender()); // m_nGender
                             sp.Encode1(client.isGameMaster() ? 1 : 0); // m_nGradeCode
-                            if (Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.KMST, 330)) {
-                                sp.Encode1(client.isGameMaster() ? 1 : 0);
-                            }
+                            sp.Encode1(client.isGameMaster() ? 1 : 0, Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.KMST, 330));
                             if (Config.GreaterOrEqual(Region.KMS, 160)) {
                                 sp.Encode4(3);
-                                if (Config.GreaterOrEqual(Region.KMS, 169)) {
-                                    sp.Encode4(0);
-                                }
+                                sp.Encode4(0, Config.GreaterOrEqual(Region.KMS, 169));
                                 sp.Encode1(0);
                                 sp.Encode1(0);
                                 sp.Encode8(0);
@@ -339,9 +335,7 @@ public class ResCLogin {
             }
             default: {
                 sp.Encode1(0); // no blue message
-                if (Region.BMS.check()) {
-                    sp.Encode4(0);
-                }
+                sp.Encode4(0, Region.BMS.check());
                 break;
             }
         }
@@ -474,9 +468,7 @@ public class ResCLogin {
                     sp.Encode4(chr.getJobRankMove());
                 }
 
-                if (Region.GMS.check()) {
-                    sp.Encode1(2); // m_bLoginOpt
-                }
+                sp.Encode1(2, Region.GMS.check()); // m_bLoginOpt
                 break;
             }
             case VAC_ResCode_CountRelatedSvrs: {

@@ -47,7 +47,7 @@ import tacos.script.TacosScriptNPC;
 public class InventoryHandler {
 
     public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
-        cp.Decode4();
+        int unk1 = cp.Decode4();
         final byte slot = (byte) cp.Decode2();
         final int itemId = cp.Decode4();
         final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);

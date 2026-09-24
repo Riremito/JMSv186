@@ -147,9 +147,7 @@ public class ReqCUser_Pet {
     }
 
     public static boolean OnPetMove(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            byte unk = cp.Decode1();
-        }
+        byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 302));
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
@@ -180,7 +178,7 @@ public class ReqCUser_Pet {
             return;
         }
         //slea.skip(5);
-        cp.DecodeBuffer(5); // ?_?
+        byte[] unk1 = cp.DecodeBuffer(5); // ?_?
         final byte command = cp.Decode1();
         final PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;

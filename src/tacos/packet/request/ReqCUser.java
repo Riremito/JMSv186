@@ -889,28 +889,24 @@ public class ReqCUser {
     public static boolean OnUserMove(MapleCharacter chr, ClientPacket cp, MapleMap map) {
         // not in TWMS148, CMS104, but in TWMS125
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
-            cp.Decode4(); // -1
-            cp.Decode4(); // -1
+            int unk1 = cp.Decode4(); // -1
+            int unk2 = cp.Decode4(); // -1
         }
 
-        cp.Decode1(); // unk
+        byte unk3 = cp.Decode1(); // unk
 
         // not in TWMS148, CMS104, but in TWMS125
         if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
-            cp.Decode4(); // -1
-            cp.Decode4(); // -1
-            cp.Decode4();
-            cp.Decode4();
+            int unk4 = cp.Decode4(); // -1
+            int unk5 = cp.Decode4(); // -1
+            int unk6 = cp.Decode4();
+            int unk7 = cp.Decode4();
         }
 
         // not in JMS147
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.BMS, 24)) {
-            cp.Decode4();
-        }
+        int unk8 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.BMS, 24));
 
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
-            cp.Decode4();
-        }
+        int unk9 = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104));
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
@@ -2033,9 +2029,7 @@ public class ReqCUser {
     public static boolean OnUserChangeStatRequest(MapleCharacter chr, ClientPacket cp) {
         int time_stamp_1 = 0;
 
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            time_stamp_1 = cp.Decode4();
-        }
+        time_stamp_1 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
 
         int update_mask[] = {0, 0};
         int heal_hp = 0;
@@ -2043,9 +2037,7 @@ public class ReqCUser {
 
         update_mask[0] = cp.Decode4();
 
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            update_mask[1] = cp.Decode4();
-        }
+        update_mask[1] = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302));
 
         if ((update_mask[0] & OpsChangeStat.CS_HP.get()) != 0) {
             heal_hp = cp.Decode2();
@@ -2231,9 +2223,7 @@ public class ReqCUser {
                     monster_ids.add(dwMobID);
                     magnets.add(bSuccess);
                 }
-                if (Config.PostBB()) {
-                    short unk = cp.Decode2();
-                }
+                short unk = cp.Decode2(Config.PostBB());
                 byte tDelay = cp.Decode1(); // Left
 
                 for (int i = 0; i < nMobCount; i++) {

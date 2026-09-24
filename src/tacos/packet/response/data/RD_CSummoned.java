@@ -52,10 +52,7 @@ public class RD_CSummoned {
         data.Encode1(summon.getMovementType().get()); // m_nMoveAbility
         data.Encode1(summon.getSummonType().get()); // m_nAssistType
         data.Encode1(animated ? 0 : 1); //nEnterType ENTER_TYPE_DEFAULT, ENTER_TYPE_CREATE_SUMMONED
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            data.Encode1(0);
-        }
+        data.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             data.Encode1(is_avater_look ? 1 : 0);

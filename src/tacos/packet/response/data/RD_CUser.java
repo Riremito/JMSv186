@@ -66,13 +66,9 @@ public class RD_CUser {
     public static byte[] CUserRemote_Init(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            data.Encode1(chr.getLevel());
-        }
+        data.Encode1(chr.getLevel(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
         data.EncodeStr(chr.getName());
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            data.EncodeStr("");
-        }
+        data.EncodeStr("", Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
@@ -93,14 +89,10 @@ public class RD_CUser {
             data.Encode2(0);
             data.Encode1(0);
         }
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            data.Encode8(0); // buff mask.
-        }
+        data.Encode8(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // buff mask.
         data.Encode8(0); // buff mask.
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            if (Config.GreaterOrEqual(Region.JMS, 187)) {
-                data.Encode4(0); // buff mask.
-            }
+            data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 187)); // buff mask.
             data.Encode1(0); //start of energy charge
             data.Encode1(0);
             data.Encode2(chr.getJob());
@@ -123,9 +115,7 @@ public class RD_CUser {
         data.Encode2(chr.getPosition().y);
         data.Encode1(chr.getStance());
         data.Encode2(0); // FH
-        if (Config.GreaterOrEqual(Region.GMS, 95)) {
-            data.Encode1(0);// bShowAdminEffect
-        }
+        data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // bShowAdminEffect
         data.Encode1(0); // pet size
         data.Encode4(chr.getMount().getLevel()); // mount lvl
         data.Encode4(chr.getMount().getExp()); // exp
@@ -146,9 +136,7 @@ public class RD_CUser {
             data.Encode1(0); // MarriageRecord
         }
         data.Encode1(chr.getEffectMask()); // Effect
-        if (Config.GreaterOrEqual(Region.GMS, 95)) {
-            data.Encode1(0); // NewYearCardRecord
-        }
+        data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // NewYearCardRecord
         data.Encode4(0); // not in KMST, in GMS v95: m_nPhase
         // 特殊マップ専用
         // MonsterCarnival

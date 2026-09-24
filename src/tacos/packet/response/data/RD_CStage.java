@@ -56,10 +56,7 @@ public class RD_CStage {
             // 0 = no data.
             return data.getBytes();
         }
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            data.Encode4(0);
-        }
-
+        data.Encode4(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         data.Encode4(0); // item1?
         data.Encode4(0); // item2?
         data.Encode4(0); // item3?

@@ -436,7 +436,7 @@ public class BeanGame {
                 break;
             case 6:
                 //点暂停或者满5个豆豆后客户端发送的豆豆信息 最多5个豆豆
-                cp.Decode1();
+                byte unk1 = cp.Decode1();
                 int 循环次数 = cp.Decode1();
                 if (循环次数 == 0) {
                     return;
