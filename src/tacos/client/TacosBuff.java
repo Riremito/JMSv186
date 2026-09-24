@@ -165,6 +165,10 @@ public class TacosBuff {
                     }
                     break;
                 }
+                case RANGER_PUPPET:
+                case RANGER_SILVER_HAWK: {
+                    return false;
+                }
                 default: {
                     break;
                 }

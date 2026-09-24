@@ -28,7 +28,6 @@ import odin.client.status.MonsterStatusEffect;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import tacos.packet.ClientPacket;
@@ -52,8 +51,8 @@ import tacos.packet.ops.OpsMoveAbility;
 public class ReqCSummonedPool {
 
     /*
-    CUser::OnSummonedPacket (JMS187)
-    CSummonedPool::OnPacket (JMS188)
+        CUser::OnSummonedPacket (JMS187)
+        CSummonedPool::OnPacket (JMS188)
      */
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
@@ -70,11 +69,9 @@ public class ReqCSummonedPool {
 
         MapleSummon summon = null;
         if (Config.LessOrEqual(Region.JMS, 131)) {
-            for (MapleSummon sms : chr.getSummons().values()) {
-                if (sms.getSkill() == m_dwSummonedID) {
-                    summon = sms;
-                    break;
-                }
+            summon = chr.getSummon();
+            if (summon.getSkillID() != m_dwSummonedID) {
+                return false;
             }
         } else {
             summon = map.getSummonByOid(m_dwSummonedID);
@@ -98,7 +95,7 @@ public class ReqCSummonedPool {
                 break;
             }
             case CP_SummonedHit: {
-                OnHit(chr, cp);
+                OnHit(chr, cp, summon);
                 return true;
             }
             case CP_Remove: {
@@ -116,13 +113,13 @@ public class ReqCSummonedPool {
 
     // CSummoned::OnMove
     public static boolean OnMove(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
-        if (summon.getMovementType() == OpsMoveAbility.MOVEABILITY_STOP || summon.isChangedMap()) {
+        if (summon.getMoveAbility() == OpsMoveAbility.MOVEABILITY_STOP) {
             return false;
         }
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
-            move_path.update(summon);
+            summon.update(move_path);
         }
 
         chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedMove(summon, move_path), summon.getPosition());
@@ -133,7 +130,7 @@ public class ReqCSummonedPool {
     public static void OnAttack(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
         final MapleMap map = chr.getMap();
 
-        final SummonSkillEntry sse = SkillFactory.getSummonData(summon.getSkill());
+        final SummonSkillEntry sse = SkillFactory.getSummonData(summon.getSkillID());
 
         if (sse == null) {
             return;
@@ -173,11 +170,10 @@ public class ReqCSummonedPool {
                 allDamage.add(new SummonAttackEntry(mob, damage));
             }
 
-            if (!summon.isChangedMap()) {
-                map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
-            }
-            Skill summonSkill = SkillFactory.getSkill(summon.getSkill());
-            MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
+            map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+
+            Skill summonSkill = SkillFactory.getSkill(summon.getSkillID());
+            MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSLV());
 
             if (summonEffect == null) {
                 return;
@@ -201,8 +197,7 @@ public class ReqCSummonedPool {
 
             if (summon.isGaviota()) {
                 chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
-                chr.getMap().removeSummon(summon.getObjectId());
-                chr.removeVisibleMapObject(summon);
+                chr.getMap().removeSummon(summon);
             }
             return;
         }
@@ -261,11 +256,10 @@ public class ReqCSummonedPool {
             short unk31 = cp.Decode2(); // Y
         }
 
-        if (!summon.isChangedMap()) {
-            map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
-        }
-        final Skill summonSkill = SkillFactory.getSkill(summon.getSkill());
-        final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSkillLevel());
+        map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+
+        final Skill summonSkill = SkillFactory.getSkill(summon.getSkillID());
+        final MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSLV());
 
         if (summonEffect == null) {
             return;
@@ -289,27 +283,19 @@ public class ReqCSummonedPool {
 
         if (summon.isGaviota()) {
             chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
-            chr.getMap().removeSummon(summon.getObjectId());
-            chr.removeVisibleMapObject(summon);
+            chr.getMap().removeSummon(summon);
         }
     }
 
     // CSummoned::OnHit
-    public static void OnHit(MapleCharacter chr, ClientPacket cp) {
+    public static void OnHit(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
         int unkByte = cp.Decode1();
         int damage = cp.Decode4();
         int monsterIdFrom = cp.Decode4();
 
-        final Iterator<MapleSummon> iter = chr.getSummons().values().iterator();
-        MapleSummon summon;
-
-        while (iter.hasNext()) {
-            summon = iter.next();
-            if (summon.isPuppet() && summon.getOwnerId() == chr.getId()) { //We can only have one puppet(AFAIK O.O) so this check is safe.
-                summon.addHP((short) -damage);
-                chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
-                break;
-            }
+        if (summon.isPuppet()) { //We can only have one puppet(AFAIK O.O) so this check is safe.
+            summon.addHP((short) -damage);
+            chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
         }
     }
 }

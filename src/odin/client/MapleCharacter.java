@@ -39,7 +39,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -69,10 +68,8 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUser_Pet.DeActivatedMsg;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
-import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
-import tacos.packet.response.ResCUserPool;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsDropPickUpMessage;
@@ -90,7 +87,6 @@ import odin.server.MapleCarnivalParty;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleSummon;
 import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.ShopDispatch;
@@ -124,8 +120,6 @@ import tacos.debug.DebugLogger;
 import tacos.debug.DebugShop;
 import tacos.debug.IDebugMan;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import tacos.packet.response.ResCUser_Dragon;
-import tacos.packet.response.ResCUser_SkillPet;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -167,7 +161,7 @@ public class MapleCharacter extends TacosCharacter {
     // foothold
     private int foothold_id = 0;
     private boolean smega;
-    private boolean hasSummon = false;
+    private boolean hasTutorialSummon = false;
     private boolean canSetBeansNum;
     private int[] wishlist;
     private int[] rocks;
@@ -182,7 +176,6 @@ public class MapleCharacter extends TacosCharacter {
     private transient Set<Object> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
-    private transient Map<Integer, MapleSummon> summons;
     private CashShop cs;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
@@ -233,8 +226,6 @@ public class MapleCharacter extends TacosCharacter {
         inst = new AtomicInteger();
         inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
         doors = new ArrayList<>();
-        summons = new LinkedHashMap<>();
-        visibleMapObjects = new LinkedHashSet<>();
         pendingCarnivalRequests = new LinkedList<>();
         savedLocations = new int[SavedLocationType.values().length];
         for (int i = 0; i < SavedLocationType.values().length; i++) {
@@ -1353,46 +1344,6 @@ public class MapleCharacter extends TacosCharacter {
         return skillMacros;
     }
 
-    /**
-     * Oid of players is always = the cid
-     */
-    /**
-     * Throws unsupported operation exception, oid of players is read only
-     */
-    @Override
-    public void setObjectId(int id) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void addVisibleMapObject(Object mo) {
-        visibleMapObjects.add(mo);
-    }
-
-    public void removeVisibleMapObject(Object mo) {
-        visibleMapObjects.remove(mo);
-    }
-
-    public void sendSpawnData(TacosClient client) {
-        client.SendPacket(ResCUserPool.UserEnterField(this));
-        // haku fox.
-        if (skill_pet != null) {
-            client.SendPacket(ResCUser_SkillPet.SkillPetTransferField(skill_pet));
-        }
-        if (dragon != null) {
-            client.SendPacket(ResCUser_Dragon.DragonEnterField(dragon));
-        }
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                client.SendPacket(ResCUser_Pet.Activated(this, pet));
-            }
-        }
-        if (summons != null) {
-            for (final MapleSummon summon : summons.values()) {
-                client.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
-            }
-        }
-    }
-
     public MaplePet getPetByUniqueId(long ped_uid) {
         for (final MaplePet pet : pets) {
             if (pet.getSummoned()) {
@@ -1531,10 +1482,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public boolean getSmega() {
         return smega;
-    }
-
-    public Map<Integer, MapleSummon> getSummons() {
-        return summons;
     }
 
     public int getChair() {
@@ -2241,12 +2188,12 @@ public class MapleCharacter extends TacosCharacter {
         updateOneInfo(questid, "have" + (index == -1 ? "" : index), "1");
     }
 
-    public boolean hasSummon() {
-        return hasSummon;
+    public boolean hasTutorialSummon() {
+        return hasTutorialSummon;
     }
 
-    public void setHasSummon(boolean summ) {
-        this.hasSummon = summ;
+    public void setTutorialSummon(boolean summ) {
+        this.hasTutorialSummon = summ;
     }
 
     public void removeDoor() {

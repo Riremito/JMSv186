@@ -854,14 +854,14 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void summonMsg(final String msg) {
-        if (!client.getPlayer().hasSummon()) {
+        if (!client.getPlayer().hasTutorialSummon()) {
             playerSummonHint(true);
         }
         client.SendPacket(ResCUserLocal.UserTutorMsg(msg));
     }
 
     public final void summonMsg(final int type) {
-        if (!client.getPlayer().hasSummon()) {
+        if (!client.getPlayer().hasTutorialSummon()) {
             playerSummonHint(true);
         }
         client.SendPacket(ResCUserLocal.UserTutorMsg(type));
@@ -872,7 +872,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void playerSummonHint(final boolean summon) {
-        client.getPlayer().setHasSummon(summon);
+        client.getPlayer().setTutorialSummon(summon);
         client.SendPacket(ResCUserLocal.UserHireTutor(summon));
     }
 

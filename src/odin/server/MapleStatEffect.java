@@ -24,10 +24,8 @@ import odin.server.life.MapleMonster;
 import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMist;
-import odin.server.maps.MapleSummon;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.MapleData;
-import tacos.packet.ops.OpsMoveAbility;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -486,18 +484,7 @@ public class MapleStatEffect {
                 applyMonsterBuff(applyfrom);
             }
         }
-        OpsMoveAbility summonMovementType = getSummonMovementType();
-        if (summonMovementType != null) {
-            final MapleSummon tosummon = new MapleSummon(applyfrom, this, new Point(pos == null ? applyfrom.getPosition() : pos), summonMovementType);
-            if (!tosummon.isPuppet()) {
-            }
-            applyfrom.getMap().spawnSummon(tosummon);
-            applyfrom.getSummons().put(sourceid, tosummon);
-            tosummon.addHP((short) x);
-            if (isBeholder()) {
-                tosummon.addHP((short) 1);
-            }
-        } else if (isMagicDoor()) { // Magic Door
+        if (isMagicDoor()) { // Magic Door
             if (!applyto.getDoors().isEmpty()) {
                 applyto.removeDoor();
                 applyto.silentPartyUpdate();
@@ -1010,56 +997,6 @@ public class MapleStatEffect {
 
     public final byte getLevel() {
         return level;
-    }
-
-    public OpsMoveAbility getSummonMovementType() {
-        if (!skill) {
-            return null;
-        }
-        switch (sourceid) {
-            case 3211002: // puppet sniper
-            case 3111002: // puppet ranger
-            case 33111003:
-            case 13111004: // puppet cygnus
-            case 5211001: // octopus - pirate
-            case 5220002: // advanced octopus - pirate
-            case 4341006:
-            case 35111002:
-            case 35111005: //TEMP
-            case 35111004: //TEMP
-            //case 35111011: //TEMP
-            case 35121009:
-            //case 35121010: //TEMP
-            case 35121011:
-                //case 4111007: //TEMP
-                return OpsMoveAbility.MOVEABILITY_STOP;
-            case 3211005: // golden eagle
-            case 3111005: // golden hawk
-            case 33111005:
-            case 2311006: // summon dragon
-            case 3221005: // frostprey
-            case 3121006: // phoenix
-                return OpsMoveAbility.MOVEABILITY_FLY;
-            case 5211002: // bird - pirate
-                return OpsMoveAbility.MOVEABILITY_FLY_RANDOM;
-            case 32111006: //reaper
-                return OpsMoveAbility.MOVEABILITY_WALK_RANDOM;
-            case 1321007: // beholder
-            case 2121005: // elquines
-            case 2221005: // ifrit
-            case 2321003: // bahamut
-            case 12111004: // Ifrit
-            case 11001004: // soul
-            case 12001004: // flame
-            case 13001004: // storm
-            case 14001005: // darkness
-            case 15001004: // lightning
-            case 35111001:
-            case 35111010:
-            case 35111009:
-                return OpsMoveAbility.MOVEABILITY_WALK;
-        }
-        return null;
     }
 
     public final int getSourceId() {

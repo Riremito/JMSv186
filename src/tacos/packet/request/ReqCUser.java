@@ -2178,8 +2178,9 @@ public class ReqCUser {
         chr.SendPacket(ResCWvsContext.SkillUseResult());
 
         Skill skill = SkillFactory.getSkill(nSkillID);
+        int nSLV_SS = 0;
         if (skill != null) {
-            int nSLV_SS = chr.getSkillLevel(skill);
+            nSLV_SS = chr.getSkillLevel(skill);
             int con_mp = skill.getEffect(nSLV_SS).getMpCon();
             int cur_mp = chr.getStat().getMp();
             if (cur_mp < con_mp) {
@@ -2242,6 +2243,12 @@ public class ReqCUser {
             case CLERIC_TELEPORT:
             case HERMIT_FLASH_JUMP: {
                 chr.sendStatChanged(true);
+                return true;
+            }
+            case RANGER_PUPPET:
+            case RANGER_SILVER_HAWK: {
+                chr.setSummon(ops_skill, nSLV_SS);
+                map.addSummon(chr.getSummon());
                 return true;
             }
             default: {

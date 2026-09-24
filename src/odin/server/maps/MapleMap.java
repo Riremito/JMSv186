@@ -58,12 +58,6 @@ public final class MapleMap extends TacosMap {
     }
 
     @Override
-    public void spawnSummon(MapleSummon summon) {
-        summon.updateMap(this);
-        super.spawnSummon(summon);
-    }
-
-    @Override
     public void spawnRevives(MapleMonster monster, int oid) {
         monster.setMap(this);
         super.spawnRevives(monster, oid);

@@ -24,7 +24,6 @@ import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMovePathAttr;
-import odin.server.maps.MapleSummon;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 
@@ -49,13 +48,6 @@ public class ParseCMovePath {
         life.setStance(move_end_action);
         life.setPosition(move_end);
         life.setFh(move_end_foothold_id);
-    }
-
-    // summon
-    public void update(MapleSummon life) {
-        life.setStance(move_end_action);
-        life.setPosition(move_end);
-        life.setFH(move_end_foothold_id);
     }
 
     // dragon

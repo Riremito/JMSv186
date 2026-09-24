@@ -36,7 +36,7 @@ public class RD_CSummoned {
 
         boolean is_avater_look = false;
         MapleCharacter chr = summon.getOwner();
-        int m_nSkillID = summon.getSkill();
+        int m_nSkillID = summon.getSkillID();
 
         // ダミーエフェクト
         if (m_nSkillID == 4341006) {
@@ -45,11 +45,11 @@ public class RD_CSummoned {
             }
         }
 
-        data.Encode2(summon.getPosition().x); // m_ptPos.x
-        data.Encode2(summon.getPosition().y); // m_ptPos.y
-        data.Encode1(summon.getSkill() == 32111006 ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
-        data.Encode2(summon.getFh()); // m_dwSN (CStaticFoothold)
-        data.Encode1(summon.getMovementType().get()); // m_nMoveAbility
+        data.Encode2(summon.getX()); // m_ptPos.x
+        data.Encode2(summon.getY()); // m_ptPos.y
+        data.Encode1(summon.getSkillID() == 32111006 ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
+        data.Encode2(summon.getFootholdId()); // m_dwSN (CStaticFoothold)
+        data.Encode1(summon.getMoveAbility().get()); // m_nMoveAbility
         data.Encode1(summon.getSummonType().get()); // m_nAssistType
         data.Encode1(animated ? 0 : 1); //nEnterType ENTER_TYPE_DEFAULT, ENTER_TYPE_CREATE_SUMMONED
         data.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));

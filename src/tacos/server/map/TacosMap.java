@@ -766,13 +766,16 @@ public class TacosMap extends TacosMapData {
     private LinkedHashMap<Integer, MapleSummon> summons = new LinkedHashMap<>();
 
     public void addSummon(MapleSummon summon) {
-        this.runningOid++;
-        summon.setObjectId(this.runningOid);
+        if (summon.getObjectId() == 0) {
+            summon.setObjectId();
+        }
         this.summons.put(summon.getObjectId(), summon);
+        broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
     }
 
-    public boolean removeSummon(int object_id) {
-        return this.summons.remove(object_id) != null;
+    public void removeSummon(MapleSummon summon) {
+        this.summons.remove(summon.getObjectId());
+        broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
     public List<MapleSummon> getAllSummons() {
@@ -783,13 +786,8 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public MapleSummon getSummonByOid(int oid) {
-        return this.summons.get(oid);
-    }
-
-    public void spawnSummon(MapleSummon summon) {
-        addSummon(summon);
-        broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
+    public MapleSummon getSummonByOid(int object_id) {
+        return this.summons.get(object_id);
     }
 
     // mob
