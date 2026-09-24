@@ -148,7 +148,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             ESP_DeleteBlackList.set(-1);
             return;
         }
-        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.PostBB()) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
             MRP_Create.set(0);
             MRP_CreateResult.set(1);
             MRP_Invite.set(2);

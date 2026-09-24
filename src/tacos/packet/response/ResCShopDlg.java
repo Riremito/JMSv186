@@ -68,8 +68,8 @@ public class ResCShopDlg {
             }
         }
 
-        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131));
-        sp.Encode1(0, Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131));
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
+        sp.Encode1(0, Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
         return sp;
     }
 
@@ -87,12 +87,12 @@ public class ResCShopDlg {
             sp.Encode1(0);
         }
 
-        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131));
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
         sp.Encode4(ds.getNpcId()); // m_dwNpcTemplateID
 
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
             // none
-        } else if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.GMS, 131)) {
+        } else if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 76)) {
             sp.Encode1(0);
         }
 
@@ -116,7 +116,7 @@ public class ResCShopDlg {
                 sp.Encode1(0);
                 sp.Encode4(0);
             }
-            if (Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131)) {
+            if (Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89)) {
                 sp.Encode4(0);
                 sp.Encode8(0);
                 sp.Encode8(TacosSharedDate.getMagicalExpirationDate());
@@ -134,7 +134,7 @@ public class ResCShopDlg {
                 sp.Encode2(ss.item_quantity); // nQuantity
             }
             sp.Encode2(ss.item_slot_max, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // nMaxPerSlot
-            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131));
+            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
             sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131));
             if (Config.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode4(0);
@@ -156,12 +156,12 @@ public class ResCShopDlg {
             sp.Encode1(0);
         }
 
-        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131));
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
         sp.Encode4(sid); // m_dwNpcTemplateID
 
         if (!Config.GreaterOrEqual(Region.EMS, 89)) {
             // none
-        } else if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.GMS, 131)) {
+        } else if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 76)) {
             sp.Encode1(0);
         }
 
@@ -185,7 +185,7 @@ public class ResCShopDlg {
                 sp.Encode4(0);
             }
 
-            if (Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131)) {
+            if (Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89)) {
                 sp.Encode4(0);
                 sp.Encode8(0);
                 sp.Encode8(TacosSharedDate.getMagicalExpirationDate());
@@ -201,7 +201,7 @@ public class ResCShopDlg {
                 sp.Encode2(1); // nQuantity
             }
             sp.Encode2(ii.getSlotMax(client, item.getItemId()), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // nMaxPerSlot
-            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.GMS, 131));
+            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
             sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131));
             if (Config.GreaterOrEqual(Region.GMS, 131)) {
                 sp.Encode4(0);

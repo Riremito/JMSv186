@@ -509,7 +509,7 @@ public class ResCLogin {
     public static ServerPacket WorldInformation(TacosWorld world) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_WorldInformation);
 
-        if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
             sp.Encode2((world != null) ? world.getId() : -1);
         } else {
             sp.Encode1((world != null) ? world.getId() : -1); // nWorldID

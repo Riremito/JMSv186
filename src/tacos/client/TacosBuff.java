@@ -51,7 +51,7 @@ public class TacosBuff {
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
             return new int[9]; //36
         }
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
             return new int[8]; // 32
         }
         // post bb ex.
@@ -80,7 +80,7 @@ public class TacosBuff {
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
             return new int[9]; //36
         }
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
             return new int[8]; // 32
         }
         // post bb ex.

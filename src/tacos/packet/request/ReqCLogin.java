@@ -292,7 +292,7 @@ public class ReqCLogin {
         }
         job_dualblade = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // 1 = DB, 2 = キャノンシューター, 10 = 蒼龍
 
-        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+        if (Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
             character_gender = cp.Decode1();
             if (!Config.Equal(Region.KMST, 391)) {
                 skin_color = cp.Decode1();
@@ -325,7 +325,7 @@ public class ReqCLogin {
 
             face_id = cp.Decode4();
             hair_id = cp.Decode4();
-            if (Region.MSEA.check() || Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.BMS.check() || Region.VMS.check() || Region.BMS.check()) {
+            if (Region.THMS.check() || Region.GMS.check() || Region.GMST.check() || Region.MSEA.check() || Region.EMS.check() || Region.BMS.check() || Region.BMS.check() || Region.VMS.check()) {
                 hair_color = cp.Decode4();
                 skin_color = cp.Decode4();
             }
@@ -444,7 +444,7 @@ public class ReqCLogin {
     }
 
     public static boolean OnSelectWorld(TacosClient client, ClientPacket cp) {
-        byte unk = cp.Decode1(Region.KMS.check() || Region.KMST.check() || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Region.HKMS.check() || Config.GreaterOrEqual(Region.EMS, 89) || Region.IMS.check());
+        byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89) || Region.KMS.check() || Region.KMST.check() || Region.HKMS.check() || Region.IMS.check());
 
         byte m_nGameStartMode = cp.Decode1(Config.GreaterOrEqual(Region.GMS, 83)); // m_nGameStartMode, always 2?
         if (m_nGameStartMode == 1) {
@@ -494,7 +494,7 @@ public class ReqCLogin {
         }
 
         int unke = cp.Decode4(Region.GMS.check() || Region.GMST.check() || Region.EMS.check());
-        String key = cp.DecodeStr(Region.THMS.check() || Region.VMS.check() || Region.BMS.check()); // 32 bytes hex or PIC
+        String key = cp.DecodeStr(Region.THMS.check() || Region.BMS.check() || Region.VMS.check()); // 32 bytes hex or PIC
         int character_id = cp.Decode4();
         if (!client.checkCharacterId(character_id)) {
             client.loginFailed("OnDeleteCharacter");

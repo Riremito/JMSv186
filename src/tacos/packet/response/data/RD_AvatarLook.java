@@ -42,7 +42,7 @@ public class RD_AvatarLook {
         data.Encode1(chr.getSkinColor()); // nSkin
         data.Encode4(chr.getFace()); // nFace
         int demon_something = 0;
-        data.Encode4(demon_something, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)); // demon something
+        data.Encode4(demon_something, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)); // demon something
         data.Encode1(0); // ignored byte
         data.Encode4(chr.getHair());
         final Map<Byte, Integer> myEquip = new LinkedHashMap<>();
@@ -81,7 +81,7 @@ public class RD_AvatarLook {
             }
             data.Encode1(255); // ending markers
         }
-        data.Encode1(255, Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 116)); // ending markers
+        data.Encode1(255, Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116)); // ending markers
         final Item cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
         if (Region.BMS.check() || Region.VMS.check()) {
@@ -127,8 +127,8 @@ public class RD_AvatarLook {
             // data.Encode4(0);
             return data.getBytes();
         }
-        data.Encode1(0, Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)); // mercedes ear
-        if (Region.THMS.check() || Region.TWMS.check() || Region.CMS.check() || Region.MSEA.check() || Region.EMS.check() || Config.GreaterOrEqual(Region.GMS, 83)) {
+        data.Encode1(0, Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111)); // mercedes ear
+        if (Config.GreaterOrEqual(Region.GMS, 83) || Region.CMS.check() || Region.TWMS.check() || Region.THMS.check() || Region.MSEA.check() || Region.EMS.check()) {
             data.EncodeZeroBytes(12);
         } else {
             data.Encode4(0); // pet 1?
