@@ -603,7 +603,7 @@ public class DebugCommand {
             }
             case "/killmob":
             case "/killall": {
-                int count = 300;
+                int count = 1000;
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
                 }

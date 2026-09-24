@@ -365,6 +365,7 @@ public class MapleMonster extends TacosMonster {
         if (exp > 0) {
             exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
             exp *= attacker.getChannelServer().getExpRate();
+            exp *= 1.25; // JMS
             //do this last just incase someone has a 2x exp card and its set to max value
             int Class_Bonus_EXP = 0;
             if (Class_Bonus_EXP_PERCENT > 0) {
