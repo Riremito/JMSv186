@@ -367,17 +367,17 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mob
-        for (MapleMonster mob : this.monsters.values()) {
-            chr.SendPacket(ResCMobPool.MobEnterField(mob));
+        for (MapleMonster monster : this.monsters.values()) {
+            chr.SendPacket(ResCMobPool.MobEnterField(monster));
 
-            int number = split.find(mob.getPosition().x, mob.getPosition().y);
+            int number = split.find(monster.getPosition().x, monster.getPosition().y);
             if (split.getTotal() < number) {
                 continue;
             }
             if (area_states.get(number) == MapSplitState.ACTIVE) {
-                if (mob.getController() == null || getPlayerByOid(mob.getController().getId()) == null) {
-                    mob.setController(chr);
-                    chr.SendPacket(ResCMobPool.MobChangeController(mob, (mob.isFirstAttack() ? 1 : 0) + 1));
+                if (monster.getOwnerId() == 0) {
+                    monster.setOwnerId(chr.getId());
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
             }
         }
@@ -480,18 +480,23 @@ public class TacosMap extends TacosMapData {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr));
             }
         }
+
+        ArrayList<Integer> area_owners = getAreaOwnerIds(chr.getId());
         // mob
-        for (MapleMonster mob : this.monsters.values()) {
-            int number = split.find(mob.getPosition().x, mob.getPosition().y);
+        for (MapleMonster monster : this.monsters.values()) {
+            int number = split.find(monster.getPosition());
             if (split.getTotal() < number) {
                 continue;
             }
-            if (area_states.get(number) == MapSplitState.ACTIVE) {
-                boolean controlled = mob.getController() != null && mob.getController().getId() == chr.getId();
-                if (controlled) {
-                    mob.setController(null);
+            //if (area_states.get(number) == MapSplitState.ACTIVE) {
+                if (monster.getOwnerId() == chr.getId()) {
+                    MapleCharacter area_owner = getPlayerByOid(area_owners.get(number));
+                    if (area_owner != null) {
+                        monster.setOwnerId(area_owners.get(number));
+                        area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                    }
                 }
-            }
+            //}
         }
     }
 
@@ -519,24 +524,28 @@ public class TacosMap extends TacosMapData {
                 chr.SendPacket(ResCUserPool.UserLeaveField(player));
             }
         }
+        ArrayList<Integer> area_owners = getAreaOwnerIds(chr.getId());
         // mob
-        for (MapleMonster mob : this.monsters.values()) {
-            int number = split.find(mob.getPosition().x, mob.getPosition().y);
+        for (MapleMonster monster : this.monsters.values()) {
+            int number = split.find(monster.getPosition().x, monster.getPosition().y);
             if (split.getTotal() < number) {
                 continue;
             }
-            boolean not_controlled = mob.getController() == null || getPlayerByOid(mob.getController().getId()) == null;
-            boolean controlled = mob.getController() != null && mob.getController().getId() == chr.getId();
             if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
-                if (not_controlled) {
-                    mob.setController(chr);
-                    chr.SendPacket(ResCMobPool.MobChangeController(mob, (mob.isFirstAttack() ? 1 : 0) + 1));
+                if (monster.getOwnerId() == 0) {
+                    monster.setOwnerId(chr.getId());
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
             }
             if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                if (controlled) {
-                    mob.setController(null);
-                    chr.SendPacket(ResCMobPool.MobChangeController(mob, 0));
+                if (monster.getOwnerId() == chr.getId()) {
+                    monster.setOwnerId(0);
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, 0));
+                    MapleCharacter area_owner = getPlayerByOid(area_owners.get(number));
+                    if (area_owner != null) {
+                        monster.setOwnerId(area_owners.get(number));
+                        area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                    }
                 }
             }
         }
@@ -689,6 +698,42 @@ public class TacosMap extends TacosMapData {
         if (skill_pet != null) {
             // TODO : leave field.
         }
+    }
+
+    public ArrayList<Integer> getAreaOwnerIds() {
+        return getAreaOwnerIds(0);
+    }
+
+    public ArrayList<Integer> getAreaOwnerIds(int leave_user_id) {
+        ArrayList<Integer> area_owners = new ArrayList<>(Collections.nCopies(split.getTotal(), 0));
+        int counter = 0;
+        for (MapleCharacter player : getAllPlayers()) {
+            if (player.getId() == leave_user_id) {
+                continue;
+            }
+            int area_number = split.find(player.getPosition());
+            int area_row = area_number / split.getCol();
+            int area_col = area_number % split.getCol();
+            for (int row_index = 0; row_index < split.getRow(); row_index++) {
+                if (row_index < (area_row - 1) || (area_row + 1) < row_index) {
+                    continue;
+                }
+                for (int col_index = 0; col_index < split.getCol(); col_index++) {
+                    if (col_index < (area_col - 1) || (area_col + 1) < col_index) {
+                        continue;
+                    }
+                    if (area_owners.get((row_index * split.getCol()) + col_index) != 0) {
+                        continue;
+                    }
+                    area_owners.set((row_index * split.getCol()) + col_index, player.getId());
+                    counter++;
+                }
+            }
+            if (split.getTotal() <= counter) {
+                return area_owners;
+            }
+        }
+        return area_owners;
     }
 
     // summon.
@@ -1529,6 +1574,7 @@ public class TacosMap extends TacosMapData {
         }
         // mob regen.
         if (this.task_mob_regen.check(time_current, 7000)) {
+            ArrayList<Integer> area_owners = getAreaOwnerIds();
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
                 if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
                     MapleMonster monster = sp.regen((MapleMap) this);
@@ -1537,10 +1583,12 @@ public class TacosMap extends TacosMapData {
                         broadcastMessage(ResCMobPool.MobEnterField(monster));
                         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
-                        int number = getSplit().find(monster.getPosition().x, monster.getPosition().y);
-                        if (area_states.get(number) == MapSplitState.ACTIVE) {
-                            monster.setController(player);
-                            player.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+
+                        int number = getSplit().find(monster.getPosition());
+                        MapleCharacter area_owner = getPlayerByOid(area_owners.get(number));
+                        if (area_owner != null) {
+                            monster.setOwnerId(area_owner.getId());
+                            area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                         }
                     }
                 }

@@ -62,16 +62,6 @@ import tacos.server.map.object.TacosMonster;
 
 public class MapleMonster extends TacosMonster {
 
-    private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
-
-    public MapleCharacter getController() {
-        return controller.get();
-    }
-
-    public void setController(MapleCharacter controller) {
-        this.controller = new WeakReference<>(controller);
-    }
-
     private int stance;
 
     public int getStance() {

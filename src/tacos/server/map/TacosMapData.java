@@ -85,8 +85,20 @@ public class TacosMapData {
         private int row;
         private int total;
 
-        protected int getTotal() {
+        public int getCol() {
+            return this.col;
+        }
+
+        public int getRow() {
+            return this.row;
+        }
+
+        public int getTotal() {
             return this.total;
+        }
+
+        public int find(Point position) {
+            return find(position.x, position.y);
         }
 
         public int find(int x, int y) {
