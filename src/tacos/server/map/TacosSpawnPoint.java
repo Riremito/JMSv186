@@ -91,8 +91,8 @@ public class TacosSpawnPoint {
         this.monster.setObjectId();
         this.monster.setMap(map); // TODO : remove from monster object.
         this.monster.setPosition(new Point(this.x, this.y));
-        this.monster.setFh(this.fh);
-        this.monster.setOriginFh(this.fh);
+        this.monster.setFootholdId(this.fh);
+        this.monster.setHomeFoothold(this.fh);
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
 

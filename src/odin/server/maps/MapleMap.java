@@ -188,14 +188,14 @@ public final class MapleMap extends TacosMap {
         if (mobid == 8820008) { //wipe out statues and respawn
             for (final Object mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
-                if (mons.getLinkOid() != monster.getObjectId()) {
+                if (mons.getSummonOption() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
                 }
             }
         } else if (mobid >= 8820010 && mobid <= 8820014) {
             for (final Object mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
-                if (mons.getId() != 8820000 && mons.getObjectId() != monster.getObjectId() && mons.getLinkOid() != monster.getObjectId()) {
+                if (mons.getId() != 8820000 && mons.getObjectId() != monster.getObjectId() && mons.getSummonOption() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
                 }
             }
@@ -230,8 +230,8 @@ public final class MapleMap extends TacosMap {
         DebugLogger.DebugLog("spawnZakum : fh = " + reactor_fh_id + ", " + zakum_pos);
 
         mainb.setPosition(zakum_pos);
-        mainb.setFh(reactor_fh_id);
-        mainb.setOriginFh(reactor_fh_id);
+        mainb.setFootholdId(reactor_fh_id);
+        mainb.setHomeFoothold(reactor_fh_id);
         mainb.setFake(true);
 
         spawnFakeMonster(mainb);
@@ -239,8 +239,8 @@ public final class MapleMap extends TacosMap {
         for (int i : zakpart) {
             MapleMonster part = MapleLifeFactory.getMonster(i);
             part.setPosition(zakum_pos);
-            part.setFh(reactor_fh_id);
-            mainb.setOriginFh(reactor_fh_id);
+            part.setFootholdId(reactor_fh_id);
+            mainb.setHomeFoothold(reactor_fh_id);
             spawnMonster(part, -2);
         }
         if (squadSchedule != null) {
@@ -395,11 +395,10 @@ public final class MapleMap extends TacosMap {
         if (ret != null) {
             newMons.setCy(ret.cy);
             newMons.setF(0); //always.
-            newMons.setFh(ret.fh);
+            newMons.setFootholdId(ret.fh);
             newMons.setRx0(ret.x + 50);
             newMons.setRx1(ret.x - 50); //does this matter
             newMons.setPosition(new Point(ret.x, ret.y));
-            newMons.setHide(false);
             //SpawnPoint sp = addMonsterSpawn(newMons, 1, (byte) team, null);
             //sp.setCarnival(num);
         }

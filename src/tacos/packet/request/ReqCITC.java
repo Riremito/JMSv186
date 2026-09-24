@@ -28,7 +28,6 @@ import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsITC;
-import static tacos.packet.ops.OpsITC.ITCReq_RegisterSaleEntry;
 import tacos.packet.response.ResCITC;
 import odin.server.MTSCart;
 import odin.server.MTSStorage;

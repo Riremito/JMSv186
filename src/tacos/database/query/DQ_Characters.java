@@ -19,7 +19,6 @@
 package tacos.database.query;
 
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 import java.sql.Connection;

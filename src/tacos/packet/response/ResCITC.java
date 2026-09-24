@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.Item;
 import odin.server.MTSStorage;
 import tacos.config.Config;
-import static tacos.config.Region.JMS;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsITC;

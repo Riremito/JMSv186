@@ -220,7 +220,7 @@ public class MobSkill {
 
                     switch (mobId) {
                         case 8500003: // Pap bomb high
-                            toSpawn.setFh((int) Math.ceil(Math.random() * 19.0));
+                            toSpawn.setFootholdId((int) Math.ceil(Math.random() * 19.0));
                             ypos = -590;
                             break;
                         case 8500004: // Pap bomb

@@ -36,7 +36,7 @@ public class TacosMapObject {
     private int owner_id = 0;
     private Point position = new Point();
     private int move_action = OpsMovePathAttr.MPA_NORMAL.get();
-    private int foothold_id = 0;
+    private int foothold_id = 0; // TODO : rename to nFootholdSN
 
     public int getObjectId() {
         return this.object_id;

@@ -845,7 +845,7 @@ public class TacosMap extends TacosMapData {
 
     public void spawnRevives(MapleMonster monster, int oid) {
         checkRemoveAfter(monster);
-        monster.setLinkOid(oid);
+        monster.setSummonOption(oid);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REVIVED);
         addMonster(monster);
         broadcastMessage(ResCMobPool.MobEnterField(monster));
@@ -1529,7 +1529,7 @@ public class TacosMap extends TacosMapData {
         }
         // mob regen.
         if (this.task_mob_regen.check(time_current, 7000)) {
-            for (TacosSpawnPoint sp : player.getMap().getMonsterSpawnPoint()) {
+            for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
                 if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
                     MapleMonster monster = sp.regen((MapleMap) this);
                     if (monster != null) {

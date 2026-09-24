@@ -76,24 +76,24 @@ public class ResCMobPool {
     public static byte[] CMob_Init(MapleMonster monster) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode2(monster.getPosition().x); // m_ptPosPrev.x
-        data.Encode2(monster.getPosition().y); // m_ptPosPrev.y
-        data.Encode1(monster.getStance()); // m_nMoveAction_CS
-        data.Encode2(monster.getFh()); // pvcMobActiveObj, Fh  causes fall down, credit to 垂垂 for fixing mob fall down issue
-        data.Encode2(monster.getOriginFh()); // m_pInterface
+        data.Encode2(monster.getPosition().x); // m_ptCurPos.x
+        data.Encode2(monster.getPosition().y); // m_ptCurPos.y
+        data.Encode1(monster.getStance()); // m_bMoveAction
+        data.Encode2(monster.getFootholdId()); // m_nFootholdSN, Fh  causes fall down, credit to 垂垂 for fixing mob fall down issue
+        data.Encode2(monster.getHomeFoothold()); // m_nHomeFoothold
 
         OpsMobAppear ops_at = monster.getAT();
         switch (ops_at) {
             case MOBAPPEAR_NORMAL, MOBAPPEAR_REGEN, MOBAPPEAR_SUSPENDED, MOBAPPEAR_DELAY -> {
-                data.Encode1(monster.getAT().get()); // nAppearType
+                data.Encode1(monster.getAT().get()); // nAppearType, m_nSummonType
             }
             case MOBAPPEAR_REVIVED -> {
-                data.Encode1(monster.getAT().get()); // nAppearType
-                data.Encode4(monster.getLinkOid()); // dwOption
+                data.Encode1(monster.getAT().get()); // nAppearType, m_nSummonType
+                data.Encode4(monster.getSummonOption()); // m_dwSummonOption
             }
             case MOBAPPEAR_EFFECT -> {
-                data.Encode1(monster.getATEx()); // nAppearType
-                data.Encode4(monster.getLinkOid()); // dwOption
+                data.Encode1(monster.getATEx()); // nAppearType, m_nSummonType
+                data.Encode4(monster.getSummonOption()); // m_dwSummonOption
             }
         }
 

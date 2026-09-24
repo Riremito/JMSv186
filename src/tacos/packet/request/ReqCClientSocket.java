@@ -55,7 +55,6 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCashItem;
-import static tacos.packet.request.ReqCLogin.SetDefaultEquip;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserLocal;
@@ -477,7 +476,7 @@ public class ReqCClientSocket {
         chr_koc.setBuddylist(20);
 
         for (int item_id : item_ids) {
-            SetDefaultEquip(chr_koc, item_id);
+            ReqCLogin.SetDefaultEquip(chr_koc, item_id);
         }
 
         chr_koc.saveNewCharToDB();

@@ -56,8 +56,8 @@ public class PetMob implements IPetEx {
 
         this.monster = MapleLifeFactory.getMonster(id);
         this.monster.setPosition(this.character.getPosition());
-        this.monster.setFH(this.character.getFH());
-        this.monster.setOriginFh(this.character.getFH());
+        this.monster.setFootholdId(this.character.getFH());
+        this.monster.setHomeFoothold(this.character.getFH());
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         SendPacket(ResCMobPool.MobEnterField(this.monster));
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
@@ -83,7 +83,7 @@ public class PetMob implements IPetEx {
 
         boolean is_left = (move_path.getMoveAction() & 1) != 0;
         this.monster.update(move_path);
-        this.monster.setOriginFh(move_path.getFootHoldId());
+        this.monster.setHomeFoothold(move_path.getFootHoldId());
 
         SendPacket(ResCMobPool.MobMove(this.monster, false, is_left ? 1 : 0, 0, move_path));
         return true;

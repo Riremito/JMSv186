@@ -20,7 +20,6 @@ package tacos.wz;
 
 import odin.client.Skill;
 import odin.client.MapleCharacter;
-import static odin.client.SkillFactory.getName;
 import odin.client.SummonSkillEntry;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
@@ -32,6 +31,7 @@ import java.util.Map;
 import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
 import tacos.config.Config;
@@ -94,7 +94,7 @@ public class SkillWz extends WzXML {
                                 // THMS meme
                                 String skill_name = "";
                                 try {
-                                    skill_name = getName(skillid);
+                                    skill_name = SkillFactory.getName(skillid);
                                 } catch (RuntimeException e) {
                                     DebugLogger.ErrorLog("" + skillid);
                                 }

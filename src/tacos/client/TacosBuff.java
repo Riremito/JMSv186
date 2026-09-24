@@ -30,12 +30,6 @@ import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
-import static tacos.packet.ops.OpsSkill.CITIZEN_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.EVANJR_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.LEGEND_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.NOBLESSE_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.NOVICE_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.PRIEST_MYSTIC_DOOR;
 import tacos.wz.opt.FieldOpt;
 
 /**

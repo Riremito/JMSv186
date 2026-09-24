@@ -57,11 +57,10 @@ import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.server.map.object.TacosMapObject;
+import tacos.server.map.object.TacosMonster;
 
-public class MapleMonster extends TacosMapObject {
+public class MapleMonster extends TacosMonster {
 
     private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
 
@@ -74,15 +73,6 @@ public class MapleMonster extends TacosMapObject {
     }
 
     private int stance;
-    private int foothold_id;
-    private int id;
-    private int f;
-    private int fh;
-    private int originFh;
-    private int cy;
-    private int rx0;
-    private int rx1;
-    private boolean hide;
 
     public int getStance() {
         return stance;
@@ -90,14 +80,6 @@ public class MapleMonster extends TacosMapObject {
 
     public void setStance(int stance) {
         this.stance = stance;
-    }
-
-    public int getFH() {
-        return this.foothold_id;
-    }
-
-    public void setFH(int foothold_id) {
-        this.foothold_id = foothold_id;
     }
 
     public boolean isFacingLeft() {
@@ -108,73 +90,15 @@ public class MapleMonster extends TacosMapObject {
         return getStance() % 2;
     }
 
-    public int getF() {
-        return f;
-    }
-
-    public void setF(int f) {
-        this.f = f;
-    }
-
-    public void setHide(boolean hide) {
-        this.hide = hide;
-    }
-
-    public int getOriginFh() {
-        return originFh;
-    }
-
-    public void setOriginFh(int originFh) {
-        this.originFh = originFh;
-    }
-
-    public int getFh() {
-        return fh;
-    }
-
-    public void setFh(int fh) {
-        this.fh = fh;
-    }
-
-    public void setCy(int cy) {
-        this.cy = cy;
-    }
-
-    public int getRx0() {
-        return rx0;
-    }
-
-    public void setRx0(int rx0) {
-        this.rx0 = rx0;
-    }
-
-    public int getRx1() {
-        return rx1;
-    }
-
-    public void setRx1(int rx1) {
-        this.rx1 = rx1;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     private MapleMonsterStats stats;
     private OverrideMonsterStats ostats = null;
     private long hp;
     private int mp;
-    private int linkoid = 0;
     private int lastNode = -1;
     private int lastNodeController = -1;
     private WeakReference<MapleMonster> sponge = new WeakReference<>(null);
     private int highestDamageChar = 0; // Just a reference for monster EXP distribution after dead
     private int stolen = -1; //monster can only be stolen ONCE
-    private int nAppearType = -1;
     private byte venom_counter;
     private byte carnivalTeam;
     private MapleMap map;
@@ -188,23 +112,21 @@ public class MapleMonster extends TacosMapObject {
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
-    private OpsMobAppear appear_type = OpsMobAppear.MOBAPPEAR_NORMAL;
     private ScheduledFuture<?> dropItemSchedule;
 
-    public MapleMonster(final int id, final MapleMonsterStats stats) {
-        this.id = id;
+    public MapleMonster(int id, MapleMonsterStats stats) {
+        setId(id);
         initWithStats(stats);
     }
 
-    public MapleMonster(final MapleMonster monster) {
-        this.id = monster.id;
-        this.f = monster.f;
-        this.hide = monster.hide;
-        this.fh = monster.fh;
-        this.originFh = monster.fh;
-        this.cy = monster.cy;
-        this.rx0 = monster.rx0;
-        this.rx1 = monster.rx1;
+    public MapleMonster(MapleMonster monster) {
+        setId(monster.getId());
+        setF(monster.getF());
+        setCy(monster.getCy());
+        setRx0(monster.getRx0());
+        setRx1(monster.getRx1());
+        setFootholdId(monster.getFootholdId());
+        setHomeFoothold(monster.getFootholdId());
         initWithStats(monster.stats);
     }
 
@@ -497,7 +419,7 @@ public class MapleMonster extends TacosMapObject {
         if (oldSponge != null && oldSponge.isAlive()) {
             boolean set = true;
             for (MapleMonster mons : map.getAllMonsters()) {
-                if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getLinkOid() == oldSponge.getObjectId())) { //sponge was this, please update
+                if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getSummonOption() == oldSponge.getObjectId())) { //sponge was this, please update
                     set = false;
                     break;
                 }
@@ -550,9 +472,9 @@ public class MapleMonster extends TacosMapObject {
                 if (spongy != null) {
                     map.spawnRevives(spongy, this.getObjectId());
                     for (MapleMonster mons : map.getAllMonsters()) {
-                        if (mons.getObjectId() != spongy.getObjectId() && (mons.getSponge() == this || mons.getLinkOid() == this.getObjectId())) { //sponge was this, please update
+                        if (mons.getObjectId() != spongy.getObjectId() && (mons.getSponge() == this || mons.getSummonOption() == this.getObjectId())) { //sponge was this, please update
                             mons.setSponge(spongy);
-                            mons.setLinkOid(spongy.getObjectId());
+                            mons.setSummonOption(spongy.getObjectId());
                         }
                     }
                 }
@@ -1191,14 +1113,6 @@ public class MapleMonster extends TacosMapObject {
         }
     }
 
-    public int getLinkOid() {
-        return linkoid;
-    }
-
-    public void setLinkOid(int lo) {
-        this.linkoid = lo;
-    }
-
     public int getStolen() {
         return stolen;
     }
@@ -1254,21 +1168,5 @@ public class MapleMonster extends TacosMapObject {
 
     public void setNodePacket(ServerPacket np) {
         this.nodepack = np;
-    }
-
-    public OpsMobAppear getAT() {
-        return this.appear_type;
-    }
-
-    public void setAT(OpsMobAppear appear_type) {
-        this.appear_type = appear_type;
-    }
-
-    public int getATEx() {
-        return this.nAppearType;
-    }
-
-    public void setATEx(int nAppearType) {
-        this.nAppearType = nAppearType;
     }
 }
