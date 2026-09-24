@@ -413,7 +413,7 @@ public class RD_CharacterData {
                 data.Encode1(0, Config.GreaterOrEqual(Region.EMS, 89));
                 data.Encode1(0, Config.GreaterOrEqual(Region.EMS, 89));
                 if ((datamask & 0x800000L) != 0) {
-                    data.Encode2(0, Config.GreaterOrEqual(Region.JMS, 187) | Config.Equal(Region.CMS, 88) || Config.Between(Region.TWMS, 124, 125) || Config.GreaterOrEqual(Region.THMS, 96) || Config.GreaterOrEqual(Region.EMS, 76)); // VisitorQuestLog, not 0, Encode2, Encode2
+                    data.Encode2(0, Config.GreaterOrEqual(Region.JMS, 187) || Config.Equal(Region.CMS, 88) || Config.Between(Region.TWMS, 124, 125) || Config.GreaterOrEqual(Region.THMS, 96) || Config.GreaterOrEqual(Region.EMS, 76)); // VisitorQuestLog, not 0, Encode2, Encode2
                 }
                 if ((datamask & 0x1000000L) != 0) {
                     data.Encode2(0, Config.Equal(Region.CMS, 88) || Config.Between(Region.TWMS, 124, 125));
@@ -549,7 +549,7 @@ public class RD_CharacterData {
             }
             data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlotEnd(RD_GW_ItemSlotBase.ItemType.Equip));
             // 装備済み -1000
-            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+            if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
                 for (Item item : equipped) {
                     if (item.getPosition() <= -1000 && item.getPosition() > -1100) {
                         data.EncodeBuffer(RD_GW_ItemSlotBase.EncodeSlot(item));
@@ -852,7 +852,7 @@ public class RD_CharacterData {
             data.Encode4(skill.getValue().skillevel);
 
             // not in v165
-            data.Encode8(TacosSharedDate.getTimestamp(skill.getValue().expiration), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
+            data.Encode8(TacosSharedDate.getTimestamp(skill.getValue().expiration), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
 
             if (TacosShared.is_skill_need_master_level(skill.getKey().getId())) {
                 data.Encode4(skill.getValue().masterlevel);

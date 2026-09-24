@@ -97,7 +97,7 @@ public class TacosCoolTime {
             data.Encode4(ctd.skill.get());
 
             long ct_sec = Math.max(0, ctd.time_end - time) / 1000;
-            if (Config.GreaterOrEqual(Region.JMS, 302) | Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+            if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
                 data.Encode4((int) ct_sec);
             } else {
                 data.Encode2((short) ct_sec);

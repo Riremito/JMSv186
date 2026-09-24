@@ -49,7 +49,7 @@ public class ResCScriptMan {
         switch (smt) {
             case SM_SAY: {
                 if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-                    if ((param & 4) > 0) {
+                    if ((param & 4) != 0) {
                         sp.Encode4(0); // nSpeakerTemplateID
                     }
                 }
