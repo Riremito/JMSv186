@@ -20,7 +20,6 @@ package tacos.wz;
 
 import odin.client.Skill;
 import odin.client.MapleCharacter;
-import odin.client.SummonSkillEntry;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
@@ -31,9 +30,11 @@ import java.util.Map;
 import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.LinkedHashMap;
 import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
+import tacos.client.TacosSummonSkill;
 import tacos.config.Config;
 
 /**
@@ -48,7 +49,7 @@ public class SkillWz extends WzXML {
 
     private Map<Integer, Skill> map_Skill = null;
     private Map<Integer, List<Integer>> map_SkillsByJob = null;
-    private Map<Integer, SummonSkillEntry> map_SummonSkillInformation = null;
+    private LinkedHashMap<Integer, TacosSummonSkill> summon_skills = null;
 
     public Map<Integer, List<Integer>> getSkillsByJob() {
         if (map_SkillsByJob == null) {
@@ -57,11 +58,19 @@ public class SkillWz extends WzXML {
         return map_SkillsByJob;
     }
 
-    public Map<Integer, SummonSkillEntry> getSummonSkillInformation() {
-        if (map_SummonSkillInformation == null) {
+    public LinkedHashMap<Integer, TacosSummonSkill> getSummonSkills() {
+        if (this.summon_skills == null) {
+            this.summon_skills = new LinkedHashMap<>();
             getSkill();
         }
-        return map_SummonSkillInformation;
+        return this.summon_skills;
+    }
+
+    public boolean isSummonSkill(int skill_id) {
+        if (getSummonSkills().get(skill_id) != null) {
+            return true;
+        }
+        return false;
     }
 
     public Map<Integer, Skill> getSkill() {
@@ -70,11 +79,9 @@ public class SkillWz extends WzXML {
         }
         map_Skill = new HashMap<>();
         map_SkillsByJob = new HashMap<>();
-        map_SummonSkillInformation = new HashMap<>();
 
         int skillid;
         MapleData summon_data;
-        SummonSkillEntry sse;
         for (MapleDataEntity topDir : getRootDirectory().getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
                 for (MapleData data : getData(topDir.getName())) { // Loop thru each jobs
@@ -101,13 +108,10 @@ public class SkillWz extends WzXML {
                                 skil.setName(skill_name);
                                 map_Skill.put(skillid, skil);
 
-                                summon_data = data2.getChildByPath("summon/attack1/info");
+                                summon_data = data2.getChildByPath("summon");
                                 if (summon_data != null) {
-                                    sse = new SummonSkillEntry();
-                                    sse.attackAfter = (short) WzDataTool.getIntPath("attackAfter", summon_data, 999999);
-                                    sse.type = (byte) WzDataTool.getIntPath("type", summon_data, 0);
-                                    sse.mobCount = (byte) WzDataTool.getIntPath("mobCount", summon_data, 1);
-                                    map_SummonSkillInformation.put(skillid, sse);
+                                    TacosSummonSkill tss = new TacosSummonSkill(skillid);
+                                    getSummonSkills().put(skillid, tss);
                                 }
                             }
                         }

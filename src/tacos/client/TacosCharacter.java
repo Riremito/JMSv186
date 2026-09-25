@@ -965,6 +965,10 @@ public class TacosCharacter {
         return this.summon;
     }
 
+    public void removeSummon() {
+        this.summon = null;
+    }
+
     public boolean setSummon(OpsSkill ops_skill, int nSLV) {
         if (this.summon != null) {
             getMap().removeSummon(getSummon());

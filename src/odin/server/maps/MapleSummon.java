@@ -27,22 +27,12 @@ import tacos.server.map.object.TacosSummon;
 
 public class MapleSummon extends TacosSummon {
 
-    private short hp;
-
     public MapleSummon(TacosCharacter player, OpsSkill ops_skill, int nSLV) {
         super(player, ops_skill, nSLV);
     }
 
     public MapleCharacter getOwner() {
         return null;
-    }
-
-    public short getHP() {
-        return hp;
-    }
-
-    public void addHP(short delta) {
-        this.hp += delta;
     }
 
     public boolean isGaviota() {

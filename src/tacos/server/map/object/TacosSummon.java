@@ -32,6 +32,7 @@ public class TacosSummon extends TacosMapObject {
     private int nCharLevel;
     private int nSkillID;
     private int nSLV;
+    private int hp = 1;
 
     public TacosSummon(TacosCharacter player, OpsSkill ops_skill, int nSLV) {
         this.nSkillID = ops_skill.get();
@@ -52,6 +53,14 @@ public class TacosSummon extends TacosMapObject {
 
     public int getSLV() {
         return nSLV;
+    }
+
+    public int getHp() {
+        return this.hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
     }
 
     public OpsMoveAbility getMoveAbility() {

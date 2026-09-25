@@ -46,10 +46,6 @@ public class SkillFactory {
         return WzXML.STRING.getSkillName(skill_id);
     }
 
-    public static SummonSkillEntry getSummonData(int skillid) {
-        return WzXML.SKILL.getSummonSkillInformation().get(skillid);
-    }
-
     public static Collection<Skill> getAllSkills() {
         return WzXML.SKILL.getSkill().values();
     }

@@ -2202,12 +2202,19 @@ public class ReqCUser {
             chr.getStat().setHp(cur_hp - con_hp);
         }
 
+        OpsSkill ops_skill = OpsSkill.find(nSkillID);
+
+        if (WzXML.SKILL.isSummonSkill(nSkillID)) {
+            chr.setSummon(ops_skill, nSLV_SS);
+            map.addSummon(chr.getSummon());
+            return true;
+        }
+
         if (chr.getBuff().update(nSkillID)) {
             chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, nSkillID));
             return true;
         }
 
-        OpsSkill ops_skill = OpsSkill.find(nSkillID);
         switch (ops_skill) {
             case HERO_MONSTER_MAGNET:
             case DARKKNIGHT_MONSTER_MAGNET: {
@@ -2243,12 +2250,6 @@ public class ReqCUser {
             case CLERIC_TELEPORT:
             case HERMIT_FLASH_JUMP: {
                 chr.sendStatChanged(true);
-                return true;
-            }
-            case RANGER_PUPPET:
-            case RANGER_SILVER_HAWK: {
-                chr.setSummon(ops_skill, nSLV_SS);
-                map.addSummon(chr.getSummon());
                 return true;
             }
             default: {

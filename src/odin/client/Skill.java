@@ -28,7 +28,6 @@ import odin.server.life.Element;
 
 public class Skill {
 
-    //public static final int[] skills = new int[]{4311003, 4321000, 4331002, 4331005, 4341004, 4341007};
     private String name = "";
     private final List<MapleStatEffect> effects = new ArrayList<>();
     private Element element;
@@ -42,8 +41,7 @@ public class Skill {
     private boolean chargeskill;
     private boolean timeLimited;
 
-    public Skill(final int id) {
-        super();
+    public Skill(int id) {
         this.id = id;
     }
 
