@@ -76,6 +76,28 @@ public class SkillWz extends WzXML {
                     MapleData md_summon = md_skill_data.getChildByPath("summon");
                     if (md_summon != null) {
                         int skill_id = Integer.parseInt(md_skill_data.getName());
+                        // postBB style, but not all skills are updated in BIGBANG.
+                        if (Config.PostBB()) {
+                            MapleData md_common = md_skill_data.getChildByPath("common");
+                            if (md_common != null) {
+                                LinkedHashMap<Integer, TacosSummonSkill> level_list = new LinkedHashMap<>();
+                                int maxLevel = WzDataTool.getIntPath("maxLevel", md_common, 0);
+                                for (int skill_level = 1; skill_level <= maxLevel; skill_level++) {
+                                    TacosSummonSkill tss = new TacosSummonSkill(skill_id, skill_level);
+                                    tss.setItemCon(WzDataTool.getIntExpression("itemCon", md_common, 0, skill_level));
+                                    tss.setItemConNo(WzDataTool.getIntExpression("itemConNo", md_common, 0, skill_level));
+                                    tss.setMobCount(WzDataTool.getIntExpression("mobCount", md_common, 0, skill_level));
+                                    tss.setMpCon(WzDataTool.getIntExpression("mpCon", md_common, 0, skill_level));
+                                    tss.setProp(WzDataTool.getIntExpression("prop", md_common, 0, skill_level));
+                                    tss.setTime(WzDataTool.getIntExpression("time", md_common, 0, skill_level));
+                                    tss.setX(WzDataTool.getIntExpression("x", md_common, 1, skill_level));
+                                    level_list.put(skill_level, tss);
+                                }
+                                skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
+                                continue;
+                            }
+                        }
+                        // preBB style.
                         MapleData md_level = md_skill_data.getChildByPath("level");
                         if (md_level != null) {
                             LinkedHashMap<Integer, TacosSummonSkill> level_list = new LinkedHashMap<>();
@@ -103,6 +125,11 @@ public class SkillWz extends WzXML {
         }
 
         this.job_list.put(job_id, skill_list);
+
+        LinkedHashMap<Integer, TacosSummonSkill> level_list = skill_list.get(target_skill_id);
+        if (level_list != null) {
+            return level_list.get(target_skill_level);
+        }
         return null;
     }
 
