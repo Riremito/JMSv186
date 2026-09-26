@@ -56,7 +56,6 @@ import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.server.maps.MapleSummon;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
@@ -84,6 +83,7 @@ import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosSummon;
 import tacos.unofficial.PetCharacter;
 import tacos.unofficial.PetMob;
 import tacos.unofficial.PetNPC;
@@ -959,9 +959,9 @@ public class TacosCharacter {
     }
 
     // summon.
-    protected MapleSummon summon = null;
+    protected TacosSummon summon = null;
 
-    public MapleSummon getSummon() {
+    public TacosSummon getSummon() {
         return this.summon;
     }
 
@@ -973,7 +973,7 @@ public class TacosCharacter {
         if (this.summon != null) {
             getMap().removeSummon(getSummon());
         }
-        this.summon = new MapleSummon(this, ops_skill, nSLV);
+        this.summon = new TacosSummon(this, ops_skill, nSLV);
         return true;
     }
 

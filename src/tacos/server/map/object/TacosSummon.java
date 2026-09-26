@@ -18,6 +18,7 @@
  */
 package tacos.server.map.object;
 
+import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsAssist;
 import tacos.packet.ops.OpsMoveAbility;
@@ -147,5 +148,9 @@ public class TacosSummon extends TacosMapObject {
                 return true;
         }
         return false;
+    }
+
+    public MapleCharacter getOwner() {
+        return null;
     }
 }

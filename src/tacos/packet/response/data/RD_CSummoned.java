@@ -19,10 +19,10 @@
 package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
-import odin.server.maps.MapleSummon;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
+import tacos.server.map.object.TacosSummon;
 
 /**
  *
@@ -31,7 +31,7 @@ import tacos.packet.ServerPacket;
 public class RD_CSummoned {
 
     // CSummoned::Init
-    public static byte[] Init(MapleSummon summon, boolean animated) {
+    public static byte[] Init(TacosSummon summon, boolean animated) {
         ServerPacket data = new ServerPacket();
 
         boolean is_avater_look = false;

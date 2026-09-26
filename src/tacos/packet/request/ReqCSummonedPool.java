@@ -37,11 +37,11 @@ import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleSummon;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMoveAbility;
+import tacos.server.map.object.TacosSummon;
 
 /**
  *
@@ -66,7 +66,7 @@ public class ReqCSummonedPool {
 
         int m_dwSummonedID = cp.Decode4(); // older version = SkillID
 
-        MapleSummon summon = null;
+        TacosSummon summon = null;
         if (Config.LessOrEqual(Region.JMS, 131)) {
             summon = chr.getSummon();
             if (summon.getSkillID() != m_dwSummonedID) {
@@ -111,7 +111,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnMove
-    public static boolean OnMove(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
+    public static boolean OnMove(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
         if (summon.getMoveAbility() == OpsMoveAbility.MOVEABILITY_STOP) {
             return false;
         }
@@ -126,7 +126,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnAttack
-    public static void OnAttack(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
+    public static void OnAttack(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
         MapleMap map = chr.getMap();
 
         if (Config.Equal(Region.KMST, 330)) {
@@ -187,11 +187,6 @@ public class ReqCSummonedPool {
                     chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
                 }
             }
-
-            if (summon.isGaviota()) {
-                chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
-                chr.getMap().removeSummon(summon);
-            }
             return;
         }
 
@@ -243,15 +238,10 @@ public class ReqCSummonedPool {
                 chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
             }
         }
-
-        if (summon.isGaviota()) {
-            chr.getMap().broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
-            chr.getMap().removeSummon(summon);
-        }
     }
 
     // CSummoned::OnHit
-    public static void OnHit(MapleCharacter chr, ClientPacket cp, MapleSummon summon) {
+    public static void OnHit(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
         int unkByte = cp.Decode1();
         int damage = cp.Decode4();
         int monsterIdFrom = cp.Decode4();

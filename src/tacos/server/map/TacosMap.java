@@ -51,7 +51,6 @@ import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleReactor;
-import odin.server.maps.MapleSummon;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
@@ -87,6 +86,7 @@ import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosSummon;
 
 /**
  *
@@ -763,9 +763,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // summon.
-    private LinkedHashMap<Integer, MapleSummon> summons = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosSummon> summons = new LinkedHashMap<>();
 
-    public void addSummon(MapleSummon summon) {
+    public void addSummon(TacosSummon summon) {
         if (summon.getObjectId() == 0) {
             summon.setObjectId();
         }
@@ -773,20 +773,20 @@ public class TacosMap extends TacosMapData {
         broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
     }
 
-    public void removeSummon(MapleSummon summon) {
+    public void removeSummon(TacosSummon summon) {
         this.summons.remove(summon.getObjectId());
         broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
-    public List<MapleSummon> getAllSummons() {
-        ArrayList<MapleSummon> ret = new ArrayList<>();
-        for (MapleSummon summon : this.summons.values()) {
+    public List<TacosSummon> getAllSummons() {
+        ArrayList<TacosSummon> ret = new ArrayList<>();
+        for (TacosSummon summon : this.summons.values()) {
             ret.add(summon);
         }
         return ret;
     }
 
-    public MapleSummon getSummonByOid(int object_id) {
+    public TacosSummon getSummonByOid(int object_id) {
         return this.summons.get(object_id);
     }
 
