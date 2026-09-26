@@ -60,7 +60,10 @@ public class SkillWz extends WzXML {
         LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>> skill_list = this.job_list.get(job_id);
         if (skill_list != null) {
             LinkedHashMap<Integer, TacosSummonSkill> level_list = skill_list.get(target_skill_id);
-            return level_list.get(target_skill_level);
+            if (level_list != null) {
+                return level_list.get(target_skill_level);
+            }
+            return null;
         }
 
         skill_list = new LinkedHashMap<>();

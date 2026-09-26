@@ -79,33 +79,37 @@ public class ResCSummonedPool {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedAttack);
 
         sp.Encode4(summon.getOwnerId());
-        sp.Encode4(summon.getSkillID());
+
+        if (Config.LessOrEqual(Region.JMS, 131)) {
+            sp.Encode4(summon.getSkillID());
+        } else {
+            sp.Encode4(summon.getObjectId());
+        }
+
         sp.Encode1(level - 1, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); //? guess
         sp.Encode1(animation);
         sp.Encode1(allDamage.size());
-        for (final SummonAttackEntry attackEntry : allDamage) {
-            sp.Encode4(attackEntry.getMonster().getObjectId()); // oid
-            if (Config.LessOrEqual(Region.JMS, 131)) {
-                sp.Encode1(6);
-            } else {
-                sp.Encode1(7); // who knows
-            }
+
+        for (SummonAttackEntry attackEntry : allDamage) {
+            sp.Encode4(attackEntry.getMonster().getObjectId());
+            sp.Encode1(Config.LessOrEqual(Region.JMS, 131) ? 6 : 7);
             sp.Encode4(attackEntry.getDamage()); // damage
         }
+
         return sp;
     }
 
     public static ServerPacket SummonedSkill(TacosSummon summon,/*int cid, int summonSkillId*/ int newStance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedSkill);
-        /*
-            // JMS147
-            Header(@007B); // 0046F5FB
-            Encode4(#111); // 007A8D87
-            Encode4(#100017); // 0077E3BB
-            Encode1(#8); // 00674ADA
-         */
+
         sp.Encode4(summon.getOwnerId());
-        sp.Encode4(summon.getObjectId());
+
+        if (Config.LessOrEqual(Region.JMS, 131)) {
+            sp.Encode4(summon.getSkillID());
+        } else {
+            sp.Encode4(summon.getObjectId());
+        }
+
         sp.Encode1(newStance); // not stance?
         return sp;
     }
@@ -114,7 +118,13 @@ public class ResCSummonedPool {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedHit);
 
         sp.Encode4(summon.getOwnerId());
-        sp.Encode4(summon.getSkillID());
+
+        if (Config.LessOrEqual(Region.JMS, 131)) {
+            sp.Encode4(summon.getSkillID());
+        } else {
+            sp.Encode4(summon.getObjectId());
+        }
+
         sp.Encode1(unkByte);
         sp.Encode4(damage);
         sp.Encode4(monsterIdFrom);

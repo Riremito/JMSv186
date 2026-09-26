@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCSummonedPool;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
@@ -39,7 +38,6 @@ import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMoveAbility;
 import tacos.server.map.object.TacosSummon;
 
@@ -166,7 +164,7 @@ public class ReqCSummonedPool {
                 allDamage.add(new SummonAttackEntry(mob, damage));
             }
 
-            map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+            map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()));
 
             Skill summonSkill = SkillFactory.getSkill(summon.getSkillID());
             MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSLV());
@@ -186,9 +184,6 @@ public class ReqCSummonedPool {
                     }
                 }
                 mob.damage(chr, toDamage, true);
-                if (!mob.isAlive()) {
-                    chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
-                }
             }
             return;
         }
@@ -231,15 +226,12 @@ public class ReqCSummonedPool {
         short unk30 = cp.Decode2(Config.LessOrEqual(Region.JMS, 147)); // X
         short unk31 = cp.Decode2(Config.LessOrEqual(Region.JMS, 147)); // Y
 
-        map.broadcastMessageTo(chr, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), summon.getPosition());
+        map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), chr.getId());
 
         for (SummonAttackEntry attackEntry : allDamage) {
             int toDamage = attackEntry.getDamage();
-            final MapleMonster mob = attackEntry.getMonster();
+            MapleMonster mob = attackEntry.getMonster();
             mob.damage(chr, toDamage, true);
-            if (!mob.isAlive()) {
-                chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
-            }
         }
     }
 

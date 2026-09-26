@@ -961,30 +961,47 @@ public class TacosCharacter {
 
     // summon.
     // skill_id
-    private final LinkedHashMap<Integer, TacosSummon> summons = new LinkedHashMap<>();
+    private final ArrayList<TacosSummon> summons = new ArrayList<>();
 
     public ArrayList<TacosSummon> getSummons() {
-        ArrayList<TacosSummon> ret = new ArrayList<>();
-        for (TacosSummon summon : this.summons.values()) {
-            ret.add(summon);
+        return this.summons;
+    }
+
+    public int findSummonByOid(TacosSummon summon) {
+        for (int index = 0; index < this.summons.size(); index++) {
+            if (this.summons.get(index).getObjectId() == summon.getObjectId()) {
+                return index;
+            }
         }
-        return ret;
+        return -1;
+    }
+
+    public TacosSummon findSummonBySkill(int skill_id) {
+        for (int index = 0; index < this.summons.size(); index++) {
+            if (this.summons.get(index).getSkillID() == skill_id) {
+                return this.summons.get(index);
+            }
+        }
+        return null;
     }
 
     public void removeSummon(TacosSummon summon) {
-        this.summons.remove(summon.getSkillID());
+        int index = findSummonByOid(summon);
+        if (index != -1) {
+            this.summons.remove(index);
+        }
         this.map.removeSummon(summon);
         this.map.broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
     public boolean addSummon(TacosSummonSkill tss) {
-        TacosSummon summon = this.summons.get(tss.getId());
+        TacosSummon summon = findSummonBySkill(tss.getId());
         if (summon != null) {
-            removeSummon(summon);
+            removeSummon(summon); // remove this line to allow multiple summoning.
         }
         summon = new TacosSummon(this, tss);
         summon.reset(this);
-        this.summons.put(tss.getId(), summon);
+        this.summons.add(summon);
         this.map.addSummon(summon);
         this.map.broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
         return true;
