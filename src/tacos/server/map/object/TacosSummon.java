@@ -40,7 +40,7 @@ public class TacosSummon extends TacosMapObject {
         this.nCharLevel = player.getLevel();
         this.nSkillID = tss.getId();
         this.nSLV = tss.getLevel();
-        this.summon_time = 5000;//tss.getTime() * 1000;
+        this.summon_time = tss.getTime() * 1000;
         this.summon_hp = tss.getX();
         setOwnerId(player.getId());
         setFootholdId(player.getFH());

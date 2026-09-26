@@ -68,9 +68,11 @@ public class ReqCSummonedPool {
 
         TacosSummon summon = null;
         if (Config.LessOrEqual(Region.JMS, 131)) {
-            summon = chr.getSummon();
-            if (summon.getSkillID() != m_dwSummonedID) {
-                return false;
+            for (TacosSummon player_summon : chr.getSummons()) {
+                if (player_summon.getSkillID() == m_dwSummonedID) {
+                    summon = player_summon;
+                    break;
+                }
             }
         } else {
             summon = map.getSummonByOid(m_dwSummonedID);
@@ -251,7 +253,7 @@ public class ReqCSummonedPool {
         summon.setHp(summon_hp);
         chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
         if (summon.getHp() <= 0) {
-            chr.removeSummon();
+            chr.removeSummon(summon);
         }
     }
 }

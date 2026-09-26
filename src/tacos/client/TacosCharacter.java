@@ -959,23 +959,30 @@ public class TacosCharacter {
     }
 
     // summon.
-    protected TacosSummon summon = null;
+    // skill_id
+    private final LinkedHashMap<Integer, TacosSummon> summons = new LinkedHashMap<>();
 
-    public TacosSummon getSummon() {
-        return this.summon;
-    }
-
-    public void removeSummon() {
-        this.map.removeSummon(this.summon);
-        this.summon = null;
-    }
-
-    public boolean setSummon(TacosSummonSkill tss) {
-        if (this.summon != null) {
-            this.map.removeSummon(this.summon);
+    public ArrayList<TacosSummon> getSummons() {
+        ArrayList<TacosSummon> ret = new ArrayList<>();
+        for (TacosSummon summon : this.summons.values()) {
+            ret.add(summon);
         }
-        this.summon = new TacosSummon(this, tss);
-        this.map.addSummon(this.summon);
+        return ret;
+    }
+
+    public void removeSummon(TacosSummon summon) {
+        this.summons.remove(summon.getSkillID());
+        this.map.removeSummon(summon);
+    }
+
+    public boolean addSummon(TacosSummonSkill tss) {
+        TacosSummon summon = this.summons.get(tss.getId());
+        if (summon != null) {
+            removeSummon(summon);
+        }
+        summon = new TacosSummon(this, tss);
+        this.summons.put(tss.getId(), summon);
+        this.map.addSummon(summon);
         return true;
     }
 
@@ -1323,9 +1330,9 @@ public class TacosCharacter {
             SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
         }
         // summon.
-        if (getSummon() != null) {
-            if ((getSummon().getTimeCreated() + getSummon().getTime()) <= time_current) {
-                removeSummon();
+        for (TacosSummon summon : getSummons()) {
+            if ((summon.getTimeCreated() + summon.getTime()) <= time_current) {
+                removeSummon(summon);
             }
         }
 

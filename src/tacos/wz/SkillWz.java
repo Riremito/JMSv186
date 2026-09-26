@@ -52,7 +52,7 @@ public class SkillWz extends WzXML {
     }
 
     // job_id, skill_id, skill_level
-    private LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>>> job_list = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>>> job_list = new LinkedHashMap<>();
 
     public TacosSummonSkill getSummonSkill(int target_skill_id, int target_skill_level) {
         int job_id = target_skill_id / 10000;

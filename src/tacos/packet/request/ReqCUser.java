@@ -2208,7 +2208,7 @@ public class ReqCUser {
         // summon skill.
         TacosSummonSkill tss = WzXML.SKILL.getSummonSkill(nSkillID, nSLV_SS);
         if (tss != null) {
-            chr.setSummon(tss);
+            chr.addSummon(tss);
             return true;
         }
 
