@@ -47,30 +47,70 @@ public class SkillWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Skill" : "Skill.wz");
     }
 
+    public MapleData getImg(int job_id) {
+        return getData(job_id + ".img");
+    }
+
+    // job_id, skill_id, skill_level
+    private LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>>> job_list = new LinkedHashMap<>();
+
+    public TacosSummonSkill getSummonSkill(int target_skill_id, int target_skill_level) {
+        int job_id = target_skill_id / 10000;
+
+        LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>> skill_list = this.job_list.get(job_id);
+        if (skill_list != null) {
+            LinkedHashMap<Integer, TacosSummonSkill> level_list = skill_list.get(target_skill_id);
+            return level_list.get(target_skill_level);
+        }
+
+        skill_list = new LinkedHashMap<>();
+
+        MapleData job_img = getImg(job_id);
+        if (job_img != null) {
+            MapleData md_skill = job_img.getChildByPath("skill");
+            if (md_skill != null) {
+                for (MapleData md_skill_data : md_skill.getChildren()) {
+                    MapleData md_summon = md_skill_data.getChildByPath("summon");
+                    if (md_summon != null) {
+                        int skill_id = Integer.parseInt(md_skill_data.getName());
+                        MapleData md_level = md_skill_data.getChildByPath("level");
+                        if (md_level != null) {
+                            LinkedHashMap<Integer, TacosSummonSkill> level_list = new LinkedHashMap<>();
+                            for (MapleData md_level_data : md_level.getChildren()) {
+                                int skill_level = Integer.parseInt(md_level_data.getName());
+                                TacosSummonSkill tss = new TacosSummonSkill(skill_id, skill_level);
+                                tss.setHs(WzDataTool.getStringPath("hs", md_level_data, ""));
+                                tss.setItemCon(WzDataTool.getIntPath("itemCon", md_level_data, 0));
+                                tss.setItemConNo(WzDataTool.getIntPath("itemConNo", md_level_data, 0));
+                                tss.setMad(WzDataTool.getIntPath("mad", md_level_data, 0));
+                                tss.setMastery(WzDataTool.getIntPath("mastery", md_level_data, 0));
+                                tss.setMobCount(WzDataTool.getIntPath("mobCount", md_level_data, 0));
+                                tss.setMpCon(WzDataTool.getIntPath("mpCon", md_level_data, 0));
+                                tss.setPad(WzDataTool.getIntPath("pad", md_level_data, 0));
+                                tss.setProp(WzDataTool.getIntPath("prop", md_level_data, 0));
+                                tss.setTime(WzDataTool.getIntPath("time", md_level_data, 0));
+                                tss.setX(WzDataTool.getIntPath("x", md_level_data, 1));
+                                level_list.put(skill_level, tss);
+                            }
+                            skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
+                        }
+                    }
+                }
+            }
+        }
+
+        this.job_list.put(job_id, skill_list);
+        return null;
+    }
+
     private Map<Integer, Skill> map_Skill = null;
     private Map<Integer, List<Integer>> map_SkillsByJob = null;
-    private LinkedHashMap<Integer, TacosSummonSkill> summon_skills = null;
 
     public Map<Integer, List<Integer>> getSkillsByJob() {
         if (map_SkillsByJob == null) {
             getSkill();
         }
         return map_SkillsByJob;
-    }
-
-    public LinkedHashMap<Integer, TacosSummonSkill> getSummonSkills() {
-        if (this.summon_skills == null) {
-            this.summon_skills = new LinkedHashMap<>();
-            getSkill();
-        }
-        return this.summon_skills;
-    }
-
-    public boolean isSummonSkill(int skill_id) {
-        if (getSummonSkills().get(skill_id) != null) {
-            return true;
-        }
-        return false;
     }
 
     public Map<Integer, Skill> getSkill() {
@@ -81,7 +121,6 @@ public class SkillWz extends WzXML {
         map_SkillsByJob = new HashMap<>();
 
         int skillid;
-        MapleData summon_data;
         for (MapleDataEntity topDir : getRootDirectory().getFiles()) { // Loop thru jobs
             if (topDir.getName().length() <= 8) {
                 for (MapleData data : getData(topDir.getName())) { // Loop thru each jobs
@@ -107,12 +146,6 @@ public class SkillWz extends WzXML {
                                 }
                                 skil.setName(skill_name);
                                 map_Skill.put(skillid, skil);
-
-                                summon_data = data2.getChildByPath("summon");
-                                if (summon_data != null) {
-                                    TacosSummonSkill tss = new TacosSummonSkill(skillid);
-                                    getSummonSkills().put(skillid, tss);
-                                }
                             }
                         }
                     }
@@ -404,7 +437,7 @@ public class SkillWz extends WzXML {
                 DebugLogger.ErrorLog("MCSkill.img/" + md.getName() + "/mobSkillID");
                 continue;
             }
-            map_MCSkill.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(WzDataTool.getIntPath("spendCP", md, 0), mobSkillID, WzDataTool.getIntPath("level", md, 0), WzDataTool.getIntPath("target", md, 1) > 1));
+            map_MCSkill.put(Integer.valueOf(md.getName()), new MapleCarnivalFactory.MCSkill(WzDataTool.getIntPath("spendCP", md, 0), mobSkillID, WzDataTool.getIntPath("level", md, 0), WzDataTool.getIntPath("target", md, 1) > 1));
         }
         return map_MCSkill;
     }
@@ -416,9 +449,8 @@ public class SkillWz extends WzXML {
 
         map_MCGuardian = new HashMap<>();
         for (MapleData md : getData("MCGuardian.img")) {
-            map_MCGuardian.put(Integer.parseInt(md.getName()), new MapleCarnivalFactory.MCSkill(WzDataTool.getIntPath("spendCP", md, 0), WzDataTool.getIntPath("mobSkillID", md, 0), WzDataTool.getIntPath("level", md, 0), true));
+            map_MCGuardian.put(Integer.valueOf(md.getName()), new MapleCarnivalFactory.MCSkill(WzDataTool.getIntPath("spendCP", md, 0), WzDataTool.getIntPath("mobSkillID", md, 0), WzDataTool.getIntPath("level", md, 0), true));
         }
         return map_MCGuardian;
     }
-
 }

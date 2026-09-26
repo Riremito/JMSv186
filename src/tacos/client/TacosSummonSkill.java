@@ -30,7 +30,9 @@ import lombok.Setter;
 public class TacosSummonSkill {
 
     @Setter(AccessLevel.NONE)
-    private final int skill_id;
+    private final int id;
+    @Setter(AccessLevel.NONE)
+    private final int level;
     // info
     private String hs = "";
     private int itemCon = 0;
@@ -43,9 +45,9 @@ public class TacosSummonSkill {
     private int prop = 0;
     private int time = 0;
     private int x = 0;
-    // summon
 
-    public TacosSummonSkill(int skill_id) {
-        this.skill_id = skill_id;
+    public TacosSummonSkill(int id, int level) {
+        this.id = id;
+        this.level = level;
     }
 }

@@ -966,14 +966,16 @@ public class TacosCharacter {
     }
 
     public void removeSummon() {
+        this.map.removeSummon(this.summon);
         this.summon = null;
     }
 
-    public boolean setSummon(OpsSkill ops_skill, int nSLV) {
+    public boolean setSummon(TacosSummonSkill tss) {
         if (this.summon != null) {
-            getMap().removeSummon(getSummon());
+            this.map.removeSummon(this.summon);
         }
-        this.summon = new TacosSummon(this, ops_skill, nSLV);
+        this.summon = new TacosSummon(this, tss);
+        this.map.addSummon(this.summon);
         return true;
     }
 
@@ -1319,6 +1321,12 @@ public class TacosCharacter {
             }
             pet.setFullness(newFullness);
             SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
+        }
+        // summon.
+        if (getSummon() != null) {
+            if ((getSummon().getTimeCreated() + getSummon().getTime()) <= time_current) {
+                removeSummon();
+            }
         }
 
         return true;

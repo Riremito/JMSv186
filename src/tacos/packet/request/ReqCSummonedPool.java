@@ -77,7 +77,8 @@ public class ReqCSummonedPool {
         }
 
         if (summon == null) {
-            return false;
+            // already removed.
+            return true;
         }
 
         switch (header) {
@@ -251,7 +252,6 @@ public class ReqCSummonedPool {
         chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
         if (summon.getHp() <= 0) {
             chr.removeSummon();
-            chr.getMap().removeSummon(summon);
         }
     }
 }

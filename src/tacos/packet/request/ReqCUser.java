@@ -85,6 +85,7 @@ import tacos.database.LazyDatabase;
 import tacos.debug.DebugCommand;
 import tacos.debug.DebugShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.client.TacosSummonSkill;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsCashItem;
@@ -2204,9 +2205,10 @@ public class ReqCUser {
 
         OpsSkill ops_skill = OpsSkill.find(nSkillID);
 
-        if (WzXML.SKILL.isSummonSkill(nSkillID)) {
-            chr.setSummon(ops_skill, nSLV_SS);
-            map.addSummon(chr.getSummon());
+        // summon skill.
+        TacosSummonSkill tss = WzXML.SKILL.getSummonSkill(nSkillID, nSLV_SS);
+        if (tss != null) {
+            chr.setSummon(tss);
             return true;
         }
 

@@ -20,9 +20,9 @@ package tacos.server.map.object;
 
 import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
+import tacos.client.TacosSummonSkill;
 import tacos.packet.ops.OpsAssist;
 import tacos.packet.ops.OpsMoveAbility;
-import tacos.packet.ops.OpsSkill;
 
 /**
  *
@@ -33,12 +33,15 @@ public class TacosSummon extends TacosMapObject {
     private int nCharLevel;
     private int nSkillID;
     private int nSLV;
-    private int hp = 1;
+    private int summon_time;
+    private int summon_hp = 1;
 
-    public TacosSummon(TacosCharacter player, OpsSkill ops_skill, int nSLV) {
-        this.nSkillID = ops_skill.get();
+    public TacosSummon(TacosCharacter player, TacosSummonSkill tss) {
         this.nCharLevel = player.getLevel();
-        this.nSLV = nSLV;
+        this.nSkillID = tss.getId();
+        this.nSLV = tss.getLevel();
+        this.summon_time = 5000;//tss.getTime() * 1000;
+        this.summon_hp = tss.getX();
         setOwnerId(player.getId());
         setFootholdId(player.getFH());
         setPosition(player.getPosition());
@@ -56,12 +59,16 @@ public class TacosSummon extends TacosMapObject {
         return nSLV;
     }
 
+    public int getTime() {
+        return this.summon_time;
+    }
+
     public int getHp() {
-        return this.hp;
+        return this.summon_hp;
     }
 
     public void setHp(int hp) {
-        this.hp = hp;
+        this.summon_hp = hp;
     }
 
     public OpsMoveAbility getMoveAbility() {
