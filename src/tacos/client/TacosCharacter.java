@@ -73,6 +73,7 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFriend;
+import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.builder.PB_Friend;
 import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.portal.ArdentmillPortal;
@@ -973,6 +974,7 @@ public class TacosCharacter {
     public void removeSummon(TacosSummon summon) {
         this.summons.remove(summon.getSkillID());
         this.map.removeSummon(summon);
+        this.map.broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
     public boolean addSummon(TacosSummonSkill tss) {
@@ -981,9 +983,19 @@ public class TacosCharacter {
             removeSummon(summon);
         }
         summon = new TacosSummon(this, tss);
+        summon.reset(this);
         this.summons.put(tss.getId(), summon);
         this.map.addSummon(summon);
+        this.map.broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
         return true;
+    }
+
+    public void updateSummons() {
+        for (TacosSummon summon : getSummons()) {
+            summon.reset(this);
+            summon.setObjectId(); // update to new object id.
+            this.map.addSummon(summon);
+        }
     }
 
     // skill pet.

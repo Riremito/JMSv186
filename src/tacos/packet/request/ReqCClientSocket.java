@@ -348,6 +348,7 @@ public class ReqCClientSocket {
                 // your pet
                 // [entering map]
                 MapleMap map = chr.getMap();
+                chr.updateSummons();
                 map.userEnterField(chr);
                 map.linkedObjectEnterField(chr);
 

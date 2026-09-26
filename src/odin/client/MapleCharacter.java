@@ -790,6 +790,7 @@ public class MapleCharacter extends TacosCharacter {
             map_from.userLeaveField(this);
             updateMap(map_to, (portal_to != null) ? portal_to : map.getPortal(0)); // for dynamic portal
             sendSetField(this, false);
+            updateSummons();
             map_to.userEnterField(this);
             map_to.linkedObjectEnterField(this);
             stats.relocHeal();

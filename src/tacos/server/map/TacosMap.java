@@ -492,6 +492,8 @@ public class TacosMap extends TacosMapData {
                 }
             }
         }
+
+        linkedObjectLeaveField(chr);
     }
 
     public void userMove(MapleCharacter chr, ParseCMovePath move_path) {
@@ -509,7 +511,13 @@ public class TacosMap extends TacosMapData {
             }
             if (area_states.get(player_number) == MapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
+                for (TacosSummon summon : chr.getSummons()) {
+                    player.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
+                }
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
+                for (TacosSummon summon : player.getSummons()) {
+                    chr.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
+                }
             }
             if (area_states.get(player_number) == MapSplitState.MOVE) {
                 player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
@@ -667,6 +675,10 @@ public class TacosMap extends TacosMapData {
     }
 
     public void linkedObjectEnterField(TacosCharacter chr) {
+        // summon.
+        for (TacosSummon summon : chr.getSummons()) {
+            broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, false));
+        }
         // evan dragon
         TacosDragon dragon = chr.getDragon();
         if (dragon != null) {
@@ -682,6 +694,10 @@ public class TacosMap extends TacosMapData {
     }
 
     public void linkedObjectLeaveField(TacosCharacter chr) {
+        // summon.
+        for (TacosSummon summon : chr.getSummons()) {
+            removeSummon(summon);
+        }
         // evan dragon
         TacosDragon dragon = chr.getDragon();
         if (dragon != null) {
@@ -770,12 +786,10 @@ public class TacosMap extends TacosMapData {
             summon.setObjectId();
         }
         this.summons.put(summon.getObjectId(), summon);
-        broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
     }
 
     public void removeSummon(TacosSummon summon) {
         this.summons.remove(summon.getObjectId());
-        broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
     public List<TacosSummon> getAllSummons() {
