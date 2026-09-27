@@ -88,6 +88,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.client.TacosSummonSkill;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
+import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.ops.OpsGivePopularity;
 import tacos.packet.ops.OpsMarriage;
@@ -2541,10 +2542,21 @@ public class ReqCUser {
         if (type == MapleInventoryType.EQUIP) {
             if (1 <= slot_from && slot_to <= -1) {
                 MapleInventoryManipulator.equip(chr.getClient(), slot_from, slot_to);
+                // 精霊のペンダント
+                if (chr.getInventory(MapleInventoryType.EQUIPPED).getItem(slot_to).getItemId() == 1122017) {
+                    int rate = 10;
+                    chr.setFairyExp(rate);
+                    chr.SendPacket(ResCWvsContext.BonusExpRateChanged(OpsBodyPart.BP_PENDANT, 0, rate));
+                }
                 return true;
             }
             if (slot_from <= -1 && 1 <= slot_to) {
                 MapleInventoryManipulator.unequip(chr.getClient(), slot_from, slot_to);
+                // 精霊のペンダント
+                if (chr.getInventory(MapleInventoryType.EQUIP).getItem(slot_to).getItemId() == 1122017) {
+                    int rate = 0;
+                    chr.setFairyExp(rate);
+                }
                 return true;
             }
             if (slot_from <= -1 && slot_to <= -1) {

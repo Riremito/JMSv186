@@ -376,7 +376,7 @@ public class MapleMonster extends TacosMonster {
                 Premium_Bonus_EXP = (int) ((exp / 100.0) * Premium_Bonus_EXP_PERCENT);
             }
             int Equipment_Bonus_EXP = (int) ((exp / 100.0) * attacker.getStat().equipmentBonusExp);
-            if (attacker.getStat().equippedFairy) {
+            if (0 < attacker.getFairyExp()) {
                 Equipment_Bonus_EXP += (int) ((exp / 100.0) * attacker.getFairyExp());
             }
 

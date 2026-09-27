@@ -1374,4 +1374,14 @@ public class TacosCharacter {
         }
         getBuff().removeTimeout(time_current);
     }
+
+    private int fairyExp = 0;
+
+    public int getFairyExp() {
+        return this.fairyExp;
+    }
+
+    public void setFairyExp(int rate) {
+        this.fairyExp = rate;
+    }
 }

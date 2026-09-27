@@ -1539,14 +1539,12 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnBonusExpRateChanged
-    public static ServerPacket BonusExpRateChanged(int type, int percent) {
+    public static ServerPacket BonusExpRateChanged(OpsBodyPart body_part, int nHour, int rate) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_BonusExpRateChanged);
 
-        sp.Encode2(21); // 0x15
-        sp.Encode4(0); // idk
-        sp.Encode2(0); // idk
-        sp.Encode2(percent); // percent
-        sp.Encode2(0); // idk
+        sp.Encode4(body_part.get()); // BP_PENDANT (17)
+        sp.Encode4(nHour);
+        sp.Encode4(rate);
         return sp;
     }
 

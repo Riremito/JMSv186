@@ -382,7 +382,6 @@ public class MapScriptMethods {
                     client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mobId), new Point(pos2));
                     client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mobId), new Point(pos3));
                 }
-                client.getPlayer().startMapTimeLimitTask(120, client.getPlayer().getMap().getReturnMap());
                 break;
             }
             case shammos_Fenter: {

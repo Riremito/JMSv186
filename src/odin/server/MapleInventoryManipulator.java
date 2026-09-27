@@ -682,9 +682,6 @@ public class MapleInventoryManipulator {
             target.setPosition(src);
             chr.getInventory(MapleInventoryType.EQUIP).addFromDB(target);
         }
-        if (source.getItemId() == 1122017) {
-            chr.startFairySchedule(true, true);
-        }
         client.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(MapleInventoryType.EQUIP, src, dst).build()));
         chr.equipChanged();
     }
@@ -710,9 +707,6 @@ public class MapleInventoryManipulator {
         if (target != null) {
             target.setPosition(src);
             client.getPlayer().getInventory(MapleInventoryType.EQUIPPED).addFromDB(target);
-        }
-        if (source.getItemId() == 1122017) {
-            client.getPlayer().cancelFairySchedule(true);
         }
         client.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(MapleInventoryType.EQUIP, src, dst).build()));
         client.getPlayer().equipChanged();

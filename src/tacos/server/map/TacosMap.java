@@ -106,10 +106,26 @@ public class TacosMap extends TacosMapData {
     public TacosMap(int mapid, int channel) {
         super(mapid);
         this.channel = channel;
+        this.time_created = System.currentTimeMillis();
     }
 
     public int getChannel() {
         return this.channel;
+    }
+
+    private long time_created = 0;
+
+    private long getTimeCreated() {
+        return this.time_created;
+    }
+
+    private long getTimer(long time_current) {
+        if (getTimeLimit() <= 0) {
+            return 0;
+        }
+        long timer = getTimeLimit() * 1000;
+        long time_end = getTimeCreated() + timer;
+        return (time_end - time_current) / 1000;
     }
 
     public Map<String, Integer> getEnvironment() {
@@ -346,10 +362,7 @@ public class TacosMap extends TacosMapData {
         updateParty(chr);
         sendMapEffect(chr);
         if (0 < getTimeLimit()) {
-            chr.DebugMsg("timeLimit = " + getTimeLimit());
-            if (getForcedReturnMap() != null) {
-                chr.startMapTimeLimitTask(getTimeLimit(), getForcedReturnMap());
-            }
+            chr.SendPacket(ResCField.Clock((int) getTimer(System.currentTimeMillis())));
         }
         sendExpedition(chr, null);
 
@@ -1617,6 +1630,18 @@ public class TacosMap extends TacosMapData {
         if (!this.task_map.check(time_current, 1000)) {
             return false;
         }
+        // clock.
+        if (0 < getTimeLimit()) {
+            if (getTimer(time_current) <= 0) {
+                MapleMap map_to = player.getChannelServer().findMap(getForcedReturnId());
+                if (map_to == null) {
+                    map_to = player.getChannelServer().findMap(TacosConstants.DEFAULT_RETURN_MAP_ID);
+                }
+                player.changeMap(map_to, map_to.getPortal(0));
+                return true;
+            }
+        }
+
         ArrayList<MapSplitState> area_states = getSplit().getArea(player.getPosition().x, player.getPosition().y, MapSplitState.ACTIVE);
         // drop removal.
         if (this.task_drop_removal.check(time_current, 5000)) {

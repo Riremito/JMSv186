@@ -27,7 +27,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
-import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleRing;
 import java.awt.Point;
 import java.sql.Connection;
@@ -42,8 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import tacos.shared.TacosSharedExpTable;
@@ -66,7 +63,6 @@ import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUser_Pet.DeActivatedMsg;
-import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
@@ -95,7 +91,6 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.MapleCarnivalChallenge;
 import odin.server.MapleInventoryManipulator;
 import odin.server.Timer.EtcTimer;
-import odin.server.Timer.MapTimer;
 import odin.server.maps.Event_PyramidSubway;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosCharacter;
@@ -138,7 +133,6 @@ public class MapleCharacter extends TacosCharacter {
     private long nextConsume = 0;
     private long pqStartTime = 0;
     private byte dojoRecord;
-    private byte fairyExp = 10;
     private int mulung_energy;
     private int availableCP;
     private int totalCP;
@@ -169,11 +163,8 @@ public class MapleCharacter extends TacosCharacter {
     private int[] regrocks;
     private transient AtomicInteger inst;
     private List<Integer> lastmonthfameids;
-    private transient List<Integer> pendingExpiration = null;
-    private transient List<Integer> pendingSkills = null;
     private List<MapleDoor> doors;
     private SkillMacro[] skillMacros = new SkillMacro[5];
-    private transient Set<Object> visibleMapObjects;
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
     private CashShop cs;
@@ -186,8 +177,6 @@ public class MapleCharacter extends TacosCharacter {
     // 雇用商人
     private Object remoteStore = null;
     private MapleParty party;
-    private transient ScheduledFuture<?> fairySchedule;
-    private transient ScheduledFuture<?> mapTimeLimitTask;
     private transient ScheduledFuture<?> fishing;
     private transient Event_PyramidSubway pyramidSubway = null;
     private IDebugMan debugMan = null;
@@ -313,8 +302,6 @@ public class MapleCharacter extends TacosCharacter {
                         ret.remainingSp[GameConstants.getSkillBookForSkill(row.skillId)] += row.skillLevel;
                     }
                 }
-
-                ret.expirationTask(false); //do it now
 
                 // Bless of Fairy handling
                 byte maxlevel_ = 0;
@@ -587,19 +574,6 @@ public class MapleCharacter extends TacosCharacter {
             possesed += inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(itemid);
         }
         return possesed;
-    }
-
-    public void startMapTimeLimitTask(int time, final MapleMap to) {
-        SendPacket(ResCField.Clock(time));
-
-        time *= 1000;
-        mapTimeLimitTask = MapTimer.getInstance().register(new Runnable() {
-
-            @Override
-            public void run() {
-                changeMap(to, to.getPortal(0));
-            }
-        }, time, time);
     }
 
     public void startFishingTask(final boolean VIP) {
@@ -1043,74 +1017,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public Runnable checkItemSlot(short item_slot, int item_id) {
         return checkItemSlot(item_slot, item_id, (short) 1);
-    }
-
-    public final void expirationTask() {
-        expirationTask(true);
-    }
-
-    public final void expirationTask(boolean pending) {
-        if (pending) {
-            if (pendingExpiration != null) {
-                for (Integer z : pendingExpiration) {
-                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_CashItemExpireMessage, PB_Message.builder().ItemID(z.intValue()).build()));
-                }
-            }
-            pendingExpiration = null;
-            if (pendingSkills != null) {
-                for (Integer z : pendingSkills) {
-                    SendPacket(ResCWvsContext.ChangeSkillRecordResult(z, 0, 0, -1));
-                    SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("[" + SkillFactory.getSkillName(z) + "] skill has expired and will not be available for use.").build()));
-                }
-            } //not real msg
-            pendingSkills = null;
-            return;
-        }
-        long expiration;
-        final List<Integer> ret = new ArrayList<>();
-        final long currenttime = System.currentTimeMillis();
-        final List<SimpleImmutableEntry<MapleInventoryType, Item>> toberemove = new ArrayList<>(); // This is here to prevent deadlock.
-        final List<Item> tobeunlock = new ArrayList<>(); // This is here to prevent deadlock.
-
-        for (final MapleInventoryType inv : MapleInventoryType.values()) {
-            for (final Item item : getInventory(inv)) {
-                expiration = item.getExpiration();
-
-                if (expiration != -1 && !GameConstants.isPet(item.getItemId()) && currenttime > expiration) {
-                    if (ItemFlag.LOCK.check(item.getFlag())) {
-                        tobeunlock.add(item);
-                    } else if (currenttime > expiration) {
-                        toberemove.add(new SimpleImmutableEntry<>(inv, item));
-                    }
-                } else if (item.getItemId() == 5000054 && item.getPet() != null && item.getPet().getSecondsLeft() <= 0) {
-                    toberemove.add(new SimpleImmutableEntry<>(inv, item));
-                }
-            }
-        }
-        Item item;
-        for (final SimpleImmutableEntry<MapleInventoryType, Item> itemz : toberemove) {
-            item = itemz.getValue();
-            ret.add(item.getItemId());
-            getInventory(itemz.getKey()).removeItem(item.getPosition(), item.getQuantity(), false);
-        }
-        for (final Item itemz : tobeunlock) {
-            itemz.setExpiration(-1);
-            itemz.setFlag((byte) (itemz.getFlag() - ItemFlag.LOCK.getValue()));
-        }
-        this.pendingExpiration = ret;
-
-        final List<Integer> skilz = new ArrayList<>();
-        final List<Skill> toberem = new ArrayList<>();
-        for (Entry<Skill, SkillEntry> skil : skills.entrySet()) {
-            if (skil.getValue().expiration != -1 && currenttime > skil.getValue().expiration) {
-                toberem.add(skil.getKey());
-            }
-        }
-        for (Skill skil : toberem) {
-            skilz.add(skil.getId());
-            this.skills.remove(skil);
-        }
-        this.pendingSkills = skilz;
     }
 
     public MapleShop getShop() {
@@ -1915,47 +1821,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void setFH(int id) {
         this.foothold_id = id;
-    }
-
-    public void startFairySchedule(boolean exp) {
-        startFairySchedule(exp, false);
-    }
-
-    public void startFairySchedule(boolean exp, boolean equipped) {
-        cancelFairySchedule(exp);
-        if (fairyExp < 30 && stats.equippedFairy) {
-            if (equipped) {
-                dropMessage(5, "The Fairy Pendant's experience points will increase to " + (fairyExp + 10) + "% after one hour.");
-            }
-            fairySchedule = EtcTimer.getInstance().schedule(new Runnable() {
-
-                public void run() {
-                    if (fairyExp < 30 && stats.equippedFairy) {
-                        fairyExp += 10;
-                        dropMessage(5, "The Fairy Pendant's EXP was boosted to " + fairyExp + "%.");
-                        startFairySchedule(false, true);
-                    } else {
-                        cancelFairySchedule(!stats.equippedFairy);
-                    }
-                }
-            }, 60 * 60 * 1000);
-        } else {
-            cancelFairySchedule(!stats.equippedFairy);
-        }
-    }
-
-    public void cancelFairySchedule(boolean exp) {
-        if (fairySchedule != null) {
-            fairySchedule.cancel(false);
-            fairySchedule = null;
-        }
-        if (exp) {
-            this.fairyExp = 10;
-        }
-    }
-
-    public byte getFairyExp() {
-        return fairyExp;
     }
 
     public void spawnPet(short slot, boolean lead) {
