@@ -121,6 +121,6 @@ public class TacosMapObject {
         this.owner_id = chr.getId();
         setPosition(chr.getPosition());
         this.move_action = OpsMovePathAttr.MPA_NORMAL.get();
-        this.foothold_id = chr.getFH();
+        this.foothold_id = chr.getFootholdId();
     }
 }

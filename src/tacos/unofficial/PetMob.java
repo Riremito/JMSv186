@@ -56,8 +56,8 @@ public class PetMob implements IPetEx {
 
         this.monster = MapleLifeFactory.getMonster(id);
         this.monster.setPosition(this.character.getPosition());
-        this.monster.setFootholdId(this.character.getFH());
-        this.monster.setHomeFoothold(this.character.getFH());
+        this.monster.setFootholdId(this.character.getFootholdId());
+        this.monster.setHomeFoothold(this.character.getFootholdId());
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         SendPacket(ResCMobPool.MobEnterField(this.monster));
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);

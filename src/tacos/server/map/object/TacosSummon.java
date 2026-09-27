@@ -51,7 +51,7 @@ public class TacosSummon extends TacosMapObject {
         this.summon_time = tss.getTime() * 1000;
         this.summon_hp = tss.getX();
         setOwnerId(player.getId());
-        setFootholdId(player.getFH());
+        setFootholdId(player.getFootholdId());
         setPosition(player.getPosition());
         setSummonData(tss.getId());
     }

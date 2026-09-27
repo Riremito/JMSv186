@@ -56,7 +56,7 @@ public class PetNPC implements IPetEx {
         this.npc.setRx0(this.character.getPosition().x + 50);
         this.npc.setRx1(this.character.getPosition().x - 50);
         this.npc.setPosition(this.character.getPosition());
-        this.npc.setFootholdId(this.character.getFH());
+        this.npc.setFootholdId(this.character.getFootholdId());
         this.character.getMap().addNPC(this.npc);
         SendPacket(ResCNpcPool.NpcEnterField(this.npc));
         return true;

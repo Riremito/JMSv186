@@ -423,7 +423,7 @@ public class MapleStatEffect {
             }
         } else if (!primary && isResurrection()) {
             hpchange = stat.getMaxHp();
-            applyto.setStance(0); //TODO fix death bug, player doesnt spawn on other screen
+            applyto.setMoveAction(0); //TODO fix death bug, player doesnt spawn on other screen
         }
         if (isMPRecovery()) {
             final int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);

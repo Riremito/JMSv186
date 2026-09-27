@@ -300,8 +300,8 @@ public class DebugCommand {
                 npc.setCy(chr.getPosition().y);
                 npc.setRx0(chr.getPosition().x - 50);
                 npc.setRx1(chr.getPosition().x + 50);
-                npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getStance());
-                npc.setFootholdId(chr.getFH());
+                npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
+                npc.setFootholdId(chr.getFootholdId());
                 map.addNPC(npc);
                 map.broadcastMessage(ResCNpcPool.NpcEnterField(npc));
                 chr.DebugMsg("npc : " + npc_id);
@@ -313,8 +313,8 @@ public class DebugCommand {
                 pnpc.setCy(chr.getPosition().y);
                 pnpc.setRx0(chr.getPosition().x - 50);
                 pnpc.setRx1(chr.getPosition().x + 50);
-                pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getStance());
-                pnpc.setFootholdId(chr.getFH());
+                pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getMoveAction());
+                pnpc.setFootholdId(chr.getFootholdId());
                 map.addNPC(pnpc);
                 chr.SendPacket(ResCNpcPool.NpcEnterField(pnpc));
                 chr.SendPacket(ResCNpcPool.ImitatedNPCData(pnpc));
@@ -384,7 +384,7 @@ public class DebugCommand {
                 reactor.setDelay(-1);
 
                 Point pos = new Point(chr.getPosition());
-                int foothold_id = chr.getFH();
+                int foothold_id = chr.getFootholdId();
                 if (foothold_id == 0) {
                     chr.DebugMsg("reactor : foothold_id = 0.");
                     return true;

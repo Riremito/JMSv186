@@ -24,7 +24,6 @@ import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMovePathAttr;
-import tacos.client.TacosCharacter;
 import tacos.config.Config;
 
 /**
@@ -48,13 +47,6 @@ public class ParseCMovePath {
         life.setStance(move_end_action);
         life.setPosition(move_end);
         life.setFh(move_end_foothold_id);
-    }
-
-    // dragon
-    public void update(TacosCharacter life) {
-        life.setStance(move_end_action);
-        life.setPosition(move_end);
-        life.setFH(move_end_foothold_id);
     }
 
     public int getX() {
@@ -182,5 +174,4 @@ public class ParseCMovePath {
     public byte[] get() {
         return data;
     }
-
 }

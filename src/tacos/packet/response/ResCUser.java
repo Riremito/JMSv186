@@ -142,8 +142,8 @@ public class ResCUser {
             sp.Encode1(bTransferField ? 1 : 0); // bTransferField
 
             if (bTransferField) {
-                sp.Encode4(chr.getPosition().x); // ptSetPos.x
-                sp.Encode4(chr.getPosition().y); // ptSetPos.y
+                sp.Encode4(chr.getX()); // ptSetPos.x
+                sp.Encode4(chr.getY()); // ptSetPos.y
             }
         }
 
@@ -154,8 +154,8 @@ public class ResCUser {
     // JMS
     public static ServerPacket fishingCaught(int chrid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
+
         sp.Encode4(chrid);
         return sp;
     }
-
 }

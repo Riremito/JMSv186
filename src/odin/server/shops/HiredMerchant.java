@@ -94,7 +94,7 @@ public class HiredMerchant {
             chrs[i] = new WeakReference<>(null);
         }
         this.item_sub_type = itemId % 100;
-        this.foothold_id = owner.getFH();
+        this.foothold_id = owner.getFootholdId();
         start = System.currentTimeMillis();
         blacklist = new LinkedList<>();
         this.schedule = EtcTimer.getInstance().schedule(new Runnable() {

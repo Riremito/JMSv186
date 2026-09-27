@@ -152,8 +152,6 @@ public class MapleCharacter extends TacosCharacter {
     private int pet_auto_hp_item_id = 0;
     private int pet_auto_mp_item_id = 0;
     private int pet_auto_cure_item_id = 0;
-    // foothold
-    private int foothold_id = 0;
     private boolean smega;
     private boolean hasTutorialSummon = false;
     private boolean canSetBeansNum;
@@ -1815,14 +1813,6 @@ public class MapleCharacter extends TacosCharacter {
         return new SimpleImmutableEntry<>(crings, frings);
     }
 
-    public int getFH() {
-        return this.foothold_id;
-    }
-
-    public void setFH(int id) {
-        this.foothold_id = id;
-    }
-
     public void spawnPet(short slot, boolean lead) {
         spawnPet(slot, lead, true);
     }
@@ -2273,7 +2263,7 @@ public class MapleCharacter extends TacosCharacter {
         ret.gender = gender;
         ret.dwPosMap = map.getId();
         ret.map = map;
-        ret.setStance(getStance());
+        ret.setMoveAction(getMoveAction());
         ret.chair = chair;
         ret.nEffectItemID = nEffectItemID;
         ret.guildid = guildid;

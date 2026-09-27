@@ -63,8 +63,8 @@ public class TestCommand {
             case "/check": {
                 chr.DebugMsg("X  : " + chr.getPosition().x);
                 chr.DebugMsg("Y  : " + chr.getPosition().y);
-                chr.DebugMsg("FH : " + chr.getFH());
-                chr.DebugMsg("Ac : " + chr.getStance());
+                chr.DebugMsg("FH : " + chr.getFootholdId());
+                chr.DebugMsg("Ac : " + chr.getMoveAction());
                 return true;
             }
             case "/testmsg": {
@@ -96,7 +96,7 @@ public class TestCommand {
                     }
                 }
 
-                if (chr.getFH() <= 0) {
+                if (chr.getFootholdId() <= 0) {
                     return true;
                 }
 
@@ -107,7 +107,7 @@ public class TestCommand {
                     if (30 < count) {
                         break;
                     }
-                    if (mfh.getId() < chr.getFH() - 15) {
+                    if (mfh.getId() < chr.getFootholdId() - 15) {
                         continue;
                     }
                     count++;
@@ -115,8 +115,8 @@ public class TestCommand {
                     int fh_id = 0;
                     int fh_x = 0;
                     int fh_y = 0;
-                    if (mfh.getId() == chr.getFH()) {
-                        fh_id = chr.getFH();
+                    if (mfh.getId() == chr.getFootholdId()) {
+                        fh_id = chr.getFootholdId();
                         fh_x = chr.getPosition().x;
                         fh_y = chr.getPosition().y;
                     } else {

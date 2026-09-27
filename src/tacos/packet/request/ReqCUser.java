@@ -919,7 +919,7 @@ public class ReqCUser {
                 chr.DebugMsg("MapSplit : " + area_prev + " -> " + area_next);
             }
             map.userMove(chr, move_path);
-            move_path.update(chr);
+            chr.update(move_path);
         }
 
         // follow.
@@ -927,7 +927,7 @@ public class ReqCUser {
             MapleCharacter passenger = map.getPlayerById(chr.getPassenger());
             if (passenger != null) {
                 map.userMove(passenger, move_path); // test
-                move_path.update(passenger); // for when passenger cancels follow.
+                passenger.update(move_path); // for when passenger cancels follow.
                 passenger.SendPacket(ResCUserLocal.UserPassiveMove(move_path));
                 // to keep correct passenger coordinate for remote users requires calculation of actual passenger move path.
                 //map.broadcastMessage(ResCUser.UserFollowCharacter(passenger, false));

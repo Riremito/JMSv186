@@ -84,6 +84,7 @@ import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosPlayer;
 import tacos.server.map.object.TacosSummon;
 import tacos.unofficial.PetCharacter;
 import tacos.unofficial.PetMob;
@@ -96,53 +97,10 @@ import tacos.wz.WzXML;
  *
  * @author Riremito
  */
-public class TacosCharacter {
-
-    private Point position = new Point();
-    private int objectId;
-
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
-
-    private int stance;
-    private int foothold_id;
-
-    public int getStance() {
-        return stance;
-    }
-
-    public void setStance(int stance) {
-        this.stance = stance;
-    }
-
-    public int getFH() {
-        return this.foothold_id;
-    }
-
-    public void setFH(int foothold_id) {
-        this.foothold_id = foothold_id;
-    }
+public class TacosCharacter extends TacosPlayer {
 
     public boolean isFacingLeft() {
-        return getStance() % 2 != 0;
-    }
-
-    public int getFacingDirection() {
-        return getStance() % 2;
+        return getMoveAction() % 2 != 0;
     }
 
     protected TacosClient client;
@@ -323,8 +281,8 @@ public class TacosCharacter {
         setPosMap(map_to.getId());
         setPortal(portal_to.getId()); // spawn point
         setPosition(portal_to.getPosition()); // spawn point xy (server side), some version could not control spawn xy by packet.
-        setFH(0); // foothold id is 0 while character is in the air.
-        setStance(OpsMovePathAttr.MPA_NORMAL.get()); // default state (?)
+        setFootholdId(0); // foothold id is 0 while character is in the air.
+        setMoveAction(OpsMovePathAttr.MPA_NORMAL.get()); // default state (?)
     }
 
     public void updateMapById(int map_id, int portal_id) {

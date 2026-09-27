@@ -111,9 +111,9 @@ public class RD_CUser {
         }
         data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getPosition().x);
-        data.Encode2(chr.getPosition().y);
-        data.Encode1(chr.getStance());
+        data.Encode2(chr.getX());
+        data.Encode2(chr.getY());
+        data.Encode1(chr.getMoveAction());
         data.Encode2(0); // FH
         data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // bShowAdminEffect
         data.Encode1(0); // pet size
@@ -170,10 +170,10 @@ public class RD_CUser {
         data.Encode4(0); // m_dwDriverID
         data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getPosition().x);
-        data.Encode2(chr.getPosition().y);
-        data.Encode1(chr.getStance()); // m_nMoveAction
-        data.Encode2(chr.getFH());
+        data.Encode2(chr.getX());
+        data.Encode2(chr.getY());
+        data.Encode1(chr.getMoveAction()); // m_nMoveAction
+        data.Encode2(chr.getFootholdId());
         for (int i = 0; i < 4; i++) {
             MaplePet pet = chr.getPet(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
@@ -274,10 +274,10 @@ public class RD_CUser {
         data.Encode4(0);
         data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getPosition().x);
-        data.Encode2(chr.getPosition().y);
-        data.Encode1(chr.getStance()); // m_nMoveAction
-        data.Encode2(chr.getFH());
+        data.Encode2(chr.getX());
+        data.Encode2(chr.getY());
+        data.Encode1(chr.getMoveAction()); // m_nMoveAction
+        data.Encode2(chr.getFootholdId());
 
         for (int i = 0; i < 4; i++) {
             MaplePet pet = chr.getPet(i);
