@@ -20,23 +20,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import java.awt.Point;
 import odin.server.MapleItemInformationProvider;
 import tacos.database.query.DQ_Pets;
+import tacos.server.map.object.TacosPet;
 
-public class MaplePet {
+public class MaplePet extends TacosPet {
 
     private static int pet_level_limit = 30;
     private static int pet_closeness_limit = 30000;
     private static int pet_fullness_limit = 100;
     private static final int[] closeness_table = {0, 1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22547, 26074, 30000};
     private String name;
-    private int Fh = 0;
-    private int stance = 0;
     private int uniqueid;
     private int petitemid;
     private int secondsLeft = 0;
-    private Point pos;
     private byte fullness = 100;
     private byte level = 1;
     private short inventorypos = 0;
@@ -44,22 +41,22 @@ public class MaplePet {
     private short skill_mask = -1; // 0xFFFF
     private boolean summoned = false;
 
-    public static int getClosenessNeededForLevel(final int level) {
+    public static int getClosenessNeededForLevel(int level) {
         return closeness_table[level - 1];
     }
 
-    private MaplePet(final int petitemid, final int uniqueid) {
+    private MaplePet(int petitemid, int uniqueid) {
         this.petitemid = petitemid;
         this.uniqueid = uniqueid;
     }
 
-    private MaplePet(final int petitemid, final int uniqueid, final short inventorypos) {
+    private MaplePet(int petitemid, int uniqueid, short inventorypos) {
         this.petitemid = petitemid;
         this.uniqueid = uniqueid;
         this.inventorypos = inventorypos;
     }
 
-    public static final MaplePet loadFromDb(final int itemid, final int petid, final short inventorypos) {
+    public static MaplePet loadFromDb(int itemid, int petid, short inventorypos) {
         final MaplePet ret = new MaplePet(itemid, petid, inventorypos);
         if (!DQ_Pets.load(ret, petid)) {
             return null;
@@ -67,52 +64,52 @@ public class MaplePet {
         return ret;
     }
 
-    public final void saveToDb() {
+    public void saveToDb() {
         DQ_Pets.save(this);
     }
 
-    public static final MaplePet createPet(final int itemid, final int uniqueid) {
+    public static MaplePet createPet(int itemid, int uniqueid) {
         return createPet(itemid, MapleItemInformationProvider.getInstance().getName(itemid), 1, 0, 100, uniqueid, itemid == 5000054 ? 18000 : 0);
     }
 
-    public static final MaplePet createPet(int itemid, String name, int level, int closeness, int fullness, int uniqueid, int secondsLeft) {
+    public static MaplePet createPet(int itemid, String name, int level, int closeness, int fullness, int uniqueid, int secondsLeft) {
         if (uniqueid <= -1) { //wah
             uniqueid = MapleInventoryIdentifier.getInstance();
         }
         if (!DQ_Pets.add(uniqueid, name, level, closeness, fullness, secondsLeft)) {
             return null;
         }
-        final MaplePet pet = new MaplePet(itemid, uniqueid);
+
+        MaplePet pet = new MaplePet(itemid, uniqueid);
         pet.setName(name);
         pet.setLevel(level);
         pet.setFullness(fullness);
         pet.setCloseness(closeness);
         pet.setSecondsLeft(secondsLeft);
-
         return pet;
     }
 
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
-    public final void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public final boolean getSummoned() {
+    public boolean getSummoned() {
         return summoned;
     }
 
-    public final void setSummoned(final boolean summoned) {
+    public void setSummoned(boolean summoned) {
         this.summoned = summoned;
     }
 
-    public final short getInventoryPosition() {
+    public short getInventoryPosition() {
         return inventorypos;
     }
 
-    public final void setInventoryPosition(final short inventorypos) {
+    public void setInventoryPosition(short inventorypos) {
         this.inventorypos = inventorypos;
     }
 
@@ -124,63 +121,39 @@ public class MaplePet {
         this.uniqueid = id;
     }
 
-    public final short getCloseness() {
+    public short getCloseness() {
         return closeness;
     }
 
-    public final void setCloseness(final int closeness) {
+    public void setCloseness(int closeness) {
         this.closeness = (short) closeness;
     }
 
-    public final byte getLevel() {
+    public byte getLevel() {
         return level;
     }
 
-    public final void setLevel(final int level) {
+    public void setLevel(int level) {
         this.level = (byte) level;
     }
 
-    public final byte getFullness() {
+    public byte getFullness() {
         return fullness;
     }
 
-    public final void setFullness(final int fullness) {
+    public void setFullness(int fullness) {
         this.fullness = (byte) fullness;
     }
 
-    public final int getFh() {
-        return Fh;
-    }
-
-    public final void setFh(final int Fh) {
-        this.Fh = Fh;
-    }
-
-    public final Point getPosition() {
-        return pos;
-    }
-
-    public final void setPosition(final Point pos) {
-        this.pos = pos;
-    }
-
-    public final int getStance() {
-        return stance;
-    }
-
-    public final void setStance(final int stance) {
-        this.stance = stance;
-    }
-
-    public final int getPetItemId() {
+    public int getPetItemId() {
         return petitemid;
     }
 
-    public final int getSecondsLeft() {
+    public int getSecondsLeft() {
         return secondsLeft;
     }
 
-    public final void setSecondsLeft(int sl) {
+    public void setSecondsLeft(int sl) {
         this.secondsLeft = sl;
     }
 

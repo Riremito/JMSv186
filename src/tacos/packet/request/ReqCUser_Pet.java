@@ -141,7 +141,7 @@ public class ReqCUser_Pet {
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
             chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(0));
-            map.broadcastMessage(ResCUserRemote.showPetLevelUp(chr, 0));
+            map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, 0), chr.getId());
         }
         return true;
     }
@@ -151,10 +151,10 @@ public class ReqCUser_Pet {
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
-            move_path.update(pet);
+            pet.update(move_path);
         }
 
-        map.broadcastMessage(chr, ResCUser_Pet.PetMove(chr, pet, move_path), false);
+        map.splitSendPacket(chr, ResCUser_Pet.PetMove(chr, pet, move_path), chr.getId());
         return true;
     }
 
@@ -163,13 +163,13 @@ public class ReqCUser_Pet {
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
 
-        map.broadcastMessage(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), false);
+        map.splitSendPacket(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), chr.getId());
         return true;
     }
 
     public static void OnPetInteractionRequest(MapleCharacter chr, ClientPacket cp) {
-        final int petIndex = cp.Decode4();
-        /*chr.getPetIndex(slea.readInt());*/
+        int petIndex = cp.Decode4();
+
         if (petIndex == -1) {
             return;
         }
@@ -177,10 +177,10 @@ public class ReqCUser_Pet {
         if (pet == null) {
             return;
         }
-        //slea.skip(5);
+
         byte[] unk1 = cp.DecodeBuffer(5); // ?_?
-        final byte command = cp.Decode1();
-        final PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
+        byte command = cp.Decode1();
+        PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
@@ -193,12 +193,13 @@ public class ReqCUser_Pet {
                 if (newCloseness >= MaplePet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
-                    chr.getMap().broadcastMessage(ResCUserRemote.showPetLevelUp(chr, petIndex));
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
-        chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetActionCommand(chr.getId(), command, petIndex, success, false), true);
+
+        chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
     }
 
     public static boolean OnPetDropPickUpRequest(MapleCharacter chr, MaplePet pet, ClientPacket cp) {

@@ -62,7 +62,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUser_Pet;
-import tacos.packet.response.ResCUser_Pet.DeActivatedMsg;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
@@ -219,7 +218,6 @@ public class MapleCharacter extends TacosCharacter {
             savedLocations[i] = -1;
         }
         questinfo = new LinkedHashMap<>();
-        pets = new ArrayList<>();
     }
 
     public static MapleCharacter loadCharFromDB(int character_id, TacosClient client, boolean channelserver) {
@@ -431,30 +429,28 @@ public class MapleCharacter extends TacosCharacter {
                 spawnpointToSave = (byte) (closest != null ? closest.getId() : 0);
             }
 
-            final StringBuilder petz = new StringBuilder();
-            int petLength = 0;
-            for (final MaplePet pet : pets) {
+            int[] pet_slots = {-1, -1, -1};
+            int pet_index = 0;
+
+            for (MaplePet pet : getPets()) {
                 pet.saveToDb();
                 if (pet.getSummoned()) {
-
-                    petz.append(pet.getInventoryPosition());
-                    petz.append(",");
-                    petLength++;
+                    pet_slots[pet_index++] = pet.getInventoryPosition();
+                }
+                if (3 <= pet_index) {
+                    break;
                 }
             }
-            while (petLength < 3) {
-                petz.append("-1,");
-                petLength++;
-            }
-            final String petstring = petz.toString();
 
-            final DQ_Characters.CharacterSaveRow saveRow = new DQ_Characters.CharacterSaveRow(id, level, fame,
+            String petstring = String.format("%d,%d,%d", pet_slots[0], pet_slots[1], pet_slots[2]);
+
+            DQ_Characters.CharacterSaveRow saveRow = new DQ_Characters.CharacterSaveRow(id, level, fame,
                     stats.getStr(), stats.getDex(), stats.getLuk(), stats.getInt(), exp,
                     stats.getHp() < 1 ? 50 : stats.getHp(), stats.getMp(), stats.getMaxHp(), stats.getMaxMp(),
                     sp.substring(0, sp.length() - 1), remainingAp, (byte) gmLevel, (byte) skinColor, (byte) gender,
                     job, hair, face, mapToSave, meso, hpApUsed, spawnpointToSave, party != null ? party.getId() : -1,
                     (short) (byte) buddylist.getCapacity(), getMonsterBook().getCover(), dojo, dojoRecord,
-                    petstring.substring(0, petstring.length() - 1), subcategory, marriageId, currentrep, totalrep,
+                    petstring, subcategory, marriageId, currentrep, totalrep,
                     name, tama);
 
             if (!DQ_Characters.updateStat(con, saveRow)) {
@@ -1249,103 +1245,6 @@ public class MapleCharacter extends TacosCharacter {
         return skillMacros;
     }
 
-    public MaplePet getPetByUniqueId(long ped_uid) {
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet.getUniqueId() == ped_uid) {
-                    return pet;
-                }
-            }
-        }
-        return null;
-    }
-
-    public void addPet(final MaplePet pet) {
-        if (pets.contains(pet)) {
-            pets.remove(pet);
-        }
-        pets.add(pet);
-        // So that the pet will be at the last
-        // Pet index logic :(
-    }
-
-    public void removePet(MaplePet pet, boolean shiftLeft) {
-        pet.setSummoned(false);
-        /*	int slot = -1;
-        for (int i = 0; i < 3; i++) {
-        if (pets[i] != null) {
-        if (pets[i].getUniqueId() == pet.getUniqueId()) {
-        pets[i] = null;
-        slot = i;
-        break;
-        }
-        }
-        }
-        if (shiftLeft) {
-        if (slot > -1) {
-        for (int i = slot; i < 3; i++) {
-        if (i != 2) {
-        pets[i] = pets[i + 1];
-        } else {
-        pets[i] = null;
-        }
-        }
-        }
-        }*/
-    }
-
-    public final byte getPetIndex(final MaplePet petz) {
-        byte count = 0;
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet == petz) {
-                    return count;
-                }
-                count++;
-            }
-        }
-        return -1;
-    }
-
-    public final byte getPetIndex(final int petId) {
-        byte count = 0;
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet.getUniqueId() == petId) {
-                    return count;
-                }
-                count++;
-            }
-        }
-        return -1;
-    }
-
-    public final byte getPetById(final int petId) {
-        byte count = 0;
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet.getPetItemId() == petId) {
-                    return count;
-                }
-                count++;
-            }
-        }
-        return -1;
-    }
-
-    public final List<MaplePet> getPets() {
-        return pets;
-    }
-
-    public void unequipPet(MaplePet pet, boolean shiftLeft, boolean hunger) {
-        if (pet.getSummoned()) {
-            pet.saveToDb();
-            map.broadcastMessage(this, ResCUser_Pet.Deactivated(this, pet, hunger ? DeActivatedMsg.PET_WENT_BACK_HOME : DeActivatedMsg.PET_NO_MSG), true);
-            removePet(pet, shiftLeft);
-            sendStatChanged(true);
-        }
-    }
-
     public FameStatus canGiveFame(MapleCharacter from) {
         if (lastfametime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
             return FameStatus.NOT_TODAY;
@@ -1856,11 +1755,11 @@ public class MapleCharacter extends TacosCharacter {
                         final Point pos = getPosition();
                         pet.setPosition(pos);
                         try {
-                            pet.setFh(getMap().getFootholds().findBelow(pos).getId());
+                            pet.setFootholdId(getMap().getFootholds().findBelow(pos).getId());
                         } catch (NullPointerException e) {
-                            pet.setFh(0); //lol, it can be fixed by movement
+                            pet.setFootholdId(0); //lol, it can be fixed by movement
                         }
-                        pet.setStance(0);
+                        pet.setMoveAction(0);
                         pet.setSummoned(true);
 
                         addPet(pet);
@@ -3079,5 +2978,4 @@ public class MapleCharacter extends TacosCharacter {
         SendPacket(Res_JMS_CField_Pachinko.openBeans(this, type));
         return true;
     }
-
 }

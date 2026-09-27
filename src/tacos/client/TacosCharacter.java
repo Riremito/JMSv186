@@ -74,6 +74,7 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFriend;
 import tacos.packet.response.ResCSummonedPool;
+import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_Friend;
 import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.portal.ArdentmillPortal;
@@ -435,7 +436,6 @@ public class TacosCharacter extends TacosPlayer {
     protected int fame;
     protected int meso;
     protected int gashaEXP = 0;
-    protected List<MaplePet> pets;
     protected int tama = 0;
 
     public int getGender() {
@@ -914,6 +914,84 @@ public class TacosCharacter extends TacosPlayer {
             BuddylistEntry ble = this.buddylist.get(friend.getId());
             ble.setChannel(friend.getChannelId());
             this.buddylist.put(ble);
+        }
+    }
+    // pet.
+
+    // pet
+    private List<MaplePet> pets = new ArrayList<>();
+
+    public MaplePet getPetByUniqueId(long ped_uid) {
+        for (final MaplePet pet : pets) {
+            if (pet.getSummoned()) {
+                if (pet.getUniqueId() == ped_uid) {
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void addPet(MaplePet pet) {
+        if (pets.contains(pet)) {
+            pets.remove(pet);
+        }
+        pets.add(pet);
+    }
+
+    public void removePet(MaplePet pet, boolean shiftLeft) {
+        pet.setSummoned(false);
+    }
+
+    public byte getPetIndex(final MaplePet petz) {
+        byte count = 0;
+        for (final MaplePet pet : pets) {
+            if (pet.getSummoned()) {
+                if (pet == petz) {
+                    return count;
+                }
+                count++;
+            }
+        }
+        return -1;
+    }
+
+    public byte getPetIndex(int petId) {
+        byte count = 0;
+        for (MaplePet pet : pets) {
+            if (pet.getSummoned()) {
+                if (pet.getUniqueId() == petId) {
+                    return count;
+                }
+                count++;
+            }
+        }
+        return -1;
+    }
+
+    public byte getPetById(int petId) {
+        byte count = 0;
+        for (MaplePet pet : pets) {
+            if (pet.getSummoned()) {
+                if (pet.getPetItemId() == petId) {
+                    return count;
+                }
+                count++;
+            }
+        }
+        return -1;
+    }
+
+    public List<MaplePet> getPets() {
+        return pets;
+    }
+
+    public void unequipPet(MaplePet pet, boolean shiftLeft, boolean hunger) {
+        if (pet.getSummoned()) {
+            pet.saveToDb();
+            map.broadcastMessage(this, ResCUser_Pet.Deactivated(this, pet, hunger ? ResCUser_Pet.DeActivatedMsg.PET_WENT_BACK_HOME : ResCUser_Pet.DeActivatedMsg.PET_NO_MSG), true);
+            removePet(pet, shiftLeft);
+            sendStatChanged(true);
         }
     }
 

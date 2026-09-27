@@ -18,7 +18,6 @@
  */
 package tacos.packet.request.parse;
 
-import odin.client.inventory.MaplePet;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
@@ -37,17 +36,6 @@ public class ParseCMovePath {
     private Point move_end = null;
     private int move_end_action = 0;
     private short move_end_foothold_id = 0;
-
-    public ParseCMovePath() {
-
-    }
-
-    // pet
-    public void update(MaplePet life) {
-        life.setStance(move_end_action);
-        life.setPosition(move_end);
-        life.setFh(move_end_foothold_id);
-    }
 
     public int getX() {
         return move_end.x;

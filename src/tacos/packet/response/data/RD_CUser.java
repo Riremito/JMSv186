@@ -51,8 +51,8 @@ public class RD_CUser {
         data.Encode8(pet.getUniqueId());
         data.Encode2(pet.getPosition().x);
         data.Encode2(pet.getPosition().y);
-        data.Encode1(pet.getStance());
-        data.Encode2(pet.getFh());
+        data.Encode1(pet.getMoveAction());
+        data.Encode2(pet.getFootholdId());
 
         if (Config.GreaterOrEqual(Region.THMS, 96)) {
             data.Encode1(0);

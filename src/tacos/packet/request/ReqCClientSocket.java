@@ -352,7 +352,7 @@ public class ReqCClientSocket {
                 map.userEnterField(chr);
                 map.linkedObjectEnterField(chr);
 
-                for (final MaplePet pet : chr.getPets()) {
+                for (MaplePet pet : chr.getPets()) {
                     if (pet.getSummoned()) {
                         map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
                     }
