@@ -18,10 +18,10 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsSkill;
 import tacos.server.map.object.TacosSummon;
 
 /**
@@ -34,20 +34,9 @@ public class RD_CSummoned {
     public static byte[] Init(TacosSummon summon, boolean animated) {
         ServerPacket data = new ServerPacket();
 
-        boolean is_avater_look = false;
-        MapleCharacter chr = summon.getOwner();
-        int m_nSkillID = summon.getSkillID();
-
-        // ダミーエフェクト
-        if (m_nSkillID == 4341006) {
-            if (chr != null) {
-                is_avater_look = true;
-            }
-        }
-
         data.Encode2(summon.getX()); // m_ptPos.x
         data.Encode2(summon.getY()); // m_ptPos.y
-        data.Encode1(summon.getSkillID() == 32111006 ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
+        data.Encode1(summon.getSkill() == OpsSkill.BMAGE_REVIVE ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
         data.Encode2(summon.getFootholdId()); // m_dwSN (CStaticFoothold)
         data.Encode1(summon.getMoveAbility().get()); // m_nMoveAbility
         data.Encode1(summon.getAssist().get()); // m_nAssistType
@@ -55,15 +44,17 @@ public class RD_CSummoned {
         data.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+            boolean is_avater_look = summon.getSkill() == OpsSkill.DUAL5_DUMMY_EFFECT;
             data.Encode1(is_avater_look ? 1 : 0);
             if (is_avater_look) {
-                data.EncodeBuffer(RD_AvatarLook.Encode(chr));
+                data.EncodeBuffer(RD_AvatarLook.Encode(summon.getOwner()));
             }
         }
 
-        if (Config.PostBB()) {
-            // アクセラレーター<EX-7>
-            if (m_nSkillID == 35111002) {
+        // BIGBANG
+        switch (summon.getSkill()) {
+            case MECHANIC_TESLA_COIL -> {
+                // アクセラレーター<EX-7>
                 int m_nTeslaCoilState = 0;
                 data.Encode1(m_nTeslaCoilState); // m_nTeslaCoilState
                 if (m_nTeslaCoilState == 1) { // TESLACOIL_LEADER
@@ -73,14 +64,14 @@ public class RD_CSummoned {
                     }
                 }
             }
-            // 鬼神召喚
-            if (Config.GreaterOrEqual(Region.JMS, 302)) {
-                if (m_nSkillID == 42111003) {
-                    data.Encode2(summon.getX() + 250);
-                    data.Encode2(summon.getY());
-                    data.Encode2(summon.getX() - 250);
-                    data.Encode2(summon.getY());
-                }
+            case KANNA_KISHIN -> {
+                // 鬼神召喚
+                data.Encode2(summon.getX() + 250);
+                data.Encode2(summon.getY());
+                data.Encode2(summon.getX() - 250);
+                data.Encode2(summon.getY());
+            }
+            default -> {
             }
         }
 

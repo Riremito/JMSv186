@@ -18,7 +18,6 @@
  */
 package tacos.server.map.object;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosSummonSkill;
 import tacos.debug.DebugLogger;
@@ -35,6 +34,7 @@ public class TacosSummon extends TacosMapObject {
     private int nCharLevel;
     private int nSkillID;
     private int nSLV;
+    private TacosCharacter player;
     // wz data.
     private int summon_time;
     private int summon_hp = 1;
@@ -47,6 +47,7 @@ public class TacosSummon extends TacosMapObject {
         this.nCharLevel = player.getLevel();
         this.nSkillID = tss.getId();
         this.nSLV = tss.getLevel();
+        this.player = player;
         this.summon_time = tss.getTime() * 1000;
         this.summon_hp = tss.getX();
         setOwnerId(player.getId());
@@ -65,6 +66,10 @@ public class TacosSummon extends TacosMapObject {
 
     public int getSLV() {
         return this.nSLV;
+    }
+
+    public TacosCharacter getOwner() {
+        return this.player;
     }
 
     public int getTime() {
@@ -108,12 +113,14 @@ public class TacosSummon extends TacosMapObject {
                 setAssist(OpsAssist.ASSIST_HEAL);
             }
             case ARCHMAGE1_IFRIT -> {
-                // エルクィネス
+                // エルクィネス (PreBB)
+                // イフリート (BIGBANG)
                 setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
                 setAssist(OpsAssist.ASSIST_ATTACK);
             }
             case ARCHMAGE2_ELQUINES -> {
-                // イフリート
+                // イフリート (PreBB)
+                // エルクィネス (BIGBANG)
                 setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
                 setAssist(OpsAssist.ASSIST_ATTACK);
             }
@@ -161,15 +168,92 @@ public class TacosSummon extends TacosMapObject {
                 setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
                 setAssist(OpsAssist.ASSIST_ATTACK);
             }
+            case SOULMASTER_SOUL -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case FLAMEWIZARD_FLAME -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case WINDBREAKER_STORM -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case WINDBREAKER_PUPPET -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_NONE);
+            }
+            case NIGHTWALKER_DARKNESS -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case STRIKER_LIGHTNING -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case DUAL5_DUMMY_EFFECT -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            // BIGBANG
+            case HERMIT_SHADOW_MIRROR -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK_COUNTER);
+            }
+            case BMAGE_REVIVE -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK_RANDOM);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case WILDHUNTER_TRAP -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case WILDHUNTER_SILVER_HAWK -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_FLY);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case MECHANIC_SATELITE -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK_EX);
+            }
+            case MECHANIC_TESLA_COIL -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case MECHANIC_SIEGE1 -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case MECHANIC_VELOCITY_CONTROLER -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case MECHANIC_SATELITE2 -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK_EX);
+            }
+            case MECHANIC_SATELITE3 -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK_EX);
+            }
+            case MECHANIC_ROBOROBO -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_SUMMON);
+            }
+            case MECHANIC_ROBOROBO_DUMMY -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_SUMMON);
+            }
+            case KANNA_KISHIN -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
             default -> {
                 setMoveAbility(OpsMoveAbility.UNKNOWN);
                 setAssist(OpsAssist.UNKNOWN);
                 DebugLogger.ErrorLog("setSummonData : " + nSkillID + " ( " + this.skill + " ), not coded.");
             }
         }
-    }
-
-    public MapleCharacter getOwner() {
-        return null;
     }
 }

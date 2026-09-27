@@ -977,6 +977,8 @@ public enum OpsSkill {
     AURA_DARK_BLUE(1),
     AURA_DARK_YELLOW(2),
     AURA_BLUE_YELOW(3),
+    // added.
+    KANNA_KISHIN(42111003),
     UNKNOWN(-1);
 
     int value;

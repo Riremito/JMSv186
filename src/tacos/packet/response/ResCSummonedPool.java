@@ -96,6 +96,7 @@ public class ResCSummonedPool {
             sp.Encode4(attackEntry.getDamage()); // damage
         }
 
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
         return sp;
     }
 

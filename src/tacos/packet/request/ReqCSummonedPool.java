@@ -202,15 +202,12 @@ public class ReqCSummonedPool {
         short unk17 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // y
         short unk18 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // x
         short unk19 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // y
+        int unk302_0 = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302));
 
         List<SummonAttackEntry> allDamage = new ArrayList<>();
-
         for (int i = 0; i < numAttacked; i++) {
-            MapleMonster mob = map.getMonsterByOid(cp.Decode4());
-            if (mob == null) {
-                continue;
-            }
-            int unk20 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // MobID
+            int mob_object_id = cp.Decode4();
+            int mob_id = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // MobID
             byte unk21 = cp.Decode1();
             byte unk22 = cp.Decode1();
             byte unk23 = cp.Decode1();
@@ -221,7 +218,11 @@ public class ReqCSummonedPool {
             short unk28 = cp.Decode2();
             short unk29 = cp.Decode2();
             int damage = cp.Decode4();
-            allDamage.add(new SummonAttackEntry(mob, damage));
+
+            MapleMonster mob = map.getMonsterByOid(mob_object_id);
+            if (mob != null) {
+                allDamage.add(new SummonAttackEntry(mob, damage));
+            }
         }
 
         short unk30 = cp.Decode2(Config.LessOrEqual(Region.JMS, 147)); // X
