@@ -489,7 +489,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 MaplePet pet = null;
 
                 if (Config.LessOrEqual(Region.JMS, 147)) {
-                    pet = chr.getPet(0);
+                    pet = chr.getPetByIndex(0);
                 } else {
                     long pet_uid = cp.Decode8();
                     pet = chr.getPetByUniqueId(pet_uid);

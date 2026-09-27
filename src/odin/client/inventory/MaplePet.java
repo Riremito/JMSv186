@@ -30,30 +30,28 @@ public class MaplePet extends TacosPet {
     private static int pet_closeness_limit = 30000;
     private static int pet_fullness_limit = 100;
     private static final int[] closeness_table = {0, 1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22547, 26074, 30000};
-    private String name;
-    private int uniqueid;
-    private int petitemid;
+
     private int secondsLeft = 0;
     private byte fullness = 100;
     private byte level = 1;
     private short inventorypos = 0;
     private short closeness = 0;
     private short skill_mask = -1; // 0xFFFF
-    private boolean summoned = false;
 
     public static int getClosenessNeededForLevel(int level) {
         return closeness_table[level - 1];
     }
 
     private MaplePet(int petitemid, int uniqueid) {
-        this.petitemid = petitemid;
-        this.uniqueid = uniqueid;
+        setUniqueId(uniqueid);
+        setPetItemId(petitemid);
     }
 
     private MaplePet(int petitemid, int uniqueid, short inventorypos) {
-        this.petitemid = petitemid;
-        this.uniqueid = uniqueid;
         this.inventorypos = inventorypos;
+
+        setUniqueId(uniqueid);
+        setPetItemId(petitemid);
     }
 
     public static MaplePet loadFromDb(int itemid, int petid, short inventorypos) {
@@ -89,36 +87,12 @@ public class MaplePet extends TacosPet {
         return pet;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean getSummoned() {
-        return summoned;
-    }
-
-    public void setSummoned(boolean summoned) {
-        this.summoned = summoned;
-    }
-
     public short getInventoryPosition() {
         return inventorypos;
     }
 
     public void setInventoryPosition(short inventorypos) {
         this.inventorypos = inventorypos;
-    }
-
-    public int getUniqueId() {
-        return uniqueid;
-    }
-
-    public void setUniqueId(int id) {
-        this.uniqueid = id;
     }
 
     public short getCloseness() {
@@ -143,10 +117,6 @@ public class MaplePet extends TacosPet {
 
     public void setFullness(int fullness) {
         this.fullness = (byte) fullness;
-    }
-
-    public int getPetItemId() {
-        return petitemid;
     }
 
     public int getSecondsLeft() {

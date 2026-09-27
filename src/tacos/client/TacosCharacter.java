@@ -23,7 +23,6 @@ import tacos.server.map.object.TacosSkillPet;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import odin.client.BuddyList;
 import odin.client.BuddylistEntry;
@@ -76,7 +75,6 @@ import tacos.packet.ops.OpsFriend;
 import tacos.packet.response.ResCSummonedPool;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_Friend;
-import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
 import tacos.server.TacosChannel;
@@ -85,6 +83,7 @@ import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosPlayer;
 import tacos.server.map.object.TacosSummon;
 import tacos.unofficial.PetCharacter;
@@ -92,7 +91,6 @@ import tacos.unofficial.PetMob;
 import tacos.unofficial.PetNPC;
 import tacos.wz.ids.DWI_Dafault;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzXML;
 
 /**
  *
@@ -743,22 +741,6 @@ public class TacosCharacter extends TacosPlayer {
         this.marriageItemId = marriageItemId;
     }
 
-    public MaplePet getPet(int index) {
-        if (3 <= index) {
-            return null;
-        }
-        byte count = 0;
-        for (MaplePet pet : this.pets) {
-            if (pet.getSummoned()) {
-                if (count == index) {
-                    return pet;
-                }
-                count++;
-            }
-        }
-        return null;
-    }
-
     protected MapleInventory[] inventory;
 
     public final MapleInventory[] getInventorys() {
@@ -916,83 +898,68 @@ public class TacosCharacter extends TacosPlayer {
             this.buddylist.put(ble);
         }
     }
+
     // pet.
+    private final ArrayList<MaplePet> pets = new ArrayList<>();
 
-    // pet
-    private List<MaplePet> pets = new ArrayList<>();
+    public ArrayList<MaplePet> getPets() {
+        return this.pets;
+    }
 
-    public MaplePet getPetByUniqueId(long ped_uid) {
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet.getUniqueId() == ped_uid) {
-                    return pet;
-                }
+    public MaplePet getPetByIndex(int index) {
+        if (this.pets.size() <= index) {
+            return null;
+        }
+        return this.pets.get(index);
+    }
+
+    public int getPetIndex(TacosPet pet) {
+        for (int index = 0; index < this.pets.size(); index++) {
+            if (this.pets.get(index).getObjectId() == pet.getObjectId()) {
+                return index;
             }
         }
-        return null;
+        return -1;
+    }
+
+    public void removePet(MaplePet pet) {
+        this.map.removePet(pet);
+        this.map.broadcastMessage(ResCUser_Pet.Deactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
+        int index = getPetIndex(pet);
+        if (index != -1) {
+            this.pets.remove(index);
+        }
     }
 
     public void addPet(MaplePet pet) {
-        if (pets.contains(pet)) {
-            pets.remove(pet);
+        if (getPetByUniqueId(pet.getUniqueId()) != null) {
+            return;
         }
-        pets.add(pet);
+        if (1 <= pets.size()) {
+            // TODO : multi pets.
+            return;
+        }
+        this.pets.add(pet);
+        pet.reset(this);
+        this.map.addPet(pet);
+        this.map.broadcastMessage(ResCUser_Pet.Activated(this, pet));
     }
 
-    public void removePet(MaplePet pet, boolean shiftLeft) {
-        pet.setSummoned(false);
+    public void updatePets() {
+        for (TacosPet pet : getPets()) {
+            pet.reset(this);
+            pet.setObjectId(); // update to new object id.
+            this.map.addPet(pet);
+        }
     }
 
-    public byte getPetIndex(final MaplePet petz) {
-        byte count = 0;
-        for (final MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet == petz) {
-                    return count;
-                }
-                count++;
+    public MaplePet getPetByUniqueId(long pet_uid) {
+        for (MaplePet pet : this.pets) {
+            if (pet.getUniqueId() == pet_uid) {
+                return pet;
             }
         }
-        return -1;
-    }
-
-    public byte getPetIndex(int petId) {
-        byte count = 0;
-        for (MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet.getUniqueId() == petId) {
-                    return count;
-                }
-                count++;
-            }
-        }
-        return -1;
-    }
-
-    public byte getPetById(int petId) {
-        byte count = 0;
-        for (MaplePet pet : pets) {
-            if (pet.getSummoned()) {
-                if (pet.getPetItemId() == petId) {
-                    return count;
-                }
-                count++;
-            }
-        }
-        return -1;
-    }
-
-    public List<MaplePet> getPets() {
-        return pets;
-    }
-
-    public void unequipPet(MaplePet pet, boolean shiftLeft, boolean hunger) {
-        if (pet.getSummoned()) {
-            pet.saveToDb();
-            map.broadcastMessage(this, ResCUser_Pet.Deactivated(this, pet, hunger ? ResCUser_Pet.DeActivatedMsg.PET_WENT_BACK_HOME : ResCUser_Pet.DeActivatedMsg.PET_NO_MSG), true);
-            removePet(pet, shiftLeft);
-            sendStatChanged(true);
-        }
+        return null;
     }
 
     // summon.
@@ -1267,9 +1234,6 @@ public class TacosCharacter extends TacosPlayer {
                 continue;
             }
             getInventory(mit.getValue()).addFromDB(mit.getKey());
-            if (mit.getKey().getPet() != null) {
-                this.pets.add(mit.getKey().getPet());
-            }
         }
         DQ_KeyMap.loadKeyMap(this);
         DQ_Monsterbook.load(this);
@@ -1374,25 +1338,8 @@ public class TacosCharacter extends TacosPlayer {
         // buff.
         updateBuffs(time_current);
         // pet.
-        for (MaplePet pet : ((MapleCharacter) this).getPets()) {
-            if (!pet.getSummoned()) {
-                continue;
-            }
-            if (pet.getPetItemId() == 5000054 && 0 < pet.getSecondsLeft()) {
-                pet.setSecondsLeft(pet.getSecondsLeft() - 1);
-                if (pet.getSecondsLeft() <= 0) {
-                    ((MapleCharacter) this).unequipPet(pet, true, true);
-                    continue;
-                }
-            }
-            int newFullness = pet.getFullness() - WzXML.ITEM.getHunger(pet.getPetItemId());
-            if (newFullness <= 5) {
-                pet.setFullness(15);
-                ((MapleCharacter) this).unequipPet(pet, true, true);
-                continue;
-            }
-            pet.setFullness(newFullness);
-            SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
+        for (MaplePet pet : new ArrayList<>(getPets())) {
+            //SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
         }
         // summon.
         for (TacosSummon summon : new ArrayList<>(getSummons())) {

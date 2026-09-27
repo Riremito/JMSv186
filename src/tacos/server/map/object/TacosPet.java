@@ -24,4 +24,40 @@ package tacos.server.map.object;
  */
 public class TacosPet extends TacosMapObject {
 
+    private String name;
+    private boolean summoned = false;
+    private int unique_id;
+    private int item_id;
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean getSummoned() {
+        return this.summoned;
+    }
+
+    public void setSummoned(boolean summoned) {
+        this.summoned = summoned;
+    }
+
+    public int getUniqueId() {
+        return this.unique_id;
+    }
+
+    public void setUniqueId(int id) {
+        this.unique_id = id;
+    }
+
+    public int getPetItemId() {
+        return this.item_id;
+    }
+
+    public void setPetItemId(int id) {
+        this.item_id = id;
+    }
 }

@@ -193,7 +193,6 @@ public class ReqCITC {
                 }
                 if (item_.getPet() != null) {
                     item_.getPet().setInventoryPosition(pos);
-                    chr.addPet(item_.getPet());
                 }
                 cart.removeFromInventory(item);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.getByType(item_.getType()), item_).build()));

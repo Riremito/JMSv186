@@ -745,7 +745,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void gainCloseness(final int closeness, final int index) {
-        final MaplePet pet = getPlayer().getPet(index);
+        final MaplePet pet = getPlayer().getPetByIndex(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
             getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));

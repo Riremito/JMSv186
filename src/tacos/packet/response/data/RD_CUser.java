@@ -27,6 +27,7 @@ import odin.server.shops.ShopDispatch;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
+import tacos.server.map.object.TacosPet;
 
 /**
  *
@@ -44,13 +45,14 @@ public class RD_CUser {
     }
 
     // CPet::Init
-    public static byte[] CPet_Init(MaplePet pet) {
+    public static byte[] CPet_Init(TacosPet pet) {
         ServerPacket data = new ServerPacket();
+
         data.Encode4(pet.getPetItemId());
         data.EncodeStr(pet.getName());
         data.Encode8(pet.getUniqueId());
-        data.Encode2(pet.getPosition().x);
-        data.Encode2(pet.getPosition().y);
+        data.Encode2(pet.getX());
+        data.Encode2(pet.getY());
         data.Encode1(pet.getMoveAction());
         data.Encode2(pet.getFootholdId());
 
@@ -175,7 +177,7 @@ public class RD_CUser {
         data.Encode1(chr.getMoveAction()); // m_nMoveAction
         data.Encode2(chr.getFootholdId());
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPet(i);
+            MaplePet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
@@ -280,7 +282,7 @@ public class RD_CUser {
         data.Encode2(chr.getFootholdId());
 
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPet(i);
+            MaplePet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;

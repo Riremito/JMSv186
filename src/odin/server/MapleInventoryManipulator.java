@@ -152,7 +152,6 @@ public class MapleInventoryManipulator {
                         if (pet != null) {
                             nItem.setPet(pet);
                             pet.setInventoryPosition(newSlot);
-                            client.getPlayer().addPet(pet);
                         }
                         client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
                         if (GameConstants.isRechargable(itemId) && quantity == 0) {

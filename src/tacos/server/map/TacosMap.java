@@ -82,10 +82,12 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosSummon;
 
 /**
@@ -524,10 +526,16 @@ public class TacosMap extends TacosMapData {
             }
             if (area_states.get(player_number) == MapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
+                for (TacosPet pet : chr.getPets()) {
+                    player.SendPacket(ResCUser_Pet.TransferField(chr, pet));
+                }
                 for (TacosSummon summon : chr.getSummons()) {
                     player.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
+                for (TacosPet pet : player.getPets()) {
+                    chr.SendPacket(ResCUser_Pet.TransferField(player, pet));
+                }
                 for (TacosSummon summon : player.getSummons()) {
                     chr.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
                 }
@@ -688,6 +696,10 @@ public class TacosMap extends TacosMapData {
     }
 
     public void linkedObjectEnterField(TacosCharacter chr) {
+        // pet.
+        for (TacosPet pet : chr.getPets()) {
+            broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
+        }
         // summon.
         for (TacosSummon summon : chr.getSummons()) {
             broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, false));
@@ -789,6 +801,32 @@ public class TacosMap extends TacosMapData {
             }
         }
         return 0;
+    }
+
+    // pet.
+    private LinkedHashMap<Integer, TacosPet> pets = new LinkedHashMap<>();
+
+    public void addPet(TacosPet pet) {
+        if (pet.getObjectId() == 0) {
+            pet.setObjectId();
+        }
+        this.pets.put(pet.getObjectId(), pet);
+    }
+
+    public void removePet(TacosPet pet) {
+        this.pets.remove(pet.getObjectId());
+    }
+
+    public List<TacosPet> getAllPets() {
+        ArrayList<TacosPet> ret = new ArrayList<>();
+        for (TacosPet pet : this.pets.values()) {
+            ret.add(pet);
+        }
+        return ret;
+    }
+
+    public TacosPet getPetByOid(int object_id) {
+        return this.pets.get(object_id);
     }
 
     // summon.

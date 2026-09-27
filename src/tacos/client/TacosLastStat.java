@@ -77,16 +77,16 @@ public class TacosLastStat {
         this.gasha_exp = chr.getGashaEXP();
 
         // pet
-        MaplePet pet = chr.getPet(0);
-        if (pet != null && pet.getSummoned()) {
+        MaplePet pet = chr.getPetByIndex(0);
+        if (pet != null) {
             this.pet1 = pet.getUniqueId();
         }
-        pet = chr.getPet(1);
-        if (pet != null && pet.getSummoned()) {
+        pet = chr.getPetByIndex(1);
+        if (pet != null) {
             this.pet2 = pet.getUniqueId();
         }
-        pet = chr.getPet(2);
-        if (pet != null && pet.getSummoned()) {
+        pet = chr.getPetByIndex(2);
+        if (pet != null) {
             this.pet3 = pet.getUniqueId();
         }
     }
@@ -172,12 +172,12 @@ public class TacosLastStat {
             this.statmask |= OpsChangeStat.CS_TEMPEXP.get();
         }
         // pet
-        MaplePet new_pet1 = chr.getPet(0);
-        MaplePet new_pet2 = chr.getPet(1);
-        MaplePet new_pet3 = chr.getPet(2);
-        long new_pet1_val = (new_pet1 != null && new_pet1.getSummoned()) ? new_pet1.getUniqueId() : 0;
-        long new_pet2_val = (new_pet2 != null && new_pet2.getSummoned()) ? new_pet2.getUniqueId() : 0;
-        long new_pet3_val = (new_pet3 != null && new_pet3.getSummoned()) ? new_pet3.getUniqueId() : 0;
+        MaplePet new_pet1 = chr.getPetByIndex(0);
+        MaplePet new_pet2 = chr.getPetByIndex(1);
+        MaplePet new_pet3 = chr.getPetByIndex(2);
+        long new_pet1_val = (new_pet1 != null) ? new_pet1.getUniqueId() : 0;
+        long new_pet2_val = (new_pet2 != null) ? new_pet2.getUniqueId() : 0;
+        long new_pet3_val = (new_pet3 != null) ? new_pet3.getUniqueId() : 0;
 
         if (this.pet1 != new_pet1_val) {
             this.pet1 = new_pet1_val;

@@ -133,7 +133,7 @@ public class Item {
         this.uniqueid = id;
     }
 
-    public final MaplePet getPet() {
+    public MaplePet getPet() {
         return pet;
     }
 

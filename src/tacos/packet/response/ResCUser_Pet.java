@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.inventory.MaplePet;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -26,6 +25,7 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.RD_CUser;
+import tacos.server.map.object.TacosPet;
 
 /**
  *
@@ -69,8 +69,9 @@ public class ResCUser_Pet {
     }
 
     // showPet
-    public static ServerPacket PetActivated(TacosCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
+    public static ServerPacket PetActivated(TacosCharacter chr, TacosPet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
         ServerPacket sp = new ServerPacket((transfer_field || Config.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
+
         sp.Encode4(chr.getId());
 
         if (Config.Equal(Region.JMS, 147)) {
@@ -111,19 +112,19 @@ public class ResCUser_Pet {
         return sp;
     }
 
-    public static ServerPacket Activated(TacosCharacter chr, MaplePet pet) {
+    public static ServerPacket Activated(TacosCharacter chr, TacosPet pet) {
         return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
     }
 
-    public static ServerPacket Deactivated(TacosCharacter chr, MaplePet pet, DeActivatedMsg msg) {
+    public static ServerPacket Deactivated(TacosCharacter chr, TacosPet pet, DeActivatedMsg msg) {
         return PetActivated(chr, pet, false, msg, false);
     }
 
-    public static ServerPacket TransferField(TacosCharacter chr, MaplePet pet) {
+    public static ServerPacket TransferField(TacosCharacter chr, TacosPet pet) {
         return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
-    public static ServerPacket PetMove(TacosCharacter chr, MaplePet pet, ParseCMovePath data) {
+    public static ServerPacket PetMove(TacosCharacter chr, TacosPet pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetMove);
 
         sp.Encode4(chr.getId());
@@ -150,7 +151,7 @@ public class ResCUser_Pet {
         return sp;
     }
 
-    public static ServerPacket PetNameChanged(TacosCharacter chr, MaplePet pet, String pet_name) {
+    public static ServerPacket PetNameChanged(TacosCharacter chr, TacosPet pet, String pet_name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
         sp.Encode4(chr.getId());

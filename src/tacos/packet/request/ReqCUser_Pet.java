@@ -73,7 +73,7 @@ public class ReqCUser_Pet {
             pet = chr.getPetByUniqueId(pet_uid);
         } else {
             int pet_index = cp.Decode4();
-            pet = chr.getPet(pet_index);
+            pet = chr.getPetByIndex(pet_index);
         }
 
         if (pet == null) {
@@ -117,7 +117,7 @@ public class ReqCUser_Pet {
     }
 
     public static boolean OnPetFood(MapleCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
-        MaplePet pet = chr.getPet(0);
+        MaplePet pet = chr.getPetByIndex(0);
         MapleMap map = chr.getMap();
 
         if (pet == null || map == null) {
@@ -173,7 +173,7 @@ public class ReqCUser_Pet {
         if (petIndex == -1) {
             return;
         }
-        MaplePet pet = chr.getPet(petIndex);
+        MaplePet pet = chr.getPetByIndex(petIndex);
         if (pet == null) {
             return;
         }

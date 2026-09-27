@@ -24,7 +24,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleMount;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleRing;
@@ -61,7 +60,6 @@ import tacos.packet.response.Res_JMS_CField_Pachinko;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.ResCTownPortalPool;
-import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
@@ -434,9 +432,7 @@ public class MapleCharacter extends TacosCharacter {
 
             for (MaplePet pet : getPets()) {
                 pet.saveToDb();
-                if (pet.getSummoned()) {
-                    pet_slots[pet_index++] = pet.getInventoryPosition();
-                }
+                pet_slots[pet_index++] = pet.getInventoryPosition();
                 if (3 <= pet_index) {
                     break;
                 }
@@ -758,6 +754,7 @@ public class MapleCharacter extends TacosCharacter {
             map_from.userLeaveField(this);
             updateMap(map_to, (portal_to != null) ? portal_to : map.getPortal(0)); // for dynamic portal
             sendSetField(this, false);
+            updatePets();
             updateSummons();
             map_to.userEnterField(this);
             map_to.linkedObjectEnterField(this);
@@ -1710,77 +1707,6 @@ public class MapleCharacter extends TacosCharacter {
         Collections.sort(frings, new MapleRing.RingComparator());
         Collections.sort(crings, new MapleRing.RingComparator());
         return new SimpleImmutableEntry<>(crings, frings);
-    }
-
-    public void spawnPet(short slot, boolean lead) {
-        spawnPet(slot, lead, true);
-    }
-
-    public void spawnPet(short slot, boolean lead, boolean broadcast) {
-        final Item item = getInventory(MapleInventoryType.CASH).getItem(slot);
-        if (item == null || item.getItemId() > 5000100 || item.getItemId() < 5000000) {
-            return;
-        }
-        switch (item.getItemId()) {
-            case 5000047:
-            case 5000028: {
-                final MaplePet pet = MaplePet.createPet(item.getItemId() + 1, MapleInventoryIdentifier.getInstance());
-                if (pet != null) {
-                    MapleInventoryManipulator.addById(client, item.getItemId() + 1, (short) 1, item.getOwner(), pet, 45);
-                    MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.CASH, slot, (short) 1, false);
-                }
-                break;
-            }
-            default: {
-                final MaplePet pet = item.getPet();
-                if (pet != null && (item.getItemId() != 5000054 || pet.getSecondsLeft() > 0) && (item.getExpiration() == -1 || item.getExpiration() > System.currentTimeMillis())) {
-                    if (pet.getSummoned()) { // Already summoned, let's keep it
-                        unequipPet(pet, true, false);
-                    } else {
-                        int leadid = 8;
-                        if (GameConstants.isKOC(getJob())) {
-                            leadid = 10000018;
-                        } else if (GameConstants.isAran(getJob())) {
-                            leadid = 20000024;
-                        } else if (GameConstants.isEvan(getJob())) {
-                            leadid = 20010024;
-                        } else if (GameConstants.isResist(getJob())) {
-                            leadid = 30000024;
-                        }
-                        if (getSkillLevel(SkillFactory.getSkill(leadid)) == 0 && getPet(0) != null) {
-                            unequipPet(getPet(0), false, false);
-                        } else if (lead && getSkillLevel(SkillFactory.getSkill(leadid)) > 0) { // Follow the Lead
-                            //			    shiftPetsRight();
-                        }
-                        final Point pos = getPosition();
-                        pet.setPosition(pos);
-                        try {
-                            pet.setFootholdId(getMap().getFootholds().findBelow(pos).getId());
-                        } catch (NullPointerException e) {
-                            pet.setFootholdId(0); //lol, it can be fixed by movement
-                        }
-                        pet.setMoveAction(0);
-                        pet.setSummoned(true);
-
-                        addPet(pet);
-                        if (broadcast) {
-                            getMap().broadcastMessage(this, ResCUser_Pet.Activated(this, pet), true);
-                        }
-                    }
-                }
-                break;
-            }
-        }
-        sendStatChanged(true);
-    }
-
-    public final void spawnSavedPets() {
-        for (int i = 0; i < petStore.length; i++) {
-            if (petStore[i] > -1) {
-                spawnPet(petStore[i], false, false);
-            }
-        }
-        petStore = new byte[]{-1, -1, -1};
     }
 
     public Event_PyramidSubway getPyramidSubway() {

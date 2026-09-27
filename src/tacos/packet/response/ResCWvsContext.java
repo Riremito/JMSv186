@@ -23,7 +23,6 @@ import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
-import odin.client.inventory.MaplePet;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.shared.TacosSharedDate;
@@ -727,13 +726,7 @@ public class ResCWvsContext {
     // CWvsContext::OnCharacterInfo
     public static ServerPacket CharacterInfo(MapleCharacter player, boolean isSelf) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CharacterInfo);
-        boolean pet_summoned = false;
-        for (final MaplePet pet : player.getPets()) {
-            if (pet.getSummoned()) {
-                pet_summoned = true;
-                break;
-            }
-        }
+
         sp.Encode4(player.getId()); // dwCharacterId
         sp.Encode1(player.getLevel()); // nLevel
         sp.Encode2(player.getJob()); // nJob
@@ -776,14 +769,14 @@ public class ResCWvsContext {
 
         sp.Encode1(0, Config.PostBB());
         sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
-        sp.Encode1((player.getPet(0) != null) ? 1 : 0); // bPetActivated
+        sp.Encode1((player.getPetByIndex(0) != null) ? 1 : 0); // bPetActivated
         if (Config.LessOrEqual(Region.JMS, 131)) {
             // inlined?
-            if (player.getPet(0) != null) {
-                sp.EncodeBuffer(RD_CWvsContext.CUIUserInfo_SetPetInfo_JMS131(player, player.getPet(0)));
+            if (player.getPetByIndex(0) != null) {
+                sp.EncodeBuffer(RD_CWvsContext.CUIUserInfo_SetPetInfo_JMS131(player, player.getPetByIndex(0)));
             }
         } else if (Config.GreaterOrEqual(Region.GMS, 95)) {
-            if (player.getPet(0) != null) {
+            if (player.getPetByIndex(0) != null) {
                 sp.EncodeBuffer(RD_CWvsContext.CUIUserInfo_SetMultiPetInfo_GMS95(player));
             }
         } else {

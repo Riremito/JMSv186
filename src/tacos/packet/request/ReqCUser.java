@@ -85,6 +85,7 @@ import tacos.database.LazyDatabase;
 import tacos.debug.DebugCommand;
 import tacos.debug.DebugShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import odin.client.inventory.MaplePet;
 import tacos.client.TacosSummonSkill;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
@@ -1417,11 +1418,11 @@ public class ReqCUser {
     }
 
     // CUser::OnCharacterInfoRequest
-    public static final boolean OnCharacterInfoRequest(MapleCharacter chr, ClientPacket cp, MapleMap map) {
+    public static boolean OnCharacterInfoRequest(MapleCharacter chr, ClientPacket cp, MapleMap map) {
         // CCheatInspector::InspectExclRequestTime
-        final int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
-        final int m_dwCharacterId = cp.Decode4();
-        final MapleCharacter player = map.getPlayerById(m_dwCharacterId); // CUser::FindUser
+        int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
+        int m_dwCharacterId = cp.Decode4();
+        MapleCharacter player = map.getPlayerById(m_dwCharacterId); // CUser::FindUser
 
         if (player == null) {
             chr.updateStat();
@@ -1432,12 +1433,27 @@ public class ReqCUser {
         return true;
     }
 
-    public static final boolean OnUserActivatePetRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserActivatePetRequest(MapleCharacter chr, ClientPacket cp) {
         int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
         byte flag = (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131) || Config.PostBB()) ? 1 : cp.Decode1();
 
-        chr.spawnPet(item_slot, flag > 0 ? true : false);
+        Item item = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
+        if (item != null) {
+            MaplePet pet = item.getPet();
+            if (pet != null) {
+                if (chr.getPetByUniqueId(pet.getUniqueId()) == null) {
+                    pet.setSummoned(true);
+                    chr.addPet(pet);
+                } else {
+                    pet.setSummoned(false);
+                    chr.removePet(pet);
+                }
+                chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().add(MapleInventoryType.CASH, item).build()));
+            }
+        }
+
+        chr.sendStatChanged(true);
         return true;
     }
 
