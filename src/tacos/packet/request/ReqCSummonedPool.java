@@ -39,6 +39,7 @@ import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMoveAbility;
+import tacos.packet.ops.OpsSkill;
 import tacos.server.map.object.TacosSummon;
 
 /**
@@ -91,8 +92,8 @@ public class ReqCSummonedPool {
                 return true;
             }
             case CP_SummonedSkill: {
-                // CSummoned::OnSkill
-                break;
+                OnSkill(chr, cp, summon);
+                return true;
             }
             case CP_SummonedHit: {
                 OnHit(chr, cp, summon);
@@ -233,6 +234,36 @@ public class ReqCSummonedPool {
             MapleMonster mob = attackEntry.getMonster();
             mob.damage(chr, toDamage, true);
         }
+        if (summon.getSkill() == OpsSkill.VALKYRIE_GABIOTA) {
+            chr.removeSummon(summon);
+        }
+    }
+
+    // CSummoned::OnSkill
+    public static boolean OnSkill(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
+        int nSkillID = cp.Decode4();
+        byte unk1 = cp.Decode1();
+
+        OpsSkill summoned_skill = OpsSkill.find(nSkillID);
+        switch (summon.getSkill()) {
+            case DARKKNIGHT_BEHOLDER -> {
+                if (summoned_skill == OpsSkill.DARKKNIGHT_BEHOLDERS_HEALING) {
+                    // ダークスピリットヒール
+                    return true;
+                }
+                if (summoned_skill == OpsSkill.DARKKNIGHT_BEHOLDERS_BUFF) {
+                    // ダークスピリットアップ
+                    byte buff_type = cp.Decode1();
+                    // TODO : random buff.
+                    return true;
+                }
+            }
+            default -> {
+            }
+        }
+
+        DebugLogger.ErrorLog("OnSkill : " + nSkillID + " (" + summoned_skill + ")" + ", not coded.");
+        return false;
     }
 
     // CSummoned::OnHit

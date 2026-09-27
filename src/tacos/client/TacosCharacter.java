@@ -1359,7 +1359,7 @@ public class TacosCharacter {
             SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
         }
         // summon.
-        for (TacosSummon summon : getSummons()) {
+        for (TacosSummon summon : new ArrayList<>(getSummons())) {
             if ((summon.getTimeCreated() + summon.getTime()) <= time_current) {
                 removeSummon(summon);
             }

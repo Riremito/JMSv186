@@ -21,8 +21,10 @@ package tacos.server.map.object;
 import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosSummonSkill;
+import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsAssist;
 import tacos.packet.ops.OpsMoveAbility;
+import tacos.packet.ops.OpsSkill;
 
 /**
  *
@@ -33,8 +35,13 @@ public class TacosSummon extends TacosMapObject {
     private int nCharLevel;
     private int nSkillID;
     private int nSLV;
+    // wz data.
     private int summon_time;
     private int summon_hp = 1;
+    // client data.
+    OpsSkill skill;
+    OpsMoveAbility move_ability;
+    OpsAssist assist;
 
     public TacosSummon(TacosCharacter player, TacosSummonSkill tss) {
         this.nCharLevel = player.getLevel();
@@ -45,18 +52,19 @@ public class TacosSummon extends TacosMapObject {
         setOwnerId(player.getId());
         setFootholdId(player.getFH());
         setPosition(player.getPosition());
+        setSummonData(tss.getId());
     }
 
     public int getSkillID() {
-        return nSkillID;
+        return this.nSkillID;
     }
 
     public int getOwnerLevel() {
-        return nCharLevel;
+        return this.nCharLevel;
     }
 
     public int getSLV() {
-        return nSLV;
+        return this.nSLV;
     }
 
     public int getTime() {
@@ -71,90 +79,94 @@ public class TacosSummon extends TacosMapObject {
         this.summon_hp = hp;
     }
 
+    public OpsSkill getSkill() {
+        return this.skill;
+    }
+
     public OpsMoveAbility getMoveAbility() {
-        switch (getSkillID()) {
-            case 3211002: // puppet sniper
-            case 3111002: // puppet ranger
-            case 33111003:
-            case 13111004: // puppet cygnus
-            case 5211001: // octopus - pirate
-            case 5220002: // advanced octopus - pirate
-            case 4341006:
-            case 35111002:
-            case 35111005: //TEMP
-            case 35111004: //TEMP
-            //case 35111011: //TEMP
-            case 35121009:
-            //case 35121010: //TEMP
-            case 35121011:
-                //case 4111007: //TEMP
-                return OpsMoveAbility.MOVEABILITY_STOP;
-            case 3211005: // golden eagle
-            case 3111005: // golden hawk
-            case 33111005:
-            case 2311006: // summon dragon
-            case 3221005: // frostprey
-            case 3121006: // phoenix
-                return OpsMoveAbility.MOVEABILITY_FLY;
-            case 5211002: // bird - pirate
-                return OpsMoveAbility.MOVEABILITY_FLY_RANDOM;
-            case 32111006: //reaper
-                return OpsMoveAbility.MOVEABILITY_WALK_RANDOM;
-            case 1321007: // beholder
-            case 2121005: // elquines
-            case 2221005: // ifrit
-            case 2321003: // bahamut
-            case 12111004: // Ifrit
-            case 11001004: // soul
-            case 12001004: // flame
-            case 13001004: // storm
-            case 14001005: // darkness
-            case 15001004: // lightning
-            case 35111001:
-            case 35111010:
-            case 35111009:
-                return OpsMoveAbility.MOVEABILITY_WALK;
-        }
-        return OpsMoveAbility.UNKNOWN;
+        return this.move_ability;
     }
 
-    public OpsAssist getSummonType() {
-        if (isPuppet()) {
-            return OpsAssist.ASSIST_NONE;
-        }
-        switch (getSkillID()) {
-            case 1321007: {
-                return OpsAssist.ASSIST_HEAL;
-            }
-            case 35111001: //satellite.
-            case 35111009:
-            case 35111010: {
-                return OpsAssist.ASSIST_ATTACK_EX;
-            }
-            case 35121009: //bots n. tots
-            {
-                return OpsAssist.ASSIST_SUMMON;
-            }
-            case 4111007: {
-                return OpsAssist.ASSIST_ATTACK_COUNTER;
-            }
-            default: {
-                break;
-            }
-        }
-        return OpsAssist.ASSIST_ATTACK;
+    public OpsAssist getAssist() {
+        return this.assist;
     }
 
-    public boolean isPuppet() {
-        switch (getSkillID()) {
-            case 3111002:
-            case 3211002:
-            case 13111004:
-            case 4341006:
-            case 33111003:
-                return true;
+    private void setMoveAbility(OpsMoveAbility move_ability) {
+        this.move_ability = move_ability;
+    }
+
+    private void setAssist(OpsAssist assist) {
+        this.assist = assist;
+    }
+
+    private void setSummonData(int nSkillID) {
+        this.skill = OpsSkill.find(nSkillID);
+        switch (this.skill) {
+            case DARKKNIGHT_BEHOLDER -> {
+                // ダークスピリット
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_HEAL);
+            }
+            case ARCHMAGE1_IFRIT -> {
+                // エルクィネス
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case ARCHMAGE2_ELQUINES -> {
+                // イフリート
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case PRIEST_SUMMON_DRAGON -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_FLY);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case BISHOP_BAHAMUT -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case RANGER_PUPPET -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_NONE);
+            }
+            case RANGER_SILVER_HAWK -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_FLY);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case BOWMASTER_PHOENIX -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_FLY);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case SNIPER_PUPPET -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_NONE);
+            }
+            case SNIPER_GOLDEN_EAGLE -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_FLY);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case CROSSBOWMASTER_FREEZER -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_FLY);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case VALKYRIE_OCTOPUS -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case VALKYRIE_GABIOTA -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_FLY_RANDOM);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            case CAPTAIN_SUPPORT_OCTOPUS -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_STOP);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
+            default -> {
+                setMoveAbility(OpsMoveAbility.UNKNOWN);
+                setAssist(OpsAssist.UNKNOWN);
+                DebugLogger.ErrorLog("setSummonData : " + nSkillID + " ( " + this.skill + " ), not coded.");
+            }
         }
-        return false;
     }
 
     public MapleCharacter getOwner() {

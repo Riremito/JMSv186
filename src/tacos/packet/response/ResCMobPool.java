@@ -76,8 +76,8 @@ public class ResCMobPool {
     public static byte[] CMob_Init(MapleMonster monster) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode2(monster.getPosition().x); // m_ptCurPos.x
-        data.Encode2(monster.getPosition().y); // m_ptCurPos.y
+        data.Encode2(monster.getX()); // m_ptCurPos.x
+        data.Encode2(monster.getY()); // m_ptCurPos.y
         data.Encode1(monster.getStance()); // m_bMoveAction
         data.Encode2(monster.getFootholdId()); // m_nFootholdSN, Fh  causes fall down, credit to 垂垂 for fixing mob fall down issue
         data.Encode2(monster.getHomeFoothold()); // m_nHomeFoothold
@@ -367,8 +367,8 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); //?
         sp.Encode4(map.getNodeInfo().getNodes().size());
-        sp.Encode4(monster.getPosition().x);
-        sp.Encode4(monster.getPosition().y);
+        sp.Encode4(monster.getX());
+        sp.Encode4(monster.getY());
         for (MapleNodes.MapleNodeInfo mni : map.getNodeInfo().getNodes()) {
             sp.Encode4(mni.x);
             sp.Encode4(mni.y);

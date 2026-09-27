@@ -50,8 +50,8 @@ public class RD_CSummoned {
         data.Encode1(summon.getSkillID() == 32111006 ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
         data.Encode2(summon.getFootholdId()); // m_dwSN (CStaticFoothold)
         data.Encode1(summon.getMoveAbility().get()); // m_nMoveAbility
-        data.Encode1(summon.getSummonType().get()); // m_nAssistType
-        data.Encode1(animated ? 0 : 1); //nEnterType ENTER_TYPE_DEFAULT, ENTER_TYPE_CREATE_SUMMONED
+        data.Encode1(summon.getAssist().get()); // m_nAssistType
+        data.Encode1(animated ? 0 : 1); // nEnterType ENTER_TYPE_DEFAULT, ENTER_TYPE_CREATE_SUMMONED
         data.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
@@ -76,10 +76,10 @@ public class RD_CSummoned {
             // 鬼神召喚
             if (Config.GreaterOrEqual(Region.JMS, 302)) {
                 if (m_nSkillID == 42111003) {
-                    data.Encode2(summon.getPosition().x + 250);
-                    data.Encode2(summon.getPosition().y);
-                    data.Encode2(summon.getPosition().x - 250);
-                    data.Encode2(summon.getPosition().y);
+                    data.Encode2(summon.getX() + 250);
+                    data.Encode2(summon.getY());
+                    data.Encode2(summon.getX() - 250);
+                    data.Encode2(summon.getY());
                 }
             }
         }
