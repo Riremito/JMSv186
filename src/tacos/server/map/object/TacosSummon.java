@@ -176,6 +176,10 @@ public class TacosSummon extends TacosMapObject {
                 setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
                 setAssist(OpsAssist.ASSIST_ATTACK);
             }
+            case FLAMEWIZARD_IFRIT -> {
+                setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
+                setAssist(OpsAssist.ASSIST_ATTACK);
+            }
             case WINDBREAKER_STORM -> {
                 setMoveAbility(OpsMoveAbility.MOVEABILITY_WALK);
                 setAssist(OpsAssist.ASSIST_ATTACK);
