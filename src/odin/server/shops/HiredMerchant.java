@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.shops;
 
-import java.util.concurrent.ScheduledFuture;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
@@ -30,12 +29,10 @@ import java.util.List;
 import java.util.ArrayList;
 import tacos.packet.response.ResCEmployeePool;
 import odin.server.MapleInventoryManipulator;
-import odin.server.Timer.EtcTimer;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosWorld;
-import java.awt.Point;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -44,16 +41,14 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.ItemLoader;
 import tacos.database.query.DQ_Hiredmerch;
 import java.sql.SQLException;
+import tacos.server.map.object.TacosMerchant;
 
-public class HiredMerchant {
+public class HiredMerchant extends TacosMerchant {
 
     public final static byte HIRED_MERCHANT = 1;
     public final static byte PLAYER_SHOP = 2;
     public final static byte OMOK = 3;
     public final static byte MATCH_CARD = 4;
-
-    private Point position = new Point();
-    private int objectId;
 
     protected boolean open = false;
     protected boolean available = false;
@@ -70,8 +65,6 @@ public class HiredMerchant {
     protected List<String> visitors = new LinkedList<>();
     protected List<BoughtItem> bought = new LinkedList<>();
     protected List<MaplePlayerShopItem> items = new LinkedList<>();
-
-    public ScheduledFuture<?> schedule;
     private List<String> blacklist;
     private int storeid;
     private int foothold_id;
@@ -97,30 +90,6 @@ public class HiredMerchant {
         this.foothold_id = owner.getFootholdId();
         start = System.currentTimeMillis();
         blacklist = new LinkedList<>();
-        this.schedule = EtcTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                closeShop(true, true, 0);
-            }
-        }, 1000 * 60 * 60 * 24);
-    }
-
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
     }
 
     public int getMaxSize() {
@@ -447,18 +416,13 @@ public class HiredMerchant {
     }
 
     public void closeShop(boolean saveItems, boolean remove, int reason) {
-        if (schedule != null) {
-            schedule.cancel(false);
-        }
         if (saveItems) {
             saveItems();
         }
         if (remove) {
             TacosWorld.find(0).getChannelServer(channel).removeMerchant(this); // TODO : fix
-            getMap().broadcastMessage(ResCEmployeePool.EmployeeLeaveField(this));
         }
-        getMap().removeHiredMerchant(this.getObjectId());
-        schedule = null;
+        getMap().removeMerchant(this);
     }
 
     public int getTimeLeft() {

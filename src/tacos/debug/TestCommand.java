@@ -34,7 +34,6 @@ import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.packet.ops.OpsUI;
-import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.ResCMobPool;
 import tacos.packet.response.ResCNpcPool;
@@ -148,9 +147,7 @@ public class TestCommand {
                     HiredMerchant hm = new HiredMerchant(chr, item_id, "DebugHiredMarchant");
                     hm.setTest(chr.getId() + id_inc, fh_id, ids.get(rand.nextInt(ids.size())), 7777 + id_inc);
                     hm.setPosition(new Point(fh_x, fh_y));
-                    map.addHiredMerchant(hm);
-                    chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(hm));
-                    chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
+                    map.addMerchant(hm);
                     hms.add(hm);
                 }
                 return true;

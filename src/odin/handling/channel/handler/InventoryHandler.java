@@ -326,7 +326,7 @@ public class InventoryHandler {
                 List<HiredMerchant> objects;
                 switch (OWL_ID) {
                     case 0:
-                        objects = mapp.getAllHiredMerchants();
+                        objects = mapp.getAllMerchants();
                         for (HiredMerchant merch : objects) {
                             if (merch.getOwnerId() == id) {
                                 merchant = merch;
@@ -335,7 +335,7 @@ public class InventoryHandler {
                         }
                         break;
                     case 1:
-                        objects = mapp.getAllHiredMerchants();
+                        objects = mapp.getAllMerchants();
                         for (HiredMerchant merch : objects) {
                             if (merch.getStoreId() == id) {
                                 merchant = merch;
@@ -344,7 +344,7 @@ public class InventoryHandler {
                         }
                         break;
                     default:
-                        merchant = mapp.getHiredMerchantByOid(id);
+                        merchant = mapp.getMerchantByOid(id);
                         break;
                 }
                 if (merchant != null) {

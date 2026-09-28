@@ -33,10 +33,8 @@ import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
 import odin.server.shops.ShopDispatch;
-import tacos.server.map.TacosMap;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
-import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import tacos.config.Config;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -105,6 +103,7 @@ public class ResCMiniRoomBaseDlg {
                 sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(mpsi.item));
             }
         }
+
         return sp;
     }
 
@@ -437,7 +436,7 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(4);
         sp.Encode2(merch.getVisitorSlot(chr));
         sp.Encode4(merch.getItemId());
-        sp.EncodeStr("\u96c7\u7528\u5546\u4eba");
+        sp.EncodeStr("雇用商人");
         for (final SimpleImmutableEntry<Byte, MapleCharacter> storechr : merch.getVisitors()) {
             sp.Encode1(storechr.getKey());
             sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getValue()));

@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import tacos.shared.TacosSharedExpTable;
 import tacos.database.DatabaseConnection;
@@ -61,7 +60,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.ResCField_MonsterCarnival;
 import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCScriptMan;
-import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.ops.OpsMessage;
@@ -75,7 +73,6 @@ import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
 import odin.server.Randomizer;
-import odin.server.RandomRewards;
 import odin.server.MapleCarnivalParty;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleDoor;
@@ -87,7 +84,6 @@ import odin.server.CashShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.MapleCarnivalChallenge;
 import odin.server.MapleInventoryManipulator;
-import odin.server.Timer.EtcTimer;
 import odin.server.maps.Event_PyramidSubway;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosCharacter;
@@ -172,7 +168,6 @@ public class MapleCharacter extends TacosCharacter {
     // 雇用商人
     private Object remoteStore = null;
     private MapleParty party;
-    private transient ScheduledFuture<?> fishing;
     private transient Event_PyramidSubway pyramidSubway = null;
     private IDebugMan debugMan = null;
     private DebugShop debugShop = null;
@@ -564,72 +559,6 @@ public class MapleCharacter extends TacosCharacter {
             possesed += inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(itemid);
         }
         return possesed;
-    }
-
-    public void startFishingTask(final boolean VIP) {
-        final int time = GameConstants.getFishingTime(VIP, isGM());
-        cancelFishingTask();
-
-        fishing = EtcTimer.getInstance().register(new Runnable() { //no real reason for clone.
-
-            @Override
-            public void run() {
-                int bait_level = 0;
-                // 餌を消費しない
-                if (isGM()) {
-                    bait_level = 2;
-                }
-                // 高級餌を消費
-                if (bait_level < 2 && haveItem(2300001, 1, false, true)) {
-                    bait_level = 2;
-                    MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300001, 1, false, false);
-                }
-                // 餌を消費
-                if (bait_level < 2 && haveItem(2300000, 1, false, true)) {
-                    bait_level = 1;
-                    MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300000, 1, false, false);
-                }
-                // 釣り終了
-                if (bait_level < 1) {
-                    cancelFishingTask();
-                    return;
-                }
-                final int randval = RandomRewards.getInstance().getFishingReward();
-
-                switch (randval) {
-                    case 0: // Meso
-                    {
-                        final int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
-                        gainMeso(caught_meso, true);
-                        SendPacket(ResCWvsContext.fishingUpdate((byte) 1, caught_meso));
-                        break;
-                    }
-                    case 1: // EXP
-                    {
-                        final int required_exp = TacosSharedExpTable.getExpNeededForLevel(level);
-                        int caught_exp = Randomizer.rand(required_exp / ((3 - bait_level) * 100), required_exp / ((3 - bait_level) * 10));
-                        if (caught_exp == 0) {
-                            caught_exp += 1;
-                        }
-                        gainExp(caught_exp, true, false, true);
-                        SendPacket(ResCWvsContext.fishingUpdate((byte) 2, caught_exp));
-                        break;
-                    }
-                    default: {
-                        MapleInventoryManipulator.addById(client, randval, (short) 1);
-                        //SendPacket(UIPacket.fishingUpdate((byte) 0, randval));
-                        break;
-                    }
-                }
-                map.broadcastMessage(ResCUser.fishingCaught(id));
-            }
-        }, time, time);
-    }
-
-    public void cancelFishingTask() {
-        if (fishing != null) {
-            fishing.cancel(false);
-        }
     }
 
     public void silentEnforceMaxHpMp() {

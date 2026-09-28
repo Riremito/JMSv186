@@ -58,6 +58,10 @@ public class TacosTask {
         this.time_updated = System.currentTimeMillis();
     }
 
+    public void reset() {
+        this.time_updated = System.currentTimeMillis();
+    }
+
     public boolean check(long current_time, long interval) {
         if ((this.time_updated + interval) <= current_time) {
             this.time_updated = current_time;

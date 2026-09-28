@@ -1197,10 +1197,6 @@ public class GameConstants {
         }
     }
 
-    public static int getFishingTime(boolean vip, boolean gm) {
-        return gm ? 100 : (vip ? 100 : 1000);
-    }
-
     public static int getCustomSpawnID(int summoner, int def) {
         switch (summoner) {
             case 9400589:

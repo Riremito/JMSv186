@@ -218,7 +218,7 @@ public class ReqCUser_Pet {
             int drop_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
-        MapleMapItem mapitem = chr.getMap().findDrop(drop_id);
+        MapleMapItem mapitem = chr.getMap().getDropByOid(drop_id);
         if (mapitem == null) {
             return false;
         }

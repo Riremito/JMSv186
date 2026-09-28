@@ -55,6 +55,9 @@ import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import odin.server.MapleInventoryManipulator;
+import odin.server.RandomRewards;
+import odin.server.Randomizer;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
@@ -72,7 +75,7 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFriend;
-import tacos.packet.response.ResCSummonedPool;
+import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_Friend;
 import tacos.script.portal.ArdentmillPortal;
@@ -86,6 +89,7 @@ import tacos.server.TacosTask;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosPlayer;
 import tacos.server.map.object.TacosSummon;
+import tacos.shared.TacosSharedExpTable;
 import tacos.unofficial.PetCharacter;
 import tacos.unofficial.PetMob;
 import tacos.unofficial.PetNPC;
@@ -994,7 +998,6 @@ public class TacosCharacter extends TacosPlayer {
             this.summons.remove(index);
         }
         this.map.removeSummon(summon);
-        this.map.broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
     public boolean addSummon(TacosSummonSkill tss) {
@@ -1006,7 +1009,6 @@ public class TacosCharacter extends TacosPlayer {
         summon.reset(this);
         this.summons.add(summon);
         this.map.addSummon(summon);
-        this.map.broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
         return true;
     }
 
@@ -1069,6 +1071,87 @@ public class TacosCharacter extends TacosPlayer {
 
     public void setCoconutTeam(int coconutteam) {
         this.coconutteam = coconutteam;
+    }
+
+    // fishing.
+    private final TacosTask task_fishing = new TacosTask();
+    private int fishing_rod_id = 0;
+    private int fishing_chair_id = 0;
+    private int fishing_hit_interval = 30000;
+
+    public boolean fishingHit() {
+        if (((MapleCharacter) this).getChair() != 3011000) {
+            return false;
+        }
+        int bait_level = 0;
+        // 高級餌を消費
+        if (bait_level < 2 && ((MapleCharacter) this).haveItem(2300001, 1, false, true)) {
+            bait_level = 2;
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300001, 1, false, false);
+        }
+        // 餌を消費
+        if (bait_level < 2 && ((MapleCharacter) this).haveItem(2300000, 1, false, true)) {
+            bait_level = 1;
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300000, 1, false, false);
+        }
+        // 釣り終了
+        if (bait_level <= 0) {
+            return false;
+        }
+        int randval = RandomRewards.getInstance().getFishingReward();
+
+        switch (randval) {
+            case 0 -> // Meso
+            {
+                int caught_meso = Randomizer.rand(bait_level * 10000, bait_level * 100000);
+                ((MapleCharacter) this).gainMeso(caught_meso, true);
+                SendPacket(ResCWvsContext.fishingUpdate((byte) 1, caught_meso));
+            }
+            case 1 -> // EXP
+            {
+                int required_exp = TacosSharedExpTable.getExpNeededForLevel(level);
+                int caught_exp = Randomizer.rand(required_exp / ((3 - bait_level) * 100), required_exp / ((3 - bait_level) * 10));
+                if (caught_exp == 0) {
+                    caught_exp += 1;
+                }
+                ((MapleCharacter) this).gainExp(caught_exp, true, false, true);
+                SendPacket(ResCWvsContext.fishingUpdate((byte) 2, caught_exp));
+            }
+            default -> {
+                if (!WzDataStorage.ITEM.check(randval)) {
+                    DebugMsg("Fishing : invalid reward, " + randval);
+                    return false;
+                }
+                MapleInventoryManipulator.addById(client, randval, (short) 1);
+                SendPacket(ResCWvsContext.fishingUpdate((byte) 0, randval));
+            }
+        }
+
+        this.map.splitSendPacket(this, ResCUser.UserFishingSuccess(this));
+        return true;
+    }
+
+    public boolean startFishing() {
+        for (Item item : getInventory(MapleInventoryType.CASH).list()) {
+            int item_id = item.getItemId();
+            if (item_id == 0 && item_id == 5340000) {
+                this.fishing_rod_id = item_id;
+            }
+            if (item_id == 5340001) {
+                this.fishing_rod_id = item_id;
+                break;
+            }
+        }
+
+        this.fishing_hit_interval = (fishing_rod_id == 5340001) ? 10000 : 30000;
+        this.fishing_chair_id = ((MapleCharacter) this).getChair();
+        this.task_fishing.reset();
+        return true;
+    }
+
+    public void stopFishing() {
+        this.fishing_rod_id = 0;
+        this.fishing_chair_id = 0;
     }
 
     // aran
@@ -1347,7 +1430,10 @@ public class TacosCharacter extends TacosPlayer {
                 removeSummon(summon);
             }
         }
-
+        // fishing.
+        if (this.task_fishing.check(time_current, this.fishing_hit_interval)) {
+            fishingHit();
+        }
         return true;
     }
 

@@ -28,7 +28,6 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.Timer.EventTimer;
 import odin.server.life.MapleLifeFactory;
 
 public class AramiaFireWorks {
@@ -78,26 +77,12 @@ public class AramiaFireWorks {
 
     private void broadcastEvent(MapleCharacter player) {
         broadcastServer(player, KEG_ID);
-        // Henesys Park
-        EventTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public final void run() {
-                startEvent(player.findMap(100000200));
-            }
-        }, 10000);
+        startEvent(player.findMap(100000200));
     }
 
     private final void startEvent(final MapleMap map) {
         map.startMapEffect("Who's going crazy with the fireworks?", 5121010);
-
-        EventTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public final void run() {
-                spawnMonster(map);
-            }
-        }, 5000);
+        spawnMonster(map);
     }
 
     private void spawnMonster(MapleMap map) {
@@ -146,26 +131,13 @@ public class AramiaFireWorks {
 
     private void broadcastSun(MapleCharacter player) {
         broadcastServer(player, SUN_ID);
-        // Henesys Park
-        EventTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public final void run() {
-                startSun(player.findMap(970010000));
-            }
-        }, 10000);
+        startSun(player.findMap(970010000));
     }
 
     private final void startSun(final MapleMap map) {
         map.startMapEffect("The tree is bursting with sunshine!", 5121010);
         for (int i = 0; i < 3; i++) {
-            EventTimer.getInstance().schedule(new Runnable() {
-
-                @Override
-                public final void run() {
-                    spawnItem(map);
-                }
-            }, 5000 + (i * 10000));
+            spawnItem(map);
         }
     }
 
@@ -215,25 +187,13 @@ public class AramiaFireWorks {
 
     private void broadcastDec(MapleCharacter player) {
         broadcastServer(player, DEC_ID);
-        EventTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public final void run() {
-                startDec(player.findMap(555000000));
-            }
-        }, 10000); //no msg
+        startDec(player.findMap(555000000));
     }
 
     private final void startDec(final MapleMap map) {
         map.startMapEffect("The tree is bursting with snow!", 5120000);
         for (int i = 0; i < 3; i++) {
-            EventTimer.getInstance().schedule(new Runnable() {
-
-                @Override
-                public final void run() {
-                    spawnDec(map);
-                }
-            }, 5000 + (i * 10000));
+            spawnDec(map);
         }
     }
 

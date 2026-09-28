@@ -310,7 +310,7 @@ public final class MapleMap extends TacosMap {
 
         @Override
         public void run() {
-            if (mapitem != null && mapitem == findDrop(mapitem.getObjectId())) {
+            if (mapitem != null && mapitem == getDropByOid(mapitem.getObjectId())) {
                 removeDrop(mapitem.getObjectId());
                 broadcastMessage(ResCDropPool.DropLeaveField(mapitem, DropLeaveType.EXPIRED));
                 reactor.hitReactor(client);

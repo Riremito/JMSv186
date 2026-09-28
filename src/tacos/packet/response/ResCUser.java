@@ -20,6 +20,7 @@ package tacos.packet.response;
 
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
+import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
@@ -151,11 +152,10 @@ public class ResCUser {
     }
 
     // CUser::OnShowPQReward
-    // JMS
-    public static ServerPacket fishingCaught(int chrid) {
+    public static ServerPacket UserFishingSuccess(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
 
-        sp.Encode4(chrid);
+        sp.Encode4(chr.getId());
         return sp;
     }
 }

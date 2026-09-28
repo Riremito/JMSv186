@@ -409,14 +409,8 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (HiredMerchant employee : this.hiredMerchants.values()) {
-            int number = split.find(employee.getPosition().x, employee.getPosition().y);
-            if (split.getTotal() < number) {
-                continue;
-            }
-            if (area_states.get(number) == MapSplitState.ACTIVE) {
-                chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
-            }
+        for (HiredMerchant employee : this.merchants.values()) {
+            chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
         }
         // drop
         for (MapleMapItem drop : this.drops.values()) {
@@ -587,17 +581,8 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (HiredMerchant employee : this.hiredMerchants.values()) {
-            int number = split.find(employee.getPosition().x, employee.getPosition().y);
-            if (split.getTotal() < number) {
-                continue;
-            }
-            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
-                chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
-            }
-            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(employee));
-            }
+        for (HiredMerchant employee : this.merchants.values()) {
+            // none.
         }
         // drop
         for (MapleMapItem drop : this.drops.values()) {
@@ -719,6 +704,10 @@ public class TacosMap extends TacosMapData {
     }
 
     public void linkedObjectLeaveField(TacosCharacter chr) {
+        // pet.
+        for (TacosPet pet : chr.getPets()) {
+            removePet(pet);
+        }
         // summon.
         for (TacosSummon summon : chr.getSummons()) {
             removeSummon(summon);
@@ -837,10 +826,12 @@ public class TacosMap extends TacosMapData {
             summon.setObjectId();
         }
         this.summons.put(summon.getObjectId(), summon);
+        broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
     }
 
     public void removeSummon(TacosSummon summon) {
         this.summons.remove(summon.getObjectId());
+        broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
     public List<TacosSummon> getAllSummons() {
@@ -855,7 +846,7 @@ public class TacosMap extends TacosMapData {
         return this.summons.get(object_id);
     }
 
-    // mob
+    // monster.
     private LinkedHashMap<Integer, MapleMonster> monsters = new LinkedHashMap<>();
 
     public MapleMonster getMonsterByOid(int object_id) {
@@ -1116,11 +1107,12 @@ public class TacosMap extends TacosMapData {
             mist.setObjectId();
         }
         this.mists.put(mist.getObjectId(), mist);
-        broadcastMessage(ResCAffectedAreaPool.AffectedAreaCreated(mist));
+        splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaCreated(mist));
     }
 
-    public boolean removeMist(int object_id) {
-        this.mists.remove(object_id);
+    public boolean removeMist(MapleMist mist) {
+        this.mists.remove(mist.getObjectId());
+        splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaRemoved(mist));
         return true;
     }
 
@@ -1133,28 +1125,31 @@ public class TacosMap extends TacosMapData {
     }
 
     // merchant.
-    private LinkedHashMap<Integer, HiredMerchant> hiredMerchants = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, HiredMerchant> merchants = new LinkedHashMap<>();
 
-    public void addHiredMerchant(HiredMerchant merchant) {
-        this.runningOid++;
-        merchant.setObjectId(this.runningOid);
-        this.hiredMerchants.put(merchant.getObjectId(), merchant);
+    public void addMerchant(HiredMerchant merchant) {
+        if (merchant.getObjectId() == 0) {
+            merchant.setObjectId();
+        }
+        this.merchants.put(merchant.getObjectId(), merchant);
+        broadcastMessage(ResCEmployeePool.EmployeeEnterField(merchant));
     }
 
-    public boolean removeHiredMerchant(int object_id) {
-        return this.hiredMerchants.remove(object_id) != null;
+    public void removeMerchant(HiredMerchant merchant) {
+        this.merchants.remove(merchant.getObjectId());
+        broadcastMessage(ResCEmployeePool.EmployeeLeaveField(merchant));
     }
 
-    public List<HiredMerchant> getAllHiredMerchants() {
+    public List<HiredMerchant> getAllMerchants() {
         ArrayList<HiredMerchant> ret = new ArrayList<>();
-        for (HiredMerchant merchant : this.hiredMerchants.values()) {
+        for (HiredMerchant merchant : this.merchants.values()) {
             ret.add(merchant);
         }
         return ret;
     }
 
-    public HiredMerchant getHiredMerchantByOid(int object_id) {
-        return this.hiredMerchants.get(object_id);
+    public HiredMerchant getMerchantByOid(int object_id) {
+        return this.merchants.get(object_id);
     }
 
     // mini game.
@@ -1208,7 +1203,7 @@ public class TacosMap extends TacosMapData {
     }
 
     // drop item.
-    private LinkedHashMap<Integer, MapleMapItem> drops = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, MapleMapItem> drops = new LinkedHashMap<>();
 
     public void addDrop(MapleMapItem drop) {
         if (drop.getObjectId() == 0) {
@@ -1222,11 +1217,11 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public MapleMapItem findDrop(int object_id) {
+    public MapleMapItem getDropByOid(int object_id) {
         return this.drops.get(object_id);
     }
 
-    public List<MapleMapItem> getAllItems() {
+    public List<MapleMapItem> getAllDrops() {
         ArrayList<MapleMapItem> ret = new ArrayList<>();
         for (MapleMapItem drop : this.drops.values()) {
             ret.add(drop);
@@ -1310,6 +1305,7 @@ public class TacosMap extends TacosMapData {
     public void addDynamicPortal(TacosDynamicPortal dynamic_portal) {
         dynamic_portal.setObjectId();
         this.dynamicPortals.put(dynamic_portal.getObjectId(), dynamic_portal);
+        splitSendPacket(dynamic_portal, Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
     }
 
     public boolean removeDynamicPortal(int object_id) {
@@ -1344,11 +1340,6 @@ public class TacosMap extends TacosMapData {
             }
         }
         return null;
-    }
-
-    public void spawnDynamicPortal(TacosDynamicPortal dynamic_portal) {
-        addDynamicPortal(dynamic_portal);
-        broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
     }
 
     // reactor.
@@ -1511,7 +1502,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void returnEverLastItem(final MapleCharacter chr) {
-        for (final Object o : getAllItems()) {
+        for (final Object o : getAllDrops()) {
             final MapleMapItem item = ((MapleMapItem) o);
             if (item.getOwnerId() == chr.getId()) {
                 broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.DropLeaveType.NORMAL, chr, 0), item.getPosition());
@@ -1683,7 +1674,7 @@ public class TacosMap extends TacosMapData {
         ArrayList<MapSplitState> area_states = getSplit().getArea(player.getPosition().x, player.getPosition().y, MapSplitState.ACTIVE);
         // drop removal.
         if (this.task_drop_removal.check(time_current, 5000)) {
-            for (MapleMapItem mmi : getAllItems()) {
+            for (MapleMapItem mmi : getAllDrops()) {
                 if (mmi.checkTime(time_current, DeveloperMode.DM_TEST.get() ? 10000 : 120000)) {
                     removeDrop(mmi.getObjectId());
                     broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
@@ -1750,8 +1741,7 @@ public class TacosMap extends TacosMapData {
                 // mist removal.
                 if (mist.checkTime(time_current, mist.getDuration())) {
                     player.DebugMsg("Mist : removed, " + mist.getObjectId());
-                    removeMist(mist.getObjectId());
-                    splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaRemoved(mist));
+                    removeMist(mist);
                 }
             }
         }

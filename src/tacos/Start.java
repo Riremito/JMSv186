@@ -101,11 +101,8 @@ public class Start {
         }
         DQ_Accounts.resetLoginState();
 
-        EtcTimer.getInstance().start();
         MapTimer.getInstance().start();
-        MobTimer.getInstance().start();
         CloneTimer.getInstance().start();
-        EventTimer.getInstance().start();
 
         /*
         DebugLogger.SetupLog("INFO");
@@ -151,10 +148,7 @@ public class Start {
                     } catch (SQLException ex) {
                     }
                     MapTimer.getInstance().stop();
-                    MobTimer.getInstance().stop();
                     CloneTimer.getInstance().stop();
-                    EventTimer.getInstance().stop();
-                    EtcTimer.getInstance().stop();
                     DebugLogger.InfoLog("shutdown OK!");
                 }
         ));

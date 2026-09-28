@@ -248,5 +248,4 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             return;
         }
     }
-
 }

@@ -105,7 +105,6 @@ import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.packet.request.sub.ReqSub_Admin;
 import tacos.packet.request.sub.ReqSub_FriendRequest;
 import tacos.packet.response.ResCDropPool;
-import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -612,7 +611,6 @@ public class ReqCUser {
                 short y = cp.Decode2();
                 TacosDynamicPortal dynamic_portal = new TacosDynamicPortal(item_id, 749050200, x, y);
                 map.addDynamicPortal(dynamic_portal);
-                map.broadcastMessage(Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
                 chr.sendStatChanged(true);
                 return true;
             }
@@ -948,9 +946,8 @@ public class ReqCUser {
         boolean is_cancel = (map_chair_id == -1);
 
         if (is_cancel) {
-            // 釣り
             if (chr.getChair() == 3011000) {
-                chr.cancelFishingTask();
+                chr.stopFishing();
             }
             chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActivePortableChair(chr.getId(), 0), false);
         }
@@ -968,21 +965,8 @@ public class ReqCUser {
             return false;
         }
 
-        // 釣り
         if (item_id == 3011000) {
-            int fishing_level = 0;
-            for (Item item : chr.getInventory(MapleInventoryType.CASH).list()) {
-                if (fishing_level <= 1 && item.getItemId() == 5340000) {
-                    fishing_level = 1;
-                }
-                if (item.getItemId() == 5340001) {
-                    fishing_level = 2;
-                    break;
-                }
-            }
-            if (fishing_level > 0) {
-                chr.startFishingTask(fishing_level == 2);
-            }
+            chr.startFishing();
         }
 
         chr.setChair(item_id);
@@ -1067,7 +1051,7 @@ public class ReqCUser {
         // meso explosion.
         if (is_meso_explosion) {
             for (int drop_id : attack.allMeso) {
-                MapleMapItem mmi = map.findDrop(drop_id);
+                MapleMapItem mmi = map.getDropByOid(drop_id);
                 if (mmi == null || mmi.getMeso() <= 0) {
                     DebugLogger.ErrorLog("attack : err meso explosion.");
                     continue;

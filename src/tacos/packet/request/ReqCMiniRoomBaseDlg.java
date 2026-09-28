@@ -30,7 +30,6 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMiniRoomProtocol;
-import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
@@ -47,6 +46,7 @@ import tacos.packet.ops.OpsMiniRoomType;
  */
 public class ReqCMiniRoomBaseDlg {
 
+    // CMiniRoomBaseDlg::OnPacketBase
     public static boolean OnMiniRoom(MapleCharacter chr, MapleMap map, ClientPacket cp) {
         byte protocol_req = cp.Decode1();
 
@@ -141,7 +141,7 @@ public class ReqCMiniRoomBaseDlg {
                         HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(merch);
                         chr.setRemoteStore(merch);
-                        chr.getMap().addHiredMerchant(merch);
+                        chr.getMap().addMerchant(merch);
                         chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
                         return true;
                     }
@@ -190,7 +190,7 @@ public class ReqCMiniRoomBaseDlg {
                 // old code
                 {
                     int miniroom_id = cp.Decode4();
-                    Object ob = chr.getMap().getHiredMerchantByOid(miniroom_id);
+                    Object ob = chr.getMap().getMerchantByOid(miniroom_id);
                     if (ob == null) {
                         ob = chr.getMap().getMiniGameByOid(miniroom_id);
                     }
@@ -308,16 +308,15 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Balloon: {
-                final Object shop = chr.getPlayerShop();
+                Object shop = chr.getPlayerShop();
                 if (shop != null && ShopDispatch.isOwner(shop, chr) && ShopDispatch.getShopType(shop) < 3) {
                     if (chr.getMap().allowPersonalShop()) {
 
                         if (ShopDispatch.getShopType(shop) == 1) {
-                            final HiredMerchant merchant = (HiredMerchant) shop;
+                            HiredMerchant merchant = (HiredMerchant) shop;
                             merchant.setStoreid(chr.getChannelServer().addMerchant(merchant));
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
-                            chr.getMap().broadcastMessage(ResCEmployeePool.EmployeeEnterField(merchant));
                             chr.setPlayerShop(null);
 
                         } else if (ShopDispatch.getShopType(shop) == 2) {
@@ -807,14 +806,13 @@ public class ReqCMiniRoomBaseDlg {
             return false;
         }
 
-        final HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
+        HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
         if (merchant == null) {
             // test
             //chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
 
             HiredMerchant hm = new HiredMerchant(chr, 5030000, "DebugHiredMarchant");
-            chr.getMap().addHiredMerchant(hm);
-            chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
+            chr.getMap().addMerchant(hm);
             return false;
         }
 
@@ -832,5 +830,4 @@ public class ReqCMiniRoomBaseDlg {
         chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
         return true;
     }
-
 }

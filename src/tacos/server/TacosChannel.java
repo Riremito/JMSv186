@@ -201,7 +201,7 @@ public class TacosChannel extends TacosServer {
     public List<HiredMerchant> searchMerchant(int item_id) {
         List<HiredMerchant> list = new LinkedList<>();
         for (HiredMerchant hm : this.merchants.values()) {
-            if (hm.searchItem(item_id).size() > 0) {
+            if (!hm.searchItem(item_id).isEmpty()) {
                 list.add(hm);
             }
         }

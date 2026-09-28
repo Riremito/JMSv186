@@ -85,7 +85,7 @@ public class ReqCDropPool {
     }
 
     public static boolean OnDropPickUpRequest(MapleCharacter chr, int object_id) {
-        MapleMapItem mapitem = chr.getMap().findDrop(object_id);
+        MapleMapItem mapitem = chr.getMap().getDropByOid(object_id);
         if (mapitem == null) {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;
