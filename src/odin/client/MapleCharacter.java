@@ -68,7 +68,6 @@ import tacos.packet.ops.OpsQuestRecordMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleShop;
 import odin.server.MapleStatEffect;
 import odin.server.MapleTrade;
@@ -899,44 +898,6 @@ public class MapleCharacter extends TacosCharacter {
         if (party != null) {
             getWorld().getParty().updateParty(party.getId(), PartyOperation.SILENT_UPDATE, new MaplePartyCharacter(this));
         }
-    }
-
-    // removeFromSlot like
-    private boolean useItemDone(MapleInventoryType type, Item item_used, short item_quantity) {
-        boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
-
-        getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
-
-        if (item_used.getQuantity() == 0 && !isRecharge) {
-            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().remove(type, item_used.getPosition()).build()));
-        } else {
-            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, (Item) item_used).build()));
-        }
-
-        return true;
-    }
-
-    // removeFromSlot like
-    public Runnable checkItemSlot(short item_slot, int item_id, short item_quantity) {
-        MapleInventoryType type = GameConstants.getInventoryType(item_id);
-        Item item_used = getInventory(type).getItem(item_slot);
-
-        if (item_used == null) {
-            return null;
-        }
-        if (item_used.getItemId() != item_id) {
-            return null;
-        }
-        if (item_used.getQuantity() < item_quantity) {
-            return null;
-        }
-
-        Runnable use_item = () -> useItemDone(type, item_used, item_quantity);
-        return use_item;
-    }
-
-    public Runnable checkItemSlot(short item_slot, int item_id) {
-        return checkItemSlot(item_slot, item_id, (short) 1);
     }
 
     public MapleShop getShop() {
@@ -2603,32 +2564,32 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public final boolean hasEquipped(int itemid) {
-        return inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(itemid) >= 1;
+    public boolean hasEquipped(int item_id) {
+        return inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(item_id) >= 1;
     }
 
     // used by script
-    public final boolean haveItem(int itemid, int quantity, boolean checkEquipped, boolean greaterOrEquals) {
-        final MapleInventoryType type = GameConstants.getInventoryType(itemid);
-        int possesed = inventory[type.ordinal()].countById(itemid);
+    public boolean haveItem(int item_id, int quantity) {
+        return haveItem(item_id, quantity, true, true);
+    }
+
+    // used by script
+    public boolean haveItem(int item_id) {
+        return haveItem(item_id, 1, true, true);
+    }
+
+    // used by script
+    public boolean haveItem(int item_id, int quantity, boolean checkEquipped, boolean greaterOrEquals) {
+        MapleInventoryType type = GameConstants.getInventoryType(item_id);
+        int possesed = inventory[type.ordinal()].countById(item_id);
         if (checkEquipped && type == MapleInventoryType.EQUIP) {
-            possesed += inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(itemid);
+            possesed += inventory[MapleInventoryType.EQUIPPED.ordinal()].countById(item_id);
         }
         if (greaterOrEquals) {
             return possesed >= quantity;
         } else {
             return possesed == quantity;
         }
-    }
-
-    // used by script
-    public final boolean haveItem(int itemid, int quantity) {
-        return haveItem(itemid, quantity, true, true);
-    }
-
-    // used by script
-    public final boolean haveItem(int itemid) {
-        return haveItem(itemid, 1, true, true);
     }
 
     // used by script

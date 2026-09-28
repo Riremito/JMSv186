@@ -96,7 +96,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
     ORP_InvalidStonePosition_By33,
     MGP_TurnUpCard,
     MGP_MatchCard,
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 
@@ -127,8 +127,26 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsMiniRoomProtocol ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
         if (Config.LessOrEqual(Region.JMS, 147)) {
+            clear();
+            MRP_Create.set(0);
+            MRP_CreateResult.set(1);
+            MRP_Invite.set(2);
+            MRP_InviteResult.set(3);
+            MRP_Enter.set(4);
+            MRP_EnterResult.set(5);
+            MRP_Chat.set(6);
+            MRP_GameMessage.set(7);
+            MRP_UserChat.set(8);
+            MRP_Avatar.set(9);
+            MRP_Leave.set(10);
             ESP_PutItem.set(29); // アイテム追加
             ESP_BuyItem.set(30);
             ESP_BuyResult.set(31);

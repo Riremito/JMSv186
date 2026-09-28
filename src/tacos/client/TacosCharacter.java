@@ -78,6 +78,7 @@ import tacos.packet.ops.OpsFriend;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_Friend;
+import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.portal.ArdentmillPortal;
 import tacos.script.portal.FreeMarketPortal;
 import tacos.server.TacosChannel;
@@ -549,6 +550,61 @@ public class TacosCharacter extends TacosPlayer {
         this.tama = tama;
     }
 
+    // inventory.
+    protected MapleInventory[] inventory;
+
+    private MapleInventory[] getInventorys() {
+        return this.inventory;
+    }
+
+    public MapleInventory getInventory(MapleInventoryType type) {
+        return this.inventory[type.ordinal()];
+    }
+
+    private ArrayList<Item> getAllItems() {
+        ArrayList<Item> ret = new ArrayList<>();
+        for (MapleInventory iv : getInventorys()) {
+            ret.addAll(iv.list());
+        }
+        return ret;
+    }
+
+    public Runnable checkItemSlot(short item_slot, int item_id) {
+        return checkItemSlot(item_slot, item_id, (short) 1);
+    }
+
+    private Runnable checkItemSlot(short item_slot, int item_id, short item_quantity) {
+        MapleInventoryType type = GameConstants.getInventoryType(item_id);
+        Item item_used = getInventory(type).getItem(item_slot);
+
+        if (item_used == null) {
+            return null;
+        }
+        if (item_used.getItemId() != item_id) {
+            return null;
+        }
+        if (item_used.getQuantity() < item_quantity) {
+            return null;
+        }
+
+        Runnable use_item = () -> useItemDone(type, item_used, item_quantity);
+        return use_item;
+    }
+
+    private boolean useItemDone(MapleInventoryType type, Item item_used, short item_quantity) {
+        boolean isRecharge = GameConstants.isRechargable(item_used.getItemId());
+
+        getInventory(type).removeItem(item_used.getPosition(), item_quantity, isRecharge);
+
+        if (item_used.getQuantity() == 0 && !isRecharge) {
+            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().remove(type, item_used.getPosition()).build()));
+        } else {
+            SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, (Item) item_used).build()));
+        }
+
+        return true;
+    }
+
     // guild
     protected MapleGuildCharacter mgc;
     protected int guildid = 0;
@@ -743,25 +799,6 @@ public class TacosCharacter extends TacosPlayer {
 
     public void setMarriageItemId(int marriageItemId) {
         this.marriageItemId = marriageItemId;
-    }
-
-    protected MapleInventory[] inventory;
-
-    public final MapleInventory[] getInventorys() {
-        return this.inventory;
-    }
-
-    public MapleInventory getInventory(MapleInventoryType type) {
-        return this.inventory[type.ordinal()];
-    }
-
-    public ArrayList<Item> getAllItems() {
-        ArrayList<Item> items = new ArrayList<>();
-        for (MapleInventory iv : getInventorys()) {
-            items.addAll(iv.list());
-        }
-
-        return items;
     }
 
     public void equipChanged() {

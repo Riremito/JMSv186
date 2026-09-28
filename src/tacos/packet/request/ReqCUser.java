@@ -209,8 +209,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserRemoteShopOpenRequest: {
-                short item_slot = cp.Decode2();
-                ReqCMiniRoomBaseDlg.RemoteStore(chr, item_slot);
+                OnUserRemoteShopOpenRequest(chr, cp);
                 return true;
             }
             case CP_UserScriptMessageAnswer: {
@@ -1358,6 +1357,13 @@ public class ReqCUser {
 
         chr.DebugMsg("OnUserSelectNpc : " + npc.getId());
         return TacosScriptNPC.getInstance().start(client, npc.getId());
+    }
+
+    public static boolean OnUserRemoteShopOpenRequest(MapleCharacter chr, ClientPacket cp) {
+        short item_slot = cp.Decode2();
+
+        ReqCMiniRoomBaseDlg.remoteStore(chr, item_slot);
+        return true;
     }
 
     public static boolean OnUserGivePopularityRequest(MapleCharacter chr, ClientPacket cp) {

@@ -326,7 +326,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopBlockPlayer(final byte slot) {
+    public static ServerPacket shopBlockPlayer(byte slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
@@ -337,7 +337,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopErrorMessage(final int error, final int type) {
+    public static ServerPacket shopErrorMessage(int error, int type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
@@ -365,7 +365,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket MerchantBlackListView(final List<String> blackList) {
+    public static ServerPacket MerchantBlackListView(List<String> blackList) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.ESP_DeliverBlackList.get());
@@ -428,8 +428,8 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getHiredMerch(final MapleCharacter chr, final HiredMerchant merch, final boolean firstTime) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+    public static ServerPacket getHiredMerch(MapleCharacter chr, HiredMerchant merch, boolean firstTime) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(5);
         sp.Encode1(5);
@@ -437,15 +437,18 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode2(merch.getVisitorSlot(chr));
         sp.Encode4(merch.getItemId());
         sp.EncodeStr("雇用商人");
-        for (final SimpleImmutableEntry<Byte, MapleCharacter> storechr : merch.getVisitors()) {
+
+        for (SimpleImmutableEntry<Byte, MapleCharacter> storechr : merch.getVisitors()) {
             sp.Encode1(storechr.getKey());
             sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getValue()));
             sp.EncodeStr(storechr.getValue().getName());
             sp.Encode2(storechr.getValue().getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87));
         }
+
         sp.Encode1(-1);
         sp.Encode2(0);
         sp.EncodeStr(merch.getOwnerName());
+
         if (merch.isOwner(chr)) {
             sp.Encode4(merch.getTimeLeft());
             sp.Encode1(firstTime ? 1 : 0);
@@ -458,16 +461,19 @@ public class ResCMiniRoomBaseDlg {
             }
             sp.Encode4(merch.getMeso());
         }
+
         sp.EncodeStr(merch.getDescription());
         sp.Encode1(10);
         sp.Encode4(merch.getMeso()); // meso
         sp.Encode1(merch.getItems().size());
-        for (final MaplePlayerShopItem item : merch.getItems()) {
+
+        for (MaplePlayerShopItem item : merch.getItems()) {
             sp.Encode2(item.bundles);
             sp.Encode2(item.item.getQuantity());
             sp.Encode4(item.price);
             sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item.item));
         }
+
         return sp;
     }
 
