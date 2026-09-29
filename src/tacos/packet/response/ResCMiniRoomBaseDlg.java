@@ -616,9 +616,12 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.PSP_Refresh.get());
+
+        // CEntrustedShopDlg::OnRefresh
         if (ShopDispatch.getShopType(shop) == 1) {
             sp.Encode4(0);
         }
+        // CPersonalShopDlg::OnRefresh
         sp.Encode1(ShopDispatch.getItems(shop).size());
         for (final MaplePlayerShopItem item : ShopDispatch.getItems(shop)) {
             sp.Encode2(item.bundles);

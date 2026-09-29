@@ -19,6 +19,7 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
 import odin.handling.world.Alliance;
@@ -334,6 +335,32 @@ public class TacosWorld {
 
         broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("[お祝い] " + player.getPlayerNameWithMedal() + "様がレベル" + max_level + "になりました。おめでとうございます。").build()));
         return true;
+    }
+
+    // miniroom.
+    private final LinkedHashMap<Integer, TacosRoom> rooms = new LinkedHashMap<>();
+
+    public TacosRoom getRoom(int room_id) {
+        return this.rooms.get(room_id);
+    }
+
+    public TacosRoom createRoom() {
+        TacosRoom room = new TacosRoom();
+        this.rooms.put(room.getId(), room);
+        return room;
+    }
+
+    public void removeRoom(int room_id) {
+        this.rooms.remove(room_id);
+    }
+
+    public TacosRoom findRoom(MapleCharacter player) {
+        for (TacosRoom room : this.rooms.values()) {
+            if (room.findPlayer(player)) {
+                return room;
+            }
+        }
+        return null;
     }
 
     // update task.

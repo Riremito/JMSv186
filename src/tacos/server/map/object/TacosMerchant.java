@@ -26,6 +26,7 @@ import odin.client.MapleCharacter;
 import odin.server.shops.HiredMerchant;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
+import tacos.server.TacosRoom;
 
 /**
  *
@@ -37,6 +38,17 @@ public class TacosMerchant extends TacosMapObject {
     private final MapleCharacter[] visitors = new MapleCharacter[4];
     private final List<String> visitors_names = new LinkedList<>();
     private final List<String> blacklist = new LinkedList<>();
+    private final int room_id;
+
+    public TacosMerchant(MapleCharacter owner) {
+        TacosRoom room = owner.getWorld().createRoom();
+        room.setMerchant(this);
+        this.room_id = room.getId();
+    }
+
+    public int getRoomId() {
+        return this.room_id;
+    }
 
     public boolean enter(MapleCharacter visitor) {
         if (getOwnerId() == visitor.getId()) {

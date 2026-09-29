@@ -39,6 +39,9 @@ import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMiniRoomType;
+import tacos.server.TacosRoom;
+import tacos.server.TacosWorld;
+import tacos.server.map.object.TacosMerchant;
 
 /**
  *
@@ -50,6 +53,7 @@ public class ReqCMiniRoomBaseDlg {
     public static boolean OnMiniRoom(MapleCharacter chr, MapleMap map, ClientPacket cp) {
         byte protocol_req = cp.Decode1();
 
+        TacosWorld world = chr.getWorld();
         switch (OpsMiniRoomProtocol.find(protocol_req)) {
             case MRP_Create: {
                 // new code.
@@ -169,12 +173,15 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Enter: {
-                int miniroom_id = cp.Decode4();
-
+                int object_id = cp.Decode4();
                 // 雇用商人
-                HiredMerchant merchant = chr.getMap().getMerchantByOid(miniroom_id);
+                HiredMerchant merchant = chr.getMap().getMerchantByOid(object_id);
                 if (merchant != null) {
-                    merchant.enter(chr);
+                    TacosRoom room = world.getRoom(merchant.getRoomId());
+                    if (room != null) {
+                        room.addPlayer(chr);
+                        merchant.enter(chr);
+                    }
                     return true;
                 }
 
@@ -198,10 +205,11 @@ public class ReqCMiniRoomBaseDlg {
                 chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStatic(hm, chr));
                  */
                 // old code
+                /*
                 {
-                    Object ob = chr.getMap().getMiniGameByOid(miniroom_id);
+                    Object ob = chr.getMap().getMiniGameByOid(object_id);
                     if (ob == null) {
-                        ob = chr.getMap().getPlayerShopByOid(miniroom_id);
+                        ob = chr.getMap().getPlayerShopByOid(object_id);
                     }
 
                     if ((ob instanceof MaplePlayerShop || ob instanceof MapleMiniGame) && chr.getPlayerShop() == null) {
@@ -235,6 +243,7 @@ public class ReqCMiniRoomBaseDlg {
                         }
                     }
                 }
+                 */
                 return true;
             }
             case MRP_Chat: {
@@ -262,6 +271,15 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Leave: {
+                TacosRoom room = world.findRoom(chr);
+                if (room != null) {
+                    TacosMerchant merchant = room.getMerchant();
+                    if (merchant != null) {
+                        merchant.leave(chr);
+                        room.removePlayer(chr);
+                    }
+                    return true;
+                }
                 if (chr.getTrade() != null) {
                     MapleTrade.cancelTrade(chr.getTrade(), chr.getClient());
                     return true;
@@ -270,19 +288,14 @@ public class ReqCMiniRoomBaseDlg {
                 if (ips == null) {
                     return true;
                 }
-
-                if (ips instanceof HiredMerchant) {
-                    HiredMerchant merchant = (HiredMerchant) ips;
-                    merchant.leave(chr);
-                    return true;
-                }
-
+                /*
                 if (!ShopDispatch.isAvailable(ips) || (ShopDispatch.isOwner(ips, chr) && ShopDispatch.getShopType(ips) != 1)) {
                     ShopDispatch.closeShop(ips, false, ShopDispatch.isAvailable(ips), 3);
                 } else {
                     ShopDispatch.removeVisitor(ips, chr);
                 }
                 chr.setPlayerShop(null);
+                 */
                 return true;
             }
             case MRP_Balloon: {
@@ -480,13 +493,11 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case ESP_GoOut: {
-                // 雇用商人 "商店から出る" 間違ってるかも?
-                Object ips = chr.getPlayerShop();
-                if (ips == null) {
-                    return true;
-                }
-                if (ips instanceof HiredMerchant) {
-                    HiredMerchant merchant = (HiredMerchant) ips;
+                TacosRoom room = world.findRoom(chr);
+                if (room != null) {
+                    TacosMerchant merchant = room.getMerchant();
+                    if (merchant != null) {
+                    }
                     return true;
                 }
                 return true;

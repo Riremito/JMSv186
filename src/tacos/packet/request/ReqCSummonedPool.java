@@ -18,21 +18,15 @@
  */
 package tacos.packet.request;
 
-import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.SkillFactory;
-import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCSummonedPool;
-import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
@@ -157,34 +151,21 @@ public class ReqCSummonedPool {
                 int damage = cp.Decode4();
 
                 MapleMonster mob = map.getMonsterByOid(mob_object_id);
-
                 if (mob == null) {
                     continue;
                 }
-
                 allDamage.add(new SummonAttackEntry(mob, damage));
             }
 
-            map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()));
+            map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), chr.getId());
 
-            Skill summonSkill = SkillFactory.getSkill(summon.getSkillID());
-            MapleStatEffect summonEffect = summonSkill.getEffect(summon.getSLV());
-
-            if (summonEffect == null) {
-                return;
-            }
             for (SummonAttackEntry attackEntry : allDamage) {
                 int toDamage = attackEntry.getDamage();
                 MapleMonster mob = attackEntry.getMonster();
-
-                if (toDamage > 0 && !summonEffect.getMonsterStati().isEmpty()) {
-                    if (summonEffect.makeChanceResult()) {
-                        for (Map.Entry<MonsterStatus, Integer> z : summonEffect.getMonsterStati().entrySet()) {
-                            mob.applyStatus(chr, new MonsterStatusEffect(z.getKey(), z.getValue(), summonSkill.getId(), null, false), summonEffect.isPoison(), 4000, false);
-                        }
-                    }
-                }
                 mob.damage(chr, toDamage, true);
+            }
+            if (summon.getSkill() == OpsSkill.VALKYRIE_GABIOTA) {
+                chr.removeSummon(summon);
             }
             return;
         }

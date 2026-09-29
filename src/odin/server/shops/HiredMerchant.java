@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
-import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosWorld;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -65,6 +64,7 @@ public class HiredMerchant extends TacosMerchant {
 
     @SuppressWarnings("unchecked")
     public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
+        super(owner);
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
         this.owneraccount = owner.getAccountId();
