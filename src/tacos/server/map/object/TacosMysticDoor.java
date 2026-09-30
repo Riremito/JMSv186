@@ -21,7 +21,6 @@ package tacos.server.map.object;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import odin.server.Randomizer;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosDoorSkill;
@@ -34,25 +33,40 @@ import tacos.server.map.TacosPortal;
  */
 public class TacosMysticDoor extends TacosMapObject {
 
-    private final int nState;
+    private int nState = 0;
     private final int town_map_id;
     private final int field_map_id;
     private final int skill_id;
     private Point field_pos = new Point();
     private TacosPortal townPortal = null;
+    private MapleMap map;
+    private int time;
 
-    public TacosMysticDoor(TacosCharacter owner, int nState, TacosDoorSkill tds) {
-        this.nState = nState;
+    public TacosMysticDoor(MapleMap map, TacosCharacter owner, TacosDoorSkill tds) {
         this.skill_id = tds.getId();
         this.town_map_id = owner.getMap().getReturnMapId();
         this.field_map_id = owner.getMap().getId();
         setPosition(owner.getPosition());
         setFieldPosition(owner.getPosition());
         setOwnerId(owner.getId());
+        this.map = map;
+        this.time = tds.getTime() * 1000;
+    }
+
+    public MapleMap getMap() {
+        return this.map;
+    }
+
+    public int getTime() {
+        return this.time;
     }
 
     public int getState() {
         return this.nState;
+    }
+
+    public void setState(int nState) {
+        this.nState = nState;
     }
 
     public int getTownMapId() {
@@ -101,7 +115,7 @@ public class TacosMysticDoor extends TacosMapObject {
         for (TacosPortal portal : map_town.getPortals()) {
             if (portal.getType() == TacosPortal.DOOR_PORTAL) {
                 freePortals.add(portal);
-                DebugLogger.DebugLog("getFreePortal : " + (byte) portal.getId());
+                DebugLogger.DebugLog("getFreePortal : " + (byte) portal.getMysticDoorId());
             }
         }
         // already used.
@@ -112,6 +126,6 @@ public class TacosMysticDoor extends TacosMapObject {
             return null;
         }
 
-        return freePortals.get(Randomizer.nextInt(freePortals.size()));
+        return freePortals.get(0);
     }
 }

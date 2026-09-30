@@ -56,8 +56,7 @@ public class TacosPortal {
     }
 
     public int getMysticDoorId() {
-        int val = (int) ((byte) this.id);
-        return val + 128;
+        return 0x80 + this.id;
     }
 
     public String getName() {
