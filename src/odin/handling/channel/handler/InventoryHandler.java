@@ -86,7 +86,7 @@ public class InventoryHandler {
                         map = chr.findMap(i);
 
                         if (map.getCharactersSize() == 0) {
-                            chr.changeMap(map, map.getPortal(0));
+                            chr.changeMapPortal(map, map.getPortal(0));
                             warped = true;
                             break;
                         }
@@ -321,7 +321,7 @@ public class InventoryHandler {
         if (client.getPlayer().getMapId() >= 910000000 && client.getPlayer().getMapId() <= 910000022 && client.getPlayer().getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
                 final MapleMap mapp = chr.findMap(map);
-                client.getPlayer().changeMap(mapp, mapp.getPortal(0));
+                client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
                 List<HiredMerchant> objects;
                 switch (OWL_ID) {

@@ -1532,7 +1532,7 @@ public class ReqCUser {
 
         chr.SendPacket(ResCWvsContext.MapTransferResult(chr, ops_res, false));
         if (ops_res == OpsMapTransfer.MapTransferRes_Use) {
-            chr.changeMap(target_map, target_map.getPortal(0));
+            chr.changeMapPortal(target_map, target_map.getPortal(0));
             return true;
         }
         chr.sendStatChanged(true);

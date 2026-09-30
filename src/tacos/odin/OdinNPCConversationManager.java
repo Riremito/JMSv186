@@ -654,7 +654,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             MapleCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
-            player.changeMap(target, target.getPortal(0));
+            player.changeMapPortal(target, target.getPortal(0));
             player.gainExp(exp, true, false, true);
         }
     }
@@ -663,7 +663,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         MapleMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             MapleCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
-            player.changeMap(target, target.getPortal(0));
+            player.changeMapPortal(target, target.getPortal(0));
             player.gainExp(exp, true, false, true);
             player.gainMeso(meso, true);
         }

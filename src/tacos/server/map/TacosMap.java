@@ -1648,7 +1648,7 @@ public class TacosMap extends TacosMapData {
                 if (map_to == null) {
                     map_to = player.getChannelServer().findMap(TacosConstants.DEFAULT_RETURN_MAP_ID);
                 }
-                player.changeMap(map_to, map_to.getPortal(0));
+                player.changeMapPortal(map_to, map_to.getPortal(0));
                 return true;
             }
         }

@@ -45,7 +45,7 @@ public class Event_DojoAgent {
             final MapleMap map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));
+                player.changeMapPortal(map, map.getPortal(0));
                 return true;
             }
         }
@@ -66,7 +66,7 @@ public class Event_DojoAgent {
         }
         if (currentmap >= 970032700 && currentmap <= 970032800) {
             map = player.findMap(baseAgentMapId);
-            player.changeMap(map, map.getPortal(0));
+            player.changeMapPortal(map, map.getPortal(0));
             return true;
         }
         final int nextmapid = baseAgentMapId + ((thisStage + 1) * 100);
@@ -74,7 +74,7 @@ public class Event_DojoAgent {
             map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));
+                player.changeMapPortal(map, map.getPortal(0));
                 return true;
             }
         }
@@ -112,11 +112,11 @@ public class Event_DojoAgent {
                 for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                     MapleCharacter chr = mapidd.getPlayerById(mem.getId());
                     if (chr != null) {
-                        chr.changeMap(map, map.getPortal(0));
+                        chr.changeMapPortal(map, map.getPortal(0));
                     }
                 }
             } else {
-                player.changeMap(map, map.getPortal(0));
+                player.changeMapPortal(map, map.getPortal(0));
             }
             spawnMonster(map, stage);
         }
@@ -168,13 +168,13 @@ public class Event_DojoAgent {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
-                            chr.changeMap(map, map.getPortal(1));
+                            chr.changeMapPortal(map, map.getPortal(1));
                             chr.modifyCSPoints(1, 5000, true);
                         }
                     }
                 } else {
                     player.modifyCSPoints(1, 5000, true);
-                    player.changeMap(map, map.getPortal(1));
+                    player.changeMapPortal(map, map.getPortal(1));
                 }
                 return true;
             }
@@ -187,11 +187,11 @@ public class Event_DojoAgent {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
-                            chr.changeMap(map, map.getPortal(0));
+                            chr.changeMapPortal(map, map.getPortal(0));
                         }
                     }
                 } else {
-                    player.changeMap(map, map.getPortal(0));
+                    player.changeMapPortal(map, map.getPortal(0));
                 }
                 spawnMonster(map, thisStage + 1);
                 return true;
@@ -205,11 +205,11 @@ public class Event_DojoAgent {
                             for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                                 MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                                 if (chr != null) {
-                                    chr.changeMap(mapz, mapz.getPortal(0));
+                                    chr.changeMapPortal(mapz, mapz.getPortal(0));
                                 }
                             }
                         } else {
-                            player.changeMap(mapz, mapz.getPortal(0));
+                            player.changeMapPortal(mapz, mapz.getPortal(0));
                         }
                         spawnMonster(mapz, thisStage + 1);
                         return true;

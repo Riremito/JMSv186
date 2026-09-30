@@ -72,7 +72,7 @@ public class MapleCarnivalParty {
         for (int character_id : members) {
             final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
-                player.changeMap(map, map.getPortal(portalname));
+                player.changeMapPortal(map, map.getPortal(portalname));
             }
         }
     }
@@ -82,7 +82,7 @@ public class MapleCarnivalParty {
         for (int character_id : members) {
             final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
-                player.changeMap(map, map.getPortal(portalid));
+                player.changeMapPortal(map, map.getPortal(portalid));
             }
         }
     }

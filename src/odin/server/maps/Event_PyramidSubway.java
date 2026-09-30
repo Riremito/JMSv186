@@ -387,7 +387,7 @@ public class Event_PyramidSubway {
             final MapleMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));//solo
+                player.changeMapPortal(map, map.getPortal(0));//solo
                 return true;
             }
         }
@@ -449,7 +449,7 @@ public class Event_PyramidSubway {
             final MapleMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));//solo
+                player.changeMapPortal(map, map.getPortal(0));//solo
                 return true;
             }
         }
@@ -494,7 +494,7 @@ public class Event_PyramidSubway {
                     } else if (clear == 2) {
                         chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
                     }
-                    chr.changeMap(map, map.getPortal(0));
+                    chr.changeMapPortal(map, map.getPortal(0));
                 }
             }
         }
@@ -503,7 +503,7 @@ public class Event_PyramidSubway {
         } else if (clear == 2) {
             player.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
         }
-        player.changeMap(map, map.getPortal(0));
+        player.changeMapPortal(map, map.getPortal(0));
     }
 
     private static final void clearMap(final MapleMap map, final boolean check) {

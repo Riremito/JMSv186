@@ -995,7 +995,7 @@ public class DebugCommand {
             case "/randommap": {
                 int mapid = WzDataStorage.MAP.getRandom();
                 MapleMap map_to = chr.findMap(mapid);
-                chr.changeMap(map_to, map_to.getPortal(0));
+                chr.changeMapPortal(map_to, map_to.getPortal(0));
                 chr.DebugMsg("random map : " + map_to.getId());
                 DebugLogger.InfoLog("random map : " + map_to.getId());
                 return true;
@@ -1020,7 +1020,7 @@ public class DebugCommand {
         }
 
         MapleMap map = chr.findMap(map_id);
-        chr.changeMap(map, map.getPortal(0));
+        chr.changeMapPortal(map, map.getPortal(0));
         return true;
     }
 

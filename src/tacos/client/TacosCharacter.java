@@ -21,6 +21,8 @@ package tacos.client;
 import tacos.server.map.object.TacosDragon;
 import tacos.server.map.object.TacosSkillPet;
 import java.awt.Point;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,9 +57,30 @@ import tacos.database.query.DQ_KeyMap;
 import tacos.database.query.DQ_Mountdata;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import java.util.Calendar;
+import java.util.List;
+import odin.client.MapleQuestStatus;
+import odin.client.SkillMacro;
+import odin.handling.world.MapleParty;
+import odin.server.CashShop;
 import odin.server.MapleInventoryManipulator;
 import odin.server.RandomRewards;
 import odin.server.Randomizer;
+import odin.server.maps.Event_PyramidSubway;
+import odin.server.quest.MapleQuest;
+import tacos.database.DatabaseConnection;
+import tacos.database.DatabaseException;
+import tacos.database.query.DQ_Accounts;
+import tacos.database.query.DQ_Achievements;
+import tacos.database.query.DQ_Famelog;
+import tacos.database.query.DQ_Questinfo;
+import tacos.database.query.DQ_Queststatus;
+import tacos.database.query.DQ_Regrocklocations;
+import tacos.database.query.DQ_Savedlocations;
+import tacos.database.query.DQ_Skillmacros;
+import tacos.database.query.DQ_Skills;
+import tacos.database.query.DQ_Trocklocations;
+import tacos.database.query.DQ_Wishlist;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
@@ -240,17 +263,17 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // enter game server.
-    protected void sendSetField(MapleCharacter mchr, boolean bCharacterData) {
+    public void sendSetField(boolean bCharacterData) {
         if (bCharacterData) {
             getCalcDamage().setSeed(getCalcDamage().random(), getCalcDamage().random(), getCalcDamage().random());
         }
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            SendPacket(ResCStage.SetField_JMS_302(mchr, 1, bCharacterData, 0));
-            SendPacket(ResCStage.SetField_JMS_302(mchr, 2, bCharacterData, -1));
+            SendPacket(ResCStage.SetField_JMS_302((MapleCharacter) this, 1, bCharacterData, 0));
+            SendPacket(ResCStage.SetField_JMS_302((MapleCharacter) this, 2, bCharacterData, -1));
             return;
         }
 
-        SendPacket(ResCStage.SetField(mchr, bCharacterData));
+        SendPacket(ResCStage.SetField((MapleCharacter) this, bCharacterData));
     }
 
     public MapleMap getMap() {
@@ -352,7 +375,7 @@ public class TacosCharacter extends TacosPlayer {
             // revive
             if (map_id_to == 0) {
                 map_to = (revive_type > 0) ? getMap() : getMap().getReturnMap();
-                changeMap(map_to, map_to.getPortal(0));
+                changeMapPortal(map_to, map_to.getPortal(0));
                 getStat().setHp(getStat().getMaxHp());
                 getStat().setMp(getStat().getMaxMp());
                 sendStatChanged(true);
@@ -363,7 +386,7 @@ public class TacosCharacter extends TacosPlayer {
         }
         // direct map change.
         map_to = findMap(map_id_to);
-        changeMap(map_to, map_to.getPortal(0));
+        changeMapPortal(map_to, map_to.getPortal(0));
         return true;
     }
 
@@ -372,7 +395,7 @@ public class TacosCharacter extends TacosPlayer {
         if (map_to != null) {
             TacosPortal portal_to = map_to.getPortal(0);
             if (portal_to != null) {
-                changeMap(map_to, portal_to);
+                changeMapPortal(map_to, portal_to);
                 return true;
             }
         }
@@ -385,7 +408,7 @@ public class TacosCharacter extends TacosPlayer {
         if (map_to != null) {
             TacosPortal portal_to = map_to.findClosestSpawnpoint(new Point(x, y));
             if (portal_to != null) {
-                changeMap(map_to, portal_to);
+                changeMapPortal(map_to, portal_to);
                 return true;
             }
         }
@@ -393,8 +416,46 @@ public class TacosCharacter extends TacosPlayer {
         return false;
     }
 
-    public void changeMap(MapleMap to, TacosPortal pto) {
-        ((MapleCharacter) this).changeMapInternal(to, pto.getPosition(), pto);
+    // unofficial usage.
+    public void changeMapDynamicPortal(MapleMap to, Point pos) {
+        changeMapPortal(to, null);
+    }
+
+    public void changeMapBanish(int mapid, String portal, String msg) {
+        DebugMsg(msg);
+        MapleMap map_to = findMap(mapid);
+        changeMapPortal(map_to, map_to.getPortal(portal));
+    }
+
+    public boolean changeMapPortal(MapleMap map_to, TacosPortal portal_to) {
+        if (map_to == null) {
+            return false;
+        }
+
+        int map_id_prev = this.map.getId();
+        boolean map_id_check = this.map.getId() == map_id_prev;
+
+        if (map_id_check) {
+            MapleMap map_from = this.map;
+            map_from.userLeaveField((MapleCharacter) this);
+            updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortal(0)); // for dynamic portal
+            sendSetField(false);
+            updatePets();
+            updateSummons();
+            map_to.userEnterField((MapleCharacter) this);
+            map_to.linkedObjectEnterField(this);
+            stats.relocHeal();
+        }
+
+        if (getPyramidSubway() != null) {
+            if (getPyramidSubway() != null) {
+                getPyramidSubway().onChangeMap((MapleCharacter) this, map_to.getId());
+            }
+        }
+
+        // マップ移動時にDBへ反映する
+        saveToDB(false);
+        return true;
     }
 
     // unlock 1
@@ -1385,76 +1446,6 @@ public class TacosCharacter extends TacosPlayer {
         return this.storage;
     }
 
-    // database.
-    public boolean addNewCharacterData() {
-        if (!DQ_Characters.add(this)) {
-            return false;
-        }
-        if (!DQ_Inventoryslot.add(this)) {
-            return false;
-        }
-        if (!DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems())) {
-            return false;
-        }
-        if (!DQ_Mountdata.add(this)) {
-            return false;
-        }
-        if (!DQ_KeyMap.add(this)) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean loadCharacterData(boolean is_channel_server) {
-        // all server.
-        // login server.
-        if (!is_channel_server) {
-            // avatar look.
-            for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
-                if (mit.getValue() == MapleInventoryType.EQUIPPED) {
-                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getKey());
-                }
-            }
-            return true;
-        }
-        // channel server.
-        // inventory.
-        DQ_Inventoryslot.load(this);
-        for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
-            if (!WzDataStorage.ITEM.check(mit.getKey().getItemId())) {
-                DebugLogger.ErrorLog("Invalid item id : " + mit.getKey().getItemId());
-                continue;
-            }
-            getInventory(mit.getValue()).addFromDB(mit.getKey());
-        }
-        DQ_KeyMap.loadKeyMap(this);
-        DQ_Monsterbook.load(this);
-        for (BuddylistEntry ble : DQ_Buddies.load(this)) {
-            this.buddylist.put(ble);
-        }
-        return true;
-    }
-
-    public boolean saveCharacterData(boolean is_channel_server) {
-        // all server.
-        DQ_Inventoryslot.save(this);
-        DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
-        // cash shop or itc server.
-        if (!is_channel_server) {
-            return true;
-        }
-        // channel server.
-        if (storage != null) {
-            storage.update();
-        }
-
-        DQ_KeyMap.saveKeys(this);
-        DQ_Monsterbook.save(this);
-        DQ_Buddies.removePending(this);
-        DQ_Buddies.update(this);
-        return true;
-    }
-
     // useful.
     public String getPlayerNameWithMedal() {
         Item equipped_medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
@@ -1559,6 +1550,7 @@ public class TacosCharacter extends TacosPlayer {
         getBuff().removeTimeout(time_current);
     }
 
+    // not checked yet.
     private int fairyExp = 0;
 
     public int getFairyExp() {
@@ -1567,5 +1559,387 @@ public class TacosCharacter extends TacosPlayer {
 
     public void setFairyExp(int rate) {
         this.fairyExp = rate;
+    }
+
+    private Event_PyramidSubway pyramidSubway = null;
+
+    public Event_PyramidSubway getPyramidSubway() {
+        return this.pyramidSubway;
+    }
+
+    public void setPyramidSubway(Event_PyramidSubway ps) {
+        this.pyramidSubway = ps;
+    }
+
+    // database.
+    // database.
+    public boolean saveNewCharToDB() {
+        if (!addNewCharacterData()) {
+            return false;
+        }
+        if (!DQ_Queststatus.add((MapleCharacter) this)) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean addNewCharacterData() {
+        if (!DQ_Characters.add(this)) {
+            return false;
+        }
+        if (!DQ_Inventoryslot.add(this)) {
+            return false;
+        }
+        if (!DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems())) {
+            return false;
+        }
+        if (!DQ_Mountdata.add(this)) {
+            return false;
+        }
+        if (!DQ_KeyMap.add(this)) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean loadCharacterData(boolean is_channel_server) {
+        // all server.
+        // login server.
+        if (!is_channel_server) {
+            // avatar look.
+            for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id, true).values()) {
+                if (mit.getValue() == MapleInventoryType.EQUIPPED) {
+                    getInventory(MapleInventoryType.EQUIPPED).addFromDB(mit.getKey());
+                }
+            }
+            return true;
+        }
+        // channel server.
+        // inventory.
+        DQ_Inventoryslot.load(this);
+        for (SimpleImmutableEntry<Item, MapleInventoryType> mit : DQ_Inventoryitems.load(InvTypeDB.Inventory, this.id).values()) {
+            if (!WzDataStorage.ITEM.check(mit.getKey().getItemId())) {
+                DebugLogger.ErrorLog("Invalid item id : " + mit.getKey().getItemId());
+                continue;
+            }
+            getInventory(mit.getValue()).addFromDB(mit.getKey());
+        }
+        DQ_KeyMap.loadKeyMap(this);
+        DQ_Monsterbook.load(this);
+        for (BuddylistEntry ble : DQ_Buddies.load(this)) {
+            this.buddylist.put(ble);
+        }
+        return true;
+    }
+
+    public boolean saveCharacterData(boolean is_channel_server) {
+        // all server.
+        DQ_Inventoryslot.save(this);
+        DQ_Inventoryitems.add(InvTypeDB.Inventory, this.id, getAllItems());
+        // cash shop or itc server.
+        if (!is_channel_server) {
+            return true;
+        }
+        // channel server.
+        if (storage != null) {
+            storage.update();
+        }
+
+        DQ_KeyMap.saveKeys(this);
+        DQ_Monsterbook.save(this);
+        DQ_Buddies.removePending(this);
+        DQ_Buddies.update(this);
+        return true;
+    }
+
+    protected int hpApUsed;
+    protected MapleParty party;
+    protected int dojo;
+    protected byte dojoRecord;
+    protected SkillMacro[] skillMacros = new SkillMacro[5];
+    protected Map<Integer, String> questinfo;
+    protected Map<MapleQuest, MapleQuestStatus> quests;
+    protected int[] savedLocations;
+    protected int nexonPoint;
+    protected int maplePoint;
+    protected int points;
+    protected int vpoints;
+    protected int[] wishlist;
+    protected int[] rocks;
+    protected int[] regrocks;
+    protected CashShop cs;
+    protected byte[] petStore;
+    protected String BlessOfFairy_Origin;
+    protected long lastfametime;
+    protected List<Integer> lastmonthfameids;
+
+    public int getWishlistSize() {
+        int ret = 0;
+        for (int i = 0; i < 10; i++) {
+            if (wishlist[i] > 0) {
+                ret++;
+            }
+        }
+        return ret;
+    }
+
+    public static MapleCharacter loadCharFromDB(int character_id, TacosClient client, boolean channelserver) {
+        MapleCharacter ret = new MapleCharacter();
+        ret.init_step1();
+
+        if (channelserver) {
+            ret.init_step2();
+        }
+
+        ret.client = client;
+        ret.id = character_id;
+        ret.loadCharacterData(channelserver);
+
+        try {
+            DQ_Characters.loadStat(ret);
+            DQ_Characters.ExtrasRow extras = DQ_Characters.loadExtras(character_id);
+
+            if (channelserver) {
+                ret.updateMapById(ret.dwPosMap, ret.nPortal);
+
+                int partyid = extras.party;
+                if (partyid >= 0) {
+                    MapleParty party = client.getWorld().getParty().getParty(partyid);
+                    if (party != null && party.getMemberById(ret.id) != null) {
+                        ret.party = party;
+                    }
+                }
+
+                int cover = extras.monsterbookcover;
+                ret.getMonsterBook().setCover(cover);
+
+                ret.dojo = extras.dojo;
+                ret.dojoRecord = extras.dojoRecord;
+                final String[] pets = extras.pets.split(",");
+                for (int i = 0; i < ret.petStore.length; i++) {
+                    ret.petStore[i] = Byte.parseByte(pets[i]);
+                }
+            }
+
+            boolean compensate_previousEvans = false;
+            ret.quests.putAll(DQ_Queststatus.loadAll(character_id));
+            for (final MapleQuestStatus loadedStatus : ret.quests.values()) {
+                if (loadedStatus.getQuest().getId() == 170000) {
+                    compensate_previousEvans = true;
+                    break;
+                }
+            }
+
+            if (channelserver) {
+                DQ_Accounts.AccountLoginRow acc = DQ_Accounts.loadForCharacterLogin(ret.accountid);
+                if (acc != null) {
+                    ret.getClient().setMapleId(acc.name);
+                    ret.nexonPoint = acc.acash;
+                    ret.maplePoint = acc.mpoints;
+                    ret.points = acc.points;
+                    ret.vpoints = acc.vpoints;
+
+                    if (acc.lastlogon != null) {
+                        final Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(acc.lastlogon.getTime());
+                        if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+                            ret.nexonPoint += 500;
+                        }
+                    }
+
+                    DQ_Accounts.updateLastLogon(ret.accountid);
+                }
+
+                ret.questinfo.putAll(DQ_Questinfo.loadAll(character_id));
+
+                Skill skil;
+                for (DQ_Skills.SkillRow row : DQ_Skills.loadAll(character_id)) {
+                    skil = SkillFactory.getSkill(row.skillId);
+                    if (skil != null && GameConstants.isApplicableSkill(row.skillId)) {
+                        ret.skills.put(skil, new SkillEntry(row.skillLevel, row.masterLevel, row.expiration));
+                    } else if (skil == null) { //doesnt. exist. e.g. bb
+                        ret.remainingSp[GameConstants.getSkillBookForSkill(row.skillId)] += row.skillLevel;
+                    }
+                }
+
+                // Bless of Fairy handling
+                byte maxlevel_ = 0;
+                for (DQ_Characters.BlessOfFairyRow row : DQ_Characters.loadOtherCharactersForBlessOfFairy(ret.accountid)) {
+                    if (row.id != character_id) { // Not this character
+                        byte maxlevel = (byte) (row.level / 10);
+
+                        if (maxlevel > 20) {
+                            maxlevel = 20;
+                        }
+                        if (maxlevel > maxlevel_) {
+                            maxlevel_ = maxlevel;
+                            ret.BlessOfFairy_Origin = row.name;
+                        }
+
+                    } else if (character_id < 17000 && !compensate_previousEvans && ret.job >= 2200 && ret.job <= 2218) { //compensate, watch max charid
+                        for (int i = 0; i <= GameConstants.getSkillBook(ret.job); i++) {
+                            ret.remainingSp[i] += 2; //2 that they missed. gg
+                        }
+                        ret.setQuestAdd(MapleQuest.getInstance(170000), (byte) 0, null); //set it so never again
+                    }
+                }
+
+                // 精霊の祝福
+                final Skill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
+
+                if (bofskill != null) {
+                    ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
+                }
+                // END
+
+                ret.skillMacros = DQ_Skillmacros.loadAll(character_id);
+
+                for (final Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
+                    ret.savedLocations[e.getKey()] = e.getValue();
+                }
+
+                final DQ_Famelog.RecentFame recentFame = DQ_Famelog.loadRecent(character_id);
+                ret.lastfametime = recentFame.lastFameTime;
+                ret.lastmonthfameids = recentFame.lastMonthFameIds;
+
+                ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
+
+                int i = 0;
+                for (final int sn : DQ_Wishlist.loadAll(character_id)) {
+                    ret.wishlist[i] = sn;
+                    i++;
+                }
+                while (i < 10) {
+                    ret.wishlist[i] = 0;
+                    i++;
+                }
+
+                int r = 0;
+                for (final int mapid : DQ_Trocklocations.loadAll(character_id)) {
+                    ret.rocks[r] = mapid;
+                    r++;
+                }
+                while (r < 10) {
+                    ret.rocks[r] = 999999999;
+                    r++;
+                }
+
+                r = 0;
+                for (final int mapid : DQ_Regrocklocations.loadAll(character_id)) {
+                    ret.regrocks[r] = mapid;
+                    r++;
+                }
+                while (r < 5) {
+                    ret.regrocks[r] = 999999999;
+                    r++;
+                }
+
+                final DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
+                final Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
+                ret.mount = new MapleMount(ret, mount != null ? mount.getItemId() : 0, ret.job > 1000 && ret.job < 2000 ? 10001004 : (ret.job >= 2000 ? (ret.job == 2001 || ret.job >= 2200 ? 20011004 : (ret.job >= 3000 ? 30001004 : 20001004)) : 1004), mountRow.fatigue, mountRow.level, mountRow.exp);
+
+                ret.stats.recalcLocalStats(true);
+            }
+        } catch (SQLException ess) {
+            ess.printStackTrace();
+            System.out.println("Failed to load character..");
+        }
+        return ret;
+    }
+
+    public void saveToDB(boolean fromcs) {
+        saveCharacterData(!fromcs);
+
+        Connection con = DatabaseConnection.getConnection();
+        try {
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            con.setAutoCommit(false);
+
+            final StringBuilder sps = new StringBuilder();
+            for (int i = 0; i < remainingSp.length; i++) {
+                sps.append(remainingSp[i]);
+                sps.append(",");
+            }
+            final String sp = sps.toString();
+
+            final int mapToSave;
+            if (!fromcs && map != null) {
+                if (map.getForcedReturnId() != 999999999) {
+                    mapToSave = map.getForcedReturnId();
+                } else {
+                    mapToSave = stats.getHp() < 1 ? map.getReturnMapId() : map.getId();
+                }
+            } else {
+                mapToSave = dwPosMap;
+            }
+
+            final byte spawnpointToSave;
+            if (map == null) {
+                spawnpointToSave = (byte) 0;
+            } else {
+                final TacosPortal closest = map.findClosestSpawnpoint(getPosition());
+                spawnpointToSave = (byte) (closest != null ? closest.getId() : 0);
+            }
+
+            int[] pet_slots = {-1, -1, -1};
+            int pet_index = 0;
+
+            for (MaplePet pet : getPets()) {
+                pet.saveToDb();
+                pet_slots[pet_index++] = pet.getInventoryPosition();
+                if (3 <= pet_index) {
+                    break;
+                }
+            }
+
+            String petstring = String.format("%d,%d,%d", pet_slots[0], pet_slots[1], pet_slots[2]);
+
+            DQ_Characters.CharacterSaveRow saveRow = new DQ_Characters.CharacterSaveRow(id, level, fame,
+                    stats.getStr(), stats.getDex(), stats.getLuk(), stats.getInt(), exp,
+                    stats.getHp() < 1 ? 50 : stats.getHp(), stats.getMp(), stats.getMaxHp(), stats.getMaxMp(),
+                    sp.substring(0, sp.length() - 1), remainingAp, (byte) gmLevel, (byte) skinColor, (byte) gender,
+                    job, hair, face, mapToSave, meso, hpApUsed, spawnpointToSave, party != null ? party.getId() : -1,
+                    (short) (byte) buddylist.getCapacity(), getMonsterBook().getCover(), dojo, dojoRecord,
+                    petstring, subcategory, marriageId, currentrep, totalrep,
+                    name, tama);
+
+            if (!DQ_Characters.updateStat(con, saveRow)) {
+                throw new DatabaseException("Character not in database (" + id + ")");
+            }
+
+            DQ_Skillmacros.deleteAndSaveAll(con, id, skillMacros);
+            DQ_Questinfo.deleteAndSaveAll(con, id, questinfo);
+            DQ_Queststatus.deleteAndSaveAll(con, id, quests.values());
+            DQ_Skills.deleteAndSaveAll(con, id, skills);
+            DQ_Savedlocations.deleteAndSaveAll(con, id, savedLocations);
+            DQ_Achievements.deleteByAccountId(con, accountid);
+            DQ_Accounts.updatePoints(con, client.getId(), nexonPoint, maplePoint, points, vpoints);
+
+            if (cs != null) {
+                cs.save();
+            }
+            mount.saveMount(id);
+
+            DQ_Wishlist.deleteAndSaveAll(con, id, wishlist, getWishlistSize());
+            DQ_Trocklocations.deleteAndSaveAll(con, id, rocks);
+            DQ_Regrocklocations.deleteAndSaveAll(con, id, regrocks);
+
+            con.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            DebugLogger.ExceptionLog("saveToDB : saving character data.");
+            try {
+                con.rollback();
+            } catch (SQLException ex) {
+                DebugLogger.ExceptionLog("saveToDB : Rolling Back.");
+            }
+        } finally {
+            try {
+                con.setAutoCommit(true);
+                con.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            } catch (SQLException e) {
+                DebugLogger.ExceptionLog("saveToDB : going back to autocommit mode.");
+            }
+        }
     }
 }

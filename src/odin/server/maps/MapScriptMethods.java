@@ -560,7 +560,7 @@ public class MapScriptMethods {
                         client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
                         final MapleMap mapto = chr.findMap(900010000);
-                        client.getPlayer().changeMap(mapto, mapto.getPortal(0));
+                        client.getPlayer().changeMapPortal(mapto, mapto.getPortal(0));
                         return;
                 }
                 showIntro(client, data);
@@ -680,7 +680,7 @@ public class MapScriptMethods {
             case check_count: {
                 if (client.getPlayer().getMapId() == 950101010 && (!client.getPlayer().haveItem(4001433, 20) || client.getPlayer().getLevel() < 50)) { //ravana Map
                     final MapleMap mapp = chr.findMap(950101100); //exit Map
-                    client.getPlayer().changeMap(mapp, mapp.getPortal(0));
+                    client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
                 }
                 break;
             }

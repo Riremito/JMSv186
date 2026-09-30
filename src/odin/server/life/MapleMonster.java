@@ -560,7 +560,7 @@ public class MapleMonster extends TacosMonster {
         map.killAllMonsters(true);
         map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
         for (MapleCharacter chr : map.getAllPlayers()) {
-            chr.changeMap(chr.getMap(), chr.getMap().getPortal(0));
+            chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }
         MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
     }

@@ -100,18 +100,18 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void warp(final int map) {
         final MapleMap mapz = getWarpMap(map);
         try {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(0));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
     public final void warp_Instanced(final int map) {
         final MapleMap mapz = getMap_Instanced(map);
         try {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(0));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
@@ -122,16 +122,16 @@ public abstract class OdinAbstractPlayerInteraction {
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 client.SendPacket(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
             } else {
-                client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
     public final void warpS(final int map, final int portal) {
         final MapleMap mapz = getWarpMap(map);
-        client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+        client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
     }
 
     public final void warp(final int map, String portal) {
@@ -144,10 +144,10 @@ public abstract class OdinAbstractPlayerInteraction {
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 client.SendPacket(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
             } else {
-                client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
@@ -156,13 +156,13 @@ public abstract class OdinAbstractPlayerInteraction {
         if (map == 109060000 || map == 109060002 || map == 109060004) {
             portal = mapz.getSnowballPortal();
         }
-        client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+        client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
     }
 
     public final void warpMap(final int mapid, final int portal) {
         final MapleMap map = getMap(mapid);
         for (MapleCharacter chr : client.getPlayer().getMap().getAllPlayers()) {
-            chr.changeMap(map, map.getPortal(portal));
+            chr.changeMapPortal(map, map.getPortal(portal));
         }
     }
 
@@ -551,7 +551,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
-                player.changeMap(target, target.getPortal(0));
+                player.changeMapPortal(target, target.getPortal(0));
             }
         }
     }
@@ -573,12 +573,12 @@ public abstract class OdinAbstractPlayerInteraction {
             if (player != null) {
                 if (rand) {
                     try {
-                        player.changeMap(target, target.getPortal(Randomizer.nextInt(target.getPortals().size())));
+                        player.changeMapPortal(target, target.getPortal(Randomizer.nextInt(target.getPortals().size())));
                     } catch (Exception e) {
-                        player.changeMap(target, target.getPortal(0));
+                        player.changeMapPortal(target, target.getPortal(0));
                     }
                 } else {
-                    player.changeMap(target, target.getPortal(portal));
+                    player.changeMapPortal(target, target.getPortal(portal));
                 }
             }
         }
@@ -594,7 +594,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
-                player.changeMap(target, target.getPortal(0));
+                player.changeMapPortal(target, target.getPortal(0));
             }
         }
     }
