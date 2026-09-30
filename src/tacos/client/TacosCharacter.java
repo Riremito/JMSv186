@@ -1083,6 +1083,7 @@ public class TacosCharacter extends TacosPlayer {
         if (getFootholdId() == 0) {
             return false;
         }
+
         removeDoor();
         TacosMysticDoor door_field_ = new TacosMysticDoor(this.map, this, tds); // field door.
         door_field_.reset(this);
@@ -1092,6 +1093,8 @@ public class TacosCharacter extends TacosPlayer {
             DebugLogger.ErrorLog("addDoor : map_town is null.");
             return false;
         }
+        door_field_.setTownPortal(this.map.getPortal(0));
+
         TacosPortal portal_town = door_field_.getFreePortal(map_town);
         if (portal_town == null) {
             SendPacket(ResCTownPortalPool.TownPortal(null));

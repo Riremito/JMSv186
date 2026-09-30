@@ -115,7 +115,7 @@ public class TacosMysticDoor extends TacosMapObject {
         for (TacosPortal portal : map_town.getPortals()) {
             if (portal.getType() == TacosPortal.DOOR_PORTAL) {
                 freePortals.add(portal);
-                DebugLogger.DebugLog("getFreePortal : " + (byte) portal.getMysticDoorId());
+                DebugLogger.DebugLog("getFreePortal : " + portal.getMysticDoorId());
             }
         }
         // already used.

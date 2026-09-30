@@ -3249,11 +3249,7 @@ public class ReqCUser {
         for (TacosMysticDoor door : chr.getMap().getAllDoors()) {
             if (door.getOwnerId() == door_character_id) {
                 MapleMap map_to = chr.getChannelServer().findMap(is_town_to_field ? door.getFieldMapId() : door.getTownMapId());
-                if (is_town_to_field) {
-                    chr.changeMapPortal(map_to, map_to.getPortal(0));
-                } else {
-                    chr.changeMapPortal(map_to, door.getTownPortal());
-                }
+                chr.changeMapPortal(map_to, door.getTownPortal());
                 return true;
             }
         }
