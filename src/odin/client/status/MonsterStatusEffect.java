@@ -20,48 +20,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.status;
 
-import java.util.concurrent.ScheduledFuture;
 import odin.server.life.MobSkill;
 
 public class MonsterStatusEffect {
 
     private MonsterStatus stati;
     private final int skill;
-    private final MobSkill mobskill;
-    private final boolean monsterSkill;
-    private Integer x;
-    private ScheduledFuture<?> cancelTask;
-    private ScheduledFuture<?> poisonSchedule;
 
-    public MonsterStatusEffect(final MonsterStatus stat, final Integer x, final int skillId, final MobSkill mobskill, final boolean monsterSkill) {
+    public MonsterStatusEffect(MonsterStatus stat, Integer x, int skillId, MobSkill mobskill, boolean monsterSkill) {
         this.stati = stat;
         this.skill = skillId;
-        this.monsterSkill = monsterSkill;
-        this.mobskill = mobskill;
-        this.x = x;
     }
 
     public final MonsterStatus getStati() {
         return stati;
     }
 
-    public final Integer getX() {
-        return x;
-    }
-
     public final int getSkill() {
         return skill;
     }
-
-    public final MobSkill getMobSkill() {
-        return mobskill;
-    }
-
-    public final void cancelTask() {
-        if (this.cancelTask != null) {
-            this.cancelTask.cancel(false);
-        }
-        this.cancelTask = null;
-    }
-
 }

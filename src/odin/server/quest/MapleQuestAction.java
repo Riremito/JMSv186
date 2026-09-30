@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import odin.client.Skill;
 import odin.constants.GameConstants;
-import odin.client.inventory.InventoryException;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
@@ -147,12 +146,7 @@ public class MapleQuestAction {
                     }
                     final short count = (short) WzDataTool.getInt(iEntry.getChildByPath("count"), 1);
                     if (count < 0) { // remove items
-                        try {
-                            MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
-                        } catch (InventoryException ie) {
-                            // it's better to catch this here so we'll atleast try to remove the other items
-                            System.err.println("[h4x] Completing a quest without meeting the requirements" + ie);
-                        }
+                        MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
 
                         PB_UserEffect pb = PB_UserEffect.builder()
                                 .item_id(id)

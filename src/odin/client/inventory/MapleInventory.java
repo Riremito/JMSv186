@@ -66,7 +66,6 @@ public class MapleInventory implements Iterable<Item> {
      * Returns the item with its slot id if it exists within the inventory,
      * otherwise null is returned
      */
-
     public Item findByUniqueId(long itemId) {
         for (Item item : inventory.values()) {
             if (item.getUniqueId() == itemId) {
@@ -118,7 +117,7 @@ public class MapleInventory implements Iterable<Item> {
         Item source = (Item) inventory.get(sSlot);
         Item target = (Item) inventory.get(dSlot);
         if (source == null) {
-            throw new InventoryException("Trying to move empty slot");
+            return;
         }
         if (target == null) {
             source.setPosition(dSlot);
@@ -182,7 +181,6 @@ public class MapleInventory implements Iterable<Item> {
     /**
      * Returns the next empty slot id, -1 if the inventory is full
      */
-
     public short getNextItem(short slot) {
         for (short i = slot; i <= slotLimit; i++) {
             if (inventory.keySet().contains(i)) {

@@ -768,43 +768,6 @@ public class MapleMonster extends TacosMonster {
         return stats.getBuffToGive();
     }
 
-    private final class PoisonTask implements Runnable {
-
-        private final int poisonDamage;
-        private final MapleCharacter chr;
-        private final MonsterStatusEffect status;
-        private final Runnable cancelTask;
-        private final boolean shadowWeb;
-        private final MapleMap map;
-
-        private PoisonTask(final int poisonDamage, final MapleCharacter chr, final MonsterStatusEffect status, final Runnable cancelTask, final boolean shadowWeb) {
-            this.poisonDamage = poisonDamage;
-            this.chr = chr;
-            this.status = status;
-            this.cancelTask = cancelTask;
-            this.shadowWeb = shadowWeb;
-            this.map = chr.getMap();
-        }
-
-        @Override
-        public void run() {
-            long damage = poisonDamage;
-            if (damage >= hp) {
-                damage = hp - 1;
-                if (!shadowWeb) {
-                    cancelTask.run();
-                    status.cancelTask();
-                }
-            }
-            if (hp > 1 && damage > 0) {
-                damage(chr, damage, false);
-                if (shadowWeb) {
-                    map.broadcastMessage(ResCMobPool.MobDamaged(getParent(), (int) damage, 0), getPosition());
-                }
-            }
-        }
-    }
-
     public MapleMonster getParent() {
         return this;
     }

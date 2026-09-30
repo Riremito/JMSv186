@@ -8,7 +8,6 @@ import odin.client.inventory.MapleInventoryIdentifier;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.InventoryException;
 import odin.client.inventory.ItemFlag;
 import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
@@ -198,7 +197,7 @@ public class MapleInventoryManipulator {
                 }
                 client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nEquip).build()));
             } else {
-                throw new InventoryException("Trying to create equip with non-one quantity");
+                return -1;
             }
         }
         client.getPlayer().havePartyQuest(itemId);
@@ -295,7 +294,7 @@ public class MapleInventoryManipulator {
                 client.getPlayer().havePartyQuest(item.getItemId());
                 return item;
             } else {
-                throw new InventoryException("Trying to create equip with non-one quantity");
+                return null;
             }
         }
         return null;
