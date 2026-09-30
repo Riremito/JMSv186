@@ -344,7 +344,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
         for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
-            if (react.getReactorId() == id) {
+            if (react.getId() == id) {
                 react.forceStartReactor(client);
                 break;
             }
@@ -357,7 +357,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
         for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
-            if (react.getReactorId() == id) {
+            if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
             }
@@ -370,7 +370,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
         for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
-            if (react.getReactorId() == id) {
+            if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
             }
@@ -978,7 +978,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public boolean isAllReactorState(final int reactorId, final int state) {
         boolean ret = false;
         for (MapleReactor r : getMap().getAllReactors()) {
-            if (r.getReactorId() == reactorId) {
+            if (r.getId() == reactorId) {
                 ret = r.getState() == state;
             }
         }

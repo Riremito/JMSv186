@@ -66,7 +66,7 @@ public class ReqCReactorPool {
                 }
 
                 // 不明
-                if (reactor.getReactorId() < 6109013 || reactor.getReactorId() > 6109027) {
+                if (reactor.getId() < 6109013 || reactor.getId() > 6109027) {
 
                     return false;
                 }

@@ -49,7 +49,6 @@ import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosReward;
-import tacos.wz.WzXML;
 
 public final class MapleMap extends TacosMap {
 
@@ -336,7 +335,7 @@ public final class MapleMap extends TacosMap {
         for (MapleReactor react : getAllReactors()) {
 
             if (react.getReactorType() == 100) {
-                if (GameConstants.isCustomReactItem(react.getReactorId(), item.getItemId(), react.getReactItem().getKey()) && react.getReactItem().getValue() == item.getQuantity()) {
+                if (GameConstants.isCustomReactItem(react.getId(), item.getItemId(), react.getReactItem().getKey()) && react.getReactItem().getValue() == item.getQuantity()) {
                     if (react.getArea().contains(drop.getPosition())) {
                         if (!react.isTimerActive()) {
                             MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, client), 5000);
@@ -422,9 +421,7 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (guardz != null) {
-            final MapleReactorStats stats = WzXML.REACTOR.getReactor(9980000 + team);
-            final MapleReactor my = new MapleReactor(stats, 9980000 + team);
-            stats.setFacingDirection((byte) 0); //always
+            MapleReactor my = new MapleReactor(9980000 + team);
             my.setPosition(guardz);
             my.setState((byte) 1);
             my.setDelay(0);

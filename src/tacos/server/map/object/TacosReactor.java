@@ -18,10 +18,55 @@
  */
 package tacos.server.map.object;
 
+import odin.server.maps.MapleReactorStats;
+import tacos.wz.WzXML;
+
 /**
  *
  * @author Riremito
  */
 public class TacosReactor extends TacosMapObject {
 
+    private int id;
+    private int bFlip = 0;
+    private String name = "";
+    protected MapleReactorStats stats;
+    private boolean alive = true;
+
+    public TacosReactor(int id) {
+        this.id = id;
+        this.stats = WzXML.REACTOR.getReactor(id);
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public int getFacingDirection() {
+        return this.bFlip;
+    }
+
+    public void setFacingDirection(int bFlip) {
+        this.bFlip = bFlip;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MapleReactorStats getStats() {
+        return this.stats;
+    }
+
+    public boolean isAlive() {
+        return this.alive;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
+    }
 }

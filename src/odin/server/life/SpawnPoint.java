@@ -115,7 +115,7 @@ public class SpawnPoint {
         map.spawnMonster(mob, -2);
         if (carnivalTeam > -1) {
             for (MapleReactor r : map.getAllReactors()) { //parsing through everytime a monster is spawned? not good idea
-                if (r.getName().startsWith(String.valueOf(carnivalTeam)) && r.getReactorId() == (9980000 + carnivalTeam) && r.getState() < 5) {
+                if (r.getName().startsWith(String.valueOf(carnivalTeam)) && r.getId() == (9980000 + carnivalTeam) && r.getState() < 5) {
                     int num = Integer.parseInt(r.getName().substring(1, 2)); //00, 01, etc
                     MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
                     if (skil != null) {

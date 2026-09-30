@@ -1328,13 +1328,14 @@ public class TacosMap extends TacosMapData {
     private LinkedHashMap<Integer, MapleReactor> reactors = new LinkedHashMap<>();
 
     public void addReactor(MapleReactor reactor) {
-        this.runningOid++;
-        reactor.setObjectId(this.runningOid);
+        if (reactor.getObjectId() == 0) {
+            reactor.setObjectId();
+        }
         this.reactors.put(reactor.getObjectId(), reactor);
     }
 
-    public boolean removeReactor(int object_id) {
-        return this.reactors.remove(object_id) != null;
+    public void removeReactor(int object_id) {
+        this.reactors.remove(object_id);
     }
 
     public List<MapleReactor> getAllReactors() {
@@ -1354,7 +1355,7 @@ public class TacosMap extends TacosMapData {
         Iterator<MapleReactor> itr = this.reactors.values().iterator();
         while (itr.hasNext()) {
             MapleReactor n = itr.next();
-            if (n.getReactorId() == id) {
+            if (n.getId() == id) {
                 ret = n;
                 break;
             }
@@ -1393,13 +1394,13 @@ public class TacosMap extends TacosMapData {
     public void shuffleReactors(int first, int last) {
         List<Point> points = new ArrayList<>();
         for (MapleReactor mr : this.reactors.values()) {
-            if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
+            if (mr.getId() >= first && mr.getId() <= last) {
                 points.add(mr.getPosition());
             }
         }
         Collections.shuffle(points);
         for (MapleReactor mr : this.reactors.values()) {
-            if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
+            if (mr.getId() >= first && mr.getId() <= last) {
                 mr.setPosition(points.remove(points.size() - 1));
             }
         }
@@ -1444,7 +1445,7 @@ public class TacosMap extends TacosMapData {
         }
         for (MapleReactor r : toSpawn) {
             removeReactor(r.getObjectId());
-            if (r.getReactorId() != 9980000 && r.getReactorId() != 9980001) { //guardians cpq
+            if (r.getId() != 9980000 && r.getId() != 9980001) { //guardians cpq
                 respawnReactor(r);
             }
         }

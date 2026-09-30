@@ -52,9 +52,9 @@ public class TacosScriptReactor extends TacosScript {
     }
 
     public boolean act(TacosClient client, MapleReactor reactor) {
-        DebugMsg(client, TacosScriptType.REACOTR, reactor.getReactorId());
+        DebugMsg(client, TacosScriptType.REACOTR, reactor.getId());
 
-        ScriptEngine engine = getScript(TacosScriptType.REACOTR.get() + reactor.getReactorId());
+        ScriptEngine engine = getScript(TacosScriptType.REACOTR.get() + reactor.getId());
         if (engine == null) {
             return false;
         }

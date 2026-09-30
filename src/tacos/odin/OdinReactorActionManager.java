@@ -58,7 +58,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
     }
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
-        List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getReactorId());
+        List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getId());
         List<ReactorDropEntry> items = new LinkedList<>();
 
         if (meso) {

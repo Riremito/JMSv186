@@ -27,38 +27,17 @@ import tacos.packet.response.ResCReactorPool;
 import odin.server.Timer.MapTimer;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.script.TacosScriptReactor;
+import tacos.server.map.object.TacosReactor;
 
-public class MapleReactor {
+public class MapleReactor extends TacosReactor {
 
-    private Point position = new Point();
-    private int objectId;
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
-
-    private int rid;
     private int delay;
-    private MapleReactorStats stats;
     private byte state;
     private MapleMap map;
-    private String name = "";
     private boolean timerActive;
-    private boolean alive;
 
-    public MapleReactor(MapleReactorStats stats, int rid) {
-        this.stats = stats;
-        this.rid = rid;
-        alive = true;
-    }
-
-    public final byte getFacingDirection() {
-        return stats.getFacingDirection();
+    public MapleReactor(int rid) {
+        super(rid);
     }
 
     public void setTimerActive(boolean active) {
@@ -69,16 +48,8 @@ public class MapleReactor {
         return timerActive;
     }
 
-    public int getReactorId() {
-        return rid;
-    }
-
     public void setState(byte state) {
         this.state = state;
-    }
-
-    public void setAlive(boolean alive) {
-        this.alive = alive;
     }
 
     public void setDelay(int delay) {
@@ -115,7 +86,7 @@ public class MapleReactor {
                 } else { //reactor not broken yet
                     boolean done = false;
                     map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, stance)); //magatia is weird cause full beaker can be activated by gm hat o.o
-                    if (state == stats.getNextState(state) || rid == 2618000 || rid == 2309000) { //current state = next state, looping reactor
+                    if (state == stats.getNextState(state) || getId() == 2618000 || getId() == 2309000) { //current state = next state, looping reactor
                         TacosScriptReactor.getInstance().act(client, this);
                         done = true;
                     }
@@ -146,10 +117,6 @@ public class MapleReactor {
         return pos;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void scheduleSetState(final byte oldState, final byte newState, long delay) {
         MapTimer.getInstance().schedule(new Runnable() {
 
@@ -163,23 +130,8 @@ public class MapleReactor {
     }
 
     // used by script
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    // used by script
-    public int getObjectId() {
-        return objectId;
-    }
-
-    // used by script
     public byte getState() {
         return state;
-    }
-
-    // used by script
-    public boolean isAlive() {
-        return alive;
     }
 
     // used by script
@@ -223,17 +175,6 @@ public class MapleReactor {
                 map.destroyReactor(getObjectId());
             }
         }, delay);
-    }
-
-    // used by script
-    public String getName() {
-        return name;
-    }
-
-    // used by script
-    @Override
-    public String toString() {
-        return "Reactor " + getObjectId() + " of id " + rid + " at position " + getPosition().toString() + " state" + state + " type " + stats.getType(state);
     }
 
     // used by script

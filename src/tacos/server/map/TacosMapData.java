@@ -33,7 +33,6 @@ import odin.server.maps.MapleFootholdTree;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import odin.server.maps.MapleReactor;
-import odin.server.maps.MapleReactorStats;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.wz.WzDataTool;
@@ -563,11 +562,8 @@ public class TacosMapData {
                 continue;
             }
             int FacingDirection = WzDataTool.getInt(reactor.getChildByPath("f"), 0);
-
-            MapleReactorStats stats = WzXML.REACTOR.getReactor(reactor_id);
-            MapleReactor myReactor = new MapleReactor(stats, reactor_id);
-
-            stats.setFacingDirection((byte) FacingDirection);
+            MapleReactor myReactor = new MapleReactor(reactor_id);
+            myReactor.setFacingDirection(FacingDirection);
             myReactor.setPosition(new Point(WzDataTool.getInt(reactor.getChildByPath("x")), WzDataTool.getInt(reactor.getChildByPath("y"))));
             myReactor.setDelay(WzDataTool.getInt(reactor.getChildByPath("reactorTime")) * 1000);
             myReactor.setState((byte) 0);

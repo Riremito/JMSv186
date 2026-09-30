@@ -374,13 +374,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                MapleReactorStats reactorSt = WzXML.REACTOR.getReactor(reactor_id);
-                if (reactorSt == null) {
-                    chr.DebugMsg("reactor : reactorSt = null.");
-                    return true;
-                }
-
-                MapleReactor reactor = new MapleReactor(reactorSt, reactor_id);
+                MapleReactor reactor = new MapleReactor(reactor_id);
                 reactor.setDelay(-1);
 
                 Point pos = new Point(chr.getPosition());
@@ -395,6 +389,7 @@ public class DebugCommand {
                     chr.DebugMsg("reactor : fh = null.");
                     return true;
                 }
+                MapleReactorStats reactorSt = reactor.getStats();
                 if (reactorSt.getBR() != null && reactorSt.getTL() != null) {
                     pos.y = fh.getY1() + ((reactorSt.getBR().y - reactorSt.getTL().y) / 2);
                 }
