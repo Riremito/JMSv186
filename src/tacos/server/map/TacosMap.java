@@ -44,7 +44,6 @@ import odin.server.Timer.MapTimer;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapScriptMethods;
-import odin.server.maps.MapleDoor;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
@@ -59,7 +58,6 @@ import tacos.config.DeveloperMode;
 import tacos.server.map.object.TacosDragon;
 import tacos.server.map.object.TacosSkillPet;
 import tacos.constants.TacosConstants;
-import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
@@ -87,6 +85,7 @@ import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosMysticDoor;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosSummon;
 
@@ -440,14 +439,8 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mystic door
-        for (MapleDoor door : this.doors.values()) {
-            int number = split.find(door.getPosition().x, door.getPosition().y);
-            if (split.getTotal() < number) {
-                continue;
-            }
-            if (area_states.get(number) == MapSplitState.ACTIVE) {
-                chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
-            }
+        for (TacosMysticDoor door : this.doors.values()) {
+            chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door));
         }
         // mechanic gate
         // pinkbean cake event portal
@@ -618,17 +611,8 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mystic door
-        for (MapleDoor door : this.doors.values()) {
-            int number = split.find(door.getPosition().x, door.getPosition().y);
-            if (split.getTotal() < number) {
-                continue;
-            }
-            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
-                chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
-            }
-            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                chr.SendPacket(ResCTownPortalPool.TownPortalRemoved(door));
-            }
+        for (TacosMysticDoor door : this.doors.values()) {
+            // none.
         }
         // mechanic gate
         // pinkbean cake event portal
@@ -1269,34 +1253,32 @@ public class TacosMap extends TacosMapData {
     }
 
     // mystic door.
-    private LinkedHashMap<Integer, MapleDoor> doors = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosMysticDoor> doors = new LinkedHashMap<>();
 
-    public void addDoor(MapleDoor door) {
-        this.runningOid++;
-        door.setObjectId(this.runningOid);
+    public void addDoor(TacosMysticDoor door) {
+        if (door.getObjectId() == 0) {
+            door.setObjectId();
+        }
         this.doors.put(door.getObjectId(), door);
+        broadcastMessage(ResCTownPortalPool.TownPortalCreated(door));
     }
 
-    public boolean removeDoor(int object_id) {
-        return this.doors.remove(object_id) != null;
+    public boolean removeDoor(TacosMysticDoor door) {
+        this.doors.remove(door.getObjectId());
+        broadcastMessage(ResCTownPortalPool.TownPortalRemoved(door));
+        return true;
     }
 
-    public List<MapleDoor> getAllDoors() {
-        ArrayList<MapleDoor> ret = new ArrayList<>();
-        for (MapleDoor door : this.doors.values()) {
+    public List<TacosMysticDoor> getAllDoors() {
+        ArrayList<TacosMysticDoor> ret = new ArrayList<>();
+        for (TacosMysticDoor door : this.doors.values()) {
             ret.add(door);
         }
         return ret;
     }
 
-    public MapleDoor getDoorByOid(int object_id) {
+    public TacosMysticDoor getDoorByOid(int object_id) {
         return this.doors.get(object_id);
-    }
-
-    public void spawnDoor(MapleDoor door) {
-        DebugLogger.DebugLog("Spawn Door : " + door.getMapId());
-        addDoor(door);
-        broadcastMessage(null);
     }
 
     // dynamic portal.

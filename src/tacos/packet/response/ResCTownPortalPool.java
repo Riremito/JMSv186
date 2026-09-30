@@ -18,9 +18,11 @@
  */
 package tacos.packet.response;
 
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleDoor;
 import tacos.packet.ServerPacketHeader;
+import tacos.server.map.object.TacosMysticDoor;
 
 /**
  *
@@ -28,43 +30,42 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCTownPortalPool {
 
-    public static ServerPacket TownPortalCreated(MapleDoor door, boolean isTown) {
+    // CTownPortalPool::OnTownPortalCreated
+    public static ServerPacket TownPortalCreated(TacosMysticDoor door) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalCreated);
 
-        sp.Encode1(isTown ? 1 : 0);
-        sp.Encode4(door.getOwnerId());
-        sp.Encode2((short) door.getPosition().x);
-        sp.Encode2((short) door.getPosition().y);
+        sp.Encode1(door.getState()); // nState, town or not.
+        sp.Encode4(door.getOwnerId()); // dwCharacterID
+        sp.Encode2(door.getX()); // x
+        sp.Encode2(door.getY()); // y
         return sp;
     }
 
-    public static ServerPacket TownPortalRemoved(MapleDoor door) {
+    // CTownPortalPool::OnTownPortalRemoved
+    public static ServerPacket TownPortalRemoved(TacosMysticDoor door) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortalRemoved);
 
         sp.Encode1(1);
-        sp.Encode4(door.getOwnerId());
+        sp.Encode4(door.getOwnerId()); // dwCharacterID
         return sp;
     }
 
     // CWvsContext::OnTownPortal
-    public static ServerPacket setMysticDoorInfo(MapleDoor door) {
+    public static ServerPacket TownPortal(TacosMysticDoor door) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TownPortal);
 
-        if (door == null) {
-            sp.Encode4(999999999);
-            sp.Encode4(999999999);
-        } else {
-            sp.Encode4(door.getMapId());
-            sp.Encode4(door.getLink().getMapId());
-            sp.Encode4(door.getSkillId());
-            sp.Encode2((short) door.getLink().getPosition().x);
-            sp.Encode2((short) door.getLink().getPosition().y);
+        int m_dwTownID = (door != null) ? door.getTownMapId() : 999999999;
+        int m_dwFieldID = (door != null) ? door.getFieldMapId() : 999999999;
+
+        sp.Encode4(m_dwTownID);
+        sp.Encode4(m_dwFieldID);
+
+        if (door != null && m_dwTownID != 999999999 && m_dwFieldID != 999999999) {
+            sp.Encode4(door.getSkillId(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)); // m_nSKillID
+            sp.Encode2(door.getFieldX()); // m_ptFieldPortal.x
+            sp.Encode2(door.getFieldY()); // m_ptFieldPortal.y
         }
 
         return sp;
-    }
-
-    public static ServerPacket resetMysticDoorInfo() {
-        return setMysticDoorInfo(null);
     }
 }

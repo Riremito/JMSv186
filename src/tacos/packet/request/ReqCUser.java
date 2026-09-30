@@ -86,6 +86,7 @@ import tacos.debug.DebugCommand;
 import tacos.debug.DebugShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.client.inventory.MaplePet;
+import tacos.client.TacosDoorSkill;
 import tacos.client.TacosSummonSkill;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
@@ -110,6 +111,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
+import tacos.server.map.object.TacosMysticDoor;
 import tacos.shared.TacosShared;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
@@ -554,7 +556,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_EnterTownPortalRequest: {
-                ReqCTownPortalPool.TryEnterTownPortal(client, cp);
+                OnEnterTownPortalRequest(chr, cp);
                 return true;
             }
             case CP_FuncKeyMappedModified: {
@@ -2218,6 +2220,12 @@ public class ReqCUser {
             chr.addSummon(tss);
             return true;
         }
+        // door skill.
+        TacosDoorSkill tds = WzXML.SKILL.getDoorSkill(nSkillID, nSLV_SS);
+        if (tds != null) {
+            chr.addDoor(tds);
+            return true;
+        }
 
         if (chr.getBuff().update(nSkillID)) {
             chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, nSkillID));
@@ -3229,7 +3237,28 @@ public class ReqCUser {
             }
         }
 
-        DebugLogger.ErrorLog("OnMemoRequest : not coded " + type);
+        DebugLogger.ErrorLog("OnMemoRequest : not coded, " + type);
+        return true;
+    }
+
+    // CField::TryEnterTownPortal
+    public static boolean OnEnterTownPortalRequest(MapleCharacter chr, ClientPacket cp) {
+        int door_character_id = cp.Decode4();
+        boolean is_town_to_field = cp.Decode1() != 0;
+
+        for (TacosMysticDoor door : chr.getMap().getAllDoors()) {
+            if (door.getOwnerId() == door_character_id) {
+                MapleMap map_to = chr.getChannelServer().findMap(is_town_to_field ? door.getFieldMapId() : door.getTownMapId());
+                if (is_town_to_field) {
+                    chr.changeMapPortal(map_to, door.getTownPortal());
+                } else {
+                    chr.changeMapPortal(map_to, door.getTownPortal());
+                }
+                return true;
+            }
+        }
+
+        DebugLogger.ErrorLog("OnEnterTownPortalRequest : not coded.");
         return true;
     }
 

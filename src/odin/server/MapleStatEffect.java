@@ -19,9 +19,7 @@ import odin.constants.GameConstants;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.ResCTownPortalPool;
 import odin.server.life.MapleMonster;
-import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMist;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -484,34 +482,7 @@ public class MapleStatEffect {
                 applyMonsterBuff(applyfrom);
             }
         }
-        if (isMagicDoor()) { // Magic Door
-            if (!applyto.getDoors().isEmpty()) {
-                applyto.removeDoor();
-                applyto.silentPartyUpdate();
-            }
-            MapleDoor door = new MapleDoor(applyto, new Point(applyto.getPosition()), sourceid); // Current Map door
-            if (door.getTownPortal() != null) {
-                MapleDoor townDoor = new MapleDoor(door); // Town door
-                door.setLink(townDoor);
-                door.getTown().spawnDoor(townDoor);
-                townDoor.setLink(door);
-
-                applyto.getMap().spawnDoor(door);
-                applyto.addDoor(door);
-                applyto.addDoor(townDoor);
-                //applyto.SendPacket(MysticDoorResponse.setMysticDoorInfo(door));
-
-                if (applyto.getParty() != null) { // update town doors
-                    //applyto.silentPartyUpdate();
-                }
-
-                applyto.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
-
-            } else {
-                applyto.dropMessage(5, "You may not spawn a door because all doors in the town are taken.");
-            }
-
-        } else if (isMist()) {
+        if (isMist()) {
             Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
             MapleMist mist = new MapleMist(bounds, applyfrom, this, getDuration());
             applyfrom.getMap().addMist(mist);

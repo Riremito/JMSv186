@@ -61,7 +61,6 @@ import tacos.packet.response.data.RD_CharacterStat;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleItemInformationProvider;
-import odin.server.maps.MapleDoor;
 import tacos.client.TacosBuff;
 import tacos.client.TacosBuff.Buff;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -76,7 +75,6 @@ import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_CStage;
-import tacos.server.map.TacosPortal;
 
 /**
  *
@@ -1024,6 +1022,7 @@ public class ResCWvsContext {
                 break;
             }
             case PartyInfo_TownPortalChanged: {
+                /*
                 List<MapleDoor> doors = chr.getDoors();
                 MapleDoor door = doors.isEmpty() ? null : doors.get(0);
                 TacosPortal door_portal = (door != null) ? door.getTownPortal() : null;
@@ -1034,6 +1033,7 @@ public class ResCWvsContext {
                 sp.Encode4((door != null) ? door.getSkillId() : 0);
                 sp.Encode2((door != null) ? door.getLink().getPosition().x : 0);
                 sp.Encode2((door != null) ? door.getLink().getPosition().y : 0);
+                */
                 break;
             }
             case PartyInfo_OpenGate: {
@@ -1076,11 +1076,13 @@ public class ResCWvsContext {
         }
         for (MaplePartyCharacter partychar : partymembers) {
             if (partychar.getChannel() == forchannel && !leaving) {
+                /*
                 data.Encode4(partychar.getDoorTown());
                 data.Encode4(partychar.getDoorTarget());
                 data.Encode4(partychar.getDoorSkill());
                 data.Encode4(partychar.getDoorPosition().x);
                 data.Encode4(partychar.getDoorPosition().y);
+                */
             } else {
                 data.Encode4(leaving ? 999999999 : 0);
                 data.Encode8(leaving ? 999999999 : 0);

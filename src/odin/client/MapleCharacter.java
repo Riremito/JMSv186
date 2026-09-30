@@ -58,7 +58,6 @@ import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.Res_JMS_CField_Pachinko;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.ResCField_MonsterCarnival;
-import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -74,7 +73,6 @@ import odin.server.MapleTrade;
 import odin.server.Randomizer;
 import odin.server.MapleCarnivalParty;
 import odin.server.MapleItemInformationProvider;
-import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
 import odin.server.maps.SavedLocationType;
 import odin.server.quest.MapleQuest;
@@ -153,7 +151,6 @@ public class MapleCharacter extends TacosCharacter {
     private int[] regrocks;
     private transient AtomicInteger inst;
     private List<Integer> lastmonthfameids;
-    private List<MapleDoor> doors;
     private SkillMacro[] skillMacros = new SkillMacro[5];
     private Map<MapleQuest, MapleQuestStatus> quests;
     private Map<Integer, String> questinfo;
@@ -203,7 +200,6 @@ public class MapleCharacter extends TacosCharacter {
         regrocks = new int[5];
         inst = new AtomicInteger();
         inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
-        doors = new ArrayList<>();
         pendingCarnivalRequests = new LinkedList<>();
         savedLocations = new int[SavedLocationType.values().length];
         for (int i = 0; i < SavedLocationType.values().length; i++) {
@@ -648,15 +644,6 @@ public class MapleCharacter extends TacosCharacter {
     // unofficial usage.
     public void changeMapDynamicPortal(MapleMap to, Point pos) {
         changeMapInternal(to, pos, null);
-    }
-
-    public void enterTownPortal(MapleDoor door) {
-        SendPacket(ResCTownPortalPool.setMysticDoorInfo(door));
-        SendPacket(ResCTownPortalPool.TownPortalRemoved(door));
-        changeMapInternal(door.getLink().getMap(), door.getLink().getPosition(), door.getTownPortal());
-        SendPacket(ResCTownPortalPool.TownPortalRemoved(door.getLink()));
-        SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
-        SendPacket(ResCTownPortalPool.setMysticDoorInfo(door.getLink()));
     }
 
     public void changeMapPortal(MapleMap to, TacosPortal pto) {
@@ -1157,18 +1144,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void setTrade(MapleTrade trade) {
         this.trade = trade;
-    }
-
-    public void addDoor(MapleDoor door) {
-        doors.add(door);
-    }
-
-    public void clearDoors() {
-        doors.clear();
-    }
-
-    public List<MapleDoor> getDoors() {
-        return new ArrayList<>(doors);
     }
 
     public boolean getSmega() {
@@ -1767,21 +1742,6 @@ public class MapleCharacter extends TacosCharacter {
         this.hasTutorialSummon = summ;
     }
 
-    public void removeDoor() {
-        final MapleDoor door = getDoors().iterator().next();
-        for (final MapleCharacter chr : door.getTarget().getAllPlayers()) {
-            door.sendDestroyData(chr.getClient());
-        }
-        for (final MapleCharacter chr : door.getTown().getAllPlayers()) {
-            door.sendDestroyData(chr.getClient());
-        }
-        for (final MapleDoor destroyDoor : getDoors()) {
-            door.getTarget().removeDoor(destroyDoor.getObjectId());
-            door.getTown().removeDoor(destroyDoor.getObjectId());
-        }
-        clearDoors();
-    }
-
     public void changeRemoval() {
         changeRemoval(false);
     }
@@ -1798,9 +1758,6 @@ public class MapleCharacter extends TacosCharacter {
             if (ShopDispatch.isOwner(playerShop, this)) {
                 ShopDispatch.setOpen(playerShop, true);
             }
-        }
-        if (!getDoors().isEmpty()) {
-            removeDoor();
         }
         TacosScriptNPC.getInstance().dispose(client);
         TacosScriptQuest.getInstance().dispose(client);

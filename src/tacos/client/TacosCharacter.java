@@ -75,6 +75,7 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFriend;
+import tacos.packet.response.ResCTownPortalPool;
 import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_Friend;
@@ -87,6 +88,7 @@ import tacos.server.TacosServerType;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosPortal;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosMysticDoor;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosPlayer;
 import tacos.server.map.object.TacosSummon;
@@ -1057,6 +1059,64 @@ public class TacosCharacter extends TacosPlayer {
         }
     }
 
+    // mystic door.
+    private final ArrayList<TacosMysticDoor> doors = new ArrayList<>();
+
+    public TacosMysticDoor findDoorBySkillId(int skill_id) {
+        for (int index = 0; index < this.doors.size(); index++) {
+            if (this.doors.get(index).getSkillId() == skill_id) {
+                return this.doors.get(index);
+            }
+        }
+        return null;
+    }
+
+    public int findDoorByOid(TacosMysticDoor door) {
+        for (int index = 0; index < this.doors.size(); index++) {
+            if (this.doors.get(index).getObjectId() == door.getObjectId()) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    public boolean addDoor(TacosDoorSkill tds) {
+        TacosMysticDoor door_field = findDoorBySkillId(tds.getId());
+        if (door_field != null) {
+            removeDoor(door_field);
+        }
+        door_field = new TacosMysticDoor(this, 1, tds); // field door.
+        door_field.reset(this);
+        MapleMap map_town = getChannelServer().findMap(this.map.getReturnMapId());
+        if (map_town == null) {
+            DebugLogger.ErrorLog("addDoor : map_town is null.");
+            return false;
+        }
+        TacosPortal portal_town = door_field.getFreePortal(map_town);
+        if (portal_town == null) {
+            DebugLogger.ErrorLog("addDoor : portal_town is null.");
+            return false;
+        }
+        door_field.setTownPortal(portal_town);
+        this.doors.add(door_field);
+        this.map.addDoor(door_field);
+        SendPacket(ResCTownPortalPool.TownPortal(door_field));
+
+        TacosMysticDoor door_town = new TacosMysticDoor(this, 1, tds);
+        door_town.setPosition(portal_town.getPosition());
+        door_town.setTownPortal(portal_town);
+        map_town.addDoor(door_town);
+        return true;
+    }
+
+    public void removeDoor(TacosMysticDoor door) {
+        int index = findDoorByOid(door);
+        if (index != -1) {
+            this.doors.remove(index);
+        }
+        this.map.removeDoor(door);
+        SendPacket(ResCTownPortalPool.TownPortal(null));
+    }
     // skill pet.
     protected TacosSkillPet skill_pet = null;
 

@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
+import tacos.client.TacosDoorSkill;
 import tacos.client.TacosSummonSkill;
 import tacos.config.Config;
 
@@ -127,6 +128,78 @@ public class SkillWz extends WzXML {
         this.job_list.put(job_id, skill_list);
 
         LinkedHashMap<Integer, TacosSummonSkill> level_list = skill_list.get(target_skill_id);
+        if (level_list != null) {
+            return level_list.get(target_skill_level);
+        }
+        return null;
+    }
+
+    // door.
+    private final LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<Integer, TacosDoorSkill>>> job_list_door = new LinkedHashMap<>();
+
+    public TacosDoorSkill getDoorSkill(int target_skill_id, int target_skill_level) {
+        int job_id = target_skill_id / 10000;
+
+        LinkedHashMap<Integer, LinkedHashMap<Integer, TacosDoorSkill>> skill_list = this.job_list_door.get(job_id);
+        if (skill_list != null) {
+            LinkedHashMap<Integer, TacosDoorSkill> level_list = skill_list.get(target_skill_id);
+            if (level_list != null) {
+                return level_list.get(target_skill_level);
+            }
+            return null;
+        }
+
+        skill_list = new LinkedHashMap<>();
+
+        MapleData job_img = getImg(job_id);
+        if (job_img != null) {
+            MapleData md_skill = job_img.getChildByPath("skill");
+            if (md_skill != null) {
+                for (MapleData md_skill_data : md_skill.getChildren()) {
+                    MapleData md_frame = md_skill_data.getChildByPath("Frame");
+                    if (md_frame != null) {
+                        int skill_id = Integer.parseInt(md_skill_data.getName());
+                        // postBB style, but not all skills are updated in BIGBANG.
+                        if (Config.PostBB()) {
+                            MapleData md_common = md_skill_data.getChildByPath("common");
+                            if (md_common != null) {
+                                LinkedHashMap<Integer, TacosDoorSkill> level_list = new LinkedHashMap<>();
+                                int maxLevel = WzDataTool.getIntPath("maxLevel", md_common, 0);
+                                for (int skill_level = 1; skill_level <= maxLevel; skill_level++) {
+                                    TacosDoorSkill tds = new TacosDoorSkill(skill_id, skill_level);
+                                    tds.setItemCon(WzDataTool.getIntExpression("itemCon", md_common, 0, skill_level));
+                                    tds.setItemConNo(WzDataTool.getIntExpression("itemConNo", md_common, 0, skill_level));
+                                    tds.setMpCon(WzDataTool.getIntExpression("mpCon", md_common, 0, skill_level));
+                                    tds.setTime(WzDataTool.getIntExpression("time", md_common, 0, skill_level));
+                                    level_list.put(skill_level, tds);
+                                }
+                                skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
+                                continue;
+                            }
+                        }
+                        // preBB style.
+                        MapleData md_level = md_skill_data.getChildByPath("level");
+                        if (md_level != null) {
+                            LinkedHashMap<Integer, TacosDoorSkill> level_list = new LinkedHashMap<>();
+                            for (MapleData md_level_data : md_level.getChildren()) {
+                                int skill_level = Integer.parseInt(md_level_data.getName());
+                                TacosDoorSkill tds = new TacosDoorSkill(skill_id, skill_level);
+                                tds.setItemCon(WzDataTool.getIntPath("itemCon", md_level_data, 0));
+                                tds.setItemConNo(WzDataTool.getIntPath("itemConNo", md_level_data, 0));
+                                tds.setMpCon(WzDataTool.getIntPath("mpCon", md_level_data, 0));
+                                tds.setTime(WzDataTool.getIntPath("time", md_level_data, 0));
+                                level_list.put(skill_level, tds);
+                            }
+                            skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
+                        }
+                    }
+                }
+            }
+        }
+
+        this.job_list_door.put(job_id, skill_list);
+
+        LinkedHashMap<Integer, TacosDoorSkill> level_list = skill_list.get(target_skill_id);
         if (level_list != null) {
             return level_list.get(target_skill_level);
         }
