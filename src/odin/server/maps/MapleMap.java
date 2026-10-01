@@ -44,6 +44,7 @@ import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.response.ResCDropPool.DropLeaveType;
+import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -72,12 +73,6 @@ public final class MapleMap extends TacosMap {
     public void spawnFakeMonster(MapleMonster monster) {
         monster.setMap(this);
         super.spawnFakeMonster(monster);
-    }
-
-    @Override
-    public void spawnReactor(MapleReactor reactor) {
-        reactor.setMap(this);
-        super.spawnReactor(reactor);
     }
 
     public void killMonster(MapleMonster monster, MapleCharacter chr, boolean withDrops, boolean second, OpsMobLeaveField animation) {
@@ -243,10 +238,9 @@ public final class MapleMap extends TacosMap {
     }
 
     public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short quest_id) {
-        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, mob, chr, droptype, false, quest_id);
+        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, chr, droptype, false, quest_id);
         addDrop(mdrop);
         broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
-        activateItemReactors(mdrop, chr.getClient());
     }
 
     public void talkMonster(String msg, int itemId, MapleMonster monster) {
@@ -295,52 +289,21 @@ public final class MapleMap extends TacosMap {
         startMapEffect(msg, itemId, true);
     }
 
-    private class ActivateItemReactor implements Runnable {
-
-        private MapleMapItem mapitem;
-        private MapleReactor reactor;
-        private TacosClient client;
-
-        public ActivateItemReactor(MapleMapItem mapitem, MapleReactor reactor, TacosClient client) {
-            this.mapitem = mapitem;
-            this.reactor = reactor;
-            this.client = client;
-        }
-
-        @Override
-        public void run() {
-            if (mapitem != null && mapitem == getDropByOid(mapitem.getObjectId())) {
-                removeDrop(mapitem.getObjectId());
-                broadcastMessage(ResCDropPool.DropLeaveField(mapitem, DropLeaveType.EXPIRED));
-                reactor.hitReactor(client);
-                reactor.setTimerActive(false);
-
-                if (reactor.getDelay() > 0) {
-                    MapTimer.getInstance().schedule(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            reactor.forceHitReactor((byte) 0);
-                        }
-                    }, reactor.getDelay());
-                }
-            } else {
-                reactor.setTimerActive(false);
-            }
-        }
-    }
-
     private void activateItemReactors(MapleMapItem drop, TacosClient client) {
         Item item = drop.getItem();
-        for (MapleReactor react : getAllReactors()) {
-
-            if (react.getReactorType() == 100) {
-                if (GameConstants.isCustomReactItem(react.getId(), item.getItemId(), react.getReactItem().getKey()) && react.getReactItem().getValue() == item.getQuantity()) {
-                    if (react.getArea().contains(drop.getPosition())) {
-                        if (!react.isTimerActive()) {
-                            MapTimer.getInstance().schedule(new ActivateItemReactor(drop, react, client), 5000);
-                            react.setTimerActive(true);
-                            break;
+        for (MapleReactor reactor : getAllReactors()) {
+            if (reactor.getReactorType() == 100) {
+                if (GameConstants.isCustomReactItem(reactor.getId(), item.getItemId(), reactor.getReactItem().getKey()) && reactor.getReactItem().getValue() == item.getQuantity()) {
+                    if (reactor.getArea().contains(drop.getPosition())) {
+                        if (!reactor.isTimerActive()) {
+                            // 5000 ms
+                            removeDrop(drop.getObjectId());
+                            broadcastMessage(ResCDropPool.DropLeaveField(drop, DropLeaveType.EXPIRED));
+                            reactor.hitReactor(client);
+                            reactor.setTimerActive(false);
+                            reactor.forceHitReactor((byte) 0);
+                            reactor.setTimerActive(true);
+                            return;
                         }
                     }
                 }
@@ -421,13 +384,13 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (guardz != null) {
-            MapleReactor my = new MapleReactor(9980000 + team);
-            my.setPosition(guardz);
-            my.setState((byte) 1);
-            my.setDelay(0);
-            my.setName(team + "" + num); //lol
-            //with num. -> guardians in factory
-            spawnReactor(my);
+            MapleReactor reactor = new MapleReactor(9980000 + team);
+            reactor.setPosition(guardz);
+            reactor.setState((byte) 1);
+            reactor.setName(team + "" + num); //lol
+            reactor.setMap(this);
+            addReactor(reactor);
+            broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
             final MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             for (MapleMonster mons : getAllMonsters()) {
                 if (mons.getCarnivalTeam() == team) {
@@ -483,22 +446,20 @@ public final class MapleMap extends TacosMap {
     }
 
     // used by script
-    public void spawnItemDrop(Object dropper, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+    public void spawnItemDrop(MapleCharacter player, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
-        MapleMapItem drop = new MapleMapItem(item, droppos, dropper, owner, (byte) 2, playerDrop);
+        MapleMapItem drop = new MapleMapItem(item, droppos, owner, (byte) 2, playerDrop);
         addDrop(drop);
-        Point dropperPosition;
-        if (dropper instanceof MapleCharacter) {
-            dropperPosition = ((MapleCharacter) dropper).getPosition();
-        } else if (dropper instanceof MapleReactor) {
-            dropperPosition = ((MapleReactor) dropper).getPosition();
-        } else {
-            throw new IllegalArgumentException("spawnItemDrop: unknown dropper type: " + dropper);
-        }
-        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, dropperPosition));
-        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, dropperPosition)); // enable pick up for new players
-        if (!getEverlast()) {
-            activateItemReactors(drop, owner.getClient());
-        }
+        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, player.getPosition()));
+        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, player.getPosition()));
+        activateItemReactors(drop, owner.getClient());
+    }
+
+    public void spawnItemDropByReactor(MapleReactor reactor, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+        Point droppos = calcDropPos(pos, pos);
+        MapleMapItem drop = new MapleMapItem(item, droppos, owner, (byte) 2, playerDrop);
+        addDrop(drop);
+        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
+        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
     }
 }

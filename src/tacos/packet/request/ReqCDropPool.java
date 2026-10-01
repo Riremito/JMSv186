@@ -27,7 +27,6 @@ import tacos.config.Region;
 import odin.handling.world.MaplePartyCharacter;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleMonster;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
@@ -160,7 +159,7 @@ public class ReqCDropPool {
             DebugLogger.ErrorLog("PickUp : checkSpace");
             return false;
         }
-        if (!MapleInventoryManipulator.addFromDrop(chr.getClient(), mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster)) {
+        if (!MapleInventoryManipulator.addFromDrop(chr.getClient(), mapitem.getItem(), true, !mapitem.isPlayerDrop())) {
             DebugLogger.ErrorLog("PickUp : addFromDrop");
             return false;
         }

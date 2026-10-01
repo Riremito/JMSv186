@@ -768,10 +768,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         }
     }
 
-    public void resetReactors() {
-        getPlayer().getMap().resetReactors();
-    }
-
     public void genericGuildMessage(int code) {
         client.SendPacket(ResCWvsContext.genericGuildMessage((byte) code));
     }

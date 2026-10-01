@@ -29,6 +29,7 @@ import odin.server.MapleSquad;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
+import odin.server.maps.MapleReactor;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
 import tacos.packet.response.ResCWvsContext;
@@ -40,6 +41,7 @@ import tacos.packet.ops.OpsMobAppear;
 import tacos.property.Property_Dummy_World;
 import tacos.server.map.MasterMonster;
 import tacos.server.map.TacosNPCSpawnPoint;
+import tacos.server.map.TacosReactorSpawnPoint;
 import tacos.server.map.TacosSpawnPoint;
 import tacos.unofficial.CustomMap;
 
@@ -133,6 +135,13 @@ public class TacosChannel extends TacosServer {
             MapleNPC npc = sp.regen(map);
             if (npc != null) {
                 map.addNPC(npc);
+            }
+        }
+        // reactor.
+        for (TacosReactorSpawnPoint sp : map.getReactorSpawnPoint()) {
+            MapleReactor reactor = sp.regen(map);
+            if (reactor != null) {
+                map.addReactor(reactor);
             }
         }
         // custom npc.

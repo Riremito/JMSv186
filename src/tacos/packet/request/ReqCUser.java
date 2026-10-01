@@ -1033,7 +1033,7 @@ public class ReqCUser {
                 if (is_pick_pocket && skill_effect_pick_pocket != null && !is_meso_explosion) {
                     if (skill_effect_pick_pocket.makeChanceResult()) {
                         int maxmeso = skill_effect_pick_pocket.getX();
-                        map.spawnMesoDrop(Math.min((int) Math.max(((double) (damage & 0x7FFFFFFF) / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster, chr, true, (byte) 0);
+                        map.spawnMesoDrop(Math.min((int) Math.max(((double) (damage & 0x7FFFFFFF) / (double) 20000) * (double) maxmeso, (double) 1), maxmeso), new Point((int) (monster.getPosition().getX() + Randomizer.nextInt(100) - 50), (int) (monster.getPosition().getY())), monster.getPosition(), chr, true, (byte) 0);
                     }
                 }
             }
@@ -2328,7 +2328,7 @@ public class ReqCUser {
         }
 
         chr.gainMeso(-mesos, false, true);
-        chr.getMap().spawnMesoDrop(mesos, chr.getPosition(), chr, chr, true, (byte) 0);
+        chr.getMap().spawnMesoDrop(mesos, chr.getPosition(), chr.getPosition(), chr, true, (byte) 0);
         return true;
     }
 

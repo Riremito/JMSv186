@@ -39,7 +39,6 @@ import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
 import tacos.config.Config;
@@ -277,7 +276,7 @@ public class ReqCUser_Pet {
             if (ReqCDropPool.useDropItem(chr, mapitem.getItemId())) {
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             } else if (MapleInventoryManipulator.checkSpace(client, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
+                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, !mapitem.isPlayerDrop());
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             }
         }

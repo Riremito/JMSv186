@@ -30,9 +30,7 @@ import java.util.Map;
 import tacos.wz.MapleData;
 import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
-import odin.server.maps.MapleReactor;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.wz.WzDataTool;
@@ -207,6 +205,7 @@ public class TacosMapData {
     private Map<Integer, TacosPortal> portals = new HashMap<>();
     private ArrayList<TacosSpawnPoint> monster_spawn_point = new ArrayList<>();
     private ArrayList<TacosNPCSpawnPoint> npc_spawn_point = new ArrayList<>();
+    private ArrayList<TacosReactorSpawnPoint> reactor_spawn_point = new ArrayList<>();
 
     public TacosMapData(int mapid) {
         this.map_id = mapid;
@@ -226,6 +225,10 @@ public class TacosMapData {
 
     public ArrayList<TacosNPCSpawnPoint> getNPCSpawnPoint() {
         return this.npc_spawn_point;
+    }
+
+    public ArrayList<TacosReactorSpawnPoint> getReactorSpawnPoint() {
+        return this.reactor_spawn_point;
     }
 
     public Point calcDropPos(Point initial, Point fallback) {
@@ -550,29 +553,12 @@ public class TacosMapData {
 
     // reactor node.
     public boolean loadReactor(MapleData mapData) {
-        MapleData reactors = mapData.getChildByPath("reactor");
-        if (reactors == null) {
-            return true;
-        }
-
-        for (MapleData reactor : reactors) {
-            int reactor_id = WzDataTool.getInt(reactor.getChildByPath("id"), -1);
-            if (reactor_id == -1) {
-                DebugLogger.ErrorLog("loadReactor : failed" + mapData.getParent().getName());
-                continue;
+        for (MapleData reactor : mapData.getChildByPath("reactor")) {
+            TacosReactorSpawnPoint sp = new TacosReactorSpawnPoint();
+            if (sp.loadData(reactor)) {
+                this.reactor_spawn_point.add(sp);
             }
-            int FacingDirection = WzDataTool.getInt(reactor.getChildByPath("f"), 0);
-            MapleReactor myReactor = new MapleReactor(reactor_id);
-            myReactor.setFacingDirection(FacingDirection);
-            myReactor.setPosition(new Point(WzDataTool.getInt(reactor.getChildByPath("x")), WzDataTool.getInt(reactor.getChildByPath("y"))));
-            myReactor.setDelay(WzDataTool.getInt(reactor.getChildByPath("reactorTime")) * 1000);
-            myReactor.setState((byte) 0);
-            myReactor.setName(WzDataTool.getString(reactor.getChildByPath("name"), ""));
-
-            myReactor.setMap(((MapleMap) this));
-            ((MapleMap) this).addReactor(myReactor);
         }
-
         return true;
     }
 

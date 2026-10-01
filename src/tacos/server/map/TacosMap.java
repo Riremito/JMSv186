@@ -1217,23 +1217,15 @@ public class TacosMap extends TacosMapData {
         return this.drops.size();
     }
 
-    public void spawnMesoDrop(int meso, Point position, Object dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+    public void spawnMesoDrop(int meso, Point position, Point dropperPosition, MapleCharacter owner, boolean playerDrop, byte droptype) {
         Point droppos = calcDropPos(position, position);
-        MapleMapItem mdrop = new MapleMapItem(meso, droppos, dropper, owner, droptype, playerDrop);
+        MapleMapItem mdrop = new MapleMapItem(meso, droppos, owner, droptype, playerDrop);
         addDrop(mdrop);
-        Point dropperPosition;
-        if (dropper instanceof MapleCharacter) {
-            dropperPosition = ((MapleCharacter) dropper).getPosition();
-        } else if (dropper instanceof MapleMonster) {
-            dropperPosition = ((MapleMonster) dropper).getPosition();
-        } else {
-            throw new IllegalArgumentException("spawnMesoDrop: unknown dropper type: " + dropper);
-        }
         broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, droppos, dropperPosition));
     }
 
     public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
-        MapleMapItem mdrop = new MapleMapItem(meso, position, dropper, owner, droptype, playerDrop);
+        MapleMapItem mdrop = new MapleMapItem(meso, position, owner, droptype, playerDrop);
         addDrop(mdrop);
         broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, position, dropper.getPosition()));
     }
@@ -1327,6 +1319,20 @@ public class TacosMap extends TacosMapData {
     // reactor.
     private LinkedHashMap<Integer, MapleReactor> reactors = new LinkedHashMap<>();
 
+    public void resetReactors() {
+        for (MapleReactor reactor : this.reactors.values()) {
+            reactor.forceHitReactor((byte) 0);
+        }
+    }
+
+    public List<MapleReactor> getAllReactors() {
+        ArrayList<MapleReactor> ret = new ArrayList<>();
+        for (MapleReactor reactor : this.reactors.values()) {
+            ret.add(reactor);
+        }
+        return ret;
+    }
+
     public void addReactor(MapleReactor reactor) {
         if (reactor.getObjectId() == 0) {
             reactor.setObjectId();
@@ -1338,59 +1344,25 @@ public class TacosMap extends TacosMapData {
         this.reactors.remove(object_id);
     }
 
-    public List<MapleReactor> getAllReactors() {
-        ArrayList<MapleReactor> ret = new ArrayList<>();
+    public MapleReactor getReactorByOid(int object_id) {
+        return this.reactors.get(object_id);
+    }
+
+    public MapleReactor getReactorByName(String name) {
         for (MapleReactor reactor : this.reactors.values()) {
-            ret.add(reactor);
-        }
-        return ret;
-    }
-
-    public MapleReactor getReactorByOid(int oid) {
-        return this.reactors.get(oid);
-    }
-
-    public MapleReactor getReactorById(int id) {
-        MapleReactor ret = null;
-        Iterator<MapleReactor> itr = this.reactors.values().iterator();
-        while (itr.hasNext()) {
-            MapleReactor n = itr.next();
-            if (n.getId() == id) {
-                ret = n;
-                break;
-            }
-        }
-        return ret;
-    }
-
-    public MapleReactor getReactorByName(final String name) {
-        for (MapleReactor mr : this.reactors.values()) {
-            if (mr.getName().equalsIgnoreCase(name)) {
-                return mr;
+            if (reactor.getName().equalsIgnoreCase(name)) {
+                return reactor;
             }
         }
         return null;
     }
 
-    public void resetReactors() {
-        setReactorState((byte) 0);
-    }
-
-    // unused
-    public void setReactorState() {
-        setReactorState((byte) 1);
-    }
-
-    public void setReactorState(byte state) {
-        for (MapleReactor mr : this.reactors.values()) {
-            mr.forceHitReactor((byte) state);
-        }
-    }
-
+    // used by script
     public void shuffleReactors() {
-        shuffleReactors(0, 9999999); //all
+        shuffleReactors(0, 9999999);
     }
 
+    // used by script
     public void shuffleReactors(int first, int last) {
         List<Point> points = new ArrayList<>();
         for (MapleReactor mr : this.reactors.values()) {
@@ -1406,49 +1378,12 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public void spawnReactor(MapleReactor reactor) {
-        addReactor(reactor);
-        broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
-    }
-
-    public void respawnReactor(MapleReactor reactor) {
-        reactor.setState((byte) 0);
-        reactor.setAlive(true);
-        spawnReactor(reactor);
-    }
-
     public void destroyReactor(int oid) {
         MapleReactor reactor = getReactorByOid(oid);
         broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
         reactor.setAlive(false);
         removeReactor(reactor.getObjectId());
         reactor.setTimerActive(false);
-
-        if (reactor.getDelay() > 0) {
-            MapTimer.getInstance().schedule(new Runnable() {
-
-                @Override
-                public final void run() {
-                    respawnReactor(reactor);
-                }
-            }, reactor.getDelay());
-        }
-    }
-
-    public void reloadReactors() {
-        List<MapleReactor> toSpawn = new ArrayList<>();
-        for (MapleReactor reactor : this.reactors.values()) {
-            broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
-            reactor.setAlive(false);
-            reactor.setTimerActive(false);
-            toSpawn.add(reactor);
-        }
-        for (MapleReactor r : toSpawn) {
-            removeReactor(r.getObjectId());
-            if (r.getId() != 9980000 && r.getId() != 9980001) { //guardians cpq
-                respawnReactor(r);
-            }
-        }
     }
 
     // self and other players in range.
@@ -1616,7 +1551,6 @@ public class TacosMap extends TacosMapData {
     public void resetFully(boolean respawn) {
         setChangeBGM("");
         killAllMonsters(false);
-        reloadReactors();
         cancelSquadSchedule();
         resetPortals();
         environment.clear();
@@ -1635,6 +1569,7 @@ public class TacosMap extends TacosMapData {
     private final TacosTask task_map = new TacosTask();
     private final TacosTask task_drop_removal = new TacosTask();
     private final TacosTask task_mob_regen = new TacosTask();
+    private final TacosTask task_reactor_regen = new TacosTask();
     private final TacosTask task_mist = new TacosTask();
 
     public boolean update(MapleCharacter player, long time_current) {
@@ -1681,6 +1616,18 @@ public class TacosMap extends TacosMapData {
                             monster.setOwnerId(area_owner.getId());
                             area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                         }
+                    }
+                }
+            }
+        }
+        // reactor regen.
+        if (this.task_reactor_regen.check(time_current, 7000)) {
+            for (TacosReactorSpawnPoint sp : getReactorSpawnPoint()) {
+                if (sp.getLastRegenTime() + sp.getReactorTime() <= time_current) {
+                    MapleReactor reactor = sp.regen((MapleMap) this);
+                    if (reactor != null) {
+                        addReactor(reactor);
+                        broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
                     }
                 }
             }

@@ -94,7 +94,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
             if (d.itemId == 0) {
                 range = maxMeso - minMeso;
                 mesoDrop = Randomizer.nextInt(range) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
-                reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor, getPlayer(), false, (byte) 0);
+                reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor.getPosition(), getPlayer(), false, (byte) 0);
             } else {
                 Item drop;
                 if (GameConstants.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
@@ -102,7 +102,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
                 } else {
                     drop = ii.randomizeStats((Equip) ii.getEquipById(d.itemId));
                 }
-                reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, false);
+                reactor.getMap().spawnItemDropByReactor(reactor, getPlayer(), drop, dropPos, false, false);
             }
             dropPos.x += 25;
         }

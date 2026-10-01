@@ -58,6 +58,7 @@ import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
+import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptPortal;
@@ -375,8 +376,6 @@ public class DebugCommand {
                 }
 
                 MapleReactor reactor = new MapleReactor(reactor_id);
-                reactor.setDelay(-1);
-
                 Point pos = new Point(chr.getPosition());
                 int foothold_id = chr.getFootholdId();
                 if (foothold_id == 0) {
@@ -394,8 +393,9 @@ public class DebugCommand {
                     pos.y = fh.getY1() + ((reactorSt.getBR().y - reactorSt.getTL().y) / 2);
                 }
                 reactor.setPosition(pos);
-                // spawn & hit
-                map.spawnReactor(reactor);
+                reactor.setMap(map);
+                map.addReactor(reactor);
+                map.broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
                 TacosScriptReactor.getInstance().act(client, reactor);
                 chr.DebugMsg("reactor : " + reactor_id);
                 return true;

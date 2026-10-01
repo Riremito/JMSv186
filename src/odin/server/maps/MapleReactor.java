@@ -31,7 +31,6 @@ import tacos.server.map.object.TacosReactor;
 
 public class MapleReactor extends TacosReactor {
 
-    private int delay;
     private byte state;
     private MapleMap map;
     private boolean timerActive;
@@ -52,14 +51,6 @@ public class MapleReactor extends TacosReactor {
         this.state = state;
     }
 
-    public void setDelay(int delay) {
-        this.delay = delay;
-    }
-
-    public int getDelay() {
-        return delay;
-    }
-
     public int getReactorType() {
         return stats.getType(state);
     }
@@ -69,15 +60,15 @@ public class MapleReactor extends TacosReactor {
     }
 
     //hitReactor command for item-triggered reactors
-    public void hitReactor(int charPos, short stance, TacosClient client) {
+    public void hitReactor(int dwHitOption, short stance, TacosClient client) {
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
             //type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
             final byte oldState = state;
-            if (!(stats.getType(state) == 2 && (charPos == 0 || charPos == 2))) { // next state
+            if (!(stats.getType(state) == 2 && (dwHitOption == 0 || dwHitOption == 2))) { // next state
                 state = stats.getNextState(state);
 
                 if (stats.getNextState(state) == -1 || stats.getType(state) == 999) { //end of reactor
-                    if ((stats.getType(state) < 100 || stats.getType(state) == 999) && delay > 0) { //reactor broken
+                    if ((stats.getType(state) < 100 || stats.getType(state) == 999)) { //reactor broken
                         map.destroyReactor(getObjectId());
                     } else { //item-triggered on final step
                         map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, stance));
@@ -117,7 +108,7 @@ public class MapleReactor extends TacosReactor {
         return pos;
     }
 
-    public void scheduleSetState(final byte oldState, final byte newState, long delay) {
+    public void scheduleSetState(byte oldState, byte newState, long delay) {
         MapTimer.getInstance().schedule(new Runnable() {
 
             @Override
@@ -150,7 +141,7 @@ public class MapleReactor extends TacosReactor {
     }
 
     // used by script
-    public void forceHitReactor(final byte newState) {
+    public void forceHitReactor(byte newState) {
         setState((byte) newState);
         setTimerActive(false);
         map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));

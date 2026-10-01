@@ -29,6 +29,7 @@ public class TacosDrop extends TacosMapObject {
     private Item item = null;
     private int quest_id = 0;
     private int meso = 0;
+    private boolean player_drop = false;
 
     public TacosDrop(Item item, int quest_id, int meso) {
         this.item = item;
@@ -53,5 +54,13 @@ public class TacosDrop extends TacosMapObject {
 
     public int getQuestId() {
         return this.quest_id;
+    }
+
+    public boolean isPlayerDrop() {
+        return this.player_drop;
+    }
+
+    public void setPlayerDrop(boolean player_drop) {
+        this.player_drop = player_drop;
     }
 }

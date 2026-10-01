@@ -36,7 +36,7 @@ public class ResCReactorPool {
         sp.Encode1(reactor.getState()); // nState
         sp.Encode2(reactor.getX()); // ptPos.x
         sp.Encode2(reactor.getY()); // ptPos.y
-        sp.Encode2(stance); // tHitStart
+        sp.Encode2(stance); // tHitStart, tActionDelay
         sp.Encode1(0); // nProperEventIdx
         sp.Encode1(4); // tStateEnd
         return sp;
