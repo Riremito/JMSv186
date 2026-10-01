@@ -45,7 +45,10 @@ public class TacosReactorSpawnPoint {
         this.f = WzDataTool.getInt(md_reactor.getChildByPath("f"), 0);
         this.id = WzDataTool.getInt(md_reactor.getChildByPath("id"), 0);
         this.name = WzDataTool.getString(md_reactor.getChildByPath("name"), "");
-        this.reactorTime = WzDataTool.getInt(md_reactor.getChildByPath("reactorTime"), 0) * 1000;
+        this.reactorTime = WzDataTool.getInt(md_reactor.getChildByPath("reactorTime"), 0);
+        if (1 <= this.reactorTime) {
+            this.reactorTime *= 1000;
+        }
         this.x = WzDataTool.getInt(md_reactor.getChildByPath("x"));
         this.y = WzDataTool.getInt(md_reactor.getChildByPath("y"));
 

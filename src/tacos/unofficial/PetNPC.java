@@ -58,7 +58,6 @@ public class PetNPC implements IPetEx {
         this.npc.setPosition(this.character.getPosition());
         this.npc.setFootholdId(this.character.getFootholdId());
         this.character.getMap().addNPC(this.npc);
-        SendPacket(ResCNpcPool.NpcEnterField(this.npc));
         return true;
     }
 
@@ -68,8 +67,7 @@ public class PetNPC implements IPetEx {
             return false;
         }
 
-        this.character.getMap().removeNPC(this.npc.getObjectId());
-        SendPacket(ResCNpcPool.NpcLeaveField(this.npc));
+        this.character.getMap().removeNPC(this.npc);
         this.npc = null;
         return true;
     }

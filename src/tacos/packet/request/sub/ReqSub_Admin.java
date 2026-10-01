@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
-import tacos.packet.response.ResCNpcPool;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
@@ -284,7 +283,6 @@ public class ReqSub_Admin {
         npc.setRx1(y - 50);
         npc.setFootholdId(map.getFootholds().findBelow(npc_xy).getId());
         map.addNPC(npc);
-        map.broadcastMessage(ResCNpcPool.NpcEnterField(npc));
         return true;
     }
 }

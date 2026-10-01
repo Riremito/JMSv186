@@ -29,14 +29,14 @@ import tacos.packet.ServerPacketHeader;
 public class ResCReactorPool {
 
     // CReactorPool::OnReactorChangeState
-    public static ServerPacket ReactorChangeState(MapleReactor reactor, int stance) {
+    public static ServerPacket ReactorChangeState(MapleReactor reactor, int tActionDelay) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorChangeState);
 
         sp.Encode4(reactor.getObjectId()); // dwID
         sp.Encode1(reactor.getState()); // nState
         sp.Encode2(reactor.getX()); // ptPos.x
         sp.Encode2(reactor.getY()); // ptPos.y
-        sp.Encode2(stance); // tHitStart, tActionDelay
+        sp.Encode2(tActionDelay); // tHitStart, tActionDelay
         sp.Encode1(0); // nProperEventIdx
         sp.Encode1(4); // tStateEnd
         return sp;

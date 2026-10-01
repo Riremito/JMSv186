@@ -44,7 +44,6 @@ import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.response.ResCDropPool.DropLeaveType;
-import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -390,7 +389,6 @@ public final class MapleMap extends TacosMap {
             reactor.setName(team + "" + num); //lol
             reactor.setMap(this);
             addReactor(reactor);
-            broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
             final MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             for (MapleMonster mons : getAllMonsters()) {
                 if (mons.getCarnivalTeam() == team) {

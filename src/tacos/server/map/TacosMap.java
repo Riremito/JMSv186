@@ -455,13 +455,7 @@ public class TacosMap extends TacosMapData {
         }
         // reactor
         for (MapleReactor reactor : this.reactors.values()) {
-            int number = split.find(reactor.getPosition().x, reactor.getPosition().y);
-            if (split.getTotal() <= number) {
-                continue;
-            }
-            if (area_states.get(number) == MapSplitState.ACTIVE) {
-                chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
-            }
+            chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
         }
     }
 
@@ -629,16 +623,7 @@ public class TacosMap extends TacosMapData {
         }
         // reactor
         for (MapleReactor reactor : this.reactors.values()) {
-            int number = split.find(reactor.getPosition().x, reactor.getPosition().y);
-            if (split.getTotal() <= number) {
-                continue;
-            }
-            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
-                chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
-            }
-            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                chr.SendPacket(ResCReactorPool.ReactorLeaveField(reactor));
-            }
+            // none.
         }
     }
 
@@ -1013,15 +998,17 @@ public class TacosMap extends TacosMapData {
             npc.setObjectId();
         }
         this.npcs.put(npc.getObjectId(), npc);
+        broadcastMessage(ResCNpcPool.NpcEnterField(npc));
     }
 
-    public boolean removeNPC(int object_id) {
-        this.npcs.remove(object_id);
+    public boolean removeNPC(MapleNPC npc) {
+        this.npcs.remove(npc.getObjectId());
+        broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
         // remove from spawn point.
         for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
-            MapleNPC npc = sp.getNPC();
-            if (npc != null) {
-                if (npc.getObjectId() == object_id) {
+            MapleNPC npc_sp = sp.getNPC();
+            if (npc_sp != null) {
+                if (npc_sp.getObjectId() == npc.getObjectId()) {
                     sp.removeNPC();
                     return true;
                 }
@@ -1061,6 +1048,7 @@ public class TacosMap extends TacosMapData {
         return this.npcs.get(object_id);
     }
 
+    // used by script.
     public void spawnNpc(int npc_id, Point pos) {
         MapleNPC npc = new MapleNPC(npc_id);
         npc.setPosition(pos);
@@ -1069,17 +1057,15 @@ public class TacosMap extends TacosMapData {
         npc.setRx1(pos.x - 50);
         npc.setFootholdId(getFootholds().findBelow(pos).getId());
         addNPC(npc);
-        broadcastMessage(ResCNpcPool.NpcEnterField(npc));
     }
 
-    public boolean removeNpc(int npc_id) {
+    public boolean removeNPCById(int npc_id) {
         MapleNPC npc = getNPCById(npc_id);
         if (npc == null) {
             return false;
         }
 
-        removeNPC(npc.getObjectId());
-        broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
+        removeNPC(npc);
         return true;
     }
 
@@ -1338,10 +1324,12 @@ public class TacosMap extends TacosMapData {
             reactor.setObjectId();
         }
         this.reactors.put(reactor.getObjectId(), reactor);
+        broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
     }
 
-    public void removeReactor(int object_id) {
-        this.reactors.remove(object_id);
+    public void removeReactor(MapleReactor reactor) {
+        this.reactors.remove(reactor.getObjectId());
+        broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
     }
 
     public MapleReactor getReactorByOid(int object_id) {
@@ -1355,6 +1343,13 @@ public class TacosMap extends TacosMapData {
             }
         }
         return null;
+    }
+
+    // used by script
+    public void setReactorState() {
+        for (MapleReactor reactor : this.reactors.values()) {
+            reactor.forceHitReactor((byte) 1);
+        }
     }
 
     // used by script
@@ -1376,14 +1371,6 @@ public class TacosMap extends TacosMapData {
                 mr.setPosition(points.remove(points.size() - 1));
             }
         }
-    }
-
-    public void destroyReactor(int oid) {
-        MapleReactor reactor = getReactorByOid(oid);
-        broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
-        reactor.setAlive(false);
-        removeReactor(reactor.getObjectId());
-        reactor.setTimerActive(false);
     }
 
     // self and other players in range.
@@ -1544,16 +1531,38 @@ public class TacosMap extends TacosMapData {
         return TacosScriptEvent.getInstance().getEventManager(em);
     }
 
+    // used by script
     public void resetFully() {
         resetFully(true);
     }
 
+    // used by script
     public void resetFully(boolean respawn) {
         setChangeBGM("");
-        killAllMonsters(false);
         cancelSquadSchedule();
         resetPortals();
         environment.clear();
+    }
+
+    public void removeAllObjects() {
+        // remove.
+        setChangeBGM("");
+        for (MapleMonster monster : getAllMonsters()) {
+            removeMonster(monster);
+        }
+        for (MapleReactor reactor : getAllReactors()) {
+            removeReactor(reactor);
+        }
+        for (MapleNPC npc : getAllNPCs()) {
+            removeNPC(npc);
+        }
+        for (MapleMapItem mmi : getAllDrops()) {
+            removeDrop(mmi.getObjectId());
+            broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
+        }
+        for (MapleMist mist : getAllMists()) {
+            removeMist(mist);
+        }
     }
 
     // compatbility
@@ -1621,13 +1630,14 @@ public class TacosMap extends TacosMapData {
             }
         }
         // reactor regen.
-        if (this.task_reactor_regen.check(time_current, 7000)) {
+        if (this.task_reactor_regen.check(time_current, 5000)) {
             for (TacosReactorSpawnPoint sp : getReactorSpawnPoint()) {
-                if (sp.getLastRegenTime() + sp.getReactorTime() <= time_current) {
-                    MapleReactor reactor = sp.regen((MapleMap) this);
-                    if (reactor != null) {
-                        addReactor(reactor);
-                        broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
+                if (1 <= sp.getReactorTime()) {
+                    if (sp.getLastRegenTime() + sp.getReactorTime() <= time_current) {
+                        MapleReactor reactor = sp.regen((MapleMap) this);
+                        if (reactor != null) {
+                            addReactor(reactor);
+                        }
                     }
                 }
             }

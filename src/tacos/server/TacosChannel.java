@@ -152,6 +152,10 @@ public class TacosChannel extends TacosServer {
         return map;
     }
 
+    public void removeMap(int map_id) {
+        this.maps.remove(map_id);
+    }
+
     public TacosOnlinePlayers getOnlinePlayers() {
         return this.onlines;
     }

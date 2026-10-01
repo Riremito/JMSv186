@@ -58,7 +58,6 @@ import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
-import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptPortal;
@@ -286,6 +285,16 @@ public class DebugCommand {
                 ds.start(chr);
                 return true;
             }
+            case "/removeall": {
+                map.removeAllObjects();
+                return true;
+            }
+            case "/regen": {
+                int map_id = map.getId();
+                chr.getChannelServer().removeMap(map_id);
+                chr.changeMap(map_id);
+                return true;
+            }
             // npc.
             case "/npc": {
                 if (!dcmd.check(1)) {
@@ -304,7 +313,6 @@ public class DebugCommand {
                 npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
                 npc.setFootholdId(chr.getFootholdId());
                 map.addNPC(npc);
-                map.broadcastMessage(ResCNpcPool.NpcEnterField(npc));
                 chr.DebugMsg("npc : " + npc_id);
                 return true;
             }
@@ -317,7 +325,6 @@ public class DebugCommand {
                 pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getMoveAction());
                 pnpc.setFootholdId(chr.getFootholdId());
                 map.addNPC(pnpc);
-                chr.SendPacket(ResCNpcPool.NpcEnterField(pnpc));
                 chr.SendPacket(ResCNpcPool.ImitatedNPCData(pnpc));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false));
                 return true;
@@ -395,7 +402,6 @@ public class DebugCommand {
                 reactor.setPosition(pos);
                 reactor.setMap(map);
                 map.addReactor(reactor);
-                map.broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
                 TacosScriptReactor.getInstance().act(client, reactor);
                 chr.DebugMsg("reactor : " + reactor_id);
                 return true;

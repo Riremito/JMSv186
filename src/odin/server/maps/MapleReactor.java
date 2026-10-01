@@ -24,7 +24,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
-import odin.server.Timer.MapTimer;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.script.TacosScriptReactor;
 import tacos.server.map.object.TacosReactor;
@@ -60,23 +59,23 @@ public class MapleReactor extends TacosReactor {
     }
 
     //hitReactor command for item-triggered reactors
-    public void hitReactor(int dwHitOption, short stance, TacosClient client) {
+    public void hitReactor(int dwHitOption, short tActionDelay, TacosClient client) {
         if (stats.getType(state) < 999 && stats.getType(state) != -1) {
             //type 2 = only hit from right (kerning swamp plants), 00 is air left 02 is ground left
-            final byte oldState = state;
+            byte oldState = state;
             if (!(stats.getType(state) == 2 && (dwHitOption == 0 || dwHitOption == 2))) { // next state
                 state = stats.getNextState(state);
 
                 if (stats.getNextState(state) == -1 || stats.getType(state) == 999) { //end of reactor
                     if ((stats.getType(state) < 100 || stats.getType(state) == 999)) { //reactor broken
-                        map.destroyReactor(getObjectId());
+                        map.removeReactor(this);
                     } else { //item-triggered on final step
-                        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, stance));
+                        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, tActionDelay));
                     }
                     TacosScriptReactor.getInstance().act(client, this);
                 } else { //reactor not broken yet
                     boolean done = false;
-                    map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, stance)); //magatia is weird cause full beaker can be activated by gm hat o.o
+                    map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, tActionDelay)); //magatia is weird cause full beaker can be activated by gm hat o.o
                     if (state == stats.getNextState(state) || getId() == 2618000 || getId() == 2309000) { //current state = next state, looping reactor
                         TacosScriptReactor.getInstance().act(client, this);
                         done = true;
@@ -109,15 +108,9 @@ public class MapleReactor extends TacosReactor {
     }
 
     public void scheduleSetState(byte oldState, byte newState, long delay) {
-        MapTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                if (MapleReactor.this.state == oldState) {
-                    forceHitReactor(newState);
-                }
-            }
-        }, delay);
+        if (MapleReactor.this.state == oldState) {
+            forceHitReactor(newState);
+        }
     }
 
     // used by script
@@ -132,7 +125,7 @@ public class MapleReactor extends TacosReactor {
 
     // used by script
     public MapleMap getMap() {
-        return map;
+        return this.map;
     }
 
     // used by script
@@ -154,29 +147,16 @@ public class MapleReactor extends TacosReactor {
 
     // used by script
     public void forceTrigger() {
-        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
+        this.map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
     }
 
     // used by script
     public void delayedDestroyReactor(long delay) {
-        MapTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                map.destroyReactor(getObjectId());
-            }
-        }, delay);
+        this.map.removeReactor(this);
     }
 
     // used by script
     public void delayedHitReactor(final TacosClient client, long delay) {
-        MapTimer.getInstance().schedule(new Runnable() {
-
-            @Override
-            public void run() {
-                hitReactor(client);
-            }
-        }, delay);
+        hitReactor(client);
     }
-
 }
