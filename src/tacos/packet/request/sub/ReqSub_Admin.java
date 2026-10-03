@@ -281,7 +281,7 @@ public class ReqSub_Admin {
         npc.setCy(x);
         npc.setRx0(x + 50);
         npc.setRx1(y - 50);
-        npc.setFootholdId(map.getFootholds().findBelow(npc_xy).getId());
+        npc.setFootholdId(map.findBelow(npc_xy).getId());
         map.addNPC(npc);
         return true;
     }

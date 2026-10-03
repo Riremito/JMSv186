@@ -102,7 +102,7 @@ public class TestCommand {
                 List<HiredMerchant> hms = new ArrayList<>();
                 Random rand = new Random();
                 int count = 0;
-                for (TacosFoothold mfh : map.getFootholds().getAll()) {
+                for (TacosFoothold mfh : map.getFootholds().values()) {
                     if (30 < count) {
                         break;
                     }

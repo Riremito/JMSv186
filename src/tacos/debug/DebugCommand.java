@@ -390,7 +390,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                TacosFoothold fh = map.getFootholds().findFootHold(foothold_id);
+                TacosFoothold fh = map.getFootholds().get(foothold_id);
                 if (fh == null) {
                     chr.DebugMsg("reactor : fh = null.");
                     return true;

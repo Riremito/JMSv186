@@ -210,9 +210,9 @@ public final class MapleMap extends TacosMap {
     // 多分Reactorの中心座標とサイズが必要, Map上の座標を利用すると足場より下に設置されているように見えるので落下する
     public void spawnZakum(MapleReactor zakum_reactor) {
         MapleMonster mainb = MapleLifeFactory.getMonster(8800000);
-        int reactor_fh_id = getFootholds().findReactorFootId(zakum_reactor.getMobSpawnPoint());
+        int reactor_fh_id = findBelow(zakum_reactor.getMobSpawnPoint()).getId();
         Point zakum_pos = new Point(zakum_reactor.getMobSpawnPoint());
-        zakum_pos.y = getFootholds().findFootHold(reactor_fh_id).getY1() - 1;
+        zakum_pos.y = getFootholds().get(reactor_fh_id).getY1() - 1;
 
         DebugLogger.DebugLog("spawnZakum : fh = " + reactor_fh_id + ", " + zakum_pos);
 

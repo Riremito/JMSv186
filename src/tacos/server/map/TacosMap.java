@@ -1055,7 +1055,7 @@ public class TacosMap extends TacosMapData {
         npc.setCy(pos.y);
         npc.setRx0(pos.x + 50);
         npc.setRx1(pos.x - 50);
-        npc.setFootholdId(getFootholds().findBelow(pos).getId());
+        npc.setFootholdId(findBelow(pos).getId());
         addNPC(npc);
     }
 

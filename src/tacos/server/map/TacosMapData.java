@@ -24,11 +24,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import tacos.wz.MapleData;
-import odin.server.maps.MapleFootholdTree;
 import odin.server.maps.MapleNodes;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
@@ -165,7 +164,7 @@ public class TacosMapData {
         this.split.total = 0;
 
         // calculate wall coordinates.
-        for (TacosFoothold foothold : this.footholds.getAll()) {
+        for (TacosFoothold foothold : getFootholds().values()) {
             int fh_left = Math.min(foothold.getX1(), foothold.getX2());
             int fh_top = Math.min(foothold.getY1(), foothold.getY2());
             int fh_right = Math.max(foothold.getX1(), foothold.getX2());
@@ -200,7 +199,6 @@ public class TacosMapData {
     }
 
     protected int map_id;
-    private MapleFootholdTree footholds;
     private Map<Integer, TacosPortal> portals = new HashMap<>();
     private ArrayList<TacosSpawnPoint> monster_spawn_point = new ArrayList<>();
     private ArrayList<TacosNPCSpawnPoint> npc_spawn_point = new ArrayList<>();
@@ -214,8 +212,58 @@ public class TacosMapData {
         return this.map_id;
     }
 
-    public MapleFootholdTree getFootholds() {
+    private final LinkedHashMap<Integer, TacosFoothold> footholds = new LinkedHashMap<>();
+
+    public LinkedHashMap<Integer, TacosFoothold> getFootholds() {
         return this.footholds;
+    }
+
+    public TacosFoothold findBelow(Point pt) {
+        TacosFoothold ground_fh = null;
+        for (TacosFoothold foothold : getFootholds().values()) {
+            if (foothold.isWall()) {
+                continue;
+            }
+            if (pt.getX() < foothold.getX1() || foothold.getX2() < pt.getX()) {
+                continue;
+            }
+            if (foothold.getY1() < pt.getY()) {
+                continue;
+            }
+            if (ground_fh != null) {
+                if (ground_fh.getY1() < foothold.getY1()) {
+                    continue;
+                }
+            }
+            ground_fh = foothold;
+        }
+        return ground_fh;
+    }
+
+    public Point calcPointBelow(Point initial) {
+        TacosFoothold fh_below = findBelow(initial);
+        if (fh_below == null) {
+            return null;
+        }
+        int dropY = fh_below.getY1();
+        if (!fh_below.isWall() && fh_below.getY1() != fh_below.getY2()) {
+            double s1 = Math.abs(fh_below.getY2() - fh_below.getY1());
+            double s2 = Math.abs(fh_below.getX2() - fh_below.getX1());
+            if (fh_below.getY2() < fh_below.getY1()) {
+                dropY = fh_below.getY1() - (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
+            } else {
+                dropY = fh_below.getY1() + (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
+            }
+        }
+        return new Point(initial.x, dropY);
+    }
+
+    public Point calcDropPos(Point initial, Point fallback) {
+        Point ret = calcPointBelow(new Point(initial.x, initial.y - 50));
+        if (ret == null) {
+            return fallback;
+        }
+        return ret;
     }
 
     public ArrayList<TacosSpawnPoint> getMonsterSpawnPoint() {
@@ -228,14 +276,6 @@ public class TacosMapData {
 
     public ArrayList<TacosReactorSpawnPoint> getReactorSpawnPoint() {
         return this.reactor_spawn_point;
-    }
-
-    public Point calcDropPos(Point initial, Point fallback) {
-        Point ret = calcPointBelow(new Point(initial.x, initial.y - 50));
-        if (ret == null) {
-            return fallback;
-        }
-        return ret;
     }
 
     // load wz data.
@@ -274,10 +314,6 @@ public class TacosMapData {
     }
 
     public boolean loadFootHolds(MapleData mapData) {
-        List<TacosFoothold> allFootholds = new LinkedList<>();
-        Point lBound = new Point();
-        Point uBound = new Point();
-
         for (MapleData footRoot : mapData.getChildByPath("foothold")) {
             for (MapleData footCat : footRoot) {
                 for (MapleData footHold : footCat) {
@@ -289,29 +325,10 @@ public class TacosMapData {
                     fh.setY2(WzDataTool.getInt(footHold.getChildByPath("y2")));
                     fh.setPrev(WzDataTool.getInt(footHold.getChildByPath("prev")));
                     fh.setNext(WzDataTool.getInt(footHold.getChildByPath("next")));
-                    if (fh.getX1() < lBound.x) {
-                        lBound.x = fh.getX1();
-                    }
-                    if (fh.getX2() > uBound.x) {
-                        uBound.x = fh.getX2();
-                    }
-                    if (fh.getY1() < lBound.y) {
-                        lBound.y = fh.getY1();
-                    }
-                    if (fh.getY2() > uBound.y) {
-                        uBound.y = fh.getY2();
-                    }
-                    allFootholds.add(fh);
+                    getFootholds().put(fh.getId(), fh);
                 }
             }
         }
-
-        MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
-        for (TacosFoothold foothold : allFootholds) {
-            fTree.insert(foothold);
-        }
-
-        this.footholds = fTree;
         return true;
     }
 
@@ -374,24 +391,6 @@ public class TacosMapData {
             }
         }
         return closest;
-    }
-
-    public Point calcPointBelow(Point initial) {
-        TacosFoothold fh_below = this.footholds.findBelow(initial);
-        if (fh_below == null) {
-            return null;
-        }
-        int dropY = fh_below.getY1();
-        if (!fh_below.isWall() && fh_below.getY1() != fh_below.getY2()) {
-            double s1 = Math.abs(fh_below.getY2() - fh_below.getY1());
-            double s2 = Math.abs(fh_below.getX2() - fh_below.getX1());
-            if (fh_below.getY2() < fh_below.getY1()) {
-                dropY = fh_below.getY1() - (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
-            } else {
-                dropY = fh_below.getY1() + (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
-            }
-        }
-        return new Point(initial.x, dropY);
     }
 
     // info node.
