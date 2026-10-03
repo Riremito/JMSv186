@@ -107,4 +107,14 @@ public class TacosMonster extends TacosMapObject {
     public void setSummonOption(int dwSummonOption) {
         this.dwSummonOption = dwSummonOption;
     }
+
+    private int last_hit_skill_id = 0;
+
+    public int getLastHitSkillId() {
+        return this.last_hit_skill_id;
+    }
+
+    public void setLastHitSkillId(int last_hit_skill_id) {
+        this.last_hit_skill_id = last_hit_skill_id;
+    }
 }

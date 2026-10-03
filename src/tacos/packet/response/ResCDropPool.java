@@ -25,6 +25,8 @@ import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMapItem;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
+import tacos.server.map.object.TacosDrop.DropEnterType;
+import tacos.server.map.object.TacosDrop.DropLeaveType;
 
 /**
  *
@@ -53,7 +55,7 @@ public class ResCDropPool {
             case NO_ROTATE: {
                 sp.Encode2(dropfrom.x); // x
                 sp.Encode2(dropfrom.y); // y
-                sp.Encode2(0); // tDelay
+                sp.Encode2(drop.getDelay()); // tDelay
                 break;
             }
             case SILENT: {
@@ -120,52 +122,5 @@ public class ResCDropPool {
 
     public static ServerPacket DropLeaveField(MapleMapItem drop, DropLeaveType lt) {
         return DropLeaveField(drop, lt, null, 0);
-    }
-
-    public enum DropEnterType {
-        UPDATE(0),
-        NORMAL(1),
-        SILENT(2),
-        SPAWN(3),
-        NO_ROTATE(4),
-        UNKNOWN;
-
-        private int value;
-
-        private DropEnterType(int value) {
-            this.value = value;
-        }
-
-        private DropEnterType() {
-            this.value = -1;
-        }
-
-        private int get() {
-            return this.value;
-        }
-    }
-
-    public enum DropLeaveType {
-        EXPIRED(0),
-        REMOVE(1),
-        NORMAL(2),
-        SILENT(3),
-        EXPLOSION(4),
-        PET(5),
-        UNKNOWN;
-
-        private int value;
-
-        private DropLeaveType(int value) {
-            this.value = value;
-        }
-
-        private DropLeaveType() {
-            this.value = -1;
-        }
-
-        private int get() {
-            return this.value;
-        }
     }
 }

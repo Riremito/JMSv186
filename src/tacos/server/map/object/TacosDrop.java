@@ -30,6 +30,7 @@ public class TacosDrop extends TacosMapObject {
     private int quest_id = 0;
     private int meso = 0;
     private boolean player_drop = false;
+    private int delay = 0;
 
     public TacosDrop(Item item, int quest_id, int meso) {
         this.item = item;
@@ -62,5 +63,79 @@ public class TacosDrop extends TacosMapObject {
 
     public void setPlayerDrop(boolean player_drop) {
         this.player_drop = player_drop;
+    }
+
+    public int getDelay() {
+        return this.delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
+    }
+
+    private DropEnterType enter_type = DropEnterType.NORMAL;
+    private DropLeaveType leave_type = DropLeaveType.EXPIRED;
+
+    public DropEnterType getET() {
+        return this.enter_type;
+    }
+
+    public void setET(DropEnterType enter_type) {
+        this.enter_type = enter_type;
+    }
+
+    public DropLeaveType getLT() {
+        return this.leave_type;
+    }
+
+    public void setLT(DropLeaveType leave_type) {
+        this.leave_type = leave_type;
+    }
+
+    public enum DropEnterType {
+        UPDATE(0),
+        NORMAL(1),
+        SILENT(2),
+        SPAWN(3),
+        NO_ROTATE(4),
+        UNKNOWN;
+
+        private int value;
+
+        private DropEnterType(int value) {
+            this.value = value;
+        }
+
+        private DropEnterType() {
+            this.value = -1;
+        }
+
+        public int get() {
+            return this.value;
+        }
+    }
+
+    public enum DropLeaveType {
+        EXPIRED(0),
+        REMOVE(1),
+        NORMAL(2),
+        SILENT(3),
+        EXPLOSION(4),
+        PET(5),
+        UNKNOWN;
+
+        private int value;
+
+        private DropLeaveType(int value) {
+            this.value = value;
+        }
+
+        private DropLeaveType() {
+            this.value = -1;
+        }
+
+        public int get() {
+            return this.value;
+        }
     }
 }

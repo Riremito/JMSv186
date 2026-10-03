@@ -29,7 +29,6 @@ import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCDropPool;
-import tacos.packet.response.ResCDropPool.DropEnterType;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCMobPool;
 import odin.server.MapleItemInformationProvider;
@@ -43,12 +42,13 @@ import odin.server.maps.MapleNodes.MonsterPoint;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.packet.response.ResCDropPool.DropLeaveType;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.server.map.TacosMap;
 import tacos.server.map.TacosReward;
+import tacos.server.map.object.TacosDrop.DropEnterType;
+import tacos.server.map.object.TacosDrop.DropLeaveType;
 
 public final class MapleMap extends TacosMap {
 
@@ -95,8 +95,14 @@ public final class MapleMap extends TacosMap {
         } else if (monster.getId() == 9300166) { //ariant pq bomb
             animation = OpsMobLeaveField.MOBLEAVEFIELD_SWALLOW; //or is it 3?
         }
+        monster.setLastHitSkillId(lastSkill);
         removeMonster(monster.getObjectId());
         int dropOwner = monster.killBy(chr, lastSkill);
+        // stop dead monster for hitAfter skills.
+        if (monster.getOwnerId() == chr.getId()) {
+            monster.setOwnerId(0);
+            chr.SendPacket(ResCMobPool.MobChangeController(monster, 0));
+        }
         broadcastMessage(ResCMobPool.MobLeaveField(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
@@ -234,12 +240,6 @@ public final class MapleMap extends TacosMap {
             cancelSquadSchedule();
             broadcastMessage(ResCField.DestroyClock());
         }
-    }
-
-    public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short quest_id) {
-        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, chr, droptype, false, quest_id);
-        addDrop(mdrop);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
     }
 
     public void talkMonster(String msg, int itemId, MapleMonster monster) {

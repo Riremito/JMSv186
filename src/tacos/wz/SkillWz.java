@@ -35,6 +35,7 @@ import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.Element;
 import tacos.client.TacosDoorSkill;
+import tacos.client.TacosSkill;
 import tacos.client.TacosSummonSkill;
 import tacos.config.Config;
 
@@ -53,12 +54,12 @@ public class SkillWz extends WzXML {
     }
 
     // job_id, skill_id, skill_level
-    private final LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>>> job_list = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>>> job_list_summon = new LinkedHashMap<>();
 
     public TacosSummonSkill getSummonSkill(int target_skill_id, int target_skill_level) {
         int job_id = target_skill_id / 10000;
 
-        LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>> skill_list = this.job_list.get(job_id);
+        LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSummonSkill>> skill_list = this.job_list_summon.get(job_id);
         if (skill_list != null) {
             LinkedHashMap<Integer, TacosSummonSkill> level_list = skill_list.get(target_skill_id);
             if (level_list != null) {
@@ -125,7 +126,7 @@ public class SkillWz extends WzXML {
             }
         }
 
-        this.job_list.put(job_id, skill_list);
+        this.job_list_summon.put(job_id, skill_list);
 
         LinkedHashMap<Integer, TacosSummonSkill> level_list = skill_list.get(target_skill_id);
         if (level_list != null) {
@@ -200,6 +201,73 @@ public class SkillWz extends WzXML {
         this.job_list_door.put(job_id, skill_list);
 
         LinkedHashMap<Integer, TacosDoorSkill> level_list = skill_list.get(target_skill_id);
+        if (level_list != null) {
+            return level_list.get(target_skill_level);
+        }
+        return null;
+    }
+
+    // skill.
+    private final LinkedHashMap<Integer, LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSkill>>> job_list = new LinkedHashMap<>();
+
+    public TacosSkill getSkill(int target_skill_id, int target_skill_level) {
+        int job_id = target_skill_id / 10000;
+
+        LinkedHashMap<Integer, LinkedHashMap<Integer, TacosSkill>> skill_list = this.job_list.get(job_id);
+        if (skill_list != null) {
+            LinkedHashMap<Integer, TacosSkill> level_list = skill_list.get(target_skill_id);
+            if (level_list != null) {
+                return level_list.get(target_skill_level);
+            }
+            return null;
+        }
+
+        skill_list = new LinkedHashMap<>();
+
+        MapleData job_img = getImg(job_id);
+        if (job_img != null) {
+            MapleData md_skill = job_img.getChildByPath("skill");
+            if (md_skill != null) {
+                for (MapleData md_skill_data : md_skill.getChildren()) {
+                    MapleData md_hit_0 = md_skill_data.getChildByPath("hit/0");
+                    if (md_hit_0 != null) {
+                        int hitAfter = WzDataTool.getIntPath("hitAfter", md_hit_0, 0);
+                        int skill_id = Integer.parseInt(md_skill_data.getName());
+                        // postBB style, but not all skills are updated in BIGBANG.
+                        if (Config.PostBB()) {
+                            MapleData md_common = md_skill_data.getChildByPath("common");
+                            if (md_common != null) {
+                                LinkedHashMap<Integer, TacosSkill> level_list = new LinkedHashMap<>();
+                                int maxLevel = WzDataTool.getIntPath("maxLevel", md_common, 0);
+                                for (int skill_level = 1; skill_level <= maxLevel; skill_level++) {
+                                    TacosSkill ts = new TacosSkill(skill_id, skill_level);
+                                    ts.setHitAfter(hitAfter);
+                                    level_list.put(skill_level, ts);
+                                }
+                                skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
+                                continue;
+                            }
+                        }
+                        // preBB style.
+                        MapleData md_level = md_skill_data.getChildByPath("level");
+                        if (md_level != null) {
+                            LinkedHashMap<Integer, TacosSkill> level_list = new LinkedHashMap<>();
+                            for (MapleData md_level_data : md_level.getChildren()) {
+                                int skill_level = Integer.parseInt(md_level_data.getName());
+                                TacosSkill ts = new TacosSkill(skill_id, skill_level);
+                                ts.setHitAfter(hitAfter);
+                                level_list.put(skill_level, ts);
+                            }
+                            skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
+                        }
+                    }
+                }
+            }
+        }
+
+        this.job_list.put(job_id, skill_list);
+
+        LinkedHashMap<Integer, TacosSkill> level_list = skill_list.get(target_skill_id);
         if (level_list != null) {
             return level_list.get(target_skill_level);
         }

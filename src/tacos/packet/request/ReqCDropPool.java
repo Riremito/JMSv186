@@ -43,6 +43,7 @@ import tacos.packet.response.builder.PB_UserEffect;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsDropPickUpMessage;
 import tacos.packet.response.builder.PB_Message;
+import tacos.server.map.object.TacosDrop.DropLeaveType;
 
 /**
  *
@@ -173,7 +174,7 @@ public class ReqCDropPool {
 
     public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem, boolean is_pet, int pet_index) {
         chr.getMap().removeDrop(mapitem.getObjectId());
-        chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? ResCDropPool.DropLeaveType.PET : ResCDropPool.DropLeaveType.NORMAL, chr, pet_index), mapitem.getPosition());
+        chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index), mapitem.getPosition());
     }
 
     public static boolean useDropItem(MapleCharacter chr, int id) {

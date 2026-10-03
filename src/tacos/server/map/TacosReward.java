@@ -35,12 +35,14 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MonsterDropEntry;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosSkill;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.unofficial.CustomMonsterBookDrop;
 import tacos.wz.ServerImg;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzDataTool;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -100,6 +102,8 @@ public class TacosReward {
     public static boolean getReward(MapleCharacter chr, MapleMonster monster) {
         MapleMap map = monster.getMap();
         int mob_id = monster.getId();
+        TacosSkill ts = (monster.getLastHitSkillId() != 0) ? WzXML.SKILL.getSkill(monster.getLastHitSkillId(), 1) : null; // temporary lv1.
+        int hitAfter = (ts != null) ? ts.getHitAfter() : 0;
 
         ArrayList<Reward> list_reward = getRewardData(mob_id);
         if (!list_reward.isEmpty()) {
@@ -108,7 +112,7 @@ public class TacosReward {
             for (Reward reward : list_reward) {
                 if (Randomizer.nextInt(PROB_MAX) <= reward.prob) {
                     if (reward.money != 0) {
-                        map.spawnMobMesoDrop(reward.money, map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, false, (byte) 0);
+                        map.spawnMobMesoDrop(reward.money, map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, false, (byte) 0, hitAfter);
                     } else {
                         Item idrop = null;
                         // 装備
@@ -121,7 +125,7 @@ public class TacosReward {
                             int quantity = reward.min + ((0 < range) ? Randomizer.nextInt(range) : 0);
                             idrop = new Item(reward.item, (byte) 0, (short) quantity, (byte) 0);
                         }
-                        map.spawnMobDrop(idrop, map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, (byte) 0, (short) 0);
+                        map.spawnMobDrop(idrop, map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, (byte) 0, (short) 0, hitAfter);
                     }
                     drop_count++;
                 }
@@ -181,7 +185,7 @@ public class TacosReward {
                     }
 
                     if (mesos > 0) {
-                        map.spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, false, drop_type);
+                        map.spawnMobMesoDrop((int) (mesos * (chr.getStat().mesoBuff / 100.0) * chr.getDropMod() * cmServerrate), map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, false, drop_type, 0);
                         dropped_count++;
                     }
                 } else {
@@ -196,7 +200,7 @@ public class TacosReward {
                         idrop = new Item(de.itemId, (byte) 0, (short) (de.Maximum != 1 ? Randomizer.nextInt(range <= 0 ? 1 : range) + de.Minimum : 1), (byte) 0);
                     }
 
-                    map.spawnMobDrop(idrop, map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, drop_type, de.questid);
+                    map.spawnMobDrop(idrop, map.calcDropPos(getDropPosition(monster, drop_type, dropped_count), monster.getPosition()), monster, chr, drop_type, de.questid, 0);
                     dropped_count++;
                 }
             }

@@ -54,7 +54,6 @@ import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import tacos.client.TacosCharacter;
-import tacos.config.DeveloperMode;
 import tacos.server.map.object.TacosDragon;
 import tacos.server.map.object.TacosSkillPet;
 import tacos.constants.TacosConstants;
@@ -85,6 +84,8 @@ import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
 import tacos.server.TacosTask;
+import tacos.server.map.object.TacosDrop.DropEnterType;
+import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosSummon;
@@ -425,7 +426,7 @@ public class TacosMap extends TacosMapData {
                 continue;
             }
             if (area_states.get(number) == MapSplitState.ACTIVE) {
-                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, DropEnterType.SILENT, drop.getPosition()));
             }
         }
         // mist
@@ -585,10 +586,10 @@ public class TacosMap extends TacosMapData {
                 continue;
             }
             if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
-                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.DropEnterType.SILENT, drop.getPosition()));
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, DropEnterType.SILENT, drop.getPosition()));
             }
             if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
-                chr.SendPacket(ResCDropPool.DropLeaveField(drop, ResCDropPool.DropLeaveType.REMOVE));
+                chr.SendPacket(ResCDropPool.DropLeaveField(drop, DropLeaveType.REMOVE));
             }
         }
         // mist
@@ -1207,13 +1208,23 @@ public class TacosMap extends TacosMapData {
         Point droppos = calcDropPos(position, position);
         MapleMapItem mdrop = new MapleMapItem(meso, droppos, owner, droptype, playerDrop);
         addDrop(mdrop);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, droppos, dropperPosition));
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, droppos, dropperPosition));
     }
 
-    public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+    public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype, int delay) {
         MapleMapItem mdrop = new MapleMapItem(meso, position, owner, droptype, playerDrop);
         addDrop(mdrop);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, position, dropper.getPosition()));
+        mdrop.setDelay(delay);
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, position, dropper.getPosition()));
+        mdrop.setDelay(0);
+    }
+
+    public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short quest_id, int delay) {
+        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, chr, droptype, false, quest_id);
+        addDrop(mdrop);
+        mdrop.setDelay(delay);
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
+        mdrop.setDelay(0);
     }
 
     public void spawnAutoDrop(int itemid, Point pos) {
@@ -1226,8 +1237,8 @@ public class TacosMap extends TacosMapData {
         }
         MapleMapItem mdrop = new MapleMapItem(pos, idrop);
         addDrop(mdrop);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.NORMAL, pos, pos));
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.DropEnterType.UPDATE, pos, pos));
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, pos, pos));
+        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.UPDATE, pos, pos));
     }
 
     // mystic door.
@@ -1410,7 +1421,7 @@ public class TacosMap extends TacosMapData {
         for (final Object o : getAllDrops()) {
             final MapleMapItem item = ((MapleMapItem) o);
             if (item.getOwnerId() == chr.getId()) {
-                broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.DropLeaveType.NORMAL, chr, 0), item.getPosition());
+                broadcastMessage(ResCDropPool.DropLeaveField(item, DropLeaveType.NORMAL, chr, 0), item.getPosition());
                 if (item.getMeso() > 0) {
                     chr.gainMeso(item.getMeso(), false);
                 } else {
@@ -1558,7 +1569,7 @@ public class TacosMap extends TacosMapData {
         }
         for (MapleMapItem mmi : getAllDrops()) {
             removeDrop(mmi.getObjectId());
-            broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
+            broadcastMessage(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
         }
         for (MapleMist mist : getAllMists()) {
             removeMist(mist);
@@ -1602,9 +1613,9 @@ public class TacosMap extends TacosMapData {
         // drop removal.
         if (this.task_drop_removal.check(time_current, 5000)) {
             for (MapleMapItem mmi : getAllDrops()) {
-                if (mmi.checkTime(time_current, DeveloperMode.DM_TEST.get() ? 10000 : 120000)) {
+                if (mmi.checkTime(time_current, 120000)) {
                     removeDrop(mmi.getObjectId());
-                    broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPIRED));
+                    broadcastMessage(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
                 }
             }
         }

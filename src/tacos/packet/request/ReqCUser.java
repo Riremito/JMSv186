@@ -111,6 +111,7 @@ import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosNpcShop;
+import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.shared.TacosShared;
 import tacos.wz.WzXML;
@@ -1058,7 +1059,7 @@ public class ReqCUser {
                     continue;
                 }
                 map.removeDrop(mmi.getObjectId());
-                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, ResCDropPool.DropLeaveType.EXPLOSION));
+                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPLOSION));
             }
         }
         return true;
