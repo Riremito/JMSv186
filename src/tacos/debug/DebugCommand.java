@@ -42,7 +42,6 @@ import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MapleNPC;
 import odin.server.life.MonsterDropEntry;
 import odin.server.life.PlayerNPC;
-import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
 import odin.server.maps.SavedLocationType;
 import tacos.database.query.DQ_Accounts;
@@ -66,6 +65,7 @@ import tacos.script.TacosScriptReactor;
 import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
+import tacos.server.map.TacosFoothold;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosReward.Reward;
 import tacos.server.map.TacosSpawnPoint;
@@ -390,7 +390,7 @@ public class DebugCommand {
                     return true;
                 }
 
-                MapleFoothold fh = map.getFootholds().findFootHold(foothold_id);
+                TacosFoothold fh = map.getFootholds().findFootHold(foothold_id);
                 if (fh == null) {
                     chr.DebugMsg("reactor : fh = null.");
                     return true;

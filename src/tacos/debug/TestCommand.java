@@ -28,7 +28,6 @@ import tacos.wz.MapleData;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
-import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift;
@@ -42,6 +41,7 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosChannel;
+import tacos.server.map.TacosFoothold;
 import tacos.wz.WzXML;
 
 /**
@@ -102,7 +102,7 @@ public class TestCommand {
                 List<HiredMerchant> hms = new ArrayList<>();
                 Random rand = new Random();
                 int count = 0;
-                for (MapleFoothold mfh : map.getFootholds().getAll()) {
+                for (TacosFoothold mfh : map.getFootholds().getAll()) {
                     if (30 < count) {
                         break;
                     }

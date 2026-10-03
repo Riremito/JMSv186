@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import tacos.wz.MapleData;
-import odin.server.maps.MapleFoothold;
 import odin.server.maps.MapleFootholdTree;
 import odin.server.maps.MapleNodes;
 import tacos.constants.TacosConstants;
@@ -166,7 +165,7 @@ public class TacosMapData {
         this.split.total = 0;
 
         // calculate wall coordinates.
-        for (MapleFoothold foothold : this.footholds.getAll()) {
+        for (TacosFoothold foothold : this.footholds.getAll()) {
             int fh_left = Math.min(foothold.getX1(), foothold.getX2());
             int fh_top = Math.min(foothold.getY1(), foothold.getY2());
             int fh_right = Math.max(foothold.getX1(), foothold.getX2());
@@ -275,19 +274,21 @@ public class TacosMapData {
     }
 
     public boolean loadFootHolds(MapleData mapData) {
-        List<MapleFoothold> allFootholds = new LinkedList<>();
+        List<TacosFoothold> allFootholds = new LinkedList<>();
         Point lBound = new Point();
         Point uBound = new Point();
 
         for (MapleData footRoot : mapData.getChildByPath("foothold")) {
             for (MapleData footCat : footRoot) {
                 for (MapleData footHold : footCat) {
-                    Point p1 = new Point(WzDataTool.getInt(footHold.getChildByPath("x1")), WzDataTool.getInt(footHold.getChildByPath("y1")));
-                    Point p2 = new Point(WzDataTool.getInt(footHold.getChildByPath("x2")), WzDataTool.getInt(footHold.getChildByPath("y2")));
-                    MapleFoothold fh = new MapleFoothold(p1, p2, Integer.parseInt(footHold.getName()));
-                    fh.setPrev((short) WzDataTool.getInt(footHold.getChildByPath("prev")));
-                    fh.setNext((short) WzDataTool.getInt(footHold.getChildByPath("next")));
-
+                    TacosFoothold fh = new TacosFoothold();
+                    fh.setId(Integer.parseInt(footHold.getName()));
+                    fh.setX1(WzDataTool.getInt(footHold.getChildByPath("x1")));
+                    fh.setY1(WzDataTool.getInt(footHold.getChildByPath("y1")));
+                    fh.setX2(WzDataTool.getInt(footHold.getChildByPath("x2")));
+                    fh.setY2(WzDataTool.getInt(footHold.getChildByPath("y2")));
+                    fh.setPrev(WzDataTool.getInt(footHold.getChildByPath("prev")));
+                    fh.setNext(WzDataTool.getInt(footHold.getChildByPath("next")));
                     if (fh.getX1() < lBound.x) {
                         lBound.x = fh.getX1();
                     }
@@ -306,7 +307,7 @@ public class TacosMapData {
         }
 
         MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
-        for (MapleFoothold foothold : allFootholds) {
+        for (TacosFoothold foothold : allFootholds) {
             fTree.insert(foothold);
         }
 
@@ -376,7 +377,7 @@ public class TacosMapData {
     }
 
     public Point calcPointBelow(Point initial) {
-        MapleFoothold fh_below = this.footholds.findBelow(initial);
+        TacosFoothold fh_below = this.footholds.findBelow(initial);
         if (fh_below == null) {
             return null;
         }

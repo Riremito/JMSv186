@@ -24,6 +24,7 @@ import java.awt.Point;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import tacos.server.map.TacosFoothold;
 
 public class MapleFootholdTree {
 
@@ -31,7 +32,7 @@ public class MapleFootholdTree {
     private MapleFootholdTree nw = null;
     private MapleFootholdTree ne = null;
     private MapleFootholdTree sw = null;
-    private List<MapleFoothold> footholds = new LinkedList<>();
+    private List<TacosFoothold> footholds = new LinkedList<>();
     private MapleFootholdTree se = null;
     private Point p1;
     private Point p2;
@@ -53,7 +54,7 @@ public class MapleFootholdTree {
         center = new Point((p2.x - p1.x) / 2, (p2.y - p1.y) / 2);
     }
 
-    public final void insert(final MapleFoothold f) {
+    public void insert(TacosFoothold f) {
         if (depth == 0) {
             if (f.getX1() > maxDropX) {
                 maxDropX = f.getX1();
@@ -89,11 +90,11 @@ public class MapleFootholdTree {
         }
     }
 
-    private final List<MapleFoothold> getRelevants(final Point p) {
+    private List<TacosFoothold> getRelevants(final Point p) {
         return getRelevants(p, new LinkedList<>());
     }
 
-    private final List<MapleFoothold> getRelevants(final Point p, final List<MapleFoothold> list) {
+    private List<TacosFoothold> getRelevants(final Point p, final List<TacosFoothold> list) {
         list.addAll(footholds);
         if (nw != null) {
             if (p.x <= center.x && p.y <= center.y) {
@@ -109,44 +110,7 @@ public class MapleFootholdTree {
         return list;
     }
 
-    private final MapleFoothold findWallR(final Point p1, final Point p2) {
-        MapleFoothold ret;
-        for (final MapleFoothold f : footholds) {
-            //if (f.isWall()) System.out.println(f.getX1() + " " + f.getX2());
-            if (f.isWall() && f.getX1() >= p1.x && f.getX1() <= p2.x && f.getY1() >= p1.y && f.getY2() <= p1.y) {
-                return f;
-            }
-        }
-        if (nw != null) {
-            if (p1.x <= center.x && p1.y <= center.y) {
-                ret = nw.findWallR(p1, p2);
-                if (ret != null) {
-                    return ret;
-                }
-            }
-            if ((p1.x > center.x || p2.x > center.x) && p1.y <= center.y) {
-                ret = ne.findWallR(p1, p2);
-                if (ret != null) {
-                    return ret;
-                }
-            }
-            if (p1.x <= center.x && p1.y > center.y) {
-                ret = sw.findWallR(p1, p2);
-                if (ret != null) {
-                    return ret;
-                }
-            }
-            if ((p1.x > center.x || p2.x > center.x) && p1.y > center.y) {
-                ret = se.findWallR(p1, p2);
-                if (ret != null) {
-                    return ret;
-                }
-            }
-        }
-        return null;
-    }
-
-    private static int compareFH(MapleFoothold fh1, MapleFoothold fh2) {
+    private static int compareFH(TacosFoothold fh1, TacosFoothold fh2) {
         if (fh1.getY2() < fh2.getY1()) {
             return -1;
         }
@@ -156,16 +120,16 @@ public class MapleFootholdTree {
         return 0;
     }
 
-    public MapleFoothold findBelow(Point p) {
-        List<MapleFoothold> relevants = getRelevants(p);
-        List<MapleFoothold> xMatches = new LinkedList<>();
-        for (MapleFoothold fh : relevants) {
+    public TacosFoothold findBelow(Point p) {
+        List<TacosFoothold> relevants = getRelevants(p);
+        List<TacosFoothold> xMatches = new LinkedList<>();
+        for (TacosFoothold fh : relevants) {
             if (fh.getX1() <= p.x && fh.getX2() >= p.x) {
                 xMatches.add(fh);
             }
         }
         Collections.sort(xMatches, (fh1, fh2) -> compareFH(fh1, fh2));
-        for (MapleFoothold fh : xMatches) {
+        for (TacosFoothold fh : xMatches) {
             if (!fh.isWall() && fh.getY1() != fh.getY2()) {
                 int calcY;
                 double s1 = Math.abs(fh.getY2() - fh.getY1());
@@ -207,8 +171,8 @@ public class MapleFootholdTree {
         return p2.y;
     }
 
-    public MapleFoothold findFootHold(int foothold_id) {
-        for (MapleFoothold fh : this.footholds) {
+    public TacosFoothold findFootHold(int foothold_id) {
+        for (TacosFoothold fh : this.footholds) {
             if (fh.getId() == foothold_id) {
                 return fh;
             }
@@ -217,9 +181,8 @@ public class MapleFootholdTree {
     }
 
     public int findReactorFootId(Point target_pos) {
-        //DebugLogger.DebugLog("findReactorFootId : " + target_pos);
-        MapleFoothold fh_ground = null;
-        for (MapleFoothold fh : this.footholds) {
+        TacosFoothold fh_ground = null;
+        for (TacosFoothold fh : this.footholds) {
             // width 0
             if (fh.getX1() == fh.getX2()) {
                 continue;
@@ -250,7 +213,7 @@ public class MapleFootholdTree {
         return 0;
     }
 
-    public List<MapleFoothold> getAll() {
+    public List<TacosFoothold> getAll() {
         return this.footholds;
     }
 }
