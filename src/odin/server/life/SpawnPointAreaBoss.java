@@ -76,28 +76,16 @@ public class SpawnPointAreaBoss {
         return nextPossibleSpawn <= System.currentTimeMillis();
     }
 
-    public final Point getPosition() {
+    public Point getPosition() {
         final int rand = Randomizer.nextInt(3);
         return rand == 0 ? pos1 : rand == 1 ? pos2 : pos3;
     }
 
-    public final MapleMonster spawnMonster(TacosMap map) {
-        final MapleMonster mob = new MapleMonster(monster);
+    public MapleMonster spawnMonster(TacosMap map) {
+        MapleMonster mob = new MapleMonster(monster);
 
         mob.setPosition(getPosition());
         spawned.set(true);
-        mob.addListener(new MonsterListener() {
-
-            @Override
-            public void monsterKilled() {
-                nextPossibleSpawn = System.currentTimeMillis();
-
-                if (mobTime > 0) {
-                    nextPossibleSpawn += mobTime;
-                }
-                spawned.set(false);
-            }
-        });
         map.spawnMonster(mob, -2);
 
         if (msg != null) {
@@ -108,7 +96,7 @@ public class SpawnPointAreaBoss {
         return mob;
     }
 
-    public final int getMobTime() {
+    public int getMobTime() {
         return mobTime;
     }
 }

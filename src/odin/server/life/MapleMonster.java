@@ -98,7 +98,6 @@ public class MapleMonster extends TacosMonster {
     private boolean controllerHasAggro;
     private boolean controllerKnowsAboutAggro;
     private OdinEventInstanceManager eventInstance;
-    private MonsterListener listener = null;
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
@@ -423,9 +422,6 @@ public class MapleMonster extends TacosMonster {
         nodepack = null;
         reflectpack = null;
         cancelDropItem();
-        if (listener != null) {
-            listener.monsterKilled();
-        }
         int v1 = highestDamageChar;
         this.highestDamageChar = 0; //reset so we dont kill twice
         return v1;
@@ -563,10 +559,6 @@ public class MapleMonster extends TacosMonster {
             chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }
         MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
-    }
-
-    public final void addListener(final MonsterListener listener) {
-        this.listener = listener;
     }
 
     public final boolean isControllerHasAggro() {
