@@ -34,16 +34,19 @@ import tacos.wz.MapleData;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMonsterBook;
+import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugManTest;
 import tacos.debug.DebugMan_CC;
 import tacos.debug.DebugMan_NM;
+import tacos.debug.DebugMan_Warp;
 import tacos.debug.DebugShop;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosChannel;
 import tacos.server.map.TacosFoothold;
+import tacos.server.map.TacosPortal;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzName;
@@ -333,27 +336,47 @@ public class TacosCommandDebug {
                 chr.changeMapById(map_id);
                 return true;
             }
+            case "/portal" -> {
+                ArrayList<Integer> map_ids = new ArrayList<>();
+
+                for (TacosPortal portal : map.getPortals()) {
+                    int map_id = portal.getTargetMapId();
+                    int type = portal.getType();
+
+                    if (map_id == map.getId() || (map_id == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID && portal.getScriptName() == null)) {
+                        continue;
+                    }
+
+                    chr.DebugMsg(map_id + "(" + type + "), " + portal.getScriptName());
+                    map_ids.add(map_id);
+                }
+                if (map_ids.isEmpty()) {
+                    map_ids.add(map.getId());
+                }
+
+                chr.DebugMsg("portal : " + map_ids.size());
+                DebugMan_Warp dm = new DebugMan_Warp(map_ids);
+                dm.start(chr);
+                return true;
+            }
             case "/townmap" -> {
-                int count = 0;
+                ArrayList<Integer> town_map_ids = new ArrayList<>();
+
                 for (int map_id : WzDataStorage.MAP.getIds()) {
                     MapleData data = WzXML.MAP.getImg(map_id);
                     if (data != null) {
                         if (WzDataTool.getIntPath("info/town", data, 0) != 0) {
                             int return_map_id = WzDataTool.getIntPath("info/returnMap", data, 0);
                             if (map_id == return_map_id) {
-                                WzName nd = WzNameStorage.MAP.get(map_id);
-                                if (nd != null) {
-                                    nd.sendMapDebugMsg(chr);
-                                } else {
-                                    chr.DebugMsg(map_id + " : ERROR.");
-                                }
-                                count++;
+                                town_map_ids.add(map_id);
                             }
                         }
                     }
                 }
 
-                chr.DebugMsg("townmap : " + count);
+                chr.DebugMsg("townmap : " + town_map_ids.size());
+                DebugMan_Warp dm = new DebugMan_Warp(town_map_ids);
+                dm.start(chr);
                 return true;
             }
             // map.

@@ -155,7 +155,5 @@ public class DebugMan {
         protected String get() {
             return this.msg;
         }
-
     }
-
 }

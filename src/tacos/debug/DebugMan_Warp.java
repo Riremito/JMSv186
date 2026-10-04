@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 Riremito
+ * Copyright (C) 2026 Riremito
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,31 @@
  */
 package tacos.debug;
 
+import java.util.ArrayList;
 import odin.client.MapleCharacter;
-import tacos.wz.ids.DWI_Random;
-import odin.server.maps.MapleMap;
 
 /**
  *
  * @author Riremito
  */
-public class DebugMan_NM extends DebugMan implements IDebugMan {
+public class DebugMan_Warp extends DebugMan implements IDebugMan {
+
+    private NpcTag nt_first = new NpcTag();
+    private final ArrayList<Integer> selection_list = new ArrayList<>();
+    private int target_map_id = 910000000;
+
+    public DebugMan_Warp(ArrayList<Integer> map_ids) {
+        this.selection_list.addAll(map_ids);
+        setFirstTalk();
+    }
+
+    private void setFirstTalk() {
+        this.nt_first = new NpcTag();
+
+        for (int index = 0; index < this.selection_list.size(); index++) {
+            this.nt_first.addMenu(index, this.selection_list.get(index) + " : #m" + this.selection_list.get(index) + "#");
+        }
+    }
 
     @Override
     public boolean start(MapleCharacter chr) {
@@ -40,46 +56,25 @@ public class DebugMan_NM extends DebugMan implements IDebugMan {
         return true;
     }
 
-    private int target_map_id = 910000000;
-    private int maps[] = null;
-    private int number_of_maps = 10;
-
     @Override
     public boolean action(MapleCharacter chr, int status, int answer) {
         switch (status) {
             case 0: {
-                NpcTag nt = new NpcTag();
-                int current_map_id = chr.getMap().getId();
-                int map_index = DWI_Random.getMapIndex(current_map_id);
-                maps = new int[number_of_maps * 2 + 1];
-
-                for (int i = 0; i < number_of_maps * 2 + 1; i++) {
-                    maps[i] = DWI_Random.getMapByIndex(map_index + i - number_of_maps);
-                    if (maps[i] == -1) {
-                        continue;
-                    }
-                    if (maps[i] == current_map_id) {
-                        nt.addMenuRed(i, maps[i] + " : #m" + maps[i] + "#");
-                    } else {
-                        nt.addMenu(i, maps[i] + " : #m" + maps[i] + "#");
-                    }
-                }
-                super.askMenu(chr, nt);
+                super.askMenu(chr, this.nt_first);
                 return true;
             }
             case 1: {
                 NpcTag nt = new NpcTag();
-                if (answer < number_of_maps * 2 + 1) {
-                    nt.add("go to " + maps[answer] + " : #m" + maps[answer] + "#");
-                    target_map_id = maps[answer];
+                if (0 <= answer && answer < this.selection_list.size()) {
+                    nt.add("go to " + this.selection_list.get(answer) + " : #m" + this.selection_list.get(answer) + "#");
+                    this.target_map_id = this.selection_list.get(answer);
                     super.say(chr, nt, true, false);
                     return true;
                 }
                 return false;
             }
             case 2: {
-                MapleMap map = chr.findMap(target_map_id);
-                chr.changeMapPortal(map, map.getPortal(0));
+                chr.changeMapById(this.target_map_id);
                 return false;
             }
             default: {
