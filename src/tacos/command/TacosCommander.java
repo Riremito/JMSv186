@@ -18,8 +18,6 @@
  */
 package tacos.command;
 
-import odin.client.MapleCharacter;
-
 /**
  *
  * @author Riremito
@@ -28,26 +26,7 @@ public class TacosCommander {
 
     private static final String COMMAND_PREFIX = "/@!";
 
-    public static boolean executeCommand(MapleCharacter chr, String message) {
-        TacosCommander dcmd = new TacosCommander(message);
-
-        if (!dcmd.checkPrefix()) {
-            return false;
-        }
-        if (DebugCommand.executeCommand(dcmd, chr)) {
-            return true;
-        }
-        if (TestCommand.executeCommand(dcmd, chr)) {
-            return true;
-        }
-        if (CustomCommand.executeCommand(dcmd, chr)) {
-            return true;
-        }
-
-        return true;
-    }
-
-    private String message = null;
+    private final String message;
     private String[] splitted = null;
 
     public TacosCommander(String message) {

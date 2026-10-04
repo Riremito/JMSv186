@@ -85,7 +85,7 @@ import tacos.wz.WzDataStorage;
  *
  * @author Riremito
  */
-public class DebugCommand {
+public class TacosCommandAdmin {
 
     public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
         TacosClient client = chr.getClient();

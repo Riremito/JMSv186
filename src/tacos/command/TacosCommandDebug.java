@@ -48,7 +48,7 @@ import tacos.wz.WzXML;
  *
  * @author Riremito
  */
-public class TestCommand {
+public class TacosCommandDebug {
 
     public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
         MapleMap map = chr.getMap();

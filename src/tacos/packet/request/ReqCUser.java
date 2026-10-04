@@ -87,7 +87,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.client.inventory.MaplePet;
 import tacos.client.TacosDoorSkill;
 import tacos.client.TacosSummonSkill;
-import tacos.command.TacosCommander;
+import tacos.command.TacosCommand;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsAttackIndex;
 import tacos.packet.ops.OpsBodyPart;
@@ -1265,7 +1265,7 @@ public class ReqCUser {
         boolean bOnlyBalloon = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
 
         if (!bOnlyBalloon) {
-            if (TacosCommander.executeCommand(chr, message)) {
+            if (TacosCommand.executeCommand(chr, message)) {
                 return true;
             }
         }

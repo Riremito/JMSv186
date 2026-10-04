@@ -32,7 +32,7 @@ import tacos.wz.WzDataStorage;
  *
  * @author Riremito
  */
-public class CustomCommand {
+public class TacosCommandPlayer {
 
     public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
         MapleMap map = chr.getMap();
