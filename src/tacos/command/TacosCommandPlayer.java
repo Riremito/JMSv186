@@ -18,15 +18,10 @@
  */
 package tacos.command;
 
-import java.awt.Point;
 import odin.client.MapleCharacter;
-import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
-import tacos.packet.response.ResCField;
-import tacos.packet.response.builder.PB_FieldEffect;
-import tacos.packet.ops.OpsFieldEffect;
-import odin.server.Randomizer;
-import tacos.wz.WzDataStorage;
+import odin.server.maps.SavedLocationType;
+import tacos.packet.request.ReqCUser;
 
 /**
  *
@@ -38,29 +33,41 @@ public class TacosCommandPlayer {
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
-            case "/addportal" -> {
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-                int map_id_to = dcmd.getInt(1);
-
-                if (map_id_to == 0 || !WzDataStorage.MAP.check(map_id_to)) {
-                    chr.DebugMsg("AddPortal : invalid map id.");
-                    return true;
-                }
-
-                Point player_xy = chr.getPosition();
-                TacosDynamicPortal dynamic_portal = new TacosDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
-                map.addDynamicPortal(dynamic_portal);
-                chr.DebugMsg("AddPortal : " + chr.getPosMap() + " -> " + map_id_to);
+            // enable actions.
+            case "/ea" -> {
+                chr.sendStatChanged(true);
                 return true;
             }
-            case "/slot" -> {
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/frame").build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR1/" + Randomizer.nextInt(4)).build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR2/" + Randomizer.nextInt(4)).build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR3/" + Randomizer.nextInt(5)).build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("quest2288/" + Randomizer.nextInt(9)).build())); // test bgm
+            case "/save" -> {
+                chr.saveToDB(false);
+                chr.DebugMsg("save : done.");
+                return true;
+            }
+            // player command.
+            case "/fm" -> {
+                chr.saveLocation(SavedLocationType.FREE_MARKET, map.getReturnMap().getId());
+                chr.changeMapById(910000000);
+                return true;
+            }
+            case "/henesys" -> {
+                chr.changeMapById(100000000);
+                return true;
+            }
+            case "/leafre" -> {
+                chr.changeMapById(240000000);
+                return true;
+            }
+            case "/magatia" -> {
+                chr.changeMapById(261000000);
+                return true;
+            }
+            case "/autosp" -> {
+                int skill_id = chr.getSpUsed().get();
+                if (skill_id != 0) {
+                    while (ReqCUser.OnSkillUpRequestInternal(chr, skill_id));
+                }
+
+                chr.DebugMsg("autosp : " + skill_id);
                 return true;
             }
             case "/wh" -> {
@@ -69,39 +76,6 @@ public class TacosCommandPlayer {
                         player.changeMapWithCoordinate(map.getId(), chr.getX(), chr.getY());
                     }
                 }
-                return true;
-            }
-            case "/petcharacter", "/petchr", "/clone" -> {
-                if (chr.getPetCharacter().remove()) {
-                    chr.DebugMsg("PetCharacter : remove.");
-                    return true;
-                }
-                chr.getPetCharacter().spawn(chr.getId());
-                chr.DebugMsg("PetCharacter : sapwn.");
-                return true;
-            }
-            case "/petmob" -> {
-                if (!dcmd.check(1)) {
-                    chr.getPetMob().remove();
-                    chr.DebugMsg("PetMob : remove.");
-                    return true;
-                }
-
-                int mob_id = dcmd.getInt(1);
-                chr.getPetMob().spawn(mob_id);
-                chr.DebugMsg("PetMob : sapwn.");
-                return true;
-            }
-            case "/petnpc" -> {
-                if (!dcmd.check(1)) {
-                    chr.getPetNPC().remove();
-                    chr.DebugMsg("PetNPC : remove.");
-                    return true;
-                }
-
-                int mob_id = dcmd.getInt(1);
-                chr.getPetNPC().spawn(mob_id);
-                chr.DebugMsg("PetNPC : sapwn.");
                 return true;
             }
             default -> {

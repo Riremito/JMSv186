@@ -390,13 +390,15 @@ public class TacosCharacter extends TacosPlayer {
         return true;
     }
 
-    public boolean changeMap(int map_id) {
-        MapleMap map_to = findMap(map_id);
-        if (map_to != null) {
-            TacosPortal portal_to = map_to.getPortal(0);
-            if (portal_to != null) {
-                changeMapPortal(map_to, portal_to);
-                return true;
+    public boolean changeMapById(int map_id) {
+        if (WzDataStorage.MAP.check(map_id)) {
+            MapleMap map_to = findMap(map_id);
+            if (map_to != null) {
+                TacosPortal portal_to = map_to.getPortal(0);
+                if (portal_to != null) {
+                    changeMapPortal(map_to, portal_to);
+                    return true;
+                }
             }
         }
         SendPacket(ResCField.TransferFieldReqIgnored(OpsTransferField.TF_DISABLED_PORTAL));

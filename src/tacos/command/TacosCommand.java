@@ -38,7 +38,16 @@ public class TacosCommand {
         if (TacosCommandDebug.executeCommand(dcmd, chr)) {
             return true;
         }
+        if (TacosCommandTest.executeCommand(dcmd, chr)) {
+            return true;
+        }
+        if (TacosCommandInfo.executeCommand(dcmd, chr)) {
+            return true;
+        }
         if (TacosCommandPlayer.executeCommand(dcmd, chr)) {
+            return true;
+        }
+        if (TacosCommandCustom.executeCommand(dcmd, chr)) {
             return true;
         }
 

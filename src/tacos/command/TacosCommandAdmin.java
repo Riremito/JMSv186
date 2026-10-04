@@ -24,46 +24,27 @@ import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryType;
 import tacos.property.Property_Packet;
 import odin.constants.GameConstants;
 import tacos.shared.TacosSharedExpTable;
-import tacos.wz.ids.DWI_Random;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
-import tacos.packet.request.ReqCUser;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MapleNPC;
-import odin.server.life.MonsterDropEntry;
 import odin.server.life.PlayerNPC;
 import odin.server.maps.MapleMap;
-import odin.server.maps.SavedLocationType;
 import tacos.database.query.DQ_Accounts;
-import tacos.wz.MapleData;
-import odin.server.life.MobSkill;
 import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
-import tacos.client.TacosForcedStat;
-import tacos.client.TacosMonsterBook;
 import tacos.debug.DebugJob;
 import tacos.debug.DebugLogger;
-import tacos.debug.DebugManTest;
-import tacos.debug.DebugMan_CC;
-import tacos.debug.DebugMan_NM;
-import tacos.debug.DebugShop;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.packet.ops.OpsMobSkill;
-import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
-import tacos.packet.response.ResCWvsContext;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptPortal;
 import tacos.script.TacosScriptQuest;
@@ -72,13 +53,7 @@ import tacos.server.TacosChannel;
 import tacos.server.TacosLogin;
 import tacos.server.TacosWorld;
 import tacos.server.map.TacosFoothold;
-import tacos.server.map.TacosReward;
-import tacos.server.map.TacosReward.Reward;
-import tacos.server.map.TacosSpawnPoint;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
-import tacos.wz.WzName;
-import tacos.wz.WzNameStorage;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -117,15 +92,6 @@ public class TacosCommandAdmin {
 
                 DQ_Accounts.resetPassword(dcmd.get(1), dcmd.get(2));
                 chr.DebugMsg("ResetPassword : " + dcmd.get(1));
-                return true;
-            }
-            case "/save" -> {
-                chr.saveToDB(false);
-                chr.DebugMsg("save : done.");
-                return true;
-            }
-            case "/ea", "/stuck", "/unlock" -> {
-                chr.sendStatChanged(true);
                 return true;
             }
             case "/players" -> {
@@ -175,6 +141,19 @@ public class TacosCommandAdmin {
                 }
                 return true;
             }
+            case "/warp" -> {
+                if (!dcmd.check(1)) {
+                    return true;
+                }
+                int map_id = dcmd.getInt(1);
+
+                if (map_id <= 0) {
+                    return true;
+                }
+
+                chr.changeMapById(map_id);
+                return true;
+            }
             case "/npctalk" -> {
                 if (!dcmd.check(1)) {
                     return true;
@@ -202,81 +181,6 @@ public class TacosCommandAdmin {
                 chr.DebugMsg("npctalk2 : " + npc_id);
                 return true;
             }
-            case "/dm" -> {
-                if (!dcmd.check(1)) {
-                    DebugManTest dm_test = new DebugManTest();
-                    dm_test.start(chr);
-                    return true;
-                }
-                if (dcmd.get(1).equals("nm")) {
-                    DebugMan_NM dm = new DebugMan_NM();
-                    dm.start(chr);
-                    return true;
-                }
-                if (dcmd.get(1).equals("cc")) {
-                    DebugMan_CC dm = new DebugMan_CC();
-                    dm.start(chr);
-                    return true;
-                }
-                return true;
-            }
-            case "/ds" -> {
-                DebugShop ds = new DebugShop();
-
-                if (!dcmd.check(1)) {
-                    ds.setRandomItems(100);
-                    ds.setRechargeAll();
-                    ds.start(chr);
-                    return true;
-                }
-
-                int item_sub_type = dcmd.getInt(1);
-                if (item_sub_type == 207 || item_sub_type == 233) {
-                    ds.setRechargeAll();
-                }
-                ds.setItemTest(item_sub_type);
-                ds.start(chr);
-                return true;
-            }
-            case "/ds2" -> {
-                DebugShop ds = new DebugShop();
-
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-
-                String search_string = "";
-                for (int i = 1; i < dcmd.getLength(); i++) {
-                    if (!search_string.isEmpty()) {
-                        search_string += " ";
-                    }
-                    search_string += dcmd.get(i);
-                }
-
-                int shop_item_count = 0;
-                for (WzName nd : WzNameStorage.ITEM.find(search_string)) {
-                    ds.addItem(nd.getId());
-                    shop_item_count++;
-                    if (100 <= shop_item_count) {
-                        chr.DebugMsg("item search hits over 100 item names.");
-                        break;
-                    }
-                }
-
-                chr.DebugMsg("search results = " + shop_item_count);
-                ds.start(chr);
-                return true;
-            }
-            case "/removeall" -> {
-                map.removeAllObjects();
-                return true;
-            }
-            case "/regen" -> {
-                int map_id = map.getId();
-                chr.getChannelServer().removeMap(map_id);
-                chr.changeMap(map_id);
-                return true;
-            }
             case "/npc" -> {
                 if (!dcmd.check(1)) {
                     return true;
@@ -293,6 +197,7 @@ public class TacosCommandAdmin {
                 npc.setRx1(chr.getPosition().x + 50);
                 npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
                 npc.setFootholdId(chr.getFootholdId());
+
                 map.addNPC(npc);
                 chr.DebugMsg("npc : " + npc_id);
                 return true;
@@ -305,50 +210,10 @@ public class TacosCommandAdmin {
                 pnpc.setRx1(chr.getPosition().x + 50);
                 pnpc.setF(dcmd.check(1) ? dcmd.getInt(1) : chr.getMoveAction());
                 pnpc.setFootholdId(chr.getFootholdId());
+
                 map.addNPC(pnpc);
                 chr.SendPacket(ResCNpcPool.ImitatedNPCData(pnpc));
                 chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false));
-                return true;
-            }
-            case "/npclocation" -> {
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-                int npc_id = dcmd.getInt(1);
-                if (!WzDataStorage.NPC.check(npc_id)) {
-                    chr.DebugMsg("npclocation : invalid id.");
-                    return true;
-                }
-
-                MapleData npc_location = WzXML.ETC.getNpcLocation();
-                if (npc_location == null) {
-                    chr.DebugMsg("npclocation : NpcLocation.img is not found.");
-                    return true;
-                }
-                npc_location = npc_location.getChildByPath(Integer.toString(npc_id));
-                if (npc_location == null) {
-                    chr.DebugMsg("npclocation : NpcLocation.img/npc_id is not found.");
-                    return true;
-                }
-
-                WzName nd_npc = WzNameStorage.NPC.get(npc_id);
-
-                if (nd_npc == null) {
-                    chr.DebugMsg("npclocation : error.");
-                    return true;
-                }
-
-                nd_npc.sendDebugMsg(chr);
-                for (MapleData data : npc_location) {
-                    int map_id = WzDataTool.getInt(data);
-                    WzName nd_map = WzNameStorage.MAP.get(map_id);
-                    if (nd_map == null) {
-                        chr.DebugMsg("ERROR.");
-                        continue;
-                    }
-                    nd_map.sendMapDebugMsg(chr);
-                }
-
                 return true;
             }
             case "/reactor" -> {
@@ -384,83 +249,6 @@ public class TacosCommandAdmin {
                 map.addReactor(reactor);
                 TacosScriptReactor.getInstance().act(client, reactor);
                 chr.DebugMsg("reactor : " + reactor_id);
-                return true;
-            }
-            case "/search" -> {
-                if (!dcmd.check(2)) {
-                    return true;
-                }
-
-                WzNameStorage nds;
-
-                switch (dcmd.get(1).toLowerCase()) {
-                    case "item" -> {
-                        nds = WzNameStorage.ITEM;
-                        for (WzName nd : nds.find(dcmd.get(2), false)) {
-                            nd.sendDebugMsgItem(chr);
-                        }
-                        return true;
-                    }
-                    case "map" -> {
-                        nds = WzNameStorage.MAP;
-                        for (WzName nd : nds.find(dcmd.get(2), false)) {
-                            nd.sendMapDebugMsg(chr);
-                        }
-                        return true;
-                    }
-                    case "mob" -> {
-                        nds = WzNameStorage.MOB;
-                    }
-                    case "npc" -> {
-                        nds = WzNameStorage.NPC;
-                    }
-                    case "reactor" -> {
-                        // no names.
-                        return true;
-                    }
-                    case "skill" -> {
-                        nds = WzNameStorage.SKILL;
-                    }
-                    default -> {
-                        return true;
-                    }
-                }
-
-                for (WzName nd : nds.find(dcmd.get(2), false)) {
-                    nd.sendDebugMsg(chr);
-                }
-                return true;
-            }
-            case "/checkmapdata", "/mapdata" -> {
-                checkMapData(chr);
-                return true;
-            }
-            case "/mobtime" -> {
-                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
-                    if (sp.getMobTime() != 0) {
-                        chr.DebugMsg(String.format("mobtime : %.1f hours.", (double) sp.getMobTime() / 1000 / 3600));
-                    }
-                }
-                return true;
-            }
-            case "/dropinfo" -> {
-                ArrayList<Integer> mob_ids = new ArrayList<>();
-                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
-                    int mob_id = sp.getId();
-                    if (!mob_ids.contains(mob_id)) {
-                        mob_ids.add(mob_id);
-                    }
-                }
-                for (int mob_id : mob_ids) {
-                    chr.DebugMsg("[" + mob_id + " - " + WzNameStorage.MOB.get(mob_id).getName() + "]");
-                    for (Reward reward : TacosReward.getRewardData(mob_id)) {
-                        if (reward.item != 0) {
-                            chr.DebugMsgItem(reward.item + " : " + String.format("%05.2f%%", reward.prob * 100.0 / TacosReward.PROB_MAX) + " - " + WzNameStorage.ITEM.get(reward.item).getName(), reward.item);
-                        } else {
-                            chr.DebugMsg("meso : " + String.format("%05.2f%%", reward.prob * 100.0 / TacosReward.PROB_MAX) + " - " + reward.money);
-                        }
-                    }
-                }
                 return true;
             }
             case "/dc", "/disconnect" -> {
@@ -502,32 +290,6 @@ public class TacosCommandAdmin {
 
                 map.spawnItemDrop(chr, chr, item, chr.getPosition(), true, true);
                 chr.DebugMsg("drop : " + item_id);
-                return true;
-            }
-            case "/monsterbook" -> {
-                // Item.wz/Consume/0238.img/info/mob
-                MapleData monster_card_items = WzXML.ITEM.getItemImg(238);
-                // String.wz/MonsterBook.img
-                MapleData monster_book_mobs = WzXML.STRING.getMonsterBook();
-                if (monster_card_items == null || monster_book_mobs == null) {
-                    return true;
-                }
-
-                TacosMonsterBook monster_book = chr.getMonsterBook();
-
-                for (MapleData mb_mob : monster_book_mobs.getChildren()) {
-                    int mob_id = Integer.parseInt(mb_mob.getName());
-
-                    for (MapleData mc_item : monster_card_items.getChildren()) {
-                        if (WzDataTool.getIntPath("info/mob", mc_item, 0) == mob_id) {
-                            int card_item_id = Integer.parseInt(mc_item.getName());
-                            monster_book.add(card_item_id, 5, false);
-                            break;
-                        }
-                    }
-                }
-
-                monster_book.update();
                 return true;
             }
             case "/bosstest" -> {
@@ -594,86 +356,6 @@ public class TacosCommandAdmin {
                 chr.DebugMsg("killmob : done.");
                 return true;
             }
-            case "/mobinfo" -> {
-                chr.DebugMsg("mobinfo : " + map.getAllMonsters().size());
-                return true;
-            }
-            case "/ms", "/disease" -> {
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-
-                int mob_skill_id = dcmd.getInt(1);
-                int mob_skill_level = 1;
-                OpsMobSkill oms = OpsMobSkill.find(mob_skill_id);
-                if (oms == OpsMobSkill.UNKNOWN) {
-                    chr.DebugMsg("mobdkill : invalid or not supported id.");
-                    return true;
-                }
-                MobSkill ms = WzXML.SKILL.getMobSkillData(mob_skill_id, mob_skill_level);
-                if (ms == null) {
-                    chr.DebugMsg("MobSkill : not found.");
-                    return true;
-                }
-
-                int cts = oms.getDisease().get();
-                int buff_id = mob_skill_id | (mob_skill_level << 16);
-                int buff_effect = Math.max(ms.getX(), 1);
-                int buff_time = dcmd.check(2) ? dcmd.getInt(2) : 5000;
-                if (chr.getBuff().updateTest(cts, buff_id, buff_effect, buff_time)) {
-                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
-                }
-
-                chr.DebugMsg("mobdkill : " + mob_skill_id);
-                return true;
-            }
-            case "/mt" -> {
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-                int cts = dcmd.getInt(1);
-                int buff_id = -4000000;
-                int buff_effect = dcmd.check(2) ? dcmd.getInt(2) : 1;
-                int buff_time = dcmd.check(3) ? dcmd.getInt(3) : 5000;
-                if (chr.getBuff().updateTest(dcmd.getInt(1), buff_id, buff_effect, buff_time)) {
-                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
-                }
-                chr.DebugMsg("mt : " + OpsSecondaryStat.find(cts) + "(" + cts + "), buff_effect = " + buff_effect + ", buff_time =" + buff_time);
-                return true;
-            }
-            case "/mt2" -> {
-                if (!dcmd.check(3)) {
-                    return true;
-                }
-
-                int cts = dcmd.getInt(1);
-                if (!OpsSecondaryStat.find(cts).isTwoState()) {
-                    chr.DebugMsg("mt2 : not a two state buff.");
-                    return false;
-                }
-
-                int buff_id = -4000000;
-                int buff_effect = dcmd.getInt(2);
-                int buff_effect_2 = dcmd.getInt(3);
-                int buff_time = dcmd.check(4) ? dcmd.getInt(4) : 5000;
-
-                if (chr.getBuff().updateTest(dcmd.getInt(1), buff_id, buff_effect, buff_time, buff_effect_2)) {
-                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
-                }
-                chr.DebugMsg("mt : " + OpsSecondaryStat.find(cts) + "(" + cts + "), buff_effect = " + buff_effect + ", " + buff_effect_2);
-                return true;
-            }
-            case "/ride" -> {
-                int buff_id = -4000000;
-                int buff_effect = 1902000;
-                int buff_effect_2 = 1004;
-                int buff_time = dcmd.check(2) ? dcmd.getInt(2) : 5000;
-
-                if (chr.getBuff().updateTest(OpsSecondaryStat.CTS_RideVehicle.get(), buff_id, buff_effect, buff_time, buff_effect_2)) {
-                    chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
-                }
-                return true;
-            }
             case "/heal" -> {
                 int new_hp = chr.getStat().getMaxHp();
                 int new_mp = chr.getStat().getMaxMp();
@@ -706,15 +388,6 @@ public class TacosCommandAdmin {
 
                 chr.DebugMsg("heal : HP = " + chr.getStat().getHp() + " / " + chr.getStat().getMaxHp());
                 chr.DebugMsg("heal : MP = " + chr.getStat().getMp() + " / " + chr.getStat().getMaxMp());
-                return true;
-            }
-            case "/autosp" -> {
-                int skill_id = chr.getSpUsed().get();
-                if (skill_id != 0) {
-                    while (ReqCUser.OnSkillUpRequestInternal(chr, skill_id));
-                }
-
-                chr.DebugMsg("autosp : " + skill_id);
                 return true;
             }
             case "/allskill", "/job" -> {
@@ -807,189 +480,15 @@ public class TacosCommandAdmin {
                 chr.DebugMsg("reset beginner skill : done.");
                 return true;
             }
-            case "/fs" -> {
-                TacosForcedStat fs = chr.getForcedStat();
-                int index = 1;
-                fs.setSTR(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setDEX(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setINT(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setLUK(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setPAD(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setACC(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setEVA(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setSpeed(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                fs.setJump(dcmd.check(index) ? dcmd.getInt(index++) : 0);
-                chr.SendPacket(ResCWvsContext.ForcedStatSet(chr));
-                chr.DebugMsg("forced stat set : STR DEX INT LUK PAD ACC EVA Speed Jump");
-                return true;
-            }
-            case "/map2", "/mapt", "/warp" -> {
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-                int map_id = dcmd.getInt(1);
-
-                if (map_id <= 0) {
-                    return true;
-                }
-
-                changeMap(chr, map_id);
-                return true;
-            }
-            case "/prevmap" -> {
-                int index = DWI_Random.getMapIndex(chr.getPosMap());
-                int map_id = DWI_Random.getMapByIndex(index - 1);
-
-                if (map_id <= 0) {
-                    return true;
-                }
-
-                changeMap(chr, map_id);
-                return true;
-            }
-            case "/nextmap" -> {
-                int index = DWI_Random.getMapIndex(chr.getPosMap());
-                int map_id = DWI_Random.getMapByIndex(index + 1);
-
-                if (map_id <= 0) {
-                    return true;
-                }
-
-                changeMap(chr, map_id);
-                return true;
-            }
-            case "/townmap" -> {
-                int count = 0;
-                for (int map_id : WzDataStorage.MAP.getIds()) {
-                    MapleData data = WzXML.MAP.getImg(map_id);
-                    if (data != null) {
-                        if (WzDataTool.getIntPath("info/town", data, 0) != 0) {
-                            int return_map_id = WzDataTool.getIntPath("info/returnMap", data, 0);
-                            if (map_id == return_map_id) {
-                                WzName nd = WzNameStorage.MAP.get(map_id);
-                                if (nd != null) {
-                                    nd.sendMapDebugMsg(chr);
-                                } else {
-                                    chr.DebugMsg(map_id + " : ERROR.");
-                                }
-                                count++;
-                            }
-                        }
-                    }
-                }
-                chr.DebugMsg("town map : " + count);
-                return true;
-            }
-            case "/fm", "/フリマ" -> {
-                chr.saveLocation(SavedLocationType.FREE_MARKET, map.getReturnMap().getId());
-                changeMap(chr, 910000000);
-                return true;
-            }
-            case "/henesys", "/ヘネシス" -> {
-                changeMap(chr, 100000000);
-                return true;
-            }
-            case "/leafre", "/リプレ" -> {
-                changeMap(chr, 240000000);
-                return true;
-            }
-            case "/magatia", "/マガティア" -> {
-                changeMap(chr, 261000000);
-                return true;
-            }
             case "/jc", "/転職" -> {
                 remoteNPCTalk(client, 9330104, 1012003);
-                return true;
-            }
-            case "/randombeauty" -> {
-                int skin_id = WzDataStorage.SKIN.getRandom();
-                int face_id = WzDataStorage.FACE.getRandom();
-                int hair_id = WzDataStorage.HAIR.getRandom();
-
-                chr.setSkinColor((byte) (skin_id % 100));
-                chr.setFace(face_id);
-                chr.setHair(hair_id);
-                chr.sendStatChanged(false);
-                chr.DebugMsg("random beauty : SkinID = " + skin_id + ", FaceID = " + face_id + ", HairID = " + hair_id);
-                DebugLogger.InfoLog("random beauty : SkinID = " + skin_id + ", FaceID = " + face_id + ", HairID = " + hair_id);
-                return true;
-            }
-            case "/randomdrop" -> {
-                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                int itemid = WzDataStorage.ITEM.getRandom();
-                Item toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
-                map.spawnItemDrop(chr, chr, toDrop, chr.getPosition(), true, true);
-                String item_name = MapleItemInformationProvider.getInstance().getName(toDrop.getItemId());
-
-                if (item_name == null) {
-                    item_name = "<null>";
-                }
-
-                chr.DebugMsgItem("random drop : " + toDrop.getItemId() + " - " + item_name, toDrop.getItemId());
-                DebugLogger.InfoLog("random drop : " + toDrop.getItemId() + " - " + item_name);
-                return true;
-            }
-            case "/randomspawn" -> {
-                int mob_count = 1;
-                if (dcmd.check(1)) {
-                    mob_count = dcmd.getInt(1);
-                }
-
-                if (1000 < mob_count) {
-                    mob_count = 1000;
-                }
-
-                for (int i = 0; i < mob_count; i++) {
-                    int mobid = WzDataStorage.MOB.getRandom();
-                    DebugLogger.InfoLog("random spawn: " + mobid);
-                    MapleMonster mob = MapleLifeFactory.getMonster(mobid);
-                    map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
-                    chr.DebugMsg("random spawn : " + mob.getId() + " - " + mob.getStats().getName());
-                    DebugLogger.InfoLog("random spawn : " + mob.getId() + " - " + mob.getStats().getName());
-                }
-
-                return true;
-            }
-            case "/randommap" -> {
-                int mapid = WzDataStorage.MAP.getRandom();
-                MapleMap map_to = chr.findMap(mapid);
-                chr.changeMapPortal(map_to, map_to.getPortal(0));
-                chr.DebugMsg("random map : " + map_to.getId());
-                DebugLogger.InfoLog("random map : " + map_to.getId());
-                return true;
-            }
-            case "/randombgm" -> {
-                String bgm = WzXML.SOUND.getRandomBGM();
-                map.setChangeBGM(bgm);
-                chr.DebugMsg("random BGM : " + bgm);
                 return true;
             }
             default -> {
             }
         }
-        // npc.
-        // reactor.
-        // client
-        // item
-        // monster card.
-        // ボス関連
-        // Mob
-        // mob skill.
-        // ステータス関連
-        // Map移動関連
-        // ランダム関連
 
         return false;
-    }
-
-    public static boolean changeMap(MapleCharacter chr, int map_id) {
-        if (!WzDataStorage.MAP.check(map_id)) {
-            return false;
-        }
-
-        MapleMap map = chr.findMap(map_id);
-        chr.changeMapPortal(map, map.getPortal(0));
-        return true;
     }
 
     // bypass npc data checks
@@ -1144,43 +643,6 @@ public class TacosCommandAdmin {
             Skill skill = SkillFactory.getSkill(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
         }
-        return true;
-    }
-
-    private static boolean checkMapData(MapleCharacter chr) {
-        MapleMap map = chr.getMap();
-        if (map == null) {
-            return false;
-        }
-
-        List<Integer> mob_ids = new ArrayList<>();
-        List<Integer> mob_counts = new ArrayList<>();
-        for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
-            int id = sp.getId();
-            int index = mob_ids.indexOf(id);
-            if (index != -1) {
-                mob_counts.set(index, mob_counts.get(index) + 1);
-                continue;
-            }
-            mob_ids.add(id);
-            mob_counts.add(1);
-        }
-
-        for (int i = 0; i < mob_ids.size(); i++) {
-            int mob_id = mob_ids.get(i);
-            int mob_count = mob_counts.get(i);
-            MapleData md_mob = WzXML.STRING.getMob().getChildByPath(Integer.toString(mob_id));
-            String mob_name = md_mob != null ? WzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
-            if (!WzDataStorage.MOB.check(mob_id)) {
-                chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
-                continue;
-            }
-            chr.DebugMsg("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
-            for (MonsterDropEntry mde : MapleMonsterInformationProvider.getInstance().retrieveDrop(mob_id)) {
-                chr.DebugMsg(mde.itemId + " : " + mde.chance);
-            }
-        }
-
         return true;
     }
 }

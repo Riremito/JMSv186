@@ -93,7 +93,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 item_use.run();
                 if (action == 0) {
-                    chr.changeMap(map_id);
+                    chr.changeMapById(map_id);
                 } else {
                     chr.changeMapWithCoordinate(map_id, chr.getPosition().x, chr.getPosition().y);
                 }
