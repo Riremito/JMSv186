@@ -16,14 +16,13 @@
  *
  *
  */
-package tacos.debug;
+package tacos.command;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import tacos.wz.MapleData;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
@@ -32,6 +31,7 @@ import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift;
 import tacos.client.TacosMapleGift.MapleGiftData;
+import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.ResCMobPool;
@@ -50,42 +50,81 @@ import tacos.wz.WzXML;
  */
 public class TestCommand {
 
-    public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
-        TacosClient client = chr.getClient();
+    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
-            case "/koc164": {
+            case "/koc164" -> {
                 chr.SendPacket(ResCWvsContext.KOC_UI_Open());
                 return true;
             }
-            case "/check": {
-                chr.DebugMsg("X  : " + chr.getPosition().x);
-                chr.DebugMsg("Y  : " + chr.getPosition().y);
-                chr.DebugMsg("FH : " + chr.getFootholdId());
-                chr.DebugMsg("Ac : " + chr.getMoveAction());
+            case "/maplegift" -> {
+                TacosMapleGift maple_gift = chr.getMapleGift();
+                maple_gift.clear();
+                MapleGiftData maple_gift_data = new MapleGiftData();
+                maple_gift_data.unk1 = 1;
+                maple_gift_data.item_id = 1452045;
+                maple_gift_data.name = "MAPLE";
+                maple_gift_data.id = 777;
+                maple_gift.add(maple_gift_data);
+
+                chr.SendPacket(ResCWvsContext.MapleGift(maple_gift_data));
                 return true;
             }
-            case "/testmsg": {
+            case "/poll" -> {
+                String questions[] = {
+                    "Question1",
+                    "Question2"
+                };
+                String answers[][] = {
+                    {"123", "aiueo", "asdf"},
+                    {"456", "qwert"}
+                };
+
+                chr.SendPacket(ResCUserLocal.PollQuestion(questions, answers));
+                return true;
+            }
+            case "/repair" -> {
+                chr.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, 1012003));
+                return true;
+            }
+            case "/mg" -> {
+                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
+                return true;
+            }
+            case "/msgtest" -> {
                 chr.DebugMsg("BLUE.");
                 chr.DebugMsg2("PINK.");
                 chr.DebugMsg3("YELLOW.");
                 return true;
             }
-            case "/threadid": {
+            case "/slidemsg" -> {
+                TacosChannel srv_channel = chr.getChannelServer();
+                if (!dcmd.check(1)) {
+                    srv_channel.setServerMessage("");
+                    srv_channel.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(srv_channel.getServerMessage()).build()));
+                    return true;
+                }
+                srv_channel.setServerMessage(dcmd.get(1));
+                srv_channel.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(srv_channel.getServerMessage()).build()));
+                return true;
+            }
+            case "/threadid" -> {
                 chr.DebugMsg("thread id = " + DebugLogger.getThreadId());
                 return true;
             }
-            case "/test":
-            case "/help": {
-                DebugCommand.remoteNPCTalk(client, 9010021, 1012003);
+            case "/playerxy" -> {
+                chr.DebugMsg("X  : " + chr.getX());
+                chr.DebugMsg("Y  : " + chr.getY());
+                chr.DebugMsg("FH : " + chr.getFootholdId());
+                chr.DebugMsg("MA : " + chr.getMoveAction());
                 return true;
             }
-            case "/cr": {
+            case "/cr" -> {
                 chr.DebugMsg(String.format("Critical : %d%%", chr.getCriticalRate().get()));
                 return true;
             }
-            case "/hm": {
+            case "/hm" -> {
                 List<Integer> ids = new ArrayList<>();
                 MapleData md_item_sub_type = WzXML.ITEM.getItemImg(503);
                 if (md_item_sub_type != null) {
@@ -152,45 +191,14 @@ public class TestCommand {
                 }
                 return true;
             }
-            // packet test.
-            case "/msg": {
-                TacosChannel srv_channel = chr.getChannelServer();
-                if (!dcmd.check(1)) {
-                    srv_channel.setServerMessage("");
-                    srv_channel.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(srv_channel.getServerMessage()).build()));
-                    return true;
-                }
-                srv_channel.setServerMessage(dcmd.get(1));
-                srv_channel.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(srv_channel.getServerMessage()).build()));
-                return true;
-            }
-            case "/repair": {
-                chr.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, 1012003));
-                return true;
-            }
-            case "/mg": {
-                chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticOmokTest(chr));
-                return true;
-            }
-            case "/poll": {
-                String questions[] = {"Question1", "Question2"};
-                String answers[][] = {
-                    {"123", "aiueo", "asdf"},
-                    {"456", "qwert"}
-                };
-
-                // client strings won't be cleared, buggy...
-                chr.SendPacket(ResCUserLocal.PollQuestion(questions, answers));
-                return true;
-            }
-            case "/npccon": {
+            case "/npccon" -> {
                 for (MapleNPC npc : map.getAllNPCs()) {
                     chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
                     chr.DebugMsg("NpcControl : id = " + npc.getId() + ", oid = " + npc.getObjectId());
                 }
                 return true;
             }
-            case "/mobtest": {
+            case "/mobtest" -> {
                 List<MapleMonster> monsters = map.getAllMonsters();
                 MapleMonster monster = null;
                 if (map.getAllMonsters().isEmpty()) {
@@ -205,21 +213,7 @@ public class TestCommand {
                 monsterPacketTest(chr, monster, index);
                 return true;
             }
-            case "/maplegift": {
-                TacosMapleGift maple_gift = chr.getMapleGift();
-                maple_gift.clear();
-                MapleGiftData maple_gift_data = new MapleGiftData();
-                maple_gift_data.unk1 = 1;
-                maple_gift_data.item_id = 1452045;
-                maple_gift_data.name = "MAPLE";
-                maple_gift_data.id = 777;
-                maple_gift.add(maple_gift_data);
-                // there is no way to cancel maple gift popup.
-                chr.SendPacket(ResCWvsContext.MapleGift(maple_gift_data));
-                return true;
-            }
-            default: {
-                break;
+            default -> {
             }
         }
 

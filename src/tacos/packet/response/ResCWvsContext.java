@@ -1033,7 +1033,7 @@ public class ResCWvsContext {
                 sp.Encode4((door != null) ? door.getSkillId() : 0);
                 sp.Encode2((door != null) ? door.getLink().getPosition().x : 0);
                 sp.Encode2((door != null) ? door.getLink().getPosition().y : 0);
-                */
+                 */
                 break;
             }
             case PartyInfo_OpenGate: {
@@ -1082,7 +1082,7 @@ public class ResCWvsContext {
                 data.Encode4(partychar.getDoorSkill());
                 data.Encode4(partychar.getDoorPosition().x);
                 data.Encode4(partychar.getDoorPosition().y);
-                */
+                 */
             } else {
                 data.Encode4(leaving ? 999999999 : 0);
                 data.Encode8(leaving ? 999999999 : 0);
@@ -1436,6 +1436,7 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // unimplemented, cancel action is not coded.
     public static ServerPacket MapleGift(MapleGiftData maple_gift_data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_MapleGift);
 
@@ -2359,6 +2360,7 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // never used in JMS, other region may be used this packet before Lv20 limit removal.
     public static ServerPacket KOC_UI_Open() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_164_KOC_UI_Open);
 

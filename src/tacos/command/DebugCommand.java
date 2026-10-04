@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.debug;
+package tacos.command;
 
 import odin.client.Skill;
 import odin.client.MapleCharacter;
@@ -51,6 +51,12 @@ import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosForcedStat;
 import tacos.client.TacosMonsterBook;
+import tacos.debug.DebugJob;
+import tacos.debug.DebugLogger;
+import tacos.debug.DebugManTest;
+import tacos.debug.DebugMan_CC;
+import tacos.debug.DebugMan_NM;
+import tacos.debug.DebugShop;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsMobSkill;
@@ -81,34 +87,19 @@ import tacos.wz.WzDataStorage;
  */
 public class DebugCommand {
 
-    public static boolean checkCommand(MapleCharacter chr, String message) {
-        DebugCommander dcmd = new DebugCommander(message);
-        if (!dcmd.checkPrefix()) {
-            // show shat message.
-            return false;
-        }
-
-        if (executeCommand(dcmd, chr)) {
-            return true;
-        }
-
-        if (TestCommand.executeCommand(dcmd, chr)) {
-            return true;
-        }
-
-        if (CustomCommand.executeCommand(dcmd, chr)) {
-            return true;
-        }
-
-        return true;
-    }
-
-    public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
+    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
         TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
-            case "/reload": {
+            case "/shutdown" -> {
+                // CTRL + C & Y
+                if (chr.getName().equals("リレミト") || chr.getName().equals("Riremito")) {
+                    System.exit(0);
+                }
+                return true;
+            }
+            case "/reload" -> {
                 Property_Packet.reload();
                 TacosScriptPortal.getInstance().clearScripts();
                 TacosScriptNPC.getInstance().clearScripts();
@@ -119,34 +110,25 @@ public class DebugCommand {
                 chr.DebugMsg("reload : done.");
                 return true;
             }
-            case "/shutdown": {
-                // CTRL + C & Y
-                if (chr.getName().equals("リレミト") || chr.getName().equals("Riremito")) {
-                    System.exit(0);
-                }
-                return true;
-            }
-            case "/resetpassword": {
+            case "/resetpassword" -> {
                 if (!dcmd.check(2)) {
                     return true;
                 }
 
                 DQ_Accounts.resetPassword(dcmd.get(1), dcmd.get(2));
-                chr.DebugMsg("reset password : " + dcmd.get(1));
+                chr.DebugMsg("ResetPassword : " + dcmd.get(1));
                 return true;
             }
-            case "/save": {
+            case "/save" -> {
                 chr.saveToDB(false);
                 chr.DebugMsg("save : done.");
                 return true;
             }
-            case "/ea":
-            case "/stuck":
-            case "/unlock": {
+            case "/ea", "/stuck", "/unlock" -> {
                 chr.sendStatChanged(true);
                 return true;
             }
-            case "/players": {
+            case "/players" -> {
                 TacosWorld world = chr.getWorld();
                 {
                     TacosLogin srv_login = world.getLogin();
@@ -193,7 +175,7 @@ public class DebugCommand {
                 }
                 return true;
             }
-            case "/npctalk": {
+            case "/npctalk" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -207,7 +189,7 @@ public class DebugCommand {
                 chr.DebugMsg("npctalk : " + npc_id);
                 return true;
             }
-            case "/npctalk2": {
+            case "/npctalk2" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -220,7 +202,7 @@ public class DebugCommand {
                 chr.DebugMsg("npctalk2 : " + npc_id);
                 return true;
             }
-            case "/dm": {
+            case "/dm" -> {
                 if (!dcmd.check(1)) {
                     DebugManTest dm_test = new DebugManTest();
                     dm_test.start(chr);
@@ -238,7 +220,7 @@ public class DebugCommand {
                 }
                 return true;
             }
-            case "/ds": {
+            case "/ds" -> {
                 DebugShop ds = new DebugShop();
 
                 if (!dcmd.check(1)) {
@@ -256,7 +238,7 @@ public class DebugCommand {
                 ds.start(chr);
                 return true;
             }
-            case "/ds2": {
+            case "/ds2" -> {
                 DebugShop ds = new DebugShop();
 
                 if (!dcmd.check(1)) {
@@ -285,18 +267,17 @@ public class DebugCommand {
                 ds.start(chr);
                 return true;
             }
-            case "/removeall": {
+            case "/removeall" -> {
                 map.removeAllObjects();
                 return true;
             }
-            case "/regen": {
+            case "/regen" -> {
                 int map_id = map.getId();
                 chr.getChannelServer().removeMap(map_id);
                 chr.changeMap(map_id);
                 return true;
             }
-            // npc.
-            case "/npc": {
+            case "/npc" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -316,7 +297,7 @@ public class DebugCommand {
                 chr.DebugMsg("npc : " + npc_id);
                 return true;
             }
-            case "/pnpc": {
+            case "/pnpc" -> {
                 PlayerNPC pnpc = new PlayerNPC(9901000, chr);
                 pnpc.setPosition(chr.getPosition());
                 pnpc.setCy(chr.getPosition().y);
@@ -329,7 +310,7 @@ public class DebugCommand {
                 chr.SendPacket(ResCNpcPool.NpcChangeController(pnpc, false));
                 return true;
             }
-            case "/npclocation": {
+            case "/npclocation" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -370,8 +351,7 @@ public class DebugCommand {
 
                 return true;
             }
-            // reactor.
-            case "/reactor": {
+            case "/reactor" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -406,7 +386,7 @@ public class DebugCommand {
                 chr.DebugMsg("reactor : " + reactor_id);
                 return true;
             }
-            case "/search": {
+            case "/search" -> {
                 if (!dcmd.check(2)) {
                     return true;
                 }
@@ -451,12 +431,11 @@ public class DebugCommand {
                 }
                 return true;
             }
-            case "/checkmapdata":
-            case "/mapdata": {
+            case "/checkmapdata", "/mapdata" -> {
                 checkMapData(chr);
                 return true;
             }
-            case "/mobtime": {
+            case "/mobtime" -> {
                 for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
                     if (sp.getMobTime() != 0) {
                         chr.DebugMsg(String.format("mobtime : %.1f hours.", (double) sp.getMobTime() / 1000 / 3600));
@@ -464,7 +443,7 @@ public class DebugCommand {
                 }
                 return true;
             }
-            case "/dropinfo": {
+            case "/dropinfo" -> {
                 ArrayList<Integer> mob_ids = new ArrayList<>();
                 for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
                     int mob_id = sp.getId();
@@ -484,9 +463,7 @@ public class DebugCommand {
                 }
                 return true;
             }
-            // client
-            case "/dc":
-            case "/disconnect": {
+            case "/dc", "/disconnect" -> {
                 MapleCharacter target = chr;
                 if (!dcmd.check(1)) {
                     target = chr.getWorld().findOnlinePlayer(dcmd.get(1));
@@ -499,8 +476,7 @@ public class DebugCommand {
                 target.getClient().getSession().close();
                 return true;
             }
-            // item
-            case "/drop": {
+            case "/drop" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -528,8 +504,7 @@ public class DebugCommand {
                 chr.DebugMsg("drop : " + item_id);
                 return true;
             }
-            // monster card.
-            case "/monsterbook": {
+            case "/monsterbook" -> {
                 // Item.wz/Consume/0238.img/info/mob
                 MapleData monster_card_items = WzXML.ITEM.getItemImg(238);
                 // String.wz/MonsterBook.img
@@ -555,8 +530,7 @@ public class DebugCommand {
                 monster_book.update();
                 return true;
             }
-            // ボス関連
-            case "/bosstest": {
+            case "/bosstest" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -570,9 +544,7 @@ public class DebugCommand {
                 chr.DebugMsg("bosstest : " + boss_name);
                 return true;
             }
-            // Mob
-            case "/mob":
-            case "/spawn": {
+            case "/mob", "/spawn" -> {
                 int mob_id = 130101;
                 int count = 1;
                 if (dcmd.check(1)) {
@@ -602,8 +574,7 @@ public class DebugCommand {
                 chr.DebugMsg("mob : " + mob_id);
                 return true;
             }
-            case "/killmob":
-            case "/killall": {
+            case "/killmob", "/killall" -> {
                 int count = 1000;
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
@@ -623,13 +594,11 @@ public class DebugCommand {
                 chr.DebugMsg("killmob : done.");
                 return true;
             }
-            case "/mobinfo": {
+            case "/mobinfo" -> {
                 chr.DebugMsg("mobinfo : " + map.getAllMonsters().size());
                 return true;
             }
-            // mob skill.
-            case "/ms":
-            case "/disease": {
+            case "/ms", "/disease" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -658,7 +627,7 @@ public class DebugCommand {
                 chr.DebugMsg("mobdkill : " + mob_skill_id);
                 return true;
             }
-            case "/mt": {
+            case "/mt" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -672,7 +641,7 @@ public class DebugCommand {
                 chr.DebugMsg("mt : " + OpsSecondaryStat.find(cts) + "(" + cts + "), buff_effect = " + buff_effect + ", buff_time =" + buff_time);
                 return true;
             }
-            case "/mt2": {
+            case "/mt2" -> {
                 if (!dcmd.check(3)) {
                     return true;
                 }
@@ -694,7 +663,7 @@ public class DebugCommand {
                 chr.DebugMsg("mt : " + OpsSecondaryStat.find(cts) + "(" + cts + "), buff_effect = " + buff_effect + ", " + buff_effect_2);
                 return true;
             }
-            case "/ride": {
+            case "/ride" -> {
                 int buff_id = -4000000;
                 int buff_effect = 1902000;
                 int buff_effect_2 = 1004;
@@ -705,8 +674,7 @@ public class DebugCommand {
                 }
                 return true;
             }
-            // ステータス関連
-            case "/heal": {
+            case "/heal" -> {
                 int new_hp = chr.getStat().getMaxHp();
                 int new_mp = chr.getStat().getMaxMp();
 
@@ -740,7 +708,7 @@ public class DebugCommand {
                 chr.DebugMsg("heal : MP = " + chr.getStat().getMp() + " / " + chr.getStat().getMaxMp());
                 return true;
             }
-            case "/autosp": {
+            case "/autosp" -> {
                 int skill_id = chr.getSpUsed().get();
                 if (skill_id != 0) {
                     while (ReqCUser.OnSkillUpRequestInternal(chr, skill_id));
@@ -749,8 +717,7 @@ public class DebugCommand {
                 chr.DebugMsg("autosp : " + skill_id);
                 return true;
             }
-            case "/allskill":
-            case "/job": {
+            case "/allskill", "/job" -> {
                 if (dcmd.check(1)) {
                     chr.setJob(dcmd.getInt(1));
                 }
@@ -759,22 +726,22 @@ public class DebugCommand {
                 chr.DebugMsg("allskill : done.");
                 return true;
             }
-            case "/allskill0": {
+            case "/allskill0" -> {
                 DebugJob.AllSkill(chr, true);
                 chr.DebugMsg("allskill0 : done.");
                 return true;
             }
-            case "/allstat": {
+            case "/allstat" -> {
                 DebugJob.AllStat(chr);
                 chr.DebugMsg("allstat : done.");
                 return true;
             }
-            case "/resetstat": {
+            case "/resetstat" -> {
                 DebugJob.ResetStat(chr);
                 chr.DebugMsg("resetstat : done.");
                 return true;
             }
-            case "/defstat": {
+            case "/defstat" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -789,7 +756,7 @@ public class DebugCommand {
                 chr.DebugMsg("defstat : done.");
                 return true;
             }
-            case "/levelup": {
+            case "/levelup" -> {
                 int next_level = chr.getLevel() + 1;
                 if (next_level <= 0 || 200 < next_level) {
                     return true;
@@ -804,8 +771,7 @@ public class DebugCommand {
                 chr.DebugMsg("levelup : done.");
                 return true;
             }
-            case "/level":
-            case "/levelset": {
+            case "/level", "/levelset" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -831,17 +797,17 @@ public class DebugCommand {
                 chr.DebugMsg("level : done.");
                 return true;
             }
-            case "/bs": {
+            case "/bs" -> {
                 getBasicSkill(chr);
                 chr.DebugMsg("beginner skill : done.");
                 return true;
             }
-            case "/rbs": {
+            case "/rbs" -> {
                 resetBasicSkill(chr);
                 chr.DebugMsg("reset beginner skill : done.");
                 return true;
             }
-            case "/fs": {
+            case "/fs" -> {
                 TacosForcedStat fs = chr.getForcedStat();
                 int index = 1;
                 fs.setSTR(dcmd.check(index) ? dcmd.getInt(index++) : 0);
@@ -857,10 +823,7 @@ public class DebugCommand {
                 chr.DebugMsg("forced stat set : STR DEX INT LUK PAD ACC EVA Speed Jump");
                 return true;
             }
-            // Map移動関連
-            case "/map2":
-            case "/mapt":
-            case "/warp": {
+            case "/map2", "/mapt", "/warp" -> {
                 if (!dcmd.check(1)) {
                     return true;
                 }
@@ -873,7 +836,7 @@ public class DebugCommand {
                 changeMap(chr, map_id);
                 return true;
             }
-            case "/prevmap": {
+            case "/prevmap" -> {
                 int index = DWI_Random.getMapIndex(chr.getPosMap());
                 int map_id = DWI_Random.getMapByIndex(index - 1);
 
@@ -884,7 +847,7 @@ public class DebugCommand {
                 changeMap(chr, map_id);
                 return true;
             }
-            case "/nextmap": {
+            case "/nextmap" -> {
                 int index = DWI_Random.getMapIndex(chr.getPosMap());
                 int map_id = DWI_Random.getMapByIndex(index + 1);
 
@@ -895,7 +858,7 @@ public class DebugCommand {
                 changeMap(chr, map_id);
                 return true;
             }
-            case "/townmap": {
+            case "/townmap" -> {
                 int count = 0;
                 for (int map_id : WzDataStorage.MAP.getIds()) {
                     MapleData data = WzXML.MAP.getImg(map_id);
@@ -917,34 +880,28 @@ public class DebugCommand {
                 chr.DebugMsg("town map : " + count);
                 return true;
             }
-            case "/fm":
-            case "/フリマ": {
+            case "/fm", "/フリマ" -> {
                 chr.saveLocation(SavedLocationType.FREE_MARKET, map.getReturnMap().getId());
                 changeMap(chr, 910000000);
                 return true;
             }
-            case "/henesys":
-            case "/ヘネシス": {
+            case "/henesys", "/ヘネシス" -> {
                 changeMap(chr, 100000000);
                 return true;
             }
-            case "/leafre":
-            case "/リプレ": {
+            case "/leafre", "/リプレ" -> {
                 changeMap(chr, 240000000);
                 return true;
             }
-            case "/magatia":
-            case "/マガティア": {
+            case "/magatia", "/マガティア" -> {
                 changeMap(chr, 261000000);
                 return true;
             }
-            case "/jc":
-            case "/転職": {
+            case "/jc", "/転職" -> {
                 remoteNPCTalk(client, 9330104, 1012003);
                 return true;
             }
-            // ランダム関連
-            case "/randombeauty": {
+            case "/randombeauty" -> {
                 int skin_id = WzDataStorage.SKIN.getRandom();
                 int face_id = WzDataStorage.FACE.getRandom();
                 int hair_id = WzDataStorage.HAIR.getRandom();
@@ -957,7 +914,7 @@ public class DebugCommand {
                 DebugLogger.InfoLog("random beauty : SkinID = " + skin_id + ", FaceID = " + face_id + ", HairID = " + hair_id);
                 return true;
             }
-            case "/randomdrop": {
+            case "/randomdrop" -> {
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 int itemid = WzDataStorage.ITEM.getRandom();
                 Item toDrop = (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(itemid)) : new odin.client.inventory.Item(itemid, (byte) 0, (short) 1, (byte) 0);
@@ -972,7 +929,7 @@ public class DebugCommand {
                 DebugLogger.InfoLog("random drop : " + toDrop.getItemId() + " - " + item_name);
                 return true;
             }
-            case "/randomspawn": {
+            case "/randomspawn" -> {
                 int mob_count = 1;
                 if (dcmd.check(1)) {
                     mob_count = dcmd.getInt(1);
@@ -993,7 +950,7 @@ public class DebugCommand {
 
                 return true;
             }
-            case "/randommap": {
+            case "/randommap" -> {
                 int mapid = WzDataStorage.MAP.getRandom();
                 MapleMap map_to = chr.findMap(mapid);
                 chr.changeMapPortal(map_to, map_to.getPortal(0));
@@ -1001,16 +958,26 @@ public class DebugCommand {
                 DebugLogger.InfoLog("random map : " + map_to.getId());
                 return true;
             }
-            case "/randombgm": {
+            case "/randombgm" -> {
                 String bgm = WzXML.SOUND.getRandomBGM();
                 map.setChangeBGM(bgm);
                 chr.DebugMsg("random BGM : " + bgm);
                 return true;
             }
-            default: {
-                break;
+            default -> {
             }
         }
+        // npc.
+        // reactor.
+        // client
+        // item
+        // monster card.
+        // ボス関連
+        // Mob
+        // mob skill.
+        // ステータス関連
+        // Map移動関連
+        // ランダム関連
 
         return false;
     }

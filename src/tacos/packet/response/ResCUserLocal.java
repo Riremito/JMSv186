@@ -418,6 +418,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // unimplemented, buggy.
     public static ServerPacket PollQuestion(String questions[], String answers[][]) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Poll_Question);
 
@@ -430,6 +431,7 @@ public class ResCUserLocal {
                 sp.EncodeStr(answers[i][j]);
             }
         }
+
         return sp;
     }
 

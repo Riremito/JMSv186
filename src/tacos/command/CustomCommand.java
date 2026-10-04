@@ -16,7 +16,7 @@
  *
  *
  */
-package tacos.debug;
+package tacos.command;
 
 import java.awt.Point;
 import odin.client.MapleCharacter;
@@ -34,13 +34,44 @@ import tacos.wz.WzDataStorage;
  */
 public class CustomCommand {
 
-    public static boolean executeCommand(DebugCommander dcmd, MapleCharacter chr) {
+    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
         MapleMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
-            case "/petcharacter":
-            case "/petchr":
-            case "/clone": {
+            case "/addportal" -> {
+                if (!dcmd.check(1)) {
+                    return true;
+                }
+                int map_id_to = dcmd.getInt(1);
+
+                if (map_id_to == 0 || !WzDataStorage.MAP.check(map_id_to)) {
+                    chr.DebugMsg("AddPortal : invalid map id.");
+                    return true;
+                }
+
+                Point player_xy = chr.getPosition();
+                TacosDynamicPortal dynamic_portal = new TacosDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
+                map.addDynamicPortal(dynamic_portal);
+                chr.DebugMsg("AddPortal : " + chr.getPosMap() + " -> " + map_id_to);
+                return true;
+            }
+            case "/slot" -> {
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/frame").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR1/" + Randomizer.nextInt(4)).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR2/" + Randomizer.nextInt(4)).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR3/" + Randomizer.nextInt(5)).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("quest2288/" + Randomizer.nextInt(9)).build())); // test bgm
+                return true;
+            }
+            case "/wh" -> {
+                for (MapleCharacter player : chr.getChannelServer().getOnlinePlayers().get()) {
+                    if (player.getId() != chr.getId()) {
+                        player.changeMapWithCoordinate(map.getId(), chr.getX(), chr.getY());
+                    }
+                }
+                return true;
+            }
+            case "/petcharacter", "/petchr", "/clone" -> {
                 if (chr.getPetCharacter().remove()) {
                     chr.DebugMsg("PetCharacter : remove.");
                     return true;
@@ -49,7 +80,7 @@ public class CustomCommand {
                 chr.DebugMsg("PetCharacter : sapwn.");
                 return true;
             }
-            case "/petmob": {
+            case "/petmob" -> {
                 if (!dcmd.check(1)) {
                     chr.getPetMob().remove();
                     chr.DebugMsg("PetMob : remove.");
@@ -61,7 +92,7 @@ public class CustomCommand {
                 chr.DebugMsg("PetMob : sapwn.");
                 return true;
             }
-            case "/petnpc": {
+            case "/petnpc" -> {
                 if (!dcmd.check(1)) {
                     chr.getPetNPC().remove();
                     chr.DebugMsg("PetNPC : remove.");
@@ -73,41 +104,7 @@ public class CustomCommand {
                 chr.DebugMsg("PetNPC : sapwn.");
                 return true;
             }
-            case "/slot": {
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/frame").build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR1/" + Randomizer.nextInt(4)).build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR2/" + Randomizer.nextInt(4)).build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("miro/RR3/" + Randomizer.nextInt(5)).build()));
-                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("quest2288/" + Randomizer.nextInt(9)).build())); // test bgm
-                return true;
-            }
-            case "/wh": {
-                for (MapleCharacter victim : chr.getChannelServer().getOnlinePlayers().get()) {
-                    if (victim != chr) {
-                        victim.changeMapWithCoordinate(map.getId(), chr.getPosition().x, chr.getPosition().y);
-                    }
-                }
-                return true;
-            }
-            case "/addportal": {
-                if (!dcmd.check(1)) {
-                    return true;
-                }
-                int map_id_to = dcmd.getInt(1);
-
-                if (map_id_to == 0 || !WzDataStorage.MAP.check(map_id_to)) {
-                    chr.DebugMsg("AddPortal : Invalid MapID.");
-                    return true;
-                }
-
-                Point player_xy = chr.getPosition();
-                TacosDynamicPortal dynamic_portal = new TacosDynamicPortal(2420004, map_id_to, player_xy.x, player_xy.y);
-                map.addDynamicPortal(dynamic_portal);
-                chr.DebugMsg("AddPortal : " + chr.getPosMap() + " -> " + map_id_to);
-                return true;
-            }
-            default: {
-                break;
+            default -> {
             }
         }
 
