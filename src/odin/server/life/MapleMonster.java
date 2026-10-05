@@ -96,8 +96,6 @@ public class MapleMonster extends TacosMonster {
     private boolean fake;
     private boolean dropsDisabled;
     private final Collection<AttackerEntry> attackers = new LinkedList<>();
-    private boolean controllerHasAggro;
-    private boolean controllerKnowsAboutAggro;
     private OdinEventInstanceManager eventInstance;
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
@@ -543,7 +541,6 @@ public class MapleMonster extends TacosMonster {
     }
 
     public void switchShammosController(MapleCharacter newController, boolean immediateAggro) {
-        setControllerKnowsAboutAggro(false);
         if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
             if (lastNodeController != -1 && lastNodeController != newController.getId()) { //new controller, please re update
                 resetShammos(newController.getClient());
@@ -560,18 +557,6 @@ public class MapleMonster extends TacosMonster {
             chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }
         MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
-    }
-
-    public final boolean isControllerHasAggro() {
-        return controllerHasAggro;
-    }
-
-    public final void setControllerHasAggro(final boolean controllerHasAggro) {
-        this.controllerHasAggro = controllerHasAggro;
-    }
-
-    public final void setControllerKnowsAboutAggro(final boolean controllerKnowsAboutAggro) {
-        this.controllerKnowsAboutAggro = controllerKnowsAboutAggro;
     }
 
     public void sendSpawnData(TacosClient client) {

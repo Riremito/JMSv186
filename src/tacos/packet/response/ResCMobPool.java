@@ -214,8 +214,8 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); // dwMobID
         sp.Encode2(moveid);
-        sp.Encode1(monster.isControllerHasAggro() ? 1 : 0);
-        sp.Encode2(monster.getMp());
+        sp.Encode1(monster.getNextAttackPossible() ? 1 : 0); // bNextAttackPossible
+        sp.Encode2(monster.getMp()); // m_nMP
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
         sp.Encode4(0, Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));

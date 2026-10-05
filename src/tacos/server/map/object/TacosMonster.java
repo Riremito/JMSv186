@@ -35,6 +35,7 @@ public class TacosMonster extends TacosMapObject {
     private int nAppearType = -1;
     private OpsMobAppear appear_type = OpsMobAppear.MOBAPPEAR_NORMAL;
     private int dwSummonOption = 0;
+    public boolean bNextAttackPossible = false;
 
     public int getId() {
         return this.id;
@@ -106,6 +107,14 @@ public class TacosMonster extends TacosMapObject {
 
     public void setSummonOption(int dwSummonOption) {
         this.dwSummonOption = dwSummonOption;
+    }
+
+    public boolean getNextAttackPossible() {
+        return this.bNextAttackPossible;
+    }
+
+    public void setNextAttackPossible(boolean bNextAttackPossible) {
+        this.bNextAttackPossible = bNextAttackPossible;
     }
 
     private int last_hit_skill_id = 0;

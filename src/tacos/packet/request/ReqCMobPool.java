@@ -201,6 +201,9 @@ public class ReqCMobPool {
     }
 
     public static boolean OnMobApplyCtrl(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+        if (monster.getOwnerId() == chr.getId()) {
+            monster.setNextAttackPossible(true);
+        }
         return true;
     }
 
