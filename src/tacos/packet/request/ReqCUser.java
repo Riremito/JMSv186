@@ -1347,7 +1347,8 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc : getConversation = " + chr.getConversation());
             return false;
         }
-        if (TacosNpcShop.checkNpcShop(chr, npc.getId())) {
+        if (TacosNpcShop.startNpcShop(chr, npc.getId())) {
+            chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc.getId());
             return true;
         }
         if (npc.hasShop()) {

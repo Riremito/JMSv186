@@ -78,11 +78,14 @@ public class TacosCommandInfo {
                 }
                 for (int mob_id : mob_ids) {
                     chr.DebugMsg("[" + mob_id + " - " + WzNameStorage.MOB.get(mob_id).getName() + "]");
-                    for (RewardData reward : ServerImg.SI.getRewardData(mob_id)) {
-                        if (reward.getItem() != 0) {
-                            chr.DebugMsgItem(reward.getItem() + " : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + WzNameStorage.ITEM.get(reward.getItem()).getName(), reward.getItem());
-                        } else {
-                            chr.DebugMsg("meso : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + reward.getMoney());
+                    ArrayList<RewardData> list_reward = ServerImg.BMS8.getRewardData(mob_id);
+                    if (list_reward != null) {
+                        for (RewardData reward : list_reward) {
+                            if (reward.getItem() != 0) {
+                                chr.DebugMsgItem(reward.getItem() + " : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + WzNameStorage.ITEM.get(reward.getItem()).getName(), reward.getItem());
+                            } else {
+                                chr.DebugMsg("meso : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + reward.getMoney());
+                            }
                         }
                     }
                 }

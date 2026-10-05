@@ -53,8 +53,8 @@ public class TacosReward {
         TacosSkill ts = (monster.getLastHitSkillId() != 0) ? WzXML.SKILL.getSkill(monster.getLastHitSkillId(), 1) : null; // temporary lv1.
         int hitAfter = (ts != null) ? ts.getHitAfter() : 0;
 
-        ArrayList<RewardData> list_reward = ServerImg.SI.getRewardData(mob_id);
-        if (!list_reward.isEmpty()) {
+        ArrayList<RewardData> list_reward = ServerImg.BMS8.getRewardData(mob_id);
+        if (list_reward != null) {
             MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
             int drop_count = 0;
             for (RewardData reward : list_reward) {
