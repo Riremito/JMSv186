@@ -58,6 +58,7 @@ import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.server.map.TacosReward;
 import tacos.server.map.object.TacosMonster;
 
 public class MapleMonster extends TacosMonster {
@@ -1065,10 +1066,9 @@ public class MapleMonster extends TacosMonster {
 
     public void handleSteal(MapleCharacter chr) {
         Skill steal = SkillFactory.getSkill(4201004);
-        final int level = chr.getSkillLevel(steal);
+        int level = chr.getSkillLevel(steal);
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
-            final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
-            final List<MonsterDropEntry> dropEntry = new ArrayList<>(mi.retrieveDrop(getId()));
+            ArrayList<MonsterDropEntry> dropEntry = new ArrayList<>(TacosReward.getMonsterDrops(getId()));
             Collections.shuffle(dropEntry);
             Item idrop;
             for (MonsterDropEntry d : dropEntry) {

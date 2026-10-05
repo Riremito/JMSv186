@@ -22,7 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.TreeMap;
+import lombok.Getter;
 import tacos.wz.WzXML.XmlDomData;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
@@ -71,8 +73,57 @@ public class ServerImg {
     }
 
     // ドロップ
-    public MapleData getReward() {
+    private MapleData getReward() {
         return getData("Reward.img");
+    }
+
+    @Getter
+    public static class RewardData {
+
+        private int money;
+        private int item;
+        private int prob;
+        private int min;
+        private int max;
+    }
+
+    private final TreeMap<Integer, ArrayList<RewardData>> rewards = new TreeMap<>();
+    public static final int PROB_MAX = 1000000;
+
+    public ArrayList<RewardData> getRewardData(int mob_id) {
+        ArrayList<RewardData> list_reward = this.rewards.get(mob_id);
+        if (list_reward != null) {
+            // already loaded.
+            return list_reward;
+        }
+
+        list_reward = new ArrayList<>();
+        MapleData mob_drop_table = getReward().getChildByPath(String.format("m%07d", mob_id));
+        // found.
+        if (mob_drop_table != null) {
+            for (MapleData mob_drop : mob_drop_table.getChildren()) {
+                RewardData reward = new RewardData();
+                reward.money = WzDataTool.getIntPath("money", mob_drop, 0);
+                reward.item = WzDataTool.getIntPath("item", mob_drop, 0);
+                String prob_str = WzDataTool.getStringPath("prob", mob_drop, "[R8]0.0").replace("[R8]", "");
+                reward.prob = (int) (Double.parseDouble(prob_str) * PROB_MAX);
+                reward.min = WzDataTool.getIntPath("min", mob_drop, 1);
+                reward.max = WzDataTool.getIntPath("max", mob_drop, 1);
+
+                if (reward.item != 0) {
+                    if (!WzDataStorage.ITEM.check(reward.item)) {
+                        DebugLogger.ErrorLog("getReward : " + mob_id + ", invalid item = " + reward.item);
+                        continue;
+                    }
+                }
+
+                list_reward.add(reward);
+            }
+        }
+
+        this.rewards.put(mob_id, list_reward);
+        DebugLogger.XmlLog("getReward : " + mob_id + ", count = " + list_reward.size());
+        return list_reward;
     }
 
     private File root_dir;

@@ -21,12 +21,13 @@ package tacos.command;
 import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
-import odin.server.life.MapleMonsterInformationProvider;
 import odin.server.life.MonsterDropEntry;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosSpawnPoint;
 import tacos.wz.MapleData;
+import tacos.wz.ServerImg;
+import tacos.wz.ServerImg.RewardData;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzNameStorage;
@@ -77,11 +78,11 @@ public class TacosCommandInfo {
                 }
                 for (int mob_id : mob_ids) {
                     chr.DebugMsg("[" + mob_id + " - " + WzNameStorage.MOB.get(mob_id).getName() + "]");
-                    for (TacosReward.Reward reward : TacosReward.getRewardData(mob_id)) {
-                        if (reward.item != 0) {
-                            chr.DebugMsgItem(reward.item + " : " + String.format("%05.2f%%", reward.prob * 100.0 / TacosReward.PROB_MAX) + " - " + WzNameStorage.ITEM.get(reward.item).getName(), reward.item);
+                    for (RewardData reward : ServerImg.SI.getRewardData(mob_id)) {
+                        if (reward.getItem() != 0) {
+                            chr.DebugMsgItem(reward.getItem() + " : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + WzNameStorage.ITEM.get(reward.getItem()).getName(), reward.getItem());
                         } else {
-                            chr.DebugMsg("meso : " + String.format("%05.2f%%", reward.prob * 100.0 / TacosReward.PROB_MAX) + " - " + reward.money);
+                            chr.DebugMsg("meso : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + reward.getMoney());
                         }
                     }
                 }
@@ -122,7 +123,7 @@ public class TacosCommandInfo {
                 continue;
             }
             chr.DebugMsg("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
-            for (MonsterDropEntry mde : MapleMonsterInformationProvider.getInstance().retrieveDrop(mob_id)) {
+            for (MonsterDropEntry mde : TacosReward.getMonsterDrops(mob_id)) {
                 chr.DebugMsg(mde.itemId + " : " + mde.chance);
             }
         }
