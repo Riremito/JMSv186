@@ -174,7 +174,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             {
                 String message = cp.DecodeStr();
                 chr.setADBoard(message);
-                map.broadcastMessage(ResCUser.UserADBoard(chr));
+                map.broadcastPacket(ResCUser.UserADBoard(chr));
                 chr.updateInv();
                 return true;
             }
@@ -308,7 +308,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 Equip equip = (Equip) item;
                 equip.resetPotential(cash_item_id == 5062001 || cash_item_id == 5062003, cash_item_id == 5062002 || cash_item_id == 5062003);
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
-                chr.getMap().broadcastMessage(chr, ResCUser.UserItemUnreleaseEffect(chr), false);
+                chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 //MapleInventoryManipulator.addById(chr.getClient(), 2430112, (short) 1);
                 return true;
@@ -505,7 +505,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 // new name
                 pet.setName(pet_name);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
-                chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetNameChanged(chr, pet, pet_name), true);
+                chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetNameChanged(chr, pet, pet_name), chr.getId());
                 return true;
             }
             default: {

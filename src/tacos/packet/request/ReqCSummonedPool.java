@@ -115,9 +115,9 @@ public class ReqCSummonedPool {
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
             summon.update(move_path);
+            chr.getMap().splitSendPacket(chr, ResCSummonedPool.SummonedMove(summon, move_path), chr.getId());
         }
 
-        chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedMove(summon, move_path), summon.getPosition());
         return true;
     }
 
@@ -256,7 +256,7 @@ public class ReqCSummonedPool {
 
         int summon_hp = Math.max(0, summon.getHp() - damage);
         summon.setHp(summon_hp);
-        chr.getMap().broadcastMessageTo(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), summon.getPosition());
+        chr.getMap().splitSendPacket(chr, ResCSummonedPool.SummonedHit(summon, damage, unkByte, monsterIdFrom), chr.getId());
         if (summon.getHp() <= 0) {
             chr.removeSummon(summon);
         }

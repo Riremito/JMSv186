@@ -103,7 +103,7 @@ public final class MapleMap extends TacosMap {
             monster.setOwnerId(0);
             chr.SendPacket(ResCMobPool.MobChangeController(monster, 0));
         }
-        broadcastMessage(ResCMobPool.MobLeaveField(monster, animation));
+        broadcastPacket(ResCMobPool.MobLeaveField(monster, animation));
 
         if (monster.getBuffToGive() > -1) {
             int buffid = monster.getBuffToGive();
@@ -122,7 +122,7 @@ public final class MapleMap extends TacosMap {
                                     .skill_id(buffid)
                                     .build();
                             mc.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_BuffItemEffect, pb));
-                            broadcastMessage(mc, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, pb), false);
+                            splitSendPacket(mc, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, pb), mc.getId());
                             break;
                         }
                         default: {
@@ -238,7 +238,7 @@ public final class MapleMap extends TacosMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(ResCField.DestroyClock());
+            broadcastPacket(ResCField.DestroyClock());
         }
     }
 
@@ -246,8 +246,8 @@ public final class MapleMap extends TacosMap {
         if (itemId > 0) {
             startMapEffect(msg, itemId, false);
         }
-        broadcastMessage(ResCMobPool.MobEscortStopSay(monster, itemId, msg)); // 5120035
-        broadcastMessage(ResCMobPool.MobEscortReturnBefore(monster));
+        broadcastPacket(ResCMobPool.MobEscortStopSay(monster, itemId, msg)); // 5120035
+        broadcastPacket(ResCMobPool.MobEscortReturnBefore(monster));
     }
 
     public final void startMapEffect(final String msg, final int itemId) {
@@ -260,25 +260,25 @@ public final class MapleMap extends TacosMap {
         }
         mapEffect = new MapleMapEffect(msg, itemId);
         mapEffect.setJukebox(jukebox);
-        broadcastMessage(mapEffect.makeStartData());
+        broadcastPacket(mapEffect.makeStartData());
         MapTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public void run() {
-                broadcastMessage(mapEffect.makeDestroyData());
+                broadcastPacket(mapEffect.makeDestroyData());
                 mapEffect = null;
             }
         }, jukebox ? 300000 : 30000);
     }
 
     public final void startExtendedMapEffect(final String msg, final int itemId) {
-        broadcastMessage(ResCField.BlowWeather(msg, itemId, true));
+        broadcastPacket(ResCField.BlowWeather(msg, itemId, true));
         MapTimer.getInstance().schedule(new Runnable() {
 
             @Override
             public void run() {
-                broadcastMessage(ResCField.BlowWeather(null, 0, false));
-                broadcastMessage(ResCField.BlowWeather(msg, itemId, false));
+                broadcastPacket(ResCField.BlowWeather(null, 0, false));
+                broadcastPacket(ResCField.BlowWeather(msg, itemId, false));
                 //dont remove mapeffect.
             }
         }, 60000);
@@ -297,7 +297,7 @@ public final class MapleMap extends TacosMap {
                         if (!reactor.isTimerActive()) {
                             // 5000 ms
                             removeDrop(drop.getObjectId());
-                            broadcastMessage(ResCDropPool.DropLeaveField(drop, DropLeaveType.EXPIRED));
+                            broadcastPacket(ResCDropPool.DropLeaveField(drop, DropLeaveType.EXPIRED));
                             reactor.hitReactor(client);
                             reactor.setTimerActive(false);
                             reactor.forceHitReactor((byte) 0);
@@ -439,7 +439,7 @@ public final class MapleMap extends TacosMap {
         }
         if (squadSchedule != null) {
             cancelSquadSchedule();
-            broadcastMessage(ResCField.DestroyClock());
+            broadcastPacket(ResCField.DestroyClock());
         }
     }
 
@@ -448,8 +448,8 @@ public final class MapleMap extends TacosMap {
         Point droppos = calcDropPos(pos, pos);
         MapleMapItem drop = new MapleMapItem(item, droppos, owner, (byte) 2, playerDrop);
         addDrop(drop);
-        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, player.getPosition()));
-        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, player.getPosition()));
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, player.getPosition()));
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, player.getPosition()));
         activateItemReactors(drop, owner.getClient());
     }
 
@@ -457,7 +457,7 @@ public final class MapleMap extends TacosMap {
         Point droppos = calcDropPos(pos, pos);
         MapleMapItem drop = new MapleMapItem(item, droppos, owner, (byte) 2, playerDrop);
         addDrop(drop);
-        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
-        broadcastMessage(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
     }
 }

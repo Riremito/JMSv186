@@ -155,9 +155,9 @@ public class ReqCMobPool {
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
             monster.update(move_path);
+            map.broadcastPacket(ResCMobPool.MobMove(monster, bNextAttackPossible, bLeft, mob_skill, move_path), chr.getId());
         }
 
-        map.broadcastMessageTo(chr, ResCMobPool.MobMove(monster, bNextAttackPossible, bLeft, mob_skill, move_path), monster.getPosition());
         return true;
     }
 
@@ -237,7 +237,7 @@ public class ReqCMobPool {
         int damage = (int) (monster_to.getMobMaxHp() / 5);
 
         monster_to.setHp(Math.max(0, monster_to.getHp() - damage));
-        map.broadcastMessage(ResCMobPool.MobDamaged(monster_to, damage, 1));
+        map.broadcastPacket(ResCMobPool.MobDamaged(monster_to, damage, 1));
 
         if (monster_to.getHp() <= 0) {
             map.killMonster(monster_to, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
@@ -340,7 +340,7 @@ public class ReqCMobPool {
 
                 }
                 if (newMap > 0) {
-                    map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Proceed to the next stage.").build()));
+                    map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Proceed to the next stage.").build()));
                     map.removeMonster(monster);
                 }
             }

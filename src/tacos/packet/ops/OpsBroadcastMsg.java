@@ -29,42 +29,24 @@ public enum OpsBroadcastMsg {
     BM_ALL,
     BM_CLONE,
     BM_MAP,
-    // 青文字, [告知事項]
-    BM_NOTICE(0),
-    // ダイアログ
+    BM_NOTICE(0), // 青文字, [告知事項]
     BM_ALERT(1),
-    // メガホン
     BM_SPEAKERCHANNEL(2),
-    // 拡声器
     BM_SPEAKERWORLD(3),
-    // 画面上部
     BM_SLIDE(4),
-    // ピンク文字
     BM_EVENT(5),
-    // 青文字
     BM_NOTICEWITHOUTPREFIX(6),
-    // 用途不明, 0x00B93F3F[0x07] = 00B93E27
     BM_UTILDLGEX(7),
-    // アイテム拡声器
     BM_ITEMSPEAKER(8),
-    // ワールド拡声器, 未実装
     BM_ARTSPEAKERWORLD(9),
-    // 三連拡声器
     MEGAPHONE_TRIPLE(10),
-    // 用途不明, 0x00B93F3F[0x0B] = 00B93ECA
     UNKNOWN_0B(11),
-    // ハート拡声器
-    BM_HEARTSPEAKER(12),// v131 -> 0x08
-    // ドクロ拡声器
-    BM_SKULLSPEAKER(13), // v131 -> 0x09
-    // ガシャポン
+    BM_HEARTSPEAKER(12),
+    BM_SKULLSPEAKER(13),
     BM_GACHAPONANNOUNCE(14),
-    // 青文字, 名前:アイテム名(xxxx個))
-    UNKNOWN_0F(15),
-    // 体験用アバター獲得
-    BM_CASHSHOPAD(16),
-    // 青文字, アイテム表示
-    UNKNOWN_11(17),
+    UNKNOWN_0F(15), // 青文字, 名前:アイテム名(xxxx個))
+    BM_CASHSHOPAD(16), // 体験用アバター獲得
+    UNKNOWN_11(17), // 青文字, アイテム表示
     UNKNOWN(-1);
 
     private int value;
@@ -106,5 +88,4 @@ public enum OpsBroadcastMsg {
             // 22 yello crash
         }
     }
-
 }

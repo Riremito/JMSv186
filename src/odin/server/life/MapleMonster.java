@@ -292,7 +292,7 @@ public class MapleMonster extends TacosMonster {
                     if (sponge.get().hp <= 0) {
                         map.killMonster(sponge.get(), from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                     } else {
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(sponge.get()).build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(sponge.get()).build()));
                     }
                 }
             }
@@ -301,13 +301,13 @@ public class MapleMonster extends TacosMonster {
                 if (sponge.get() == null/* && hp > 0*/) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
-                            map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()), this.getPosition());
+                            map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
                             break;
                         case 1:
-                            map.broadcastMessage(from, ResCMobPool.MobDamaged(this, (int) damage, 1), false);
+                            map.broadcastPacket(ResCMobPool.MobDamaged(this, (int) damage, 1));
                             break;
                         case 2:
-                            map.broadcastMessage(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
+                            map.broadcastPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                             from.mulung_EnergyModify(true);
                             break;
                         case 3:
@@ -327,7 +327,7 @@ public class MapleMonster extends TacosMonster {
                 if (hp <= 0) {
                     if (stats.getHPDisplayType() == 0) {
                         this.setHp(0);
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
                     }
                     map.killMonster(this, from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                 }
@@ -350,7 +350,7 @@ public class MapleMonster extends TacosMonster {
             setMp(TotalMP);
         }
         if (broadcast) {
-            map.broadcastMessage(ResCMobPool.MobDamaged(this, -hp, 0));
+            map.broadcastPacket(ResCMobPool.MobDamaged(this, -hp, 0));
         } else if (sponge.get() != null) { // else if, since only sponge doesn't broadcast
             sponge.get().hp += hp;
         }
@@ -519,8 +519,8 @@ public class MapleMonster extends TacosMonster {
                     map.spawnRevives(mob, this.getObjectId());
 
                     if (mob.getId() == 9300216) {
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/clear").build()));
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/end/clear").build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/clear").build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/end/clear").build()));
                     }
                 }
                 break;
@@ -552,7 +552,7 @@ public class MapleMonster extends TacosMonster {
 
     public final void resetShammos(TacosClient client) {
         map.killAllMonsters(true);
-        map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
+        map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
         for (MapleCharacter chr : map.getAllPlayers()) {
             chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }

@@ -89,9 +89,9 @@ public class SpawnPointAreaBoss {
         map.spawnMonster(mob, -2);
 
         if (msg != null) {
-            map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(msg).build()));
+            map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(msg).build()));
             // TODO : replace to DebugMsg
-            map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("Master Monster = " + monster.getId() + ", MapID = " + map.getId()).build()));
+            map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("Master Monster = " + monster.getId() + ", MapID = " + map.getId()).build()));
         }
         return mob;
     }

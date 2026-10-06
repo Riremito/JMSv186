@@ -102,6 +102,10 @@ public class TacosMapData {
             return (area_row * this.col) + area_col;
         }
 
+        public ArrayList<MapSplitState> getArea(Point pos, MapSplitState state) {
+            return getArea(pos.x, pos.y, state);
+        }
+
         public ArrayList<MapSplitState> getArea(int x, int y, MapSplitState state) {
             ArrayList<MapSplitState> area_states = new ArrayList<>(Collections.nCopies(this.total, MapSplitState.UNKNOWN));
 

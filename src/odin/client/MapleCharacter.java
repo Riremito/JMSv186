@@ -713,7 +713,7 @@ public class MapleCharacter extends TacosCharacter {
         PB_UserEffect pb = PB_UserEffect.builder()
                 .player(this)
                 .build();
-        map.broadcastMessage(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_LevelUp, pb), false);
+        map.splitSendPacket(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_LevelUp, pb), getId());
         stats.recalcLocalStats();
         silentPartyUpdate();
         guildUpdate();
@@ -1924,7 +1924,7 @@ public class MapleCharacter extends TacosCharacter {
             PB_UserEffect pb = PB_UserEffect.builder()
                     .player(this)
                     .build();
-            map.broadcastMessage(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_JobChanged, pb), false);
+            map.splitSendPacket(this, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_JobChanged, pb), getId());
             silentPartyUpdate();
             guildUpdate();
             familyUpdate();

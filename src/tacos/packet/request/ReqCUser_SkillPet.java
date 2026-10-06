@@ -56,7 +56,7 @@ public class ReqCUser_SkillPet {
                 ParseCMovePath move_path = new ParseCMovePath();
                 if (move_path.Decode(cp)) {
                     skill_pet.update(move_path);
-                    map.broadcastMessage(chr, ResCUser_SkillPet.SkillPetMove(skill_pet, move_path), false);
+                    map.splitSendPacket(chr, ResCUser_SkillPet.SkillPetMove(skill_pet, move_path), chr.getId());
                 }
                 return true;
             }

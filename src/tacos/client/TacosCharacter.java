@@ -867,7 +867,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public void equipChanged() {
-        this.map.broadcastMessage(this, ResCUserRemote.UserAvatarModified(this, 1), false);
+        this.map.splitSendPacket(this, ResCUserRemote.UserAvatarModified(this, 1), getId());
         getWorld().avatarMessenger(this);
         this.stats.recalcLocalStats();
     }
@@ -1030,7 +1030,7 @@ public class TacosCharacter extends TacosPlayer {
 
     public void removePet(MaplePet pet) {
         this.map.removePet(pet);
-        this.map.broadcastMessage(ResCUser_Pet.Deactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
+        this.map.broadcastPacket(ResCUser_Pet.Deactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
         int index = getPetIndex(pet);
         if (index != -1) {
             this.pets.remove(index);
@@ -1048,7 +1048,7 @@ public class TacosCharacter extends TacosPlayer {
         this.pets.add(pet);
         pet.reset(this);
         this.map.addPet(pet);
-        this.map.broadcastMessage(ResCUser_Pet.Activated(this, pet));
+        this.map.broadcastPacket(ResCUser_Pet.Activated(this, pet));
     }
 
     public void updatePets() {
@@ -1221,7 +1221,7 @@ public class TacosCharacter extends TacosPlayer {
         if (this.dragon != null) {
             if (TacosConstants.is_evan(getJob(), true)) {
                 this.dragon.setJobCode(this);
-                this.map.broadcastMessage(ResCUser_Dragon.DragonEnterField(this.dragon));
+                this.map.broadcastPacket(ResCUser_Dragon.DragonEnterField(this.dragon));
                 return true;
             }
             this.dragon = null;

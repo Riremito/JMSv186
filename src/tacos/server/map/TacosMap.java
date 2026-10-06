@@ -37,7 +37,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.handling.world.PartyOperation;
 import tacos.odin.OdinEventManager;
-import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
@@ -217,7 +216,7 @@ public class TacosMap extends TacosMapData {
     public void setChangeBGM(String wz_path) {
         this.fe_change_bgm = wz_path;
         if (!getChangeBGM().equals("")) {
-            broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
+            broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
         }
     }
 
@@ -284,11 +283,11 @@ public class TacosMap extends TacosMapData {
         switch (map_id) {
             case TacosConstants.MAP_ID_ZAKUM: {
                 if (boss_id == TacosConstants.MOB_ID_ZAKUM) {
-                    broadcastMessage(ResCField.ZakumTimer(true, 5));
-                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.ZakumTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
                     return true;
                 }
-                broadcastMessage(ResCField.ZakumTimer(false, 5));
+                broadcastPacket(ResCField.ZakumTimer(false, 5));
                 return true;
             }
             case TacosConstants.MAP_ID_HORNTAIL: {
@@ -296,39 +295,39 @@ public class TacosMap extends TacosMapData {
                     // 大変な挑戦の終わりにホンテールを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS164)
                     // 大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS302)
                     world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").build()));
-                    broadcastMessage(ResCField.Clock(exit_timer));
-                    broadcastMessage(ResCField.HontaleTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.HontaleTimer(true, 5));
                     return true;
                 }
-                broadcastMessage(ResCField.HontaleTimer(false, 5));
+                broadcastPacket(ResCField.HontaleTimer(false, 5));
                 return true;
             }
             case TacosConstants.MAP_ID_PINKBEAN: {
                 if (boss_id == TacosConstants.MOB_ID_PINKBEAN) {
                     // 不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！ (JMS164-302)
                     world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").build()));
-                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.Clock(exit_timer));
                     return true;
                 }
                 return true;
             }
             case TacosConstants.MAP_ID_CHAOS_ZAKUM: {
                 if (boss_id == TacosConstants.MOB_ID_CHAOS_ZAKUM) {
-                    broadcastMessage(ResCField.ChaosZakumTimer(true, 5));
-                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.ChaosZakumTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
                     return true;
                 }
-                broadcastMessage(ResCField.ChaosZakumTimer(false, 5));
+                broadcastPacket(ResCField.ChaosZakumTimer(false, 5));
                 return true;
             }
             case TacosConstants.MAP_ID_CHAOS_HORNTAIL: {
                 if (boss_id == TacosConstants.MOB_ID_CHAOS_HORNTAIL) {
                     world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").build()));
-                    broadcastMessage(ResCField.Clock(exit_timer));
-                    broadcastMessage(ResCField.HontaleTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.HontaleTimer(true, 5));
                     return true;
                 }
-                broadcastMessage(ResCField.HontaleTimer(false, 5));
+                broadcastPacket(ResCField.HontaleTimer(false, 5));
                 return true;
             }
             default: {
@@ -628,15 +627,43 @@ public class TacosMap extends TacosMapData {
         }
     }
 
+    public void sendText(String text) {
+        broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    public void sendPinkText(String text) {
+        broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    public void sendYellowText(String text) {
+        broadcastPacket(ResCWvsContext.SetWeekEventMessage(text));
+    }
+
+    // to all.
+    public void broadcastPacket(ServerPacket packet) {
+        for (MapleCharacter player : getAllPlayers()) {
+            player.SendPacket(packet);
+        }
+    }
+
+    // to remote users.
+    public void broadcastPacket(ServerPacket packet, int sender_id) {
+        for (MapleCharacter player : getAllPlayers()) {
+            if (player.getId() != sender_id) {
+                player.SendPacket(packet);
+            }
+        }
+    }
+
     public void splitSendPacket(TacosMapObject object, ServerPacket packet) {
         splitSendPacket(object, packet, 0);
     }
 
     public void splitSendPacket(TacosMapObject object, ServerPacket packet, int sender_id) {
-        ArrayList<MapSplitState> area_states = split.getArea(object.getPosition().x, object.getPosition().y, MapSplitState.ACTIVE);
+        ArrayList<MapSplitState> area_states = split.getArea(object.getPosition(), MapSplitState.ACTIVE);
 
         for (MapleCharacter player : this.players.values()) {
-            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            int player_number = split.find(player.getPosition());
             if (split.getTotal() <= player_number) {
                 continue;
             }
@@ -653,23 +680,23 @@ public class TacosMap extends TacosMapData {
     public void linkedObjectEnterField(TacosCharacter chr) {
         // pet.
         for (TacosPet pet : chr.getPets()) {
-            broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
+            splitSendPacket(chr, ResCUser_Pet.TransferField(chr, pet));
         }
         // summon.
         for (TacosSummon summon : chr.getSummons()) {
-            broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, false));
+            splitSendPacket(chr, ResCSummonedPool.SummonedEnterField(summon, false));
         }
         // evan dragon
         TacosDragon dragon = chr.getDragon();
         if (dragon != null) {
             dragon.reset(chr);
-            broadcastMessage(ResCUser_Dragon.DragonEnterField(dragon));
+            splitSendPacket(chr, ResCUser_Dragon.DragonEnterField(dragon));
         }
         // kanna fox
         TacosSkillPet skill_pet = chr.getSkillPet();
         if (skill_pet != null) {
             skill_pet.reset(chr);
-            broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(skill_pet));
+            splitSendPacket(chr, ResCUser_SkillPet.SkillPetTransferField(skill_pet));
         }
     }
 
@@ -796,12 +823,12 @@ public class TacosMap extends TacosMapData {
             summon.setObjectId();
         }
         this.summons.put(summon.getObjectId(), summon);
-        broadcastMessage(ResCSummonedPool.SummonedEnterField(summon, true));
+        broadcastPacket(ResCSummonedPool.SummonedEnterField(summon, true));
     }
 
     public void removeSummon(TacosSummon summon) {
         this.summons.remove(summon.getObjectId());
-        broadcastMessage(ResCSummonedPool.SummonedLeaveField(summon, true));
+        broadcastPacket(ResCSummonedPool.SummonedLeaveField(summon, true));
     }
 
     public List<TacosSummon> getAllSummons() {
@@ -897,21 +924,21 @@ public class TacosMap extends TacosMapData {
 
     public void removeMonster(MapleMonster monster) {
         removeMonster(monster.getObjectId());
-        broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
+        broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
     }
 
     public void killMonster(MapleMonster monster) {
         monster.setHp(0);
         monster.spawnRevives();
         removeMonster(monster.getObjectId());
-        broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
+        broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
     }
 
     public void killAllMonsters(boolean animate) {
         for (MapleMonster monster : getAllMonsters()) {
             monster.setHp(0);
             removeMonster(monster.getObjectId());
-            broadcastMessage(ResCMobPool.MobLeaveField(monster, animate ? OpsMobLeaveField.MOBLEAVEFIELD_ETC : OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
+            broadcastPacket(ResCMobPool.MobLeaveField(monster, animate ? OpsMobLeaveField.MOBLEAVEFIELD_ETC : OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
         }
     }
 
@@ -919,7 +946,7 @@ public class TacosMap extends TacosMapData {
         for (MapleMonster monster : getAllMonsters()) {
             if (monster.getId() == monsId) {
                 removeMonster(monster.getObjectId());
-                broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
+                broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
                 return true;
             }
         }
@@ -956,7 +983,7 @@ public class TacosMap extends TacosMapData {
         monster.setSummonOption(oid);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REVIVED);
         addMonster(monster);
-        broadcastMessage(ResCMobPool.MobEnterField(monster));
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         setMobOwner(monster);
     }
@@ -968,7 +995,7 @@ public class TacosMap extends TacosMapData {
         addMonster(monster);
         monster.setAT(ops_at != OpsMobAppear.UNKNOWN ? ops_at : OpsMobAppear.MOBAPPEAR_EFFECT);
         monster.setATEx(spawnType);
-        broadcastMessage(ResCMobPool.MobEnterField(monster));
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         setMobOwner(monster);
     }
@@ -977,7 +1004,7 @@ public class TacosMap extends TacosMapData {
         monster.setPosition(pos);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         addMonster(monster);
-        broadcastMessage(ResCMobPool.MobEnterField(monster));
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         setMobOwner(monster);
         return monster.getObjectId();
@@ -987,7 +1014,7 @@ public class TacosMap extends TacosMapData {
         monster.setFake(true);
         monster.setAT(OpsMobAppear.MOBAPPEAR_SUSPENDED);
         addMonster(monster);
-        broadcastMessage(ResCMobPool.MobEnterField(monster));
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
         setMobOwner(monster);
     }
 
@@ -999,12 +1026,12 @@ public class TacosMap extends TacosMapData {
             npc.setObjectId();
         }
         this.npcs.put(npc.getObjectId(), npc);
-        broadcastMessage(ResCNpcPool.NpcEnterField(npc));
+        broadcastPacket(ResCNpcPool.NpcEnterField(npc));
     }
 
     public boolean removeNPC(MapleNPC npc) {
         this.npcs.remove(npc.getObjectId());
-        broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
+        broadcastPacket(ResCNpcPool.NpcLeaveField(npc));
         // remove from spawn point.
         for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
             MapleNPC npc_sp = sp.getNPC();
@@ -1103,12 +1130,12 @@ public class TacosMap extends TacosMapData {
             merchant.setObjectId();
         }
         this.merchants.put(merchant.getObjectId(), merchant);
-        broadcastMessage(ResCEmployeePool.EmployeeEnterField(merchant));
+        broadcastPacket(ResCEmployeePool.EmployeeEnterField(merchant));
     }
 
     public void removeMerchant(HiredMerchant merchant) {
         this.merchants.remove(merchant.getObjectId());
-        broadcastMessage(ResCEmployeePool.EmployeeLeaveField(merchant));
+        broadcastPacket(ResCEmployeePool.EmployeeLeaveField(merchant));
     }
 
     public List<HiredMerchant> getAllMerchants() {
@@ -1208,14 +1235,14 @@ public class TacosMap extends TacosMapData {
         Point droppos = calcDropPos(position, position);
         MapleMapItem mdrop = new MapleMapItem(meso, droppos, owner, droptype, playerDrop);
         addDrop(mdrop);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, droppos, dropperPosition));
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, droppos, dropperPosition));
     }
 
     public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype, int delay) {
         MapleMapItem mdrop = new MapleMapItem(meso, position, owner, droptype, playerDrop);
         addDrop(mdrop);
         mdrop.setDelay(delay);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, position, dropper.getPosition()));
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, position, dropper.getPosition()));
         mdrop.setDelay(0);
     }
 
@@ -1223,7 +1250,7 @@ public class TacosMap extends TacosMapData {
         MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, chr, droptype, false, quest_id);
         addDrop(mdrop);
         mdrop.setDelay(delay);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
         mdrop.setDelay(0);
     }
 
@@ -1237,8 +1264,8 @@ public class TacosMap extends TacosMapData {
         }
         MapleMapItem mdrop = new MapleMapItem(pos, idrop);
         addDrop(mdrop);
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, pos, pos));
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, DropEnterType.UPDATE, pos, pos));
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, pos, pos));
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.UPDATE, pos, pos));
     }
 
     // mystic door.
@@ -1249,12 +1276,12 @@ public class TacosMap extends TacosMapData {
             door.setObjectId();
         }
         this.doors.put(door.getObjectId(), door);
-        broadcastMessage(ResCTownPortalPool.TownPortalCreated(door));
+        broadcastPacket(ResCTownPortalPool.TownPortalCreated(door));
     }
 
     public boolean removeDoor(TacosMysticDoor door) {
         this.doors.remove(door.getObjectId());
-        broadcastMessage(ResCTownPortalPool.TownPortalRemoved(door));
+        broadcastPacket(ResCTownPortalPool.TownPortalRemoved(door));
         return true;
     }
 
@@ -1335,12 +1362,12 @@ public class TacosMap extends TacosMapData {
             reactor.setObjectId();
         }
         this.reactors.put(reactor.getObjectId(), reactor);
-        broadcastMessage(ResCReactorPool.ReactorEnterField(reactor));
+        broadcastPacket(ResCReactorPool.ReactorEnterField(reactor));
     }
 
     public void removeReactor(MapleReactor reactor) {
         this.reactors.remove(reactor.getObjectId());
-        broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
+        broadcastPacket(ResCReactorPool.ReactorLeaveField(reactor));
     }
 
     public MapleReactor getReactorByOid(int object_id) {
@@ -1380,54 +1407,6 @@ public class TacosMap extends TacosMapData {
         for (MapleReactor mr : this.reactors.values()) {
             if (mr.getId() >= first && mr.getId() <= last) {
                 mr.setPosition(points.remove(points.size() - 1));
-            }
-        }
-    }
-
-    // self and other players in range.
-    public void broadcastMessage(ServerPacket packet, Point rangedFrom) {
-        broadcastMessageInternal(null, packet, rangedFrom, false);
-    }
-
-    // other players in range.
-    public void broadcastMessageTo(TacosCharacter source, ServerPacket packet, Point rangedFrom) {
-        broadcastMessageInternal(source, packet, rangedFrom, false);
-    }
-
-    // self and other players.
-    public void broadcastMessage(ServerPacket packet) {
-        broadcastMessageInternal(null, packet, null, true);
-    }
-
-    // self and other players, or other players.
-    public void broadcastMessage(TacosCharacter source, ServerPacket packet, boolean repeatToSource) {
-        broadcastMessageInternal(repeatToSource ? null : source, packet, source.getPosition(), true);
-    }
-
-    private void broadcastMessageInternal(TacosCharacter source, ServerPacket packet, Point rangedFrom, boolean ignoreRange) {
-        Iterator<MapleCharacter> ltr = this.players.values().iterator();
-        TacosCharacter chr;
-        while (ltr.hasNext()) {
-            chr = ltr.next();
-            if (source == null || chr.getId() != source.getId()) {
-                if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
-                    chr.SendPacket(packet);
-                }
-            }
-        }
-    }
-
-    public void returnEverLastItem(final MapleCharacter chr) {
-        for (final Object o : getAllDrops()) {
-            final MapleMapItem item = ((MapleMapItem) o);
-            if (item.getOwnerId() == chr.getId()) {
-                broadcastMessage(ResCDropPool.DropLeaveField(item, DropLeaveType.NORMAL, chr, 0), item.getPosition());
-                if (item.getMeso() > 0) {
-                    chr.gainMeso(item.getMeso(), false);
-                } else {
-                    MapleInventoryManipulator.addFromDrop(chr.getClient(), item.getItem(), false);
-                }
-                removeDrop(item.getObjectId());
             }
         }
     }
@@ -1569,7 +1548,7 @@ public class TacosMap extends TacosMapData {
         }
         for (MapleMapItem mmi : getAllDrops()) {
             removeDrop(mmi.getObjectId());
-            broadcastMessage(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
+            broadcastPacket(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
         }
         for (MapleMist mist : getAllMists()) {
             removeMist(mist);
@@ -1615,7 +1594,7 @@ public class TacosMap extends TacosMapData {
             for (MapleMapItem mmi : getAllDrops()) {
                 if (mmi.checkTime(time_current, 120000)) {
                     removeDrop(mmi.getObjectId());
-                    broadcastMessage(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
+                    broadcastPacket(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
                 }
             }
         }
@@ -1626,7 +1605,7 @@ public class TacosMap extends TacosMapData {
                     MapleMonster monster = sp.regen((MapleMap) this);
                     if (monster != null) {
                         addMonster(monster);
-                        broadcastMessage(ResCMobPool.MobEnterField(monster));
+                        broadcastPacket(ResCMobPool.MobEnterField(monster));
                         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
 

@@ -116,10 +116,6 @@ public class TacosMerchant extends TacosMapObject {
         SendPacket(packet);
     }
 
-    public void update() {
-        //getMap().broadcastMessage(ResCEmployeePool.EmployeeMiniRoomBalloon(this));
-    }
-
     public int getMaxSize() {
         return visitors.length + 1;
     }
@@ -140,7 +136,6 @@ public class TacosMerchant extends TacosMapObject {
             if (getOwnerId() != visitor.getId()) {
                 this.visitors_names.add(visitor.getName());
             }
-            update();
         }
     }
 
@@ -149,7 +144,6 @@ public class TacosMerchant extends TacosMapObject {
         if (0 < slot) {
             SendPacket(ResCMiniRoomBaseDlg.shopVisitorLeave(slot));
             visitors[slot - 1] = null;
-            update();
         }
     }
 
@@ -177,7 +171,6 @@ public class TacosMerchant extends TacosMapObject {
                 visitors[i] = null;
             }
         }
-        update();
     }
 
     public List<AbstractMap.SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors() {

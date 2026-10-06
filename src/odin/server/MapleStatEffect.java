@@ -536,7 +536,7 @@ public class MapleStatEffect {
                             .skill_id(sourceid)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
-                    chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), false);
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), chr.getId());
                 }
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
@@ -553,7 +553,7 @@ public class MapleStatEffect {
                                 .skill_id(sourceid)
                                 .build();
                         affected.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
-                        affected.getMap().broadcastMessage(affected, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), false);
+                        affected.getMap().splitSendPacket(affected, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), affected.getId());
                     }
                     if (isTimeLeap()) {
                         affected.getCoolTime().timeLeap();

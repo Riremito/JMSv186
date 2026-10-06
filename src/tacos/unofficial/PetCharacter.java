@@ -43,7 +43,7 @@ public class PetCharacter implements IPetEx {
 
     @Override
     public void SendPacket(ServerPacket packet) {
-        this.character.getMap().broadcastMessage(packet);
+        this.character.getMap().broadcastPacket(packet);
     }
 
     @Override

@@ -208,7 +208,7 @@ public class MapleSquad {
     // used by script
     public void clear() {
         if (removal != null) {
-            getBeginMap().broadcastMessage(ResCField.DestroyClock());
+            getBeginMap().broadcastPacket(ResCField.DestroyClock());
             removal.cancel(false);
             removal = null;
         }

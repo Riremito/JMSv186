@@ -65,7 +65,7 @@ public class ReqCNpcPool {
                     move_path = null;
                 }
 
-                map.broadcastMessage(ResCNpcPool.NpcMove(npc, nChatIdx, m_nOneTimeAction, move_path));
+                map.broadcastPacket(ResCNpcPool.NpcMove(npc, nChatIdx, m_nOneTimeAction, move_path));
                 return true;
             }
             default: {

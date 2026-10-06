@@ -40,7 +40,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.ItemLoader;
 import tacos.database.query.DQ_Hiredmerch;
 import tacos.server.TacosWorld;
-import tacos.packet.response.ResCUser;
 import java.sql.SQLException;
 
 public class MaplePlayerShop {
@@ -189,12 +188,6 @@ public class MaplePlayerShop {
         return chrs[num].get();
     }
 
-    public void update() {
-        if (isAvailable() && getMCOwner() != null) {
-            getMap().broadcastMessage(ResCUser.sendPlayerShopBox(getMCOwner()));
-        }
-    }
-
     public void addVisitor(MapleCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
@@ -202,9 +195,6 @@ public class MaplePlayerShop {
             chrs[i - 1] = new WeakReference<>(visitor);
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
-            }
-            if (i == 3) {
-                update();
             }
         }
     }
@@ -215,9 +205,6 @@ public class MaplePlayerShop {
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
             chrs[slot - 1] = new WeakReference<>(null);
-            if (shouldUpdate) {
-                update();
-            }
         }
     }
 
@@ -245,7 +232,6 @@ public class MaplePlayerShop {
                 chrs[i] = new WeakReference<>(null);
             }
         }
-        update();
     }
 
     public String getOwnerName() {
@@ -426,7 +412,6 @@ public class MaplePlayerShop {
 
         owner.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(reason, 0));
         owner.setPlayerShop(null);
-        update();
     }
 
     public boolean isBanned(String name) {

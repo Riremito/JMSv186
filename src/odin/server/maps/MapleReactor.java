@@ -70,12 +70,12 @@ public class MapleReactor extends TacosReactor {
                     if ((stats.getType(state) < 100 || stats.getType(state) == 999)) { //reactor broken
                         map.removeReactor(this);
                     } else { //item-triggered on final step
-                        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, tActionDelay));
+                        map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay));
                     }
                     TacosScriptReactor.getInstance().act(client, this);
                 } else { //reactor not broken yet
                     boolean done = false;
-                    map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, tActionDelay)); //magatia is weird cause full beaker can be activated by gm hat o.o
+                    map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, tActionDelay)); //magatia is weird cause full beaker can be activated by gm hat o.o
                     if (state == stats.getNextState(state) || getId() == 2618000 || getId() == 2309000) { //current state = next state, looping reactor
                         TacosScriptReactor.getInstance().act(client, this);
                         done = true;
@@ -137,7 +137,7 @@ public class MapleReactor extends TacosReactor {
     public void forceHitReactor(byte newState) {
         setState((byte) newState);
         setTimerActive(false);
-        map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
+        map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, (short) 0));
     }
 
     // used by script
@@ -147,7 +147,7 @@ public class MapleReactor extends TacosReactor {
 
     // used by script
     public void forceTrigger() {
-        this.map.broadcastMessage(ResCReactorPool.ReactorChangeState(this, (short) 0));
+        this.map.broadcastPacket(ResCReactorPool.ReactorChangeState(this, (short) 0));
     }
 
     // used by script

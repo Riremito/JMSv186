@@ -192,7 +192,7 @@ public class ReqCUser {
             }
             case CP_UserADBoardClose: {
                 chr.setADBoard(null);
-                map.broadcastMessage(ResCUser.UserADBoard(chr));
+                map.broadcastPacket(ResCUser.UserADBoard(chr));
                 return true;
             }
             case CP_UserEmotion: {
@@ -951,7 +951,7 @@ public class ReqCUser {
             if (chr.getChair() == 3011000) {
                 chr.stopFishing();
             }
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActivePortableChair(chr.getId(), 0), false);
+            chr.getMap().splitSendPacket(chr, ResCUserRemote.UserSetActivePortableChair(chr.getId(), 0), chr.getId());
         }
 
         chr.setChair(is_cancel ? 0 : map_chair_id);
@@ -972,7 +972,7 @@ public class ReqCUser {
         }
 
         chr.setChair(item_id);
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActivePortableChair(chr.getId(), item_id), false);
+        chr.getMap().splitSendPacket(chr, ResCUserRemote.UserSetActivePortableChair(chr.getId(), item_id), chr.getId());
         chr.updateInv();
         return true;
     }
@@ -1018,8 +1018,8 @@ public class ReqCUser {
             skill_effect_pick_pocket = skill_pick_pocket.getEffect(30); // level.
         }
 
-        // for remote users.
-        map.broadcastMessageTo(chr, ResCUserRemote.UserAttack(chr, attack), chr.getPosition());
+        map.splitSendPacket(chr, ResCUserRemote.UserAttack(chr, attack), chr.getId());
+
         boolean is_steal = attack.skill == OpsSkill.THIEF_STEAL.get();
         for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
             MapleMonster monster = map.getMonsterByOid(entry.getKey());
@@ -1059,7 +1059,7 @@ public class ReqCUser {
                     continue;
                 }
                 map.removeDrop(mmi.getObjectId());
-                map.broadcastMessage(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPLOSION));
+                map.broadcastPacket(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPLOSION));
             }
         }
         return true;
@@ -1135,7 +1135,7 @@ public class ReqCUser {
                 // hack.
                 return true;
             }
-            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
             chr.getStat().setHp(chr.getStat().getHp() - uhd.nDamage);
             chr.sendStatChanged();
             return true;
@@ -1153,7 +1153,7 @@ public class ReqCUser {
                 return true;
             }
             uhd.nSkillID = fake_skill.get();
-            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
             return true;
         }
         if (uhd.nDamage < 0) {
@@ -1161,7 +1161,7 @@ public class ReqCUser {
         }
         // MISS
         if (uhd.nDamage == 0) {
-            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
             return true;
         }
         MobAttackInfo attackInfo = WzXML.MOB.getMobAttackInfo(monster, uhd.nAttackIdx);
@@ -1172,7 +1172,7 @@ public class ReqCUser {
                 if (uhd.nDelta == 0) {
                     uhd.nDelta = 1;
                 }
-                map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+                map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
                 chr.getStat().setHp(1);
                 chr.getStat().setMp(1);
                 chr.sendStatChanged();
@@ -1182,7 +1182,7 @@ public class ReqCUser {
             // mpBurn
             int mp_burn = (short) attackInfo.getMpBurn(); // 9400113, BodyGuard B meme.
             if (mp_burn != 0) {
-                map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+                map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
                 int nMP = chr.getStat().getMp() - mp_burn;
                 if (chr.getStat().getMaxMp() < nMP) {
                     nMP = chr.getStat().getMaxMp();
@@ -1217,7 +1217,7 @@ public class ReqCUser {
                 uhd.nDelta = uhd.nDamage - reflect_damage;
                 monster.damage(chr, reflect_damage, true);
                 chr.getStat().setHp(chr.getStat().getHp() - uhd.nDelta);
-                map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+                map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
                 chr.sendStatChanged();
                 chr.DebugMsg("PowerGuard : " + uhd.nDamage + " -> " + uhd.nDelta + ", " + reflect_damage);
                 return true;
@@ -1230,7 +1230,7 @@ public class ReqCUser {
                 mp_damage = chr.getStat().getMp();
             }
             int hp_damage = uhd.nDamage - mp_damage;
-            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
             chr.getStat().setHp(chr.getStat().getHp() - hp_damage);
             chr.getStat().setMp(chr.getStat().getMp() - mp_damage);
             chr.sendStatChanged();
@@ -1244,7 +1244,7 @@ public class ReqCUser {
                 meso_damage = chr.getMeso();
             }
             int hp_damage = uhd.nDamage - meso_damage;
-            map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+            map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
             chr.getStat().setHp(chr.getStat().getHp() - hp_damage);
             chr.setMeso(chr.getMeso() - meso_damage);
             chr.sendStatChanged();
@@ -1253,7 +1253,7 @@ public class ReqCUser {
         }
 
         chr.DebugMsg("OnUserHit : nAttackIdx =" + uhd.nAttackIdx + ", nDamage = " + uhd.nDamage);
-        map.broadcastMessage(chr, ResCUserRemote.UserHit(uhd), false);
+        map.splitSendPacket(chr, ResCUserRemote.UserHit(uhd), chr.getId());
         chr.getStat().setHp(chr.getStat().getHp() - uhd.nDamage);
         chr.sendStatChanged();
         return true;
@@ -1270,7 +1270,7 @@ public class ReqCUser {
             }
         }
 
-        map.broadcastMessage(ResCUser.UserChat(chr, message, bOnlyBalloon), chr.getPosition());
+        map.splitSendPacket(chr, ResCUser.UserChat(chr, message, bOnlyBalloon));
         return true;
     }
 
@@ -1287,7 +1287,7 @@ public class ReqCUser {
             return false;
         }
         MapleMap map = chr.getMap();
-        map.broadcastMessage(chr, ResCUserRemote.UserEmotion(chr, emotion_id), false);
+        map.splitSendPacket(chr, ResCUserRemote.UserEmotion(chr, emotion_id), chr.getId());
         return true;
     }
 
@@ -1318,7 +1318,7 @@ public class ReqCUser {
         }
 
         chr.setActiveEffectItem(nEffectItemID);
-        chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSetActiveEffectItem(chr), false);
+        chr.getMap().splitSendPacket(chr, ResCUserRemote.UserSetActiveEffectItem(chr), chr.getId());
         return true;
     }
 
@@ -1600,7 +1600,7 @@ public class ReqCUser {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit), vegas == 0);
+            chr.getMap().splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
             return true;
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
@@ -1740,7 +1740,7 @@ public class ReqCUser {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
         }
-        chr.getMap().broadcastMessage(chr, ResCUser.getScrollEffect(chr.getId(), scrollSuccess, legendarySpirit), vegas == 0);
+        chr.getMap().splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), scrollSuccess, legendarySpirit));
         // equipped item was scrolled and changed
         if (equip_slot < 0 && (scrollSuccess == Equip.ScrollResult.SUCCESS || scrollSuccess == Equip.ScrollResult.CURSE) && vegas == 0) {
             chr.equipChanged();
@@ -1792,7 +1792,7 @@ public class ReqCUser {
                 io.add(GameConstants.getInventoryType(toReveal.getItemId()), toReveal);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
-            map.broadcastMessage(ResCUser.UserItemReleaseEffect(chr, eqq.getPosition()));
+            map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, eqq.getPosition()));
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
             //Debug.DebugLog("potential updated");
         } else {
@@ -2257,7 +2257,7 @@ public class ReqCUser {
                     if (monster == null) {
                         continue;
                     }
-                    map.broadcastMessage(chr, ResCMobPool.MobCatchEffect(monster, magnets.get(i) != 0), false);
+                    map.splitSendPacket(chr, ResCMobPool.MobCatchEffect(monster, magnets.get(i) != 0), chr.getId());
                 }
                 // magnet effect for remote?
                 //map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(chr.getId(), nSkillID, 1, slea.readByte()), chr.getPosition());
@@ -2290,7 +2290,7 @@ public class ReqCUser {
             return false;
         }
 
-        map.broadcastMessage(chr, ResCUserRemote.UserSkillCancel(chr, buff_id), false);
+        map.splitSendPacket(chr, ResCUserRemote.UserSkillCancel(chr, buff_id), chr.getId());
         return true;
     }
 
@@ -2313,7 +2313,7 @@ public class ReqCUser {
         int skilllevel_serv = chr.getSkillLevel(skill);
 
         if (skilllevel_serv > 0 && skilllevel_serv == nSLV && skill.isChargeSkill()) {
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserSkillPrepare(chr, nSkillID, nSLV, action, attack_speed_degree), false);
+            chr.getMap().splitSendPacket(chr, ResCUserRemote.UserSkillPrepare(chr, nSkillID, nSLV, action, attack_speed_degree), chr.getId());
         }
 
         return true;
@@ -2459,7 +2459,7 @@ public class ReqCUser {
                         .player(chr)
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_QuestComplete));
-                map.broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_QuestComplete, pb), false);
+                map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_QuestComplete, pb), chr.getId());
                 return true;
             }
             default: {
@@ -2660,7 +2660,7 @@ public class ReqCUser {
                     levelup = true;
                 }
             }
-            map.broadcastMessage(ResCWvsContext.SetTamingMobInfo(chr, levelup));
+            map.broadcastPacket(ResCWvsContext.SetTamingMobInfo(chr, levelup));
             MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
         }
         chr.updateInv();
@@ -2683,23 +2683,23 @@ public class ReqCUser {
             switch (item_id) {
                 case 2270004: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
+                        map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                         MapleInventoryManipulator.addById(chr.getClient(), 4001169, (short) 1);
                     } else {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
+                        map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
                     }
                     break;
                 }
                 case 2270002: {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
+                        map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
+                        map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
                     }
                     break;
@@ -2709,7 +2709,7 @@ public class ReqCUser {
                     if (mob.getId() != 9300101) {
                         break;
                     }
-                    map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
+                    map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                     map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                     MapleInventoryManipulator.addById(chr.getClient(), 1902000, (short) 1, null);
                     MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
@@ -2721,11 +2721,11 @@ public class ReqCUser {
                         break;
                     }
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, true));
+                        map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
                         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
-                        map.broadcastMessage(ResCMobPool.MobEffectByItem(mob, item_id, false));
+                        map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
                     }
                     break;
@@ -2781,7 +2781,7 @@ public class ReqCUser {
             }
         }
 
-        map.broadcastMessage(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
+        map.broadcastPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
         chr.updateInv();
         return true;
     }
@@ -2873,7 +2873,7 @@ public class ReqCUser {
                 driver.setPassenger(0);
             }
             chr.setDriver(0);
-            map.broadcastMessage(ResCUser.UserFollowCharacter(chr, true));
+            map.broadcastPacket(ResCUser.UserFollowCharacter(chr, true));
             return true;
         }
 
@@ -2914,7 +2914,7 @@ public class ReqCUser {
 
         passenger.setDriver(chr.getId());
         chr.setPassenger(passenger.getId());
-        map.broadcastMessage(ResCUser.UserFollowCharacter(passenger, false));
+        map.broadcastPacket(ResCUser.UserFollowCharacter(passenger, false));
         return true;
     }
 

@@ -36,6 +36,7 @@ public class PB_BroadcastMsg {
     public byte ear;
     public Item item;
     public List<String> messages;
-    public int item_id;
+    @Builder.Default
+    public int item_id = 0;
     public int gashapon_type;
 }

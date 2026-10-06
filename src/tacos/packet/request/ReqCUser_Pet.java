@@ -151,9 +151,9 @@ public class ReqCUser_Pet {
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
             pet.update(move_path);
+            map.splitSendPacket(chr, ResCUser_Pet.PetMove(chr, pet, move_path), chr.getId());
         }
 
-        map.splitSendPacket(chr, ResCUser_Pet.PetMove(chr, pet, move_path), chr.getId());
         return true;
     }
 

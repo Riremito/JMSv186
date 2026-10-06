@@ -138,7 +138,7 @@ public class ReqCDropPool {
                             .player(chr)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
-                    chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), false);
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), chr.getId());
 
                     chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MONSTER_CARD).ItemID(nCardID).build()));
                 } else {
@@ -174,7 +174,7 @@ public class ReqCDropPool {
 
     public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem, boolean is_pet, int pet_index) {
         chr.getMap().removeDrop(mapitem.getObjectId());
-        chr.getMap().broadcastMessage(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index), mapitem.getPosition());
+        chr.getMap().broadcastPacket(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index));
     }
 
     public static boolean useDropItem(MapleCharacter chr, int id) {

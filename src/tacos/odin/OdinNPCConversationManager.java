@@ -596,7 +596,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void showEffect(boolean broadcast, String effect) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(effect).build()));
+            client.getPlayer().getMap().broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(effect).build()));
         } else {
             client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(effect).build()));
         }
@@ -604,7 +604,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void playSound(boolean broadcast, String sound) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path(sound).build()));
+            client.getPlayer().getMap().broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path(sound).build()));
         } else {
             client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path(sound).build()));
         }
@@ -612,7 +612,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public void environmentChange(boolean broadcast, String env) {
         if (broadcast) {
-            client.getPlayer().getMap().broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Object, PB_FieldEffect.builder().wz_path(env).build()));
+            client.getPlayer().getMap().broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Object, PB_FieldEffect.builder().wz_path(env).build()));
         } else {
             client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Object, PB_FieldEffect.builder().wz_path(env).build()));
         }
@@ -687,8 +687,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (ret) {
             final MapleMap map = client.getPlayer().getMap();
 
-            map.broadcastMessage(ResCField.Clock(minutes * 60));
-            map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(client.getPlayer().getName() + startText).build()));
+            map.broadcastPacket(ResCField.Clock(minutes * 60));
+            map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(client.getPlayer().getName() + startText).build()));
         } else {
             squad.clear();
         }
@@ -1218,14 +1218,14 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public final void doWeddingEffect(final Object ch) {
         final MapleCharacter chr = (MapleCharacter) ch;
-        getMap().broadcastMessage(ResCWvsContext.SetWeekEventMessage(getPlayer().getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
+        getMap().broadcastPacket(ResCWvsContext.SetWeekEventMessage(getPlayer().getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
         CloneTimer.getInstance().schedule(new Runnable() {
 
             public void run() {
                 if (chr == null || getPlayer() == null) {
                     warpMap(680000500, 0);
                 } else {
-                    getMap().broadcastMessage(ResCWvsContext.SetWeekEventMessage(chr.getName() + ", do you take " + getPlayer().getName() + " as your husband and promise to stay beside him through all downtimes, crashes, and lags?"));
+                    getMap().broadcastPacket(ResCWvsContext.SetWeekEventMessage(chr.getName() + ", do you take " + getPlayer().getName() + " as your husband and promise to stay beside him through all downtimes, crashes, and lags?"));
                 }
             }
         }, 10000);

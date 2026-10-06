@@ -473,7 +473,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void mapMessage(final String message) {
-        client.getPlayer().getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
+        client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void guildMessage(final String message) {
@@ -487,7 +487,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void mapMessage(final int type, final String message) {
         DebugLogger.DebugLog("mapMessage is called.");
-        client.getPlayer().getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
+        client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void guildMessage(final int type, final String message) {
@@ -1015,7 +1015,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void sendNPCText(final String text, final int npc) {
-        getMap().broadcastMessage(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
+        getMap().broadcastPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
     }
 
     // event script compatibility

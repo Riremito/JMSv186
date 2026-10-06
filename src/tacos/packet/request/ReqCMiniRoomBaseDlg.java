@@ -39,6 +39,8 @@ import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMiniRoomType;
+import tacos.packet.response.ResCEmployeePool;
+import tacos.packet.response.ResCUser;
 import tacos.server.TacosRoom;
 import tacos.server.TacosWorld;
 import tacos.server.map.object.TacosMerchant;
@@ -107,7 +109,7 @@ public class ReqCMiniRoomBaseDlg {
                         game.setOpen(true);
                         game.send(chr.getClient());
                         chr.getMap().addMiniGame(game);
-                        game.update();
+                        chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                         return true;
                     }
                     case MR_TradingRoom: {
@@ -309,11 +311,12 @@ public class ReqCMiniRoomBaseDlg {
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
                             chr.setPlayerShop(null);
+                            chr.getMap().splitSendPacket(chr, ResCEmployeePool.EmployeeMiniRoomBalloon((HiredMerchant) shop));
 
                         } else if (ShopDispatch.getShopType(shop) == 2) {
                             ShopDispatch.setOpen(shop, true);
                             ShopDispatch.setAvailable(shop, true);
-                            ShopDispatch.update(shop);
+                            chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                         }
                     }
                 }
@@ -619,7 +622,7 @@ public class ReqCMiniRoomBaseDlg {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 1, game.getRequestedTie()));
                             game.nextLoser();
                             game.setOpen(true);
-                            game.update();
+                            chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                             game.checkExitAfterGame();
                         } else {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameDenyTie());
@@ -639,7 +642,7 @@ public class ReqCMiniRoomBaseDlg {
                     game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
-                    game.update();
+                    chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                     game.checkExitAfterGame();
                 }
                 return true;
@@ -711,7 +714,7 @@ public class ReqCMiniRoomBaseDlg {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardStart(game, game.getLoser()));
                         }
                         game.setOpen(false);
-                        game.update();
+                        chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                     }
                 }
                 return true;

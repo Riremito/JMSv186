@@ -109,7 +109,7 @@ public class AramiaFireWorks {
                     if (this.sunshines >= (MAX_SUN / 6) * (2 + reactor.getState())) {
                         reactor.setState((byte) (reactor.getState() + 1));
                         reactor.setTimerActive(false);
-                        map.broadcastMessage(ResCReactorPool.ReactorChangeState(reactor, reactor.getState()));
+                        map.broadcastPacket(ResCReactorPool.ReactorChangeState(reactor, reactor.getState()));
                     }
                     break;
                 default:
@@ -165,7 +165,7 @@ public class AramiaFireWorks {
                     if (this.decorations >= (MAX_DEC / 6) * (2 + reactor.getState())) {
                         reactor.setState((byte) (reactor.getState() + 1));
                         reactor.setTimerActive(false);
-                        map.broadcastMessage(ResCReactorPool.ReactorChangeState(reactor, reactor.getState()));
+                        map.broadcastPacket(ResCReactorPool.ReactorChangeState(reactor, reactor.getState()));
                     }
                     break;
                 default:
