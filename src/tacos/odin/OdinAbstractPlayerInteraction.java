@@ -45,7 +45,6 @@ import odin.server.maps.Event_DojoAgent;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleLifeFactory;
 import odin.server.quest.MapleQuest;
-import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
@@ -64,6 +63,7 @@ import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosChannel;
+import tacos.server.TacosWorld;
 
 public abstract class OdinAbstractPlayerInteraction {
 
@@ -943,7 +943,7 @@ public abstract class OdinAbstractPlayerInteraction {
             fullness = 100;
         }
         try {
-            MapleInventoryManipulator.addById(client, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, MapleInventoryIdentifier.getInstance(), id == 5000054 ? (int) period : 0), 45);
+            MapleInventoryManipulator.addById(client, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }

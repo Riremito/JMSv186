@@ -9,7 +9,6 @@ import java.util.Set;
 import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
-import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
@@ -19,6 +18,7 @@ import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
+import tacos.server.TacosWorld;
 import tacos.wz.WzDataStorage;
 
 public class MapleShop {
@@ -115,7 +115,7 @@ public class MapleShop {
         chr.gainMeso(-price, false);
 
         if (GameConstants.isPet(itemId)) {
-            MapleInventoryManipulator.addById(client, itemId, quantity, "", MaplePet.createPet(itemId, MapleInventoryIdentifier.getInstance()), -1);
+            MapleInventoryManipulator.addById(client, itemId, quantity, "", MaplePet.createPet(itemId, TacosWorld.getNextItemUniqueId()), -1);
         } else {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 

@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import odin.client.inventory.MapleInventoryIdentifier;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
@@ -24,6 +23,7 @@ import tacos.packet.response.builder.PB_InvOp;
 import odin.server.maps.AramiaFireWorks;
 import tacos.client.TacosClient;
 import tacos.config.Config;
+import tacos.server.TacosWorld;
 
 public class MapleInventoryManipulator {
 
@@ -68,10 +68,10 @@ public class MapleInventoryManipulator {
             if (pet != null) {
                 uniqueid = pet.getUniqueId();
             } else {
-                uniqueid = MapleInventoryIdentifier.getInstance();
+                uniqueid = TacosWorld.getNextItemUniqueId();
             }
         } else if (GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH || MapleItemInformationProvider.getInstance().isCash(itemId)) { //less work to do
-            uniqueid = MapleInventoryIdentifier.getInstance(); //shouldnt be generated yet, so put it here
+            uniqueid = TacosWorld.getNextItemUniqueId(); //shouldnt be generated yet, so put it here
         }
         return uniqueid;
     }

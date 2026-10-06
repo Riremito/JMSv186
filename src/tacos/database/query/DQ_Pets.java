@@ -105,7 +105,7 @@ public class DQ_Pets {
             try (PreparedStatement ps = con.prepareStatement("SELECT MAX(petid) FROM " + DB_TABLE_NAME)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        ret = rs.getInt(1) + 1;
+                        ret = rs.getInt(1);
                     }
                 }
             }
@@ -115,5 +115,4 @@ public class DQ_Pets {
 
         return ret;
     }
-
 }

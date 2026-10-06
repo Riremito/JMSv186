@@ -557,7 +557,11 @@ public class TacosMapData {
 
     // reactor node.
     public boolean loadReactor(MapleData mapData) {
-        for (MapleData reactor : mapData.getChildByPath("reactor")) {
+        MapleData md_reactor = mapData.getChildByPath("reactor");
+        if (md_reactor == null) {
+            return false;
+        }
+        for (MapleData reactor : md_reactor.getChildren()) {
             TacosReactorSpawnPoint sp = new TacosReactorSpawnPoint();
             if (sp.loadData(reactor)) {
                 this.reactor_spawn_point.add(sp);

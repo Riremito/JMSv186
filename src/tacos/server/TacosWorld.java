@@ -27,6 +27,9 @@ import odin.handling.world.Family;
 import odin.handling.world.Guild;
 import odin.handling.world.Party;
 import tacos.client.TacosCharacter;
+import tacos.database.query.DQ_Inventoryitems;
+import tacos.database.query.DQ_Pets;
+import tacos.database.query.DQ_Rings;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
@@ -361,6 +364,35 @@ public class TacosWorld {
             }
         }
         return null;
+    }
+
+    // item unique id.
+    public static int NEXT_ITEM_UNIQUE_ID = 0;
+
+    public static int getNextItemUniqueId() {
+        if (NEXT_ITEM_UNIQUE_ID != 0) {
+            return NEXT_ITEM_UNIQUE_ID++;
+        }
+        int uid_max = DQ_Inventoryitems.getMaxUniqueId();
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid_max + " (item)");
+        int uid = DQ_Pets.getMaxPetId();
+        if (uid_max < uid) {
+            uid_max = uid;
+        }
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid + " (pet)");
+        uid = DQ_Rings.getMaxRingId();
+        if (uid_max < uid) {
+            uid_max = uid;
+        }
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid + " (ring)");
+        uid = DQ_Rings.getMaxPartnerRingId();
+        if (uid_max < uid) {
+            uid_max = uid;
+        }
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid + " (partner ring)");
+        uid_max++;
+        NEXT_ITEM_UNIQUE_ID = uid_max;
+        return NEXT_ITEM_UNIQUE_ID++;
     }
 
     // update task.

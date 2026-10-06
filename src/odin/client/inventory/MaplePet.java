@@ -22,6 +22,7 @@ package odin.client.inventory;
 
 import odin.server.MapleItemInformationProvider;
 import tacos.database.query.DQ_Pets;
+import tacos.server.TacosWorld;
 import tacos.server.map.object.TacosPet;
 
 public class MaplePet extends TacosPet {
@@ -72,7 +73,7 @@ public class MaplePet extends TacosPet {
 
     public static MaplePet createPet(int itemid, String name, int level, int closeness, int fullness, int uniqueid, int secondsLeft) {
         if (uniqueid <= -1) { //wah
-            uniqueid = MapleInventoryIdentifier.getInstance();
+            uniqueid = TacosWorld.getNextItemUniqueId();
         }
         if (!DQ_Pets.add(uniqueid, name, level, closeness, fullness, secondsLeft)) {
             return null;
