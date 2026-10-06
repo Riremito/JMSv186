@@ -59,8 +59,8 @@ import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TreeMap;
 import odin.client.MapleQuestStatus;
-import odin.client.SkillMacro;
 import odin.handling.world.MapleParty;
 import odin.server.CashShop;
 import odin.server.MapleInventoryManipulator;
@@ -1448,6 +1448,13 @@ public class TacosCharacter extends TacosPlayer {
         return this.storage;
     }
 
+    // macro.
+    private final TreeMap<Integer, TacosSingleMacro> macros = new TreeMap<>();
+
+    public TreeMap<Integer, TacosSingleMacro> getMacros() {
+        return this.macros;
+    }
+
     // useful.
     public String getPlayerNameWithMedal() {
         Item equipped_medal = getInventory(MapleInventoryType.EQUIPPED).getItem(OpsBodyPart.BP_MEDAL.getSlot());
@@ -1574,7 +1581,6 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // database.
-    // database.
     public boolean saveNewCharToDB() {
         if (!addNewCharacterData()) {
             return false;
@@ -1658,7 +1664,6 @@ public class TacosCharacter extends TacosPlayer {
     protected MapleParty party;
     protected int dojo;
     protected byte dojoRecord;
-    protected SkillMacro[] skillMacros = new SkillMacro[5];
     protected Map<Integer, String> questinfo;
     protected Map<MapleQuest, MapleQuestStatus> quests;
     protected int[] savedLocations;
@@ -1794,7 +1799,7 @@ public class TacosCharacter extends TacosPlayer {
                 }
                 // END
 
-                ret.skillMacros = DQ_Skillmacros.loadAll(character_id);
+                DQ_Skillmacros.loadAll(ret);
 
                 for (final Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
                     ret.savedLocations[e.getKey()] = e.getValue();
@@ -1909,7 +1914,7 @@ public class TacosCharacter extends TacosPlayer {
                 throw new DatabaseException("Character not in database (" + id + ")");
             }
 
-            DQ_Skillmacros.deleteAndSaveAll(con, id, skillMacros);
+            DQ_Skillmacros.deleteAndSaveAll(con, this);
             DQ_Questinfo.deleteAndSaveAll(con, id, questinfo);
             DQ_Queststatus.deleteAndSaveAll(con, id, quests.values());
             DQ_Skills.deleteAndSaveAll(con, id, skills);

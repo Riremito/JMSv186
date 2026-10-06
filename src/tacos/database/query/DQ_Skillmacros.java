@@ -22,57 +22,67 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import odin.client.SkillMacro;
+import tacos.client.TacosCharacter;
+import tacos.client.TacosSingleMacro;
 import tacos.database.DatabaseConnection;
 
 /**
- * NOTE: load/save here declare {@code throws SQLException} instead of
- * catching it internally, matching the original MapleCharacter behavior
- * (see DQ_Questinfo for the same rationale).
+ * NOTE: load/save here declare {@code throws SQLException} instead of catching
+ * it internally, matching the original MapleCharacter behavior (see
+ * DQ_Questinfo for the same rationale).
  *
  * @author Riremito
  */
 public class DQ_Skillmacros {
 
     public static final String DB_TABLE_NAME = "skillmacros";
-    public static final int SLOT_COUNT = 5;
 
-    public static SkillMacro[] loadAll(int characterId) throws SQLException {
-        SkillMacro[] ret = new SkillMacro[SLOT_COUNT];
+    public static void loadAll(TacosCharacter chr) throws SQLException {
         Connection con = DatabaseConnection.getConnection();
         try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
+            ps.setInt(1, chr.getId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int position = rs.getInt("position");
-                    ret[position] = new SkillMacro(rs.getInt("skill1"), rs.getInt("skill2"), rs.getInt("skill3"), rs.getString("name"), rs.getInt("shout"), position);
+                    int skill_id_1 = rs.getInt("skill1");
+                    int skill_id_2 = rs.getInt("skill2");
+                    int skill_id_3 = rs.getInt("skill3");
+                    String name = rs.getString("name");
+                    int shout = rs.getInt("shout");
+
+                    TacosSingleMacro tsm = new TacosSingleMacro();
+                    tsm.setName(name);
+                    tsm.setShout(shout);
+                    tsm.setSkill1(skill_id_1);
+                    tsm.setSkill2(skill_id_2);
+                    tsm.setSkill3(skill_id_3);
+
+                    chr.getMacros().put(position, tsm);
                 }
             }
         }
-        return ret;
     }
 
-    public static void deleteAndSaveAll(Connection con, int characterId, SkillMacro[] skillMacros) throws SQLException {
+    public static void deleteAndSaveAll(Connection con, TacosCharacter chr) throws SQLException {
         try (PreparedStatement ps = con.prepareStatement("DELETE FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
-            ps.setInt(1, characterId);
+            ps.setInt(1, chr.getId());
             ps.executeUpdate();
         }
 
-        for (int i = 0; i < SLOT_COUNT; i++) {
-            final SkillMacro macro = skillMacros[i];
+        for (int index = 0; index < chr.getMacros().size(); index++) {
+            TacosSingleMacro macro = chr.getMacros().get(index);
             if (macro != null) {
                 try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, skill1, skill2, skill3, name, shout, position) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
-                    ps.setInt(1, characterId);
+                    ps.setInt(1, chr.getId());
                     ps.setInt(2, macro.getSkill1());
                     ps.setInt(3, macro.getSkill2());
                     ps.setInt(4, macro.getSkill3());
                     ps.setString(5, macro.getName());
                     ps.setInt(6, macro.getShout());
-                    ps.setInt(7, i);
+                    ps.setInt(7, index);
                     ps.execute();
                 }
             }
         }
     }
-
 }

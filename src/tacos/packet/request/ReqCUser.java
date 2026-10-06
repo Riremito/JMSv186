@@ -461,9 +461,6 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserCalcDamageStatSetRequest: {
-                // @006A
-                // バフを獲得するアイテムを使用した際に送信されている
-                // 利用用途が不明だが、アイテム利用時ではなくてこちらが送信されたときにバフを有効にすべきなのかもしれない
                 return true;
             }
             case CP_UserMacroSysDataModified: {

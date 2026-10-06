@@ -742,14 +742,6 @@ public class MapleCharacter extends TacosCharacter {
         saveToDB(false);
     }
 
-    public void updateMacros(int position, SkillMacro updateMacro) {
-        skillMacros[position] = updateMacro;
-    }
-
-    public final SkillMacro[] getMacros() {
-        return skillMacros;
-    }
-
     public FameStatus canGiveFame(MapleCharacter from) {
         if (lastfametime >= System.currentTimeMillis() - 60 * 60 * 24 * 1000) {
             return FameStatus.NOT_TODAY;
@@ -1562,7 +1554,6 @@ public class MapleCharacter extends TacosCharacter {
         for (Item equip : getInventory(MapleInventoryType.EQUIPPED)) {
             ret.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
         }
-        ret.skillMacros = skillMacros;
         ret.keylayout = keylayout;
         ret.questinfo = questinfo;
         ret.savedLocations = savedLocations;
