@@ -71,14 +71,14 @@ public class ReqCFuncKeyMappedMan {
 
         for (int index = 0; index < macro_count; index++) {
             String name = cp.DecodeStr(); // sName
-            byte bMute = cp.Decode1(); // bMute
+            boolean bMute = cp.Decode1() != 0; // bMute
             int skill_id_1 = cp.Decode4(); // aSkill[0]
             int skill_id_2 = cp.Decode4(); // aSkill[1]
             int skill_id_3 = cp.Decode4(); // aSkill[2]
 
             TacosSingleMacro tsm = new TacosSingleMacro();
             tsm.setName(name);
-            tsm.setShout(bMute);
+            tsm.setMute(bMute);
             tsm.setSkill1(skill_id_1);
             tsm.setSkill2(skill_id_2);
             tsm.setSkill3(skill_id_3);

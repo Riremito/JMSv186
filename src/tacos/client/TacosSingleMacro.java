@@ -27,9 +27,9 @@ import lombok.Data;
 @Data
 public class TacosSingleMacro {
 
+    private String name = "";
+    private boolean mute = false;
     private int skill1 = 0;
     private int skill2 = 0;
     private int skill3 = 0;
-    private int shout = 0;
-    private String name = "";
 }

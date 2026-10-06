@@ -52,7 +52,7 @@ public class DQ_Skillmacros {
 
                     TacosSingleMacro tsm = new TacosSingleMacro();
                     tsm.setName(name);
-                    tsm.setShout(shout);
+                    tsm.setMute((shout != 0));
                     tsm.setSkill1(skill_id_1);
                     tsm.setSkill2(skill_id_2);
                     tsm.setSkill3(skill_id_3);
@@ -78,7 +78,7 @@ public class DQ_Skillmacros {
                     ps.setInt(3, macro.getSkill2());
                     ps.setInt(4, macro.getSkill3());
                     ps.setString(5, macro.getName());
-                    ps.setInt(6, macro.getShout());
+                    ps.setInt(6, macro.isMute() ? 1 : 0);
                     ps.setInt(7, index);
                     ps.execute();
                 }

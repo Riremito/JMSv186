@@ -41,7 +41,7 @@ public class ResCFuncKeyMappedMan {
         sp.Encode1(chr.getMacros().size());
         for (TacosSingleMacro macro : chr.getMacros().values()) {
             sp.EncodeStr(macro.getName()); // sName
-            sp.Encode1(macro.getShout()); // bMute
+            sp.Encode1(macro.isMute() ? 1 : 0); // bMute
             sp.Encode4(macro.getSkill1()); // aSkill[0]
             sp.Encode4(macro.getSkill2()); // aSkill[1]
             sp.Encode4(macro.getSkill3()); // aSkill[2]
