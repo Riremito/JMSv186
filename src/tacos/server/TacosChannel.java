@@ -39,7 +39,6 @@ import tacos.network.PacketHandler_Game;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.property.Property_Dummy_World;
-import tacos.server.map.MasterMonster;
 import tacos.server.map.TacosNPCSpawnPoint;
 import tacos.server.map.TacosReactorSpawnPoint;
 import tacos.server.map.TacosSpawnPoint;
@@ -144,10 +143,10 @@ public class TacosChannel extends TacosServer {
                 map.addReactor(reactor);
             }
         }
+        // master monster.
+        map.addMasterMonster();
         // custom npc.
         CustomMap.addNPCtoMap(map);
-        // master monster.
-        MasterMonster.addAreaBossSpawn(map);
         this.maps.put(map_id, map);
         return map;
     }

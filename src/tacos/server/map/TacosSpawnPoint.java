@@ -95,9 +95,6 @@ public class TacosSpawnPoint {
         this.monster.setHomeFoothold(this.fh);
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
-
-        //chr.SendPacket(ResCMobPool.MobEnterField(this.monster));
-        //chr.SendPacket(ResCMobPool.MobChangeController(this.monster, false));
         this.last_regen_time = System.currentTimeMillis();
         return this.monster;
     }
@@ -113,9 +110,5 @@ public class TacosSpawnPoint {
 
     public long getLastRegenTime() {
         return this.last_regen_time;
-    }
-
-    public String getInfo() {
-        return String.format("%3d : id=%8d, f=%d, fh=%3d, xy=%5d,%5d, time=%d", node_id, id, f, fh, x, y, mobTime);
     }
 }

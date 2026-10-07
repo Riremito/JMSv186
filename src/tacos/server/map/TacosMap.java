@@ -887,6 +887,16 @@ public class TacosMap extends TacosMapData {
                 }
             }
         }
+        // remove from boss spawn point.
+        for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
+            MapleMonster monster = bsp.getMonster();
+            if (monster != null) {
+                if (monster.getObjectId() == object_id) {
+                    bsp.removeMonster();
+                    return true;
+                }
+            }
+        }
         // no spwan point.
         return true;
     }
@@ -1016,6 +1026,20 @@ public class TacosMap extends TacosMapData {
         addMonster(monster);
         broadcastPacket(ResCMobPool.MobEnterField(monster));
         setMobOwner(monster);
+    }
+
+    // master monster.
+    private final ArrayList<TacosBossSpawnPoint> boss_spawn_point = new ArrayList<>();
+
+    public ArrayList<TacosBossSpawnPoint> getBossSpawnPoint() {
+        return this.boss_spawn_point;
+    }
+
+    public void addMasterMonster() {
+        TacosBossSpawnPoint bsp = TacosBossSpawnPoint.getMasterMonster((MapleMap) this);
+        if (bsp != null) {
+            getBossSpawnPoint().add(bsp);
+        }
     }
 
     // npc.
@@ -1568,6 +1592,7 @@ public class TacosMap extends TacosMapData {
     private final TacosTask task_map = new TacosTask();
     private final TacosTask task_drop_removal = new TacosTask();
     private final TacosTask task_mob_regen = new TacosTask();
+    private final TacosTask task_boss_regen = new TacosTask();
     private final TacosTask task_reactor_regen = new TacosTask();
     private final TacosTask task_mist = new TacosTask();
 
@@ -1605,6 +1630,28 @@ public class TacosMap extends TacosMapData {
                     MapleMonster monster = sp.regen((MapleMap) this);
                     if (monster != null) {
                         addMonster(monster);
+                        broadcastPacket(ResCMobPool.MobEnterField(monster));
+                        monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
+                        monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
+
+                        int number = getSplit().find(monster.getPosition());
+                        MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+                        if (area_owner != null) {
+                            monster.setOwnerId(area_owner.getId());
+                            area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                        }
+                    }
+                }
+            }
+        }
+        // master monster.
+        if (this.task_boss_regen.check(time_current, 60000)) {
+            for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
+                if (bsp.getLastRegenTime() + bsp.getMobTime() <= time_current) {
+                    MapleMonster monster = bsp.regen((MapleMap) this);
+                    if (monster != null) {
+                        addMonster(monster);
+                        sendText(bsp.getMessage());
                         broadcastPacket(ResCMobPool.MobEnterField(monster));
                         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());

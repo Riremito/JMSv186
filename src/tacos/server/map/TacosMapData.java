@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 import tacos.wz.MapleData;
 import odin.server.maps.MapleNodes;
 import tacos.constants.TacosConstants;
@@ -52,6 +53,7 @@ public class TacosMapData {
         UNKNOWN;
     }
 
+    @Getter
     protected class MapWall {
 
         private int left;
@@ -60,37 +62,19 @@ public class TacosMapData {
         private int bottom;
     }
 
+    @Getter
     protected class MapScreen {
 
         private int width;
         private int height;
-
-        protected int getWidth() {
-            return this.width;
-        }
-
-        protected int getHeight() {
-            return this.height;
-        }
     }
 
+    @Getter
     public class MapSplit {
 
         private int col;
         private int row;
         private int total;
-
-        public int getCol() {
-            return this.col;
-        }
-
-        public int getRow() {
-            return this.row;
-        }
-
-        public int getTotal() {
-            return this.total;
-        }
 
         public int find(Point position) {
             return find(position.x, position.y);
@@ -99,7 +83,11 @@ public class TacosMapData {
         public int find(int x, int y) {
             int area_col = (x - wall.left) / SPLIT_WIDTH;
             int area_row = (y - wall.top) / SPLIT_HEIGHT;
-            return (area_row * this.col) + area_col;
+            int area = (area_row * this.col) + area_col;
+            if (area <= -1 || this.total <= area) {
+                area = 0;
+            }
+            return area;
         }
 
         public ArrayList<MapSplitState> getArea(Point pos, MapSplitState state) {
@@ -220,6 +208,10 @@ public class TacosMapData {
 
     public LinkedHashMap<Integer, TacosFoothold> getFootholds() {
         return this.footholds;
+    }
+
+    public TacosFoothold findBelow(int x, int y) {
+        return findBelow(new Point(x, y));
     }
 
     public TacosFoothold findBelow(Point pt) {
