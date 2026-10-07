@@ -41,26 +41,36 @@ public class TacosBossSpawnPoint {
     private MapleMonster monster = null;
     private long lastRegenTime = 0;
 
+    private Point getRandomXY(MapleMap map) {
+        int x = map.wall.getLeft() + Randomizer.nextInt(map.screen.getWidth());
+        int y = map.wall.getTop() + Randomizer.nextInt(map.screen.getHeight());
+
+        return new Point(x, y);
+    }
+
+    private int findFootholdId(MapleMap map, Point pos) {
+        TacosFoothold foothold = map.findBelow(pos);
+
+        return (foothold != null) ? foothold.getId() : 0;
+    }
+
     public MapleMonster regen(MapleMap map) {
         if (this.monster != null) {
             return null;
         }
 
-        int x = map.wall.getLeft() + Randomizer.nextInt(map.screen.getWidth());
-        int y = map.wall.getTop() + Randomizer.nextInt(map.screen.getHeight());
-        TacosFoothold foothold = map.findBelow(x, y);
-        int foothold_id = (foothold != null) ? foothold.getId() : 0;
-
-        if (foothold_id == 0) {
-            DebugLogger.DebugLog("fh, x, y : " + foothold_id + "," + x + "," + y);
+        int sp_count = map.getMonsterSpawnPoint().size();
+        if (sp_count == 0) {
+            return null;
         }
 
+        TacosSpawnPoint target_sp = map.getMonsterSpawnPoint().get(Randomizer.nextInt(sp_count));
         this.monster = MapleLifeFactory.getMonster(this.id);
         this.monster.setObjectId();
         this.monster.setMap(map); // TODO : remove from monster object.
-        this.monster.setPosition(new Point(x, y));
-        this.monster.setFootholdId(foothold_id);
-        this.monster.setHomeFoothold(foothold_id);
+        this.monster.setPosition(target_sp.getX(), target_sp.getY());
+        this.monster.setFootholdId(target_sp.getFh());
+        this.monster.setHomeFoothold(target_sp.getFh());
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
         this.lastRegenTime = System.currentTimeMillis();

@@ -1645,7 +1645,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // master monster.
-        if (this.task_boss_regen.check(time_current, 60000)) {
+        if (this.task_boss_regen.check(time_current, 7000)) {
             for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
                 if (bsp.getLastRegenTime() + bsp.getMobTime() <= time_current) {
                     MapleMonster monster = bsp.regen((MapleMap) this);

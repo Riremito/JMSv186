@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import lombok.Data;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
@@ -32,6 +33,7 @@ import tacos.wz.WzDataTool;
  *
  * @author Riremito
  */
+@Data
 public class TacosSpawnPoint {
 
     private int node_id;
@@ -71,16 +73,8 @@ public class TacosSpawnPoint {
         return true;
     }
 
-    public int getId() {
-        return this.id;
-    }
-
-    public int getMobTime() {
-        return this.mobTime;
-    }
-
     private MapleMonster monster = null;
-    private long last_regen_time = 0;
+    private long lastRegenTime = 0;
 
     public MapleMonster regen(MapleMap map) {
         if (this.monster != null) {
@@ -95,20 +89,16 @@ public class TacosSpawnPoint {
         this.monster.setHomeFoothold(this.fh);
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
-        this.last_regen_time = System.currentTimeMillis();
-        return this.monster;
-    }
-
-    public MapleMonster getMonster() {
+        this.lastRegenTime = System.currentTimeMillis();
         return this.monster;
     }
 
     public void removeMonster() {
         this.monster = null;
-        this.last_regen_time = System.currentTimeMillis();
+        this.lastRegenTime = System.currentTimeMillis();
     }
 
     public long getLastRegenTime() {
-        return this.last_regen_time;
+        return this.lastRegenTime;
     }
 }
