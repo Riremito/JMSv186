@@ -40,6 +40,7 @@ import tacos.debug.DebugManTest;
 import tacos.debug.DebugMan_CC;
 import tacos.debug.DebugMan_NM;
 import tacos.debug.DebugMan_Warp;
+import tacos.debug.DebugMan_WarpBoss;
 import tacos.debug.DebugShop;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
@@ -376,6 +377,12 @@ public class TacosCommandDebug {
 
                 chr.DebugMsg("townmap : " + town_map_ids.size());
                 DebugMan_Warp dm = new DebugMan_Warp(town_map_ids);
+                dm.start(chr);
+                return true;
+            }
+            case "/bossmap" -> {
+                DebugMan_WarpBoss dm = new DebugMan_WarpBoss();
+                dm.setMasterMonsters();
                 dm.start(chr);
                 return true;
             }

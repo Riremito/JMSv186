@@ -58,19 +58,28 @@ public class TacosBossSpawnPoint {
         if (this.monster != null) {
             return null;
         }
+        this.monster = MapleLifeFactory.getMonster(this.id);
 
         int sp_count = map.getMonsterSpawnPoint().size();
-        if (sp_count == 0) {
-            return null;
+        if (sp_count != 0) {
+            TacosSpawnPoint target_sp = map.getMonsterSpawnPoint().get(Randomizer.nextInt(sp_count));
+            this.monster.setPosition(target_sp.getX(), target_sp.getY());
+            this.monster.setFootholdId(target_sp.getFh());
+            this.monster.setHomeFoothold(target_sp.getFh());
+        } else {
+            Point pos = getRandomXY(map);
+            int foothold_id = findFootholdId(map, pos);
+            if (foothold_id == 0) {
+                pos.setLocation(0, 0);
+                foothold_id = findFootholdId(map, pos);
+            }
+            this.monster.setPosition(pos);
+            this.monster.setFootholdId(foothold_id);
+            this.monster.setHomeFoothold(foothold_id);
         }
 
-        TacosSpawnPoint target_sp = map.getMonsterSpawnPoint().get(Randomizer.nextInt(sp_count));
-        this.monster = MapleLifeFactory.getMonster(this.id);
         this.monster.setObjectId();
         this.monster.setMap(map); // TODO : remove from monster object.
-        this.monster.setPosition(target_sp.getX(), target_sp.getY());
-        this.monster.setFootholdId(target_sp.getFh());
-        this.monster.setHomeFoothold(target_sp.getFh());
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
         this.lastRegenTime = System.currentTimeMillis();
