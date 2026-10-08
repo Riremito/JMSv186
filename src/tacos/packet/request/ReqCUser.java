@@ -71,7 +71,6 @@ import odin.server.Randomizer;
 import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
-import odin.server.life.MobAttackInfo;
 import odin.server.life.MobSkill;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
@@ -114,6 +113,7 @@ import tacos.server.map.TacosNpcShop;
 import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.shared.TacosShared;
+import tacos.wz.MobWz.MobAttackInfo;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
@@ -1193,13 +1193,13 @@ public class ReqCUser {
                 return true;
             }
             // mob skill.
-            MobSkill mob_skill = WzXML.SKILL.getMobSkillData(attackInfo.getDiseaseSkill(), attackInfo.getDiseaseLevel());
+            MobSkill mob_skill = WzXML.SKILL.getMobSkillData(attackInfo.getDisease(), attackInfo.getLevel());
             if (mob_skill != null) {
                 if (uhd.nDamage != 0) {
                     mob_skill.applyEffect(chr, monster, false);
                 }
             }
-            monster.setMp(monster.getMp() - attackInfo.getMpCon());
+            monster.setMp(monster.getMp() - attackInfo.getConMP());
         }
         if (0 < uhd.nReflect) {
             MobSkill skill = WzXML.SKILL.getMobSkillData(0, uhd.nReflect);

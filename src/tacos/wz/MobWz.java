@@ -25,13 +25,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import odin.server.life.MapleMonster;
-import odin.server.life.MobAttackInfo;
 import odin.server.life.MapleMonsterStats;
 import odin.server.life.Element;
 import odin.server.life.ElementalEffectiveness;
 import odin.server.life.BanishInfo;
 import java.util.LinkedList;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import lombok.Getter;
 
 /**
  *
@@ -205,6 +205,16 @@ public class MobWz extends WzXML {
         return stats;
     }
 
+    @Getter
+    public class MobAttackInfo {
+
+        private boolean deadlyAttack;
+        private int mpBurn;
+        private int conMP;
+        private int disease;
+        private int level;
+    }
+
     private Map<SimpleImmutableEntry<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
 
     public MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
@@ -226,11 +236,11 @@ public class MobWz extends WzXML {
             }
             MapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
             if (attackData != null) {
-                ret.setDeadlyAttack(attackData.getChildByPath("deadlyAttack") != null);
-                ret.setMpBurn(WzDataTool.getIntPath("mpBurn", attackData, 0));
-                ret.setDiseaseSkill(WzDataTool.getIntPath("disease", attackData, 0));
-                ret.setDiseaseLevel(WzDataTool.getIntPath("level", attackData, 0));
-                ret.setMpCon(WzDataTool.getIntPath("conMP", attackData, 0));
+                ret.deadlyAttack = attackData.getChildByPath("deadlyAttack") != null;
+                ret.mpBurn = WzDataTool.getIntPath("mpBurn", attackData, 0);
+                ret.disease = WzDataTool.getIntPath("disease", attackData, 0);
+                ret.level = WzDataTool.getIntPath("level", attackData, 0);
+                ret.conMP = WzDataTool.getIntPath("conMP", attackData, 0);
             }
         }
         map_mobAttacks.put(new SimpleImmutableEntry<>(mob.getId(), attack), ret);
