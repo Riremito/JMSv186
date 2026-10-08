@@ -46,6 +46,7 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.server.TacosChannel;
+import tacos.server.map.TacosBossSpawnPoint;
 import tacos.server.map.TacosFoothold;
 import tacos.server.map.TacosPortal;
 import tacos.wz.WzDataStorage;
@@ -395,6 +396,25 @@ public class TacosCommandDebug {
                 int map_id = map.getId();
                 chr.getChannelServer().removeMap(map_id);
                 chr.changeMapById(map_id);
+                return true;
+            }
+            case "/addmm" -> {
+                if (!dcmd.check(1)) {
+                    return true;
+                }
+
+                int mob_id = dcmd.getInt(1);
+
+                if (!WzDataStorage.MOB.check(mob_id)) {
+                    DebugLogger.ErrorLog("getMasterMonster : invalid mob id, " + mob_id);
+                    return true;
+                }
+
+                TacosBossSpawnPoint bsp = new TacosBossSpawnPoint();
+
+                bsp.setId(mob_id);
+                bsp.setMobTime(1000);
+                map.getBossSpawnPoint().add(bsp);
                 return true;
             }
             // others.

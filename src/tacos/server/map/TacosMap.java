@@ -346,11 +346,12 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userEnterField(MapleCharacter chr) {
-        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition().x, chr.getPosition().y, MapSplitState.ACTIVE);
+        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition(), MapSplitState.ACTIVE);
 
         addPlayer(chr); // object id.
         updateAreaOnEnter(chr.getId(), chr.getPosition().x, chr.getPosition().y);
 
+        checkMasterMonsterTime(chr);
         // no split.
         sendChangeBGM(chr);
         if (!getNodeInfo().getPlatforms().isEmpty()) {
@@ -372,7 +373,7 @@ public class TacosMap extends TacosMapData {
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            int player_number = split.find(player.getPosition());
             if (split.getTotal() <= player_number) {
                 continue;
             }
@@ -398,7 +399,7 @@ public class TacosMap extends TacosMapData {
         }
         // npc
         for (MapleNPC npc : this.npcs.values()) {
-            int number = split.find(npc.getPosition().x, npc.getPosition().y);
+            int number = split.find(npc.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -420,7 +421,7 @@ public class TacosMap extends TacosMapData {
                     continue;
                 }
             }
-            int number = split.find(drop.getPosition().x, drop.getPosition().y);
+            int number = split.find(drop.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -430,7 +431,7 @@ public class TacosMap extends TacosMapData {
         }
         // mist
         for (MapleMist mist : this.mists.values()) {
-            int number = split.find(mist.getPosition().x, mist.getPosition().y);
+            int number = split.find(mist.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -445,7 +446,7 @@ public class TacosMap extends TacosMapData {
         // mechanic gate
         // pinkbean cake event portal
         for (TacosDynamicPortal instance_portal : this.dynamicPortals.values()) {
-            int number = split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            int number = split.find(instance_portal.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -460,7 +461,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userLeaveField(MapleCharacter chr) {
-        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition().x, chr.getPosition().y, MapSplitState.ACTIVE);
+        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition(), MapSplitState.ACTIVE);
         removePlayer(chr.getObjectId());
         updateAreaOnLeave(chr.getId(), chr.getPosition().x, chr.getPosition().y);
 
@@ -469,7 +470,7 @@ public class TacosMap extends TacosMapData {
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            int player_number = split.find(player.getPosition());
             if (split.getTotal() <= player_number) {
                 continue;
             }
@@ -501,7 +502,7 @@ public class TacosMap extends TacosMapData {
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = split.find(player.getPosition().x, player.getPosition().y);
+            int player_number = split.find(player.getPosition());
             if (split.getTotal() <= player_number) {
                 continue;
             }
@@ -531,7 +532,7 @@ public class TacosMap extends TacosMapData {
         }
         // mob
         for (MapleMonster monster : this.monsters.values()) {
-            int number = split.find(monster.getPosition().x, monster.getPosition().y);
+            int number = split.find(monster.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -555,7 +556,7 @@ public class TacosMap extends TacosMapData {
         }
         // npc
         for (MapleNPC npc : this.npcs.values()) {
-            int number = split.find(npc.getPosition().x, npc.getPosition().y);
+            int number = split.find(npc.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -580,7 +581,7 @@ public class TacosMap extends TacosMapData {
                     continue;
                 }
             }
-            int number = split.find(drop.getPosition().x, drop.getPosition().y);
+            int number = split.find(drop.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -593,7 +594,7 @@ public class TacosMap extends TacosMapData {
         }
         // mist
         for (MapleMist mist : this.mists.values()) {
-            int number = split.find(mist.getPosition().x, mist.getPosition().y);
+            int number = split.find(mist.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -611,7 +612,7 @@ public class TacosMap extends TacosMapData {
         // mechanic gate
         // pinkbean cake event portal
         for (TacosDynamicPortal instance_portal : this.dynamicPortals.values()) {
-            int number = split.find(instance_portal.getPosition().x, instance_portal.getPosition().y);
+            int number = split.find(instance_portal.getPosition());
             if (split.getTotal() <= number) {
                 continue;
             }
@@ -892,7 +893,7 @@ public class TacosMap extends TacosMapData {
             MapleMonster monster = bsp.getMonster();
             if (monster != null) {
                 if (monster.getObjectId() == object_id) {
-                    bsp.removeMonster();
+                    bsp.removeMonster(this);
                     return true;
                 }
             }
@@ -1040,6 +1041,33 @@ public class TacosMap extends TacosMapData {
         if (bsp != null) {
             getBossSpawnPoint().add(bsp);
         }
+    }
+
+    private boolean checkMasterMonsterTime(TacosCharacter chr) {
+        if (getBossSpawnPoint().isEmpty()) {
+            return false;
+        }
+        TacosBossSpawnPoint bsp = getBossSpawnPoint().get(0);
+        if (bsp == null) {
+            return false;
+        }
+        if (bsp.getMonster() != null) {
+            return false;
+        }
+
+        long next_time = 0;
+        long current_time = System.currentTimeMillis();
+        if (bsp.getLastRegenTime() != 0) {
+            next_time = bsp.getLastRegenTime() + bsp.getMobTime();
+            if (current_time < next_time) {
+                next_time -= current_time;
+            } else {
+                next_time = 0;
+            }
+        }
+
+        chr.DebugMsg("Master Monster : " + String.format("%.1f", (double) next_time / 1000 / 60) + " minutes.");
+        return true;
     }
 
     // npc.
@@ -1651,7 +1679,9 @@ public class TacosMap extends TacosMapData {
                     MapleMonster monster = bsp.regen((MapleMap) this);
                     if (monster != null) {
                         addMonster(monster);
-                        sendText(bsp.getMessage());
+                        if (!bsp.getMessage().isEmpty()) {
+                            sendText(bsp.getMessage());
+                        }
                         broadcastPacket(ResCMobPool.MobEnterField(monster));
                         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());

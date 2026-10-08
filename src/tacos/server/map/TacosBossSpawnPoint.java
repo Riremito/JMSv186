@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import lombok.Data;
 import odin.server.Randomizer;
 import odin.server.life.MapleLifeFactory;
@@ -26,6 +27,7 @@ import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
+import tacos.server.TacosWorld;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -37,9 +39,10 @@ public class TacosBossSpawnPoint {
 
     private int id;
     private int mobTime;
-    private String message;
+    private String message = "";
     private MapleMonster monster = null;
     private long lastRegenTime = 0;
+    private ArrayList<Integer> sharedMapIds = new ArrayList<>();
 
     private Point getRandomXY(MapleMap map) {
         int x = map.wall.getLeft() + Randomizer.nextInt(map.screen.getWidth());
@@ -83,12 +86,28 @@ public class TacosBossSpawnPoint {
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
         this.lastRegenTime = System.currentTimeMillis();
+        updateSharedMap(map, this.lastRegenTime);
         return this.monster;
     }
 
-    public void removeMonster() {
+    public void removeMonster(TacosMap map) {
         this.monster = null;
         this.lastRegenTime = System.currentTimeMillis();
+        updateSharedMap(map, this.lastRegenTime);
+    }
+
+    private void updateSharedMap(TacosMap map, long current_time) {
+        for (int shared_map_id : this.sharedMapIds) {
+            if (map.getId() != shared_map_id) {
+                MapleMap shared_map = TacosWorld.find(0).getChannelServer(map.getChannel()).findMap(shared_map_id);
+                if (shared_map != null && !shared_map.getBossSpawnPoint().isEmpty()) {
+                    TacosBossSpawnPoint shared_bsp = shared_map.getBossSpawnPoint().get(0);
+                    if (shared_bsp != null) {
+                        shared_bsp.lastRegenTime = current_time;
+                    }
+                }
+            }
+        }
     }
 
     // master monster data.
@@ -125,16 +144,23 @@ public class TacosBossSpawnPoint {
                 bsp.id = 5220002;
                 bsp.mobTime = 1800 * 1000;
                 bsp.message = "パウストが出ました。";
+                bsp.sharedMapIds.add(100040105);
+                bsp.sharedMapIds.add(100040106);
             }
             case 220050000, 220050100, 220050200 -> {
                 bsp.id = 5220003;
                 bsp.mobTime = 1500 * 1000;
                 bsp.message = "タイマーが出ました。";
+                bsp.sharedMapIds.add(220050000);
+                bsp.sharedMapIds.add(220050100);
+                bsp.sharedMapIds.add(220050200);
             }
             case 107000300, 107000400 -> {
                 bsp.id = 6220000;
                 bsp.mobTime = 1800 * 1000;
                 bsp.message = "ダイルが出ました。";
+                bsp.sharedMapIds.add(107000300);
+                bsp.sharedMapIds.add(107000400);
             }
             case 221040301 -> {
                 bsp.id = 6220001;
@@ -155,6 +181,8 @@ public class TacosBossSpawnPoint {
                 bsp.id = 7220002;
                 bsp.mobTime = 1800 * 1000;
                 bsp.message = "気持ち悪い猫の鳴き声が聞えます。";
+                bsp.sharedMapIds.add(250010503);
+                bsp.sharedMapIds.add(250010504);
             }
             case 200010300 -> {
                 bsp.id = 8220000;
