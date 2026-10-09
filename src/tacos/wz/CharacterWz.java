@@ -20,9 +20,6 @@ package tacos.wz;
 
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
-import odin.provider.IMapleData;
-import odin.provider.IMapleDataDirectoryEntry;
-import odin.provider.IMapleDataEntity;
 
 /**
  *
@@ -34,17 +31,17 @@ public class CharacterWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Character" : "Character.wz");
     }
 
-    public IMapleData getItemData(int id) {
+    public MapleData getItemData(int id) {
         int item_type = id / 1000000;
         if (2 <= item_type) {
             return null;
         }
 
         String target_img_name = String.format("%08d.img", id);
-        for (IMapleDataDirectoryEntry mdde : rootDirectory.getSubDirectories()) {
-            for (IMapleDataEntity mdfe : mdde.getFiles()) {
+        for (MapleDataDirectoryEntry mdde : rootDirectory.getSubDirectories()) {
+            for (MapleDataEntity mdfe : mdde.getFiles()) {
                 if (mdfe.getName().equals(target_img_name)) {
-                    IMapleData md_equip = getData(mdde.getName() + "/" + mdfe.getName());
+                    MapleData md_equip = getData(mdde.getName() + "/" + mdfe.getName());
                     if (md_equip == null) {
                         DebugLogger.XmlLog("getItemData : invalid equip data, " + id);
                         return null;

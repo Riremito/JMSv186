@@ -22,17 +22,12 @@ package odin.handling.channel;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Guilds;
 
 public class MapleGuildRanking {
 
     private static MapleGuildRanking instance = new MapleGuildRanking();
-    private List<GuildRankingInfo> ranks = new LinkedList<GuildRankingInfo>();
+    private List<GuildRankingInfo> ranks = new LinkedList<>();
 
     public static MapleGuildRanking getInstance() {
         return instance;
@@ -47,34 +42,17 @@ public class MapleGuildRanking {
 
     private void reload() {
         ranks.clear();
-        try {
-            Connection con = DatabaseConnection.getConnection();
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM guilds ORDER BY `GP` DESC LIMIT 50");
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                final GuildRankingInfo rank = new GuildRankingInfo(
-                        rs.getString("name"),
-                        rs.getInt("GP"),
-                        rs.getInt("logo"),
-                        rs.getInt("logoColor"),
-                        rs.getInt("logoBG"),
-                        rs.getInt("logoBGColor"));
-
-                ranks.add(rank);
-            }
-            ps.close();
-            rs.close();
-        } catch (SQLException e) {
-            System.err.println("Error handling guildRanking");
-            e.printStackTrace();
-        }
+        ranks.addAll(DQ_Guilds.getTopByGP(50));
     }
 
     public static class GuildRankingInfo {
 
         private String name;
-        private int gp, logo, logocolor, logobg, logobgcolor;
+        private int gp;
+        private int logo;
+        private int logocolor;
+        private int logobg;
+        private int logobgcolor;
 
         public GuildRankingInfo(String name, int gp, int logo, int logocolor, int logobg, int logobgcolor) {
             this.name = name;

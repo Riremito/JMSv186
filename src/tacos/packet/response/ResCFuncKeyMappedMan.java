@@ -19,11 +19,11 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.SkillMacro;
+import tacos.client.TacosSingleMacro;
 import tacos.config.Region;
 import java.util.Map;
 import tacos.config.Config;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 
@@ -33,40 +33,24 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCFuncKeyMappedMan {
 
-    /*
-        @007D : LP_MacroSysDataInit
-        @017C : LP_FuncKeyMappedInit
-        @017D : LP_PetConsumeItemInit
-        @017E : LP_PetConsumeMPItemInit
-     */
-    public static ServerPacket getMacros(MapleCharacter chr) {
+    // CWvsContext::OnMacroSysDataInit
+    public static ServerPacket MacroSysDataInit(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MacroSysDataInit);
 
-        SkillMacro[] macros = chr.getMacros();
-        int macro_count = 0;
-        for (SkillMacro macro : macros) {
-            if (macro != null) {
-                macro_count++;
-            }
-        }
-
-        sp.Encode1(macro_count);
-
-        if (0 < macro_count) {
-            for (SkillMacro macro : macros) {
-                if (macro != null) {
-                    sp.EncodeStr(macro.getName());
-                    sp.Encode1(macro.getShout());
-                    sp.Encode4(macro.getSkill1());
-                    sp.Encode4(macro.getSkill2());
-                    sp.Encode4(macro.getSkill3());
-                }
-            }
+        // MACROSYSDATA::Decode
+        sp.Encode1(chr.getMacros().size());
+        for (TacosSingleMacro macro : chr.getMacros().values()) {
+            sp.EncodeStr(macro.getName()); // sName
+            sp.Encode1(macro.isMute() ? 1 : 0); // bMute
+            sp.Encode4(macro.getSkill1()); // aSkill[0]
+            sp.Encode4(macro.getSkill2()); // aSkill[1]
+            sp.Encode4(macro.getSkill3()); // aSkill[2]
         }
 
         return sp;
     }
 
+    // CFuncKeyMappedMan::OnInit
     public static ServerPacket FuncKeyMappedInit(MapleCharacter chr, boolean keymap_reset) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FuncKeyMappedInit);
 
@@ -84,8 +68,8 @@ public class ResCFuncKeyMappedMan {
             }
 
             for (int i = 0; i < KEY_MAP_SIZE; i++) {
-                Map<Integer, OdinPair<Byte, Integer>> keymap = chr.getKeyLayout().get();
-                OdinPair<Byte, Integer> binding = keymap.get(i);
+                Map<Integer, SimpleImmutableEntry<Byte, Integer>> keymap = chr.getKeyLayout().get();
+                SimpleImmutableEntry<Byte, Integer> binding = keymap.get(i);
                 if (binding == null) {
                     sp.Encode1(0);
                     sp.Encode4(0);
@@ -99,28 +83,36 @@ public class ResCFuncKeyMappedMan {
         return sp;
     }
 
-    public static ServerPacket getPetAutoHPMP_JMS_v131(MapleCharacter chr) {
+    // CFuncKeyMappedMan::OnPetConsumeItemInit
+    public static ServerPacket PetConsumeItemInit(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeItemInit);
-        sp.Encode4(chr.getPetAutoHPItem());
-        sp.Encode4(chr.getPetAutoMPItem());
-        return sp;
-    }
 
-    public static ServerPacket getPetAutoHP(MapleCharacter chr) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeItemInit);
         sp.Encode4(chr.getPetAutoHPItem());
         return sp;
     }
 
-    public static ServerPacket getPetAutoMP(MapleCharacter chr) {
+    // CFuncKeyMappedMan::OnPetConsumeMPItemInit
+    public static ServerPacket PetConsumeMPItemInit(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeMPItemInit);
+
         sp.Encode4(chr.getPetAutoMPItem());
         return sp;
     }
 
-    public static ServerPacket getPetAutoCure(MapleCharacter chr) {
+    // JMS
+    public static ServerPacket PetConsumeCureItemInit(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PetConsumeCureItemInit);
+
         sp.Encode4(chr.getPetAutoCureItem());
+        return sp;
+    }
+
+    // CFuncKeyMappedMan::OnPetConsumeItemInit, JMS131
+    public static ServerPacket PetConsumeItemInit_JMS131(MapleCharacter chr) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeItemInit);
+
+        sp.Encode4(chr.getPetAutoHPItem());
+        sp.Encode4(chr.getPetAutoMPItem());
         return sp;
     }
 }

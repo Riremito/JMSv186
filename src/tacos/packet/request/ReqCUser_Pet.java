@@ -19,8 +19,8 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
-import odin.client.inventory.IItem;
+import tacos.client.TacosClient;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
@@ -34,14 +34,13 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObjectType;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
@@ -55,8 +54,8 @@ public class ReqCUser_Pet {
     private static final int EXCEPTION_LIST_MESO = 0x7FFFFFFF;
 
     // CUserPool::OnUserCommonPacket
-    public static boolean OnPetPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPetPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -73,7 +72,7 @@ public class ReqCUser_Pet {
             pet = chr.getPetByUniqueId(pet_uid);
         } else {
             int pet_index = cp.Decode4();
-            pet = chr.getPet(pet_index);
+            pet = chr.getPetByIndex(pet_index);
         }
 
         if (pet == null) {
@@ -83,11 +82,11 @@ public class ReqCUser_Pet {
 
         switch (header) {
             case CP_PetMove: {
-                OnPetMove(map, chr, pet, cp);
+                OnPetMove(chr, map, pet, cp);
                 return true;
             }
             case CP_PetAction: {
-                OnPetAction(map, chr, pet, cp);
+                OnPetAction(chr, map, pet, cp);
                 return true;
             }
             // PetCommand
@@ -117,14 +116,14 @@ public class ReqCUser_Pet {
     }
 
     public static boolean OnPetFood(MapleCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
-        MaplePet pet = chr.getPet(0);
+        MaplePet pet = chr.getPetByIndex(0);
         MapleMap map = chr.getMap();
 
         if (pet == null || map == null) {
             return false;
         }
 
-        IItem toUse = chr.getInventory(item_type).getItem(item_slot);
+        Item toUse = chr.getInventory(item_type).getItem(item_slot);
         if (toUse == null || toUse.getItemId() != item_id || toUse.getQuantity() < 1) {
             chr.updateInv();
             return false;
@@ -137,52 +136,50 @@ public class ReqCUser_Pet {
         chr.updateInv();
 
         // 情報更新
-        chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+        chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         // pet level up
         if (pet_previous_level < pet.getLevel()) {
             chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(0));
-            map.broadcastMessage(ResCUserRemote.showPetLevelUp(chr, 0));
+            map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, 0), chr.getId());
         }
         return true;
     }
 
-    public static boolean OnPetMove(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            byte unk = cp.Decode1();
-        }
+    public static boolean OnPetMove(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
+        byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 302));
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
-            move_path.update(pet);
+            pet.update(move_path);
+            map.splitSendPacket(chr, ResCUser_Pet.PetMove(chr, pet, move_path), chr.getId());
         }
 
-        map.broadcastMessage(chr, ResCUser_Pet.PetMove(chr, pet, move_path), false);
         return true;
     }
 
-    public static boolean OnPetAction(MapleMap map, MapleCharacter chr, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetAction(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
 
-        map.broadcastMessage(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), false);
+        map.splitSendPacket(chr, ResCUser_Pet.PetAction(chr, chr.getPetIndex(pet), nType, nAction, pet_message), chr.getId());
         return true;
     }
 
-    public static void OnPetInteractionRequest(ClientPacket cp, MapleCharacter chr) {
-        final int petIndex = cp.Decode4();
-        /*chr.getPetIndex(slea.readInt());*/
+    public static void OnPetInteractionRequest(MapleCharacter chr, ClientPacket cp) {
+        int petIndex = cp.Decode4();
+
         if (petIndex == -1) {
             return;
         }
-        MaplePet pet = chr.getPet(petIndex);
+        MaplePet pet = chr.getPetByIndex(petIndex);
         if (pet == null) {
             return;
         }
-        //slea.skip(5);
-        cp.DecodeBuffer(5); // ?_?
-        final byte command = cp.Decode1();
-        final PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
+
+        byte[] unk1 = cp.DecodeBuffer(5); // ?_?
+        byte command = cp.Decode1();
+        PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
@@ -195,12 +192,13 @@ public class ReqCUser_Pet {
                 if (newCloseness >= MaplePet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
-                    chr.getMap().broadcastMessage(ResCUserRemote.showPetLevelUp(chr, petIndex));
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
                 }
-                chr.SendPacket(ResWrapper.updatePet(pet, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
-        chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetActionCommand(chr.getId(), command, petIndex, success, false), true);
+
+        chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
     }
 
     public static boolean OnPetDropPickUpRequest(MapleCharacter chr, MaplePet pet, ClientPacket cp) {
@@ -219,7 +217,7 @@ public class ReqCUser_Pet {
             int drop_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
-        MapleMapItem mapitem = (MapleMapItem) chr.getMap().getMapObject(drop_id, MapleMapObjectType.ITEM);
+        MapleMapItem mapitem = chr.getMap().getDropByOid(drop_id);
         if (mapitem == null) {
             return false;
         }
@@ -239,31 +237,31 @@ public class ReqCUser_Pet {
     }
 
     public static void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {
-        MapleClient client = chr.getClient();
-        if (mapitem.getOwner() != chr.getId() && mapitem.isPlayerDrop()) {
+        TacosClient client = chr.getClient();
+        if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
-        if (mapitem.getOwner() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
             chr.updateInv();
             return;
         }
-        if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwner() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwner()) == null)) {
+        if (!mapitem.isPlayerDrop() && mapitem.getDropType() == 1 && mapitem.getOwnerId() != chr.getId() && (chr.getParty() == null || chr.getParty().getMemberById(mapitem.getOwnerId()) == null)) {
             chr.updateInv();
             return;
         }
 
         if (mapitem.getMeso() > 0) {
-            if (chr.getParty() != null && mapitem.getOwner() != chr.getId()) {
+            if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
                 final List<MapleCharacter> toGive = new LinkedList<>();
                 final int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter m = chr.getMap().getCharacterById(z.getId());
-                    if (m != null && m.getId() != chr.getId()) {
-                        toGive.add(m);
+                    MapleCharacter player = chr.getMap().getPlayerById(z.getId());
+                    if (player != null && player.getId() != chr.getId()) {
+                        toGive.add(player);
                     }
                 }
-                for (final MapleCharacter m : toGive) {
-                    m.gainMeso(splitMeso / toGive.size() + (m.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true);
+                for (final MapleCharacter player : toGive) {
+                    player.gainMeso(splitMeso / toGive.size() + (player.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true);
                 }
                 chr.gainMeso(mapitem.getMeso() - splitMeso, true);
             } else {
@@ -278,7 +276,7 @@ public class ReqCUser_Pet {
             if (ReqCDropPool.useDropItem(chr, mapitem.getItemId())) {
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             } else if (MapleInventoryManipulator.checkSpace(client, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, mapitem.getDropper() instanceof MapleMonster);
+                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, !mapitem.isPlayerDrop());
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             }
         }

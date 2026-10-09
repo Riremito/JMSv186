@@ -20,15 +20,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.shops;
 
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 
 public class MaplePlayerShopItem {
 
-    public IItem item;
+    public Item item;
     public short bundles;
     public int price;
 
-    public MaplePlayerShopItem(IItem item, short bundles, int price) {
+    public MaplePlayerShopItem(Item item, short bundles, int price) {
         this.item = item;
         this.bundles = bundles;
         this.price = price;

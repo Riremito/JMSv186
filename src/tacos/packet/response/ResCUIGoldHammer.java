@@ -18,7 +18,7 @@
  */
 package tacos.packet.response;
 
-import odin.client.inventory.IEquip;
+import odin.client.inventory.Equip;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
@@ -30,7 +30,7 @@ import tacos.packet.ops.OpsGoldHammer;
  */
 public class ResCUIGoldHammer {
 
-    public static ServerPacket GoldHammerResult(OpsGoldHammer m_nReturnResult, IEquip equip) {
+    public static ServerPacket GoldHammerResult(OpsGoldHammer m_nReturnResult, Equip equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GoldHammerResult);
 
         sp.Encode1(m_nReturnResult.get()); // m_nReturnResult
@@ -38,9 +38,7 @@ public class ResCUIGoldHammer {
             case GoldHammerRes_Success:
             case GoldHammerRes_Fail: {
                 sp.Encode4(0);
-                if (Region.JMS.check()) {
-                    sp.Encode4(equip.getViciousHammer()); // m_nIUC
-                }
+                sp.Encode4(equip.getViciousHammer(), Region.JMS.check()); // m_nIUC
                 break;
             }
             case GoldHammerRes_Done: {

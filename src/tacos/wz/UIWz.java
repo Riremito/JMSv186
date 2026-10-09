@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import odin.provider.IMapleDataEntity;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 
@@ -42,7 +41,7 @@ public class UIWz extends WzXML {
     private void loadMapLogin() {
         this.map_login = new ArrayList<>();
         Pattern pattern = Pattern.compile("(MapLogin\\d*)\\.img");
-        for (IMapleDataEntity dir : getRootDirectory().getFiles()) {
+        for (MapleDataEntity dir : getRootDirectory().getFiles()) {
             Matcher matcher = pattern.matcher(dir.getName());
             if (matcher.matches()) {
                 this.map_login.add(matcher.group(1));

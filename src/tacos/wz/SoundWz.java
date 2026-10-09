@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import odin.provider.IMapleData;
-import odin.provider.IMapleDataEntity;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 
@@ -43,11 +41,11 @@ public class SoundWz extends WzXML {
     private void loadBGM() {
         this.bgm_path = new ArrayList<>();
         Pattern pattern = Pattern.compile("(Bgm.*)\\.img");
-        for (IMapleDataEntity dir : getRootDirectory().getFiles()) {
+        for (MapleDataEntity dir : getRootDirectory().getFiles()) {
             Matcher matcher = pattern.matcher(dir.getName());
             if (matcher.matches()) {
                 String base = matcher.group(1);
-                for (IMapleData md : getData(dir.getName()).getChildren()) {
+                for (MapleData md : getData(dir.getName()).getChildren()) {
                     this.bgm_path.add(base + "/" + md.getName());
                 }
             }

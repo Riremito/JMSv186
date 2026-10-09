@@ -22,7 +22,6 @@ import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.List;
-import odin.provider.IMapleData;
 
 /**
  *
@@ -34,8 +33,8 @@ public class StringWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/String" : "String.wz");
     }
 
-    private IMapleData checkSubDirectory(IMapleData md, String dir_name) {
-        IMapleData sub_dir = md.getChildByPath(dir_name);
+    private MapleData checkSubDirectory(MapleData md, String dir_name) {
+        MapleData sub_dir = md.getChildByPath(dir_name);
         if (sub_dir != null) {
             DebugLogger.XmlLog("SubDir OK : " + dir_name);
             return sub_dir;
@@ -43,38 +42,141 @@ public class StringWz extends WzXML {
         return md;
     }
 
-    public IMapleData getMob() {
+    public MapleData getItemStringData(final int itemId) {
+        String cat = null;
+        MapleData data;
+
+        if (itemId >= 5010000) {
+            data = getCash();
+        } else if (itemId >= 2000000 && itemId < 3000000) {
+            data = getConsume();
+        } else if ((itemId >= 1142000 && itemId < 1143000) || (itemId >= 1010000 && itemId < 1040000) || (itemId >= 1122000 && itemId < 1123000)) {
+            data = getEqp();
+            cat = "Accessory";
+        } else if (itemId >= 1000000 && itemId < 1010000) {
+            data = getEqp();
+            cat = "Cap";
+        } else if (itemId >= 1102000 && itemId < 1103000) {
+            data = getEqp();
+            cat = "Cape";
+        } else if (itemId >= 1040000 && itemId < 1050000) {
+            data = getEqp();
+            cat = "Coat";
+        } else if (itemId >= 20000 && itemId < 22000) {
+            data = getEqp();
+            cat = "Face";
+        } else if (itemId >= 1080000 && itemId < 1090000) {
+            data = getEqp();
+            cat = "Glove";
+        } else if (itemId >= 30000 && itemId < 32000) {
+            data = getEqp();
+            cat = "Hair";
+        } else if (itemId >= 1050000 && itemId < 1060000) {
+            data = getEqp();
+            cat = "Longcoat";
+        } else if (itemId >= 1060000 && itemId < 1070000) {
+            data = getEqp();
+            cat = "Pants";
+        } else if (itemId >= 1610000 && itemId < 1660000) {
+            data = getEqp();
+            cat = "Mechanic";
+        } else if (itemId >= 1802000 && itemId < 1810000) {
+            data = getEqp();
+            cat = "PetEquip";
+        } else if (itemId >= 1920000 && itemId < 2000000) {
+            data = getEqp();
+            cat = "Dragon";
+        } else if (itemId >= 1112000 && itemId < 1120000) {
+            data = getEqp();
+            cat = "Ring";
+        } else if (itemId >= 1092000 && itemId < 1100000) {
+            data = getEqp();
+            cat = "Shield";
+        } else if (itemId >= 1070000 && itemId < 1080000) {
+            data = getEqp();
+            cat = "Shoes";
+        } else if (itemId >= 1900000 && itemId < 1920000) {
+            data = getEqp();
+            cat = "Taming";
+        } else if (itemId >= 1300000 && itemId < 1800000) {
+            data = getEqp();
+            cat = "Weapon";
+        } else if (itemId >= 4000000 && itemId < 5000000) {
+            data = getEtc();
+        } else if (itemId >= 3000000 && itemId < 4000000) {
+            data = getIns();
+        } else if (itemId >= 5000000 && itemId < 5010000) {
+            data = getPet();
+        } else {
+            return null;
+        }
+        if (cat == null) {
+            return data.getChildByPath(String.valueOf(itemId));
+        } else {
+            return data.getChildByPath(cat + "/" + itemId);
+        }
+    }
+
+    public String loadItemName(final int itemId) {
+        final MapleData strings = getItemStringData(itemId);
+        if (strings == null) {
+            return null;
+        }
+        return WzDataTool.getStringPath("name", strings, null);
+    }
+
+    public String loadItemMsg(final int itemId) {
+        final MapleData strings = getItemStringData(itemId);
+        if (strings == null) {
+            return null;
+        }
+        return WzDataTool.getStringPath("msg", strings, null);
+    }
+
+    public MapleData getMob() {
         return getData("Mob.img");
     }
 
-    public IMapleData getNpc() {
+    public MapleData getNpc() {
         return getData("Npc.img");
     }
 
-    public IMapleData getMap() {
+    public String getNpcName(int npc_id) {
+        return WzDataTool.getStringPath(npc_id + "/name", getNpc(), "MISSINGNO");
+    }
+
+    public MapleData getMap() {
         return getData("Map.img");
     }
 
-    public IMapleData getSkill() {
+    public MapleData getSkill() {
         return getData("Skill.img");
     }
 
-    private IMapleData img_Item = null; // JMS131
-    private IMapleData img_Cash = null;
-    private IMapleData img_Consume = null;
-    private IMapleData img_Eqp = null;
-    private IMapleData img_Etc = null;
-    private IMapleData img_Ins = null;
-    private IMapleData img_Pet = null;
+    public String getSkillName(int skill_id) {
+        MapleData skillroot = getSkill().getChildByPath(String.format("%07d", skill_id));
+        if (skillroot != null) {
+            return WzDataTool.getString(skillroot.getChildByPath("name"), "");
+        }
+        return null;
+    }
 
-    public IMapleData getItem() {
+    private MapleData img_Item = null; // JMS131
+    private MapleData img_Cash = null;
+    private MapleData img_Consume = null;
+    private MapleData img_Eqp = null;
+    private MapleData img_Etc = null;
+    private MapleData img_Ins = null;
+    private MapleData img_Pet = null;
+
+    public MapleData getItem() {
         if (img_Item == null) {
             img_Item = getData("Item.img");
         }
         return img_Item;
     }
 
-    public IMapleData getCash() {
+    public MapleData getCash() {
         if (img_Cash == null) {
             if (getItem() == null) {
                 img_Cash = getData("Cash.img");
@@ -86,7 +188,7 @@ public class StringWz extends WzXML {
         return img_Cash;
     }
 
-    public IMapleData getConsume() {
+    public MapleData getConsume() {
         if (img_Consume == null) {
             if (getItem() == null) {
                 img_Consume = getData("Consume.img");
@@ -98,7 +200,7 @@ public class StringWz extends WzXML {
         return img_Consume;
     }
 
-    public IMapleData getEqp() {
+    public MapleData getEqp() {
         if (img_Eqp == null) {
             if (getItem() == null) {
                 img_Eqp = getData("Eqp.img");
@@ -110,7 +212,7 @@ public class StringWz extends WzXML {
         return img_Eqp;
     }
 
-    public IMapleData getEtc() {
+    public MapleData getEtc() {
         if (img_Etc == null) {
             if (getItem() == null) {
                 img_Etc = getData("Etc.img");
@@ -122,7 +224,7 @@ public class StringWz extends WzXML {
         return img_Etc;
     }
 
-    public IMapleData getIns() {
+    public MapleData getIns() {
         if (img_Ins == null) {
             if (getItem() == null) {
                 img_Ins = getData("Ins.img");
@@ -134,7 +236,7 @@ public class StringWz extends WzXML {
         return img_Ins;
     }
 
-    public IMapleData getPet() {
+    public MapleData getPet() {
         if (img_Pet == null) {
             // please do not use old PetDialog.img (Pet.img)
             if (getItem() == null) {
@@ -148,7 +250,7 @@ public class StringWz extends WzXML {
     }
 
     // MonsterBook
-    private IMapleData img_MonsterBook = null;
+    private MapleData img_MonsterBook = null;
     private List<DropMonsterBook> list_drop_monsterbook = null;
     private boolean bookAvailable = true;
 
@@ -162,7 +264,7 @@ public class StringWz extends WzXML {
         return bookAvailable;
     }
 
-    public IMapleData getMonsterBook() {
+    public MapleData getMonsterBook() {
         if (img_MonsterBook == null) {
             img_MonsterBook = getData("MonsterBook.img");
             if (img_MonsterBook == null) {
@@ -187,15 +289,15 @@ public class StringWz extends WzXML {
         DropMonsterBook dmb = new DropMonsterBook();
         dmb.mob_id = mob_id;
 
-        IMapleData md_book = getMonsterBook();
+        MapleData md_book = getMonsterBook();
         if (md_book != null) {
-            for (IMapleData md_mob : md_book.getChildren()) {
+            for (MapleData md_mob : md_book.getChildren()) {
                 if (Integer.parseInt(md_mob.getName()) == mob_id) {
-                    IMapleData md_reward = md_mob.getChildByPath("reward");
+                    MapleData md_reward = md_mob.getChildByPath("reward");
                     if (md_reward == null) {
                         break;
                     }
-                    for (IMapleData md_drop_item : md_reward.getChildren()) {
+                    for (MapleData md_drop_item : md_reward.getChildren()) {
                         int item_id = WzDataTool.getInt(md_drop_item);
                         if (!WzDataStorage.ITEM.check(item_id)) {
                             DebugLogger.ErrorLog("invalid monsterbook drop : " + item_id);

@@ -18,14 +18,11 @@
  */
 package tacos.packet.request.parse;
 
-import odin.client.inventory.MaplePet;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMovePathAttr;
-import odin.server.life.AbstractLoadedMapleLife;
-import odin.server.maps.AnimatedMapleMapObject;
 import tacos.config.Config;
 
 /**
@@ -39,31 +36,6 @@ public class ParseCMovePath {
     private Point move_end = null;
     private int move_end_action = 0;
     private short move_end_foothold_id = 0;
-
-    public ParseCMovePath() {
-
-    }
-
-    // mob, player
-    public void update(AbstractLoadedMapleLife life) {
-        life.setStance(move_end_action);
-        life.setPosition(move_end);
-        life.setFh(move_end_foothold_id);
-    }
-
-    // pet
-    public void update(MaplePet life) {
-        life.setStance(move_end_action);
-        life.setPosition(move_end);
-        life.setFh(move_end_foothold_id);
-    }
-
-    // dragon, summon
-    public void update(AnimatedMapleMapObject life) {
-        life.setStance(move_end_action);
-        life.setPosition(move_end);
-        life.setFH(move_end_foothold_id);
-    }
 
     public int getX() {
         return move_end.x;
@@ -146,7 +118,7 @@ public class ParseCMovePath {
         int offset_end_action = 0;
         final int tail_data_size = getTailDataSize(cp); // for only mob.
 
-        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.GMS, 83) || Region.BMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 165) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 83) || Region.BMS.check()) {
             // JMS131-165
             offset_end_x = data.length - 13 - tail_data_size;
             offset_end_fh = data.length - 5 - tail_data_size;
@@ -190,5 +162,4 @@ public class ParseCMovePath {
     public byte[] get() {
         return data;
     }
-
 }

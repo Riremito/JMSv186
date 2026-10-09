@@ -23,7 +23,7 @@ package tacos.config;
  * @author Riremito
  */
 public enum DeveloperMode {
-    // Developer Mode
+    DM_TEST(true),
     DM_NO_XML,
     DM_NO_ALIVE_CHECK(true),
     DM_FIRST_MAP_ID(0),
@@ -50,17 +50,18 @@ public enum DeveloperMode {
     DM_INV_SLOT_CASH(96),
     DM_INV_SLOT_STORAGE(4), // not used.
     UNKNOWN;
+
     private int value;
 
-    DeveloperMode(boolean val) {
+    private DeveloperMode(boolean val) {
         set(val);
     }
 
-    DeveloperMode(int val) {
+    private DeveloperMode(int val) {
         this.value = val;
     }
 
-    DeveloperMode() {
+    private DeveloperMode() {
         this.value = 0;
     }
 
@@ -79,5 +80,4 @@ public enum DeveloperMode {
     public void setInt(int val) {
         this.value = val;
     }
-
 }

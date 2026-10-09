@@ -24,12 +24,12 @@ import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.data.DataCUser;
+import tacos.packet.response.builder.PB_UserEffect;
+import tacos.packet.response.data.RD_CUser;
 
 /**
  *
@@ -45,37 +45,43 @@ public class ResCUserLocal {
         if (!is_cancel) {
             sp.Encode2(id); // sit
         }
+
         return sp;
     }
 
     public static ServerPacket UserEmotionLocal(MapleCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotionLocal);
 
-        sp.EncodeBuffer(DataCUser.Emotion(expression));
+        sp.EncodeBuffer(RD_CUser.Emotion(expression));
         return sp;
     }
 
-    public static ServerPacket UserEffectLocal(ArgUserEffect arg) {
+    public static ServerPacket UserEffectLocal(OpsUserEffect ops) {
+        return UserEffectLocal(ops, null);
+    }
+
+    public static ServerPacket UserEffectLocal(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
-        sp.EncodeBuffer(EffectData(arg));
+        sp.EncodeBuffer(EffectData(ops, pb));
         return sp;
     }
 
-    public static byte[] EffectData(ArgUserEffect arg) {
+    // CUser::OnEffect
+    public static byte[] EffectData(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode1(arg.ops.get());
+        data.Encode1(ops.get());
 
-        switch (arg.ops) {
+        switch (ops) {
             case UserEffect_SkillUse: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 data.Encode1(1);
-                data.Encode1(arg.skill_on ? 0 : 1);
+                data.Encode1(pb.skill_on ? 0 : 1);
                 break;
             }
             case UserEffect_SkillAffected: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 data.Encode1(1);
                 break;
             }
@@ -83,8 +89,8 @@ public class ResCUserLocal {
                 int count = 1;
                 data.Encode1(count); // loop count
                 if (0 < count) {
-                    data.Encode4(arg.item_id);
-                    data.Encode4(arg.item_quantity);
+                    data.Encode4(pb.item_id);
+                    data.Encode4(pb.item_quantity);
                 } else {
                     // this part has never used, wz data does not exist.
                     data.EncodeStr(""); // unk
@@ -93,21 +99,21 @@ public class ResCUserLocal {
                 break;
             }
             case UserEffect_SkillSpecial: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 break;
             }
             case UserEffect_BuffItemEffect: {
-                data.Encode4(arg.skill_id);
+                data.Encode4(pb.skill_id);
                 break;
             }
             case UserEffect_ItemMaker: {
-                data.Encode4(arg.imr.get());
+                data.Encode4(pb.maker.get());
             }
             default: {
                 break;
             }
         }
-        // todo
+
         return data.getBytes();
     }
 
@@ -217,7 +223,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserQuestResult(MapleCharacter c, int quest, int npc, OpsQuest oq) {
+    public static ServerPacket UserQuestResult(MapleCharacter player, int quest, int npc, OpsQuest oq) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
 
         sp.Encode1(oq.get());
@@ -412,6 +418,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // unimplemented, buggy.
     public static ServerPacket PollQuestion(String questions[], String answers[][]) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Poll_Question);
 
@@ -424,6 +431,7 @@ public class ResCUserLocal {
                 sp.EncodeStr(answers[i][j]);
             }
         }
+
         return sp;
     }
 
@@ -432,7 +440,7 @@ public class ResCUserLocal {
 
         sp.Encode4(skill_id);
 
-        if (Config.GreaterOrEqual(Region.JMS, 302) | Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(cool_time);
         } else {
             sp.Encode2(cool_time);

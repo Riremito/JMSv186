@@ -24,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.config.Config;
@@ -75,19 +74,13 @@ public class CustomMap {
                 continue;
             }
 
-            MapleNPC npc = MapleLifeFactory.getNPC(npc_id);
-            if (npc == null) {
-                DebugLogger.ErrorLog("addNPCtoMap : " + map_id + ", npc is null = " + npc_id);
-                continue;
-            }
-
+            MapleNPC npc = new MapleNPC(npc_id);
             npc.setPosition(new Point(npc_x, npc_y));
             npc.setCy(npc_y);
             npc.setRx0(npc_x + 50);
             npc.setRx1(npc_x - 50);
-            npc.setFh(npc_fh);
-            npc.setCustom(true);
-            map.addMapObject(npc);
+            npc.setFootholdId(npc_fh);
+            map.addNPC(npc);
         }
 
         return true;

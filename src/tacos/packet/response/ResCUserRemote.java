@@ -25,17 +25,18 @@ import tacos.config.Region;
 import java.util.List;
 import java.util.Map;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.arg.ArgUserEffect;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.data.DataAvatarLook;
-import tacos.packet.response.data.DataCUser;
+import tacos.packet.response.data.RD_AvatarLook;
+import tacos.packet.response.data.RD_CUser;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.ContentCustom;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
+import tacos.packet.response.builder.PB_UserEffect;
 
 /**
  *
@@ -59,11 +60,7 @@ public class ResCUserRemote {
 
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
-
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            sp.Encode1(attack.m_nLevel); // m_nLevel
-        }
-
+        sp.Encode1(attack.m_nLevel, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // m_nLevel
         sp.Encode1(attack.SkillLevel); // nSLV
 
         if (attack.SkillLevel != 0) {
@@ -179,10 +176,7 @@ public class ResCUserRemote {
         sp.Encode4(uhd.dwCharacterID);
         sp.Encode1(uhd.nAttackIdx);
         sp.Encode4(uhd.nDamage); // internal damage
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(0); // critical
-        }
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302)); // critical
 
         if (uhd.dwTemplateID != 0) {
             sp.Encode4(uhd.dwTemplateID); // dwTemplateID
@@ -218,7 +212,7 @@ public class ResCUserRemote {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotion);
 
         sp.Encode4(chr.getId()); // remote
-        sp.EncodeBuffer(DataCUser.Emotion(expression));
+        sp.EncodeBuffer(RD_CUser.Emotion(expression));
         return sp;
     }
 
@@ -237,11 +231,7 @@ public class ResCUserRemote {
 
         sp.Encode4(characterid);
         sp.Encode4(itemid);
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode4(0);
-        }
-
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302));
         return sp;
     }
 
@@ -253,7 +243,7 @@ public class ResCUserRemote {
         sp.Encode1(flag);
 
         if ((flag & 0x01) != 0) {
-            sp.EncodeBuffer(DataAvatarLook.Encode(chr));
+            sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
         }
         if ((flag & 0x02) != 0) {
             sp.Encode1(0); // nSpeed_CS
@@ -268,12 +258,11 @@ public class ResCUserRemote {
         return sp;
     }
 
-    // CUser::OnEffect
-    public static ServerPacket UserEffectRemote(ArgUserEffect arg) {
+    public static ServerPacket UserEffectRemote(OpsUserEffect ops, PB_UserEffect pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
-        sp.Encode4(arg.chr.getId());
-        sp.EncodeBuffer(ResCUserLocal.EffectData(arg));
+        sp.Encode4(pb.player.getId());
+        sp.EncodeBuffer(ResCUserLocal.EffectData(ops, pb));
         return sp;
     }
 

@@ -21,21 +21,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import odin.constants.GameConstants;
-import java.io.Serializable;
 
-public class Item implements IItem, Serializable {
+public class Item {
 
+    protected MapleRing ring = null;
     private final int id;
+    private int uniqueid = -1;
     private short position;
     private short quantity;
     private byte flag;
     private long expiration = -1;
     private MaplePet pet = null;
-    private int uniqueid = -1;
     private String owner = "";
     private String GameMaster_log = null;
     private String giftFrom = "";
-    protected MapleRing ring = null;
 
     public Item(final int id, final short position, final short quantity, final byte flag, final int uniqueid) {
         super();
@@ -61,7 +60,7 @@ public class Item implements IItem, Serializable {
         this.quantity = quantity;
     }
 
-    public IItem copy() {
+    public Item copy() {
         final Item ret = new Item(id, position, quantity, flag, uniqueid);
         ret.pet = pet;
         ret.owner = owner;
@@ -83,16 +82,6 @@ public class Item implements IItem, Serializable {
         this.quantity = quantity;
     }
 
-    @Override
-    public final int getItemId() {
-        return id;
-    }
-
-    @Override
-    public final short getPosition() {
-        return position;
-    }
-
     /*
         0x0001 封印
         0x0002 滑り防止効果
@@ -100,22 +89,14 @@ public class Item implements IItem, Serializable {
         0x0008
         0x0010 1回交換可能
      */
-    @Override
     public final byte getFlag() {
         return flag;
     }
 
-    @Override
-    public final short getQuantity() {
-        return quantity;
-    }
-
-    @Override
     public byte getType() {
         return 2; // An Item
     }
 
-    @Override
     public final String getOwner() {
         return owner;
     }
@@ -128,7 +109,6 @@ public class Item implements IItem, Serializable {
         this.flag = flag;
     }
 
-    @Override
     public final long getExpiration() {
         return expiration;
     }
@@ -137,27 +117,23 @@ public class Item implements IItem, Serializable {
         this.expiration = expire;
     }
 
-    @Override
     public final String getGMLog() {
         return GameMaster_log;
     }
 
-    @Override
     public void setGMLog(final String GameMaster_log) {
         this.GameMaster_log = GameMaster_log;
     }
 
-    @Override
     public final int getUniqueId() {
         return uniqueid;
     }
 
-    @Override
     public final void setUniqueId(final int id) {
         this.uniqueid = id;
     }
 
-    public final MaplePet getPet() {
+    public MaplePet getPet() {
         return pet;
     }
 
@@ -165,42 +141,14 @@ public class Item implements IItem, Serializable {
         this.pet = pet;
     }
 
-    @Override
     public void setGiftFrom(String gf) {
         this.giftFrom = gf;
     }
 
-    @Override
     public String getGiftFrom() {
         return giftFrom;
     }
 
-    @Override
-    public int compareTo(IItem other) {
-        if (Math.abs(position) < Math.abs(other.getPosition())) {
-            return -1;
-        } else if (Math.abs(position) == Math.abs(other.getPosition())) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof IItem)) {
-            return false;
-        }
-        final IItem ite = (IItem) obj;
-        return uniqueid == ite.getUniqueId() && id == ite.getItemId() && quantity == ite.getQuantity() && Math.abs(position) == Math.abs(ite.getPosition());
-    }
-
-    @Override
-    public String toString() {
-        return "Item: " + id + " quantity: " + quantity;
-    }
-
-    @Override
     public MapleRing getRing() {
         if (!GameConstants.isEffectRing(id) || getUniqueId() <= 0) {
             return null;
@@ -214,4 +162,30 @@ public class Item implements IItem, Serializable {
     public void setRing(MapleRing ring) {
         this.ring = ring;
     }
+
+    public static int comparePosition(Item item1, Item item2) {
+        if (Math.abs(item1.getPosition()) < Math.abs(item2.getPosition())) {
+            return -1;
+        }
+        if (Math.abs(item1.getPosition()) == Math.abs(item2.getPosition())) {
+            return 0;
+        }
+        return 1;
+    }
+
+    // used by script
+    public final int getItemId() {
+        return id;
+    }
+
+    // used by script
+    public final short getPosition() {
+        return position;
+    }
+
+    // used by script
+    public final short getQuantity() {
+        return quantity;
+    }
+
 }

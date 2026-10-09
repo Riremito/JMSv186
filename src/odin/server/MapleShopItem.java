@@ -16,10 +16,6 @@ public class MapleShopItem {
         this.reqItemQ = reqItemQ;
     }
 
-    public short getBuyable() {
-        return buyable;
-    }
-
     public int getItemId() {
         return itemId;
     }

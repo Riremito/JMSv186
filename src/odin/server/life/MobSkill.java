@@ -31,19 +31,27 @@ import java.util.LinkedList;
 import odin.client.MapleCharacter;
 import odin.client.status.MonsterStatus;
 import java.util.EnumMap;
-import odin.server.maps.MapleMapObject;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
+import tacos.wz.MobWz.MobBanInfo;
+import tacos.wz.WzXML;
 
 public class MobSkill {
 
-    private int skillId, skillLevel, mpCon, spawnEffect, hp, x, y;
-    private long duration, cooltime;
+    private int skillId;
+    private int skillLevel;
+    private int mpCon;
+    private int spawnEffect;
+    private int hp;
+    private int x;
+    private int y;
+    private long duration;
+    private long cooltime;
     private float prop;
 //    private short effect_delay;
     private short limit;
     private List<Integer> toSummon = new ArrayList<>();
-    private Point lt, rb;
+    private Point lt;
+    private Point rb;
 
     public MobSkill(int skillId, int level) {
         this.skillId = skillId;
@@ -137,10 +145,10 @@ public class MobSkill {
                 break;
             case 114:
                 if (lt != null && rb != null && skill && monster != null) {
-                    List<MapleMapObject> objects = getObjectsInRange(monster, MapleMapObjectType.MONSTER);
+                    Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
                     final int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
-                    for (MapleMapObject mons : objects) {
-                        ((MapleMonster) mons).heal(hp, getY(), true);
+                    for (MapleMonster target : monster.getMap().getMonstersInRect(bounds)) {
+                        target.heal(hp, getY(), true);
                     }
                 } else if (monster != null) {
                     monster.heal(getX(), getY(), true);
@@ -151,21 +159,21 @@ public class MobSkill {
                 break;
             case 129: // Banish
                 if (monster != null) {
-                    final BanishInfo info = monster.getStats().getBanishInfo();
+                    MobBanInfo info = monster.getStats().getBanishInfo();
                     if (info != null) {
                         if (lt != null && rb != null && skill && player != null) {
                             for (MapleCharacter chr : getPlayersInRange(monster, player)) {
-                                chr.changeMapBanish(info.getMap(), info.getPortal(), info.getMsg());
+                                chr.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
                             }
                         } else if (player != null) {
-                            player.changeMapBanish(info.getMap(), info.getPortal(), info.getMsg());
+                            player.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
                         }
                     }
                 }
                 break;
             case 131: // Mist
                 if (monster != null) {
-                    monster.getMap().spawnMist(new MapleMist(calculateBoundingBox(monster.getPosition(), true), monster, this), x * 10, false);
+                    monster.getMap().addMist(new MapleMist(calculateBoundingBox(monster.getPosition(), true), monster, this, x * 10));
                 }
                 break;
             case 140:
@@ -202,7 +210,7 @@ public class MobSkill {
                 for (Integer mobId : getSummons()) {
                     MapleMonster toSpawn = null;
                     try {
-                        toSpawn = MapleLifeFactory.getMonster(GameConstants.getCustomSpawnID(monster.getId(), mobId));
+                        toSpawn = WzXML.MOB.findMonster(GameConstants.getCustomSpawnID(monster.getId(), mobId));
                     } catch (RuntimeException e) { //monster doesn't exist
                         continue;
                     }
@@ -214,7 +222,7 @@ public class MobSkill {
 
                     switch (mobId) {
                         case 8500003: // Pap bomb high
-                            toSpawn.setFh((int) Math.ceil(Math.random() * 19.0));
+                            toSpawn.setFootholdId((int) Math.ceil(Math.random() * 19.0));
                             ypos = -590;
                             break;
                         case 8500004: // Pap bomb
@@ -304,18 +312,6 @@ public class MobSkill {
         return cooltime;
     }
 
-    public Point getLt() {
-        return lt;
-    }
-
-    public Point getRb() {
-        return rb;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
     public boolean makeChanceResult() {
         return prop >= 1.0 || Math.random() < prop;
     }
@@ -338,12 +334,5 @@ public class MobSkill {
         List<MapleCharacter> players = new ArrayList<>();
         players.add(player);
         return monster.getMap().getPlayersInRectAndInList(bounds, players);
-    }
-
-    private List<MapleMapObject> getObjectsInRange(MapleMonster monster, MapleMapObjectType objectType) {
-        final Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-        List<MapleMapObjectType> objectTypes = new ArrayList<>();
-        objectTypes.add(objectType);
-        return monster.getMap().getMapObjectsInRect(bounds, objectTypes);
     }
 }

@@ -19,7 +19,7 @@
 package tacos.client;
 
 import java.util.ArrayList;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.SkillFactory;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
@@ -27,15 +27,9 @@ import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
-import static tacos.packet.ops.OpsSkill.CITIZEN_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.EVANJR_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.LEGEND_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.NOBLESSE_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.NOVICE_MYSTIC_DOOR;
-import static tacos.packet.ops.OpsSkill.PRIEST_MYSTIC_DOOR;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -51,7 +45,7 @@ public class TacosBuff {
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
             return new int[9]; //36
         }
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
             return new int[8]; // 32
         }
         // post bb ex.
@@ -80,7 +74,7 @@ public class TacosBuff {
         if (Config.GreaterOrEqual(Region.EMS, 89)) {
             return new int[9]; //36
         }
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
             return new int[8]; // 32
         }
         // post bb ex.
@@ -134,7 +128,7 @@ public class TacosBuff {
         // skill or item.
         if (0 < buff_id) {
             OpsSkill ops_skill = OpsSkill.find(buff_id);
-            ISkill skill = SkillFactory.getSkill(buff_id);
+            Skill skill = SkillFactory.getSkill(buff_id);
             if (skill == null) {
                 DebugLogger.ErrorLog("TacosBuff - update : skill.");
                 return false;
@@ -171,6 +165,10 @@ public class TacosBuff {
                     }
                     break;
                 }
+                case RANGER_PUPPET:
+                case RANGER_SILVER_HAWK: {
+                    return false;
+                }
                 default: {
                     break;
                 }
@@ -189,10 +187,10 @@ public class TacosBuff {
 
         long time = System.currentTimeMillis();
         int count = 0;
-        for (OdinPair<OpsSecondaryStat, Integer> oi : effect.getOss()) {
+        for (SimpleImmutableEntry<OpsSecondaryStat, Integer> oi : effect.getOss()) {
             for (Buff buff : buffs) {
-                if (buff.ops == oi.getLeft()) {
-                    buff.buff_effect = oi.getRight();
+                if (buff.ops == oi.getKey()) {
+                    buff.buff_effect = oi.getValue();
                     buff.buff_id = buff_id;
                     buff.buff_time = effect.getDuration();
                     buff.server_time = time;

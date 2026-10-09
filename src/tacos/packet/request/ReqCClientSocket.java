@@ -20,17 +20,14 @@ package tacos.packet.request;
 
 import java.util.ArrayList;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import tacos.constants.MapleClientState;
 import odin.client.MapleQuestStatus;
-import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.database.LazyDatabase;
 import tacos.database.query.DQ_Accounts;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.PartyOperation;
-import odin.handling.world.OdinWorld;
 import odin.handling.world.guild.MapleGuild;
 import java.util.List;
 import odin.client.PlayerStats;
@@ -39,10 +36,16 @@ import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCFuncKeyMappedMan;
-import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsQuestRecordMessage;
+import tacos.packet.response.builder.PB_Message;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
+import tacos.packet.ops.OpsFriend;
+import tacos.packet.response.builder.PB_Friend;
 import odin.server.maps.MapleMap;
+import tacos.client.TacosClient;
 import tacos.config.Config;
 import tacos.config.Content;
 import tacos.database.query.DQ_Characters;
@@ -50,7 +53,6 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCashItem;
-import static tacos.packet.request.ReqCLogin.SetDefaultEquip;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserLocal;
@@ -65,7 +67,7 @@ import tacos.wz.WzXML;
 public class ReqCClientSocket {
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_Login(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_Login(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_AliveAck: {
                 client.recvPong();
@@ -85,7 +87,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 // enter game server, change channel, leave cs/mts.
@@ -111,7 +113,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_ITC(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_ITC(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 // enter mts.
@@ -133,7 +135,7 @@ public class ReqCClientSocket {
     }
 
     // CClientSocket::ProcessPacket
-    public static boolean OnPacket_CS(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket_CS(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         switch (header) {
             case CP_MigrateIn: {
                 // enter cashshop.
@@ -154,10 +156,8 @@ public class ReqCClientSocket {
         return false;
     }
 
-    public static boolean OnMigrateIn(MapleClient client, ClientPacket cp) {
-        if (Config.GreaterOrEqual(Region.KMS, 197)) {
-            int unk1 = cp.Decode4();
-        }
+    public static boolean OnMigrateIn(TacosClient client, ClientPacket cp) {
+        int unk1 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 197));
         int character_id = cp.Decode4(); // m_dwCharacterId
         if (Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 91)) { // 180+
             byte[] machine_id = cp.DecodeBuffer(16); // MachineId (HWID)
@@ -168,16 +168,12 @@ public class ReqCClientSocket {
         } else if (Config.GreaterOrEqual(Region.GMS, 61)) {
             byte unk2 = cp.Decode1(); // 1 byte
         }
-        if (Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.GMS, 61)) { // 146+
-            byte unk3 = cp.Decode1(); // 0, not in JMS131.
-        }
+        byte unk3 = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.GMS, 61));
         if (Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 84)) { // 180+
             long client_key = cp.Decode8(); // m_aClientKey, jms always sends 0. but GMS supports this.
             client.setClientKey(client_key);
         }
-        if (Config.GreaterOrEqual(Region.KMS, 95)) {
-            int unk4 = cp.Decode4(); // not in JMS.
-        }
+        int unk4 = cp.Decode4(Config.GreaterOrEqual(Region.KMS, 95));
 
         if (client.getPlayer() != null) {
             client.loginFailed("OnMigrateIn : client already has character.");
@@ -187,7 +183,7 @@ public class ReqCClientSocket {
         MapleCharacter transfer = world.findMigratingPlayer(character_id);
         // channge channel, enter & leave itc/cs.
         if (transfer != null) {
-            MapleClient old_client = transfer.getClient();
+            TacosClient old_client = transfer.getClient();
             // check machine id.
             if (client.getMachineId() != null) {
                 if (!old_client.getMachineId().equals(client.getMachineId())) {
@@ -249,11 +245,9 @@ public class ReqCClientSocket {
                     chr.updateMapById(chr.getPosMap(), chr.getPortal());
                 }
                 client.getChannelServer().getOnlinePlayers().add(chr);
-                // pet
-                chr.spawnSavedPets();
                 // group            
                 if (chr.getParty() != null) {
-                    OdinWorld.Party.updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
+                    client.getWorld().getParty().updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
                 }
                 // friend
                 chr.setOnlineFriends();
@@ -261,8 +255,8 @@ public class ReqCClientSocket {
                 // guild
                 MapleGuild gs = null;
                 if (0 < chr.getGuildId()) {
-                    OdinWorld.Guild.setGuildMemberOnline(chr.getMGC(), true, client.getChannelId());
-                    gs = OdinWorld.Guild.getGuild(chr.getGuildId());
+                    client.getWorld().getGuild().setGuildMemberOnline(chr.getMGC(), true, client.getChannelId());
+                    gs = client.getWorld().getGuild().getGuild(chr.getGuildId());
                     if (gs == null) {
                         chr.setGuildId(0);
                         chr.setGuildRank((byte) 5);
@@ -272,7 +266,7 @@ public class ReqCClientSocket {
                 }
                 // family
                 if (0 < chr.getFamilyId()) {
-                    OdinWorld.Family.setFamilyMemberOnline(chr.getMFC(), true, client.getChannelId());
+                    client.getWorld().getFamily().setFamilyMemberOnline(chr.getMFC(), true, client.getChannelId());
                 }
 
                 chr.sendSetField(true);
@@ -283,36 +277,36 @@ public class ReqCClientSocket {
                 // initialize
                 chr.updateStat(); // TWMS148 gets weird stat without sending this.
                 chr.SendPacket(ResCWvsContext.ForcedStatReset());
-                // pet
-                for (final MaplePet pet : chr.getPets()) {
-                    if (pet.getSummoned()) {
-                        chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
-                    }
-                }
-                if (Config.LessOrEqual(Region.JMS, 131) || Region.BMS.check() || Region.VMS.check()) {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHPMP_JMS_v131(chr));
+                if (Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check() || Region.BMS.check() || Region.VMS.check()) {
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit_JMS131(chr));
                 } else {
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoHP(chr));
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoMP(chr));
-                    chr.SendPacket(ResCFuncKeyMappedMan.getPetAutoCure(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeMPItemInit(chr));
+                    chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeCureItemInit(chr));
                 }
                 // keyboard
                 chr.SendPacket(ResCFuncKeyMappedMan.FuncKeyMappedInit(chr, false));
-                chr.SendPacket(ResCFuncKeyMappedMan.getMacros(chr));
+                chr.SendPacket(ResCFuncKeyMappedMan.MacroSysDataInit(chr));
                 // quest
                 for (MapleQuestStatus status : chr.getStartedQuests()) {
                     if (status.hasMobKills()) {
-                        chr.SendPacket(ResWrapper.updateQuestMobKills(status));
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            for (int kills : status.getMobKills().values()) {
+                                sb.append(String.format("%03d", kills));
+                            }
+                            chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) status.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(sb.toString()).build()));
+                        }
                     }
                 }
                 // group
                 chr.updatePartyMemberHP();
                 // friend
-                chr.SendPacket(ResWrapper.updateBuddylist(chr));
+                chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_LoadFriend_Done, PB_Friend.builder().chr(chr).build()));
                 // guild
                 if (0 < chr.getGuildId()) {
                     chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
-                    List<ServerPacket> packetList = OdinWorld.Alliance.getAllianceInfo(gs.getAllianceId(), true);
+                    List<ServerPacket> packetList = client.getWorld().getAlliance().getAllianceInfo(gs.getAllianceId(), true);
                     if (packetList != null) {
                         for (ServerPacket pack : packetList) {
                             if (pack != null) {
@@ -339,19 +333,15 @@ public class ReqCClientSocket {
                     chr.SendPacket(ResCClientSocket.AuthenCodeChanged());
                 }
                 // 上部スライドメッセージ
-                chr.SendPacket(ResWrapper.BroadCastMsgSlide(chr.getChannelServer().getServerMessage()));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_SLIDE, PB_BroadcastMsg.builder().message(chr.getChannelServer().getServerMessage()).build()));
                 // [other players]
                 // your pet
                 // [entering map]
                 MapleMap map = chr.getMap();
+                chr.updatePets();
+                chr.updateSummons();
                 map.userEnterField(chr);
                 map.linkedObjectEnterField(chr);
-
-                for (final MaplePet pet : chr.getPets()) {
-                    if (pet.getSummoned()) {
-                        map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
-                    }
-                }
                 break;
             }
             case ITC_SERVER: {
@@ -363,7 +353,7 @@ public class ReqCClientSocket {
                 world.getITC().getOnlinePlayers().add(transfer);
                 transfer.notityOnlineToFriends(true);
                 transfer.SendPacket(ResCStage.SetITC(transfer));
-                ReqCITC.MTSUpdate(MTSStorage.getInstance().getCart(transfer.getId()), client);
+                ReqCITC.MTSUpdate(client, MTSStorage.getInstance().getCart(transfer.getId()));
                 break;
             }
             case CASHSHOP_SERVER: {
@@ -374,7 +364,7 @@ public class ReqCClientSocket {
                 // enter cs.
                 world.getCashShop().getOnlinePlayers().add(transfer);
                 transfer.notityOnlineToFriends(true);
-                transfer.SendPacket(ResCStage.SetCashShop(client));
+                transfer.SendPacket(ResCStage.SetCashShop(transfer));
                 transfer.SendPacket(ResCCashShop.CashShopQueryCashResult(transfer));
                 transfer.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_LoadLocker_Done, client));
                 ReqCCashShop.updateFreeCouponDate(transfer);
@@ -389,7 +379,7 @@ public class ReqCClientSocket {
         return true;
     }
 
-    public static boolean OnKOCCreation(MapleClient client, ClientPacket cp) {
+    public static boolean OnKOCCreation(TacosClient client, ClientPacket cp) {
         ArrayList<Integer> item_ids = new ArrayList<>();
         String name = cp.DecodeStr();
         int face_id = cp.Decode4();
@@ -424,7 +414,6 @@ public class ReqCClientSocket {
         }
 
         // no character slot.
-        client.loadCharactersFromDB();
         if (client.getCharSlots() <= client.getCharaterCount()) {
             client.SendPacket(ResCUserLocal.KOC_UI_Response(2));
             return false;
@@ -473,12 +462,11 @@ public class ReqCClientSocket {
         chr_koc.setBuddylist(20);
 
         for (int item_id : item_ids) {
-            SetDefaultEquip(chr_koc, item_id);
+            ReqCLogin.SetDefaultEquip(chr_koc, item_id);
         }
 
         chr_koc.saveNewCharToDB();
         client.addCharacter(chr_koc);
-
         client.SendPacket(ResCUserLocal.KOC_UI_Response(0));
         return true;
     }

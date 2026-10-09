@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.network;
 
 import java.net.SocketAddress;
-
 import org.apache.mina.common.CloseFuture;
 import org.apache.mina.common.IoFilterChain;
 import org.apache.mina.common.IoHandler;

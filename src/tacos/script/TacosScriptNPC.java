@@ -20,7 +20,7 @@ package tacos.script;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.odin.OdinNPCConversationManager;
 import tacos.debug.DebugLogger;
 
@@ -44,11 +44,11 @@ public class TacosScriptNPC extends TacosScript {
 
     }
 
-    public boolean start(MapleClient client, int npc_script_id) {
+    public boolean start(TacosClient client, int npc_script_id) {
         return start(client, npc_script_id, npc_script_id);
     }
 
-    public boolean start(MapleClient client, int npc_script_id, int npc_icon_id) {
+    public boolean start(TacosClient client, int npc_script_id, int npc_icon_id) {
         DebugMsg(client, TacosScriptType.NPC, npc_script_id);
 
         String npc_script_path = TacosScriptType.NPC.get() + npc_script_id;
@@ -83,7 +83,7 @@ public class TacosScriptNPC extends TacosScript {
         return true;
     }
 
-    public boolean action(MapleClient client, int mode, int type, int selection) {
+    public boolean action(TacosClient client, int mode, int type, int selection) {
         if (mode == -1) {
             DebugLogger.ErrorLog("npc_script : action 1");
             return false;
@@ -102,7 +102,7 @@ public class TacosScriptNPC extends TacosScript {
         return true;
     }
 
-    public boolean dispose(MapleClient client) {
+    public boolean dispose(TacosClient client) {
         OdinNPCConversationManager npccm = cms.get(client);
         if (npccm == null) {
             client.getPlayer().setConversation(0);

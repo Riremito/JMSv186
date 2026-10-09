@@ -22,9 +22,8 @@ package odin.client;
 
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IEquip;
 import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.List;
@@ -33,34 +32,86 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsDropPickUpMessage;
+import tacos.packet.response.builder.PB_Message;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.builder.PB_UserEffect;
 
 public class PlayerStats {
 
-    private WeakReference<MapleCharacter> chr;
+    public int str;
     private Map<Integer, Integer> setHandling = new HashMap<>();
-    private List<Equip> durabilityHandling = new ArrayList<>(), equipLevelHandling = new ArrayList<>();
-    private float shouldHealHP, shouldHealMP;
-    public int str, dex, luk, int_, hp, maxhp, mp, maxmp;
-    private short localmaxhp, localmaxmp;
-    private byte passive_mastery = 0;
-    private int localstr, localdex, localluk, localint_;
-    private int magic, watk, hands, accuracy;
-    public boolean equippedWelcomeBackRing, equippedFairy, hasMeso, hasItem, hasVac, hasClone, hasPartyBonus, Berserk = false, isRecalc = false;
-    public int equipmentBonusExp, expMod, dropMod, cashMod, levelBonus;
-    public double expBuff, dropBuff, mesoBuff, cashBuff;
+    private List<Equip> durabilityHandling = new ArrayList<>();
+    private List<Equip> equipLevelHandling = new ArrayList<>();
+    public int dex;
+    public int luk;
+    public int int_;
+    public int hp;
+    public int maxhp;
+    public int mp;
+    public int maxmp;
+    public int equipmentBonusExp;
+    public int expMod;
+    public int dropMod;
+    public int cashMod;
+    public int levelBonus;
+    public int recoverHP;
+    public int recoverMP;
+    public int mpconReduce;
+    public int incMesoProp;
+    public int incRewardProp;
+    public int DAMreflect;
+    public int DAMreflect_rate;
+    public int mpRestore;
+    public int hpRecover;
+    public int hpRecoverProp;
+    public int mpRecover;
+    public int mpRecoverProp;
+    public int RecoveryUP;
+    public int incAllskill;
+    // Elemental properties
+    public int def;
+    public int element_ice;
+    public int element_fire;
+    public int element_light;
+    public int element_psn;
+    public boolean equippedWelcomeBackRing;
+    public boolean hasMeso;
+    public boolean hasItem;
+    public boolean hasVac;
+    public boolean hasClone;
+    public boolean hasPartyBonus;
+    public boolean isRecalc = false;
+    public double expBuff;
+    public double dropBuff;
+    public double mesoBuff;
+    public double cashBuff;
     //restore/recovery are separate variables because i dont know jack shit what it even does
     //same with incMesoProp/incRewardProp for now
-    public double dam_r, bossdam_r;
-    public int recoverHP, recoverMP, mpconReduce, incMesoProp, incRewardProp, DAMreflect, DAMreflect_rate, mpRestore,
-            hpRecover, hpRecoverProp, mpRecover, mpRecoverProp, RecoveryUP, incAllskill;
-    private float speedMod, jumpMod;
-    // Elemental properties
-    public int def, element_ice, element_fire, element_light, element_psn;
+    public double dam_r;
+    public double bossdam_r;
+    private WeakReference<MapleCharacter> chr;
+    private float shouldHealHP;
+    private float shouldHealMP;
+    private float speedMod;
+    private float jumpMod;
+    private short localmaxhp;
+    private short localmaxmp;
+    private byte passive_mastery = 0;
+    private int localstr;
+    private int localdex;
+    private int localluk;
+    private int localint_;
+    private int magic;
+    private int watk;
+    private int hands;
+    private int accuracy;
     public ReentrantLock lock = new ReentrantLock(); //we're getting concurrentmodificationexceptions, but would this slow things down?
 
     public PlayerStats(final MapleCharacter chr) {
@@ -197,14 +248,6 @@ public class PlayerStats {
         return magic;
     }
 
-    public final double getSpeedMod() {
-        return speedMod;
-    }
-
-    public final double getJumpMod() {
-        return jumpMod;
-    }
-
     public final int getTotalWatk() {
         return watk;
     }
@@ -277,7 +320,6 @@ public class PlayerStats {
         mpRecoverProp = 0;
         mpRestore = 0;
         equippedWelcomeBackRing = false;
-        equippedFairy = false;
         hasMeso = false;
         hasItem = false;
         hasPartyBonus = false;
@@ -300,8 +342,8 @@ public class PlayerStats {
         element_psn = 100;
         def = 100;
 
-        for (IItem item : chra.getInventory(MapleInventoryType.EQUIPPED)) {
-            final IEquip equip = (IEquip) item;
+        for (Item item : chra.getInventory(MapleInventoryType.EQUIPPED)) {
+            final Equip equip = (Equip) item;
 
             if (equip.getPosition() == -11) {
                 if (GameConstants.isMagicWeapon(equip.getItemId())) {
@@ -341,9 +383,6 @@ public class PlayerStats {
                 case 1112127:
                     equippedWelcomeBackRing = true;
                     break;
-                case 1122017:
-                    equippedFairy = true;
-                    break;
                 case 1812000:
                     hasMeso = true;
                     break;
@@ -379,7 +418,7 @@ public class PlayerStats {
             }
         }
         int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        for (IItem item : chra.getInventory(MapleInventoryType.CASH)) {
+        for (Item item : chra.getInventory(MapleInventoryType.CASH)) {
             if (expMod < 3 && (item.getItemId() == 5211060 || item.getItemId() == 5211050 || item.getItemId() == 5211051 || item.getItemId() == 5211052 || item.getItemId() == 5211053 || item.getItemId() == 5211054)) {
                 expMod = 3;//overwrite
             } else if (expMod == 1 && (item.getItemId() == 5210000 || item.getItemId() == 5210001 || item.getItemId() == 5210002 || item.getItemId() == 5210003 || item.getItemId() == 5210004 || item.getItemId() == 5210005 || item.getItemId() == 5211061 || item.getItemId() == 5211000 || item.getItemId() == 5211001 || item.getItemId() == 5211002 || item.getItemId() == 5211003 || item.getItemId() == 5211046 || item.getItemId() == 5211047 || item.getItemId() == 5211048 || item.getItemId() == 5211049)) {
@@ -418,7 +457,7 @@ public class PlayerStats {
                 levelBonus = 5;
             }
         }
-        for (IItem item : chra.getInventory(MapleInventoryType.ETC)) { //omfg;
+        for (Item item : chra.getInventory(MapleInventoryType.ETC)) { //omfg;
             switch (item.getItemId()) {
                 case 4030003:
                     hasVac = true;
@@ -448,7 +487,7 @@ public class PlayerStats {
 
         switch (chra.getJob()) {
             case 322: { // Crossbowman
-                final ISkill expert = SkillFactory.getSkill(3220004);
+                final Skill expert = SkillFactory.getSkill(3220004);
                 final int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
@@ -456,7 +495,7 @@ public class PlayerStats {
                 break;
             }
             case 312: { // Bowmaster
-                final ISkill expert = SkillFactory.getSkill(3120005);
+                final Skill expert = SkillFactory.getSkill(3120005);
                 final int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
@@ -465,7 +504,7 @@ public class PlayerStats {
             }
             case 211:
             case 212: { // IL
-                final ISkill amp = SkillFactory.getSkill(2110001);
+                final Skill amp = SkillFactory.getSkill(2110001);
                 final int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -475,7 +514,7 @@ public class PlayerStats {
             }
             case 221:
             case 222: { // IL
-                final ISkill amp = SkillFactory.getSkill(2210001);
+                final Skill amp = SkillFactory.getSkill(2210001);
                 final int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -485,7 +524,7 @@ public class PlayerStats {
             }
             case 1211:
             case 1212: { // flame
-                final ISkill amp = SkillFactory.getSkill(12110001);
+                final Skill amp = SkillFactory.getSkill(12110001);
                 final int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -497,7 +536,7 @@ public class PlayerStats {
             case 2216:
             case 2217:
             case 2218: {
-                final ISkill amp = SkillFactory.getSkill(22150000);
+                final Skill amp = SkillFactory.getSkill(22150000);
                 final int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -506,7 +545,7 @@ public class PlayerStats {
                 break;
             }
             case 2112: { // Aran
-                final ISkill expert = SkillFactory.getSkill(21120001);
+                final Skill expert = SkillFactory.getSkill(21120001);
                 final int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
@@ -514,14 +553,14 @@ public class PlayerStats {
                 break;
             }
         }
-        final ISkill blessoffairy = SkillFactory.getSkill(GameConstants.getBOF_ForJob(chra.getJob()));
+        final Skill blessoffairy = SkillFactory.getSkill(GameConstants.getBOF_ForJob(chra.getJob()));
         final int boflevel = chra.getSkillLevel(blessoffairy);
         if (boflevel > 0) {
             watk += blessoffairy.getEffect(boflevel).getX();
             magic += blessoffairy.getEffect(boflevel).getY();
             accuracy += blessoffairy.getEffect(boflevel).getX();
         }
-        final ISkill bx = SkillFactory.getSkill(1320006);
+        final Skill bx = SkillFactory.getSkill(1320006);
         if (chra.getSkillLevel(bx) > 0) {
             dam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
             bossdam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
@@ -577,7 +616,7 @@ public class PlayerStats {
                         if (ins != null && ins.containsKey(lvlz + i)) {
                             for (Integer z : ins.get(lvlz + i)) {
                                 if (Math.random() < 0.1) { //10% chance dood
-                                    final ISkill skil = SkillFactory.getSkill(z);
+                                    final Skill skil = SkillFactory.getSkill(z);
                                     if (skil != null && skil.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(skil) < chr.getMasterLevel(skil)) { //dont go over masterlevel :D
                                         chr.changeSkillLevel(skil, (byte) (chr.getSkillLevel(skil) + 1), chr.getMasterLevel(skil));
                                     }
@@ -588,12 +627,16 @@ public class PlayerStats {
                 }
                 changed = true;
             }
-            chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eq.copy()));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, eq.copy()).build()));
         }
         if (changed) {
             chr.equipChanged();
-            chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
-            chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, chr), false);
+
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .player(chr)
+                    .build();
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+            chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), chr.getId());
         }
         return changed;
     }
@@ -610,15 +653,15 @@ public class PlayerStats {
             if (eqq.getDurability() == 0) { //> 0 went to negative
                 if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                     chr.updateInv();
-                    chr.getClient().getSession().write(ResWrapper.getShowInventoryFull());
+                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
                     return false;
                 }
                 durabilityHandling.remove(eqq);
                 final short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
                 MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, eqq));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, eqq).build()));
             } else {
-                chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIPPED, eqq.copy()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, eqq.copy()).build()));
             }
         }
         return true;
@@ -642,28 +685,28 @@ public class PlayerStats {
             shouldHealMP += ((float) ((float) chra.getSkillLevel(SkillFactory.getSkill(2000000)) / 10) * chra.getLevel());
 
         } else if (GameConstants.isJobFamily(111, playerjob)) {
-            final ISkill effect = SkillFactory.getSkill(1110000); // Improving MP Recovery
+            final Skill effect = SkillFactory.getSkill(1110000); // Improving MP Recovery
             final int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(121, playerjob)) {
-            final ISkill effect = SkillFactory.getSkill(1210000); // Improving MP Recovery
+            final Skill effect = SkillFactory.getSkill(1210000); // Improving MP Recovery
             final int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(1111, playerjob)) {
-            final ISkill effect = SkillFactory.getSkill(11110000); // Improving MP Recovery
+            final Skill effect = SkillFactory.getSkill(11110000); // Improving MP Recovery
             final int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(410, playerjob)) {
-            final ISkill effect = SkillFactory.getSkill(4100002); // Endure
+            final Skill effect = SkillFactory.getSkill(4100002); // Endure
             final int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealHP += effect.getEffect(lvl).getHp();
@@ -671,7 +714,7 @@ public class PlayerStats {
             }
 
         } else if (GameConstants.isJobFamily(420, playerjob)) {
-            final ISkill effect = SkillFactory.getSkill(4200001); // Endure
+            final Skill effect = SkillFactory.getSkill(4200001); // Endure
             final int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealHP += effect.getEffect(lvl).getHp();
@@ -692,19 +735,6 @@ public class PlayerStats {
         }
         shouldHealHP *= 2; // To avoid any problem with bathrobe / Sauna >.<
         shouldHealMP *= 2; // 1.5
-    }
-
-    public final int getSkillByJob(final int skillID, final int job) {
-        if (GameConstants.isKOC(job)) {
-            return skillID + 10000000;
-        } else if (GameConstants.isAran(job)) {
-            return skillID + 20000000;
-        } else if (GameConstants.isEvan(job)) {
-            return skillID + 20010000;
-        } else if (GameConstants.isResist(job)) {
-            return skillID + 30000000;
-        }
-        return skillID;
     }
 
 }

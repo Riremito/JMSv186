@@ -20,19 +20,22 @@ package tacos.packet.request;
 
 import java.util.List;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.ops.OpsQuestRecordMessage;
+import tacos.packet.response.builder.PB_Message;
 
 /**
  *
@@ -40,7 +43,7 @@ import tacos.packet.response.wrapper.ResWrapper;
  */
 public class ReqCUIRaise {
 
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
 
         if (chr == null) {
@@ -93,7 +96,7 @@ public class ReqCUIRaise {
             return false;
         }
 
-        chr.SendPacket(ResWrapper.updateQuest(quest_status));
+        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest_status.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest_status.getStatus())).str(quest_status.getCustomData() != null ? quest_status.getCustomData() : "").build()));
         chr.DebugMsg("OnRaiseRefesh : nQuestID = " + uQuestID);
         return true;
     }
@@ -129,7 +132,7 @@ public class ReqCUIRaise {
         int nQuestID = cp.Decode4();
         int exp = cp.Decode4();
 
-        IItem item_dropped = chr.getInventory(MapleInventoryType.ETC).getItem(nSlotPosition);
+        Item item_dropped = chr.getInventory(MapleInventoryType.ETC).getItem(nSlotPosition);
         if (item_dropped.getItemId() != nItemID) {
             return false;
         }
@@ -148,18 +151,18 @@ public class ReqCUIRaise {
         chr.DebugMsg("OnRaiseIncExp : nItemID = " + nItemID + ", nQuestID = " + nQuestID + ", exp = " + exp);
 
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        for (IItem item : chr.getInventory(MapleInventoryType.ETC)) {
+        for (Item item : chr.getInventory(MapleInventoryType.ETC)) {
             if (item.getItemId() / 10000 != 422) {
                 continue;
             }
-            OdinPair<Integer, List<Integer>> questItemInfo = ii.questItemInfo(item.getItemId());
+            SimpleImmutableEntry<Integer, List<Integer>> questItemInfo = ii.questItemInfo(item.getItemId());
             if (questItemInfo == null) {
                 continue;
             }
-            if (questItemInfo.getLeft() != nQuestID) {
+            if (questItemInfo.getKey() != nQuestID) {
                 continue;
             }
-            if (!questItemInfo.getRight().contains(nItemID)) {
+            if (!questItemInfo.getValue().contains(nItemID)) {
                 continue;
             }
             // found.

@@ -18,6 +18,7 @@
  */
 package tacos.packet.response;
 
+import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
@@ -31,8 +32,8 @@ import tacos.tools.TacosTools;
  */
 public class ResCClientSocket {
 
-    // サーバーのバージョン情報
-    public static ServerPacket getHello(byte[] sendIv, byte[] recvIv) {
+    // first raw packet.
+    public static ServerPacket getHello(TacosClient client) {
         ServerPacket sp = new ServerPacket((short) 0); // dummy
 
         switch (Config.REGION) {
@@ -67,23 +68,12 @@ public class ResCClientSocket {
                 break;
             }
         }
-        sp.EncodeBuffer(recvIv);
-        sp.EncodeBuffer(sendIv);
+
+        sp.EncodeBuffer(client.getSeqSnd()); // m_uSeqSnd (from client)
+        sp.EncodeBuffer(client.getSeqRcv()); // m_uSeqRcv (from client)
         sp.Encode1(Config.REGION.get()); // JMS = 3
 
-        /*
-            // x64
-            sp.Encode2(Config.GetVersion());
-            sp.EncodeStr("1:" + Config.GetSubVersion()); // 1:1
-            sp.EncodeBuffer(recvIv);
-            sp.EncodeBuffer(sendIv);
-            sp.Encode1(Config.GetRegionNumber());
-            sp.Encode1(0);
-            sp.Encode1(5);
-            sp.Encode1(1);
-         */
-        // ヘッダにサイズを書き込む
-        sp.setHello();
+        sp.setHello(); // write size of this packet length.
         return sp;
     }
 
@@ -94,11 +84,7 @@ public class ResCClientSocket {
         sp.Encode1(1);
         sp.Encode4(TacosTools.getGameServerIP(server.getGlobalIP()));
         sp.Encode2(server.getPort());
-
-        if (Config.GreaterOrEqual(Region.KMS, 118) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.Equal(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)) {
-            sp.Encode1(0);
-        }
-
+        sp.Encode1(0, Config.GreaterOrEqual(Region.KMS, 118) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.Equal(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         return sp;
     }
 

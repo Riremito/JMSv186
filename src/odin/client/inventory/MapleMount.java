@@ -21,21 +21,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import java.lang.ref.WeakReference;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.ScheduledFuture;
-
-import tacos.database.DatabaseConnection;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
+import tacos.database.query.DQ_Mountdata;
 
 public class MapleMount {
 
-    private int itemid, skillid, exp;
-    private int fatigue, level;
+    private int itemid;
+    private int skillid;
+    private int exp;
+    private int fatigue;
+    private int level;
     private boolean changed = false;
-    private ScheduledFuture<?> tirednessSchedule = null;
     private WeakReference<TacosCharacter> owner;
 
     public MapleMount(TacosCharacter owner, int id, int skillid, int fatigue, int level, int exp) {
@@ -51,13 +49,7 @@ public class MapleMount {
         if (!changed) {
             return;
         }
-        Connection con = DatabaseConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement("UPDATE mountdata set `Level` = ?, `Exp` = ?, `Fatigue` = ? WHERE characterid = ?");
-        ps.setByte(1, (byte) level);
-        ps.setInt(2, exp);
-        ps.setByte(3, (byte) fatigue);
-        ps.setInt(4, charid);
-        ps.close();
+        DQ_Mountdata.update(this, charid);
     }
 
     public int getId() {
@@ -102,11 +94,6 @@ public class MapleMount {
 
     public int getLevel() {
         return level;
-    }
-
-    public void setItemId(int c) {
-        changed = true;
-        this.itemid = c;
     }
 
     public void setFatigue(byte amount) {

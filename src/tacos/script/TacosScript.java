@@ -28,7 +28,6 @@ import java.util.WeakHashMap;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import odin.client.MapleClient;
 import tacos.client.TacosClient;
 import tacos.odin.OdinEventManager;
 import tacos.odin.OdinNPCConversationManager;
@@ -41,9 +40,9 @@ import tacos.property.Property_Java;
  */
 public class TacosScript {
 
-    protected Map<MapleClient, OdinNPCConversationManager> cms = new WeakHashMap<>();
+    protected Map<TacosClient, OdinNPCConversationManager> cms = new WeakHashMap<>();
 
-    public OdinNPCConversationManager getCM(MapleClient client) {
+    public OdinNPCConversationManager getCM(TacosClient client) {
         return cms.get(client);
     }
 

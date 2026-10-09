@@ -4,7 +4,6 @@ import odin.client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
 import java.lang.ref.WeakReference;
-import tacos.packet.response.wrapper.ResWrapper;
 import odin.server.maps.MapleMap;
 
 /**
@@ -15,15 +14,16 @@ import odin.server.maps.MapleMap;
  */
 public class MapleCarnivalParty {
 
-    private List<Integer> members = new LinkedList<Integer>();
+    private List<Integer> members = new LinkedList<>();
     private WeakReference<MapleCharacter> leader;
     private byte team;
     private int channel;
-    private short availableCP = 0, totalCP = 0;
+    private short availableCP = 0;
+    private short totalCP = 0;
     private boolean winner = false;
 
     public MapleCarnivalParty(final MapleCharacter owner, final List<MapleCharacter> members1, final byte team1) {
-        leader = new WeakReference<MapleCharacter>(owner);
+        leader = new WeakReference<>(owner);
         for (MapleCharacter mem : members1) {
             members.add(mem.getId());
             mem.setCarnivalParty(this);
@@ -32,18 +32,10 @@ public class MapleCarnivalParty {
         channel = owner.getClient().getChannelId();
     }
 
-    public final MapleCharacter getLeader() {
-        return leader.get();
-    }
-
     public void addCP(MapleCharacter player, int ammount) {
         totalCP += ammount;
         availableCP += ammount;
         player.addCP(ammount);
-    }
-
-    public int getTotalCP() {
-        return totalCP;
     }
 
     public int getAvailableCP() {
@@ -55,41 +47,47 @@ public class MapleCarnivalParty {
         player.useCP(ammount);
     }
 
+    // used by script
+    public final MapleCharacter getLeader() {
+        return leader.get();
+    }
+
+    // used by script
+    public int getTotalCP() {
+        return totalCP;
+    }
+
+    // used by script
     public List<Integer> getMembers() {
         return members;
     }
 
+    // used by script
     public int getTeam() {
         return team;
     }
 
+    // used by script
     public void warp(final MapleMap map, final String portalname) {
-        for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
-            if (c != null) {
-                c.changeMap(map, map.getPortal(portalname));
+        for (int character_id : members) {
+            final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            if (player != null) {
+                player.changeMapPortal(map, map.getPortal(portalname));
             }
         }
     }
 
+    // used by script
     public void warp(final MapleMap map, final int portalid) {
-        for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
-            if (c != null) {
-                c.changeMap(map, map.getPortal(portalid));
+        for (int character_id : members) {
+            final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            if (player != null) {
+                player.changeMapPortal(map, map.getPortal(portalid));
             }
         }
     }
 
-    public boolean allInMap(MapleMap map) {
-        for (int chr : members) {
-            if (map.getCharacterById(chr) == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
+    // used by script
     public void removeMember(MapleCharacter chr) {
         for (int i = 0; i < members.size(); i++) {
             if (members.get(i) == chr.getId()) {
@@ -100,30 +98,9 @@ public class MapleCarnivalParty {
 
     }
 
+    // used by script
     public boolean isWinner() {
         return winner;
     }
 
-    public void setWinner(boolean status) {
-        winner = status;
-    }
-
-    public void displayMatchResult() {
-        final String effect = winner ? "quest/carnival/win" : "quest/carnival/lose";
-        final String sound = winner ? "MobCarnival/Win" : "MobCarnival/Lose";
-        boolean done = false;
-        for (int chr : members) {
-            final MapleCharacter c = getLeader().getChannelServer().getOnlinePlayers().findById(chr);
-            if (c != null) {
-                c.getClient().getSession().write(ResWrapper.showEffect(effect));
-                c.getClient().getSession().write(ResWrapper.playSound(sound));
-                if (!done) {
-                    done = true;
-                    c.getMap().killAllMonsters(true);
-                    c.getMap().setSpawns(false); //resetFully will take care of this
-                }
-            }
-        }
-
-    }
 }

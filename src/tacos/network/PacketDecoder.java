@@ -18,13 +18,15 @@
  */
 package tacos.network;
 
-import tacos.config.ClientEdit;
+import java.nio.ByteOrder;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.CumulativeProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
+import tacos.client.TacosClient;
+import tacos.config.Config;
 
 /**
  *
@@ -32,49 +34,61 @@ import org.apache.mina.filter.codec.ProtocolDecoderOutput;
  */
 public class PacketDecoder extends CumulativeProtocolDecoder {
 
+    private static final int DEC_HEADER_SIZE = 4;
+
+    private boolean decrypt(TacosClient client, byte[] packet) {
+        // CInPacket::DecryptData
+        if (Content.KMSEncryption.get()) {
+            CIGCipher.innoDecrypt(packet, packet, packet.length, client.getSeqSnd().clone());
+        } else {
+            // AES
+            CAESCipher.CryptData(packet, packet, packet.length, client.getSeqSnd().clone());
+            // Shanda
+            if (Content.EncryptedByShanda.get()) {
+                CIOBufferManipulator._De(packet);
+            }
+        }
+        // IV
+        byte[] iv_new = CIGCipher.innoHash(client.getSeqSnd(), null);
+        client.setSeqSnd(iv_new);
+        return true;
+    }
+
     @Override
     protected boolean doDecode(IoSession is, ByteBuffer bb, ProtocolDecoderOutput pdo) throws Exception {
-        MapleAESOFB aes_dec = (MapleAESOFB) is.getAttribute(MapleAESOFB.AES_DEC_KEY);
+        TacosClient client = (TacosClient) is.getAttribute(TacosClient.CLIENT_KEY);
 
-        // header check
-        bb.mark(); // rollback position
+        byte[] iv = client.getSeqSnd();
 
-        int buffer_size = bb.remaining();
-        if (buffer_size < 4) {
-            DebugLogger.ErrorLog("doDecode size error");
+        if (bb.remaining() < DEC_HEADER_SIZE) {
             return false;
         }
 
-        int header_data = bb.getInt(); // +4
-        if (aes_dec.checkPacket(header_data)) {
-            int required_size = MapleAESOFB.getPacketLength(header_data);
-            buffer_size = bb.remaining();
+        // rollback position.
+        bb.mark();
+        bb.order(ByteOrder.LITTLE_ENDIAN);
 
-            if (required_size <= buffer_size) {
-                byte decryptedPacket[] = new byte[required_size];
-                bb.get(decryptedPacket, 0, required_size); // +required_size
-                if (!ClientEdit.PacketEncryptionRemoved.get()) {
-                    aes_dec.crypt(decryptedPacket);
-                    if (Content.CustomEncryption.get()) {
-                        MapleCustomEncryption.decryptData(decryptedPacket);
-                    }
-                    aes_dec.updateIv();
-                }
-                pdo.write(decryptedPacket);
-                // warning
-                if (required_size < buffer_size) {
-                    //Debug.InfoLog("doDecode size ( " + buffer_size + " / " + required_size + " )");
-                }
-                return true;
-            }
-            // reset
-            //Debug.ErrorLog("doDecode size ( " + buffer_size + " / " + required_size + " )");
-            bb.reset(); // rollback because client still does not send full size of packet buffer.
+        short m_uRawSeq = bb.getShort();
+        short m_uDataLen = (short) (bb.getShort() ^ m_uRawSeq);
+        short uSeqKey = (short) (((iv[3] << 8) & 0xFF00) | (iv[2] & 0x00FF));
+
+        if ((short) (uSeqKey ^ m_uRawSeq) != Config.VERSION) {
+            is.close();
+            DebugLogger.ErrorLog("doDecode : version.");
             return false;
         }
 
-        DebugLogger.ErrorLog("doDecode dc.");
-        is.close();
-        return false;
+        if (bb.remaining() < m_uDataLen) {
+            // rollback.
+            bb.reset();
+            return false;
+        }
+
+        byte[] packet = new byte[m_uDataLen];
+
+        bb.get(packet, 0, m_uDataLen);
+        decrypt(client, packet);
+        pdo.write(packet);
+        return true;
     }
 }

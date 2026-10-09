@@ -21,34 +21,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server;
 
-import java.io.Serializable;
 import odin.client.inventory.Equip;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.MaplePet;
-import odin.client.inventory.Item;
 import odin.client.inventory.ItemLoader;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
-import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
-import tacos.database.DatabaseConnection;
+import tacos.database.query.DQ_Gifts;
 import tacos.packet.response.ResCCashShop;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.server.TacosWorld;
 
-public class CashShop implements Serializable {
+public class CashShop {
 
-    private static final long serialVersionUID = 231541893513373579L;
-    private int accountId, characterId;
+    private int accountId;
+    private int characterId;
     private ItemLoader factory;
-    private List<IItem> inventory = new ArrayList<IItem>();
-    private List<Integer> uniqueids = new ArrayList<Integer>();
+    private List<Item> inventory = new ArrayList<>();
+    private List<Integer> uniqueids = new ArrayList<>();
 
     public CashShop(int accountId, int characterId, int jobType) throws SQLException {
         this.accountId = accountId;
@@ -68,8 +63,8 @@ public class CashShop implements Serializable {
             factory = ItemLoader.CASHSHOP_EXPLORER;
         }
 
-        for (OdinPair<IItem, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
-            inventory.add(item.getLeft());
+        for (SimpleImmutableEntry<Item, MapleInventoryType> item : factory.loadItems(false, accountId).values()) {
+            inventory.add(item.getKey());
         }
     }
 
@@ -77,12 +72,12 @@ public class CashShop implements Serializable {
         return inventory.size();
     }
 
-    public List<IItem> getInventory() {
+    public List<Item> getInventory() {
         return inventory;
     }
 
-    public IItem findByCashId(long cashId) {
-        for (IItem item : inventory) {
+    public Item findByCashId(long cashId) {
+        for (Item item : inventory) {
             if (item.getUniqueId() == cashId) {
                 return item;
             }
@@ -91,8 +86,8 @@ public class CashShop implements Serializable {
         return null;
     }
 
-    public IItem findItem(int item_id) {
-        for (IItem item : inventory) {
+    public Item findItem(int item_id) {
+        for (Item item : inventory) {
             if (item.getItemId() == item_id) {
                 return item;
             }
@@ -100,43 +95,43 @@ public class CashShop implements Serializable {
         return null;
     }
 
-    public void checkExpire(MapleClient c) {
-        List<IItem> toberemove = new ArrayList<IItem>();
-        for (IItem item : inventory) {
+    public void checkExpire(TacosClient client) {
+        List<Item> toberemove = new ArrayList<>();
+        for (Item item : inventory) {
             if (item != null && !GameConstants.isPet(item.getItemId()) && item.getExpiration() > 0 && item.getExpiration() < System.currentTimeMillis()) {
                 toberemove.add(item);
             }
         }
-        if (toberemove.size() > 0) {
-            for (IItem item : toberemove) {
+        if (!toberemove.isEmpty()) {
+            for (Item item : toberemove) {
                 removeFromInventory(item);
-                c.getSession().write(ResCCashShop.cashItemExpired(item.getUniqueId()));
+                client.SendPacket(ResCCashShop.cashItemExpired(item.getUniqueId()));
             }
             toberemove.clear();
         }
     }
 
-    public IItem toItem(CashItemInfo cItem) {
+    public Item toItem(CashItemInfo cItem) {
         return toItem(cItem, MapleInventoryManipulator.getUniqueId(cItem.getId(), null), "");
     }
 
-    public IItem toItem(CashItemInfo cItem, String gift) {
+    public Item toItem(CashItemInfo cItem, String gift) {
         return toItem(cItem, MapleInventoryManipulator.getUniqueId(cItem.getId(), null), gift);
     }
 
-    public IItem toItem(CashItemInfo cItem, int uniqueid) {
+    public Item toItem(CashItemInfo cItem, int uniqueid) {
         return toItem(cItem, uniqueid, "");
     }
 
-    public IItem toItem(CashItemInfo cItem, int uniqueid, String gift) {
+    public Item toItem(CashItemInfo cItem, int uniqueid, String gift) {
         if (uniqueid <= 0) {
-            uniqueid = MapleInventoryIdentifier.getInstance();
+            uniqueid = TacosWorld.getNextItemUniqueId();
         }
         long period = cItem.getPeriod();
         if (period <= 0 || GameConstants.isPet(cItem.getId())) {
             period = 45;
         }
-        IItem ret = null;
+        Item ret = null;
         if (GameConstants.getInventoryType(cItem.getId()) == MapleInventoryType.EQUIP) {
             Equip eq = (Equip) MapleItemInformationProvider.getInstance().getEquipById(cItem.getId());
             eq.setUniqueId(uniqueid);
@@ -164,11 +159,11 @@ public class CashShop implements Serializable {
         return ret;
     }
 
-    public void addToInventory(IItem item) {
+    public void addToInventory(Item item) {
         inventory.add(item);
     }
 
-    public void removeFromInventory(IItem item) {
+    public void removeFromInventory(Item item) {
         inventory.remove(item);
     }
 
@@ -177,54 +172,7 @@ public class CashShop implements Serializable {
     }
 
     public void gift(int recipient, String from, String message, int sn, int uniqueid) {
-        try {
-            PreparedStatement ps = DatabaseConnection.getConnection().prepareStatement("INSERT INTO `gifts` VALUES (DEFAULT, ?, ?, ?, ?, ?)");
-            ps.setInt(1, recipient);
-            ps.setString(2, from);
-            ps.setString(3, message);
-            ps.setInt(4, sn);
-            ps.setInt(5, uniqueid);
-            ps.executeUpdate();
-            ps.close();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-    }
-
-    public List<OdinPair<IItem, String>> loadGifts() {
-        List<OdinPair<IItem, String>> gifts = new ArrayList<OdinPair<IItem, String>>();
-        Connection con = DatabaseConnection.getConnection();
-        try {
-            PreparedStatement ps = con.prepareStatement("SELECT * FROM `gifts` WHERE `recipient` = ?");
-            ps.setInt(1, characterId);
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                CashItemInfo cItem = CashItemFactory.getInstance().getItem(rs.getInt("sn"));
-                IItem item = toItem(cItem, rs.getInt("uniqueid"), rs.getString("from"));
-                gifts.add(new OdinPair<IItem, String>(item, rs.getString("message")));
-                uniqueids.add(item.getUniqueId());
-                List<CashItemInfo> packages = CashItemFactory.getInstance().getPackageItems(cItem.getId());
-                if (packages != null && packages.size() > 0) {
-                    for (CashItemInfo packageItem : packages) {
-                        addToInventory(toItem(packageItem, rs.getString("from")));
-                    }
-                } else {
-                    addToInventory(item);
-                }
-            }
-
-            rs.close();
-            ps.close();
-            ps = con.prepareStatement("DELETE FROM `gifts` WHERE `recipient` = ?");
-            ps.setInt(1, characterId);
-            ps.executeUpdate();
-            ps.close();
-            save();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-        }
-        return gifts;
+        DQ_Gifts.add(recipient, from, message, sn, uniqueid);
     }
 
     public boolean canSendNote(int uniqueid) {
@@ -233,17 +181,17 @@ public class CashShop implements Serializable {
 
     public void sendedNote(int uniqueid) {
         for (int i = 0; i < uniqueids.size(); i++) {
-            if (uniqueids.get(i).intValue() == uniqueid) {
+            if (uniqueids.get(i) == uniqueid) {
                 uniqueids.remove(i);
             }
         }
     }
 
     public void save() throws SQLException {
-        List<OdinPair<IItem, MapleInventoryType>> itemsWithType = new ArrayList<OdinPair<IItem, MapleInventoryType>>();
+        List<SimpleImmutableEntry<Item, MapleInventoryType>> itemsWithType = new ArrayList<>();
 
-        for (IItem item : inventory) {
-            itemsWithType.add(new OdinPair<IItem, MapleInventoryType>(item, GameConstants.getInventoryType(item.getItemId())));
+        for (Item item : inventory) {
+            itemsWithType.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
         }
 
         factory.saveItems(itemsWithType, accountId);

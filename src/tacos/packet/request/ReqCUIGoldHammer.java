@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -28,7 +28,8 @@ import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsGoldHammer;
 import tacos.packet.response.ResCUIGoldHammer;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_InvOp;
 
 /**
  *
@@ -36,7 +37,7 @@ import tacos.packet.response.wrapper.ResWrapper;
  */
 public class ReqCUIGoldHammer {
 
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
@@ -88,7 +89,7 @@ public class ReqCUIGoldHammer {
         equip.setViciousHammer(equip.getViciousHammer() + 1);
         equip.setUpgradeSlots(equip.getUpgradeSlots() + 1);
         item_use.run();
-        chr.SendPacket(ResWrapper.addInventorySlot(MapleInventoryType.EQUIP, equip));
+        chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
         chr.SendPacket(ResCUIGoldHammer.GoldHammerResult(OpsGoldHammer.GoldHammerRes_Success, equip));
         return true;
     }

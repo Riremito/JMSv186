@@ -24,9 +24,13 @@ import tacos.client.TacosCharacter;
 
 public class MapleGuildCharacter { // alias for a character
 
-    private int channel = -1, guildrank, allianceRank;
+    private int channel = -1;
+    private int guildrank;
+    private int allianceRank;
     private int level;
-    private int id, jobid, guildid;
+    private int id;
+    private int jobid;
+    private int guildid;
     private boolean online;
     private String name;
 
@@ -59,36 +63,16 @@ public class MapleGuildCharacter { // alias for a character
         this.guildid = gid;
     }
 
-    public int getLevel() {
-        return level;
-    }
-
     public void setLevel(int l) {
         level = l;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public void setChannel(int ch) {
         channel = ch;
     }
 
-    public int getChannel() {
-        return channel;
-    }
-
-    public int getJobId() {
-        return jobid;
-    }
-
     public void setJobId(int job) {
         jobid = job;
-    }
-
-    public int getGuildId() {
-        return guildid;
     }
 
     public void setGuildId(int gid) {
@@ -99,16 +83,8 @@ public class MapleGuildCharacter { // alias for a character
         guildrank = rank;
     }
 
-    public int getGuildRank() {
-        return guildrank;
-    }
-
     public boolean isOnline() {
         return online;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public void setOnline(boolean f) {
@@ -119,7 +95,44 @@ public class MapleGuildCharacter { // alias for a character
         allianceRank = rank;
     }
 
+    // used by script
+    public int getLevel() {
+        return level;
+    }
+
+    // used by script
+    public int getId() {
+        return id;
+    }
+
+    // used by script
+    public int getChannel() {
+        return channel;
+    }
+
+    // used by script
+    public int getJobId() {
+        return jobid;
+    }
+
+    // used by script
+    public int getGuildId() {
+        return guildid;
+    }
+
+    // used by script
+    public int getGuildRank() {
+        return guildrank;
+    }
+
+    // used by script
+    public String getName() {
+        return name;
+    }
+
+    // used by script
     public int getAllianceRank() {
         return allianceRank;
     }
+
 }

@@ -21,21 +21,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
-
 import odin.client.MapleCharacter;
 import odin.handling.world.MaplePartyCharacter;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.response.builder.PB_Message;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
-import odin.server.life.MapleLifeFactory;
 import tacos.packet.ServerPacket;
+import tacos.wz.WzXML;
 
 public class Event_DojoAgent {
 
     private final static int baseAgentMapId = 970030000; // 9500337 = mano
-    private final static Point point1 = new Point(140, 0),
-            point2 = new Point(-193, 0),
-            point3 = new Point(355, 0);
+    private final static Point point1 = new Point(140, 0);
+    private final static Point point2 = new Point(-193, 0);
+    private final static Point point3 = new Point(355, 0);
 
     public static boolean warpStartAgent(MapleCharacter player, boolean party) {
         final int stage = 1;
@@ -44,8 +45,7 @@ public class Event_DojoAgent {
             final MapleMap map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));
-                map.respawn(true);
+                player.changeMapPortal(map, map.getPortal(0));
                 return true;
             }
         }
@@ -57,7 +57,7 @@ public class Event_DojoAgent {
         final int thisStage = (currentmap - baseAgentMapId) / 100;
 
         MapleMap map = player.getMap();
-        if (map.getSpawnedMonstersOnMap() > 0) {
+        if (map.getNumMonsters() > 0) {
             return false;
         }
         if (!fromResting) {
@@ -66,7 +66,7 @@ public class Event_DojoAgent {
         }
         if (currentmap >= 970032700 && currentmap <= 970032800) {
             map = player.findMap(baseAgentMapId);
-            player.changeMap(map, map.getPortal(0));
+            player.changeMapPortal(map, map.getPortal(0));
             return true;
         }
         final int nextmapid = baseAgentMapId + ((thisStage + 1) * 100);
@@ -74,8 +74,7 @@ public class Event_DojoAgent {
             map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));
-                map.respawn(true);
+                player.changeMapPortal(map, map.getPortal(0));
                 return true;
             }
         }
@@ -111,13 +110,13 @@ public class Event_DojoAgent {
         if (canenter) {
             if (party && player.getParty() != null) {
                 for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                    MapleCharacter chr = mapidd.getCharacterById(mem.getId());
+                    MapleCharacter chr = mapidd.getPlayerById(mem.getId());
                     if (chr != null) {
-                        chr.changeMap(map, map.getPortal(0));
+                        chr.changeMapPortal(map, map.getPortal(0));
                     }
                 }
             } else {
-                player.changeMap(map, map.getPortal(0));
+                player.changeMapPortal(map, map.getPortal(0));
             }
             spawnMonster(map, stage);
         }
@@ -126,7 +125,7 @@ public class Event_DojoAgent {
 
     public static ServerPacket Mulung_Pts(int recv, int total) {
         // どうやらバージョンごとにメッセージが切り替わっていて統一されていない?
-        return ResWrapper.showQuestMsg("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。");
+        return ResCWvsContext.Message(OpsMessage.MS_SystemMessage, PB_Message.builder().str("修練点数を" + recv + "点獲得しました。総修練点数が" + total + "になりました。").build());
     }
 
     // Resting rooms :
@@ -146,7 +145,7 @@ public class Event_DojoAgent {
                 clearMap(currentmap, true);
                 if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        MapleCharacter chr = currentmap.getCharacterById(mem.getId());
+                        MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
                             final int point = (points * 3);
                             chr.modifyCSPoints(1, point * 4, true);
@@ -167,15 +166,15 @@ public class Event_DojoAgent {
 
                 if (player.getParty() != null) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        MapleCharacter chr = currentmap.getCharacterById(mem.getId());
+                        MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
-                            chr.changeMap(map, map.getPortal(1));
+                            chr.changeMapPortal(map, map.getPortal(1));
                             chr.modifyCSPoints(1, 5000, true);
                         }
                     }
                 } else {
                     player.modifyCSPoints(1, 5000, true);
-                    player.changeMap(map, map.getPortal(1));
+                    player.changeMapPortal(map, map.getPortal(1));
                 }
                 return true;
             }
@@ -186,13 +185,13 @@ public class Event_DojoAgent {
                 clearMap(map, false);
                 if (player.getParty() != null) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        MapleCharacter chr = currentmap.getCharacterById(mem.getId());
+                        MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
-                            chr.changeMap(map, map.getPortal(0));
+                            chr.changeMapPortal(map, map.getPortal(0));
                         }
                     }
                 } else {
-                    player.changeMap(map, map.getPortal(0));
+                    player.changeMapPortal(map, map.getPortal(0));
                 }
                 spawnMonster(map, thisStage + 1);
                 return true;
@@ -204,13 +203,13 @@ public class Event_DojoAgent {
                         clearMap(mapz, false);
                         if (player.getParty() != null) {
                             for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                                MapleCharacter chr = currentmap.getCharacterById(mem.getId());
+                                MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                                 if (chr != null) {
-                                    chr.changeMap(mapz, mapz.getPortal(0));
+                                    chr.changeMapPortal(mapz, mapz.getPortal(0));
                                 }
                             }
                         } else {
-                            player.changeMap(mapz, mapz.getPortal(0));
+                            player.changeMapPortal(mapz, mapz.getPortal(0));
                         }
                         spawnMonster(mapz, thisStage + 1);
                         return true;
@@ -383,13 +382,13 @@ public class Event_DojoAgent {
                 return;
         }
         if (mobid != 0) {
-            final int rand = Randomizer.nextInt(3);
+            int rand = Randomizer.nextInt(3);
 
             MapTimer.getInstance().schedule(new Runnable() {
 
                 @Override
                 public void run() {
-                    map.spawnMonsterWithEffect(MapleLifeFactory.getMonster(mobid), 15, rand == 0 ? point1 : rand == 1 ? point2 : point3);
+                    map.spawnMonsterWithEffect(WzXML.MOB.findMonster(mobid), 15, rand == 0 ? point1 : rand == 1 ? point2 : point3);
                 }
             }, 3000);
         }

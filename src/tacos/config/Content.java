@@ -51,7 +51,8 @@ public enum Content {
     CharacterNameLength(13),
     PacketHeaderSize(2),
     OldIV(false),
-    CustomEncryption(false),
+    KMSEncryption(false),
+    EncryptedByShanda(false), // m_bIsEncryptedByShanda
     PrePotential(false), // JMS184-185, KMS95
     PetNameLength(13),
     UNKNOWN;
@@ -119,7 +120,8 @@ public enum Content {
         BIGBANG.set(bOK);
         OldIV.set(checkOldIV());
         PacketHeaderSize.setInt(checkPacketHeaderSize());
-        CustomEncryption.set(checkCustomEncryption());
+        KMSEncryption.set(checkKMSEncryption());
+        EncryptedByShanda.set(checkEncryptedByShanda());
         PrePotential.set(checkPrePotential());
         CharacterNameLength.setInt(checkCharacterNameLength());
         // Pre-BB
@@ -237,10 +239,26 @@ public enum Content {
         if (Config.LessOrEqual(Region.JMS, 141)) {
             return true;
         }
+        if (Region.HKMS.check()) {
+            return true;
+        }
         return false;
     }
 
-    private static boolean checkCustomEncryption() {
+    private static boolean checkKMSEncryption() {
+        if (Region.KMS.check()) {
+            return true;
+        }
+        if (Region.KMST.check()) {
+            return true;
+        }
+        if (Region.IMS.check()) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean checkEncryptedByShanda() {
         if (Config.LessOrEqual(Region.CMS, 85)) { // not checked
             return true;
         }
@@ -276,5 +294,4 @@ public enum Content {
 
         return false;
     }
-
 }

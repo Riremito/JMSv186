@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -31,10 +31,12 @@ import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.config.Config;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMobLeaveField;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.wz.WzXML;
 
 /**
@@ -43,7 +45,7 @@ import tacos.wz.WzXML;
  */
 public class ReqCMobPool {
 
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
@@ -129,35 +131,33 @@ public class ReqCMobPool {
 
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             // none
-            cp.Decode1();
-            cp.Decode1();
-        } else if (Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            cp.Decode4(); // 0
-            cp.Decode4(); // 0
+            byte unk5 = cp.Decode1();
+            byte unk6 = cp.Decode1();
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+            int unk7 = cp.Decode4(); // 0
+            int unk8 = cp.Decode4(); // 0
         }
 
         byte unk2 = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
-        int unk3 = Config.LessOrEqual(Region.KMS, 43) ? 1 : cp.Decode4(); // 1
+        int unk3 = (Config.LessOrEqual(Region.KMS, 43) || Region.HKMS.check()) ? 1 : cp.Decode4(); // 1
 
-        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
                 DebugLogger.DebugLog("0x00FFDDCC... " + String.format("%08X", ffddcc_1) + " | " + String.format("%08X", ffddcc_2));
             }
         }
-        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            cp.Decode4();
-        }
+        int unk9 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
 
         byte unk4 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
 
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
-            move_path.update(monster);
+            monster.update(move_path);
+            map.broadcastPacket(ResCMobPool.MobMove(monster, bNextAttackPossible, bLeft, mob_skill, move_path), chr.getId());
         }
 
-        map.broadcastMessageTo(chr, ResCMobPool.MobMove(monster, bNextAttackPossible, bLeft, mob_skill, move_path), monster.getPosition());
         return true;
     }
 
@@ -170,9 +170,9 @@ public class ReqCMobPool {
             boolean used = false;
 
             if (size > 0) {
-                OdinPair<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
-                realskill = skillToUse.getLeft();
-                level = skillToUse.getRight();
+                SimpleImmutableEntry<Integer, Integer> skillToUse = monster.getSkills().get((byte) Randomizer.nextInt(size));
+                realskill = skillToUse.getKey();
+                level = skillToUse.getValue();
                 // Skill ID and Level
                 MobSkill mobSkill = WzXML.SKILL.getMobSkillData(realskill, level);
 
@@ -201,9 +201,8 @@ public class ReqCMobPool {
     }
 
     public static boolean OnMobApplyCtrl(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
-        if (monster.getController() == null || map.getCharacterById(monster.getController().getId()) == null) {
-            monster.switchController(chr, true);
-            return true;
+        if (monster.getOwnerId() == chr.getId()) {
+            monster.setNextAttackPossible(true);
         }
         return true;
     }
@@ -238,7 +237,7 @@ public class ReqCMobPool {
         int damage = (int) (monster_to.getMobMaxHp() / 5);
 
         monster_to.setHp(Math.max(0, monster_to.getHp() - damage));
-        map.broadcastMessage(ResCMobPool.MobDamaged(monster_to, damage, 1));
+        map.broadcastPacket(ResCMobPool.MobDamaged(monster_to, damage, 1));
 
         if (monster_to.getHp() <= 0) {
             map.killMonster(monster_to, chr, false, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
@@ -341,7 +340,7 @@ public class ReqCMobPool {
 
                 }
                 if (newMap > 0) {
-                    map.broadcastMessage(ResWrapper.BroadCastMsgEvent("Proceed to the next stage."));
+                    map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Proceed to the next stage.").build()));
                     map.removeMonster(monster);
                 }
             }

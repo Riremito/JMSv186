@@ -19,7 +19,7 @@
 package tacos.debug;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import odin.constants.GameConstants;
@@ -28,10 +28,11 @@ import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsShop;
 import tacos.packet.response.ResCShopDlg;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.provider.IMapleData;
+import tacos.wz.MapleData;
 import tacos.config.Config;
 import tacos.wz.WzXML;
 import tacos.wz.WzDataStorage;
@@ -193,9 +194,9 @@ public class DebugShop {
     public boolean setRechargeAll(int item_recharge_price) {
         int item_sub_types[] = {207, 233};
         for (int item_sub_type : item_sub_types) {
-            IMapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
+            MapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
             if (md_item_sub_type != null) {
-                for (IMapleData md_item : md_item_sub_type.getChildren()) {
+                for (MapleData md_item : md_item_sub_type.getChildren()) {
                     int item_id = Integer.parseInt(md_item.getName());
                     this.addItemRecharge(item_id, item_recharge_price);
                 }
@@ -206,9 +207,9 @@ public class DebugShop {
 
     public boolean setItemTest(int item_sub_type) {
         int item_count = 0;
-        IMapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
+        MapleData md_item_sub_type = WzXML.ITEM.getItemImg(item_sub_type);
         if (md_item_sub_type != null) {
-            for (IMapleData md_item : md_item_sub_type.getChildren()) {
+            for (MapleData md_item : md_item_sub_type.getChildren()) {
                 int item_id = Integer.parseInt(md_item.getName());
                 this.addItem(item_id);
                 item_count++;
@@ -278,7 +279,7 @@ public class DebugShop {
 
     public boolean sell(MapleCharacter chr, short item_slot, int item_id, int quantity) {
         boolean is_recharge_item = GameConstants.isRechargable(item_id);
-        IItem item = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
+        Item item = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
         if (item == null) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
             return false;
@@ -320,7 +321,7 @@ public class DebugShop {
     }
 
     public boolean recharge(MapleCharacter chr, short item_slot) {
-        IItem item = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item item = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item == null) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeUnknown));
             return false;
@@ -348,7 +349,7 @@ public class DebugShop {
 
         chr.gainMeso(-rechager_price, false);
         item.setQuantity((short) ss.item_slot_max);
-        chr.SendPacket(ResWrapper.updateInventorySlot(MapleInventoryType.USE, item, false));
+        chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, item).build()));
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeSuccess));
         return true;
     }

@@ -19,7 +19,7 @@
 package tacos.unofficial;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
@@ -43,7 +43,7 @@ public class PetCharacter implements IPetEx {
 
     @Override
     public void SendPacket(ServerPacket packet) {
-        this.character.getMap().broadcastMessage(packet);
+        this.character.getMap().broadcastPacket(packet);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class PetCharacter implements IPetEx {
 
         this.clone = target.cloneCopy();
         this.clone.setPosition(this.character.getPosition());
-        this.clone.setFH(this.character.getFH());
+        this.clone.setFootholdId(this.character.getFootholdId());
         this.clone.setName(String.format("%08X", Randomizer.nextInt(0x77777777)));
         this.clone.setId(Randomizer.nextInt(0x77777777));
 
@@ -83,8 +83,7 @@ public class PetCharacter implements IPetEx {
             return false;
         }
 
-        move_path.update(this.clone);
-
+        this.clone.update(move_path);
         SendPacket(ResCUserRemote.UserMove(this.clone, move_path));
         return true;
     }
@@ -95,7 +94,7 @@ public class PetCharacter implements IPetEx {
         }
 
         this.clone.getInventory(MapleInventoryType.EQUIPPED).resetForClone();
-        for (IItem equip : this.character.getInventory(MapleInventoryType.EQUIPPED)) {
+        for (Item equip : this.character.getInventory(MapleInventoryType.EQUIPPED)) {
             this.clone.getInventory(MapleInventoryType.EQUIPPED).addFromDB(equip);
         }
 

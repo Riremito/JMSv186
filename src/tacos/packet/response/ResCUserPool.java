@@ -23,7 +23,7 @@ import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.DataCUserRemote;
+import tacos.packet.response.data.RD_CUser;
 
 /**
  *
@@ -38,11 +38,11 @@ public class ResCUserPool {
         sp.Encode4(chr.getId());
 
         if (Config.Equal(Region.JMS, 147)) {
-            sp.EncodeBuffer(DataCUserRemote.Init_JMS147(chr));
+            sp.EncodeBuffer(RD_CUser.CUserRemote_Init_JMS147(chr));
         } else if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.EncodeBuffer(DataCUserRemote.Init_JMS302(chr));
+            sp.EncodeBuffer(RD_CUser.CUserRemote_Init_JMS302(chr));
         } else {
-            sp.EncodeBuffer(DataCUserRemote.Init(chr));
+            sp.EncodeBuffer(RD_CUser.CUserRemote_Init(chr));
         }
         return sp;
     }

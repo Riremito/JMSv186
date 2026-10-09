@@ -19,10 +19,22 @@
 package tacos.server;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import odin.client.MapleCharacter;
+import odin.constants.GameConstants;
+import odin.handling.world.Alliance;
+import odin.handling.world.Family;
+import odin.handling.world.Guild;
+import odin.handling.world.Party;
 import tacos.client.TacosCharacter;
+import tacos.database.query.DQ_Inventoryitems;
+import tacos.database.query.DQ_Pets;
+import tacos.database.query.DQ_Rings;
 import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 
 /**
  *
@@ -58,6 +70,10 @@ public class TacosWorld {
     private TacosCashShop cashshop = null;
     private TacosITC itc = null;
     private ArrayList<MapleCharacter> player_migrating = new ArrayList<>();
+    private final Party party = new Party();
+    private final Guild guild = new Guild();
+    private final Alliance alliance = new Alliance();
+    private final Family family = new Family();
 
     public TacosWorld(int id, String name, int flag, String event_desc) {
         this.id = id;
@@ -96,6 +112,22 @@ public class TacosWorld {
 
     public String getEvent() {
         return this.event_desc;
+    }
+
+    public Party getParty() {
+        return this.party;
+    }
+
+    public Guild getGuild() {
+        return this.guild;
+    }
+
+    public Alliance getAlliance() {
+        return this.alliance;
+    }
+
+    public Family getFamily() {
+        return this.family;
     }
 
     public void addChannel(TacosChannel channel) {
@@ -293,5 +325,84 @@ public class TacosWorld {
         messenger = new TacosMessenger();
         messengers.add(messenger);
         return messenger;
+    }
+
+    public boolean reachedMaxLevel(TacosCharacter player) {
+        int job_id = player.getJob();
+        int level = player.getLevel();
+        int max_level = GameConstants.isKOC(job_id) ? 120 : 200;
+
+        if (level != max_level) {
+            return false;
+        }
+
+        broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("[お祝い] " + player.getPlayerNameWithMedal() + "様がレベル" + max_level + "になりました。おめでとうございます。").build()));
+        return true;
+    }
+
+    // miniroom.
+    private final LinkedHashMap<Integer, TacosRoom> rooms = new LinkedHashMap<>();
+
+    public TacosRoom getRoom(int room_id) {
+        return this.rooms.get(room_id);
+    }
+
+    public TacosRoom createRoom() {
+        TacosRoom room = new TacosRoom();
+        this.rooms.put(room.getId(), room);
+        return room;
+    }
+
+    public void removeRoom(int room_id) {
+        this.rooms.remove(room_id);
+    }
+
+    public TacosRoom findRoom(MapleCharacter player) {
+        for (TacosRoom room : this.rooms.values()) {
+            if (room.findPlayer(player)) {
+                return room;
+            }
+        }
+        return null;
+    }
+
+    // item unique id.
+    public static int NEXT_ITEM_UNIQUE_ID = 0;
+
+    public static int getNextItemUniqueId() {
+        if (NEXT_ITEM_UNIQUE_ID != 0) {
+            return NEXT_ITEM_UNIQUE_ID++;
+        }
+        int uid_max = DQ_Inventoryitems.getMaxUniqueId();
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid_max + " (item)");
+        int uid = DQ_Pets.getMaxPetId();
+        if (uid_max < uid) {
+            uid_max = uid;
+        }
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid + " (pet)");
+        uid = DQ_Rings.getMaxRingId();
+        if (uid_max < uid) {
+            uid_max = uid;
+        }
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid + " (ring)");
+        uid = DQ_Rings.getMaxPartnerRingId();
+        if (uid_max < uid) {
+            uid_max = uid;
+        }
+        DebugLogger.InfoLog("ITEM_UNIQUE_ID : " + uid + " (partner ring)");
+        uid_max++;
+        NEXT_ITEM_UNIQUE_ID = uid_max;
+        return NEXT_ITEM_UNIQUE_ID++;
+    }
+
+    // update task.
+    private final TacosTask task_world = new TacosTask();
+
+    public boolean update(MapleCharacter player, long time_current) {
+        if (!this.task_world.check(time_current, 60000)) {
+            return false;
+        }
+
+        return true;
     }
 }

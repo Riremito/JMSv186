@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPortalPlayerInteraction;
 import tacos.server.map.TacosPortal;
@@ -47,10 +47,10 @@ public class TacosScriptPortal extends TacosScript {
 
     }
 
-    public boolean enter(TacosPortal portal, MapleClient c) {
-        DebugMsg(c, TacosScriptType.PORTAL, portal.getScriptName());
+    public boolean enter(TacosPortal portal, TacosClient client) {
+        DebugMsg(client, TacosScriptType.PORTAL, portal.getScriptName());
 
-        if (enterHook(c.getPlayer(), portal)) {
+        if (enterHook(client.getPlayer(), portal)) {
             DebugLogger.ScriptLog("enterHook : " + portal.getScriptName());
             return true;
         }
@@ -65,7 +65,7 @@ public class TacosScriptPortal extends TacosScript {
             return false;
         }
 
-        OdinPortalPlayerInteraction ppi = new OdinPortalPlayerInteraction(c, portal);
+        OdinPortalPlayerInteraction ppi = new OdinPortalPlayerInteraction(client, portal);
         return script.enter(ppi);
     }
 
@@ -92,5 +92,4 @@ public class TacosScriptPortal extends TacosScript {
         }
         return false;
     }
-
 }

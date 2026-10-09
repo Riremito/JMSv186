@@ -96,7 +96,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
     ORP_InvalidStonePosition_By33,
     MGP_TurnUpCard,
     MGP_MatchCard,
-    UNKNOWN(-1);
+    UNKNOWN;
 
     private int value;
 
@@ -127,28 +127,64 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
         return UNKNOWN;
     }
 
+    public static void clear() {
+        for (OpsMiniRoomProtocol ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+    }
+
     public static void init() {
         if (Config.LessOrEqual(Region.JMS, 147)) {
-            ESP_PutItem.set(29); // アイテム追加
+            clear();
+            MRP_Create.set(0);
+            MRP_CreateResult.set(1);
+            MRP_Invite.set(2);
+            MRP_InviteResult.set(3);
+            MRP_Enter.set(4);
+            MRP_EnterResult.set(5);
+            MRP_Chat.set(6);
+            MRP_GameMessage.set(7);
+            MRP_UserChat.set(8);
+            MRP_Avatar.set(9);
+            MRP_Leave.set(10);
+            MRP_Balloon.set(11);
+            MRP_NotAvailableField.set(12);
+            TRP_PutItem.set(13);
+            TRP_PutMoney.set(14);
+            TRP_Trade.set(15);
+            TRP_UnTrade.set(16);
+            TRP_MoveItemToInventory.set(17);
+            PSP_PutItem.set(18);
+            PSP_BuyItem.set(19);
+            PSP_BuyResult.set(20);
+            PSP_Refresh.set(21);
+            PSP_AddSoldItem.set(22);
+            PSP_MoveItemToInventory.set(23);
+            PSP_Ban.set(24);
+            PSP_KickedTimeOver.set(25);
+            PSP_DeliverBlackList.set(26);
+            PSP_AddBlackList.set(27);
+            PSP_DeleteBlackList.set(28);
+            ESP_PutItem.set(29);
             ESP_BuyItem.set(30);
             ESP_BuyResult.set(31);
             ESP_Refresh.set(32);
             ESP_AddSoldItem.set(33);
-            ESP_MoveItemToInventory.set(34); // アイテム回収
-            ESP_GoOut.set(35); // 商店から出る -> MRP_Leave
-            ESP_ArrangeItem.set(36); // アイテム整理
-            ESP_WithdrawAll.set(37); // 商店のクローズ
+            ESP_MoveItemToInventory.set(34);
+            ESP_GoOut.set(35);
+            ESP_ArrangeItem.set(36);
+            ESP_WithdrawAll.set(37);
             ESP_WithdrawAllResult.set(38);
-            ESP_WithdrawMoney.set(39); // メル回収
+            ESP_WithdrawMoney.set(39);
             ESP_WithdrawMoneyResult.set(40);
-            ESP_AdminChangeTitle.set(-1);
-            ESP_DeliverVisitList.set(-1);
-            ESP_DeliverBlackList.set(-1);
-            ESP_AddBlackList.set(-1);
-            ESP_DeleteBlackList.set(-1);
+            ESP_AdminChangeTitle.set(41);
+            ESP_DeliverVisitList.set(42);
+            ESP_DeliverBlackList.set(43);
+            ESP_AddBlackList.set(44);
+            ESP_DeleteBlackList.set(45);
             return;
         }
-        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.PostBB()) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
             MRP_Create.set(0);
             MRP_CreateResult.set(1);
             MRP_Invite.set(2);
@@ -248,5 +284,4 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
             return;
         }
     }
-
 }

@@ -23,22 +23,13 @@ package odin.server.maps;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 public class MapleReactorStats {
 
-    private byte facingDirection;
     private Point tl;
     private Point br;
-    private Map<Byte, StateData> stateInfo = new HashMap<Byte, StateData>();
-
-    public final void setFacingDirection(final byte facingDirection) {
-        this.facingDirection = facingDirection;
-    }
-
-    public final byte getFacingDirection() {
-        return facingDirection;
-    }
+    private Map<Byte, StateData> stateInfo = new HashMap<>();
 
     public void setTL(Point tl) {
         this.tl = tl;
@@ -56,7 +47,7 @@ public class MapleReactorStats {
         return br;
     }
 
-    public void addState(byte state, int type, OdinPair<Integer, Integer> reactItem, byte nextState, int timeOut) {
+    public void addState(byte state, int type, SimpleImmutableEntry<Integer, Integer> reactItem, byte nextState, int timeOut) {
         StateData newState = new StateData(type, reactItem, nextState, timeOut);
         stateInfo.put(state, newState);
     }
@@ -79,7 +70,7 @@ public class MapleReactorStats {
         }
     }
 
-    public OdinPair<Integer, Integer> getReactItem(byte state) {
+    public SimpleImmutableEntry<Integer, Integer> getReactItem(byte state) {
         StateData nextState = stateInfo.get(state);
         if (nextState != null) {
             return nextState.getReactItem();
@@ -99,11 +90,12 @@ public class MapleReactorStats {
 
     private static class StateData {
 
-        private int type, timeOut;
-        private OdinPair<Integer, Integer> reactItem;
+        private int type;
+        private int timeOut;
+        private SimpleImmutableEntry<Integer, Integer> reactItem;
         private byte nextState;
 
-        private StateData(int type, OdinPair<Integer, Integer> reactItem, byte nextState, int timeOut) {
+        private StateData(int type, SimpleImmutableEntry<Integer, Integer> reactItem, byte nextState, int timeOut) {
             this.type = type;
             this.reactItem = reactItem;
             this.nextState = nextState;
@@ -118,7 +110,7 @@ public class MapleReactorStats {
             return nextState;
         }
 
-        private OdinPair<Integer, Integer> getReactItem() {
+        private SimpleImmutableEntry<Integer, Integer> getReactItem() {
             return reactItem;
         }
 

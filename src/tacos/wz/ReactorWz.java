@@ -22,8 +22,7 @@ import tacos.config.Content;
 import java.util.HashMap;
 import java.util.Map;
 import odin.server.maps.MapleReactorStats;
-import tacos.odin.OdinPair;
-import odin.provider.IMapleData;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
  *
@@ -35,7 +34,7 @@ public class ReactorWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Reactor" : "Reactor.wz");
     }
 
-    public IMapleData getImg(int reactor_id) {
+    public MapleData getImg(int reactor_id) {
         String target_img_path = String.format("%07d.img", reactor_id);
         return getData(target_img_path);
     }
@@ -52,8 +51,8 @@ public class ReactorWz extends WzXML {
         }
 
         int link_id = reactor_id;
-        IMapleData reactorData = getImg(reactor_id);
-        IMapleData link = reactorData.getChildByPath("info/link");
+        MapleData reactorData = getImg(reactor_id);
+        MapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
             link_id = WzDataTool.getIntPath("info/link", reactorData, 0);
             MapleReactorStats mrs_link = map_reactorStats.get(link_id);
@@ -71,17 +70,17 @@ public class ReactorWz extends WzXML {
         boolean areaSet = false;
         boolean foundState = false;
         for (byte i = 0; true; i++) {
-            IMapleData reactorD = reactorData.getChildByPath(String.valueOf(i));
+            MapleData reactorD = reactorData.getChildByPath(String.valueOf(i));
             if (reactorD == null) {
                 break;
             }
-            IMapleData reactorInfoData_ = reactorD.getChildByPath("event");
+            MapleData reactorInfoData_ = reactorD.getChildByPath("event");
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
-                IMapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
-                OdinPair<Integer, Integer> reactItem = null;
+                MapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
+                SimpleImmutableEntry<Integer, Integer> reactItem = null;
                 int type = WzDataTool.getIntPath("type", reactorInfoData, 0);
                 if (type == 100) { //reactor waits for item
-                    reactItem = new OdinPair<>(WzDataTool.getIntPath("0", reactorInfoData, 0), WzDataTool.getIntPath("1", reactorInfoData, 1));
+                    reactItem = new SimpleImmutableEntry<>(WzDataTool.getIntPath("0", reactorInfoData, 0), WzDataTool.getIntPath("1", reactorInfoData, 1));
                     if (!areaSet) { //only set area of effect for item-triggered reactors once
                         stats.setTL(WzDataTool.getPoint(reactorInfoData.getChildByPath("lt")));
                         stats.setBR(WzDataTool.getPoint(reactorInfoData.getChildByPath("rb")));

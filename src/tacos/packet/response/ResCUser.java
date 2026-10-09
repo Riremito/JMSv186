@@ -19,12 +19,13 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.inventory.IEquip;
+import odin.client.inventory.Equip;
+import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.struct.Structure;
+import tacos.packet.response.data.RD_Structure;
 
 /**
  *
@@ -40,15 +41,8 @@ public class ResCUser {
         sp.Encode4(chr.getId());
         sp.Encode1(chr.isGM() ? 1 : 0);
         sp.EncodeStr(message);
-
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
-            sp.Encode1(bOnlyBalloon ? 1 : 0); // skill macro
-        }
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(0);
-        }
-
+        sp.Encode1(bOnlyBalloon ? 1 : 0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // skill macro
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
         return sp;
     }
 
@@ -74,13 +68,13 @@ public class ResCUser {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMiniRoomBalloon);
 
         sp.Encode4(chr.getId());
-        sp.EncodeBuffer(Structure.AnnounceBox(chr));
+        sp.EncodeBuffer(RD_Structure.AnnounceBox(chr));
         return sp;
     }
 
     // CUser::SetConsumeItemEffect
     // CUser::ShowItemUpgradeEffect
-    public static ServerPacket getScrollEffect(int chr, IEquip.ScrollResult scrollSuccess, boolean legendarySpirit) {
+    public static ServerPacket getScrollEffect(int chr, Equip.ScrollResult scrollSuccess, boolean legendarySpirit) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUpgradeEffect);
         sp.Encode4(chr);
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
@@ -91,10 +85,10 @@ public class ResCUser {
                 3 = 使用不可
              */
             int result = 0;
-            if (scrollSuccess == IEquip.ScrollResult.SUCCESS) {
+            if (scrollSuccess == Equip.ScrollResult.SUCCESS) {
                 result = 1;
             }
-            if (scrollSuccess == IEquip.ScrollResult.CURSE) {
+            if (scrollSuccess == Equip.ScrollResult.CURSE) {
                 result = 2;
             }
             sp.Encode1(result);
@@ -105,8 +99,8 @@ public class ResCUser {
             sp.Encode1(0);
             sp.Encode4(0); // 2 = 装備のアップグレードに成功しました。
         } else {
-            sp.Encode1(scrollSuccess == IEquip.ScrollResult.SUCCESS ? 1 : 0); // bSuccess
-            sp.Encode1(scrollSuccess == IEquip.ScrollResult.CURSE ? 1 : 0);
+            sp.Encode1(scrollSuccess == Equip.ScrollResult.SUCCESS ? 1 : 0); // bSuccess
+            sp.Encode1(scrollSuccess == Equip.ScrollResult.CURSE ? 1 : 0);
             sp.Encode1(legendarySpirit ? 1 : 0); // bEnchantSkill
             sp.Encode1(0); // White Scroll
             if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
@@ -132,9 +126,7 @@ public class ResCUser {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUnreleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode1(1);
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode4(0); // 金印 2049500
-        }
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302)); // 金印 2049500
         return sp;
     }
 
@@ -151,8 +143,8 @@ public class ResCUser {
             sp.Encode1(bTransferField ? 1 : 0); // bTransferField
 
             if (bTransferField) {
-                sp.Encode4(chr.getPosition().x); // ptSetPos.x
-                sp.Encode4(chr.getPosition().y); // ptSetPos.y
+                sp.Encode4(chr.getX()); // ptSetPos.x
+                sp.Encode4(chr.getY()); // ptSetPos.y
             }
         }
 
@@ -160,11 +152,10 @@ public class ResCUser {
     }
 
     // CUser::OnShowPQReward
-    // JMS
-    public static ServerPacket fishingCaught(int chrid) {
+    public static ServerPacket UserFishingSuccess(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Fishing_Caught);
-        sp.Encode4(chrid);
+
+        sp.Encode4(chr.getId());
         return sp;
     }
-
 }

@@ -24,12 +24,10 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
@@ -41,7 +39,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
     private MapleReactor reactor;
 
-    public OdinReactorActionManager(MapleClient client, MapleReactor reactor) {
+    public OdinReactorActionManager(TacosClient client, MapleReactor reactor) {
         super(client);
         this.reactor = reactor;
     }
@@ -60,7 +58,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
     }
 
     public void dropItems(boolean meso, int mesoChance, int minMeso, int maxMeso, int minItems) {
-        List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getReactorId());
+        List<ReactorDropEntry> chances = TacosScriptReactor.getInstance().getDrops(reactor.getId());
         List<ReactorDropEntry> items = new LinkedList<>();
 
         if (meso) {
@@ -96,15 +94,15 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
             if (d.itemId == 0) {
                 range = maxMeso - minMeso;
                 mesoDrop = Randomizer.nextInt(range) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
-                reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor, getPlayer(), false, (byte) 0);
+                reactor.getMap().spawnMesoDrop(mesoDrop, dropPos, reactor.getPosition(), getPlayer(), false, (byte) 0);
             } else {
-                IItem drop;
+                Item drop;
                 if (GameConstants.getInventoryType(d.itemId) != MapleInventoryType.EQUIP) {
                     drop = new Item(d.itemId, (byte) 0, (short) 1, (byte) 0);
                 } else {
                     drop = ii.randomizeStats((Equip) ii.getEquipById(d.itemId));
                 }
-                reactor.getMap().spawnItemDrop(reactor, getPlayer(), drop, dropPos, false, false);
+                reactor.getMap().spawnItemDropByReactor(reactor, getPlayer(), drop, dropPos, false, false);
             }
             dropPos.x += 25;
         }

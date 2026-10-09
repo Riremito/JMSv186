@@ -19,7 +19,7 @@
 package tacos.server;
 
 import java.util.ArrayList;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import tacos.network.PacketHandler_Login;
 import tacos.property.Property_Login;
@@ -30,19 +30,19 @@ import tacos.property.Property_Login;
  */
 public class TacosLogin extends TacosServer {
 
-    private final ArrayList<MapleClient> clients = new ArrayList<>();
-    private final ArrayList<MapleClient> authorized_clients = new ArrayList<>();
+    private final ArrayList<TacosClient> clients = new ArrayList<>();
+    private final ArrayList<TacosClient> authorized_clients = new ArrayList<>();
 
     public TacosLogin(String server_name) {
         super(server_name);
         setType(TacosServerType.LOGIN_SERVER);
     }
 
-    public ArrayList<MapleClient> getClients() {
+    public ArrayList<TacosClient> getClients() {
         return this.clients;
     }
 
-    public ArrayList<MapleClient> getAuthorizedClients() {
+    public ArrayList<TacosClient> getAuthorizedClients() {
         return this.authorized_clients;
     }
 

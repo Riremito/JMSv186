@@ -25,13 +25,13 @@ import java.util.List;
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
-import odin.client.ISkill;
+import odin.client.Skill;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.MapleQuestStatus;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
 import odin.handling.world.guild.MapleGuild;
@@ -40,42 +40,44 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleReactor;
-import odin.server.maps.MapleMapObject;
 import odin.server.maps.SavedLocationType;
 import odin.server.maps.Event_DojoAgent;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleLifeFactory;
 import odin.server.quest.MapleQuest;
-import odin.client.inventory.MapleInventoryIdentifier;
 import tacos.debug.DebugLogger;
-import odin.handling.world.OdinWorld;
 import tacos.packet.ops.OpsFieldEffect;
-import tacos.packet.ops.arg.ArgFieldEffect;
+import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCScriptMan;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.response.wrapper.ResWrapper;
-import tacos.packet.response.wrapper.WrapCUserLocal;
+import tacos.packet.response.builder.PB_UserEffect;
+import tacos.packet.ops.OpsMessage;
+import tacos.packet.response.builder.PB_Message;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
+import tacos.packet.response.builder.PB_InvOp;
 import tacos.script.TacosScriptEvent;
 import tacos.script.TacosScriptNPC;
 import tacos.server.TacosChannel;
+import tacos.server.TacosWorld;
+import tacos.wz.WzXML;
 
 public abstract class OdinAbstractPlayerInteraction {
 
-    protected MapleClient client;
+    protected TacosClient client;
 
-    public OdinAbstractPlayerInteraction(MapleClient client) {
+    public OdinAbstractPlayerInteraction(TacosClient client) {
         this.client = client;
     }
 
-    public final MapleClient getClient() {
+    public final TacosClient getClient() {
         return client;
     }
 
-    public final MapleClient getC() {
+    public final TacosClient getC() {
         return client;
     }
 
@@ -98,18 +100,18 @@ public abstract class OdinAbstractPlayerInteraction {
     public final void warp(final int map) {
         final MapleMap mapz = getWarpMap(map);
         try {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(0));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
     public final void warp_Instanced(final int map) {
         final MapleMap mapz = getMap_Instanced(map);
         try {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(0));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
@@ -118,18 +120,18 @@ public abstract class OdinAbstractPlayerInteraction {
         if (portal != 0 && map == client.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.getSession().write(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
+                client.SendPacket(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
             } else {
-                client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
     public final void warpS(final int map, final int portal) {
         final MapleMap mapz = getWarpMap(map);
-        client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+        client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
     }
 
     public final void warp(final int map, String portal) {
@@ -140,12 +142,12 @@ public abstract class OdinAbstractPlayerInteraction {
         if (map == client.getPlayer().getMapId()) { //test
             final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.getSession().write(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
+                client.SendPacket(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
             } else {
-                client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
@@ -154,13 +156,13 @@ public abstract class OdinAbstractPlayerInteraction {
         if (map == 109060000 || map == 109060002 || map == 109060004) {
             portal = mapz.getSnowballPortal();
         }
-        client.getPlayer().changeMap(mapz, mapz.getPortal(portal));
+        client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
     }
 
     public final void warpMap(final int mapid, final int portal) {
         final MapleMap map = getMap(mapid);
-        for (MapleCharacter chr : client.getPlayer().getMap().getCharacters()) {
-            chr.changeMap(map, map.getPortal(portal));
+        for (MapleCharacter chr : client.getPlayer().getMap().getAllPlayers()) {
+            chr.changeMapPortal(map, map.getPortal(portal));
         }
     }
 
@@ -186,7 +188,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void spawnMobOnMap(final int id, final int qty, final int x, final int y, final int map) {
         for (int i = 0; i < qty; i++) {
-            getMap(map).spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), new Point(x, y));
+            getMap(map).spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), new Point(x, y));
         }
     }
 
@@ -200,7 +202,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     private final void spawnMob(final int id, final int qty, final Point pos) {
         for (int i = 0; i < qty; i++) {
-            client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), pos);
+            client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), pos);
         }
     }
 
@@ -301,7 +303,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void showQuestMsg(final String msg) {
-        client.SendPacket(ResWrapper.showQuestMsg(msg));
+        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_SystemMessage, PB_Message.builder().str(msg).build()));
     }
 
     public final void forceStartQuest(final int id, final String data) {
@@ -333,16 +335,16 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void removeNpc(final int mapid, final int npcId) {
-        getPlayer().findMap(mapid).removeNpc(npcId);
+        getPlayer().findMap(mapid).removeNPCById(npcId);
     }
 
     public final void forceStartReactor(final int mapid, final int id) {
         MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactors()) {
+        for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
-            if (react.getReactorId() == id) {
+            if (react.getId() == id) {
                 react.forceStartReactor(client);
                 break;
             }
@@ -353,9 +355,9 @@ public abstract class OdinAbstractPlayerInteraction {
         MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactors()) {
+        for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
-            if (react.getReactorId() == id) {
+            if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
             }
@@ -366,9 +368,9 @@ public abstract class OdinAbstractPlayerInteraction {
         MapleMap map = getPlayer().findMap(mapid);
         MapleReactor react;
 
-        for (final MapleMapObject remo : map.getAllReactors()) {
+        for (final Object remo : map.getAllReactors()) {
             react = (MapleReactor) remo;
-            if (react.getReactorId() == id) {
+            if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
             }
@@ -396,35 +398,35 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void Gashapon(final int id, final short quantity) {
-        IItem item_info = gainItem(id, quantity, true, 0, -1, "");
+        Item item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
-            this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgGachaponAnnounce(client.getPlayer(), item_info));
+            this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_GACHAPONANNOUNCE, PB_BroadcastMsg.builder().chr(client.getPlayer()).message("をガシャポンで手に入れました。おめでとうございます！").item(item_info).build()));
         }
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final int slots) {
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final int slots) {
         return gainItem(id, quantity, randomStats, 0, slots, "");
     }
 
-    public final IItem gainItem(final int id, final short quantity, final long period) {
+    public final Item gainItem(final int id, final short quantity, final long period) {
         return gainItem(id, quantity, false, period, -1, "");
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots) {
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots) {
         return gainItem(id, quantity, randomStats, period, slots, "");
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
         return gainItem(id, quantity, randomStats, period, slots, owner, client);
     }
 
-    public final IItem gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final MapleClient cg) {
-        IItem item_info = null;
+    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final TacosClient target) {
+        Item item_info = null;
         if (quantity >= 0) {
             final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             final MapleInventoryType type = GameConstants.getInventoryType(id);
 
-            if (!MapleInventoryManipulator.checkSpace(cg, id, quantity, "")) {
+            if (!MapleInventoryManipulator.checkSpace(target, id, quantity, "")) {
                 return null;
             }
             if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(id) && !GameConstants.isBullet(id)) {
@@ -441,18 +443,23 @@ public abstract class OdinAbstractPlayerInteraction {
                 final String name = ii.getName(id);
                 if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                     final String msg = "You have attained title <" + name + ">";
-                    cg.getPlayer().dropMessage(-1, msg);
-                    cg.getPlayer().dropMessage(5, msg);
+                    target.getPlayer().dropMessage(-1, msg);
+                    target.getPlayer().dropMessage(5, msg);
                 }
-                MapleInventoryManipulator.addbyItem(cg, item.copy());
+                MapleInventoryManipulator.addbyItem(target, item.copy());
                 item_info = item;
             } else {
-                MapleInventoryManipulator.addById(cg, id, quantity, owner == null ? "" : owner, null, period);
+                MapleInventoryManipulator.addById(target, id, quantity, owner == null ? "" : owner, null, period);
             }
         } else {
-            MapleInventoryManipulator.removeById(cg, GameConstants.getInventoryType(id), id, -quantity, true, false);
+            MapleInventoryManipulator.removeById(target, GameConstants.getInventoryType(id), id, -quantity, true, false);
         }
-        cg.getSession().write(WrapCUserLocal.getShowItemGain(id, quantity, true));
+
+        PB_UserEffect pb = PB_UserEffect.builder()
+                .item_id(id)
+                .item_quantity(quantity)
+                .build();
+        target.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         return item_info;
     }
 
@@ -462,31 +469,31 @@ public abstract class OdinAbstractPlayerInteraction {
 
     // npc/9201006.js
     public final void worldMessage(final int type, final String message) {
-        this.client.getWorld().broadcastPacket(ResWrapper.BroadCastMsgEvent(message));
+        this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void mapMessage(final String message) {
-        client.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsgEvent(message));
+        client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void guildMessage(final String message) {
-        OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsgEvent(message));
+        client.getWorld().getGuild().guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void playerMessage(final int type, final String message) {
         DebugLogger.DebugLog("playerMessage is called.");
-        client.SendPacket(ResWrapper.BroadCastMsg_SN(type, message));
+        client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void mapMessage(final int type, final String message) {
         DebugLogger.DebugLog("mapMessage is called.");
-        client.getPlayer().getMap().broadcastMessage(ResWrapper.BroadCastMsg_SN(type, message));
+        client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public final void guildMessage(final int type, final String message) {
         DebugLogger.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
-            OdinWorld.Guild.guildPacket(getPlayer().getGuildId(), ResWrapper.BroadCastMsg_SN(type, message));
+            client.getWorld().getGuild().guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
         }
     }
 
@@ -495,7 +502,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final MapleGuild getGuild(int guildid) {
-        return OdinWorld.Guild.getGuild(guildid);
+        return client.getWorld().getGuild().getGuild(guildid);
     }
 
     public final MapleParty getParty() {
@@ -526,7 +533,7 @@ public abstract class OdinAbstractPlayerInteraction {
             return false;
         }
         for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
-            final MapleCharacter chr = client.getPlayer().getMap().getCharacterById(mem.getId());
+            final MapleCharacter chr = client.getPlayer().getMap().getPlayerById(mem.getId());
             if (chr == null) {
                 return false;
             }
@@ -542,9 +549,9 @@ public abstract class OdinAbstractPlayerInteraction {
         final MapleMap target = getMap(mapId);
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
-            if (curChar != null) {
-                curChar.changeMap(target, target.getPortal(0));
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+            if (player != null) {
+                player.changeMapPortal(target, target.getPortal(0));
             }
         }
     }
@@ -562,16 +569,16 @@ public abstract class OdinAbstractPlayerInteraction {
         final MapleMap target = getMap(mapId);
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
-            if (curChar != null) {
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+            if (player != null) {
                 if (rand) {
                     try {
-                        curChar.changeMap(target, target.getPortal(Randomizer.nextInt(target.getPortals().size())));
+                        player.changeMapPortal(target, target.getPortal(Randomizer.nextInt(target.getPortals().size())));
                     } catch (Exception e) {
-                        curChar.changeMap(target, target.getPortal(0));
+                        player.changeMapPortal(target, target.getPortal(0));
                     }
                 } else {
-                    curChar.changeMap(target, target.getPortal(portal));
+                    player.changeMapPortal(target, target.getPortal(portal));
                 }
             }
         }
@@ -585,9 +592,9 @@ public abstract class OdinAbstractPlayerInteraction {
         final MapleMap target = getMap_Instanced(mapId);
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
-            if (curChar != null) {
-                curChar.changeMap(target, target.getPortal(0));
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+            if (player != null) {
+                player.changeMapPortal(target, target.getPortal(0));
             }
         }
     }
@@ -611,7 +618,12 @@ public abstract class OdinAbstractPlayerInteraction {
             } else {
                 MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, -quantity, true, false);
             }
-            chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, quantity, true));
+
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .item_id(id)
+                    .item_quantity(quantity)
+                    .build();
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         }
     }
 
@@ -626,9 +638,9 @@ public abstract class OdinAbstractPlayerInteraction {
         }
 
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
-            if (curChar != null) {
-                gainItem(id, (short) (removeAll ? -curChar.itemQuantity(id) : quantity), false, 0, 0, "", curChar.getClient());
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+            if (player != null) {
+                gainItem(id, (short) (removeAll ? -player.itemQuantity(id) : quantity), false, 0, 0, "", player.getClient());
             }
         }
     }
@@ -645,9 +657,9 @@ public abstract class OdinAbstractPlayerInteraction {
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
-            if (curChar != null) {
-                curChar.gainExp(amount * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+            if (player != null) {
+                player.gainExp(amount * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
             }
         }
     }
@@ -664,9 +676,9 @@ public abstract class OdinAbstractPlayerInteraction {
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
-            if (curChar != null) {
-                curChar.modifyCSPoints(1, amount, true);
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+            if (player != null) {
+                player.modifyCSPoints(1, amount, true);
             }
         }
     }
@@ -683,9 +695,9 @@ public abstract class OdinAbstractPlayerInteraction {
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter curChar = getMap().getCharacterById(chr.getId());
-            if (curChar != null) {
-                curChar.endPartyQuest(amount);
+            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+            if (player != null) {
+                player.endPartyQuest(amount);
             }
         }
     }
@@ -695,7 +707,12 @@ public abstract class OdinAbstractPlayerInteraction {
             final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
                 MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(id), id, possesed, true, false);
-                chr.getClient().getSession().write(WrapCUserLocal.getShowItemGain(id, (short) -possesed, true));
+
+                PB_UserEffect pb = PB_UserEffect.builder()
+                        .item_id(id)
+                        .item_quantity(-possesed)
+                        .build();
+                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
             }
         }
     }
@@ -713,7 +730,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void useItem(final int id) {
         MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(client.getPlayer());
-        client.getSession().write(ResWrapper.getStatusMsg(id));
+        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(id).build()));
     }
 
     public void cancelItem(int id) {
@@ -728,10 +745,10 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void gainCloseness(final int closeness, final int index) {
-        final MaplePet pet = getPlayer().getPet(index);
+        final MaplePet pet = getPlayer().getPetByIndex(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
-            getClient().getSession().write(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+            getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         }
     }
 
@@ -739,7 +756,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (final MaplePet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
-                getClient().getSession().write(ResWrapper.updatePet(pet, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())));
+                getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
     }
@@ -752,8 +769,8 @@ public abstract class OdinAbstractPlayerInteraction {
         TacosScriptNPC.getInstance().start(getClient(), id);
     }
 
-    public final void openNpc(final MapleClient cg, final int id) {
-        TacosScriptNPC.getInstance().start(cg, id);
+    public final void openNpc(final TacosClient target, final int id) {
+        TacosScriptNPC.getInstance().start(target, id);
     }
 
     public final int getMapId() {
@@ -761,7 +778,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean haveMonster(final int mobid) {
-        for (MapleMapObject obj : client.getPlayer().getMap().getAllMonsters()) {
+        for (Object obj : client.getPlayer().getMap().getAllMonsters()) {
             final MapleMonster mob = (MapleMonster) obj;
             if (mob.getId() == mobid) {
                 return true;
@@ -783,7 +800,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void teachSkill(final int id, byte level) {
-        final ISkill skil = SkillFactory.getSkill(id);
+        final Skill skil = SkillFactory.getSkill(id);
         if (getPlayer().getSkillLevel(skil) > level) {
             level = getPlayer().getSkillLevel(skil);
         }
@@ -791,8 +808,8 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void dojo_getUp() {
-        client.SendPacket(ResWrapper.updateInfoQuest(1207, "pt=1;min=4;belt=1;tuto=1")); //todo
-        client.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
+        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) 1207).str("pt=1;min=4;belt=1;tuto=1").build())); //todo
+        client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
         client.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
     }
 
@@ -837,17 +854,17 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void summonMsg(final String msg) {
-        if (!client.getPlayer().hasSummon()) {
+        if (!client.getPlayer().hasTutorialSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.UserTutorMsg(msg));
+        client.SendPacket(ResCUserLocal.UserTutorMsg(msg));
     }
 
     public final void summonMsg(final int type) {
-        if (!client.getPlayer().hasSummon()) {
+        if (!client.getPlayer().hasTutorialSummon()) {
             playerSummonHint(true);
         }
-        client.getSession().write(ResCUserLocal.UserTutorMsg(type));
+        client.SendPacket(ResCUserLocal.UserTutorMsg(type));
     }
 
     public final void showInstruction(final String msg, final int width, final int height) {
@@ -855,8 +872,8 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void playerSummonHint(final boolean summon) {
-        client.getPlayer().setHasSummon(summon);
-        client.getSession().write(ResCUserLocal.UserHireTutor(summon));
+        client.getPlayer().setTutorialSummon(summon);
+        client.SendPacket(ResCUserLocal.UserHireTutor(summon));
     }
 
     public final String getInfoQuest(final int id) {
@@ -876,32 +893,32 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void Aran_Start() {
-        client.getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Sound, "Aran/balloon")));
+        client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Aran/balloon").build()));
     }
 
     public final void evanTutorial(final String data, final int v1) {
-        client.getSession().write(ResCScriptMan.getEvanTutorial(data));
+        client.SendPacket(ResCScriptMan.getEvanTutorial(data));
     }
 
     public final void AranTutInstructionalBubble(final String data) {
-        client.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void ShowWZEffect(final String data) {
-        client.getSession().write(ResCUserLocal.AranTutInstructionalBalloon(data));
+        client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
     public final void showWZEffect(final String data) {
-        client.getSession().write(ResCUserLocal.ShowWZEffect(data));
+        client.SendPacket(ResCUserLocal.ShowWZEffect(data));
     }
 
     public final void EarnTitleMsg(final String data) {
-        client.getSession().write(ResCWvsContext.ScriptProgressMessage(data));
+        client.SendPacket(ResCWvsContext.ScriptProgressMessage(data));
     }
 
     public final void MovieClipIntroUI(final boolean enabled) {
-        client.getSession().write(ResCUserLocal.SetStandAloneMode(enabled));
-        client.getSession().write(ResCUserLocal.SetDirectionMode(enabled));
+        client.SendPacket(ResCUserLocal.SetStandAloneMode(enabled));
+        client.SendPacket(ResCUserLocal.SetDirectionMode(enabled));
     }
 
     public MapleInventoryType getInvType(int i) {
@@ -926,7 +943,7 @@ public abstract class OdinAbstractPlayerInteraction {
             fullness = 100;
         }
         try {
-            MapleInventoryManipulator.addById(client, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, MapleInventoryIdentifier.getInstance(), id == 5000054 ? (int) period : 0), 45);
+            MapleInventoryManipulator.addById(client, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
@@ -940,18 +957,18 @@ public abstract class OdinAbstractPlayerInteraction {
         if (getPlayer().getGuildId() <= 0) {
             return;
         }
-        OdinWorld.Guild.gainGP(getPlayer().getGuildId(), gp); //1 for
+        client.getWorld().getGuild().gainGP(getPlayer().getGuildId(), gp); //1 for
     }
 
     public int getGP() {
         if (getPlayer().getGuildId() <= 0) {
             return 0;
         }
-        return OdinWorld.Guild.getGP(getPlayer().getGuildId()); //1 for
+        return client.getWorld().getGuild().getGP(getPlayer().getGuildId()); //1 for
     }
 
     public void showMapEffect(String path) {
-        getClient().getSession().write(ResCField.FieldEffect(new ArgFieldEffect(OpsFieldEffect.FieldEffect_Screen, path)));
+        getClient().SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(path).build()));
     }
 
     public int itemQuantity(int itemid) {
@@ -961,7 +978,7 @@ public abstract class OdinAbstractPlayerInteraction {
     public boolean isAllReactorState(final int reactorId, final int state) {
         boolean ret = false;
         for (MapleReactor r : getMap().getAllReactors()) {
-            if (r.getReactorId() == reactorId) {
+            if (r.getId() == reactorId) {
                 ret = r.getState() == state;
             }
         }
@@ -982,7 +999,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void spawnBossAtNPC(int id, int x, int y, int type) {
-        getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), new Point(x, y), type);
+        getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), new Point(x, y), type);
     }
 
     // multiple monsters, remote location
@@ -993,12 +1010,12 @@ public abstract class OdinAbstractPlayerInteraction {
     // handler for all spawnMonster
     public void spawnMonster(int id, int qty, Point pos) {
         for (int i = 0; i < qty; i++) {
-            getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(id), pos);
+            getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), pos);
         }
     }
 
     public void sendNPCText(final String text, final int npc) {
-        getMap().broadcastMessage(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
+        getMap().broadcastPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
     }
 
     // event script compatibility
@@ -1019,7 +1036,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void playerMessage(String message) {
-        client.SendPacket(ResWrapper.BroadCastMsgEvent(message));
+        client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
     public OdinEventManager getEventManager(String event) {

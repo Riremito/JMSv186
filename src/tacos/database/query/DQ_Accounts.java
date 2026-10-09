@@ -18,7 +18,7 @@
  */
 package tacos.database.query;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.constants.MapleClientState;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
@@ -30,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.Random;
 import tacos.config.Config;
 import tacos.tools.TacosTools;
@@ -58,7 +59,55 @@ public class DQ_Accounts {
         return false;
     }
 
-    public static MapleClientState getLoginState(MapleClient client) {
+    /**
+     * NOTE: unlike most methods in this class, this declares
+     * {@code throws SQLException} instead of catching it internally,
+     * matching the original MapleCharacter.loadCharFromDB behavior, which
+     * relies on the exception propagating to its own outer catch block.
+     */
+    public static AccountLoginRow loadForCharacterLogin(int accountId) throws SQLException {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
+            ps.setInt(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                return new AccountLoginRow(rs.getString("name"), rs.getInt("ACash"), rs.getInt("mPoints"), rs.getInt("points"), rs.getInt("vpoints"), rs.getTimestamp("lastlogon"));
+            }
+        }
+    }
+
+    /**
+     * NOTE: this declares {@code throws SQLException} for the same reason
+     * as {@code loadForCharacterLogin} above.
+     */
+    public static void updateLastLogon(int accountId) throws SQLException {
+        Connection con = DatabaseConnection.getConnection();
+        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET lastlogon = CURRENT_TIMESTAMP() WHERE id = ?")) {
+            ps.setInt(1, accountId);
+            ps.executeUpdate();
+        }
+    }
+
+    /**
+     * NOTE: this declares {@code throws SQLException} instead of catching
+     * it internally, since it is called from MapleCharacter.saveToDB, which
+     * manages its own outer transaction and must see any failure in order
+     * to roll back correctly.
+     */
+    public static void updatePoints(Connection con, int accountId, int acash, int mpoints, int points, int vpoints) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `ACash` = ?, `mPoints` = ?, `points` = ?, `vpoints` = ? WHERE id = ?")) {
+            ps.setInt(1, acash);
+            ps.setInt(2, mpoints);
+            ps.setInt(3, points);
+            ps.setInt(4, vpoints);
+            ps.setInt(5, accountId);
+            ps.execute();
+        }
+    }
+
+    public static MapleClientState getLoginState(TacosClient client) {
         try {
             Connection con = DatabaseConnection.getConnection();
             MapleClientState state;
@@ -85,7 +134,7 @@ public class DQ_Accounts {
         }
     }
 
-    public static void updateLoginState(MapleClient client, MapleClientState newstate) {
+    public static void updateLoginState(TacosClient client, MapleClientState newstate) {
         String ip_addr = client.getIPAddress();
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -147,7 +196,7 @@ public class DQ_Accounts {
         return false;
     }
 
-    public static boolean updatePassword(MapleClient client, String password) {
+    public static boolean updatePassword(TacosClient client, String password) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE `" + DB_TABLE_NAME + "` SET `password` = ?, `salt` = ? WHERE id = ?")) {
@@ -182,7 +231,7 @@ public class DQ_Accounts {
         return false;
     }
 
-    public static int login(MapleClient client, String maple_id, String password) {
+    public static int login(TacosClient client, String maple_id, String password) {
         int loginok = 5;
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -237,19 +286,19 @@ public class DQ_Accounts {
         return loginok;
     }
 
-    public static boolean checkLoginIP(MapleClient c) {
+    public static boolean checkLoginIP(TacosClient client) {
         boolean ret = false;
 
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT SessionIP FROM " + DB_TABLE_NAME + " WHERE id = ?")) {
-                ps.setInt(1, c.getId());
+                ps.setInt(1, client.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         final String sessionIP = rs.getString("SessionIP");
 
                         if (sessionIP != null) {
-                            ret = c.getIPAddress().equals(sessionIP.split(":")[0]);
+                            ret = client.getIPAddress().equals(sessionIP.split(":")[0]);
                         }
                     }
                 }
@@ -265,12 +314,29 @@ public class DQ_Accounts {
         return ret;
     }
 
-    public static boolean finishLogin(MapleClient c) {
-        MapleClientState state = getLoginState(c);
+    public static boolean finishLogin(TacosClient client) {
+        MapleClientState state = getLoginState(client);
         if (state.get() > MapleClientState.LOGIN_NOTLOGGEDIN.get() && state != MapleClientState.LOGIN_WAITING) {
             return false;
         }
-        updateLoginState(c, MapleClientState.LOGIN_LOGGEDIN);
+        updateLoginState(client, MapleClientState.LOGIN_LOGGEDIN);
         return true;
+    }
+
+    public static final class AccountLoginRow {
+        public final String name;
+        public final int acash;
+        public final int mpoints;
+        public final int points;
+        public final int vpoints;
+        public final Timestamp lastlogon;
+        public AccountLoginRow(String name, int acash, int mpoints, int points, int vpoints, Timestamp lastlogon) {
+            this.name = name;
+            this.acash = acash;
+            this.mpoints = mpoints;
+            this.points = points;
+            this.vpoints = vpoints;
+            this.lastlogon = lastlogon;
+        }
     }
 }

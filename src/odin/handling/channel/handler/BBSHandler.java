@@ -20,8 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleClient;
-import odin.handling.world.OdinWorld;
+import tacos.client.TacosClient;
 import odin.handling.world.guild.MapleBBSThread;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
@@ -36,8 +35,8 @@ public class BBSHandler {
         return in;
     }
 
-    public static final void BBSOperation(ClientPacket cp, final MapleClient c) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    public static final void BBSOperation(ClientPacket cp, final TacosClient client) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing bbs or hax
         }
         int localthreadid = 0;
@@ -53,98 +52,98 @@ public class BBSHandler {
                 String text = correctLength(cp.DecodeStr(), 600);
                 final int icon = cp.Decode4();
                 if (icon >= 0x64 && icon <= 0x6a) {
-                    if (!c.getPlayer().haveItem(5290000 + icon - 0x64, 1, false, true)) {
+                    if (!client.getPlayer().haveItem(5290000 + icon - 0x64, 1, false, true)) {
                         return; // hax, using an nx icon that s/he doesn't have
                     }
                 } else if (icon < 0 || icon > 2) {
                     return; // hax, using an invalid icon
                 }
                 if (!bEdit) {
-                    newBBSThread(c, title, text, icon, bNotice);
+                    newBBSThread(client, title, text, icon, bNotice);
                 } else {
-                    editBBSThread(c, title, text, icon, localthreadid);
+                    editBBSThread(client, title, text, icon, localthreadid);
                 }
                 break;
             case 1: // delete a thread
                 localthreadid = cp.Decode4();
-                deleteBBSThread(c, localthreadid);
+                deleteBBSThread(client, localthreadid);
                 break;
             case 2: // list threads
                 int start = cp.Decode4();
-                listBBSThreads(c, start * 10);
+                listBBSThreads(client, start * 10);
                 break;
             case 3: // list thread + reply, followed by id (int)
                 localthreadid = cp.Decode4();
-                displayThread(c, localthreadid);
+                displayThread(client, localthreadid);
                 break;
             case 4: // reply
                 localthreadid = cp.Decode4();
                 text = correctLength(cp.DecodeStr(), 25);
-                newBBSReply(c, localthreadid, text);
+                newBBSReply(client, localthreadid, text);
                 break;
             case 5: // delete reply
                 localthreadid = cp.Decode4();
                 int replyid = cp.Decode4();
-                deleteBBSReply(c, localthreadid, replyid);
+                deleteBBSReply(client, localthreadid, replyid);
                 break;
         }
     }
 
-    private static void listBBSThreads(MapleClient c, int start) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void listBBSThreads(TacosClient client, int start) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        c.getSession().write(ResCWvsContext.BBSThreadList(OdinWorld.Guild.getBBS(c.getPlayer().getGuildId()), start));
+        client.SendPacket(ResCWvsContext.BBSThreadList(client.getWorld().getGuild().getBBS(client.getPlayer().getGuildId()), start));
     }
 
-    private static void newBBSReply(final MapleClient c, final int localthreadid, final String text) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void newBBSReply(final TacosClient client, final int localthreadid, final String text) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        OdinWorld.Guild.addBBSReply(c.getPlayer().getGuildId(), localthreadid, text, c.getPlayer().getId());
-        displayThread(c, localthreadid);
+        client.getWorld().getGuild().addBBSReply(client.getPlayer().getGuildId(), localthreadid, text, client.getPlayer().getId());
+        displayThread(client, localthreadid);
     }
 
-    private static void editBBSThread(final MapleClient c, final String title, final String text, final int icon, final int localthreadid) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void editBBSThread(final TacosClient client, final String title, final String text, final int icon, final int localthreadid) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        OdinWorld.Guild.editBBSThread(c.getPlayer().getGuildId(), localthreadid, title, text, icon, c.getPlayer().getId(), c.getPlayer().getGuildRank());
-        displayThread(c, localthreadid);
+        client.getWorld().getGuild().editBBSThread(client.getPlayer().getGuildId(), localthreadid, title, text, icon, client.getPlayer().getId(), client.getPlayer().getGuildRank());
+        displayThread(client, localthreadid);
     }
 
-    private static void newBBSThread(final MapleClient c, final String title, final String text, final int icon, final boolean bNotice) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void newBBSThread(final TacosClient client, final String title, final String text, final int icon, final boolean bNotice) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        displayThread(c, OdinWorld.Guild.addBBSThread(c.getPlayer().getGuildId(), title, text, icon, bNotice, c.getPlayer().getId()));
+        displayThread(client, client.getWorld().getGuild().addBBSThread(client.getPlayer().getGuildId(), title, text, icon, bNotice, client.getPlayer().getId()));
     }
 
-    private static final void deleteBBSThread(final MapleClient c, final int localthreadid) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static final void deleteBBSThread(final TacosClient client, final int localthreadid) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        OdinWorld.Guild.deleteBBSThread(c.getPlayer().getGuildId(), localthreadid, c.getPlayer().getId(), (int) c.getPlayer().getGuildRank());
+        client.getWorld().getGuild().deleteBBSThread(client.getPlayer().getGuildId(), localthreadid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
     }
 
-    private static void deleteBBSReply(final MapleClient c, final int localthreadid, final int replyid) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void deleteBBSReply(final TacosClient client, final int localthreadid, final int replyid) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
 
-        OdinWorld.Guild.deleteBBSReply(c.getPlayer().getGuildId(), localthreadid, replyid, c.getPlayer().getId(), (int) c.getPlayer().getGuildRank());
-        displayThread(c, localthreadid);
+        client.getWorld().getGuild().deleteBBSReply(client.getPlayer().getGuildId(), localthreadid, replyid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
+        displayThread(client, localthreadid);
     }
 
-    private static void displayThread(final MapleClient c, final int localthreadid) {
-        if (c.getPlayer().getGuildId() <= 0) {
+    private static void displayThread(final TacosClient client, final int localthreadid) {
+        if (client.getPlayer().getGuildId() <= 0) {
             return;
         }
-        final List<MapleBBSThread> bbsList = OdinWorld.Guild.getBBS(c.getPlayer().getGuildId());
+        final List<MapleBBSThread> bbsList = client.getWorld().getGuild().getBBS(client.getPlayer().getGuildId());
         if (bbsList != null) {
             for (MapleBBSThread t : bbsList) {
                 if (t != null && t.localthreadID == localthreadid) {
-                    c.getSession().write(ResCWvsContext.showThread(t));
+                    client.SendPacket(ResCWvsContext.showThread(t));
                 }
             }
         }

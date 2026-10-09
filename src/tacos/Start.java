@@ -18,13 +18,11 @@
  */
 package tacos;
 
-import tacos.config.ClientEdit;
 import tacos.config.Content;
 import tacos.property.Property;
-import tacos.shared.SharedExpTable;
+import tacos.shared.TacosSharedExpTable;
 import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
-import odin.handling.world.OdinWorld;
 import java.sql.SQLException;
 import tacos.database.query.DQ_Accounts;
 import tacos.debug.DebugLogger;
@@ -36,7 +34,7 @@ import org.apache.mina.common.SimpleByteBufferAllocator;
 import odin.server.Timer.*;
 import tacos.config.Config;
 import tacos.database.query.DQ_Characters;
-import tacos.network.MapleAESOFB;
+import tacos.network.CAESCipher;
 import tacos.property.Property_World;
 import tacos.server.TacosServer;
 import tacos.server.TacosCashShop;
@@ -81,17 +79,14 @@ public class Start {
         // TODO : debug config
         // AES
         DebugLogger.SetupLog("AES_KEY");
-        MapleAESOFB.setAesKey();
+        CAESCipher.setAesKey();
         // update content flags
         DebugLogger.SetupLog("FLAG_CONTENT");
         Content.init();
         //Content.showContentList();
-        // update client edit flags
-        DebugLogger.SetupLog("FLAG_CLIENT_EDIT");
-        ClientEdit.init();
         // update exp table
         DebugLogger.SetupLog("EXP_TABLE");
-        SharedExpTable.init();
+        TacosSharedExpTable.init();
         // update packet enum values
         DebugLogger.SetupLog("PACKET_OPS");
         tacos.packet.ops.PacketOps.initAll();
@@ -105,13 +100,9 @@ public class Start {
             System.exit(0);
         }
         DQ_Accounts.resetLoginState();
-        OdinWorld.init();
 
-        EtcTimer.getInstance().start();
         MapTimer.getInstance().start();
-        MobTimer.getInstance().start();
         CloneTimer.getInstance().start();
-        EventTimer.getInstance().start();
 
         /*
         DebugLogger.SetupLog("INFO");
@@ -147,18 +138,17 @@ public class Start {
                     for (TacosServer server : TacosServer.get()) {
                         server.shutdown();
                     }
-                    OdinWorld.Guild.save();
-                    OdinWorld.Alliance.save();
-                    OdinWorld.Family.save();
+                    for (TacosWorld w : TacosWorld.getWorlds()) {
+                        w.getGuild().save();
+                        w.getAlliance().save();
+                        w.getFamily().save();
+                    }
                     try {
                         DatabaseConnection.closeAll();
                     } catch (SQLException ex) {
                     }
                     MapTimer.getInstance().stop();
-                    MobTimer.getInstance().stop();
                     CloneTimer.getInstance().stop();
-                    EventTimer.getInstance().stop();
-                    EtcTimer.getInstance().stop();
                     DebugLogger.InfoLog("shutdown OK!");
                 }
         ));

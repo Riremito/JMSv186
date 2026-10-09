@@ -21,7 +21,9 @@ public class MapleCarnivalFactory {
 
     public static class MCSkill {
 
-        public int cpLoss, skillid, level;
+        public int cpLoss;
+        public int skillid;
+        public int level;
         public boolean targetsAll;
 
         public MCSkill(int _cpLoss, int _skillid, int _level, boolean _targetsAll) {

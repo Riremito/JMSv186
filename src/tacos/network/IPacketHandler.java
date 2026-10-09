@@ -18,7 +18,7 @@
  */
 package tacos.network;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 
@@ -28,5 +28,5 @@ import tacos.packet.ClientPacketHeader;
  */
 public interface IPacketHandler {
 
-    public boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) throws Exception;
+    public boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) throws Exception;
 }

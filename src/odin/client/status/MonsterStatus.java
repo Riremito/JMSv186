@@ -20,9 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.status;
 
-import java.io.Serializable;
-
-public enum MonsterStatus implements Serializable {
+public enum MonsterStatus {
 
     NEUTRALISE(0x02), // first int on v.87 or else it won't work.
 
@@ -56,7 +54,7 @@ public enum MonsterStatus implements Serializable {
     MAGIC_DAMAGE_REFLECT(0x4000000000000000L),
     SUMMON(0x8000000000000000L) //all summon bag mobs have.
     ;
-    static final long serialVersionUID = 0L;
+
     private final long i;
     private final boolean first;
 
@@ -68,10 +66,6 @@ public enum MonsterStatus implements Serializable {
     private MonsterStatus(int i, boolean first) {
         this.i = i;
         this.first = first;
-    }
-
-    public boolean isFirst() {
-        return first;
     }
 
     public boolean isEmpty() {

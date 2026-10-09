@@ -18,12 +18,14 @@
  */
 package tacos.network;
 
-import tacos.config.ClientEdit;
+import java.nio.ByteOrder;
 import tacos.config.Content;
 import org.apache.mina.common.ByteBuffer;
 import org.apache.mina.common.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
+import tacos.client.TacosClient;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 
 /**
@@ -32,34 +34,54 @@ import tacos.packet.ServerPacket;
  */
 public class PacketEncoder implements ProtocolEncoder {
 
+    private static final int ENC_HEADER_SIZE = 4;
+
+    private boolean encrypt(TacosClient client, byte[] packet) {
+        // COutPacket::MakeBufferList
+        if (Content.KMSEncryption.get()) {
+            CIGCipher.innoEncrypt(packet, packet, packet.length, client.getSeqRcv().clone());
+        } else {
+            // Shanda
+            if (Content.EncryptedByShanda.get()) {
+                CIOBufferManipulator._En(packet);
+            }
+            // AES
+            CAESCipher.CryptData(packet, packet, packet.length, client.getSeqRcv().clone());
+        }
+        // IV
+        byte[] iv_new = CIGCipher.innoHash(client.getSeqRcv(), null);
+        client.setSeqRcv(iv_new);
+        return true;
+    }
+
     @Override
     public void encode(IoSession is, Object o, ProtocolEncoderOutput peo) throws Exception {
-        MapleAESOFB aes_enc = (MapleAESOFB) is.getAttribute(MapleAESOFB.AES_ENC_KEY);
+        TacosClient client = (TacosClient) is.getAttribute(TacosClient.CLIENT_KEY);
 
+        byte[] packet = ((ServerPacket) o).getBytes().clone();
         // raw packet
-        if (aes_enc == null) {
-            peo.write(ByteBuffer.wrap(((ServerPacket) o).getBytes()));
+        if (client == null) {
+            peo.write(ByteBuffer.wrap(packet));
             return;
         }
 
+        byte[] iv = client.getSeqRcv();
+
         // packet encryption
-        final byte[] raw_server_packet = ((ServerPacket) o).getBytes();
-        final byte[] header = aes_enc.getPacketHeader(raw_server_packet.length); // 4 bytes
-        final byte[] packet = raw_server_packet.clone();
+        short m_uDataLen = (short) packet.length;
+        short uSeqKey = (short) (((iv[3] << 8) & 0xFF00) | (iv[2] & 0x00FF));
+        short uSeqBase = (short) (0xFFFF - (short) Config.VERSION);
+        short uRawSeq = (short) (uSeqKey ^ uSeqBase);
+        short m_uOffset = (short) (uRawSeq ^ m_uDataLen);
 
-        if (!ClientEdit.PacketEncryptionRemoved.get()) {
-            if (Content.CustomEncryption.get()) {
-                MapleCustomEncryption.encryptData(packet);
-            }
-            aes_enc.crypt(packet);
-            aes_enc.updateIv();
-        }
-
-        final byte[] encrypted_server_packet = new byte[header.length + packet.length];
-        System.arraycopy(header, 0, encrypted_server_packet, 0, header.length);
-        System.arraycopy(packet, 0, encrypted_server_packet, header.length, packet.length);
-
-        peo.write(ByteBuffer.wrap(encrypted_server_packet));
+        encrypt(client, packet);
+        ByteBuffer enc_packet = ByteBuffer.allocate(ENC_HEADER_SIZE + m_uDataLen);
+        enc_packet.order(ByteOrder.LITTLE_ENDIAN);
+        enc_packet.putShort(uRawSeq);
+        enc_packet.putShort(m_uOffset);
+        enc_packet.put(packet);
+        enc_packet.flip();
+        peo.write(enc_packet);
     }
 
     @Override

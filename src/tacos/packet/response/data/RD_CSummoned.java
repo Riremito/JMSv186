@@ -1,0 +1,80 @@
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.packet.response.data;
+
+import tacos.config.Config;
+import tacos.config.Region;
+import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsSkill;
+import tacos.server.map.object.TacosSummon;
+
+/**
+ *
+ * @author Riremito
+ */
+public class RD_CSummoned {
+
+    // CSummoned::Init
+    public static byte[] Init(TacosSummon summon, boolean animated) {
+        ServerPacket data = new ServerPacket();
+
+        data.Encode2(summon.getX()); // m_ptPos.x
+        data.Encode2(summon.getY()); // m_ptPos.y
+        data.Encode1(summon.getSkill() == OpsSkill.BMAGE_REVIVE ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
+        data.Encode2(summon.getFootholdId()); // m_dwSN (CStaticFoothold)
+        data.Encode1(summon.getMoveAbility().get()); // m_nMoveAbility
+        data.Encode1(summon.getAssist().get()); // m_nAssistType
+        data.Encode1(animated ? 0 : 1); // nEnterType ENTER_TYPE_DEFAULT, ENTER_TYPE_CREATE_SUMMONED
+        data.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
+
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+            boolean is_avater_look = summon.getSkill() == OpsSkill.DUAL5_DUMMY_EFFECT;
+            data.Encode1(is_avater_look ? 1 : 0);
+            if (is_avater_look) {
+                data.EncodeBuffer(RD_AvatarLook.Encode(summon.getOwner()));
+            }
+        }
+
+        // BIGBANG
+        switch (summon.getSkill()) {
+            case MECHANIC_TESLA_COIL -> {
+                // アクセラレーター<EX-7>
+                int m_nTeslaCoilState = 0;
+                data.Encode1(m_nTeslaCoilState); // m_nTeslaCoilState
+                if (m_nTeslaCoilState == 1) { // TESLACOIL_LEADER
+                    for (int i = 0; i < 3; i++) {
+                        data.Encode2(0); // x
+                        data.Encode2(0); // y
+                    }
+                }
+            }
+            case KANNA_KISHIN -> {
+                // 鬼神召喚
+                data.Encode2(summon.getX() + 250);
+                data.Encode2(summon.getY());
+                data.Encode2(summon.getX() - 250);
+                data.Encode2(summon.getY());
+            }
+            default -> {
+            }
+        }
+
+        return data.getBytes();
+    }
+}

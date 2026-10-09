@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -32,15 +32,16 @@ import tacos.packet.response.ResCUser_FoxMan;
 public class ReqCUser_FoxMan {
 
     // CUser::OnFoxManPacket
-    public static boolean OnPacket(MapleClient client, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
         MapleCharacter chr = client.getPlayer();
-        if (chr == null || chr.isHidden()) {
+        if (chr == null) {
             return false;
         }
 
+        // TODO : fox man check.
         switch (header) {
             case CP_FoxManMove: {
-                OnFoxManMove(cp, chr);
+                OnFoxManMove(chr, cp);
                 return true;
             }
             case CP_FoxManActionSetUseRequest: {
@@ -50,19 +51,16 @@ public class ReqCUser_FoxMan {
                 break;
             }
         }
+
         return false;
     }
 
-    public static boolean OnFoxManMove(ClientPacket cp, MapleCharacter chr) {
-
-        // TODO fox check.
-        // CMovePath::Decode
+    public static boolean OnFoxManMove(MapleCharacter chr, ClientPacket cp) {
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
+            // TODO : fox man update.
+            chr.getMap().splitSendPacket(chr, ResCUser_FoxMan.FoxManMove(chr, move_path), chr.getId());
         }
-
-        chr.getMap().broadcastMessageTo(chr, ResCUser_FoxMan.FoxManMove(chr, move_path), chr.getPosition());
         return true;
     }
-
 }

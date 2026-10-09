@@ -25,20 +25,45 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.wz.MobWz.MobBanInfo;
 
 public class MapleMonsterStats {
 
-    private byte cp, selfDestruction_action, tagColor, tagBgColor, rareItemDropLevel, HPDisplayType;
-    private short level, PhysicalDefense, MagicDefense, eva;
+    private byte cp;
+    private byte selfDestruction_action;
+    private byte tagColor;
+    private byte tagBgColor;
+    private byte rareItemDropLevel;
+    private byte HPDisplayType;
+    private short level;
+    private short PhysicalDefense;
+    private short MagicDefense;
+    private short eva;
     private long hp;
-    private int exp, mp, removeAfter, buffToGive, fixedDamage, selfDestruction_hp, dropItemPeriod, point;
-    private boolean boss, undead, ffaLoot, firstAttack, isExplosiveReward, mobile, fly, onlyNormalAttack, friendly, noDoom;
+    private int exp;
+    private int mp;
+    private int removeAfter;
+    private int buffToGive;
+    private int fixedDamage;
+    private int selfDestruction_hp;
+    private int dropItemPeriod;
+    private int point;
+    private boolean boss;
+    private boolean undead;
+    private boolean ffaLoot;
+    private boolean firstAttack;
+    private boolean isExplosiveReward;
+    private boolean mobile;
+    private boolean fly;
+    private boolean onlyNormalAttack;
+    private boolean friendly;
+    private boolean noDoom;
     private String name;
-    private Map<Element, ElementalEffectiveness> resistance = new HashMap<Element, ElementalEffectiveness>();
-    private List<Integer> revives = new ArrayList<Integer>();
-    private List<OdinPair<Integer, Integer>> skills = new ArrayList<OdinPair<Integer, Integer>>();
-    private BanishInfo banish;
+    private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
+    private List<Integer> revives = new ArrayList<>();
+    private List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
+    private MobBanInfo banish;
 
     public int getExp() {
         return exp;
@@ -92,47 +117,27 @@ public class MapleMonsterStats {
         this.fixedDamage = damage;
     }
 
-    public int getFixedDamage() {
-        return fixedDamage;
-    }
-
     public void setPhysicalDefense(final short PhysicalDefense) {
         this.PhysicalDefense = PhysicalDefense;
-    }
-
-    public short getPhysicalDefense() {
-        return PhysicalDefense;
     }
 
     public final void setMagicDefense(final short MagicDefense) {
         this.MagicDefense = MagicDefense;
     }
 
-    public final short getMagicDefense() {
-        return MagicDefense;
-    }
-
     public final void setEva(final short eva) {
         this.eva = eva;
-    }
-
-    public final short getEva() {
-        return eva;
     }
 
     public void setOnlyNormalAttack(boolean onlyNormalAttack) {
         this.onlyNormalAttack = onlyNormalAttack;
     }
 
-    public boolean getOnlyNoramlAttack() {
-        return onlyNormalAttack;
-    }
-
-    public BanishInfo getBanishInfo() {
+    public MobBanInfo getBanishInfo() {
         return banish;
     }
 
-    public void setBanishInfo(BanishInfo banish) {
+    public void setBanishInfo(MobBanInfo banish) {
         this.banish = banish;
     }
 
@@ -142,10 +147,6 @@ public class MapleMonsterStats {
 
     public void setRemoveAfter(int removeAfter) {
         this.removeAfter = removeAfter;
-    }
-
-    public byte getrareItemDropLevel() {
-        return rareItemDropLevel;
     }
 
     public void setrareItemDropLevel(byte rareItemDropLevel) {
@@ -188,10 +189,6 @@ public class MapleMonsterStats {
         this.fly = fly;
     }
 
-    public boolean getFly() {
-        return fly;
-    }
-
     public List<Integer> getRevives() {
         return revives;
     }
@@ -204,16 +201,8 @@ public class MapleMonsterStats {
         this.undead = undead;
     }
 
-    public boolean getUndead() {
-        return undead;
-    }
-
     public void setEffectiveness(Element e, ElementalEffectiveness ee) {
         resistance.put(e, ee);
-    }
-
-    public void removeEffectiveness(Element e) {
-        resistance.remove(e);
     }
 
     public ElementalEffectiveness getEffectiveness(Element e) {
@@ -249,13 +238,13 @@ public class MapleMonsterStats {
         this.tagBgColor = (byte) tagBgColor;
     }
 
-    public void setSkills(List<OdinPair<Integer, Integer>> skill_) {
-        for (OdinPair<Integer, Integer> skill : skill_) {
+    public void setSkills(List<SimpleImmutableEntry<Integer, Integer>> skill_) {
+        for (SimpleImmutableEntry<Integer, Integer> skill : skill_) {
             skills.add(skill);
         }
     }
 
-    public List<OdinPair<Integer, Integer>> getSkills() {
+    public List<SimpleImmutableEntry<Integer, Integer>> getSkills() {
         return Collections.unmodifiableList(this.skills);
     }
 
@@ -264,8 +253,8 @@ public class MapleMonsterStats {
     }
 
     public boolean hasSkill(int skillId, int level) {
-        for (OdinPair<Integer, Integer> skill : skills) {
-            if (skill.getLeft() == skillId && skill.getRight() == level) {
+        for (SimpleImmutableEntry<Integer, Integer> skill : skills) {
+            if (skill.getKey() == skillId && skill.getValue() == level) {
                 return true;
             }
         }
@@ -282,10 +271,6 @@ public class MapleMonsterStats {
 
     public void setCP(byte cp) {
         this.cp = cp;
-    }
-
-    public byte getCP() {
-        return cp;
     }
 
     public void setPoint(int cp) {
@@ -326,10 +311,6 @@ public class MapleMonsterStats {
 
     public void setHPDisplayType(byte HPDisplayType) {
         this.HPDisplayType = HPDisplayType;
-    }
-
-    public int getDropItemPeriod() {
-        return dropItemPeriod;
     }
 
     public void setDropItemPeriod(int d) {

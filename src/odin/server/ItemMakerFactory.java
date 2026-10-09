@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import tacos.odin.OdinPair;
-import odin.provider.IMapleData;
-import tacos.wz.WzDataTool;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.WzXML;
 
 public class ItemMakerFactory {
@@ -22,73 +20,7 @@ public class ItemMakerFactory {
 
     protected ItemMakerFactory() {
         //System.out.println("Loading ItemMakerFactory :::");
-        // 0 = Item upgrade crystals
-        // 1 / 2/ 4/ 8 = Item creation
-
-        if (WzXML.ETC.getItemMake() == null) {
-            return;
-        }
-
-        byte totalupgrades, reqMakerLevel;
-        int reqLevel, cost, quantity, stimulator;
-        GemCreateEntry ret;
-        ItemMakerCreateEntry imt;
-
-        for (IMapleData dataType : WzXML.ETC.getItemMake().getChildren()) {
-            int type = Integer.parseInt(dataType.getName());
-            switch (type) {
-                case 0: { // Caching of gem
-                    for (IMapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
-                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
-                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
-//			totalupgrades = MapleDataTool.getInt("tuc", itemFolder, 0); // Gem is always 0
-
-                        ret = new GemCreateEntry(cost, reqLevel, reqMakerLevel, quantity);
-
-                        for (IMapleData rewardNRecipe : itemFolder.getChildren()) {
-                            for (IMapleData ind : rewardNRecipe.getChildren()) {
-                                if (rewardNRecipe.getName().equals("randomReward")) {
-                                    ret.addRandomReward(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("prob", ind, 0));
-// MapleDataTool.getInt("itemNum", ind, 0)
-                                } else if (rewardNRecipe.getName().equals("recipe")) {
-                                    ret.addReqRecipe(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
-                                }
-                            }
-                        }
-                        gemCache.put(Integer.parseInt(itemFolder.getName()), ret);
-                    }
-                    break;
-                }
-                case 1: // Warrior
-                case 2: // Magician
-                case 4: // Bowman
-                case 8: // Thief
-                case 16: { // Pirate
-                    for (IMapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
-                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
-                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
-                        totalupgrades = (byte) WzDataTool.getIntPath("tuc", itemFolder, 0);
-                        stimulator = WzDataTool.getIntPath("catalyst", itemFolder, 0);
-
-                        imt = new ItemMakerCreateEntry(cost, reqLevel, reqMakerLevel, quantity, totalupgrades, stimulator);
-
-                        for (IMapleData Recipe : itemFolder.getChildren()) {
-                            for (IMapleData ind : Recipe.getChildren()) {
-                                if (Recipe.getName().equals("recipe")) {
-                                    imt.addReqItem(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
-                                }
-                            }
-                        }
-                        createCache.put(Integer.parseInt(itemFolder.getName()), imt);
-                    }
-                    break;
-                }
-            }
-        }
+        WzXML.ETC.loadItemMake(gemCache, createCache);
     }
 
     public GemCreateEntry getGemInfo(int itemid) {
@@ -101,10 +33,12 @@ public class ItemMakerFactory {
 
     public static class GemCreateEntry {
 
-        private int reqLevel, reqMakerLevel;
-        private int cost, quantity;
-        private List<OdinPair<Integer, Integer>> randomReward = new ArrayList<OdinPair<Integer, Integer>>();
-        private List<OdinPair<Integer, Integer>> reqRecipe = new ArrayList<OdinPair<Integer, Integer>>();
+        private int reqLevel;
+        private int reqMakerLevel;
+        private int cost;
+        private int quantity;
+        private List<SimpleImmutableEntry<Integer, Integer>> randomReward = new ArrayList<>();
+        private List<SimpleImmutableEntry<Integer, Integer>> reqRecipe = new ArrayList<>();
 
         public GemCreateEntry(int cost, int reqLevel, int reqMakerLevel, int quantity) {
             this.cost = cost;
@@ -113,15 +47,11 @@ public class ItemMakerFactory {
             this.quantity = quantity;
         }
 
-        public int getRewardAmount() {
-            return quantity;
-        }
-
-        public List<OdinPair<Integer, Integer>> getRandomReward() {
+        public List<SimpleImmutableEntry<Integer, Integer>> getRandomReward() {
             return randomReward;
         }
 
-        public List<OdinPair<Integer, Integer>> getReqRecipes() {
+        public List<SimpleImmutableEntry<Integer, Integer>> getReqRecipes() {
             return reqRecipe;
         }
 
@@ -137,22 +67,24 @@ public class ItemMakerFactory {
             return cost;
         }
 
-        protected void addRandomReward(int itemId, int prob) {
-            randomReward.add(new OdinPair<Integer, Integer>(itemId, prob));
+        public void addRandomReward(int itemId, int prob) {
+            randomReward.add(new SimpleImmutableEntry<>(itemId, prob));
         }
 
-        protected void addReqRecipe(int itemId, int count) {
-            reqRecipe.add(new OdinPair<Integer, Integer>(itemId, count));
+        public void addReqRecipe(int itemId, int count) {
+            reqRecipe.add(new SimpleImmutableEntry<>(itemId, count));
         }
     }
 
     public static class ItemMakerCreateEntry {
 
         private int reqLevel;
-        private int cost, quantity, stimulator;
-        private byte tuc, reqMakerLevel;
-        private List<OdinPair<Integer, Integer>> reqItems = new ArrayList<OdinPair<Integer, Integer>>(); // itemId / amount
-        private List<Integer> reqEquips = new ArrayList<Integer>();
+        private int cost;
+        private int quantity;
+        private int stimulator;
+        private byte tuc;
+        private byte reqMakerLevel;
+        private List<SimpleImmutableEntry<Integer, Integer>> reqItems = new ArrayList<>(); // itemId / amount
 
         public ItemMakerCreateEntry(int cost, int reqLevel, byte reqMakerLevel, int quantity, byte tuc, int stimulator) {
             this.cost = cost;
@@ -167,16 +99,8 @@ public class ItemMakerFactory {
             return tuc;
         }
 
-        public int getRewardAmount() {
-            return quantity;
-        }
-
-        public List<OdinPair<Integer, Integer>> getReqItems() {
+        public List<SimpleImmutableEntry<Integer, Integer>> getReqItems() {
             return reqItems;
-        }
-
-        public List<Integer> getReqEquips() {
-            return reqEquips;
         }
 
         public int getReqLevel() {
@@ -195,8 +119,8 @@ public class ItemMakerFactory {
             return stimulator;
         }
 
-        protected void addReqItem(int itemId, int amount) {
-            reqItems.add(new OdinPair<Integer, Integer>(itemId, amount));
+        public void addReqItem(int itemId, int amount) {
+            reqItems.add(new SimpleImmutableEntry<>(itemId, amount));
         }
     }
 }

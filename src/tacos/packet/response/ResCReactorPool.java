@@ -28,40 +28,52 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCReactorPool {
 
-    public static ServerPacket ReactorChangeState(MapleReactor reactor, int stance) {
+    // CReactorPool::OnReactorChangeState
+    public static ServerPacket ReactorChangeState(MapleReactor reactor, int tActionDelay) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorChangeState);
 
-        sp.Encode4(reactor.getObjectId());
-        sp.Encode1(reactor.getState());
-        sp.Encode2(reactor.getPosition().x);
-        sp.Encode2(reactor.getPosition().y);
-        sp.Encode2(stance);
-        sp.Encode1(0);
-        sp.Encode1(4);
+        sp.Encode4(reactor.getObjectId()); // dwID
+        sp.Encode1(reactor.getState()); // nState
+        sp.Encode2(reactor.getX()); // ptPos.x
+        sp.Encode2(reactor.getY()); // ptPos.y
+        sp.Encode2(tActionDelay); // tHitStart, tActionDelay
+        sp.Encode1(0); // nProperEventIdx
+        sp.Encode1(4); // tStateEnd
         return sp;
     }
 
+    // CReactorPool::OnReactorMove
+    public static ServerPacket ReactorMove(MapleReactor reactor) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorMove);
+
+        sp.Encode4(reactor.getObjectId()); // dwID
+        sp.Encode2(reactor.getX()); // ptPos.x
+        sp.Encode2(reactor.getY()); // ptPos.y
+        return sp;
+    }
+
+    // CReactorPool::OnReactorEnterField
     public static ServerPacket ReactorEnterField(MapleReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorEnterField);
 
-        sp.Encode4(reactor.getObjectId());
-        sp.Encode4(reactor.getReactorId());
-        sp.Encode1(reactor.getState());
-        sp.Encode2(reactor.getPosition().x);
-        sp.Encode2(reactor.getPosition().y);
-        sp.Encode1(reactor.getFacingDirection()); // stance
-        sp.EncodeStr(reactor.getName());
+        sp.Encode4(reactor.getObjectId()); // dwID
+        sp.Encode4(reactor.getId()); // dwTemplateID
+        sp.Encode1(reactor.getState()); // nState, nOldState
+        sp.Encode2(reactor.getX()); // ptPos.x
+        sp.Encode2(reactor.getY()); // ptPos.y
+        sp.Encode1(reactor.getFacingDirection()); // bFlip
+        sp.EncodeStr(reactor.getName()); // sName
         return sp;
     }
 
+    // CReactorPool::OnReactorLeaveField
     public static ServerPacket ReactorLeaveField(MapleReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorLeaveField);
 
-        sp.Encode4(reactor.getObjectId());
-        sp.Encode1(reactor.getState());
-        sp.Encode2(reactor.getPosition().x);
-        sp.Encode2(reactor.getPosition().y);
+        sp.Encode4(reactor.getObjectId()); // dwID
+        sp.Encode1(reactor.getState()); // nState
+        sp.Encode2(reactor.getX()); // ptPos.x
+        sp.Encode2(reactor.getY()); // ptPos.y
         return sp;
     }
-
 }

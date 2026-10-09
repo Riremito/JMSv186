@@ -19,17 +19,19 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_MonsterCarnival;
-import tacos.packet.response.wrapper.ResWrapper;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleCarnivalFactory;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -37,8 +39,8 @@ import tacos.packet.ClientPacketHeader;
  */
 public class ReqCField_MonsterCarnival {
 
-    public static boolean OnPacket(MapleClient c, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
@@ -70,36 +72,36 @@ public class ReqCField_MonsterCarnival {
         final int num = cp.Decode4();
 
         if (tab == 0) {
-            final List<OdinPair<Integer, Integer>> mobs = chr.getMap().getNodeInfo().getMobsToSpawn();
-            if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getRight()) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
+            final List<SimpleImmutableEntry<Integer, Integer>> mobs = chr.getMap().getNodeInfo().getMobsToSpawn();
+            if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getValue()) {
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
-            final MapleMonster mons = MapleLifeFactory.getMonster(mobs.get(num).getLeft());
+            MapleMonster mons = WzXML.MOB.findMonster(mobs.get(num).getKey());
             if (mons != null && chr.getMap().makeCarnivalSpawn(chr.getCarnivalParty().getTeam(), mons, num)) {
-                chr.getCarnivalParty().useCP(chr, mobs.get(num).getRight());
+                chr.getCarnivalParty().useCP(chr, mobs.get(num).getValue());
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : chr.getMap().getCharacters()) {
+                for (MapleCharacter player : chr.getMap().getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
-                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
+                chr.getMap().broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the monster."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You may no longer summon the monster.").build()));
                 chr.sendStatChanged(true);
             }
 
         } else if (tab == 1) { //debuff
             final List<Integer> skillid = chr.getMap().getNodeInfo().getSkillIds();
             if (num >= skillid.size()) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("An error occurred.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
             final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(skillid.get(num)); //ugh wtf
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
@@ -107,33 +109,33 @@ public class ReqCField_MonsterCarnival {
             if (found) {
                 chr.getCarnivalParty().useCP(chr, skil.cpLoss);
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : chr.getMap().getCharacters()) {
+                for (MapleCharacter player : chr.getMap().getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                     //chr.dropMessage(5, "[" + (chr.getCarnivalParty().getTeam() == 0 ? "Red" : "Blue") + "] " + chr.getName() + " has used a skill. [" + dis.name() + "].");
                 }
-                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
+                chr.getMap().broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("An error occurred."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("An error occurred.").build()));
                 chr.sendStatChanged(true);
             }
         } else if (tab == 2) { //skill
             final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You do not have the CP."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
             if (chr.getMap().makeCarnivalReactor(chr.getCarnivalParty().getTeam(), num)) {
                 chr.getCarnivalParty().useCP(chr, skil.cpLoss);
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : chr.getMap().getCharacters()) {
+                for (MapleCharacter player : chr.getMap().getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
-                chr.getMap().broadcastMessage(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
+                chr.getMap().broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResWrapper.BroadCastMsgEvent("You may no longer summon the being."));
+                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You may no longer summon the being.").build()));
                 chr.sendStatChanged(true);
             }
         }

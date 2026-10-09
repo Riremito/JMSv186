@@ -28,11 +28,10 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.io.Serializable;
 
-public class MapleInventory implements Iterable<IItem>, Serializable {
+public class MapleInventory implements Iterable<Item> {
 
-    private Map<Short, IItem> inventory;
+    private Map<Short, Item> inventory;
     private byte slotLimit = 96;
     private MapleInventoryType type;
 
@@ -56,10 +55,6 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         }
     }
 
-    public byte getSlotLimit() {
-        return slotLimit;
-    }
-
     public void setSlotLimit(byte slot) {
         if (slot > 96) {
             slot = 96;
@@ -71,17 +66,8 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
      * Returns the item with its slot id if it exists within the inventory,
      * otherwise null is returned
      */
-    public IItem findById(int itemId) {
-        for (IItem item : inventory.values()) {
-            if (item.getItemId() == itemId) {
-                return item;
-            }
-        }
-        return null;
-    }
-
-    public IItem findByUniqueId(long itemId) {
-        for (IItem item : inventory.values()) {
+    public Item findByUniqueId(long itemId) {
+        for (Item item : inventory.values()) {
             if (item.getUniqueId() == itemId) {
                 return item;
             }
@@ -91,7 +77,7 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
 
     public int countById(int itemId) {
         int possesed = 0;
-        for (IItem item : inventory.values()) {
+        for (Item item : inventory.values()) {
             if (item.getItemId() == itemId) {
                 possesed += item.getQuantity();
             }
@@ -99,30 +85,14 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         return possesed;
     }
 
-    public List<IItem> listById(int itemId) {
-        List<IItem> ret = new ArrayList<IItem>();
-        for (IItem item : inventory.values()) {
-            if (item.getItemId() == itemId) {
-                ret.add(item);
-            }
-        }
-        // the linkedhashmap does impose insert order as returned order but we can not guarantee that this is still the
-        // correct order - blargh, we could empty the map and reinsert in the correct order after each inventory
-        // addition, or we could use an array/list, it's only 255 entries anyway...
-        if (ret.size() > 1) {
-            Collections.sort(ret);
-        }
-        return ret;
-    }
-
-    public Collection<IItem> list() {
+    public Collection<Item> list() {
         return inventory.values();
     }
 
     /**
      * Adds the item to the inventory and returns the assigned slot id
      */
-    public short addItem(IItem item) {
+    public short addItem(Item item) {
         short slotId = getNextFreeSlot();
         if (slotId < 0) {
             return -1;
@@ -132,7 +102,7 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         return slotId;
     }
 
-    public void addFromDB(IItem item) {
+    public void addFromDB(Item item) {
         if (item.getPosition() < 0 && !type.equals(MapleInventoryType.EQUIPPED)) {
             // This causes a lot of stuck problem, until we are done with position checking
             return;
@@ -147,7 +117,7 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         Item source = (Item) inventory.get(sSlot);
         Item target = (Item) inventory.get(dSlot);
         if (source == null) {
-            throw new InventoryException("Trying to move empty slot");
+            return;
         }
         if (target == null) {
             source.setPosition(dSlot);
@@ -168,7 +138,7 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         }
     }
 
-    private void swap(IItem source, IItem target) {
+    private void swap(Item source, Item target) {
         inventory.remove(source.getPosition());
         inventory.remove(target.getPosition());
         short swapPos = source.getPosition();
@@ -178,16 +148,12 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         inventory.put(target.getPosition(), target);
     }
 
-    public IItem getItem(short slot) {
-        return inventory.get(slot);
-    }
-
     public void removeItem(short slot) {
         removeItem(slot, (short) 1, false);
     }
 
     public void removeItem(short slot, short quantity, boolean allowZero) {
-        IItem item = inventory.get(slot);
+        Item item = inventory.get(slot);
         if (item == null) { // TODO is it ok not to throw an exception here?
             return;
         }
@@ -215,18 +181,6 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
     /**
      * Returns the next empty slot id, -1 if the inventory is full
      */
-    public short getNextFreeSlot() {
-        if (isFull()) {
-            return -1;
-        }
-        for (short i = 1; i <= slotLimit; i++) {
-            if (!inventory.keySet().contains(i)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public short getNextItem(short slot) {
         for (short i = slot; i <= slotLimit; i++) {
             if (inventory.keySet().contains(i)) {
@@ -253,8 +207,60 @@ public class MapleInventory implements Iterable<IItem>, Serializable {
         return type;
     }
 
+    // used by script
+    public byte getSlotLimit() {
+        return slotLimit;
+    }
+
+    // used by script
+    public Item findById(int itemId) {
+        for (Item item : inventory.values()) {
+            if (item.getItemId() == itemId) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    // used by script
+    public List<Item> listById(int itemId) {
+        List<Item> ret = new ArrayList<>();
+        for (Item item : inventory.values()) {
+            if (item.getItemId() == itemId) {
+                ret.add(item);
+            }
+        }
+        // the linkedhashmap does impose insert order as returned order but we can not guarantee that this is still the
+        // correct order - blargh, we could empty the map and reinsert in the correct order after each inventory
+        // addition, or we could use an array/list, it's only 255 entries anyway...
+        if (ret.size() > 1) {
+            Collections.sort(ret, (item1, item2) -> Item.comparePosition(item1, item2));
+        }
+        return ret;
+    }
+
+    // used by script
+    public Item getItem(short slot) {
+        return inventory.get(slot);
+    }
+
+    // used by script
+    public short getNextFreeSlot() {
+        if (isFull()) {
+            return -1;
+        }
+        for (short i = 1; i <= slotLimit; i++) {
+            if (!inventory.keySet().contains(i)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // used by script
     @Override
-    public Iterator<IItem> iterator() {
+    public Iterator<Item> iterator() {
         return Collections.unmodifiableCollection(inventory.values()).iterator();
     }
+
 }

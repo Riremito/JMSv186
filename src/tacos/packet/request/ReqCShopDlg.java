@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
@@ -35,8 +35,8 @@ import tacos.config.Region;
 public class ReqCShopDlg {
 
     // CShopDlg::OnPacket
-    public static boolean OnPacket(ClientPacket cp, MapleClient c) {
-        MapleCharacter chr = c.getPlayer();
+    public static boolean OnPacket(TacosClient client, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -52,27 +52,25 @@ public class ReqCShopDlg {
 
         switch (OpsShop.find(flag)) {
             case ShopReq_Buy: {
-                cp.Decode2();
+                short unk1 = cp.Decode2();
 
-                if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-                    cp.Decode1();
-                }
+                byte unk2 = cp.Decode1(Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
 
                 final int itemId = cp.Decode4();
                 final short quantity = cp.Decode2();
-                shop.buy(c, chr, itemId, quantity);
+                shop.buy(client, chr, itemId, quantity);
                 break;
             }
             case ShopReq_Sell: {
                 final byte slot = (byte) cp.Decode2();
                 final int itemId = cp.Decode4();
                 final short quantity = cp.Decode2();
-                shop.sell(c, GameConstants.getInventoryType(itemId), slot, quantity);
+                shop.sell(client, GameConstants.getInventoryType(itemId), slot, quantity);
                 break;
             }
             case ShopReq_Recharge: {
                 final byte slot = (byte) cp.Decode2();
-                shop.recharge(c, slot);
+                shop.recharge(client, slot);
                 break;
             }
             case ShopReq_Close: {

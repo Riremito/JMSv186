@@ -1,19 +1,18 @@
 package odin.server.quest;
 
-import odin.client.ISkill;
+import odin.client.Skill;
 import java.util.Calendar;
 import java.util.List;
-import java.util.LinkedList;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
-import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
-import tacos.odin.OdinPair;
-import odin.provider.IMapleData;
-import tacos.wz.WzDataTool;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.wz.MapleData;
+import tacos.wz.QuestWz;
+import tacos.wz.WzXML;
 
 public class MapleQuestRequirement {
 
@@ -21,126 +20,32 @@ public class MapleQuestRequirement {
     private MapleQuestRequirementType type;
     private int intStore;
     private String stringStore;
-    private List<OdinPair<Integer, Integer>> dataStore;
+    private List<SimpleImmutableEntry<Integer, Integer>> dataStore;
 
-    public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, IMapleData data) {
+    public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, MapleData data) {
         this.type = type;
         this.quest = quest;
 
-        switch (type) {
-            case job: {
-                final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    dataStore.add(new OdinPair<>(i, WzDataTool.getInt(child.get(i), -1)));
-                }
-                break;
-            }
-            case skill: {
-                final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            WzDataTool.getInt(childdata.getChildByPath("acquire"), 0)));
-                }
-                break;
-            }
-            case quest: {
-                final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id")),
-                            WzDataTool.getInt(childdata.getChildByPath("state"), 0)));
-                }
-                break;
-            }
-            case item: {
-                final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id")),
-                            WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
-                }
-                break;
-            }
-            case pettamenessmin:
-            case npc:
-            case questComplete:
-            case pop:
-            case interval:
-            case mbmin:
-            case lvmax:
-            case lvmin: {
-                intStore = WzDataTool.getInt(data, -1);
-                break;
-            }
-            case end: {
-                stringStore = WzDataTool.getString(data, null);
-                break;
-            }
-            case mob: {
-                final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            WzDataTool.getInt(childdata.getChildByPath("count"), 0)));
-                }
-                break;
-            }
-            case fieldEnter: {
-                final IMapleData zeroField = data.getChildByPath("0");
-                if (zeroField != null) {
-                    intStore = WzDataTool.getInt(zeroField);
-                } else {
-                    intStore = -1;
-                }
-                break;
-            }
-            case mbcard: {
-                final List<IMapleData> child = data.getChildren();
-                dataStore = new LinkedList<>();
-
-                for (int i = 0; i < child.size(); i++) {
-                    final IMapleData childdata = child.get(i);
-                    dataStore.add(new OdinPair<>(WzDataTool.getInt(childdata.getChildByPath("id"), 0),
-                            WzDataTool.getInt(childdata.getChildByPath("min"), 0)));
-                }
-                break;
-            }
-            case pet: {
-                dataStore = new LinkedList<>();
-
-                for (IMapleData child : data) {
-                    dataStore.add(new OdinPair<>(-1, WzDataTool.getIntPath("id", child, 0)));
-                }
-                break;
-            }
-        }
+        QuestWz.QuestRequirementData parsed = WzXML.QUEST.parseQuestRequirement(type, data);
+        this.intStore = parsed.intStore;
+        this.stringStore = parsed.stringStore;
+        this.dataStore = parsed.dataStore;
     }
 
     public boolean check(MapleCharacter chr, Integer npc_id) {
         switch (type) {
             case job:
-                for (OdinPair<Integer, Integer> a : dataStore) {
-                    if (a.getRight() == chr.getJob() || chr.isGM()) {
+                for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
+                    if (a.getValue() == chr.getJob() || chr.isGM()) {
                         return true;
                     }
                 }
                 return false;
             case skill: {
-                for (OdinPair<Integer, Integer> a : dataStore) {
-                    final boolean acquire = a.getRight() > 0;
-                    final int skill = a.getLeft();
-                    final ISkill skil = SkillFactory.getSkill(skill);
+                for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
+                    final boolean acquire = a.getValue() > 0;
+                    final int skill = a.getKey();
+                    final Skill skil = SkillFactory.getSkill(skill);
                     if (acquire) {
                         if (skil.isFourthJob()) {
                             if (chr.getMasterLevel(skil) == 0) {
@@ -160,9 +65,9 @@ public class MapleQuestRequirement {
                 return true;
             }
             case quest:
-                for (OdinPair<Integer, Integer> a : dataStore) {
-                    final MapleQuestStatus q = chr.getQuest(MapleQuest.getInstance(a.getLeft()));
-                    final int state = a.getRight();
+                for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
+                    final MapleQuestStatus q = chr.getQuest(MapleQuest.getInstance(a.getKey()));
+                    final int state = a.getValue();
                     if (state != 0) {
                         if (q == null && state == 0) {
                             continue;
@@ -178,14 +83,14 @@ public class MapleQuestRequirement {
                 int itemId;
                 short quantity;
 
-                for (OdinPair<Integer, Integer> a : dataStore) {
-                    itemId = a.getLeft();
+                for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
+                    itemId = a.getKey();
                     quantity = 0;
                     iType = GameConstants.getInventoryType(itemId);
-                    for (IItem item : chr.getInventory(iType).listById(itemId)) {
+                    for (Item item : chr.getInventory(iType).listById(itemId)) {
                         quantity += item.getQuantity();
                     }
-                    final int count = a.getRight();
+                    final int count = a.getValue();
                     if (quantity < count || count <= 0 && quantity > 0) {
                         return false;
                     }
@@ -201,9 +106,9 @@ public class MapleQuestRequirement {
                 cal.set(Integer.parseInt(timeStr.substring(0, 4)), Integer.parseInt(timeStr.substring(4, 6)), Integer.parseInt(timeStr.substring(6, 8)), Integer.parseInt(timeStr.substring(8, 10)), 0);
                 return cal.getTimeInMillis() >= System.currentTimeMillis();
             case mob:
-                for (OdinPair<Integer, Integer> a : dataStore) {
-                    final int mobId = a.getLeft();
-                    final int killReq = a.getRight();
+                for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
+                    final int mobId = a.getKey();
+                    final int killReq = a.getValue();
                     if (chr.getQuest(quest).getMobKills(mobId) < killReq) {
                         return false;
                     }
@@ -222,9 +127,9 @@ public class MapleQuestRequirement {
                 }
                 return false;
             case mbcard:
-                for (OdinPair<Integer, Integer> a : dataStore) {
-                    final int cardId = a.getLeft();
-                    final int killReq = a.getRight();
+                for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
+                    final int cardId = a.getKey();
+                    final int killReq = a.getValue();
                     if (chr.getMonsterBook().getCardCount(cardId) < killReq) {
                         return false;
                     }
@@ -237,18 +142,8 @@ public class MapleQuestRequirement {
             case interval:
                 return chr.getQuest(quest).getStatus() != 2 || chr.getQuest(quest).getCompletionTime() <= System.currentTimeMillis() - intStore * 60 * 1000L;
             case pet:
-                for (OdinPair<Integer, Integer> a : dataStore) {
-                    if (chr.getPetById(a.getRight()) == -1) {
-                        return false;
-                    }
-                }
                 return true;
             case pettamenessmin:
-                for (MaplePet pet : chr.getPets()) {
-                    if (pet.getSummoned() && pet.getCloseness() >= intStore) {
-                        return true;
-                    }
-                }
                 return false;
             default:
                 return true;

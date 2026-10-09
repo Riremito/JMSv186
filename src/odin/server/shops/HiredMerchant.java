@@ -20,51 +20,201 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.shops;
 
-import java.util.concurrent.ScheduledFuture;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
 import java.util.LinkedList;
 import java.util.List;
-import tacos.packet.response.ResCEmployeePool;
+import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
-import odin.server.Timer.EtcTimer;
-import odin.server.maps.MapleMapObjectType;
-import tacos.packet.response.ResCMiniRoomBaseDlg;
+import odin.server.maps.MapleMap;
+import tacos.client.TacosClient;
 import tacos.server.TacosWorld;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import odin.client.inventory.MapleInventoryType;
+import odin.client.inventory.ItemLoader;
+import tacos.database.query.DQ_Hiredmerch;
+import java.sql.SQLException;
+import tacos.server.map.object.TacosMerchant;
 
-public class HiredMerchant extends AbstractPlayerStore {
+public class HiredMerchant extends TacosMerchant {
 
-    public ScheduledFuture<?> schedule;
-    private List<String> blacklist;
+    public final static byte HIRED_MERCHANT = 1;
+    public final static byte PLAYER_SHOP = 2;
+    public final static byte OMOK = 3;
+    public final static byte MATCH_CARD = 4;
+
+    protected boolean available = false;
+    protected String ownerName;
+    protected String des;
+    protected String pass;
+    protected int owneraccount;
+    protected int itemId;
+    protected int channel;
+    protected int map;
+    protected AtomicInteger meso = new AtomicInteger(0);
+    protected List<BoughtItem> bought = new LinkedList<>();
+    protected List<MaplePlayerShopItem> items = new LinkedList<>();
     private int storeid;
-    private long start;
     private int foothold_id;
     private int item_sub_type;
+    private long start;
 
+    @SuppressWarnings("unchecked")
     public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
-        super(owner, itemId, desc, "", 3);
+        super(owner);
+        this.setPosition(owner.getPosition());
+        this.ownerName = owner.getName();
+        this.owneraccount = owner.getAccountId();
+        this.itemId = itemId;
+        this.des = desc;
+        this.pass = "";
+        this.map = owner.getMapId();
+        this.channel = owner.getClient().getChannelId();
         this.item_sub_type = itemId % 100;
-        this.foothold_id = owner.getFH();
+        this.foothold_id = owner.getFootholdId();
         start = System.currentTimeMillis();
-        blacklist = new LinkedList<String>();
-        this.schedule = EtcTimer.getInstance().schedule(new Runnable() {
+        setOwnerId(owner.getId());
+    }
 
-            @Override
-            public void run() {
-                closeShop(true, true, 0);
+    public int getMeso() {
+        return meso.get();
+    }
+
+    public void setMeso(int meso) {
+        this.meso.set(meso);
+    }
+
+    public boolean saveItems() {
+        if (getShopType() != HIRED_MERCHANT) { //hired merch only
+            return false;
+        }
+        Integer packageid = DQ_Hiredmerch.add(getOwnerId(), owneraccount, meso.get());
+        if (packageid == null) {
+            return false;
+        }
+        List<SimpleImmutableEntry<Item, MapleInventoryType>> iters = new ArrayList<>();
+        Item item;
+        for (MaplePlayerShopItem pItems : items) {
+            if (pItems.item == null || pItems.bundles <= 0) {
+                continue;
             }
-        }, 1000 * 60 * 60 * 24);
+            if (pItems.item.getQuantity() <= 0 && !GameConstants.isRechargable(pItems.item.getItemId())) {
+                continue;
+            }
+            item = pItems.item.copy();
+            item.setQuantity((short) (item.getQuantity() * pItems.bundles));
+            iters.add(new SimpleImmutableEntry<>(item, GameConstants.getInventoryType(item.getItemId())));
+        }
+        try {
+            ItemLoader.HIRED_MERCHANT.saveItems(iters, packageid, owneraccount, getOwnerId());
+            return true;
+        } catch (SQLException se) {
+        }
+        return false;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public int getOwnerAccId() {
+        return owneraccount;
+    }
+
+    public String getDescription() {
+        if (des == null) {
+            return "";
+        }
+        return des;
+    }
+
+    public List<MaplePlayerShopItem> getItems() {
+        return items;
+    }
+
+    public void addItem(MaplePlayerShopItem item) {
+        items.add(item);
+    }
+
+    public boolean removeItem(int item) {
+        return false;
+    }
+
+    public void removeFromSlot(int slot) {
+        items.remove(slot);
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public boolean isOwner(MapleCharacter chr) {
+        return chr.getId() == getOwnerId() && chr.getName().equals(ownerName);
+    }
+
+    public String getPassword() {
+        if (pass == null) {
+            return "";
+        }
+        return pass;
+    }
+
+    public MapleCharacter getMCOwner() {
+        return getMap().getPlayerById(getOwnerId());
+    }
+
+    public MapleMap getMap() {
+        return TacosWorld.find(0).getChannelServer(channel).findMap(map);
+    }
+
+    public int getGameType() {
+        if (getShopType() == HIRED_MERCHANT) { //hiredmerch
+            return 5;
+        } else if (getShopType() == PLAYER_SHOP) { //shop lol
+            return 4;
+        } else if (getShopType() == OMOK) { //omok
+            return 1;
+        } else if (getShopType() == MATCH_CARD) { //matchcard
+            return 2;
+        }
+        return 0;
+    }
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean b) {
+        this.available = b;
+    }
+
+    public List<BoughtItem> getBoughtItems() {
+        return bought;
+    }
+
+    public static final class BoughtItem {
+
+        public int id;
+        public int quantity;
+        public int totalPrice;
+        public String buyer;
+
+        public BoughtItem(final int id, final int quantity, final int totalPrice, final String buyer) {
+            this.id = id;
+            this.quantity = quantity;
+            this.totalPrice = totalPrice;
+            this.buyer = buyer;
+        }
     }
 
     public void setTest(int owner_id, int fh, int st, int store_id) {
-        this.ownerId = owner_id; // overwritten
         this.foothold_id = fh;
         this.item_sub_type = st % 100;
         this.storeid = store_id;
-        //super.setObjectId(this.ownerId - 1);
+        setOwnerId(owner_id); // overwritten
     }
 
     public int getFH() {
@@ -76,7 +226,7 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     public byte getShopType() {
-        return IMaplePlayerShop.HIRED_MERCHANT;
+        return HIRED_MERCHANT;
     }
 
     public final void setStoreid(final int storeid) {
@@ -84,7 +234,7 @@ public class HiredMerchant extends AbstractPlayerStore {
     }
 
     public List<MaplePlayerShopItem> searchItem(final int itemSearch) {
-        final List<MaplePlayerShopItem> itemz = new LinkedList<MaplePlayerShopItem>();
+        final List<MaplePlayerShopItem> itemz = new LinkedList<>();
         for (MaplePlayerShopItem item : items) {
             if (item.item.getItemId() == itemSearch && item.bundles > 0) {
                 itemz.add(item);
@@ -93,12 +243,11 @@ public class HiredMerchant extends AbstractPlayerStore {
         return itemz;
     }
 
-    @Override
-    public void buy(MapleClient c, int item, short quantity) {
-        MapleCharacter chr = c.getPlayer();
+    public void buy(TacosClient client, int item, short quantity) {
+        MapleCharacter chr = client.getPlayer();
         final MaplePlayerShopItem pItem = items.get(item);
-        final IItem shopItem = pItem.item;
-        final IItem newItem = shopItem.copy();
+        final Item shopItem = pItem.item;
+        final Item newItem = shopItem.copy();
         final short perbundle = newItem.getQuantity();
         newItem.setQuantity((short) (quantity * perbundle));
 
@@ -110,34 +259,28 @@ public class HiredMerchant extends AbstractPlayerStore {
             newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
         }
 
-        if (MapleInventoryManipulator.checkSpace(c, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(c, newItem, false)) {
+        if (MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
             pItem.bundles -= quantity; // Number remaining in the store
-            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), c.getPlayer().getName()));
+            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), client.getPlayer().getName()));
 
             final int gainmeso = getMeso() + (pItem.price * quantity);
             setMeso(gainmeso - GameConstants.EntrustedStoreTax(gainmeso));
-            c.getPlayer().gainMeso(-pItem.price * quantity, false);
+            client.getPlayer().gainMeso(-pItem.price * quantity, false);
             saveItems();
         } else {
-            c.getPlayer().dropMessage(1, "Your inventory is full.");
+            client.getPlayer().dropMessage(1, "Your inventory is full.");
             chr.updateInv();
         }
     }
 
-    @Override
     public void closeShop(boolean saveItems, boolean remove, int reason) {
-        if (schedule != null) {
-            schedule.cancel(false);
-        }
         if (saveItems) {
             saveItems();
         }
         if (remove) {
             TacosWorld.find(0).getChannelServer(channel).removeMerchant(this); // TODO : fix
-            getMap().broadcastMessage(ResCEmployeePool.EmployeeLeaveField(this));
         }
-        getMap().removeMapObject(this);
-        schedule = null;
+        getMap().removeMerchant(this);
     }
 
     public int getTimeLeft() {
@@ -146,44 +289,5 @@ public class HiredMerchant extends AbstractPlayerStore {
 
     public final int getStoreId() {
         return storeid;
-    }
-
-    @Override
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.HIRED_MERCHANT;
-    }
-
-    @Override
-    public void sendDestroyData(MapleClient client) {
-        if (isAvailable()) {
-            client.getSession().write(ResCEmployeePool.EmployeeLeaveField(this));
-        }
-    }
-
-    @Override
-    public void sendSpawnData(MapleClient client) {
-        if (isAvailable()) {
-            client.getSession().write(ResCEmployeePool.EmployeeEnterField(this));
-        }
-    }
-
-    public final boolean isInBlackList(final String bl) {
-        return blacklist.contains(bl);
-    }
-
-    public final void addBlackList(final String bl) {
-        blacklist.add(bl);
-    }
-
-    public final void removeBlackList(final String bl) {
-        blacklist.remove(bl);
-    }
-
-    public final void sendBlackList(MapleCharacter chr) {
-        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantBlackListView(blacklist));
-    }
-
-    public final void sendVisitor(MapleCharacter chr) {
-        chr.SendPacket(ResCMiniRoomBaseDlg.MerchantVisitorView(visitors));
     }
 }

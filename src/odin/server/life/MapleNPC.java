@@ -20,54 +20,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import odin.server.MapleShopFactory;
-import odin.server.maps.MapleMapObjectType;
+import tacos.server.map.object.TacosNpc;
 
-public class MapleNPC extends AbstractLoadedMapleLife {
+public class MapleNPC extends TacosNpc {
 
-    private String name = "MISSINGNO";
-    private boolean custom = false;
-
-    public MapleNPC(int npc_id, String name) {
-        super(npc_id);
-        this.name = name;
+    public MapleNPC(int npc_id) {
+        setId(npc_id);
     }
 
     public boolean hasShop() {
         return MapleShopFactory.getInstance().getShopForNPC(getId()) != null;
     }
 
-    public void sendShop(MapleClient c) {
-        MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(c);
-    }
-
-    @Override
-    public void sendSpawnData(MapleClient client) {
-    }
-
-    @Override
-    public void sendDestroyData(MapleClient client) {
-    }
-
-    @Override
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.NPC;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String n) {
-        this.name = n;
-    }
-
-    public boolean isCustom() {
-        return custom;
-    }
-
-    public void setCustom(boolean custom) {
-        this.custom = custom;
+    public void sendShop(TacosClient client) {
+        MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(client);
     }
 }

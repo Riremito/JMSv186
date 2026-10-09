@@ -18,7 +18,7 @@
  */
 package tacos.packet.response;
 
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import java.util.List;
@@ -28,7 +28,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsDBCHAR;
 import tacos.packet.ops.OpsTrunk;
-import tacos.packet.response.data.DataGW_ItemSlotBase;
+import tacos.packet.response.data.RD_GW_ItemSlotBase;
 
 /**
  *
@@ -101,42 +101,42 @@ public class ResCTrunkDlg {
         }
         // 0x04, Equip
         if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTEQUIP.get()) != 0) {
-            List<IItem> items = storage.filterItems(MapleInventoryType.EQUIP);
+            List<Item> items = storage.filterItems(MapleInventoryType.EQUIP);
             data.Encode1(items.size()); // nCount
-            for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            for (Item item : items) {
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x08, Consume
         if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTCONSUME.get()) != 0) {
-            List<IItem> items = storage.filterItems(MapleInventoryType.USE);
+            List<Item> items = storage.filterItems(MapleInventoryType.USE);
             data.Encode1(items.size()); // nCount
-            for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            for (Item item : items) {
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x10, Install
         if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTINSTALL.get()) != 0) {
-            List<IItem> items = storage.filterItems(MapleInventoryType.SETUP);
+            List<Item> items = storage.filterItems(MapleInventoryType.SETUP);
             data.Encode1(items.size()); // nCount
-            for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            for (Item item : items) {
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x20, Etc
         if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTETC.get()) != 0) {
-            List<IItem> items = storage.filterItems(MapleInventoryType.ETC);
+            List<Item> items = storage.filterItems(MapleInventoryType.ETC);
             data.Encode1(items.size()); // nCount
-            for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            for (Item item : items) {
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
         // 0x40, Cash
         if ((dbcharFlag & OpsDBCHAR.DBCHAR_ITEMSLOTCASH.get()) != 0) {
-            List<IItem> items = storage.filterItems(MapleInventoryType.CASH);
+            List<Item> items = storage.filterItems(MapleInventoryType.CASH);
             data.Encode1(items.size()); // nCount
-            for (IItem item : items) {
-                data.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+            for (Item item : items) {
+                data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
             }
         }
 

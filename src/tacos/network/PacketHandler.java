@@ -20,7 +20,7 @@ package tacos.network;
 
 import java.util.concurrent.ThreadPoolExecutor;
 import odin.client.MapleCharacter;
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoHandlerAdapter;
@@ -31,7 +31,6 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
-import odin.server.Randomizer;
 import org.apache.mina.common.ExecutorThreadModel;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
@@ -58,13 +57,6 @@ public class PacketHandler extends IoHandlerAdapter {
             case KMSB: {
                 encoder = new PacketEncoder_KMSB();
                 decoder = new PacketDecoder_KMSB();
-                break;
-            }
-            case KMS:
-            case KMST:
-            case IMS: {
-                encoder = new PacketEncoder_KMS();
-                decoder = new PacketDecoder_KMS();
                 break;
             }
             default: {
@@ -123,19 +115,12 @@ public class PacketHandler extends IoHandlerAdapter {
             return;
         }
 
-        byte serverRecv[] = new byte[]{70, 114, 122, (byte) Randomizer.nextInt(255)};
-        byte serverSend[] = new byte[]{82, 48, 120, (byte) Randomizer.nextInt(255)};
-
-        MapleAESOFB aes_enc = new MapleAESOFB(serverSend, true, true);
-        MapleAESOFB aes_dec = new MapleAESOFB(serverRecv, true, false);
-        MapleClient client = new MapleClient(session);
+        TacosClient client = new TacosClient(session);
         client.setServer(this.server);
 
-        session.setAttribute(MapleAESOFB.AES_ENC_KEY, null);
-        session.write(ResCClientSocket.getHello(serverSend, serverRecv)); // send raw packet before server starts packet encryption.
-        session.setAttribute(MapleClient.CLIENT_KEY, client);
-        session.setAttribute(MapleAESOFB.AES_ENC_KEY, aes_enc);
-        session.setAttribute(MapleAESOFB.AES_DEC_KEY, aes_dec);
+        session.setAttribute(TacosClient.CLIENT_KEY, null);
+        session.write(ResCClientSocket.getHello(client));
+        session.setAttribute(TacosClient.CLIENT_KEY, client);
         session.setIdleTime(IdleStatus.READER_IDLE, 10);
         //session.setIdleTime(IdleStatus.WRITER_IDLE, 5);
     }
@@ -143,7 +128,7 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionClosed(IoSession session) throws Exception {
         log(session, "sessionClosed.");
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
 
         if (client != null) {
             try {
@@ -155,7 +140,7 @@ public class PacketHandler extends IoHandlerAdapter {
                 }
             } finally {
                 session.close();
-                session.removeAttribute(MapleClient.CLIENT_KEY);
+                session.removeAttribute(TacosClient.CLIENT_KEY);
             }
         }
 
@@ -165,7 +150,7 @@ public class PacketHandler extends IoHandlerAdapter {
     @Override
     public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
         log(session, "sessionIdle.");
-        MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+        TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
 
         if (client != null) {
             client.sendPing();
@@ -192,7 +177,7 @@ public class PacketHandler extends IoHandlerAdapter {
             }
 
             // client
-            MapleClient client = (MapleClient) session.getAttribute(MapleClient.CLIENT_KEY);
+            TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
             ClientPacketHeader header = cp.DecodeHeader();
             if (!((IPacketHandler) this).OnPacket(client, header, cp)) {
                 DebugLogger.CPLog(cp);

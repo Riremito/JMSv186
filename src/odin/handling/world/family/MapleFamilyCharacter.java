@@ -25,29 +25,37 @@ import odin.client.MapleCharacter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapleFamilyCharacter implements java.io.Serializable {
+public class MapleFamilyCharacter {
 
-    public static final long serialVersionUID = 2058609046116597760L;
-    private int level, id, channel = -1, jobid, familyid, seniorid, currentrep, totalrep, junior1, junior2;
-    private boolean online;
-    private String name;
-    private List<Integer> pedigree = new ArrayList<Integer>(); //recalculate
+    private int level;
+    private int id;
+    private int channel = -1;
+    private int jobid;
+    private int familyid;
+    private int seniorid;
+    private int currentrep;
+    private int totalrep;
+    private int junior1;
+    private int junior2;
     private int descendants = 0;
+    private boolean online;
+    private List<Integer> pedigree = new ArrayList<>(); //recalculate
+    private String name;
 
     // either read from active character...
     // if it's online
-    public MapleFamilyCharacter(MapleCharacter c, int fid, int sid, int j1, int j2) {
-        name = c.getName();
-        level = c.getLevel();
-        id = c.getId();
-        channel = c.getClient().getChannelId();
-        jobid = c.getJob();
+    public MapleFamilyCharacter(MapleCharacter chr, int fid, int sid, int j1, int j2) {
+        name = chr.getName();
+        level = chr.getLevel();
+        id = chr.getId();
+        channel = chr.getClient().getChannelId();
+        jobid = chr.getJob();
         familyid = fid;
         junior1 = j1;
         junior2 = j2;
         seniorid = sid;
-        currentrep = c.getCurrentRep();
-        totalrep = c.getTotalRep();
+        currentrep = chr.getCurrentRep();
+        totalrep = chr.getTotalRep();
         online = true;
     }
 
@@ -168,7 +176,7 @@ public class MapleFamilyCharacter implements java.io.Serializable {
     }
 
     public List<MapleFamilyCharacter> getAllJuniors(MapleFamily fam) { //to be used scarcely
-        List<MapleFamilyCharacter> ret = new ArrayList<MapleFamilyCharacter>();
+        List<MapleFamilyCharacter> ret = new ArrayList<>();
         ret.add(this);
         if (junior1 > 0) {
             MapleFamilyCharacter chr = fam.getMFC(junior1);
@@ -182,56 +190,6 @@ public class MapleFamilyCharacter implements java.io.Serializable {
             MapleFamilyCharacter chr = fam.getMFC(junior2);
             if (chr != null) {
                 ret.addAll(chr.getAllJuniors(fam));
-                //} else {
-                //	junior2 = 0;
-            }
-        }
-        return ret;
-    }
-
-    public List<MapleFamilyCharacter> getOnlineJuniors(MapleFamily fam) { //to be used scarcely
-        List<MapleFamilyCharacter> ret = new ArrayList<MapleFamilyCharacter>();
-        ret.add(this);
-        if (junior1 > 0) {
-            MapleFamilyCharacter chr = fam.getMFC(junior1);
-            if (chr != null) {
-                if (chr.isOnline()) {
-                    ret.add(chr);
-                }
-                if (chr.getJunior1() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior1());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
-                if (chr.getJunior2() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior2());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
-                //} else {
-                //	junior1 = 0;
-            }
-        }
-        if (junior2 > 0) {
-            MapleFamilyCharacter chr = fam.getMFC(junior2);
-            if (chr != null) {
-                if (chr.isOnline()) {
-                    ret.add(chr);
-                }
-                if (chr.getJunior1() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior1());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
-                if (chr.getJunior2() > 0) {
-                    MapleFamilyCharacter chr2 = fam.getMFC(chr.getJunior2());
-                    if (chr2 != null && chr2.isOnline()) {
-                        ret.add(chr2);
-                    }
-                }
                 //} else {
                 //	junior2 = 0;
             }
@@ -244,7 +202,7 @@ public class MapleFamilyCharacter implements java.io.Serializable {
     }
 
     public void resetPedigree(MapleFamily fam) { //not in order
-        pedigree = new ArrayList<Integer>();
+        pedigree = new ArrayList<>();
         pedigree.add(id); //lol
         if (seniorid > 0) {
             MapleFamilyCharacter chr = fam.getMFC(seniorid);

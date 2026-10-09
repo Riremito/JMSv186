@@ -38,10 +38,6 @@ public class PetCommand {
         this.inc = inc;
     }
 
-    public int getPetId() {
-        return petId;
-    }
-
     public int getSkillId() {
         return skillId;
     }

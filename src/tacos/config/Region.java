@@ -31,6 +31,7 @@ public enum Region {
     CMS(4, "MS936"),
     GMST(5),
     TWMS(6, "MS950"),
+    HKMS(61, "MS950"),
     THMS(7, "MS874"),
     MSEA(7),
     VMS(7),

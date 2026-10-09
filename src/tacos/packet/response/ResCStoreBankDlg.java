@@ -18,11 +18,11 @@
  */
 package tacos.packet.response;
 
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import tacos.packet.ServerPacket;
 import odin.server.MerchItemPackage;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.response.data.DataGW_ItemSlotBase;
+import tacos.packet.response.data.RD_GW_ItemSlotBase;
 
 /**
  *
@@ -77,8 +77,8 @@ public class ResCStoreBankDlg {
         sp.Encode4(pack.getMesos());
         sp.Encode1(0);
         sp.Encode1(pack.getItems().size());
-        for (final IItem item : pack.getItems()) {
-            sp.EncodeBuffer(DataGW_ItemSlotBase.Encode(item));
+        for (final Item item : pack.getItems()) {
+            sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
         }
         sp.EncodeZeroBytes(3);
         return sp;

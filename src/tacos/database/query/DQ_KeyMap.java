@@ -26,7 +26,7 @@ import java.util.Map;
 import tacos.client.TacosCharacter;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 
 /**
  *
@@ -75,9 +75,9 @@ public class DQ_KeyMap {
             try (PreparedStatement ps = con.prepareStatement("SELECT `key`,`type`,`action` FROM " + DB_TABLE_NAME + " WHERE characterid = ?")) {
                 ps.setInt(1, chr.getId());
                 try (ResultSet rs = ps.executeQuery()) {
-                    Map<Integer, OdinPair<Byte, Integer>> keymap = chr.getKeyLayout().get();
+                    Map<Integer, SimpleImmutableEntry<Byte, Integer>> keymap = chr.getKeyLayout().get();
                     while (rs.next()) {
-                        keymap.put(rs.getInt("key"), new OdinPair<>(rs.getByte("type"), rs.getInt("action")));
+                        keymap.put(rs.getInt("key"), new SimpleImmutableEntry<>(rs.getByte("type"), rs.getInt("action")));
                     }
                     return true;
                 }
@@ -94,7 +94,7 @@ public class DQ_KeyMap {
             return false;
         }
 
-        Map<Integer, OdinPair<Byte, Integer>> keymap = chr.getKeyLayout().get();
+        Map<Integer, SimpleImmutableEntry<Byte, Integer>> keymap = chr.getKeyLayout().get();
         if (keymap.isEmpty()) {
             return false;
         }
@@ -110,7 +110,7 @@ public class DQ_KeyMap {
             boolean first = true;
             StringBuilder query = new StringBuilder();
 
-            for (Map.Entry<Integer, OdinPair<Byte, Integer>> keybinding : keymap.entrySet()) {
+            for (Map.Entry<Integer, SimpleImmutableEntry<Byte, Integer>> keybinding : keymap.entrySet()) {
                 if (first) {
                     first = false;
                     query.append("INSERT INTO " + DB_TABLE_NAME + " VALUES (");

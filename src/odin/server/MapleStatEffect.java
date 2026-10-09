@@ -1,109 +1,150 @@
 package odin.server;
 
-import odin.client.ISkill;
+import odin.client.Skill;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
-import java.util.Arrays;
-import odin.server.maps.MapleMapObject;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.ResCTownPortalPool;
-import tacos.packet.response.wrapper.WrapCUserLocal;
-import tacos.packet.response.wrapper.WrapCUserRemote;
 import odin.server.life.MapleMonster;
-import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
-import odin.server.maps.MapleSummon;
-import tacos.odin.OdinPair;
-import odin.provider.IMapleData;
-import tacos.packet.ops.OpsMoveAbility;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.wz.MapleData;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.builder.PB_UserEffect;
 import tacos.wz.WzDataTool;
 
-public class MapleStatEffect implements Serializable {
+public class MapleStatEffect {
 
-    private static final long serialVersionUID = 9179541993413738569L;
-    private byte mastery, mhpR, mmpR, mobCount, attackCount, bulletCount;
-    private short hp, mp, watk, matk, wdef, mdef, acc, avoid, hands, speed, jump, mpCon, hpCon, damage, prop, ehp, emp, ewatk, ewdef, emdef;
-    private double hpR, mpR;
-    private int duration, sourceid, moveTo, x, y, z, itemCon, itemConNo, bulletConsume, moneyCon, cooldown, morphId = 0, expinc;
-    private boolean overTime, skill, partyBuff = true;
-    private Map<MonsterStatus, Integer> monsterStatus;
-    private Point lt, rb;
-    private int expBuff, itemup, mesoup, cashup, berserk, illusion, booster, berserk2, cp, nuffSkill;
+    private byte mastery;
+    private byte mhpR;
+    private byte mmpR;
+    private byte mobCount;
+    private byte attackCount;
+    private byte bulletCount;
     private byte level;
+    private short hp;
+    private short mp;
+    private short watk;
+    private short matk;
+    private short wdef;
+    private short mdef;
+    private short acc;
+    private short avoid;
+    private short hands;
+    private short speed;
+    private short jump;
+    private short mpCon;
+    private short hpCon;
+    private short damage;
+    private short prop;
+    private short ehp;
+    private short emp;
+    private short ewatk;
+    private short ewdef;
+    private short emdef;
+    private double hpR;
+    private double mpR;
+    private int duration;
+    private int sourceid;
+    private int moveTo;
+    private int x;
+    private int y;
+    private int z;
+    private int itemCon;
+    private int itemConNo;
+    private int bulletConsume;
+    private int moneyCon;
+    private int cooldown;
+    private int morphId = 0;
+    private int expinc;
+    private int expBuff;
+    private int itemup;
+    private int mesoup;
+    private int cashup;
+    private int berserk;
+    private int illusion;
+    private int booster;
+    private int berserk2;
+    private int cp;
+    private int nuffSkill;
     private int exp; // gashaEXP, consume 237
-    private ArrayList<OdinPair<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
+    private boolean overTime;
+    private boolean skill;
+    private boolean partyBuff = true;
+    private Map<MonsterStatus, Integer> monsterStatus;
+    private Point lt;
+    private Point rb;
+    private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
-    public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level) {
+    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level) {
         return loadFromData(source, skillid, true, overtime, level, 0);
     }
 
     // after bigbang
-    public static final MapleStatEffect loadSkillEffectFromData(final IMapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
+    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
         return loadFromData(source, skillid, true, overtime, level, common_level);
     }
 
-    public static final MapleStatEffect loadItemEffectFromData(final IMapleData source, final int itemid) {
+    public static final MapleStatEffect loadItemEffectFromData(final MapleData source, final int itemid) {
         return loadFromData(source, itemid, false, false, (byte) 1, 0);
     }
 
     private boolean checkData() {
         if (watk != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_PAD, (int) watk));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_PAD, (int) watk));
         }
         if (wdef != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_PDD, (int) wdef));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_PDD, (int) wdef));
         }
         if (matk != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MAD, (int) matk));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MAD, (int) matk));
         }
         if (mdef != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MDD, (int) mdef));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MDD, (int) mdef));
         }
         if (acc != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_ACC, (int) acc));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_ACC, (int) acc));
         }
         if (avoid != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_EVA, (int) avoid));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_EVA, (int) avoid));
         }
         if (hands != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Craft, (int) hands)); // not coded
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Craft, (int) hands)); // not coded
         }
         if (speed != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Speed, (int) speed));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Speed, (int) speed));
         }
         if (jump != 0) {
-            oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Jump, (int) jump));
+            oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Jump, (int) jump));
         }
 
         switch (OpsSkill.find(sourceid)) {
             case MAGICIAN_MAGIC_GUARD:
             case FLAMEWIZARD_MAGIC_GUARD:
             case EVAN_MAGIC_GUARD: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MagicGuard, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MagicGuard, (int) x));
                 return true;
             }
             case ROGUE_DARK_SIGHT:
             case DUAL4_ADVANCED_DARK_SIGHT:
             case NIGHTWALKER_DARK_SIGHT: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_DarkSight, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_DarkSight, (int) x));
                 return true;
             }
             case FIGHTER_WEAPON_BOOSTER:
@@ -128,29 +169,29 @@ public class MapleStatEffect implements Serializable {
             case BMAGE_STAFF_BOOSTER:
             case WILDHUNTER_CROSSBOW_BOOSTER:
             case MECHANIC_BOOSTER: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Booster, (int) x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Booster, (int) x));
                 return true;
             }
             case FIGHTER_POWER_GUARD:
             case PAGE_POWER_GUARD: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_PowerGuard, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_PowerGuard, x));
                 return true;
             }
             case SPEARMAN_HYPER_BODY: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MaxHP, x));
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MaxMP, y));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MaxHP, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MaxMP, y));
                 return true;
             }
             case HUNTER_SOUL_ARROW_BOW:
             case CROSSBOWMAN_SOUL_ARROW_CROSSBOW:
             case WINDBREAKER_SOUL_ARROW_BOW: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_SoulArrow, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_SoulArrow, x));
                 return true;
             }
             case HERMIT_SHADOW_PARTNER:
             case THIEFMASTER_SHADOW_PARTNER:
             case NIGHTWALKER_SHADOW_PARTNER: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_ShadowPartner, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_ShadowPartner, x));
                 return true;
             }
             case BOWMASTER_SHARP_EYES:
@@ -160,7 +201,7 @@ public class MapleStatEffect implements Serializable {
             case NOBLESSE_SHARP_EYES:
             case EVANJR_SHARP_EYES:
             case CITIZEN_SHARP_EYES: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_SharpEyes, (x << 8) | y));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_SharpEyes, (x << 8) | y));
                 return true;
             }
             case HERO_MAPLE_HERO:
@@ -181,43 +222,43 @@ public class MapleStatEffect implements Serializable {
             case BMAGE_MAPLE_HERO:
             case WILDHUNTER_MAPLE_HERO:
             case MECHANIC_MAPLE_HERO: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_BasicStatUp, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_BasicStatUp, x));
                 return true;
             }
             case BOWMASTER_HAMSTRING: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_HamString, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_HamString, x));
                 return true;
             }
             case BOWMASTER_CONCENTRATION: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Concentration, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Concentration, x));
                 return true;
             }
             case HERMIT_MESO_UP: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_MesoUp, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_MesoUp, x));
                 return true;
             }
             case NIGHTLORD_SPIRIT_JAVELIN: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_SpiritJavelin, 0));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_SpiritJavelin, 0));
                 return true;
             }
             case BMAGE_AURA_DARK: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_DarkAura, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_DarkAura, x));
                 return true;
             }
             case BMAGE_AURA_BLUE: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_BlueAura, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_BlueAura, x));
                 return true;
             }
             case BMAGE_AURA_YELLOW: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_YellowAura, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_YellowAura, x));
                 return true;
             }
             case BMAGE_CYCLONE: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_Cyclone, x));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Cyclone, x));
                 return true;
             }
             case NOVICE_MONSTER_RIDING: {
-                oss.add(new OdinPair<>(OpsSecondaryStat.CTS_RideVehicle, 1));
+                oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_RideVehicle, 1));
                 return true;
             }
             default: {
@@ -228,7 +269,7 @@ public class MapleStatEffect implements Serializable {
         return true;
     }
 
-    private static MapleStatEffect loadFromData(final IMapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
+    private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
         final MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
         ret.skill = skill;
@@ -300,7 +341,7 @@ public class MapleStatEffect implements Serializable {
         ret.booster = 0;
         ret.illusion = WzDataTool.getIntExpression("illusion", source, 0, common_level);
 
-        final IMapleData ltd = source.getChildByPath("lt");
+        final MapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
             ret.lt = WzDataTool.getPoint(source.getChildByPath("lt"));
             ret.rb = WzDataTool.getPoint(source.getChildByPath("rb"));
@@ -322,13 +363,13 @@ public class MapleStatEffect implements Serializable {
         return ret;
     }
 
-    public void applyPassive(MapleCharacter applyto, MapleMapObject obj) {
+    public void applyPassive(MapleCharacter applyto, Object obj) {
         if (makeChanceResult()) {
             switch (sourceid) { // MP eater
                 case 2100000:
                 case 2200000:
                 case 2300000:
-                    if (obj == null || obj.getType() != MapleMapObjectType.MONSTER) {
+                    if (!(obj instanceof MapleMonster)) {
                         return;
                     }
                     MapleMonster mob = (MapleMonster) obj; // x is absorb percentage
@@ -380,7 +421,7 @@ public class MapleStatEffect implements Serializable {
             }
         } else if (!primary && isResurrection()) {
             hpchange = stat.getMaxHp();
-            applyto.setStance(0); //TODO fix death bug, player doesnt spawn on other screen
+            applyto.setMoveAction(0); //TODO fix death bug, player doesnt spawn on other screen
         }
         if (isMPRecovery()) {
             final int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);
@@ -409,10 +450,10 @@ public class MapleStatEffect implements Serializable {
 
         if (expinc != 0) {
             applyto.gainExp(expinc, true, true, false);
-            applyto.getClient().SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
+            applyto.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
         } else if (isSpiritClaw()) {
             MapleInventory use = applyto.getInventory(MapleInventoryType.USE);
-            IItem item;
+            Item item;
             for (int i = 0; i < use.getSlotLimit(); i++) { // impose order...
                 item = use.getItem((byte) i);
                 if (item != null) {
@@ -429,7 +470,7 @@ public class MapleStatEffect implements Serializable {
         } else if (cp != 0 && applyto.getCarnivalParty() != null) {
             applyto.getCarnivalParty().addCP(applyto, cp);
             applyto.CPUpdate(false, applyto.getAvailableCP(), applyto.getTotalCP(), 0);
-            for (MapleCharacter chr : applyto.getMap().getCharacters()) {
+            for (MapleCharacter chr : applyto.getMap().getAllPlayers()) {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
             }
         }
@@ -441,48 +482,10 @@ public class MapleStatEffect implements Serializable {
                 applyMonsterBuff(applyfrom);
             }
         }
-        OpsMoveAbility summonMovementType = getSummonMovementType();
-        if (summonMovementType != null) {
-            final MapleSummon tosummon = new MapleSummon(applyfrom, this, new Point(pos == null ? applyfrom.getPosition() : pos), summonMovementType);
-            if (!tosummon.isPuppet()) {
-            }
-            applyfrom.getMap().spawnSummon(tosummon);
-            applyfrom.getSummons().put(sourceid, tosummon);
-            tosummon.addHP((short) x);
-            if (isBeholder()) {
-                tosummon.addHP((short) 1);
-            }
-        } else if (isMagicDoor()) { // Magic Door
-            if (!applyto.getDoors().isEmpty()) {
-                applyto.removeDoor();
-                applyto.silentPartyUpdate();
-            }
-            MapleDoor door = new MapleDoor(applyto, new Point(applyto.getPosition()), sourceid); // Current Map door
-            if (door.getTownPortal() != null) {
-                MapleDoor townDoor = new MapleDoor(door); // Town door
-                door.setLink(townDoor);
-                door.getTown().spawnDoor(townDoor);
-                townDoor.setLink(door);
-
-                applyto.getMap().spawnDoor(door);
-                applyto.addDoor(door);
-                applyto.addDoor(townDoor);
-                //applyto.SendPacket(MysticDoorResponse.setMysticDoorInfo(door));
-
-                if (applyto.getParty() != null) { // update town doors
-                    //applyto.silentPartyUpdate();
-                }
-
-                applyto.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
-
-            } else {
-                applyto.dropMessage(5, "You may not spawn a door because all doors in the town are taken.");
-            }
-
-        } else if (isMist()) {
-            final Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
-            final MapleMist mist = new MapleMist(bounds, applyfrom, this);
-            applyfrom.getMap().spawnMist(mist, getDuration(), false);
+        if (isMist()) {
+            Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
+            MapleMist mist = new MapleMist(bounds, applyfrom, this, getDuration());
+            applyfrom.getMap().addMist(mist);
 
         } else if (isTimeLeap()) {
             applyto.getCoolTime().timeLeap();
@@ -499,7 +502,7 @@ public class MapleStatEffect implements Serializable {
             } else {
                 target = applyto.findMap(moveTo);
             }
-            applyto.changeMap(target, target.getPortal(0));
+            applyto.changeMapPortal(target, target.getPortal(0));
             return true;
         }
         return false;
@@ -513,14 +516,14 @@ public class MapleStatEffect implements Serializable {
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
-                for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
+                for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
                     if (chr.getParty() != null && chr.getParty().equals(applyfrom.getParty()) && chr.isAlive()) {
                         membrs++;
                     }
                 }
-                List<MapleCharacter> awarded = new ArrayList<MapleCharacter>();
+                List<MapleCharacter> awarded = new ArrayList<>();
                 while (awarded.size() < Math.min(membrs, y)) {
-                    for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
+                    for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {
                             awarded.add(chr);
                         }
@@ -528,22 +531,29 @@ public class MapleStatEffect implements Serializable {
                 }
                 for (MapleCharacter chr : awarded) {
                     applyTo(applyfrom, chr, false, null, newDuration);
-                    chr.SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, sourceid));
-                    chr.getMap().broadcastMessage(chr, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, chr, sourceid), false);
+                    PB_UserEffect pb = PB_UserEffect.builder()
+                            .player(chr)
+                            .skill_id(sourceid)
+                            .build();
+                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), chr.getId());
                 }
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            final List<MapleMapObject> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
+            final List<MapleCharacter> affecteds = applyfrom.getMap().getPlayersInRect(bounds);
 
-            for (final MapleMapObject affectedmo : affecteds) {
-                final MapleCharacter affected = (MapleCharacter) affectedmo;
-
+            for (final MapleCharacter affected : affecteds) {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);
-                        affected.getClient().SendPacket(WrapCUserLocal.EffectLocal(OpsUserEffect.UserEffect_SkillAffected, sourceid));
-                        affected.getMap().broadcastMessage(affected, WrapCUserRemote.EffectRemote(OpsUserEffect.UserEffect_SkillAffected, affected, sourceid), false);
+
+                        PB_UserEffect pb = PB_UserEffect.builder()
+                                .player(affected)
+                                .skill_id(sourceid)
+                                .build();
+                        affected.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
+                        affected.getMap().splitSendPacket(affected, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), affected.getId());
                     }
                     if (isTimeLeap()) {
                         affected.getCoolTime().timeLeap();
@@ -553,15 +563,14 @@ public class MapleStatEffect implements Serializable {
         }
     }
 
-    private final void applyMonsterBuff(final MapleCharacter applyfrom) {
-        final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        final List<MapleMapObject> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
+    private void applyMonsterBuff(MapleCharacter applyfrom) {
+        Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
         int i = 0;
 
-        for (final MapleMapObject mo : affected) {
+        for (MapleMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
             if (makeChanceResult()) {
                 for (Map.Entry<MonsterStatus, Integer> stat : getMonsterStati().entrySet()) {
-                    ((MapleMonster) mo).applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
+                    monster.applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
                 }
             }
             i++;
@@ -571,7 +580,7 @@ public class MapleStatEffect implements Serializable {
         }
     }
 
-    private final Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
+    private Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
         if (lt == null || rb == null) {
             return new Rectangle(posFrom.x, posFrom.y, facingLeft ? 1 : -1, 1);
         }
@@ -589,40 +598,6 @@ public class MapleStatEffect implements Serializable {
 
     public final void setDuration(int d) {
         this.duration = d;
-    }
-
-    public final void silentApplyBuff(final MapleCharacter chr, final long starttime) {
-        OpsMoveAbility summonMovementType = getSummonMovementType();
-        if (summonMovementType != null) {
-            final MapleSummon tosummon = new MapleSummon(chr, this, chr.getPosition(), summonMovementType);
-            if (!tosummon.isPuppet()) {
-                chr.getMap().spawnSummon(tosummon);
-                chr.getSummons().put(sourceid, tosummon);
-                tosummon.addHP((short) x);
-                if (isBeholder()) {
-                    tosummon.addHP((short) 1);
-                }
-            }
-        }
-    }
-
-    public static int parseMountInfo(MapleCharacter player, int skillid) {
-        switch (skillid) {
-            case 1004: // Monster riding
-            case 10001004:
-            case 20001004:
-            case 20011004:
-            case 30001004:
-                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/) != null) {
-                    return player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -118/*-122*/).getItemId();
-                }
-                if (player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/) != null) {
-                    return player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/).getItemId();
-                }
-                return 0;
-            default:
-                return GameConstants.getMountItem(skillid);
-        }
     }
 
     private final int calcHPChange(final MapleCharacter applyfrom, final boolean primary) {
@@ -701,7 +676,7 @@ public class MapleStatEffect implements Serializable {
 
                 final int ElemSkillId = getElementalAmp(applyfrom.getJob());
                 if (ElemSkillId != -1) {
-                    final ISkill amp = SkillFactory.getSkill(ElemSkillId);
+                    final Skill amp = SkillFactory.getSkill(ElemSkillId);
                     final int ampLevel = applyfrom.getSkillLevel(amp);
                     if (ampLevel > 0) {
                         MapleStatEffect ampStat = amp.getEffect(ampLevel);
@@ -729,7 +704,7 @@ public class MapleStatEffect implements Serializable {
     }
 
     private final MapleStatEffect getAlchemistEffect(final MapleCharacter chr) {
-        ISkill al;
+        Skill al;
         switch (chr.getJob()) {
             case 411:
             case 412:
@@ -807,10 +782,6 @@ public class MapleStatEffect implements Serializable {
         return false;
     }
 
-    public final void setPartyBuff(boolean pb) {
-        this.partyBuff = pb;
-    }
-
     private final boolean isPartyBuff() {
         if (lt == null || rb == null || !partyBuff) {
             return isSoulStone();
@@ -852,10 +823,6 @@ public class MapleStatEffect implements Serializable {
         return mp;
     }
 
-    public final byte getMastery() {
-        return mastery;
-    }
-
     public final short getWatk() {
         return watk;
     }
@@ -892,20 +859,12 @@ public class MapleStatEffect implements Serializable {
         return jump;
     }
 
-    public int getBooster() {
-        return booster;
-    }
-
-    public ArrayList<OdinPair<OpsSecondaryStat, Integer>> getOss() {
+    public ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> getOss() {
         return oss;
     }
 
     public final int getDuration() {
         return duration;
-    }
-
-    public final boolean isOverTime() {
-        return overTime;
     }
 
     public final int getX() {
@@ -916,32 +875,12 @@ public class MapleStatEffect implements Serializable {
         return y;
     }
 
-    public final int getZ() {
-        return z;
-    }
-
     public final short getDamage() {
         return damage;
     }
 
-    public final byte getAttackCount() {
-        return attackCount;
-    }
-
-    public final byte getBulletCount() {
-        return bulletCount;
-    }
-
-    public final int getBulletConsume() {
-        return bulletConsume;
-    }
-
     public final byte getMobCount() {
         return mobCount;
-    }
-
-    public final int getMoneyCon() {
-        return moneyCon;
     }
 
     public int getCooldown() {
@@ -952,22 +891,6 @@ public class MapleStatEffect implements Serializable {
         return monsterStatus;
     }
 
-    public final int getBerserk() {
-        return berserk;
-    }
-
-    public final boolean isHide() {
-        return skill && sourceid == 9001004;
-    }
-
-    public final boolean isDragonBlood() {
-        return skill && sourceid == 1311008;
-    }
-
-    public final boolean isBerserk() {
-        return skill && sourceid == 1320006;
-    }
-
     public final boolean isBeholder() {
         return skill && sourceid == 1321007;
     }
@@ -976,33 +899,8 @@ public class MapleStatEffect implements Serializable {
         return skill && sourceid == 5101005;
     }
 
-    public final boolean isMonsterRiding_() {
-        return skill && (sourceid == 1004 || sourceid == 10001004 || sourceid == 20001004 || sourceid == 20011004 || sourceid == 30001004);
-    }
-
-    public final boolean isMonsterRiding() {
-        return skill && (isMonsterRiding_() || GameConstants.getMountItem(sourceid) != 0);
-    }
-
     public final boolean isMagicDoor() {
         return skill && (sourceid == 2311002 || sourceid == 8001 || sourceid == 10008001 || sourceid == 20008001 || sourceid == 20018001 || sourceid == 30008001);
-    }
-
-    public final boolean isMesoGuard() {
-        return skill && sourceid == 4211005;
-    }
-
-    public final boolean isCharge() {
-        switch (sourceid) {
-            case 1211003:
-            case 1211008:
-            case 11111007:
-            case 12101005:
-            case 15101006:
-            case 21111005:
-                return skill;
-        }
-        return false;
     }
 
     public final boolean isPoison() {
@@ -1026,48 +924,6 @@ public class MapleStatEffect implements Serializable {
 
     private final boolean isSpiritClaw() {
         return skill && sourceid == 4121006;
-    }
-
-    private final boolean isDispel() {
-        return skill && (sourceid == 2311001 || sourceid == 9001000);
-    }
-
-    private final boolean isHeroWill() {
-        switch (sourceid) {
-            case 1121011:
-            case 1221012:
-            case 1321010:
-            case 2121008:
-            case 2221008:
-            case 2321009:
-            case 3121009:
-            case 3221008:
-            case 4121009:
-            case 4221008:
-            case 5121008:
-            case 5221010:
-            case 21121008:
-            case 22171004:
-            case 4341008:
-            case 32121008:
-            case 33121008:
-            case 35121008:
-                return skill;
-        }
-        return false;
-    }
-
-    public final boolean isAranCombo() {
-        return sourceid == 21000000;
-    }
-
-    public final boolean isCombo() {
-        switch (sourceid) {
-            case 1111002:
-            case 11111001: // Combo
-                return skill;
-        }
-        return false;
     }
 
     public final boolean isPirateMorph() {
@@ -1099,30 +955,6 @@ public class MapleStatEffect implements Serializable {
         return morphId;
     }
 
-    public final boolean isDivineBody() {
-        switch (sourceid) {
-            case 1010:
-            case 10001010:// Invincible Barrier
-            case 20001010:
-            case 20011010:
-            case 30001010:
-                return skill;
-        }
-        return false;
-    }
-
-    public final boolean isBerserkFury() {
-        switch (sourceid) {
-            case 1011: // Berserk fury
-            case 10001011:
-            case 20001011:
-            case 20011011:
-            case 30001011:
-                return skill;
-        }
-        return false;
-    }
-
     public final int getMorph(final MapleCharacter chr) {
         final int morph = getMorph();
         switch (morph) {
@@ -1138,74 +970,8 @@ public class MapleStatEffect implements Serializable {
         return level;
     }
 
-    public OpsMoveAbility getSummonMovementType() {
-        if (!skill) {
-            return null;
-        }
-        switch (sourceid) {
-            case 3211002: // puppet sniper
-            case 3111002: // puppet ranger
-            case 33111003:
-            case 13111004: // puppet cygnus
-            case 5211001: // octopus - pirate
-            case 5220002: // advanced octopus - pirate
-            case 4341006:
-            case 35111002:
-            case 35111005: //TEMP
-            case 35111004: //TEMP
-            //case 35111011: //TEMP
-            case 35121009:
-            //case 35121010: //TEMP
-            case 35121011:
-                //case 4111007: //TEMP
-                return OpsMoveAbility.MOVEABILITY_STOP;
-            case 3211005: // golden eagle
-            case 3111005: // golden hawk
-            case 33111005:
-            case 2311006: // summon dragon
-            case 3221005: // frostprey
-            case 3121006: // phoenix
-                return OpsMoveAbility.MOVEABILITY_FLY;
-            case 5211002: // bird - pirate
-                return OpsMoveAbility.MOVEABILITY_FLY_RANDOM;
-            case 32111006: //reaper
-                return OpsMoveAbility.MOVEABILITY_WALK_RANDOM;
-            case 1321007: // beholder
-            case 2121005: // elquines
-            case 2221005: // ifrit
-            case 2321003: // bahamut
-            case 12111004: // Ifrit
-            case 11001004: // soul
-            case 12001004: // flame
-            case 13001004: // storm
-            case 14001005: // darkness
-            case 15001004: // lightning
-            case 35111001:
-            case 35111010:
-            case 35111009:
-                return OpsMoveAbility.MOVEABILITY_WALK;
-        }
-        return null;
-    }
-
-    public final boolean isSkill() {
-        return skill;
-    }
-
     public final int getSourceId() {
         return sourceid;
-    }
-
-    public final boolean isSoaring() {
-        switch (sourceid) {
-            case 1026: // Soaring
-            case 10001026: // Soaring
-            case 20001026: // Soaring
-            case 20011026: // Soaring
-            case 30001026:
-                return skill;
-        }
-        return false;
     }
 
     public final boolean isFinalAttack() {
@@ -1232,5 +998,13 @@ public class MapleStatEffect implements Serializable {
 
     public final int getExp() {
         return exp;
+    }
+
+    public int getMpCon() {
+        return this.mpCon;
+    }
+
+    public int getHpCon() {
+        return this.hpCon;
     }
 }

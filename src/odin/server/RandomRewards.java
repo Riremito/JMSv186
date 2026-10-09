@@ -3,7 +3,6 @@ package odin.server;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-
 import odin.constants.GameConstants;
 
 public class RandomRewards {
@@ -24,46 +23,46 @@ public class RandomRewards {
     protected RandomRewards() {
         //System.out.println("Loading RandomRewards :::");
         // Gold Box
-        List<Integer> returnArray = new ArrayList<Integer>();
+        List<Integer> returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.goldrewards);
 
         compiledGold = returnArray;
 
         // Silver Box
-        returnArray = new ArrayList<Integer>();
+        returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.silverrewards);
 
         compiledSilver = returnArray;
 
         // Fishing Rewards
-        returnArray = new ArrayList<Integer>();
+        returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.fishingReward);
 
         compiledFishing = returnArray;
 
         // Event Rewards
-        returnArray = new ArrayList<Integer>();
+        returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.eventCommonReward);
 
         compiledEventC = returnArray;
 
-        returnArray = new ArrayList<Integer>();
+        returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.eventUncommonReward);
 
         compiledEventB = returnArray;
 
-        returnArray = new ArrayList<Integer>();
+        returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.eventRareReward);
 
         compiledEventA = returnArray;
 
-        returnArray = new ArrayList<Integer>();
+        returnArray = new ArrayList<>();
 
         processRewards(returnArray, GameConstants.eventSuperReward);
 
@@ -96,16 +95,4 @@ public class RandomRewards {
         return compiledFishing.get(Randomizer.nextInt(compiledFishing.size()));
     }
 
-    public final int getEventReward() {
-        final int chance = Randomizer.nextInt(100);
-        if (chance < 50) {
-            return compiledEventC.get(Randomizer.nextInt(compiledEventC.size()));
-        } else if (chance < 80) {
-            return compiledEventB.get(Randomizer.nextInt(compiledEventB.size()));
-        } else if (chance < 95) {
-            return compiledEventA.get(Randomizer.nextInt(compiledEventA.size()));
-        } else {
-            return compiledEvent.get(Randomizer.nextInt(compiledEvent.size()));
-        }
-    }
 }

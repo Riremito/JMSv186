@@ -18,7 +18,7 @@
  */
 package tacos.packet.response;
 
-import tacos.client.TacosSkillPet;
+import tacos.server.map.object.TacosSkillPet;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -34,7 +34,7 @@ public class ResCUser_SkillPet {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetMove);
 
         sp.Encode4(skill_pet.getOwnerId()); // m_dwCharacterID
-        sp.Encode4(skill_pet.getId()); // pet id
+        sp.Encode4(skill_pet.getObjectId()); // pet id
         sp.EncodeBuffer(data.get());
         return sp;
     }
@@ -46,7 +46,7 @@ public class ResCUser_SkillPet {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillPetTransferField);
 
         sp.Encode4(skill_pet.getOwnerId()); // m_dwCharacterID
-        sp.Encode4(skill_pet.getId()); // pet id
+        sp.Encode4(skill_pet.getObjectId()); // pet id
         sp.EncodeBuffer(CSkillPet__Init(skill_pet));
         return sp;
     }
@@ -59,7 +59,7 @@ public class ResCUser_SkillPet {
         data.Encode2(skill_pet.getX()); // m_ptPos.x
         data.Encode2(skill_pet.getY()); // m_ptPos.y
         data.Encode1(skill_pet.getMoveAction()); // m_nMoveAction
-        data.Encode2(skill_pet.getFootHoldId()); // sFootholdSN
+        data.Encode2(skill_pet.getFootholdId()); // sFootholdSN
         return data.getBytes();
     }
 }

@@ -21,7 +21,7 @@ package tacos.packet.request;
 import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import java.util.List;
-import odin.client.inventory.IItem;
+import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -30,18 +30,20 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMiniRoomProtocol;
-import tacos.packet.response.ResCEmployeePool;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObject;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
-import odin.server.shops.IMaplePlayerShop;
+import odin.server.shops.ShopDispatch;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import odin.server.shops.MaplePlayerShopItem;
-import tacos.odin.OdinPair;
+import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMiniRoomType;
+import tacos.packet.response.ResCEmployeePool;
+import tacos.packet.response.ResCUser;
+import tacos.server.TacosRoom;
+import tacos.server.TacosWorld;
+import tacos.server.map.object.TacosMerchant;
 
 /**
  *
@@ -49,9 +51,11 @@ import tacos.packet.ops.OpsMiniRoomType;
  */
 public class ReqCMiniRoomBaseDlg {
 
-    public static boolean OnMiniRoom(MapleMap map, MapleCharacter chr, ClientPacket cp) {
+    // CMiniRoomBaseDlg::OnPacketBase
+    public static boolean OnMiniRoom(MapleCharacter chr, MapleMap map, ClientPacket cp) {
         byte protocol_req = cp.Decode1();
 
+        TacosWorld world = chr.getWorld();
         switch (OpsMiniRoomProtocol.find(protocol_req)) {
             case MRP_Create: {
                 // new code.
@@ -104,8 +108,8 @@ public class ReqCMiniRoomBaseDlg {
                         game.setAvailable(true);
                         game.setOpen(true);
                         game.send(chr.getClient());
-                        chr.getMap().addMapObject(game);
-                        game.update();
+                        chr.getMap().addMiniGame(game);
+                        chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                         return true;
                     }
                     case MR_TradingRoom: {
@@ -117,7 +121,7 @@ public class ReqCMiniRoomBaseDlg {
                         byte unk2 = cp.Decode1();
                         short item_slot = cp.Decode2();
                         int item_id = cp.Decode4();
-                        IItem shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
+                        Item shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
 
                         if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
                             return true;
@@ -125,7 +129,7 @@ public class ReqCMiniRoomBaseDlg {
 
                         MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(mps);
-                        chr.getMap().addMapObject(mps);
+                        chr.getMap().addPlayerShop(mps);
                         chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
                         return true;
                     }
@@ -134,7 +138,7 @@ public class ReqCMiniRoomBaseDlg {
                         byte unk2 = cp.Decode1();
                         short item_slot = cp.Decode2();
                         int item_id = cp.Decode4();
-                        IItem shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
+                        Item shop = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
 
                         if (shop == null || shop.getQuantity() <= 0 || shop.getItemId() != item_id || chr.getMapId() < 910000001 || chr.getMapId() > 910000022) {
                             return true;
@@ -143,7 +147,7 @@ public class ReqCMiniRoomBaseDlg {
                         HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(merch);
                         chr.setRemoteStore(merch);
-                        chr.getMap().addMapObject(merch);
+                        chr.getMap().addMerchant(merch);
                         chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
                         return true;
                     }
@@ -163,7 +167,7 @@ public class ReqCMiniRoomBaseDlg {
             }
             case MRP_Invite: {
                 int character_id = cp.Decode4();
-                MapleTrade.inviteTrade(chr, chr.getMap().getCharacterById(character_id));
+                MapleTrade.inviteTrade(chr, chr.getMap().getPlayerById(character_id));
                 return true;
             }
             case MRP_InviteResult: {
@@ -171,11 +175,24 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Enter: {
+                int object_id = cp.Decode4();
+                // 雇用商人
+                HiredMerchant merchant = chr.getMap().getMerchantByOid(object_id);
+                if (merchant != null) {
+                    TacosRoom room = world.getRoom(merchant.getRoomId());
+                    if (room != null) {
+                        room.addPlayer(chr);
+                        merchant.enter(chr);
+                    }
+                    return true;
+                }
+
                 // 交換
                 if (chr.getTrade() != null && chr.getTrade().getPartner() != null) {
                     MapleTrade.visitTrade(chr, chr.getTrade().getPartner().getChr(), chr.getTrade().getPartner().IsPointTrading());
                     return true;
                 }
+
                 // new code
                 /*
                 int miniroom_id = cp.Decode4();
@@ -190,80 +207,45 @@ public class ReqCMiniRoomBaseDlg {
                 chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStatic(hm, chr));
                  */
                 // old code
+                /*
                 {
-                    int miniroom_id = cp.Decode4();
-                    MapleMapObject ob = chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
+                    Object ob = chr.getMap().getMiniGameByOid(object_id);
                     if (ob == null) {
-                        ob = chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.SHOP);
+                        ob = chr.getMap().getPlayerShopByOid(object_id);
                     }
 
-                    if (ob instanceof IMaplePlayerShop && chr.getPlayerShop() == null) {
-                        final IMaplePlayerShop ips = (IMaplePlayerShop) ob;
-
-                        if (ob instanceof HiredMerchant) {
-                            final HiredMerchant merchant = (HiredMerchant) ips;
-                            if (merchant.isOwner(chr)) {
-                                merchant.setOpen(false);
-                                // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
-                                //merchant.removeAllVisitors((byte) 17, (byte) 0);
-                                List<OdinPair<Byte, MapleCharacter>> visitors = ips.getVisitors();
-                                for (int i = 0; i < visitors.size(); i++) {
-                                    visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
-                                    System.out.println("slot = " + i + "char = " + visitors.get(i).getRight().getName());
-                                    visitors.get(i).getRight().setPlayerShop(null);
-                                    ips.removeVisitor(visitors.get(i).getRight());
-                                }
-
-                                chr.setPlayerShop(ips);
-                                chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
-                            } else {
-                                if (!merchant.isOpen() || !merchant.isAvailable()) {
-                                    // パケットでこのメッセージが出せそう
-                                    chr.dropMessage(1, "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。test");
-                                    //c.getSession().write(PlayerShopPacket.MaintenanceHiredMerchant(1));
-                                } else {
-                                    if (ips.getFreeSlot() == -1) {
-                                        chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
-                                    } else if (merchant.isInBlackList(chr.getName())) {
-                                        chr.dropMessage(1, "You have been banned from this store.");
-                                    } else {
-                                        chr.setPlayerShop(ips);
-                                        merchant.addVisitor(chr);
-                                        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
-                                    }
-                                }
-                            }
+                    if ((ob instanceof MaplePlayerShop || ob instanceof MapleMiniGame) && chr.getPlayerShop() == null) {
+                        final Object ips = ob;
+                        if (ips instanceof MaplePlayerShop && ((MaplePlayerShop) ips).isBanned(chr.getName())) {
+                            chr.dropMessage(1, "You have been banned from this store.");
+                            return true;
                         } else {
-                            if (ips instanceof MaplePlayerShop && ((MaplePlayerShop) ips).isBanned(chr.getName())) {
-                                chr.dropMessage(1, "You have been banned from this store.");
-                                return true;
+                            if (ShopDispatch.getFreeSlot(ips) < 0 || ShopDispatch.getVisitorSlot(ips, chr) > -1 || !ShopDispatch.isOpen(ips) || !ShopDispatch.isAvailable(ips)) {
+                                chr.SendPacket(ResCMiniRoomBaseDlg.getMiniGameFull());
                             } else {
-                                if (ips.getFreeSlot() < 0 || ips.getVisitorSlot(chr) > -1 || !ips.isOpen() || !ips.isAvailable()) {
-                                    chr.SendPacket(ResCMiniRoomBaseDlg.getMiniGameFull());
-                                } else {
-                                    byte unk1 = cp.Decode1();
-                                    if (unk1 > 0) { //a password has been entered
-                                        String pass = cp.DecodeStr();
-                                        if (!pass.equals(ips.getPassword())) {
-                                            chr.dropMessage(1, "The password you entered is incorrect.");
-                                            return true;
-                                        }
-                                    } else if (ips.getPassword().length() > 0) {
+                                byte unk1 = cp.Decode1();
+                                if (unk1 > 0) { //a password has been entered
+                                    String pass = cp.DecodeStr();
+                                    if (!pass.equals(ShopDispatch.getPassword(ips))) {
                                         chr.dropMessage(1, "The password you entered is incorrect.");
                                         return true;
                                     }
-                                    chr.setPlayerShop(ips);
-                                    ips.addVisitor(chr);
-                                    if (ips instanceof MapleMiniGame) {
-                                        ((MapleMiniGame) ips).send(chr.getClient());
-                                    } else {
-                                        chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, false));
-                                    }
+                                } else if (ShopDispatch.getPassword(ips).length() > 0) {
+                                    chr.dropMessage(1, "The password you entered is incorrect.");
+                                    return true;
+                                }
+                                chr.setPlayerShop(ips);
+                                ShopDispatch.addVisitor(ips, chr);
+                                if (ips instanceof MapleMiniGame) {
+                                    ((MapleMiniGame) ips).send(chr.getClient());
+                                } else {
+                                    chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, false));
                                 }
                             }
                         }
                     }
                 }
+                 */
                 return true;
             }
             case MRP_Chat: {
@@ -274,8 +256,8 @@ public class ReqCMiniRoomBaseDlg {
                     return true;
                 }
                 if (chr.getPlayerShop() != null) {
-                    IMaplePlayerShop ips = chr.getPlayerShop();
-                    ips.broadcastToVisitors(ResCMiniRoomBaseDlg.shopChat(chr.getName() + " : " + message, ips.getVisitorSlot(chr)));
+                    Object ips = chr.getPlayerShop();
+                    ShopDispatch.broadcastToVisitors(ips, ResCMiniRoomBaseDlg.shopChat(chr.getName() + " : " + message, ShopDispatch.getVisitorSlot(ips, chr)));
                     return true;
                 }
                 DebugLogger.ErrorLog("OnMiniRoom : MRP_Chat, not  coded.");
@@ -291,39 +273,50 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MRP_Leave: {
+                TacosRoom room = world.findRoom(chr);
+                if (room != null) {
+                    TacosMerchant merchant = room.getMerchant();
+                    if (merchant != null) {
+                        merchant.leave(chr);
+                        room.removePlayer(chr);
+                    }
+                    return true;
+                }
                 if (chr.getTrade() != null) {
                     MapleTrade.cancelTrade(chr.getTrade(), chr.getClient());
                     return true;
                 }
-                IMaplePlayerShop ips = chr.getPlayerShop();
+                Object ips = chr.getPlayerShop();
                 if (ips == null) {
                     return true;
                 }
-                if (!ips.isAvailable() || (ips.isOwner(chr) && ips.getShopType() != 1)) {
-                    ips.closeShop(false, ips.isAvailable(), 3);
+                /*
+                if (!ShopDispatch.isAvailable(ips) || (ShopDispatch.isOwner(ips, chr) && ShopDispatch.getShopType(ips) != 1)) {
+                    ShopDispatch.closeShop(ips, false, ShopDispatch.isAvailable(ips), 3);
                 } else {
-                    ips.removeVisitor(chr);
+                    ShopDispatch.removeVisitor(ips, chr);
                 }
                 chr.setPlayerShop(null);
+                 */
                 return true;
             }
             case MRP_Balloon: {
-                final IMaplePlayerShop shop = chr.getPlayerShop();
-                if (shop != null && shop.isOwner(chr) && shop.getShopType() < 3) {
+                Object shop = chr.getPlayerShop();
+                if (shop != null && ShopDispatch.isOwner(shop, chr) && ShopDispatch.getShopType(shop) < 3) {
                     if (chr.getMap().allowPersonalShop()) {
 
-                        if (shop.getShopType() == 1) {
-                            final HiredMerchant merchant = (HiredMerchant) shop;
+                        if (ShopDispatch.getShopType(shop) == 1) {
+                            HiredMerchant merchant = (HiredMerchant) shop;
                             merchant.setStoreid(chr.getChannelServer().addMerchant(merchant));
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
-                            chr.getMap().broadcastMessage(ResCEmployeePool.EmployeeEnterField(merchant));
                             chr.setPlayerShop(null);
+                            chr.getMap().splitSendPacket(chr, ResCEmployeePool.EmployeeMiniRoomBalloon((HiredMerchant) shop));
 
-                        } else if (shop.getShopType() == 2) {
-                            shop.setOpen(true);
-                            shop.setAvailable(true);
-                            shop.update();
+                        } else if (ShopDispatch.getShopType(shop) == 2) {
+                            ShopDispatch.setOpen(shop, true);
+                            ShopDispatch.setAvailable(shop, true);
+                            chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                         }
                     }
                 }
@@ -343,7 +336,7 @@ public class ReqCMiniRoomBaseDlg {
 
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 MapleInventoryType ivType = MapleInventoryType.getByType(item_type);
-                IItem item = chr.getInventory(ivType).getItem(item_slot);
+                Item item = chr.getInventory(ivType).getItem(item_slot);
 
                 if (item == null) {
                     DebugLogger.ErrorLog("OnMiniRoom : TRP_PutItem, item");
@@ -383,12 +376,12 @@ public class ReqCMiniRoomBaseDlg {
                 if (price <= 0 || bundles <= 0 || perBundle <= 0) {
                     return true;
                 }
-                final IMaplePlayerShop shop = chr.getPlayerShop();
+                final Object shop = chr.getPlayerShop();
 
-                if (shop == null || !shop.isOwner(chr) || shop instanceof MapleMiniGame) {
+                if (shop == null || !ShopDispatch.isOwner(shop, chr) || shop instanceof MapleMiniGame) {
                     return true;
                 }
-                final IItem ivItem = chr.getInventory(type).getItem(slot);
+                final Item ivItem = chr.getInventory(type).getItem(slot);
                 final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
                 if (ivItem != null) {
                     long check = bundles * perBundle;
@@ -415,14 +408,14 @@ public class ReqCMiniRoomBaseDlg {
                             // Ignore the bundles
                             MapleInventoryManipulator.removeFromSlot(chr.getClient(), type, slot, ivItem.getQuantity(), true);
 
-                            final IItem sellItem = ivItem.copy();
-                            shop.addItem(new MaplePlayerShopItem(sellItem, (short) 1, price));
+                            final Item sellItem = ivItem.copy();
+                            ShopDispatch.addItem(shop, new MaplePlayerShopItem(sellItem, (short) 1, price));
                         } else {
                             MapleInventoryManipulator.removeFromSlot(chr.getClient(), type, slot, bundles_perbundle, true);
 
-                            final IItem sellItem = ivItem.copy();
+                            final Item sellItem = ivItem.copy();
                             sellItem.setQuantity(perBundle);
-                            shop.addItem(new MaplePlayerShopItem(sellItem, bundles, price));
+                            ShopDispatch.addItem(shop, new MaplePlayerShopItem(sellItem, bundles, price));
                         }
                         chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
                     }
@@ -435,12 +428,12 @@ public class ReqCMiniRoomBaseDlg {
                 final int item = cp.Decode1();
                 final short quantity = cp.Decode2();
                 //slea.skip(4);
-                final IMaplePlayerShop shop = chr.getPlayerShop();
+                final Object shop = chr.getPlayerShop();
 
-                if (shop == null || shop.isOwner(chr) || shop instanceof MapleMiniGame) {
+                if (shop == null || ShopDispatch.isOwner(shop, chr) || shop instanceof MapleMiniGame) {
                     return true;
                 }
-                final MaplePlayerShopItem tobuy = shop.getItems().get(item);
+                final MaplePlayerShopItem tobuy = ShopDispatch.getItems(shop).get(item);
                 if (tobuy == null) {
                     return true;
                 }
@@ -451,25 +444,25 @@ public class ReqCMiniRoomBaseDlg {
                     return true;
                 }
                 if (quantity <= 0 || tobuy.bundles < quantity || (tobuy.bundles % quantity != 0 && GameConstants.isEquip(tobuy.item.getItemId())) // Buying
-                        || chr.getMeso() - (check2) < 0 || shop.getMeso() + (check2) < 0) {
+                        || chr.getMeso() - (check2) < 0 || ShopDispatch.getMeso(shop) + (check2) < 0) {
                     return true;
                 }
-                shop.buy(chr.getClient(), item, quantity);
-                shop.broadcastToVisitors(ResCMiniRoomBaseDlg.shopItemUpdate(shop));
+                ShopDispatch.buy(shop, chr.getClient(), item, quantity);
+                ShopDispatch.broadcastToVisitors(shop, ResCMiniRoomBaseDlg.shopItemUpdate(shop));
                 return true;
             }
             case PSP_MoveItemToInventory:
             case ESP_MoveItemToInventory: {
                 int slot = cp.Decode2();
-                final IMaplePlayerShop shop = chr.getPlayerShop();
-                if (shop == null || !shop.isOwner(chr) || shop instanceof MapleMiniGame || shop.getItems().size() <= 0 || shop.getItems().size() <= slot || slot < 0) {
+                final Object shop = chr.getPlayerShop();
+                if (shop == null || !ShopDispatch.isOwner(shop, chr) || shop instanceof MapleMiniGame || ShopDispatch.getItems(shop).size() <= 0 || ShopDispatch.getItems(shop).size() <= slot || slot < 0) {
                     return true;
                 }
-                final MaplePlayerShopItem item = shop.getItems().get(slot);
+                final MaplePlayerShopItem item = ShopDispatch.getItems(shop).get(slot);
 
                 if (item != null) {
                     if (item.bundles > 0) {
-                        IItem item_get = item.item.copy();
+                        Item item_get = item.item.copy();
                         long check = item.bundles * item.item.getQuantity();
                         if (check <= 0 || check > 32767) {
                             return true;
@@ -478,7 +471,7 @@ public class ReqCMiniRoomBaseDlg {
                         if (MapleInventoryManipulator.checkSpace(chr.getClient(), item_get.getItemId(), item_get.getQuantity(), item_get.getOwner())) {
                             MapleInventoryManipulator.addFromDrop(chr.getClient(), item_get, false);
                             item.bundles = 0;
-                            shop.removeFromSlot(slot);
+                            ShopDispatch.removeFromSlot(shop, slot);
                         }
                     }
                 }
@@ -489,13 +482,13 @@ public class ReqCMiniRoomBaseDlg {
                 // 営業許可証 追放
                 byte visitor_slot = cp.Decode1();
                 String visitor_name = cp.DecodeStr();
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null) {
-                    for (OdinPair<Byte, MapleCharacter> visitors : ips.getVisitors()) {
-                        if (visitors.getRight().getName().equals(visitor_name)) {
-                            visitors.getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
-                            visitors.getRight().setPlayerShop(null);
-                            ips.removeVisitor(visitors.getRight());
+                    for (SimpleImmutableEntry<Byte, MapleCharacter> visitors : ShopDispatch.getVisitors(ips)) {
+                        if (visitors.getValue().getName().equals(visitor_name)) {
+                            visitors.getValue().SendPacket(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
+                            visitors.getValue().setPlayerShop(null);
+                            ShopDispatch.removeVisitor(ips, visitors.getValue());
                             return true;
                         }
                     }
@@ -503,27 +496,28 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case ESP_GoOut: {
-                // 雇用商人 "商店から出る" 間違ってるかも?
-                // ?_?
-                final IMaplePlayerShop ips = chr.getPlayerShop();
-                if (ips != null) {
-                    ips.setOpen(true);
+                TacosRoom room = world.findRoom(chr);
+                if (room != null) {
+                    TacosMerchant merchant = room.getMerchant();
+                    if (merchant != null) {
+                    }
+                    return true;
                 }
                 return true;
             }
             case ESP_ArrangeItem: {
-                final IMaplePlayerShop imps = chr.getPlayerShop();
-                if (imps != null && imps.isOwner(chr) && !(imps instanceof MapleMiniGame)) {
-                    for (int i = 0; i < imps.getItems().size(); i++) {
-                        if (imps.getItems().get(i).bundles == 0) {
-                            imps.getItems().remove(i);
+                final Object imps = chr.getPlayerShop();
+                if (imps != null && ShopDispatch.isOwner(imps, chr) && !(imps instanceof MapleMiniGame)) {
+                    for (int i = 0; i < ShopDispatch.getItems(imps).size(); i++) {
+                        if (ShopDispatch.getItems(imps).get(i).bundles == 0) {
+                            ShopDispatch.getItems(imps).remove(i);
                         }
                     }
-                    if (chr.getMeso() + imps.getMeso() < 0) {
+                    if (chr.getMeso() + ShopDispatch.getMeso(imps) < 0) {
                         chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
                     } else {
-                        chr.gainMeso(imps.getMeso(), false);
-                        imps.setMeso(0);
+                        chr.gainMeso(ShopDispatch.getMeso(imps), false);
+                        ShopDispatch.setMeso(imps, 0);
                         chr.SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(imps));
                     }
                 }
@@ -535,13 +529,13 @@ public class ReqCMiniRoomBaseDlg {
                 // ダイアログを出さずに閉じる処理が必要となる
                 chr.SendPacket(ResCMiniRoomBaseDlg.CloseHiredMerchant());
 
-                final IMaplePlayerShop ips = chr.getPlayerShop();
-                if (!ips.isAvailable() || ips.isOwner(chr)) {
+                final Object ips = chr.getPlayerShop();
+                if (!ShopDispatch.isAvailable(ips) || ShopDispatch.isOwner(ips, chr)) {
 
                     // アイテム回収
-                    for (MaplePlayerShopItem items : ips.getItems()) {
+                    for (MaplePlayerShopItem items : ShopDispatch.getItems(ips)) {
                         if (items.bundles > 0) {
-                            IItem newItem = items.item.copy();
+                            Item newItem = items.item.copy();
                             newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
                             if (MapleInventoryManipulator.addFromDrop(chr.getClient(), newItem, false)) {
                                 items.bundles = 0;
@@ -549,7 +543,7 @@ public class ReqCMiniRoomBaseDlg {
                         }
                     }
 
-                    ips.closeShop(false, true, 20);
+                    ShopDispatch.closeShop(ips, false, true, 20);
                 }
 
                 chr.setPlayerShop(null);
@@ -600,7 +594,7 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MGRP_TieRequest: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOpen()) {
@@ -609,14 +603,14 @@ public class ReqCMiniRoomBaseDlg {
                     if (game.isOwner(chr)) {
                         game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameRequestTie(), false);
                     } else {
-                        game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMiniGameRequestTie());
+                        game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.getMiniGameRequestTie());
                     }
                     game.setRequestedTie(game.getVisitorSlot(chr));
                 }
                 return true;
             }
             case MGRP_TieResult: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOpen()) {
@@ -628,7 +622,7 @@ public class ReqCMiniRoomBaseDlg {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 1, game.getRequestedTie()));
                             game.nextLoser();
                             game.setOpen(true);
-                            game.update();
+                            chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                             game.checkExitAfterGame();
                         } else {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameDenyTie());
@@ -639,7 +633,7 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MGRP_GiveUpRequest: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOpen()) {
@@ -648,7 +642,7 @@ public class ReqCMiniRoomBaseDlg {
                     game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
-                    game.update();
+                    chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                     game.checkExitAfterGame();
                 }
                 return true;
@@ -664,7 +658,7 @@ public class ReqCMiniRoomBaseDlg {
             }
             case MGRP_LeaveEngage:
             case MGRP_LeaveEngageCancel: {
-                IMaplePlayerShop ips = chr.getPlayerShop();
+                Object ips = chr.getPlayerShop();
                 if (ips == null || !(ips instanceof MapleMiniGame)) {
                     DebugLogger.ErrorLog("OnMiniRoom : MGRP_LeaveEngage, ips");
                     return true;
@@ -680,7 +674,7 @@ public class ReqCMiniRoomBaseDlg {
             }
             case MGRP_Ready:
             case MGRP_CancelReady: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (!game.isOwner(chr) && game.isOpen()) {
@@ -691,22 +685,23 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MGRP_Ban: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
-                    if (!((MapleMiniGame) ips).isOpen()) {
+                    final MapleMiniGame game = (MapleMiniGame) ips;
+                    if (!game.isOpen()) {
                         return true;
                     }
                     // 5 = 強制退場されました。
-                    ips.removeAllVisitors(5, 1);
+                    game.removeAllVisitors(5, 1);
                 }
                 return true;
             }
             case MGRP_Start: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOwner(chr) && game.isOpen()) {
-                        for (int i = 1; i < ips.getSize(); i++) {
+                        for (int i = 1; i < game.getSize(); i++) {
                             if (!game.isReady(i)) {
                                 return true;
                             }
@@ -719,7 +714,7 @@ public class ReqCMiniRoomBaseDlg {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardStart(game, game.getLoser()));
                         }
                         game.setOpen(false);
-                        game.update();
+                        chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                     }
                 }
                 return true;
@@ -728,19 +723,19 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MGRP_TimeOver: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOpen()) {
                         return true;
                     }
-                    ips.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameSkip(ips.getVisitorSlot(chr)));
+                    game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameSkip(game.getVisitorSlot(chr)));
                     game.nextLoser();
                 }
                 return true;
             }
             case ORP_PutStoneChecker: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOpen()) {
@@ -754,7 +749,7 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case MGP_TurnUpCard: {
-                final IMaplePlayerShop ips = chr.getPlayerShop();
+                final Object ips = chr.getPlayerShop();
                 if (ips != null && ips instanceof MapleMiniGame) {
                     MapleMiniGame game = (MapleMiniGame) ips;
                     if (game.isOpen()) {
@@ -768,7 +763,7 @@ public class ReqCMiniRoomBaseDlg {
                         if (game.isOwner(chr)) {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn), false);
                         } else {
-                            game.getMCOwner().getClient().getSession().write(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn));
+                            game.getMCOwner().SendPacket(ResCMiniRoomBaseDlg.getMatchCardSelect(turn, slot, fs, turn));
                         }
                         game.setTurn(0); //2nd turn nao
                         return true;
@@ -798,38 +793,36 @@ public class ReqCMiniRoomBaseDlg {
     }
 
     // 雇用商店遠隔管理機
-    public static boolean RemoteStore(MapleCharacter chr, short item_slot) {
+    public static boolean remoteStore(MapleCharacter chr, short item_slot) {
         Runnable item_use = chr.checkItemSlot(item_slot, 5470000);
 
         if (item_use == null) {
-            DebugLogger.ErrorLog("RemoteStore : no item.");
+            DebugLogger.ErrorLog("remoteStore : no item.");
             return false;
         }
 
-        final HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
+        HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
         if (merchant == null) {
             // test
             //chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
 
             HiredMerchant hm = new HiredMerchant(chr, 5030000, "DebugHiredMarchant");
-            chr.getMap().addMapObject(hm);
-            chr.SendPacket(ResCEmployeePool.EmployeeEnterField(hm));
+            chr.getMap().addMerchant(hm);
             return false;
         }
 
         merchant.setOpen(false);
 
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
-        List<OdinPair<Byte, MapleCharacter>> visitors = merchant.getVisitors();
+        List<SimpleImmutableEntry<Byte, MapleCharacter>> visitors = merchant.getVisitors();
         for (int i = 0; i < visitors.size(); i++) {
-            visitors.get(i).getRight().getClient().getSession().write(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
-            visitors.get(i).getRight().setPlayerShop(null);
-            merchant.removeVisitor(visitors.get(i).getRight());
+            visitors.get(i).getValue().SendPacket(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
+            visitors.get(i).getValue().setPlayerShop(null);
+            merchant.removeVisitor(visitors.get(i).getValue());
         }
 
         chr.setPlayerShop(merchant);
         chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
         return true;
     }
-
 }

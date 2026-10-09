@@ -19,81 +19,32 @@
 package tacos.server.map;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
 import odin.client.MapleCharacter;
-import odin.provider.IMapleData;
-import tacos.debug.DebugLogger;
+import odin.server.MapleItemInformationProvider;
 import tacos.debug.DebugShop;
 import tacos.wz.ServerImg;
-import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
+import tacos.wz.ServerImg.NpcShopData;
 
 /**
  *
  * @author Riremito
  */
 public class TacosNpcShop {
-    
-    public static class ShopItem {
-        
-        public int item;
-        public int price;
-        public int period;
-        public int stock;
-        public double unitPrice;
-    }
-    
-    private static final TreeMap<Integer, ArrayList<ShopItem>> SHOPS = new TreeMap<>();
-    
-    public static boolean checkNpcShop(MapleCharacter chr, int npc_id) {
-        ArrayList<ShopItem> items = getShop(npc_id);
+
+    public static boolean startNpcShop(MapleCharacter chr, int npc_id) {
+        ArrayList<NpcShopData> items = ServerImg.BMS8.getNpcShopData(npc_id);
         // not a npc shop.
         if (items == null) {
             return false;
         }
-        chr.DebugMsg("NpcShop : " + npc_id);
         // open npc shop.
         DebugShop ds = new DebugShop(npc_id);
-        for (ShopItem item : items) {
-            ds.addItem(item.item, item.price, 1, 1);
+        MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
+        for (NpcShopData item : items) {
+            int item_slot_max = miip.getSlotMax(item.getItem());
+            ds.addItem(item.getItem(), item.getPrice(), 1, item_slot_max);
         }
         ds.start(chr);
         return true;
-    }
-    
-    public static ArrayList<ShopItem> getShop(int npc_id) {
-        ArrayList<ShopItem> items = SHOPS.get(npc_id);
-        
-        if (items != null) {
-            return items;
-        }
-        
-        if (!SHOPS.containsKey(npc_id)) {
-            IMapleData md_npc_shop = ServerImg.SI.getNpcShop().getChildByPath(String.format("%07d", npc_id));
-            if (md_npc_shop != null) {
-                items = new ArrayList<>();
-                for (IMapleData md_data : md_npc_shop.getChildren()) {
-                    ShopItem item = new ShopItem();
-                    item.item = WzDataTool.getIntPath("item", md_data, 0);
-                    item.price = WzDataTool.getIntPath("price", md_data, 0);
-                    item.period = WzDataTool.getIntPath("period", md_data, 0);
-                    item.stock = WzDataTool.getIntPath("stock", md_data, 0);
-                    String unitPrice_str = WzDataTool.getStringPath("prob", md_data, "[R8]0.0").replace("[R8]", "");
-                    item.unitPrice = Double.parseDouble(unitPrice_str);
-                    if (item.price == 0) {
-                        // TODO : star and bullet recharge.
-                        continue;
-                    }
-                    if (!WzDataStorage.ITEM.check(item.item)) {
-                        DebugLogger.XmlLog("getShop : " + npc_id + ", invalid item id = " + item.item);
-                        continue;
-                    }
-                    items.add(item);
-                }
-            }
-            SHOPS.put(npc_id, items);
-        }
-        
-        return items;
     }
 }

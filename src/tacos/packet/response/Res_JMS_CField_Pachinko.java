@@ -21,10 +21,10 @@ public class Res_JMS_CField_Pachinko {
         return sp;
     }
 
-    public static ServerPacket openBeans(MapleCharacter c, int type) {
+    public static ServerPacket openBeans(MapleCharacter player, int type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoOpen);
 
-        sp.Encode4(c.getTama());
+        sp.Encode4(player.getTama());
         sp.Encode1(type);
         return sp;
     }

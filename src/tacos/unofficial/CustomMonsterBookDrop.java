@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
-import odin.client.inventory.IItem;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -153,7 +152,7 @@ public class CustomMonsterBookDrop {
             int base_meso = 5 + (level * 5);
             int meso_value = base_meso + Randomizer.nextInt((base_meso / 10));
             Point drop_pos = TacosReward.getDropPosition(monster, drop_type, dropped_count);
-            map.spawnMobMesoDrop(meso_value, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, false, drop_type);
+            map.spawnMobMesoDrop(meso_value, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, false, drop_type, 0);
             dropped_count++;
         }
 
@@ -163,10 +162,10 @@ public class CustomMonsterBookDrop {
 
         CustomMonsterBookDrop cmbd = new CustomMonsterBookDrop(monster);
         for (int item_id : cmbd.getDropItems()) {
-            IItem idrop = (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(item_id)) : new Item(item_id, (byte) 0, (short) 1, (byte) 0);
+            Item idrop = (GameConstants.getInventoryType(item_id) == MapleInventoryType.EQUIP) ? ii.randomizeStats((Equip) ii.getEquipById(item_id)) : new Item(item_id, (byte) 0, (short) 1, (byte) 0);
             Point drop_pos = TacosReward.getDropPosition(monster, drop_type, dropped_count);
 
-            map.spawnMobDrop(idrop, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, drop_type, (short) 0);
+            map.spawnMobDrop(idrop, map.calcDropPos(drop_pos, monster.getPosition()), monster, player, drop_type, (short) 0, 0);
             dropped_count++;
         }
         return dropped_count;

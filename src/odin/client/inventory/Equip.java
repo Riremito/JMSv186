@@ -23,16 +23,46 @@ package odin.client.inventory;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.wz.ids.DWI_Random;
-import java.io.Serializable;
 import odin.server.Randomizer;
 import tacos.config.Config;
 
-public class Equip extends Item implements IEquip, Serializable {
+public class Equip extends Item {
 
-    private int upgradeSlots = 0, level = 0, vicioushammer = 0, enhance = 0;
-    private int str = 0, dex = 0, _int = 0, luk = 0, hp = 0, mp = 0, watk = 0, matk = 0, wdef = 0, mdef = 0, acc = 0, avoid = 0, hands = 0, speed = 0, jump = 0, hpR = 0, mpR = 0;
-    private int rank = 0, hidden = 0, potential1 = 0, potential2 = 0, potential3 = 0;
-    private int itemEXP = 0, durability = -1;
+    public static enum ScrollResult {
+
+        SUCCESS, FAIL, CURSE
+    }
+    public static final int ARMOR_RATIO = 350000;
+    public static final int WEAPON_RATIO = 700000;
+
+    private int upgradeSlots = 0;
+    private int level = 0;
+    private int vicioushammer = 0;
+    private int enhance = 0;
+    private int str = 0;
+    private int dex = 0;
+    private int _int = 0;
+    private int luk = 0;
+    private int hp = 0;
+    private int mp = 0;
+    private int watk = 0;
+    private int matk = 0;
+    private int wdef = 0;
+    private int mdef = 0;
+    private int acc = 0;
+    private int avoid = 0;
+    private int hands = 0;
+    private int speed = 0;
+    private int jump = 0;
+    private int hpR = 0;
+    private int mpR = 0;
+    private int rank = 0;
+    private int hidden = 0;
+    private int potential1 = 0;
+    private int potential2 = 0;
+    private int potential3 = 0;
+    private int itemEXP = 0;
+    private int durability = -1;
     private int incattackSpeed = 0; // 攻撃速度の書
 
     public Equip(int id, short position, byte flag) {
@@ -44,7 +74,7 @@ public class Equip extends Item implements IEquip, Serializable {
     }
 
     @Override
-    public IItem copy() {
+    public Item copy() {
         Equip ret = new Equip(getItemId(), getPosition(), getUniqueId(), getFlag());
         ret.str = str;
         ret.dex = dex;
@@ -87,82 +117,66 @@ public class Equip extends Item implements IEquip, Serializable {
         return 1;
     }
 
-    @Override
     public int getUpgradeSlots() {
         return upgradeSlots;
     }
 
-    @Override
     public int getStr() {
         return str;
     }
 
-    @Override
     public int getDex() {
         return dex;
     }
 
-    @Override
     public int getInt() {
         return _int;
     }
 
-    @Override
     public int getLuk() {
         return luk;
     }
 
-    @Override
     public int getHp() {
         return hp;
     }
 
-    @Override
     public int getMp() {
         return mp;
     }
 
-    @Override
     public int getWatk() {
         return watk;
     }
 
-    @Override
     public int getMatk() {
         return matk;
     }
 
-    @Override
     public int getWdef() {
         return wdef;
     }
 
-    @Override
     public int getMdef() {
         return mdef;
     }
 
-    @Override
     public int getAcc() {
         return acc;
     }
 
-    @Override
     public int getAvoid() {
         return avoid;
     }
 
-    @Override
     public int getHands() {
         return hands;
     }
 
-    @Override
     public int getSpeed() {
         return speed;
     }
 
-    @Override
     public int getJump() {
         return jump;
     }
@@ -276,7 +290,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.upgradeSlots = upgradeSlots;
     }
 
-    @Override
     public int getLevel() {
         return level;
     }
@@ -285,7 +298,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.level = level;
     }
 
-    @Override
     public int getViciousHammer() {
         return vicioushammer;
     }
@@ -294,7 +306,6 @@ public class Equip extends Item implements IEquip, Serializable {
         vicioushammer = ham;
     }
 
-    @Override
     public int getItemEXP() {
         return itemEXP;
     }
@@ -306,20 +317,18 @@ public class Equip extends Item implements IEquip, Serializable {
         this.itemEXP = itemEXP;
     }
 
-    @Override
     public int getEquipExp() {
         if (itemEXP <= 0) {
             return 0;
         }
         //aproximate value
         if (GameConstants.isWeapon(getItemId())) {
-            return itemEXP / IEquip.WEAPON_RATIO;
+            return itemEXP / Equip.WEAPON_RATIO;
         } else {
-            return itemEXP / IEquip.ARMOR_RATIO;
+            return itemEXP / Equip.ARMOR_RATIO;
         }
     }
 
-    @Override
     public int getEquipExpForLevel() {
         if (getEquipExp() <= 0) {
             return 0;
@@ -335,7 +344,6 @@ public class Equip extends Item implements IEquip, Serializable {
         return expz;
     }
 
-    @Override
     public int getExpPercentage() {
         if (getEquipLevel() < getBaseLevel() || getEquipLevel() > GameConstants.getMaxLevel(getItemId()) || GameConstants.getExpForLevel(getEquipLevel(), getItemId()) <= 0) {
             return 0;
@@ -343,7 +351,6 @@ public class Equip extends Item implements IEquip, Serializable {
         return getEquipExpForLevel() * 100 / GameConstants.getExpForLevel(getEquipLevel(), getItemId());
     }
 
-    @Override
     public int getEquipLevel() {
         if (GameConstants.getMaxLevel(getItemId()) <= 0) {
             return 0;
@@ -363,7 +370,6 @@ public class Equip extends Item implements IEquip, Serializable {
         return levelz;
     }
 
-    @Override
     public int getBaseLevel() {
         return (GameConstants.getStatFromWeapon(getItemId()) == null ? 1 : 0);
     }
@@ -376,7 +382,6 @@ public class Equip extends Item implements IEquip, Serializable {
         super.setQuantity(quantity);
     }
 
-    @Override
     public int getDurability() {
         return this.durability;
     }
@@ -385,7 +390,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.durability = dur;
     }
 
-    @Override
     public int getEnhance() {
         return enhance;
     }
@@ -394,7 +398,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.enhance = en;
     }
 
-    @Override
     public int getPotential1() {
         return potential1;
     }
@@ -403,7 +406,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.potential1 = en;
     }
 
-    @Override
     public int getPotential2() {
         return potential2;
     }
@@ -412,7 +414,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.potential2 = en;
     }
 
-    @Override
     public int getPotential3() {
         return potential3;
     }
@@ -421,7 +422,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.potential3 = en;
     }
 
-    @Override
     public int getRank() {
         return rank;
     }
@@ -430,7 +430,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.rank = rank;
     }
 
-    @Override
     public int getHidden() {
         return hidden;
     }
@@ -462,7 +461,7 @@ public class Equip extends Item implements IEquip, Serializable {
             if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                 // レジェンダリー抽選
                 if (master) {
-                    if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+                    if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) {
                         if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                             return 4;
                         }
@@ -498,7 +497,6 @@ public class Equip extends Item implements IEquip, Serializable {
         return true;
     }
 
-    @Override
     public int getHpR() {
         return hpR;
     }
@@ -507,7 +505,6 @@ public class Equip extends Item implements IEquip, Serializable {
         this.hpR = hp;
     }
 
-    @Override
     public int getMpR() {
         return mpR;
     }
@@ -517,7 +514,6 @@ public class Equip extends Item implements IEquip, Serializable {
     }
 
     // 攻撃速度の書
-    @Override
     public int getIncAttackSpeed() {
         return incattackSpeed;
     }

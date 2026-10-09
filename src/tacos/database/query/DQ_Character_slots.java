@@ -18,7 +18,7 @@
  */
 package tacos.database.query;
 
-import odin.client.MapleClient;
+import tacos.client.TacosClient;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 import java.sql.Connection;
@@ -34,7 +34,7 @@ public class DQ_Character_slots {
 
     public static final String DB_TABLE_NAME = "character_slots";
 
-    public static boolean load(MapleClient client) {
+    public static boolean load(TacosClient client) {
         int charslots = client.getCharSlots();
 
         try {
@@ -64,7 +64,7 @@ public class DQ_Character_slots {
         return false;
     }
 
-    public static boolean update(MapleClient client, int world_id) {
+    public static boolean update(TacosClient client, int world_id) {
         if (client.getCharSlots() >= 15) {
             return false;
         }

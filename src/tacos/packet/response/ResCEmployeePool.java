@@ -28,54 +28,54 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCEmployeePool {
 
-    public static ServerPacket EmployeeEnterField(HiredMerchant hm) {
+    public static ServerPacket EmployeeEnterField(HiredMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeEnterField);
 
-        sp.Encode4(hm.getOwnerId()); // dwEmployerID
-        sp.Encode4(hm.getItemId()); // dwTemplateID (Employee NPC Look)
-        sp.EncodeBuffer(CEmployee_Init(hm));
-        sp.EncodeBuffer(CEmployee_SetBalloon(hm));
+        sp.Encode4(merchant.getOwnerId()); // dwEmployerID
+        sp.Encode4(merchant.getItemId()); // dwTemplateID (Employee NPC Look)
+        sp.EncodeBuffer(CEmployee_Init(merchant));
+        sp.EncodeBuffer(CEmployee_SetBalloon(merchant));
         return sp;
     }
 
-    public static ServerPacket EmployeeLeaveField(HiredMerchant hm) {
+    public static ServerPacket EmployeeLeaveField(HiredMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeLeaveField);
 
-        sp.Encode4(hm.getOwnerId());
+        sp.Encode4(merchant.getOwnerId());
         return sp;
     }
 
-    public static ServerPacket EmployeeMiniRoomBalloon(HiredMerchant hm) {
+    public static ServerPacket EmployeeMiniRoomBalloon(HiredMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeMiniRoomBalloon);
 
-        sp.Encode4(hm.getOwnerId());
-        sp.EncodeBuffer(CEmployee_SetBalloon(hm));
+        sp.Encode4(merchant.getOwnerId());
+        sp.EncodeBuffer(CEmployee_SetBalloon(merchant));
         return sp;
     }
 
-    private static byte[] CEmployee_Init(HiredMerchant hm) {
+    private static byte[] CEmployee_Init(HiredMerchant merchant) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode2(hm.getPosition().x); // m_ptPos.x
-        data.Encode2(hm.getPosition().y); // m_ptPos.y
-        data.Encode2(hm.getFH()); // Foothold
-        data.EncodeStr(hm.getOwnerName());
+        data.Encode2(merchant.getX()); // m_ptPos.x
+        data.Encode2(merchant.getY()); // m_ptPos.y
+        data.Encode2(merchant.getFH()); // Foothold
+        data.EncodeStr(merchant.getOwnerName());
         return data.getBytes();
     }
 
-    private static byte[] CEmployee_SetBalloon(HiredMerchant hm) {
+    private static byte[] CEmployee_SetBalloon(HiredMerchant merchant) {
         ServerPacket data = new ServerPacket();
 
-        int m_nMiniRoomType = hm.getGameType();
+        int m_nMiniRoomType = merchant.getGameType();
         data.Encode1(m_nMiniRoomType); // m_nMiniRoomType
         if (m_nMiniRoomType != 0) {
-            data.Encode4(hm.getObjectId()); // m_dwMiniRoomSN
-            data.EncodeStr(hm.getDescription());
-            data.Encode1(hm.getItemSubType() % 100); // nSpec (Store Look)
-            data.Encode1(hm.getSize()); // nCurUsers
-            data.Encode1(hm.getMaxSize()); // nMaxUsers
+            data.Encode4(merchant.getObjectId()); // m_dwMiniRoomSN
+            data.EncodeStr(merchant.getDescription());
+            data.Encode1(merchant.getItemSubType() % 100); // nSpec (Store Look)
+            data.Encode1(merchant.getSize()); // nCurUsers
+            data.Encode1(merchant.getMaxSize()); // nMaxUsers
         }
+
         return data.getBytes();
     }
-
 }

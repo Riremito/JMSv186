@@ -21,7 +21,7 @@ package tacos.packet.response;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
-import tacos.packet.response.data.DataAvatarLook;
+import tacos.packet.response.data.RD_AvatarLook;
 import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
 import tacos.config.Config;
@@ -33,45 +33,41 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCNpcPool {
 
-    public static ServerPacket ImitatedNPCData(PlayerNPC npc) {
+    public static ServerPacket ImitatedNPCData(PlayerNPC pnpc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ImitatedNPCData);
 
-        int number_of_npcs = (npc.getCharacter() == null) ? 0 : 1;
+        int number_of_npcs = (pnpc.getPlayer() == null) ? 0 : 1;
         sp.Encode1(number_of_npcs); // number of npcs
         if (number_of_npcs != 0) {
-            sp.Encode4(npc.getId()); // dwTemplateID
-            sp.EncodeStr(npc.getName()); // sName
-            sp.EncodeBuffer(DataAvatarLook.Encode(npc.getCharacter())); // AvatarLook::Decode
+            sp.Encode4(pnpc.getId()); // dwTemplateID
+            sp.EncodeStr(pnpc.getPlayerName()); // sName
+            sp.EncodeBuffer(RD_AvatarLook.Encode(pnpc.getPlayer())); // AvatarLook::Decode
         }
 
         return sp;
     }
 
-    public static ServerPacket NpcEnterField(MapleNPC npc, boolean show) {
+    public static ServerPacket NpcEnterField(MapleNPC npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcEnterField);
 
         sp.Encode4(npc.getObjectId()); // dwNpcId
         sp.Encode4(npc.getId()); // NpcTemplate
-        sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
+        sp.EncodeBuffer(CNpc_Init(npc)); // CNpc::Init
         return sp;
     }
 
     // CNpc::Init
-    public static byte[] CNpc_Init(MapleNPC npc, boolean show) {
+    public static byte[] CNpc_Init(MapleNPC npc) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode2(npc.getPosition().x); // m_ptPos.x
-        data.Encode2(npc.getPosition().y); // m_ptPos.y
+        data.Encode2(npc.getX()); // m_ptPos.x
+        data.Encode2(npc.getY()); // m_ptPos.y
         data.Encode1(npc.getF()); // m_nMoveAction
-        data.Encode2(npc.getFh()); // Foothold
+        data.Encode2(npc.getFootholdId()); // Foothold
         data.Encode2(npc.getRx0()); // m_rgHorz.low
         data.Encode2(npc.getRx1()); // m_rgHorz.high
-        data.Encode1(show ? 1 : 0); // m_bEnabled
-
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            data.Encode1(0);
-        }
-
+        data.Encode1(npc.getHide() ? 0 : 1); // m_bEnabled
+        data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         return data.getBytes();
     }
 
@@ -82,14 +78,15 @@ public class ResCNpcPool {
         return sp;
     }
 
-    public static ServerPacket NpcChangeController(MapleNPC npc, boolean is_local, boolean show) {
+    public static ServerPacket NpcChangeController(MapleNPC npc, boolean is_local) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcChangeController);
 
         sp.Encode1(is_local ? 1 : 0);
         sp.Encode4(npc.getObjectId());
+
         if (is_local) {
             sp.Encode4(npc.getId());
-            sp.EncodeBuffer(CNpc_Init(npc, show)); // CNpc::Init
+            sp.EncodeBuffer(CNpc_Init(npc)); // CNpc::Init
         }
 
         return sp;
@@ -101,10 +98,7 @@ public class ResCNpcPool {
         sp.Encode4(npc.getObjectId());
         sp.Encode1(nChatIdx);
         sp.Encode1(m_nOneTimeAction);
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode4(0);
-        }
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302));
 
         if (move_path != null) {
             sp.EncodeBuffer(move_path.get());

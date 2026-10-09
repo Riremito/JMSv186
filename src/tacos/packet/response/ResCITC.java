@@ -19,10 +19,15 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
+import odin.client.inventory.Item;
+import odin.server.MTSStorage;
+import tacos.config.Config;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
-import static tacos.packet.ops.OpsITC.ITCRes_GetITCList_Failed;
-import tacos.packet.ops.arg.ArgITCNormalItemResult;
+import tacos.packet.ops.OpsITC;
+import tacos.packet.response.builder.PB_ITC;
+import tacos.packet.response.data.RD_GW_ItemSlotBase;
+import tacos.shared.TacosSharedDate;
 
 /**
  *
@@ -47,16 +52,32 @@ public class ResCITC {
     }
 
     // CITC::OnNormalItemResult
-    public static ServerPacket ITCNormalItemResult(ArgITCNormalItemResult arg) {
+    public static ServerPacket ITCNormalItemResult(OpsITC ops) {
+        return ITCNormalItemResult(ops, null);
+    }
+
+    // CITC::OnNormalItemResult
+    public static ServerPacket ITCNormalItemResult(OpsITC ops, PB_ITC pb) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCNormalItemResult);
 
-        sp.Encode1(arg.ops_res.get());
-        switch (arg.ops_res) {
+        sp.Encode1(ops.get());
+        switch (ops) {
             case ITCRes_GetITCList_Done: {
+                sp.Encode4(0); // m_nCurrentCategoryItemCnt
+                sp.Encode4(pb.mts_items.size()); // m_nCurrentPageItemCnt
+                sp.Encode4(pb.mts_cart.getTab()); // nCategory
+                sp.Encode4(pb.mts_cart.getType()); // nSubCategory
+                sp.Encode4(pb.mts_cart.getPage()); // nPagea
+                sp.Encode1(1); // nSortType
+                sp.Encode1(1); // nSortColumn
+                for (MTSStorage.MTSItemInfo mts_item : pb.mts_items) {
+                    sp.EncodeBuffer(ITCITEM_Encode(mts_item));
+                }
+                sp.Encode1(pb.unlock ? 1 : 0); // unlock
                 break;
             }
             case ITCRes_GetITCList_Failed: {
-                sp.Encode1(arg.ops_fail_reason.get());
+                sp.Encode1(pb.fail_reason.get());
                 break;
             }
             case ITCRes_GetSearchITCList_Done: {
@@ -90,12 +111,22 @@ public class ResCITC {
                 break;
             }
             case ITCRes_GetUserPurchaseItem_Done: {
+                sp.Encode4(pb.items.size()); // nTotalCount
+                for (Item item : pb.items) {
+                    sp.EncodeBuffer(ITCITEM_Encode(item));
+                }
+                sp.Encode4(0); // hidden item count.
+                sp.Encode1(pb.unlock ? 1 : 0); // unlock, m_bITCRequestSent reset.
                 break;
             }
             case ITCRes_GetUserPurchaseItem_Failed: {
                 break;
             }
             case ITCRes_GetUserSaleItem_Done: {
+                sp.Encode4(pb.mts_items.size()); // nTotalCount
+                for (MTSStorage.MTSItemInfo mts_item : pb.mts_items) {
+                    sp.EncodeBuffer(ITCITEM_Encode(mts_item));
+                }
                 break;
             }
             case ITCRes_GetUserSaleItem_Failed: {
@@ -108,6 +139,8 @@ public class ResCITC {
                 break;
             }
             case ITCRes_MoveITCPurchaseItemLtoS_Done: {
+                sp.Encode4(pb.item.getItemId() / 1000000); // nTab
+                sp.Encode4(pb.item.getPosition()); // nPos
                 break;
             }
             case ITCRes_MoveITCPurchaseItemLtoS_Failed: {
@@ -174,6 +207,8 @@ public class ResCITC {
                 break;
             }
             case ITCRes_GetNotifyCancelWishResult: {
+                sp.Encode4(0);
+                sp.Encode4(0);
                 break;
             }
             case ITCRes_GetSuccessBidInfoResult: {
@@ -183,6 +218,82 @@ public class ResCITC {
                 break;
             }
         }
+
         return sp;
+    }
+
+    // ITCITEM::Decode
+    public static byte[] ITCITEM_Encode(Item item) {
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
+        data.Encode4(0); // nITCSN
+        data.Encode4(0); // nPrice
+        data.Encode4(0); // nContractFee
+
+        switch (Config.REGION) {
+            case JMS: {
+                // JMS187
+                data.Encode4(0);
+                data.Encode4(0);
+                break;
+            }
+            default: {
+                // GMS95
+                data.EncodeStr(""); // sContractFeeTxId
+                data.EncodeStr(""); // sRollbackUsageID
+                break;
+            }
+        }
+
+        data.Encode8(0); // ftITCDateExpired
+        data.EncodeStr(""); // sUserID
+        data.EncodeStr(""); // sGameID
+        data.EncodeStr(""); // sComment
+        data.Encode4(0); // nBidCount
+        data.Encode4(0); // nBidRange
+        data.Encode4(0); // nBidPrice
+        data.Encode4(0); // nMinPrice
+        data.Encode4(0); // nMaxPrice
+        data.Encode4(0); // nUnitPrice
+        data.Encode2(0); // nProcessStatus
+        return data.getBytes();
+    }
+
+    public static byte[] ITCITEM_Encode(MTSStorage.MTSItemInfo mts_item) {
+        ServerPacket data = new ServerPacket();
+
+        data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(mts_item.getItem()));
+        data.Encode4(mts_item.getId()); // nITCSN
+        data.Encode4(mts_item.getPrice()); // nPrice
+        data.Encode4(mts_item.getTaxes()); // nContractFee
+
+        switch (Config.REGION) {
+            case JMS: {
+                // JMS187
+                data.Encode4(0);
+                data.Encode4(0);
+                break;
+            }
+            default: {
+                // GMS95
+                data.EncodeStr(""); // sContractFeeTxId
+                data.EncodeStr(""); // sRollbackUsageID
+                break;
+            }
+        }
+
+        data.Encode8(TacosSharedDate.getTimestamp(mts_item.getEndingDate())); // ftITCDateExpired
+        data.EncodeStr(""); // sUserID
+        data.EncodeStr(mts_item.getSeller()); // sGameID
+        data.EncodeStr(""); // sComment
+        data.Encode4(0); // nBidCount
+        data.Encode4(0); // nBidRange
+        data.Encode4(0); // nBidPrice
+        data.Encode4(0); // nMinPrice
+        data.Encode4(0); // nMaxPrice
+        data.Encode4(0); // nUnitPrice
+        data.Encode2(0); // nProcessStatus
+        return data.getBytes();
     }
 }
