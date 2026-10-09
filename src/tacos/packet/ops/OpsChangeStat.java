@@ -79,7 +79,7 @@ public enum OpsChangeStat {
     }
 
     public static void init() {
-        if (Config.Equal(Region.CMS, 88)) {
+        if (Config.Between(Region.CMS, 73, 88)) {
             // same as JMS146?
             CS_SKIN.set(1);
             CS_FACE.set(1 << 1);

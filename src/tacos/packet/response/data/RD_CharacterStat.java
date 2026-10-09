@@ -316,7 +316,7 @@ public class RD_CharacterStat {
 
         data.Encode4(chr.getExp()); // nEXP
         data.Encode2(chr.getFame()); // nPOP
-        data.Encode4(chr.getGashaEXP(), Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 77) || Config.GreaterOrEqual(Region.EMS, 76)); // nTempEXP
+        data.Encode4(chr.getGashaEXP(), Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 77) || Config.GreaterOrEqual(Region.EMS, 76)); // nTempEXP
         data.Encode8(0, Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 76));
         data.Encode4(chr.getPosMap()); // dwPosMap
         data.Encode1(chr.getPortal()); // nPortal

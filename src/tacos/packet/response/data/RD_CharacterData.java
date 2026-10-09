@@ -198,13 +198,13 @@ public class RD_CharacterData {
                     return data.getBytes();
                 }
                 if ((datamask & 0x20000L) != 0) {
-                    data.Encode4(chr.getMonsterBook().getCover(), Config.Between(Region.KMS, 51, 95) || Config.GreaterOrEqual(Region.JMS, 146) || Config.Between(Region.CMS, 85, 86) || Config.Between(Region.TWMS, 94, 122) || Config.Between(Region.THMS, 87, 88) || Config.Between(Region.GMS, 61, 92) || Config.Between(Region.MSEA, 100, 102) || Config.GreaterOrEqual(Region.VMS, 35));
+                    data.Encode4(chr.getMonsterBook().getCover(), Config.Between(Region.KMS, 51, 95) || Config.GreaterOrEqual(Region.JMS, 146) || Config.Between(Region.CMS, 73, 86) || Config.Between(Region.TWMS, 94, 122) || Config.Between(Region.THMS, 87, 88) || Config.Between(Region.GMS, 61, 92) || Config.Between(Region.MSEA, 100, 102) || Config.GreaterOrEqual(Region.VMS, 35));
                 }
                 if (Config.LessOrEqual(Region.GMS, 62)) {
                     return data.getBytes();
                 }
                 if ((datamask & 0x10000L) != 0) {
-                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr), Config.Between(Region.KMS, 51, 95) || Config.GreaterOrEqual(Region.JMS, 146) || Config.Between(Region.CMS, 85, 86) || Config.Between(Region.TWMS, 94, 122) || Config.Between(Region.THMS, 87, 88) || Config.Between(Region.GMS, 68, 92) || Config.Between(Region.MSEA, 100, 102) || Config.GreaterOrEqual(Region.VMS, 35));
+                    data.EncodeBuffer(RD_CStage.GW_MonsterBookCode_Encode(chr), Config.Between(Region.KMS, 51, 95) || Config.GreaterOrEqual(Region.JMS, 146) || Config.Between(Region.CMS, 73, 86) || Config.Between(Region.TWMS, 94, 122) || Config.Between(Region.THMS, 87, 88) || Config.Between(Region.GMS, 68, 92) || Config.Between(Region.MSEA, 100, 102) || Config.GreaterOrEqual(Region.VMS, 35));
                 }
                 if (Config.LessOrEqual(Region.KMS, 55) || Config.LessOrEqual(Region.JMS, 147)) {
                     return data.getBytes();
@@ -222,13 +222,13 @@ public class RD_CharacterData {
                     return data.getBytes();
                 }
                 if ((datamask & 0x80000L) != 0) {
-                    data.Encode2(0, Config.Between(Region.KMS, 65, 95) || Config.Between(Region.JMS, 164, 186) || Config.Between(Region.CMS, 85, 86) || Config.Between(Region.TWMS, 94, 122) || Config.Between(Region.THMS, 87, 88) || Config.GreaterOrEqual(Region.GMS, 68) || Config.Between(Region.MSEA, 100, 102) || Config.Between(Region.EMS, 55, 70));
+                    data.Encode2(0, Config.Between(Region.KMS, 65, 95) || Config.Between(Region.JMS, 164, 186) || Config.Between(Region.CMS, 73, 86) || Config.Between(Region.TWMS, 94, 122) || Config.Between(Region.THMS, 87, 88) || Config.GreaterOrEqual(Region.GMS, 68) || Config.Between(Region.MSEA, 100, 102) || Config.Between(Region.EMS, 55, 70));
                 }
                 if ((datamask & 0x800L) != 0) {
                     data.Encode2(0, Config.Between(Region.EMS, 55, 70));
                 }
                 if ((datamask & 0x100000L) != 0) {
-                    data.Encode2(0, Config.Equal(Region.TWMS, 94) || Config.GreaterOrEqual(Region.GMS, 68));
+                    data.Encode2(0, Config.Equal(Region.CMS, 73) || Config.Equal(Region.TWMS, 94) || Config.GreaterOrEqual(Region.GMS, 68));
                 }
                 if ((datamask & 0x1000000L) != 0) {
                     data.Encode2(0, Config.GreaterOrEqual(Region.EMS, 76));
@@ -509,7 +509,7 @@ public class RD_CharacterData {
             data.Encode1(chr.getInventory(MapleInventoryType.CASH).getSlotLimit()); // 0x40
         }
         // v165-v194 OK
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 74) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             // 0x100000
             if ((datamask & 0x100000) != 0) {
                 data.Encode4(0);

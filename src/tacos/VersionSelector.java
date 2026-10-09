@@ -89,6 +89,7 @@ public class VersionSelector {
 
     private static String[] versions_cms
             = {
+                "CMS v73.1",
                 "CMS v85.1",
                 "CMS v88.1",
                 "CMS v104.1",};
