@@ -18,7 +18,6 @@
  */
 package tacos.unofficial;
 
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
@@ -27,6 +26,7 @@ import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -54,7 +54,7 @@ public class PetMob implements IPetEx {
             return false;
         }
 
-        this.monster = MapleLifeFactory.getMonster(id);
+        this.monster = WzXML.MOB.findMonster(id);
         this.monster.setPosition(this.character.getPosition());
         this.monster.setFootholdId(this.character.getFootholdId());
         this.monster.setHomeFoothold(this.character.getFootholdId());

@@ -60,6 +60,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.server.map.TacosReward;
 import tacos.server.map.object.TacosMonster;
+import tacos.wz.WzXML;
 
 public class MapleMonster extends TacosMonster {
 
@@ -439,8 +440,8 @@ public class MapleMonster extends TacosMonster {
             case 8810119:
             case 8810120:
             case 8810121: //must update sponges
-                for (final int i : toSpawn) {
-                    final MapleMonster mob = MapleLifeFactory.getMonster(i);
+                for (int i : toSpawn) {
+                    MapleMonster mob = WzXML.MOB.findMonster(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
@@ -473,10 +474,10 @@ public class MapleMonster extends TacosMonster {
             case 8820011:
             case 8820012:
             case 8820013: {
-                final List<MapleMonster> mobs = new ArrayList<>();
+                List<MapleMonster> mobs = new ArrayList<>();
 
-                for (final int i : toSpawn) {
-                    final MapleMonster mob = MapleLifeFactory.getMonster(i);
+                for (int i : toSpawn) {
+                    MapleMonster mob = WzXML.MOB.findMonster(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
@@ -509,8 +510,8 @@ public class MapleMonster extends TacosMonster {
                 break;
             }
             default: {
-                for (final int i : toSpawn) {
-                    final MapleMonster mob = MapleLifeFactory.getMonster(i);
+                for (int i : toSpawn) {
+                    MapleMonster mob = WzXML.MOB.findMonster(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {

@@ -27,11 +27,11 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleCarnivalFactory;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -78,7 +78,7 @@ public class ReqCField_MonsterCarnival {
                 chr.sendStatChanged(true);
                 return;
             }
-            final MapleMonster mons = MapleLifeFactory.getMonster(mobs.get(num).getKey());
+            MapleMonster mons = WzXML.MOB.findMonster(mobs.get(num).getKey());
             if (mons != null && chr.getMap().makeCarnivalSpawn(chr.getCarnivalParty().getTeam(), mons, num)) {
                 chr.getCarnivalParty().useCP(chr, mobs.get(num).getValue());
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);

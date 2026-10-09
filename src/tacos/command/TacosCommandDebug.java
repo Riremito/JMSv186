@@ -28,7 +28,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import tacos.wz.MapleData;
 import odin.server.maps.MapleMap;
@@ -276,7 +275,7 @@ public class TacosCommandDebug {
                 for (int i = 0; i < mob_count; i++) {
                     int mobid = WzDataStorage.MOB.getRandom();
                     DebugLogger.InfoLog("random spawn: " + mobid);
-                    MapleMonster mob = MapleLifeFactory.getMonster(mobid);
+                    MapleMonster mob = WzXML.MOB.findMonster(mobid);
                     map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
 
                     chr.DebugMsg("randomspawn : " + mob.getId() + " - " + mob.getStats().getName());

@@ -22,13 +22,13 @@ import java.awt.Point;
 import java.util.ArrayList;
 import lombok.Data;
 import odin.server.Randomizer;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.server.TacosWorld;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -61,7 +61,7 @@ public class TacosBossSpawnPoint {
         if (this.monster != null) {
             return null;
         }
-        this.monster = MapleLifeFactory.getMonster(this.id);
+        this.monster = WzXML.MOB.findMonster(this.id);
 
         int sp_count = map.getMonsterSpawnPoint().size();
         if (sp_count != 0) {

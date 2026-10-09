@@ -28,8 +28,8 @@ import tacos.packet.ops.OpsMessage;
 import tacos.packet.response.builder.PB_Message;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
-import odin.server.life.MapleLifeFactory;
 import tacos.packet.ServerPacket;
+import tacos.wz.WzXML;
 
 public class Event_DojoAgent {
 
@@ -382,13 +382,13 @@ public class Event_DojoAgent {
                 return;
         }
         if (mobid != 0) {
-            final int rand = Randomizer.nextInt(3);
+            int rand = Randomizer.nextInt(3);
 
             MapTimer.getInstance().schedule(new Runnable() {
 
                 @Override
                 public void run() {
-                    map.spawnMonsterWithEffect(MapleLifeFactory.getMonster(mobid), 15, rand == 0 ? point1 : rand == 1 ? point2 : point3);
+                    map.spawnMonsterWithEffect(WzXML.MOB.findMonster(mobid), 15, rand == 0 ? point1 : rand == 1 ? point2 : point3);
                 }
             }, 3000);
         }

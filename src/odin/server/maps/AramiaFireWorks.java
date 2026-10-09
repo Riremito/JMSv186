@@ -28,7 +28,7 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MapleLifeFactory;
+import tacos.wz.WzXML;
 
 public class AramiaFireWorks {
 
@@ -90,7 +90,7 @@ public class AramiaFireWorks {
 
         for (int i = 0; i < arrayMob.length; i++) {
             pos = new Point(arrayX[i], arrayY[i]);
-            map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(arrayMob[i]), pos);
+            map.spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(arrayMob[i]), pos);
         }
     }
 

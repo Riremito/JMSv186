@@ -20,7 +20,6 @@ package tacos.server.map;
 
 import java.awt.Point;
 import lombok.Data;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
@@ -28,6 +27,7 @@ import tacos.packet.ops.OpsMobAppear;
 import tacos.wz.MapleData;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzDataTool;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -81,7 +81,7 @@ public class TacosSpawnPoint {
             return null;
         }
 
-        this.monster = MapleLifeFactory.getMonster(this.id);
+        this.monster = WzXML.MOB.findMonster(this.id);
         this.monster.setObjectId();
         this.monster.setMap(map); // TODO : remove from monster object.
         this.monster.setPosition(new Point(this.x, this.y));

@@ -68,7 +68,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.MobSkill;
@@ -2630,7 +2629,7 @@ public class ReqCUser {
         }
         for (SimpleImmutableEntry<Integer, Integer> summon_data : summon_info) {
             if (Randomizer.nextInt(100) < summon_data.getValue()) {
-                MapleMonster monster = MapleLifeFactory.getMonster(summon_data.getKey());
+                MapleMonster monster = WzXML.MOB.findMonster(summon_data.getKey());
                 chr.getMap().spawnMonster_sSack(monster, chr.getPosition(), 0);
             }
         }

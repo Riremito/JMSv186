@@ -34,7 +34,7 @@ import tacos.packet.response.ResCWvsContext;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
 import odin.server.quest.MapleQuest;
-import odin.server.life.MapleLifeFactory;
+import tacos.wz.WzXML;
 
 public class Event_PyramidSubway {
 
@@ -121,7 +121,7 @@ public class Event_PyramidSubway {
 
                 public void run() {
                     if (map.countMonsterById(9300021) <= (stage == 4 ? 1 : 2)) {
-                        map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300021), new Point(pos));
+                        map.spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(9300021), new Point(pos));
                     }
                 }
             }, 10000L);

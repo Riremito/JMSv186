@@ -28,10 +28,10 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MapleMonsterStats;
 import odin.server.life.Element;
 import odin.server.life.ElementalEffectiveness;
-import odin.server.life.BanishInfo;
 import java.util.LinkedList;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import lombok.Getter;
+import tacos.constants.TacosConstants;
 
 /**
  *
@@ -91,6 +91,14 @@ public class MobWz extends WzXML {
         }
     }
 
+    @Getter
+    public class MobBanInfo {
+
+        private String banMsg;
+        private int field;
+        private String portal;
+    }
+
     public MapleMonsterStats loadMonsterStats(int mob_id) {
         MapleData monsterData = getImg(mob_id);
         if (monsterData == null) {
@@ -144,15 +152,18 @@ public class MobWz extends WzXML {
             }
         }
 
-        final MapleData banishData = monsterInfoData.getChildByPath("ban");
-        if (banishData != null) {
-            stats.setBanishInfo(new BanishInfo(
-                    WzDataTool.getStringPath("banMsg", banishData, ""),
-                    WzDataTool.getIntPath("banMap/0/field", banishData, -1),
-                    WzDataTool.getStringPath("banMap/0/portal", banishData, "sp")));
+        // info/ban
+        MapleData md_info_ban = monsterInfoData.getChildByPath("ban");
+        if (md_info_ban != null) {
+            // example, 7090000.img
+            MobBanInfo mbd = new MobBanInfo();
+            mbd.banMsg = WzDataTool.getStringPath("banMsg", md_info_ban, ""); // info/ban/banMsg
+            mbd.field = WzDataTool.getIntPath("banMap/0/field", md_info_ban, TacosConstants.MAP_ID_PERION); // info/ban/banMap/0/field
+            mbd.portal = WzDataTool.getStringPath("banMap/0/portal", md_info_ban, "sp"); // info/ban/banMap/0/field/portal
+            stats.setBanishInfo(mbd);
         }
 
-        final MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
+        MapleData reviveInfo = monsterInfoData.getChildByPath("revive");
         if (reviveInfo != null) {
             List<Integer> revives = new LinkedList<>();
             for (MapleData bdata : reviveInfo) {
@@ -249,7 +260,7 @@ public class MobWz extends WzXML {
 
     private Map<Integer, List<Integer>> map_QuestCountGroup = null;
 
-    public Map<Integer, List<Integer>> getQuestCountGroup() {
+    private Map<Integer, List<Integer>> getQuestCountGroup() {
         if (map_QuestCountGroup != null) {
             return map_QuestCountGroup;
         }
@@ -273,5 +284,27 @@ public class MobWz extends WzXML {
         }
 
         return map_QuestCountGroup;
+    }
+
+    public boolean checkQuestCountGroup(int group_id, int mob_id) {
+        List<Integer> groups = getQuestCountGroup().get(group_id);
+        if (groups == null) {
+            return false;
+        }
+        return groups.contains(mob_id);
+    }
+
+    private final Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
+
+    public MapleMonster findMonster(int mob_id) {
+        MapleMonsterStats stats = this.monsterStats.get(mob_id);
+        if (stats == null) {
+            stats = WzXML.MOB.loadMonsterStats(mob_id);
+            if (stats == null) {
+                return null;
+            }
+            this.monsterStats.put(mob_id, stats);
+        }
+        return new MapleMonster(mob_id, stats);
     }
 }

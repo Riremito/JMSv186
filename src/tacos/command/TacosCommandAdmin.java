@@ -31,7 +31,6 @@ import java.awt.Point;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
@@ -329,7 +328,7 @@ public class TacosCommandAdmin {
                 }
 
                 for (int i = 0; i < count; i++) {
-                    MapleMonster monster = MapleLifeFactory.getMonster(mob_id);
+                    MapleMonster monster = WzXML.MOB.findMonster(mob_id);
                     map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
                 }
 

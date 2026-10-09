@@ -34,7 +34,6 @@ import tacos.packet.response.ResCMobPool;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleLifeFactory;
 import odin.server.MapleCarnivalFactory;
 import odin.server.MapleCarnivalFactory.MCSkill;
 import odin.server.Timer.MapTimer;
@@ -49,6 +48,7 @@ import tacos.server.map.TacosMap;
 import tacos.server.map.TacosReward;
 import tacos.server.map.object.TacosDrop.DropEnterType;
 import tacos.server.map.object.TacosDrop.DropLeaveType;
+import tacos.wz.WzXML;
 
 public final class MapleMap extends TacosMap {
 
@@ -140,39 +140,38 @@ public final class MapleMap extends TacosMap {
             boolean makeZakReal = true;
             final Collection<MapleMonster> monsters = getAllMonsters();
 
-            for (final MapleMonster mons : monsters) {
+            for (MapleMonster mons : monsters) {
                 if (mons.getId() >= 8800003 && mons.getId() <= 8800010) {
                     makeZakReal = false;
                     break;
                 }
             }
             if (makeZakReal) {
-                for (final Object object : monsters) {
-                    final MapleMonster mons = ((MapleMonster) object);
+                for (MapleMonster mons : monsters) {
                     if (mons.getId() == 8800000) {
-                        final Point pos = mons.getPosition();
+                        Point pos = mons.getPosition();
                         this.killAllMonsters(true);
-                        spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8800000), pos);
+                        spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(8800000), pos);
                         break;
                     }
                 }
             }
         } else if (mobid >= 8800103 && mobid <= 8800110) {
             boolean makeZakReal = true;
-            final Collection<MapleMonster> monsters = getAllMonsters();
+            Collection<MapleMonster> monsters = getAllMonsters();
 
-            for (final MapleMonster mons : monsters) {
+            for (MapleMonster mons : monsters) {
                 if (mons.getId() >= 8800103 && mons.getId() <= 8800110) {
                     makeZakReal = false;
                     break;
                 }
             }
             if (makeZakReal) {
-                for (final MapleMonster mons : monsters) {
+                for (MapleMonster mons : monsters) {
                     if (mons.getId() == 8800100) {
-                        final Point pos = mons.getPosition();
+                        Point pos = mons.getPosition();
                         this.killAllMonsters(true);
-                        spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(8800100), pos);
+                        spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(8800100), pos);
                         break;
                     }
                 }
@@ -215,7 +214,7 @@ public final class MapleMap extends TacosMap {
 
     // 多分Reactorの中心座標とサイズが必要, Map上の座標を利用すると足場より下に設置されているように見えるので落下する
     public void spawnZakum(MapleReactor zakum_reactor) {
-        MapleMonster mainb = MapleLifeFactory.getMonster(8800000);
+        MapleMonster mainb = WzXML.MOB.findMonster(8800000);
         int reactor_fh_id = findBelow(zakum_reactor.getMobSpawnPoint()).getId();
         Point zakum_pos = new Point(zakum_reactor.getMobSpawnPoint());
         zakum_pos.y = getFootholds().get(reactor_fh_id).getY1() - 1;
@@ -230,7 +229,7 @@ public final class MapleMap extends TacosMap {
         spawnFakeMonster(mainb);
         int[] zakpart = {8800003, 8800004, 8800005, 8800006, 8800007, 8800008, 8800009, 8800010};
         for (int i : zakpart) {
-            MapleMonster part = MapleLifeFactory.getMonster(i);
+            MapleMonster part = WzXML.MOB.findMonster(i);
             part.setPosition(zakum_pos);
             part.setFootholdId(reactor_fh_id);
             mainb.setHomeFoothold(reactor_fh_id);
@@ -418,10 +417,10 @@ public final class MapleMap extends TacosMap {
     }
 
     // used by script
-    public final void spawnChaosZakum(final int x, final int y) {
-        final Point pos = new Point(x, y);
-        final MapleMonster mainb = MapleLifeFactory.getMonster(8800100);
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+    public void spawnChaosZakum(int x, int y) {
+        Point pos = new Point(x, y);
+        MapleMonster mainb = WzXML.MOB.findMonster(8800100);
+        Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
         mainb.setPosition(spos);
         mainb.setFake(true);
 
@@ -431,8 +430,8 @@ public final class MapleMap extends TacosMap {
         final int[] zakpart = {8800103, 8800104, 8800105, 8800106, 8800107,
             8800108, 8800109, 8800110};
 
-        for (final int i : zakpart) {
-            final MapleMonster part = MapleLifeFactory.getMonster(i);
+        for (int i : zakpart) {
+            MapleMonster part = WzXML.MOB.findMonster(i);
             part.setPosition(spos);
 
             spawnMonster(part, -2);

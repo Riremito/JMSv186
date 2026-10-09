@@ -21,7 +21,6 @@ package tacos.command;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.server.Randomizer;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
@@ -124,7 +123,7 @@ public class TacosCommandTest {
                 List<MapleMonster> monsters = map.getAllMonsters();
                 MapleMonster monster = null;
                 if (map.getAllMonsters().isEmpty()) {
-                    monster = MapleLifeFactory.getMonster(130101);
+                    monster = WzXML.MOB.findMonster(130101);
                     map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
                 } else {
                     monster = monsters.get(0);

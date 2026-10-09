@@ -32,6 +32,8 @@ import odin.client.MapleCharacter;
 import odin.client.status.MonsterStatus;
 import java.util.EnumMap;
 import odin.server.maps.MapleMist;
+import tacos.wz.MobWz.MobBanInfo;
+import tacos.wz.WzXML;
 
 public class MobSkill {
 
@@ -157,14 +159,14 @@ public class MobSkill {
                 break;
             case 129: // Banish
                 if (monster != null) {
-                    final BanishInfo info = monster.getStats().getBanishInfo();
+                    MobBanInfo info = monster.getStats().getBanishInfo();
                     if (info != null) {
                         if (lt != null && rb != null && skill && player != null) {
                             for (MapleCharacter chr : getPlayersInRange(monster, player)) {
-                                chr.changeMapBanish(info.getMap(), info.getPortal(), info.getMsg());
+                                chr.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
                             }
                         } else if (player != null) {
-                            player.changeMapBanish(info.getMap(), info.getPortal(), info.getMsg());
+                            player.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
                         }
                     }
                 }
@@ -208,7 +210,7 @@ public class MobSkill {
                 for (Integer mobId : getSummons()) {
                     MapleMonster toSpawn = null;
                     try {
-                        toSpawn = MapleLifeFactory.getMonster(GameConstants.getCustomSpawnID(monster.getId(), mobId));
+                        toSpawn = WzXML.MOB.findMonster(GameConstants.getCustomSpawnID(monster.getId(), mobId));
                     } catch (RuntimeException e) { //monster doesn't exist
                         continue;
                     }
