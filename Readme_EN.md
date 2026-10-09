@@ -37,12 +37,7 @@
 + download script from this repo. https://github.com/Riremito/jms_scripts
 + you should put folder likes this. `JMSv186/scripts/scripts_jms/`
 ### Database
-+ run Wampserver, and open phpmyadmin by browser.
-    + you can login without password by default, just enter `root` to username.
-+ in case of JMS147, you have to make database name as `jms_v147`.
-+ import sql files in `JMSv186/sql` folder by this order.
-    + `jms_v147_empty.sql`
-    + `init_data_set.sql`
++ automatically generated.
 
 ## Build.
 + open porject by NetBeans.
@@ -67,14 +62,7 @@
 + TODO
 
 ## client
-### how to get
-+ get full client.
-    + Web Archive or [ragezone](https://forum.ragezone.com/threads/maplestory-client-localhost-archive.1101897/)
-+ get localhost client.
-    + [ragezone](https://forum.ragezone.com/threads/some-localhost-clients-kms-jms-cms-twms.1225637/)
-+ put `JMS_v147.0_L.exe` or the version of localhost you choose to your full client folder.
-### how to run
-+ just click localhost client exe.
++ you can easily find full clients in ragezone or web archive.
 ### others
 + [crash bug fix tool](https://github.com/Riremito/iGPUplz)
     + under JMS187 has to use this to bypass crash bugs.
