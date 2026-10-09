@@ -35,13 +35,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.ItemLoader;
 import tacos.database.query.DQ_Hiredmerch;
 import tacos.server.TacosWorld;
-import tacos.packet.response.ResCUser;
 import java.sql.SQLException;
 
 public class MaplePlayerShop {
@@ -190,12 +188,6 @@ public class MaplePlayerShop {
         return chrs[num].get();
     }
 
-    public void update() {
-        if (isAvailable() && getMCOwner() != null) {
-            getMap().broadcastMessage(ResCUser.sendPlayerShopBox(getMCOwner()));
-        }
-    }
-
     public void addVisitor(MapleCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
@@ -203,9 +195,6 @@ public class MaplePlayerShop {
             chrs[i - 1] = new WeakReference<>(visitor);
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
-            }
-            if (i == 3) {
-                update();
             }
         }
     }
@@ -216,9 +205,6 @@ public class MaplePlayerShop {
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
             chrs[slot - 1] = new WeakReference<>(null);
-            if (shouldUpdate) {
-                update();
-            }
         }
     }
 
@@ -246,7 +232,6 @@ public class MaplePlayerShop {
                 chrs[i] = new WeakReference<>(null);
             }
         }
-        update();
     }
 
     public String getOwnerName() {
@@ -318,18 +303,8 @@ public class MaplePlayerShop {
         return pass;
     }
 
-    public void sendDestroyData(TacosClient client) {
-    }
-
-    public void sendSpawnData(TacosClient client) {
-    }
-
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.SHOP;
-    }
-
     public MapleCharacter getMCOwner() {
-        return getMap().getCharacterById(ownerId);
+        return getMap().getPlayerById(ownerId);
     }
 
     public MapleMap getMap() {
@@ -420,7 +395,7 @@ public class MaplePlayerShop {
     public void closeShop(boolean saveItems, boolean remove, int reason) {
         MapleCharacter owner = getMCOwner();
         removeAllVisitors(reason, 1);
-        getMap().removeMapObject(this);
+        getMap().removePlayerShop(this.getObjectId());
 
         for (MaplePlayerShopItem items : getItems()) {
             if (items.bundles > 0) {
@@ -437,7 +412,6 @@ public class MaplePlayerShop {
 
         owner.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(reason, 0));
         owner.setPlayerShop(null);
-        update();
     }
 
     public boolean isBanned(String name) {

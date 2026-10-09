@@ -25,6 +25,8 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -54,15 +56,16 @@ public class ReqCNpcPool {
             case CP_NpcMove: {
                 byte nChatIdx = cp.Decode1();
                 byte m_nOneTimeAction = cp.Decode1();
+                int unk = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302));
 
                 ParseCMovePath move_path = new ParseCMovePath();
                 if (move_path.Decode(cp)) {
-                    move_path.update(npc);
+                    npc.update(move_path);
                 } else {
                     move_path = null;
                 }
 
-                map.broadcastMessage(ResCNpcPool.NpcMove(npc, nChatIdx, m_nOneTimeAction, move_path));
+                map.broadcastPacket(ResCNpcPool.NpcMove(npc, nChatIdx, m_nOneTimeAction, move_path));
                 return true;
             }
             default: {

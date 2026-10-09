@@ -18,7 +18,6 @@
  */
 package tacos.unofficial;
 
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleNPC;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
@@ -41,26 +40,24 @@ public class PetNPC implements IPetEx {
 
     @Override
     public void SendPacket(ServerPacket packet) {
-        this.character.getMap().broadcastMessage(packet);
+        this.character.getMap().broadcastPacket(packet);
     }
 
     @Override
-    public boolean spawn(int id) {
+    public boolean spawn(int npc_id) {
         remove();
 
-        if (!WzDataStorage.NPC.check(id)) {
+        if (!WzDataStorage.NPC.check(npc_id)) {
             return false;
         }
 
-        this.npc = MapleLifeFactory.getNPC(id);
+        this.npc = new MapleNPC(npc_id);
         this.npc.setCy(this.character.getPosition().y);
         this.npc.setRx0(this.character.getPosition().x + 50);
         this.npc.setRx1(this.character.getPosition().x - 50);
         this.npc.setPosition(this.character.getPosition());
-        this.npc.setFH(this.character.getFH());
-        this.npc.setOriginFh(this.character.getFH());
-
-        SendPacket(ResCNpcPool.NpcEnterField(this.npc, true));
+        this.npc.setFootholdId(this.character.getFootholdId());
+        this.character.getMap().addNPC(this.npc);
         return true;
     }
 
@@ -70,7 +67,7 @@ public class PetNPC implements IPetEx {
             return false;
         }
 
-        SendPacket(ResCNpcPool.NpcLeaveField(this.npc));
+        this.character.getMap().removeNPC(this.npc);
         this.npc = null;
         return true;
     }
@@ -81,8 +78,7 @@ public class PetNPC implements IPetEx {
             return false;
         }
 
-        move_path.update(this.npc);
-        this.npc.setOriginFh(move_path.getFootHoldId());
+        this.npc.update(move_path);
 
         SendPacket(ResCNpcPool.NpcMove(this.npc, -1, -1, move_path));
         return true;

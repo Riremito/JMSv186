@@ -41,7 +41,7 @@ import tacos.packet.request.ReqCUser_Pet;
 import tacos.packet.request.ReqCUser_SkillPet;
 import tacos.packet.request.Req_MapleTV;
 import tacos.server.TacosServer;
-import tacos.task.TacosTask;
+import tacos.server.TacosTask;
 
 /**
  *

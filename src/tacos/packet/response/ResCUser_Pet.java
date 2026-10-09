@@ -18,14 +18,14 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
-import odin.client.inventory.MaplePet;
+import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.RD_CUser;
+import tacos.server.map.object.TacosPet;
 
 /**
  *
@@ -33,16 +33,6 @@ import tacos.packet.response.data.RD_CUser;
  */
 public class ResCUser_Pet {
 
-    /*
-        @00B4 : LP_PetActivated, CUserLocal::OnPetActivated, CUserRemote::OnPetActivated
-        @00B5 : LP_PetEvol
-        @00B6 : LP_PetTransferField
-        @00B7 : LP_PetMove
-        @00B8 : LP_PetAction
-        @00B9 : LP_PetNameChanged
-        @00BA : LP_PetLoadExceptionList
-        @00BB : LP_PetActionCommand
-     */
     public enum DeActivatedMsg {
         // アイテムクリック時の動作だと思う
         PET_NO_MSG(0),
@@ -79,8 +69,9 @@ public class ResCUser_Pet {
     }
 
     // showPet
-    public static ServerPacket PetActivated(MapleCharacter chr, MaplePet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
+    public static ServerPacket PetActivated(TacosCharacter chr, TacosPet pet, boolean spawn, DeActivatedMsg msg, boolean transfer_field) {
         ServerPacket sp = new ServerPacket((transfer_field || Config.LessOrEqual(Region.JMS, 131)) ? ServerPacketHeader.LP_PetTransferField : ServerPacketHeader.LP_PetActivated);
+
         sp.Encode4(chr.getId());
 
         if (Config.Equal(Region.JMS, 147)) {
@@ -121,19 +112,19 @@ public class ResCUser_Pet {
         return sp;
     }
 
-    public static ServerPacket Activated(MapleCharacter chr, MaplePet pet) {
+    public static ServerPacket Activated(TacosCharacter chr, TacosPet pet) {
         return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, false);
     }
 
-    public static ServerPacket Deactivated(MapleCharacter chr, MaplePet pet, DeActivatedMsg msg) {
+    public static ServerPacket Deactivated(TacosCharacter chr, TacosPet pet, DeActivatedMsg msg) {
         return PetActivated(chr, pet, false, msg, false);
     }
 
-    public static ServerPacket TransferField(MapleCharacter chr, MaplePet pet) {
+    public static ServerPacket TransferField(TacosCharacter chr, TacosPet pet) {
         return PetActivated(chr, pet, true, DeActivatedMsg.PET_NO_MSG, true);
     }
 
-    public static ServerPacket PetMove(MapleCharacter chr, MaplePet pet, ParseCMovePath data) {
+    public static ServerPacket PetMove(TacosCharacter chr, TacosPet pet, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetMove);
 
         sp.Encode4(chr.getId());
@@ -148,7 +139,7 @@ public class ResCUser_Pet {
         return sp;
     }
 
-    public static ServerPacket PetAction(MapleCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
+    public static ServerPacket PetAction(TacosCharacter chr, int pet_index, byte nType, byte nAction, String pet_message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetAction);
 
         sp.Encode4(chr.getId());
@@ -160,7 +151,7 @@ public class ResCUser_Pet {
         return sp;
     }
 
-    public static ServerPacket PetNameChanged(MapleCharacter chr, MaplePet pet, String pet_name) {
+    public static ServerPacket PetNameChanged(TacosCharacter chr, TacosPet pet, String pet_name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetNameChanged);
 
         sp.Encode4(chr.getId());
@@ -169,14 +160,15 @@ public class ResCUser_Pet {
         } else {
             sp.Encode4(chr.getPetIndex(pet));
         }
+
         sp.EncodeStr(pet_name);
         return sp;
     }
 
-    public static ServerPacket PetActionCommand(int cid, byte command, int slot, boolean success, boolean food) {
+    public static ServerPacket PetActionCommand(TacosCharacter chr, byte command, int slot, boolean success, boolean food) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetActionCommand);
 
-        sp.Encode4(cid);
+        sp.Encode4(chr.getId());
         sp.Encode4(slot);
         sp.Encode1(command == 1 ? 1 : 0);
         sp.Encode1(command);
@@ -185,6 +177,7 @@ public class ResCUser_Pet {
         } else {
             sp.Encode2(success ? 1 : 0);
         }
+
         return sp;
     }
 }

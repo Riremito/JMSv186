@@ -26,8 +26,7 @@ import tacos.packet.ServerPacket;
 
 /**
  * AbstractPlayerStoreを HiredMerchant / MaplePlayerShop / MapleMiniGame の3クラスへ
- * 統合(フラット化)したことに伴い、共通の店舗操作をObject型経由でinstanceof分岐して行うための
- * ディスパッチヘルパー。
+ * 統合(フラット化)したことに伴い、共通の店舗操作をObject型経由でinstanceof分岐して行うための ディスパッチヘルパー。
  * 新しく店舗として扱う型を追加した場合は、このクラスの各メソッドにも分岐を追加すること。
  *
  * @author Riremito
@@ -126,18 +125,6 @@ public final class ShopDispatch {
             return ((MapleMiniGame) o).isOpen();
         }
         throw new IllegalArgumentException("isOpen: unknown shop type: " + o);
-    }
-
-    public static void update(Object o) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).update();
-        } else if (o instanceof MaplePlayerShop) {
-            ((MaplePlayerShop) o).update();
-        } else if (o instanceof MapleMiniGame) {
-            ((MapleMiniGame) o).update();
-        } else {
-            throw new IllegalArgumentException("update: unknown shop type: " + o);
-        }
     }
 
     public static void addVisitor(Object o, MapleCharacter visitor) {
@@ -366,5 +353,16 @@ public final class ShopDispatch {
         } else {
             throw new IllegalArgumentException("closeShop: unknown shop type: " + o);
         }
+    }
+
+    public static int getObjectId(Object o) {
+        if (o instanceof HiredMerchant) {
+            return ((HiredMerchant) o).getObjectId();
+        } else if (o instanceof MaplePlayerShop) {
+            return ((MaplePlayerShop) o).getObjectId();
+        } else if (o instanceof MapleMiniGame) {
+            return ((MapleMiniGame) o).getObjectId();
+        }
+        throw new IllegalArgumentException("getObjectId: unknown shop type: " + o);
     }
 }

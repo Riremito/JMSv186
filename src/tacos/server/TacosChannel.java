@@ -26,7 +26,10 @@ import odin.client.MapleCharacter;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.server.MapleSquad;
+import odin.server.life.MapleMonster;
+import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
+import odin.server.maps.MapleReactor;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
 import tacos.packet.response.ResCWvsContext;
@@ -34,8 +37,11 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.network.PacketHandler_Game;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMobAppear;
 import tacos.property.Property_Dummy_World;
-import tacos.server.map.MasterMonster;
+import tacos.server.map.TacosNPCSpawnPoint;
+import tacos.server.map.TacosReactorSpawnPoint;
+import tacos.server.map.TacosSpawnPoint;
 import tacos.unofficial.CustomMap;
 
 /**
@@ -47,7 +53,7 @@ public class TacosChannel extends TacosServer {
     private TacosWorld world = null;
     private int channel;
     private int language = 0;
-    private OnlinePlayers onlines;
+    private TacosOnlinePlayers onlines;
     private String serverMessage;
     private int expRate;
     private int mesoRate;
@@ -110,22 +116,46 @@ public class TacosChannel extends TacosServer {
         if (map != null) {
             return map;
         }
-
         map = new MapleMap(map_id, this.channel);
         if (!map.loadData()) {
             return null;
         }
+        // mob spawn just after generating map for test.
+        for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
+            MapleMonster monster = sp.regen(map);
+            if (monster != null) {
+                map.addMonster(monster);
+                monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
+                monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
+            }
+        }
+        // npc is always spawned.
+        for (TacosNPCSpawnPoint sp : map.getNPCSpawnPoint()) {
+            MapleNPC npc = sp.regen(map);
+            if (npc != null) {
+                map.addNPC(npc);
+            }
+        }
+        // reactor.
+        for (TacosReactorSpawnPoint sp : map.getReactorSpawnPoint()) {
+            MapleReactor reactor = sp.regen(map);
+            if (reactor != null) {
+                map.addReactor(reactor);
+            }
+        }
+        // master monster.
+        map.addMasterMonster();
         // custom npc.
         CustomMap.addNPCtoMap(map);
-        // master monster.
-        MasterMonster.addAreaBossSpawn(map);
-        map.loadMonsterRate(true);
-
         this.maps.put(map_id, map);
         return map;
     }
 
-    public OnlinePlayers getOnlinePlayers() {
+    public void removeMap(int map_id) {
+        this.maps.remove(map_id);
+    }
+
+    public TacosOnlinePlayers getOnlinePlayers() {
         return this.onlines;
     }
 
@@ -183,7 +213,7 @@ public class TacosChannel extends TacosServer {
     public List<HiredMerchant> searchMerchant(int item_id) {
         List<HiredMerchant> list = new LinkedList<>();
         for (HiredMerchant hm : this.merchants.values()) {
-            if (hm.searchItem(item_id).size() > 0) {
+            if (!hm.searchItem(item_id).isEmpty()) {
                 list.add(hm);
             }
         }
@@ -223,7 +253,7 @@ public class TacosChannel extends TacosServer {
             String channel_name = Property_World.getName() + "-" + channel;
             int language = Region.EMS.check() ? i % Property_World.getLanguages() : 0;
             TacosChannel server = new TacosChannel(channel_name, channel, language);
-            server.onlines = new OnlinePlayers();
+            server.onlines = new TacosOnlinePlayers();
             TacosServer.add(server);
             server.run(Property_World.getIP(), channel_port, new PacketHandler_Game(server, channel));
             server.setWorld(world);
@@ -251,8 +281,18 @@ public class TacosChannel extends TacosServer {
             TacosChannel server = new TacosChannel(channel_name, channel, language);
             server.setWorld(dummy_world);
             dummy_world.addChannel(server);
-            server.onlines = new OnlinePlayers();
+            server.onlines = new TacosOnlinePlayers();
         }
     }
 
+    // update task.
+    private final TacosTask task_channel = new TacosTask();
+
+    public boolean update(MapleCharacter player, long time_current) {
+        if (!this.task_channel.check(time_current, 60000)) {
+            return false;
+        }
+
+        return true;
+    }
 }

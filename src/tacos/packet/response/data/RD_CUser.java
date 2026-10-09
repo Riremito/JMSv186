@@ -24,10 +24,10 @@ import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.ShopDispatch;
-import tacos.server.map.TacosMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
+import tacos.server.map.object.TacosPet;
 
 /**
  *
@@ -45,15 +45,16 @@ public class RD_CUser {
     }
 
     // CPet::Init
-    public static byte[] CPet_Init(MaplePet pet) {
+    public static byte[] CPet_Init(TacosPet pet) {
         ServerPacket data = new ServerPacket();
+
         data.Encode4(pet.getPetItemId());
         data.EncodeStr(pet.getName());
         data.Encode8(pet.getUniqueId());
-        data.Encode2(pet.getPosition().x);
-        data.Encode2(pet.getPosition().y);
-        data.Encode1(pet.getStance());
-        data.Encode2(pet.getFh());
+        data.Encode2(pet.getX());
+        data.Encode2(pet.getY());
+        data.Encode1(pet.getMoveAction());
+        data.Encode2(pet.getFootholdId());
 
         if (Config.GreaterOrEqual(Region.THMS, 96)) {
             data.Encode1(0);
@@ -67,13 +68,9 @@ public class RD_CUser {
     public static byte[] CUserRemote_Init(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            data.Encode1(chr.getLevel());
-        }
+        data.Encode1(chr.getLevel(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
         data.EncodeStr(chr.getName());
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            data.EncodeStr("");
-        }
+        data.EncodeStr("", Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         // guild
         MapleGuild gs = null;
         if (0 < chr.getGuildId()) {
@@ -94,14 +91,10 @@ public class RD_CUser {
             data.Encode2(0);
             data.Encode1(0);
         }
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            data.Encode8(0); // buff mask.
-        }
+        data.Encode8(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // buff mask.
         data.Encode8(0); // buff mask.
         if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            if (Config.GreaterOrEqual(Region.JMS, 187)) {
-                data.Encode4(0); // buff mask.
-            }
+            data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 187)); // buff mask.
             data.Encode1(0); //start of energy charge
             data.Encode1(0);
             data.Encode2(chr.getJob());
@@ -120,13 +113,11 @@ public class RD_CUser {
         }
         data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getPosition().x);
-        data.Encode2(chr.getPosition().y);
-        data.Encode1(chr.getStance());
+        data.Encode2(chr.getX());
+        data.Encode2(chr.getY());
+        data.Encode1(chr.getMoveAction());
         data.Encode2(0); // FH
-        if (Config.GreaterOrEqual(Region.GMS, 95)) {
-            data.Encode1(0);// bShowAdminEffect
-        }
+        data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // bShowAdminEffect
         data.Encode1(0); // pet size
         data.Encode4(chr.getMount().getLevel()); // mount lvl
         data.Encode4(chr.getMount().getExp()); // exp
@@ -147,9 +138,7 @@ public class RD_CUser {
             data.Encode1(0); // MarriageRecord
         }
         data.Encode1(chr.getEffectMask()); // Effect
-        if (Config.GreaterOrEqual(Region.GMS, 95)) {
-            data.Encode1(0); // NewYearCardRecord
-        }
+        data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // NewYearCardRecord
         data.Encode4(0); // not in KMST, in GMS v95: m_nPhase
         // 特殊マップ専用
         // MonsterCarnival
@@ -183,12 +172,12 @@ public class RD_CUser {
         data.Encode4(0); // m_dwDriverID
         data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getPosition().x);
-        data.Encode2(chr.getPosition().y);
-        data.Encode1(chr.getStance()); // m_nMoveAction
-        data.Encode2(chr.getFH());
+        data.Encode2(chr.getX());
+        data.Encode2(chr.getY());
+        data.Encode1(chr.getMoveAction()); // m_nMoveAction
+        data.Encode2(chr.getFootholdId());
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPet(i);
+            MaplePet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
@@ -201,7 +190,7 @@ public class RD_CUser {
         data.Encode1((shop != null) ? ShopDispatch.getGameType(shop) : 0); // m_nMiniRoomType
         if (shop != null && ShopDispatch.getGameType(shop) != 0) {
             // AnnounceBox & Interaction : TODO Remove
-            data.Encode4(TacosMap.dispatchGetObjectId(shop)); // m_dwMiniRoomSN
+            data.Encode4(ShopDispatch.getObjectId(shop)); // m_dwMiniRoomSN
             data.EncodeStr(ShopDispatch.getDescription(shop)); // m_sMiniRoomTitle
             data.Encode1((ShopDispatch.getPassword(shop).length() != 0) ? 1 : 0); // m_bPrivate
             data.Encode1(ShopDispatch.getItemId(shop) % 10); // m_nGameKind
@@ -287,13 +276,13 @@ public class RD_CUser {
         data.Encode4(0);
         data.Encode4(chr.getActiveEffectItem());
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getPosition().x);
-        data.Encode2(chr.getPosition().y);
-        data.Encode1(chr.getStance()); // m_nMoveAction
-        data.Encode2(chr.getFH());
+        data.Encode2(chr.getX());
+        data.Encode2(chr.getY());
+        data.Encode1(chr.getMoveAction()); // m_nMoveAction
+        data.Encode2(chr.getFootholdId());
 
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPet(i);
+            MaplePet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
@@ -317,7 +306,7 @@ public class RD_CUser {
         data.Encode1((shop != null) ? ShopDispatch.getGameType(shop) : 0); // m_nMiniRoomType
         if (shop != null && ShopDispatch.getGameType(shop) != 0) {
             // AnnounceBox & Interaction : TODO Remove
-            data.Encode4(TacosMap.dispatchGetObjectId(shop)); // m_dwMiniRoomSN
+            data.Encode4(ShopDispatch.getObjectId(shop)); // m_dwMiniRoomSN
             data.EncodeStr(ShopDispatch.getDescription(shop)); // m_sMiniRoomTitle
             data.Encode1((ShopDispatch.getPassword(shop).length() != 0) ? 1 : 0); // m_bPrivate
             data.Encode1(ShopDispatch.getItemId(shop) % 10); // m_nGameKind

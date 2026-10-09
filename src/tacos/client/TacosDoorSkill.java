@@ -1,0 +1,47 @@
+/*
+ * Copyright (C) 2026 Riremito
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *
+ */
+package tacos.client;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
+
+/**
+ *
+ * @author Riremito
+ */
+@Data
+public class TacosDoorSkill {
+
+    @Setter(AccessLevel.NONE)
+    private final int id;
+    @Setter(AccessLevel.NONE)
+    private final int level;
+    private String action = ""; // alert2
+    // info
+    private int itemCon = 0;
+    private int itemConNo = 0;
+    private int mpCon = 0;
+    private int time = 0;
+
+    public TacosDoorSkill(int id, int level) {
+        this.id = id;
+        this.level = level;
+    }
+}

@@ -18,9 +18,9 @@
  */
 package tacos.packet.request;
 
+import odin.client.MapleCharacter;
+import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
-import tacos.config.Region;
-import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleReactor;
 import tacos.config.Config;
@@ -34,49 +34,29 @@ import tacos.script.TacosScriptReactor;
 public class ReqCReactorPool {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr == null) {
+            return false;
+        }
+        MapleMap map = chr.getMap();
+        if (map == null) {
+            return false;
+        }
+
+        int object_id = cp.Decode4(); // dwID
+
+        MapleReactor reactor = map.getReactorByOid(object_id);
+        if (reactor == null) {
+            return false;
+        }
+
         switch (header) {
             case CP_ReactorHit: {
-                int oid = cp.Decode4();
-                MapleReactor reactor = client.getPlayer().getMap().getReactorByOid(oid);
-                if (reactor == null || !reactor.isAlive()) {
-                    DebugLogger.ErrorLog("ReactorHit");
-                    return true;
-                }
-
-                if (Config.GreaterOrEqual(Region.JMS, 302)) {
-                    int unk = cp.Decode4();
-                }
-                int charPos = cp.Decode4();
-                short stance = cp.Decode2();
-
-                reactor.hitReactor(charPos, stance, client);
+                OnReactorHit(client, reactor, cp);
                 return true;
             }
             case CP_ReactorTouch: {
-                int oid = cp.Decode4();
-
-                MapleReactor reactor = client.getPlayer().getMap().getReactorByOid(oid);
-                if (reactor == null || !reactor.isAlive()) {
-                    DebugLogger.ErrorLog("ReactorTouch");
-                    return true;
-                }
-
-                byte touched = cp.Decode1();
-
-                if (touched == 0) {
-                    return false;
-                }
-
-                // 不明
-                if (reactor.getReactorId() < 6109013 || reactor.getReactorId() > 6109027) {
-
-                    return false;
-                }
-
-                TacosScriptReactor.getInstance().act(client, reactor);
-                return true;
-            }
-            case CP_RequireFieldObstacleStatus: {
+                OnReactorTouch(client, reactor, cp);
                 return true;
             }
             default: {
@@ -85,5 +65,28 @@ public class ReqCReactorPool {
         }
 
         return false;
+    }
+
+    // CReactorPool::FindHitReactor, 0
+    // CReactorPool::FindSkillReactor, 1
+    public static boolean OnReactorHit(TacosClient client, MapleReactor reactor, ClientPacket cp) {
+        int type = Config.PostBB() ? cp.Decode4() : 0;
+        int dwHitOption = cp.Decode4(); // dwHitOption, dwOption
+        short tDelay = cp.Decode2(); // tDelay, tActionDelay
+        int nSkillID = Config.PostBB() ? cp.Decode4() : 0;
+
+        reactor.hitReactor(dwHitOption, tDelay, client);
+        return true;
+    }
+
+    // CReactorPool::FindTouchReactorAroundLocalUser
+    public static boolean OnReactorTouch(TacosClient client, MapleReactor reactor, ClientPacket cp) {
+        boolean is_in_rect = cp.Decode1() != 0;
+
+        if (is_in_rect) {
+            TacosScriptReactor.getInstance().act(client, reactor);
+        }
+
+        return true;
     }
 }

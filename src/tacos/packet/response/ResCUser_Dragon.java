@@ -20,7 +20,7 @@ package tacos.packet.response;
 
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
-import tacos.client.TacosDragon;
+import tacos.server.map.object.TacosDragon;
 import tacos.packet.ServerPacketHeader;
 
 /**

@@ -22,7 +22,6 @@ import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
-import static tacos.packet.ClientPacketHeader.CP_ItemUpgradeComplete;
 import tacos.packet.ops.OpsCashItem;
 import tacos.packet.response.ResCUIItemUpgrade;
 

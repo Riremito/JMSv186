@@ -121,7 +121,7 @@ public class RD_CWvsContext {
         ServerPacket data = new ServerPacket();
 
         // GMS does not have first pet checks inside this function.
-        MaplePet pet = chr.getPet(0);
+        MaplePet pet = chr.getPetByIndex(0);
         data.Encode4(pet.getPetItemId()); // dwTemplateID
         data.EncodeStr(pet.getName());
         data.Encode1(pet.getLevel()); // nLevel
@@ -138,16 +138,13 @@ public class RD_CWvsContext {
         ServerPacket data = new ServerPacket();
 
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPet(i);
+            MaplePet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
             }
 
-            if (Config.PostBB()) {
-                data.Encode4(i);
-            }
-
+            data.Encode4(i, Config.PostBB());
             data.Encode4(pet.getPetItemId()); // dwTemplateID
             data.EncodeStr(pet.getName());
             data.Encode1(pet.getLevel()); // nLevel

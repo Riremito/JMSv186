@@ -36,14 +36,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.constants.GameConstants;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.ItemLoader;
 import tacos.database.query.DQ_Hiredmerch;
 import tacos.server.TacosWorld;
-import tacos.packet.response.ResCUser;
 import java.sql.SQLException;
 
 public class MapleMiniGame {
@@ -207,12 +205,6 @@ public class MapleMiniGame {
         return chrs[num].get();
     }
 
-    public void update() {
-        if (isAvailable() && getMCOwner() != null) {
-            getMap().broadcastMessage(ResCUser.sendPlayerShopBox(getMCOwner()));
-        }
-    }
-
     public void addVisitor(MapleCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
@@ -220,9 +212,6 @@ public class MapleMiniGame {
             chrs[i - 1] = new WeakReference<>(visitor);
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
-            }
-            if (i == 3) {
-                update();
             }
         }
     }
@@ -233,9 +222,6 @@ public class MapleMiniGame {
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
             chrs[slot - 1] = new WeakReference<>(null);
-            if (shouldUpdate) {
-                update();
-            }
         }
     }
 
@@ -263,7 +249,6 @@ public class MapleMiniGame {
                 chrs[i] = new WeakReference<>(null);
             }
         }
-        update();
     }
 
     public String getOwnerName() {
@@ -341,12 +326,8 @@ public class MapleMiniGame {
     public void sendSpawnData(TacosClient client) {
     }
 
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.SHOP;
-    }
-
     public MapleCharacter getMCOwner() {
-        return getMap().getCharacterById(ownerId);
+        return getMap().getPlayerById(ownerId);
     }
 
     public MapleMap getMap() {
@@ -439,7 +420,6 @@ public class MapleMiniGame {
             }
             this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, tie ? 1 : 2, x));
             this.setOpen(true);
-            update();
             checkExitAfterGame();
         }
     }
@@ -509,7 +489,6 @@ public class MapleMiniGame {
                     if (!found && searchCombo(x, y, type)) {
                         this.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(this, 2, getVisitorSlot(chr)));
                         this.setOpen(true);
-                        update();
                         checkExitAfterGame();
                         found = true;
                     }
@@ -529,7 +508,6 @@ public class MapleMiniGame {
     public void exit(MapleCharacter player) {
         player.setPlayerShop(null);
         if (isOwner(player)) {
-            update();
             removeAllVisitors(3, 1);
         } else {
             removeVisitor(player);
@@ -689,8 +667,7 @@ public class MapleMiniGame {
         if (getMCOwner() != null) {
             getMCOwner().setPlayerShop(null);
         }
-        update();
-        getMap().removeMapObject(this);
+        getMap().removeMiniGame(this.getObjectId());
     }
 
     public void buy(TacosClient client, int z, short i) {

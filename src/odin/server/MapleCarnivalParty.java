@@ -32,18 +32,10 @@ public class MapleCarnivalParty {
         channel = owner.getClient().getChannelId();
     }
 
-    public final MapleCharacter getLeader() {
-        return leader.get();
-    }
-
     public void addCP(MapleCharacter player, int ammount) {
         totalCP += ammount;
         availableCP += ammount;
         player.addCP(ammount);
-    }
-
-    public int getTotalCP() {
-        return totalCP;
     }
 
     public int getAvailableCP() {
@@ -55,32 +47,47 @@ public class MapleCarnivalParty {
         player.useCP(ammount);
     }
 
+    // used by script
+    public final MapleCharacter getLeader() {
+        return leader.get();
+    }
+
+    // used by script
+    public int getTotalCP() {
+        return totalCP;
+    }
+
+    // used by script
     public List<Integer> getMembers() {
         return members;
     }
 
+    // used by script
     public int getTeam() {
         return team;
     }
 
+    // used by script
     public void warp(final MapleMap map, final String portalname) {
         for (int character_id : members) {
             final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
-                player.changeMap(map, map.getPortal(portalname));
+                player.changeMapPortal(map, map.getPortal(portalname));
             }
         }
     }
 
+    // used by script
     public void warp(final MapleMap map, final int portalid) {
         for (int character_id : members) {
             final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
-                player.changeMap(map, map.getPortal(portalid));
+                player.changeMapPortal(map, map.getPortal(portalid));
             }
         }
     }
 
+    // used by script
     public void removeMember(MapleCharacter chr) {
         for (int i = 0; i < members.size(); i++) {
             if (members.get(i) == chr.getId()) {
@@ -91,6 +98,7 @@ public class MapleCarnivalParty {
 
     }
 
+    // used by script
     public boolean isWinner() {
         return winner;
     }

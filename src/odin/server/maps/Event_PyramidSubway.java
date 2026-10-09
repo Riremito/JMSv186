@@ -34,7 +34,7 @@ import tacos.packet.response.ResCWvsContext;
 import odin.server.Randomizer;
 import odin.server.Timer.MapTimer;
 import odin.server.quest.MapleQuest;
-import odin.server.life.MapleLifeFactory;
+import tacos.wz.WzXML;
 
 public class Event_PyramidSubway {
 
@@ -64,8 +64,6 @@ public class Event_PyramidSubway {
                 public void run() {
                     energybar -= (chr.getParty() != null && chr.getParty().getMembers().size() > 1 ? 10 : 5);
                     if (broaded) {
-                        //broadcastUpdate(c);
-                        chr.getMap().respawn(true);
                     } else {
                         broaded = true;
                     }
@@ -100,7 +98,7 @@ public class Event_PyramidSubway {
         final int time = (type == -1 ? 180 : (stage == 1 ? 240 : 300)) - 1;
         if (chr.getParty() != null && chr.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : chr.getParty().getMembers()) {
-                final MapleCharacter target = ourMap.getCharacterById(mpc.getId());
+                final MapleCharacter target = ourMap.getPlayerById(mpc.getId());
                 if (target != null) {
                     target.SendPacket(ResCField.Clock(time));
                     target.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/number/" + stage).build()));
@@ -123,7 +121,7 @@ public class Event_PyramidSubway {
 
                 public void run() {
                     if (map.countMonsterById(9300021) <= (stage == 4 ? 1 : 2)) {
-                        map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9300021), new Point(pos));
+                        map.spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(9300021), new Point(pos));
                     }
                 }
             }, 10000L);
@@ -351,7 +349,7 @@ public class Event_PyramidSubway {
         final MapleMap map = player.getMap();
         if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
-                final MapleCharacter chr = map.getCharacterById(mpc.getId());
+                final MapleCharacter chr = map.getPlayerById(mpc.getId());
                 if (chr != null) {
                     chr.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
                 }
@@ -389,7 +387,7 @@ public class Event_PyramidSubway {
             final MapleMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));//solo
+                player.changeMapPortal(map, map.getPortal(0));//solo
                 return true;
             }
         }
@@ -451,7 +449,7 @@ public class Event_PyramidSubway {
             final MapleMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
-                player.changeMap(map, map.getPortal(0));//solo
+                player.changeMapPortal(map, map.getPortal(0));//solo
                 return true;
             }
         }
@@ -489,14 +487,14 @@ public class Event_PyramidSubway {
         final MapleMap oldMap = player.getMap();
         if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
-                final MapleCharacter chr = oldMap.getCharacterById(mpc.getId());
+                final MapleCharacter chr = oldMap.getPlayerById(mpc.getId());
                 if (chr != null && chr.getId() != player.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
                     if (clear == 1) {
                         chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/clear").build()));
                     } else if (clear == 2) {
                         chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
                     }
-                    chr.changeMap(map, map.getPortal(0));
+                    chr.changeMapPortal(map, map.getPortal(0));
                 }
             }
         }
@@ -505,7 +503,7 @@ public class Event_PyramidSubway {
         } else if (clear == 2) {
             player.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
         }
-        player.changeMap(map, map.getPortal(0));
+        player.changeMapPortal(map, map.getPortal(0));
     }
 
     private static final void clearMap(final MapleMap map, final boolean check) {

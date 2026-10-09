@@ -33,11 +33,11 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import tacos.debug.DebugLogger;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
+import tacos.wz.WzXML;
 
 public class MapScriptMethods {
 
@@ -322,11 +322,11 @@ public class MapScriptMethods {
             }
             case astaroth_summon: {
                 client.getPlayer().getMap().resetFully();
-                client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(9400633), new Point(600, -26)); //rough estimate
+                client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(9400633), new Point(600, -26)); //rough estimate
                 break;
             }
             case boss_Ravana: { //event handles this so nothing for now until i find out something to do with it
-                client.getPlayer().getMap().broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
+                client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
                 break;
             }
             case killing_BonusSetting: { //spawns monsters according to mapid
@@ -378,18 +378,17 @@ public class MapScriptMethods {
                     break;
                 }
                 for (int i = 0; i < spawnPer; i++) {
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mobId), new Point(pos1));
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mobId), new Point(pos2));
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mobId), new Point(pos3));
+                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mobId), new Point(pos1));
+                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mobId), new Point(pos2));
+                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mobId), new Point(pos3));
                 }
-                client.getPlayer().startMapTimeLimitTask(120, client.getPlayer().getMap().getReturnMap());
                 break;
             }
             case shammos_Fenter: {
                 if (client.getPlayer().getMapId() >= 921120100 && client.getPlayer().getMapId() < 921120500) {
-                    final MapleMonster shammos = MapleLifeFactory.getMonster(9300275);
+                    MapleMonster shammos = WzXML.MOB.findMonster(9300275);
                     client.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(client.getPlayer().getMap().getPortal(0).getPosition()), 12);
-                    shammos.switchController(client.getPlayer(), false);
+                    shammos.switchShammosController(client.getPlayer(), false);
                     client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, client.getPlayer().getMap()));
 
                 }
@@ -561,7 +560,7 @@ public class MapScriptMethods {
                         client.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
                         final MapleMap mapto = chr.findMap(900010000);
-                        client.getPlayer().changeMap(mapto, mapto.getPortal(0));
+                        client.getPlayer().changeMapPortal(mapto, mapto.getPortal(0));
                         return;
                 }
                 showIntro(client, data);
@@ -681,7 +680,7 @@ public class MapScriptMethods {
             case check_count: {
                 if (client.getPlayer().getMapId() == 950101010 && (!client.getPlayer().haveItem(4001433, 20) || client.getPlayer().getLevel() < 50)) { //ravana Map
                     final MapleMap mapp = chr.findMap(950101100); //exit Map
-                    client.getPlayer().changeMap(mapp, mapp.getPortal(0));
+                    client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
                 }
                 break;
             }
@@ -795,6 +794,6 @@ public class MapScriptMethods {
         } else {
             mob = 9300377;
         }
-        map.spawnMonsterOnGroundBelow(MapleLifeFactory.getMonster(mob), witchTowerPos);
+        map.spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mob), witchTowerPos);
     }
 }

@@ -20,7 +20,6 @@ package tacos.database.query;
 
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleRing;
@@ -37,16 +36,17 @@ import java.util.List;
 import java.util.Map;
 import tacos.database.DatabaseConnection;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.server.TacosWorld;
 
 /**
  * Extracted from the former generic {@code odin.client.inventory.ItemLoader}
  * enum logic, scoped to the "dueyitems" / "dueyequipment" table pair.
  *
  * NOTE: unlike most DQ_ classes, {@code load}/{@code save} here declare
- * {@code throws SQLException} instead of catching it internally. This
- * matches the original ItemLoader behavior exactly, since existing callers
- * (e.g. CashShop, MTSCart, MTSStorage, AbstractPlayerStore) rely on the
- * exception propagating rather than being swallowed.
+ * {@code throws SQLException} instead of catching it internally. This matches
+ * the original ItemLoader behavior exactly, since existing callers (e.g.
+ * CashShop, MTSCart, MTSStorage, AbstractPlayerStore) rely on the exception
+ * propagating rather than being swallowed.
  *
  * @author Riremito
  */
@@ -151,7 +151,7 @@ public class DQ_Dueyitems {
                         }
                     } else {
                         //O_O hackish fix
-                        final int new_unique = MapleInventoryIdentifier.getInstance();
+                        int new_unique = TacosWorld.getNextItemUniqueId();
                         item.setUniqueId(new_unique);
                         item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
                     }

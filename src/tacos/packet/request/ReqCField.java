@@ -46,6 +46,10 @@ public class ReqCField {
         }
 
         switch (header) {
+            case CP_RequireFieldObstacleStatus: {
+                // CUserLocal::ResetNLCPQ
+                return true;
+            }
             case CP_CONTISTATE: {
                 int unused_map_id = cp.Decode4();
                 byte unk1 = cp.Decode1();

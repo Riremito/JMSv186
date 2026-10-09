@@ -3,12 +3,10 @@ package odin.server.quest;
 import odin.client.Skill;
 import java.util.Calendar;
 import java.util.List;
-import java.util.LinkedList;
 import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
-import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -144,18 +142,8 @@ public class MapleQuestRequirement {
             case interval:
                 return chr.getQuest(quest).getStatus() != 2 || chr.getQuest(quest).getCompletionTime() <= System.currentTimeMillis() - intStore * 60 * 1000L;
             case pet:
-                for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
-                    if (chr.getPetById(a.getValue()) == -1) {
-                        return false;
-                    }
-                }
                 return true;
             case pettamenessmin:
-                for (MaplePet pet : chr.getPets()) {
-                    if (pet.getSummoned() && pet.getCloseness() >= intStore) {
-                        return true;
-                    }
-                }
                 return false;
             default:
                 return true;

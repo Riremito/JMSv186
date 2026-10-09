@@ -20,10 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world;
 
-import java.awt.Point;
-import java.util.List;
 import odin.client.MapleCharacter;
-import odin.server.maps.MapleDoor;
 
 public class MaplePartyCharacter {
 
@@ -33,10 +30,6 @@ public class MaplePartyCharacter {
     private int channel;
     private int jobid;
     private int mapid;
-    private int doorTown = 999999999;
-    private int doorTarget = 999999999;
-    private int doorSkill = 0;
-    private Point doorPosition = new Point(0, 0);
     private boolean online;
 
     public MaplePartyCharacter(MapleCharacter maplechar) {
@@ -47,31 +40,10 @@ public class MaplePartyCharacter {
         this.jobid = maplechar.getJob();
         this.mapid = maplechar.getMapId();
         this.online = true;
-
-        final List<MapleDoor> doors = maplechar.getDoors();
-        if (doors.size() > 0) {
-            final MapleDoor door = doors.get(0);
-
-            this.doorTown = door.getTown().getId();
-            this.doorTarget = door.getTarget().getId();
-            this.doorSkill = door.getSkillId();
-            this.doorPosition = door.getPosition();
-        } else {
-            this.doorPosition = new Point(maplechar.getPosition());
-        }
     }
 
     public MaplePartyCharacter() {
         this.name = "";
-        //default values for everything
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public int getChannel() {
-        return channel;
     }
 
     public boolean isOnline() {
@@ -82,35 +54,33 @@ public class MaplePartyCharacter {
         this.online = online;
     }
 
+    // used by script
+    public int getLevel() {
+        return level;
+    }
+
+    // used by script
+    public int getChannel() {
+        return channel;
+    }
+
+    // used by script
     public int getMapid() {
         return mapid;
     }
 
+    // used by script
     public String getName() {
         return name;
     }
 
+    // used by script
     public int getId() {
         return id;
     }
 
+    // used by script
     public int getJobId() {
         return jobid;
-    }
-
-    public int getDoorTown() {
-        return doorTown;
-    }
-
-    public int getDoorTarget() {
-        return doorTarget;
-    }
-
-    public int getDoorSkill() {
-        return doorSkill;
-    }
-
-    public Point getDoorPosition() {
-        return doorPosition;
     }
 }

@@ -21,19 +21,6 @@ public abstract class Timer {
         }
     }
 
-    public static class EventTimer extends Timer {
-
-        private static EventTimer instance = new EventTimer();
-
-        private EventTimer() {
-            name = "Eventtimer";
-        }
-
-        public static EventTimer getInstance() {
-            return instance;
-        }
-    }
-
     public static class CloneTimer extends Timer {
 
         private static CloneTimer instance = new CloneTimer();
@@ -43,32 +30,6 @@ public abstract class Timer {
         }
 
         public static CloneTimer getInstance() {
-            return instance;
-        }
-    }
-
-    public static class EtcTimer extends Timer {
-
-        private static EtcTimer instance = new EtcTimer();
-
-        private EtcTimer() {
-            name = "Etctimer";
-        }
-
-        public static EtcTimer getInstance() {
-            return instance;
-        }
-    }
-
-    public static class MobTimer extends Timer {
-
-        private static MobTimer instance = new MobTimer();
-
-        private MobTimer() {
-            name = "Mobtimer";
-        }
-
-        public static MobTimer getInstance() {
             return instance;
         }
     }

@@ -24,7 +24,7 @@ import tacos.constants.TacosConstants;
  *
  * @author Riremito
  */
-public class ArdentmillPortal extends SharedPortal {
+public class ArdentmillPortal extends TacosSharedPortal {
 
     //  meister ville, not a beer
     public ArdentmillPortal() {

@@ -117,7 +117,7 @@ public class DQ_Rings {
             try (PreparedStatement ps = con.prepareStatement("SELECT MAX(ringid) FROM " + DB_TABLE_NAME)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        ret = rs.getInt(1) + 1;
+                        ret = rs.getInt(1);
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class DQ_Rings {
             try (PreparedStatement ps = con.prepareStatement("SELECT MAX(partnerringid) FROM " + DB_TABLE_NAME)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        ret = rs.getInt(1) + 1;
+                        ret = rs.getInt(1);
                     }
                 }
             }
@@ -145,5 +145,4 @@ public class DQ_Rings {
 
         return ret;
     }
-
 }

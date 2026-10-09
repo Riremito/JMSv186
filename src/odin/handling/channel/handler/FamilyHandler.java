@@ -65,7 +65,7 @@ public class FamilyHandler {
                     client.getPlayer().dropMessage(1, "Invalid name or you are not on the same channel.");
                     success = false;
                 } else if (victim.getFamilyId() == client.getPlayer().getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != client.getPlayer().getId()) {
-                    client.getPlayer().changeMap(victim.getMap(), victim.getMap().getPortal(0));
+                    client.getPlayer().changeMapPortal(victim.getMap(), victim.getMap().getPortal(0));
                 } else {
                     client.getPlayer().dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                     success = false;
@@ -157,7 +157,7 @@ public class FamilyHandler {
             //whew lots of checks
             boolean accepted = cp.Decode1() > 0;
             if (accepted) {
-                client.getPlayer().changeMap(tt.getMap(), tt.getMap().getPortal(0));
+                client.getPlayer().changeMapPortal(tt.getMap(), tt.getMap().getPortal(0));
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
                 tt.SendPacket(ResCWvsContext.changeRep(-cost.rep));
                 tt.useFamilyBuff(cost);
@@ -236,7 +236,7 @@ public class FamilyHandler {
     }
 
     public static final void AcceptFamily(ClientPacket cp, TacosClient client) {
-        MapleCharacter inviter = client.getPlayer().getMap().getCharacterById(cp.Decode4());
+        MapleCharacter inviter = client.getPlayer().getMap().getPlayerById(cp.Decode4());
         if (inviter != null && client.getPlayer().getSeniorId() == 0
                 && inviter.getLevel() - 20 < client.getPlayer().getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2
                 /*&& inviter.getFamily().getGens() < 1000*/ && client.getPlayer().getLevel() >= 10) {

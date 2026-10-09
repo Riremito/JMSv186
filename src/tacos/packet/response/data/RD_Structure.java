@@ -21,7 +21,6 @@ package tacos.packet.response.data;
 import odin.client.MapleCharacter;
 import odin.server.shops.ShopDispatch;
 import tacos.packet.ServerPacket;
-import tacos.server.map.TacosMap;
 
 /**
  *
@@ -47,7 +46,7 @@ public class RD_Structure {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(ShopDispatch.getGameType(shop));
-        data.Encode4(TacosMap.dispatchGetObjectId(shop));
+        data.Encode4(ShopDispatch.getObjectId(shop));
         data.EncodeStr(ShopDispatch.getDescription(shop));
         if (ShopDispatch.getShopType(shop) != 1) {
             data.Encode1(ShopDispatch.getPassword(shop).length() > 0 ? 1 : 0); //password = false

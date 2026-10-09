@@ -28,7 +28,6 @@ import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsITC;
-import static tacos.packet.ops.OpsITC.ITCReq_RegisterSaleEntry;
 import tacos.packet.response.ResCITC;
 import odin.server.MTSCart;
 import odin.server.MTSStorage;
@@ -194,7 +193,6 @@ public class ReqCITC {
                 }
                 if (item_.getPet() != null) {
                     item_.getPet().setInventoryPosition(pos);
-                    chr.addPet(item_.getPet());
                 }
                 cart.removeFromInventory(item);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.getByType(item_.getType()), item_).build()));

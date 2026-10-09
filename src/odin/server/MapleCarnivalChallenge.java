@@ -22,20 +22,12 @@ public class MapleCarnivalChallenge {
         this.challenger = new WeakReference<>(challenger);
         challengeinfo += "#b";
         for (MaplePartyCharacter pc : challenger.getParty().getMembers()) {
-            MapleCharacter chr = challenger.getMap().getCharacterById(pc.getId());
+            MapleCharacter chr = challenger.getMap().getPlayerById(pc.getId());
             if (chr != null) {
                 challengeinfo += (chr.getName() + " / Level" + chr.getLevel() + " / " + getJobNameById(chr.getJob()));
             }
         }
         challengeinfo += "#k";
-    }
-
-    public MapleCharacter getChallenger() {
-        return challenger.get();
-    }
-
-    public String getChallengeInfo() {
-        return challengeinfo;
     }
 
     public static final String getJobNameById(int job) {
@@ -334,4 +326,15 @@ public class MapleCarnivalChallenge {
                 return "Unknown Job";
         }
     }
+
+    // used by script
+    public MapleCharacter getChallenger() {
+        return challenger.get();
+    }
+
+    // used by script
+    public String getChallengeInfo() {
+        return challengeinfo;
+    }
+
 }

@@ -21,13 +21,12 @@ package tacos.database.query;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import tacos.database.DatabaseConnection;
 
 /**
- * NOTE: {@code deleteByAccountId} declares {@code throws SQLException}
- * instead of catching it internally, since it is called from
- * MapleCharacter.saveToDB, which manages its own outer transaction and must
- * see any failure in order to roll back correctly.
+ * NOTE: {@code deleteByAccountId} declares {@code throws SQLException} instead
+ * of catching it internally, since it is called from MapleCharacter.saveToDB,
+ * which manages its own outer transaction and must see any failure in order to
+ * roll back correctly.
  *
  * @author Riremito
  */

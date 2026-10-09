@@ -39,7 +39,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.StructRewardItem;
 import odin.server.maps.SavedLocationType;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.shops.HiredMerchant;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -48,7 +47,7 @@ import tacos.script.TacosScriptNPC;
 public class InventoryHandler {
 
     public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
-        cp.Decode4();
+        int unk1 = cp.Decode4();
         final byte slot = (byte) cp.Decode2();
         final int itemId = cp.Decode4();
         final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
@@ -87,7 +86,7 @@ public class InventoryHandler {
                         map = chr.findMap(i);
 
                         if (map.getCharactersSize() == 0) {
-                            chr.changeMap(map, map.getPortal(0));
+                            chr.changeMapPortal(map, map.getPortal(0));
                             warped = true;
                             break;
                         }
@@ -322,39 +321,30 @@ public class InventoryHandler {
         if (client.getPlayer().getMapId() >= 910000000 && client.getPlayer().getMapId() <= 910000022 && client.getPlayer().getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
                 final MapleMap mapp = chr.findMap(map);
-                client.getPlayer().changeMap(mapp, mapp.getPortal(0));
+                client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
-                List<Object> objects;
+                List<HiredMerchant> objects;
                 switch (OWL_ID) {
                     case 0:
-                        objects = mapp.getAllHiredMerchants();
-                        for (Object ob : objects) {
-                            if (ob instanceof HiredMerchant) {
-                                final HiredMerchant merch = (HiredMerchant) ob;
-                                if (merch.getOwnerId() == id) {
-                                    merchant = merch;
-                                    break;
-                                }
+                        objects = mapp.getAllMerchants();
+                        for (HiredMerchant merch : objects) {
+                            if (merch.getOwnerId() == id) {
+                                merchant = merch;
+                                break;
                             }
                         }
                         break;
                     case 1:
-                        objects = mapp.getAllHiredMerchants();
-                        for (Object ob : objects) {
-                            if (ob instanceof HiredMerchant) {
-                                final HiredMerchant merch = (HiredMerchant) ob;
-                                if (merch.getStoreId() == id) {
-                                    merchant = merch;
-                                    break;
-                                }
+                        objects = mapp.getAllMerchants();
+                        for (HiredMerchant merch : objects) {
+                            if (merch.getStoreId() == id) {
+                                merchant = merch;
+                                break;
                             }
                         }
                         break;
                     default:
-                        final Object ob = mapp.getMapObject(id, MapleMapObjectType.HIRED_MERCHANT);
-                        if (ob instanceof HiredMerchant) {
-                            merchant = (HiredMerchant) ob;
-                        }
+                        merchant = mapp.getMerchantByOid(id);
                         break;
                 }
                 if (merchant != null) {

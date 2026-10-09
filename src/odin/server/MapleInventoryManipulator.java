@@ -4,11 +4,9 @@ import java.awt.Point;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import odin.client.inventory.MapleInventoryIdentifier;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.InventoryException;
 import odin.client.inventory.ItemFlag;
 import odin.client.PlayerStats;
 import odin.client.inventory.MaplePet;
@@ -25,6 +23,7 @@ import tacos.packet.response.builder.PB_InvOp;
 import odin.server.maps.AramiaFireWorks;
 import tacos.client.TacosClient;
 import tacos.config.Config;
+import tacos.server.TacosWorld;
 
 public class MapleInventoryManipulator {
 
@@ -69,10 +68,10 @@ public class MapleInventoryManipulator {
             if (pet != null) {
                 uniqueid = pet.getUniqueId();
             } else {
-                uniqueid = MapleInventoryIdentifier.getInstance();
+                uniqueid = TacosWorld.getNextItemUniqueId();
             }
         } else if (GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH || MapleItemInformationProvider.getInstance().isCash(itemId)) { //less work to do
-            uniqueid = MapleInventoryIdentifier.getInstance(); //shouldnt be generated yet, so put it here
+            uniqueid = TacosWorld.getNextItemUniqueId(); //shouldnt be generated yet, so put it here
         }
         return uniqueid;
     }
@@ -152,7 +151,6 @@ public class MapleInventoryManipulator {
                         if (pet != null) {
                             nItem.setPet(pet);
                             pet.setInventoryPosition(newSlot);
-                            client.getPlayer().addPet(pet);
                         }
                         client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
                         if (GameConstants.isRechargable(itemId) && quantity == 0) {
@@ -199,7 +197,7 @@ public class MapleInventoryManipulator {
                 }
                 client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nEquip).build()));
             } else {
-                throw new InventoryException("Trying to create equip with non-one quantity");
+                return -1;
             }
         }
         client.getPlayer().havePartyQuest(itemId);
@@ -296,7 +294,7 @@ public class MapleInventoryManipulator {
                 client.getPlayer().havePartyQuest(item.getItemId());
                 return item;
             } else {
-                throw new InventoryException("Trying to create equip with non-one quantity");
+                return null;
             }
         }
         return null;
@@ -682,9 +680,6 @@ public class MapleInventoryManipulator {
             target.setPosition(src);
             chr.getInventory(MapleInventoryType.EQUIP).addFromDB(target);
         }
-        if (source.getItemId() == 1122017) {
-            chr.startFairySchedule(true, true);
-        }
         client.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(MapleInventoryType.EQUIP, src, dst).build()));
         chr.equipChanged();
     }
@@ -710,9 +705,6 @@ public class MapleInventoryManipulator {
         if (target != null) {
             target.setPosition(src);
             client.getPlayer().getInventory(MapleInventoryType.EQUIPPED).addFromDB(target);
-        }
-        if (source.getItemId() == 1122017) {
-            client.getPlayer().cancelFairySchedule(true);
         }
         client.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(MapleInventoryType.EQUIP, src, dst).build()));
         client.getPlayer().equipChanged();

@@ -316,6 +316,7 @@ public class TacosClient extends BaseClient {
         if (chr != null) {
             chr.disconnect(RemoveInChannelServer, false);
             if (getWorld().findMigratingPlayer(chr.getId()) == null) {
+                chr.removeDoor();
                 DQ_Accounts.updateLoginState(this, MapleClientState.LOGIN_NOTLOGGEDIN);
             }
         }

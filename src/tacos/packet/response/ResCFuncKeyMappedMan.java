@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
-import odin.client.SkillMacro;
+import tacos.client.TacosSingleMacro;
 import tacos.config.Region;
 import java.util.Map;
 import tacos.config.Config;
@@ -33,29 +33,18 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCFuncKeyMappedMan {
 
+    // CWvsContext::OnMacroSysDataInit
     public static ServerPacket MacroSysDataInit(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MacroSysDataInit);
 
-        SkillMacro[] macros = chr.getMacros();
-        int macro_count = 0;
-        for (SkillMacro macro : macros) {
-            if (macro != null) {
-                macro_count++;
-            }
-        }
-
-        sp.Encode1(macro_count);
-
-        if (0 < macro_count) {
-            for (SkillMacro macro : macros) {
-                if (macro != null) {
-                    sp.EncodeStr(macro.getName());
-                    sp.Encode1(macro.getShout());
-                    sp.Encode4(macro.getSkill1());
-                    sp.Encode4(macro.getSkill2());
-                    sp.Encode4(macro.getSkill3());
-                }
-            }
+        // MACROSYSDATA::Decode
+        sp.Encode1(chr.getMacros().size());
+        for (TacosSingleMacro macro : chr.getMacros().values()) {
+            sp.EncodeStr(macro.getName()); // sName
+            sp.Encode1(macro.isMute() ? 1 : 0); // bMute
+            sp.Encode4(macro.getSkill1()); // aSkill[0]
+            sp.Encode4(macro.getSkill2()); // aSkill[1]
+            sp.Encode4(macro.getSkill3()); // aSkill[2]
         }
 
         return sp;

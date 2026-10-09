@@ -24,24 +24,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Getter;
 import tacos.wz.MapleData;
-import odin.server.life.MapleLifeFactory;
-import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
-import odin.server.maps.MapleFoothold;
-import odin.server.maps.MapleFootholdTree;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
-import odin.server.maps.MapleReactor;
-import odin.server.maps.MapleReactorStats;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
 import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
-import tacos.wz.ids.DWI_Block;
 
 /**
  *
@@ -49,7 +41,160 @@ import tacos.wz.ids.DWI_Block;
  */
 public class TacosMapData {
 
+    // default is for 800x600.
+    private static final int SPLIT_WIDTH = 600;
+    private static final int SPLIT_HEIGHT = 450;
+
+    public enum MapSplitState {
+        ACTIVE,
+        MOVE,
+        MOVE_LEAVE,
+        ENTER_MOVE,
+        UNKNOWN;
+    }
+
+    @Getter
+    protected class MapWall {
+
+        private int left;
+        private int top;
+        private int right;
+        private int bottom;
+    }
+
+    @Getter
+    protected class MapScreen {
+
+        private int width;
+        private int height;
+    }
+
+    @Getter
+    public class MapSplit {
+
+        private int col;
+        private int row;
+        private int total;
+
+        public int find(Point position) {
+            return find(position.x, position.y);
+        }
+
+        public int find(int x, int y) {
+            int area_col = (x - wall.left) / SPLIT_WIDTH;
+            int area_row = (y - wall.top) / SPLIT_HEIGHT;
+            int area = (area_row * this.col) + area_col;
+            if (area <= -1 || this.total <= area) {
+                area = 0;
+            }
+            return area;
+        }
+
+        public ArrayList<MapSplitState> getArea(Point pos, MapSplitState state) {
+            return getArea(pos.x, pos.y, state);
+        }
+
+        public ArrayList<MapSplitState> getArea(int x, int y, MapSplitState state) {
+            ArrayList<MapSplitState> area_states = new ArrayList<>(Collections.nCopies(this.total, MapSplitState.UNKNOWN));
+
+            int area_number = find(x, y);
+            int area_row = area_number / this.col;
+            int area_col = area_number % this.col;
+
+            for (int row_index = 0; row_index < this.row; row_index++) {
+                if (row_index < (area_row - 1) || (area_row + 1) < row_index) {
+                    continue;
+                }
+                for (int col_index = 0; col_index < this.col; col_index++) {
+                    if (col_index < (area_col - 1) || (area_col + 1) < col_index) {
+                        continue;
+                    }
+                    area_states.set((row_index * this.col) + col_index, state);
+                }
+            }
+
+            return area_states;
+        }
+
+        protected ArrayList<MapSplitState> getMoveArea(int prev_x, int prev_y, int next_x, int next_y) {
+            ArrayList<MapSplitState> area_states = getArea(prev_x, prev_y, MapSplitState.MOVE_LEAVE);
+            ArrayList<MapSplitState> area_enter_move = getArea(next_x, next_y, MapSplitState.ENTER_MOVE);
+
+            for (int index = 0; index < area_states.size(); index++) {
+                // move only.
+                if (area_states.get(index) == MapSplitState.MOVE_LEAVE) {
+                    if (area_enter_move.get(index) == MapSplitState.ENTER_MOVE) {
+                        area_states.set(index, MapSplitState.MOVE);
+                    }
+                    continue;
+                }
+                // move & leave, move, enter & move
+                area_states.set(index, area_enter_move.get(index));
+            }
+
+            return area_states;
+        }
+    }
+
+    protected final MapWall wall = new MapWall();
+    protected final MapScreen screen = new MapScreen();
+    protected final MapSplit split = new MapSplit();
+
+    public MapSplit getSplit() {
+        return this.split;
+    }
+
+    private boolean setSplitData() {
+        this.wall.left = 0;
+        this.wall.top = 0;
+        this.wall.right = 0;
+        this.wall.bottom = 0;
+        this.screen.width = 0;
+        this.screen.height = 0;
+        this.split.col = 0;
+        this.split.row = 0;
+        this.split.total = 0;
+
+        // calculate wall coordinates.
+        for (TacosFoothold foothold : getFootholds().values()) {
+            int fh_left = Math.min(foothold.getX1(), foothold.getX2());
+            int fh_top = Math.min(foothold.getY1(), foothold.getY2());
+            int fh_right = Math.max(foothold.getX1(), foothold.getX2());
+            int fh_bottom = Math.max(foothold.getY1(), foothold.getY2()) + 10;
+            int fh_width = fh_right - fh_left;
+
+            if (fh_left < (this.wall.left + 30)) {
+                this.wall.left = fh_left + 30;
+            }
+            if (fh_top < (this.wall.top - 300)) {
+                this.wall.top = fh_top - 300;
+            }
+            if ((this.wall.right - 30) < fh_right) {
+                this.wall.right = fh_right - 30;
+            }
+            if (fh_width != 0) {
+                if (this.wall.bottom < fh_bottom) {
+                    this.wall.bottom = fh_bottom;
+                }
+            }
+        }
+
+        // calculate screen width and height.
+        this.screen.width = this.wall.right - this.wall.left;
+        this.screen.height = this.wall.bottom - this.wall.top;
+
+        // split.
+        this.split.col = (this.screen.width + SPLIT_WIDTH - 1) / SPLIT_WIDTH;
+        this.split.row = (this.screen.height + SPLIT_HEIGHT - 1) / SPLIT_HEIGHT;
+        this.split.total = this.split.col * this.split.row;
+        return true;
+    }
+
     protected int map_id;
+    private Map<Integer, TacosPortal> portals = new HashMap<>();
+    private ArrayList<TacosSpawnPoint> monster_spawn_point = new ArrayList<>();
+    private ArrayList<TacosNPCSpawnPoint> npc_spawn_point = new ArrayList<>();
+    private ArrayList<TacosReactorSpawnPoint> reactor_spawn_point = new ArrayList<>();
 
     public TacosMapData(int mapid) {
         this.map_id = mapid;
@@ -59,12 +204,74 @@ public class TacosMapData {
         return this.map_id;
     }
 
+    private final LinkedHashMap<Integer, TacosFoothold> footholds = new LinkedHashMap<>();
+
+    public LinkedHashMap<Integer, TacosFoothold> getFootholds() {
+        return this.footholds;
+    }
+
+    public TacosFoothold findBelow(int x, int y) {
+        return findBelow(new Point(x, y));
+    }
+
+    public TacosFoothold findBelow(Point pt) {
+        TacosFoothold ground_fh = null;
+        for (TacosFoothold foothold : getFootholds().values()) {
+            if (foothold.isWall()) {
+                continue;
+            }
+            if (pt.getX() < foothold.getX1() || foothold.getX2() < pt.getX()) {
+                continue;
+            }
+            if (foothold.getY1() < pt.getY()) {
+                continue;
+            }
+            if (ground_fh != null) {
+                if (ground_fh.getY1() < foothold.getY1()) {
+                    continue;
+                }
+            }
+            ground_fh = foothold;
+        }
+        return ground_fh;
+    }
+
+    public Point calcPointBelow(Point initial) {
+        TacosFoothold fh_below = findBelow(initial);
+        if (fh_below == null) {
+            return null;
+        }
+        int dropY = fh_below.getY1();
+        if (!fh_below.isWall() && fh_below.getY1() != fh_below.getY2()) {
+            double s1 = Math.abs(fh_below.getY2() - fh_below.getY1());
+            double s2 = Math.abs(fh_below.getX2() - fh_below.getX1());
+            if (fh_below.getY2() < fh_below.getY1()) {
+                dropY = fh_below.getY1() - (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
+            } else {
+                dropY = fh_below.getY1() + (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
+            }
+        }
+        return new Point(initial.x, dropY);
+    }
+
     public Point calcDropPos(Point initial, Point fallback) {
         Point ret = calcPointBelow(new Point(initial.x, initial.y - 50));
         if (ret == null) {
             return fallback;
         }
         return ret;
+    }
+
+    public ArrayList<TacosSpawnPoint> getMonsterSpawnPoint() {
+        return this.monster_spawn_point;
+    }
+
+    public ArrayList<TacosNPCSpawnPoint> getNPCSpawnPoint() {
+        return this.npc_spawn_point;
+    }
+
+    public ArrayList<TacosReactorSpawnPoint> getReactorSpawnPoint() {
+        return this.reactor_spawn_point;
     }
 
     // load wz data.
@@ -90,6 +297,7 @@ public class TacosMapData {
         loadInfo(mapData);
         // load fh.
         loadFootHolds(mapData);
+        setSplitData();
         // load portal.
         loadPortals(mapData);
         // load life.
@@ -101,8 +309,24 @@ public class TacosMapData {
         return true;
     }
 
-    // portal node.
-    private Map<Integer, TacosPortal> portals = new HashMap<>();
+    public boolean loadFootHolds(MapleData mapData) {
+        for (MapleData footRoot : mapData.getChildByPath("foothold")) {
+            for (MapleData footCat : footRoot) {
+                for (MapleData footHold : footCat) {
+                    TacosFoothold fh = new TacosFoothold();
+                    fh.setId(Integer.parseInt(footHold.getName()));
+                    fh.setX1(WzDataTool.getInt(footHold.getChildByPath("x1")));
+                    fh.setY1(WzDataTool.getInt(footHold.getChildByPath("y1")));
+                    fh.setX2(WzDataTool.getInt(footHold.getChildByPath("x2")));
+                    fh.setY2(WzDataTool.getInt(footHold.getChildByPath("y2")));
+                    fh.setPrev(WzDataTool.getInt(footHold.getChildByPath("prev")));
+                    fh.setNext(WzDataTool.getInt(footHold.getChildByPath("next")));
+                    getFootholds().put(fh.getId(), fh);
+                }
+            }
+        }
+        return true;
+    }
 
     public boolean loadPortals(MapleData mapData) {
         int nextDoorPortal = 0x80;
@@ -165,77 +389,6 @@ public class TacosMapData {
         return closest;
     }
 
-    // foothold node.
-    private MapleFootholdTree footholds;
-    protected TacosMapSplit map_split = new TacosMapSplit();
-
-    public boolean loadFootHolds(MapleData mapData) {
-        List<MapleFoothold> allFootholds = new LinkedList<>();
-        Point lBound = new Point();
-        Point uBound = new Point();
-
-        for (MapleData footRoot : mapData.getChildByPath("foothold")) {
-            for (MapleData footCat : footRoot) {
-                for (MapleData footHold : footCat) {
-                    Point p1 = new Point(WzDataTool.getInt(footHold.getChildByPath("x1")), WzDataTool.getInt(footHold.getChildByPath("y1")));
-                    Point p2 = new Point(WzDataTool.getInt(footHold.getChildByPath("x2")), WzDataTool.getInt(footHold.getChildByPath("y2")));
-                    MapleFoothold fh = new MapleFoothold(p1, p2, Integer.parseInt(footHold.getName()));
-                    fh.setPrev((short) WzDataTool.getInt(footHold.getChildByPath("prev")));
-                    fh.setNext((short) WzDataTool.getInt(footHold.getChildByPath("next")));
-
-                    if (fh.getX1() < lBound.x) {
-                        lBound.x = fh.getX1();
-                    }
-                    if (fh.getX2() > uBound.x) {
-                        uBound.x = fh.getX2();
-                    }
-                    if (fh.getY1() < lBound.y) {
-                        lBound.y = fh.getY1();
-                    }
-                    if (fh.getY2() > uBound.y) {
-                        uBound.y = fh.getY2();
-                    }
-                    allFootholds.add(fh);
-                }
-            }
-        }
-
-        MapleFootholdTree fTree = new MapleFootholdTree(lBound, uBound);
-        for (MapleFoothold foothold : allFootholds) {
-            fTree.insert(foothold);
-        }
-
-        this.footholds = fTree;
-        this.map_split.setSplit(this.footholds.getAll());
-        return true;
-    }
-
-    public MapleFootholdTree getFootholds() {
-        return this.footholds;
-    }
-
-    public TacosMapSplit getMapSplit() {
-        return this.map_split;
-    }
-
-    public Point calcPointBelow(Point initial) {
-        MapleFoothold fh_below = this.footholds.findBelow(initial);
-        if (fh_below == null) {
-            return null;
-        }
-        int dropY = fh_below.getY1();
-        if (!fh_below.isWall() && fh_below.getY1() != fh_below.getY2()) {
-            double s1 = Math.abs(fh_below.getY2() - fh_below.getY1());
-            double s2 = Math.abs(fh_below.getX2() - fh_below.getX1());
-            if (fh_below.getY2() < fh_below.getY1()) {
-                dropY = fh_below.getY1() - (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
-            } else {
-                dropY = fh_below.getY1() + (int) (Math.cos(Math.atan(s2 / s1)) * (Math.abs(initial.x - fh_below.getX1()) / Math.cos(Math.atan(s1 / s2))));
-            }
-        }
-        return new Point(initial.x, dropY);
-    }
-
     // info node.
     private boolean clock;
     private int returnMapId;
@@ -257,11 +410,13 @@ public class TacosMapData {
     private float recoveryRate;
     private int fixedMob;
     private int consumeItemCoolTime;
+    private int time_mob_id;
+    private String time_mob_message;
 
     public boolean loadInfo(MapleData mapData) {
         this.clock = mapData.getChildByPath("clock") != null;
         this.returnMapId = WzDataTool.getIntPath("info/returnMap", mapData, 0);
-        this.createMobInterval = WzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 9000);
+        this.createMobInterval = WzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 7000);
         this.monsterRate = WzDataTool.getFloatPath("info/mobRate", mapData, 0.0f);
         this.everlast = WzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0;
         this.town = WzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0;
@@ -284,6 +439,8 @@ public class TacosMapData {
             this.returnMapId = this.map_id;
         }
 
+        this.time_mob_id = WzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
+        this.time_mob_message = WzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
         return true;
     }
 
@@ -365,73 +522,26 @@ public class TacosMapData {
 
     // life node.
     public boolean loadLife(MapleData mapData) {
-        int bossid = -1;
-        String msg = null;
-        if (mapData.getChildByPath("info/timeMob") != null) {
-            bossid = WzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
-            msg = WzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
-        }
-
         for (MapleData life : mapData.getChildByPath("life")) {
             String type = WzDataTool.getString(life.getChildByPath("type"));
-            int npc_id = WzDataTool.getInt(life.getChildByPath("id"), -1);
-            if (npc_id == -1) {
-                DebugLogger.ErrorLog("loadLife : failed" + mapData.getParent().getName());
-                continue;
-            }
-            Object myLife = MapleLifeFactory.getLife(npc_id, type);
 
-            if (myLife == null) {
-                DebugLogger.ErrorLog("loadLife : failed, " + npc_id);
-                continue;
-            }
-
-            final int lifeCy = WzDataTool.getInt(life.getChildByPath("cy"));
-            MapleData dF = life.getChildByPath("f");
-            final Integer lifeF = dF != null ? WzDataTool.getInt(dF) : null;
-            final int lifeFh = WzDataTool.getInt(life.getChildByPath("fh"));
-            final int lifeRx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
-            final int lifeRx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
-            final Point lifePos = new Point(WzDataTool.getInt(life.getChildByPath("x")), WzDataTool.getInt(life.getChildByPath("y")));
-
-            if (myLife instanceof MapleNPC) {
-                MapleNPC npc = (MapleNPC) myLife;
-                npc.setCy(lifeCy);
-                if (lifeF != null) {
-                    npc.setF(lifeF);
-                }
-                npc.setFh(lifeFh);
-                npc.setRx0(lifeRx0);
-                npc.setRx1(lifeRx1);
-                npc.setPosition(lifePos);
-
-                npc.setF(npc.getF() == 1 ? 0 : 1); // wz data left right to packet data left right.
-                if (WzDataTool.getIntPath("hide", life, 0) == 1) {
-                    npc.setHide(true);
-                    DebugLogger.InfoLog("loadLife : hidden npc, " + npc_id);
-                }
-                if (DWI_Block.checkNpc(npc.getId())) {
-                    DebugLogger.InfoLog("loadLife : blocked npc, " + npc_id);
+            switch (type) {
+                case "m" -> {
+                    TacosSpawnPoint sp = new TacosSpawnPoint();
+                    if (sp.loadData(life)) {
+                        this.monster_spawn_point.add(sp);
+                    }
                     continue;
                 }
-                ((MapleMap) this).addMapObject(npc);
-            }
-            if (myLife instanceof MapleMonster) {
-                MapleMonster mob = (MapleMonster) myLife;
-                mob.setCy(lifeCy);
-                if (lifeF != null) {
-                    mob.setF(lifeF);
-                }
-                mob.setFh(lifeFh);
-                mob.setRx0(lifeRx0);
-                mob.setRx1(lifeRx1);
-                mob.setPosition(lifePos);
-
-                if (DWI_Block.checkMob(mob.getId())) {
-                    DebugLogger.InfoLog("loadLife : blocked mob, " + npc_id);
+                case "n" -> {
+                    TacosNPCSpawnPoint sp = new TacosNPCSpawnPoint();
+                    if (sp.loadData(life)) {
+                        this.npc_spawn_point.add(sp);
+                    }
                     continue;
                 }
-                ((MapleMap) this).addMonsterSpawn(mob, WzDataTool.getIntPath("mobTime", life, 0), (byte) WzDataTool.getIntPath("team", life, -1), mob.getId() == bossid ? msg : null);
+                default -> {
+                }
             }
         }
         return true;
@@ -439,32 +549,16 @@ public class TacosMapData {
 
     // reactor node.
     public boolean loadReactor(MapleData mapData) {
-        MapleData reactors = mapData.getChildByPath("reactor");
-        if (reactors == null) {
-            return true;
+        MapleData md_reactor = mapData.getChildByPath("reactor");
+        if (md_reactor == null) {
+            return false;
         }
-
-        for (MapleData reactor : reactors) {
-            int reactor_id = WzDataTool.getInt(reactor.getChildByPath("id"), -1);
-            if (reactor_id == -1) {
-                DebugLogger.ErrorLog("loadReactor : failed" + mapData.getParent().getName());
-                continue;
+        for (MapleData reactor : md_reactor.getChildren()) {
+            TacosReactorSpawnPoint sp = new TacosReactorSpawnPoint();
+            if (sp.loadData(reactor)) {
+                this.reactor_spawn_point.add(sp);
             }
-            int FacingDirection = WzDataTool.getInt(reactor.getChildByPath("f"), 0);
-
-            MapleReactorStats stats = WzXML.REACTOR.getReactor(reactor_id);
-            MapleReactor myReactor = new MapleReactor(stats, reactor_id);
-
-            stats.setFacingDirection((byte) FacingDirection);
-            myReactor.setPosition(new Point(WzDataTool.getInt(reactor.getChildByPath("x")), WzDataTool.getInt(reactor.getChildByPath("y"))));
-            myReactor.setDelay(WzDataTool.getInt(reactor.getChildByPath("reactorTime")) * 1000);
-            myReactor.setState((byte) 0);
-            myReactor.setName(WzDataTool.getString(reactor.getChildByPath("name"), ""));
-
-            myReactor.setMap(((MapleMap) this));
-            ((MapleMap) this).addMapObject(myReactor);
         }
-
         return true;
     }
 
@@ -572,6 +666,4 @@ public class TacosMapData {
     public MapleNodes getNodeInfo() {
         return this.nodeInfo;
     }
-
-    // TODO : CAN WE FIX IT?
 }

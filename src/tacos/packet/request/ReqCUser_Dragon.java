@@ -23,7 +23,7 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
-import tacos.client.TacosDragon;
+import tacos.server.map.object.TacosDragon;
 import tacos.packet.ClientPacketHeader;
 import tacos.server.map.TacosMap;
 
@@ -68,9 +68,8 @@ public class ReqCUser_Dragon {
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
             dragon.update(move_path);
-            map.broadcastMessage(chr, ResCUser_Dragon.DragonMove(dragon, move_path), false);
+            map.splitSendPacket(chr, ResCUser_Dragon.DragonMove(dragon, move_path), chr.getId());
         }
         return true;
     }
-
 }

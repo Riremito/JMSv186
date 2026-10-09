@@ -24,8 +24,8 @@ import odin.constants.GameConstants;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import odin.server.life.MapleLifeFactory;
 import odin.server.quest.MapleQuest;
+import tacos.wz.WzXML;
 
 public class MapleQuestStatus {
 
@@ -72,10 +72,6 @@ public class MapleQuestStatus {
         this.status = status;
     }
 
-    public final int getNpc() {
-        return npc;
-    }
-
     public final void setNpc(final int npc) {
         this.npc = npc;
     }
@@ -116,24 +112,13 @@ public class MapleQuestStatus {
             return true;
         }
         for (Entry<Integer, Integer> mo : killedMobs.entrySet()) {
-            if (questCount(mo.getKey(), id)) {
-                final int mobb = maxMob(mo.getKey());
+            if (WzXML.MOB.checkQuestCountGroup(mo.getKey(), id)) {
+                int mobb = maxMob(mo.getKey());
                 if (mo.getValue() >= mobb) {
                     return false; //nothing
                 }
                 killedMobs.put(mo.getKey(), Math.min(mo.getValue() + 1, mobb));
                 return true;
-            }
-        } //i doubt this
-        return false;
-    }
-
-    private boolean questCount(final int mo, final int id) {
-        if (MapleLifeFactory.getQuestCount(mo) != null) {
-            for (int i : MapleLifeFactory.getQuestCount(mo)) {
-                if (i == id) {
-                    return true;
-                }
             }
         }
         return false;
@@ -165,14 +150,6 @@ public class MapleQuestStatus {
         return killedMobs;
     }
 
-    public long getCompletionTime() {
-        return completionTime;
-    }
-
-    public void setCompletionTime(long completionTime) {
-        this.completionTime = completionTime;
-    }
-
     public int getForfeited() {
         return forfeited;
     }
@@ -185,11 +162,29 @@ public class MapleQuestStatus {
         }
     }
 
+    // used by script
+    public final int getNpc() {
+        return npc;
+    }
+
+    // used by script
+    public long getCompletionTime() {
+        return completionTime;
+    }
+
+    // used by script
+    public void setCompletionTime(long completionTime) {
+        this.completionTime = completionTime;
+    }
+
+    // used by script
     public void setCustomData(String customData) {
         this.customData = customData;
     }
 
+    // used by script
     public String getCustomData() {
         return customData;
     }
+
 }

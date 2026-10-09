@@ -55,44 +55,16 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.MapScriptMethods;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.server.map.TacosReward;
+import tacos.server.map.object.TacosMonster;
+import tacos.wz.WzXML;
 
-public class MapleMonster {
-
-    private Point position = new Point();
-    private int objectId;
-
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
+public class MapleMonster extends TacosMonster {
 
     private int stance;
-    private int foothold_id;
-    private int id;
-    private int f;
-    private int fh;
-    private int originFh;
-    private int cy;
-    private int rx0;
-    private int rx1;
-    private boolean hide;
 
     public int getStance() {
         return stance;
@@ -100,14 +72,6 @@ public class MapleMonster {
 
     public void setStance(int stance) {
         this.stance = stance;
-    }
-
-    public int getFH() {
-        return this.foothold_id;
-    }
-
-    public void setFH(int foothold_id) {
-        this.foothold_id = foothold_id;
     }
 
     public boolean isFacingLeft() {
@@ -118,104 +82,40 @@ public class MapleMonster {
         return getStance() % 2;
     }
 
-    public int getF() {
-        return f;
-    }
-
-    public void setF(int f) {
-        this.f = f;
-    }
-
-    public void setHide(boolean hide) {
-        this.hide = hide;
-    }
-
-    public int getOriginFh() {
-        return originFh;
-    }
-
-    public void setOriginFh(int originFh) {
-        this.originFh = originFh;
-    }
-
-    public int getFh() {
-        return fh;
-    }
-
-    public void setFh(int fh) {
-        this.fh = fh;
-    }
-
-    public void setCy(int cy) {
-        this.cy = cy;
-    }
-
-    public int getRx0() {
-        return rx0;
-    }
-
-    public void setRx0(int rx0) {
-        this.rx0 = rx0;
-    }
-
-    public int getRx1() {
-        return rx1;
-    }
-
-    public void setRx1(int rx1) {
-        this.rx1 = rx1;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
     private MapleMonsterStats stats;
     private OverrideMonsterStats ostats = null;
     private long hp;
     private int mp;
-    private int linkoid = 0;
     private int lastNode = -1;
     private int lastNodeController = -1;
     private WeakReference<MapleMonster> sponge = new WeakReference<>(null);
     private int highestDamageChar = 0; // Just a reference for monster EXP distribution after dead
     private int stolen = -1; //monster can only be stolen ONCE
-    private int nAppearType = -1;
     private byte venom_counter;
-    private WeakReference<MapleCharacter> controller = new WeakReference<>(null);
     private byte carnivalTeam;
     private MapleMap map;
     private boolean fake;
     private boolean dropsDisabled;
     private final Collection<AttackerEntry> attackers = new LinkedList<>();
-    private boolean controllerHasAggro;
-    private boolean controllerKnowsAboutAggro;
     private OdinEventInstanceManager eventInstance;
-    private MonsterListener listener = null;
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
-    private OpsMobAppear appear_type = OpsMobAppear.MOBAPPEAR_NORMAL;
     private ScheduledFuture<?> dropItemSchedule;
 
-    public MapleMonster(final int id, final MapleMonsterStats stats) {
-        this.id = id;
+    public MapleMonster(int id, MapleMonsterStats stats) {
+        setId(id);
         initWithStats(stats);
     }
 
-    public MapleMonster(final MapleMonster monster) {
-        this.id = monster.id;
-        this.f = monster.f;
-        this.hide = monster.hide;
-        this.fh = monster.fh;
-        this.originFh = monster.fh;
-        this.cy = monster.cy;
-        this.rx0 = monster.rx0;
-        this.rx1 = monster.rx1;
+    public MapleMonster(MapleMonster monster) {
+        setId(monster.getId());
+        setF(monster.getF());
+        setCy(monster.getCy());
+        setRx0(monster.getRx0());
+        setRx1(monster.getRx1());
+        setFootholdId(monster.getFootholdId());
+        setHomeFoothold(monster.getFootholdId());
         initWithStats(monster.stats);
     }
 
@@ -393,7 +293,7 @@ public class MapleMonster {
                     if (sponge.get().hp <= 0) {
                         map.killMonster(sponge.get(), from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                     } else {
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(sponge.get()).build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(sponge.get()).build()));
                     }
                 }
             }
@@ -402,13 +302,13 @@ public class MapleMonster {
                 if (sponge.get() == null/* && hp > 0*/) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
-                            map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()), this.getPosition());
+                            map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
                             break;
                         case 1:
-                            map.broadcastMessage(from, ResCMobPool.MobDamaged(this, (int) damage, 1), false);
+                            map.broadcastPacket(ResCMobPool.MobDamaged(this, (int) damage, 1));
                             break;
                         case 2:
-                            map.broadcastMessage(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
+                            map.broadcastPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                             from.mulung_EnergyModify(true);
                             break;
                         case 3:
@@ -428,7 +328,7 @@ public class MapleMonster {
                 if (hp <= 0) {
                     if (stats.getHPDisplayType() == 0) {
                         this.setHp(0);
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
                     }
                     map.killMonster(this, from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                 }
@@ -451,7 +351,7 @@ public class MapleMonster {
             setMp(TotalMP);
         }
         if (broadcast) {
-            map.broadcastMessage(ResCMobPool.MobDamaged(this, -hp, 0));
+            map.broadcastPacket(ResCMobPool.MobDamaged(this, -hp, 0));
         } else if (sponge.get() != null) { // else if, since only sponge doesn't broadcast
             sponge.get().hp += hp;
         }
@@ -464,6 +364,7 @@ public class MapleMonster {
         if (exp > 0) {
             exp *= attacker.getEXPMod() * (int) (attacker.getStat().expBuff / 100.0);
             exp *= attacker.getChannelServer().getExpRate();
+            exp *= 1.25; // JMS
             //do this last just incase someone has a 2x exp card and its set to max value
             int Class_Bonus_EXP = 0;
             if (Class_Bonus_EXP_PERCENT > 0) {
@@ -474,7 +375,7 @@ public class MapleMonster {
                 Premium_Bonus_EXP = (int) ((exp / 100.0) * Premium_Bonus_EXP_PERCENT);
             }
             int Equipment_Bonus_EXP = (int) ((exp / 100.0) * attacker.getStat().equipmentBonusExp);
-            if (attacker.getStat().equippedFairy) {
+            if (0 < attacker.getFairyExp()) {
                 Equipment_Bonus_EXP += (int) ((exp / 100.0) * attacker.getFairyExp());
             }
 
@@ -483,7 +384,7 @@ public class MapleMonster {
         attacker.mobKilled(getId(), lastskillID);
     }
 
-    public final int killBy(final MapleCharacter killer, final int lastSkill) {
+    public int killBy(MapleCharacter killer, int lastSkill) {
         int totalBaseExp = getMobExp();
         AttackerEntry highest = null;
         long highdamage = 0;
@@ -498,11 +399,6 @@ public class MapleMonster {
             baseExp = (int) Math.ceil(totalBaseExp * ((double) attackEntry.getDamage() / getMobMaxHp()));
             attackEntry.killedMob(getMap(), baseExp, attackEntry == highest, lastSkill);
         }
-        final MapleCharacter controll = controller.get();
-        if (controll != null) { // this can/should only happen when a hidden gm attacks the monster
-            controll.SendPacket(ResCMobPool.MobChangeController(this));
-            controll.stopControllingMonster(this);
-        }
 
         spawnRevives();
         if (killer != null && killer.getPyramidSubway() != null) {
@@ -513,7 +409,7 @@ public class MapleMonster {
         if (oldSponge != null && oldSponge.isAlive()) {
             boolean set = true;
             for (MapleMonster mons : map.getAllMonsters()) {
-                if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getLinkOid() == oldSponge.getObjectId())) { //sponge was this, please update
+                if (mons.getObjectId() != oldSponge.getObjectId() && mons.getObjectId() != this.getObjectId() && (mons.getSponge() == oldSponge || mons.getSummonOption() == oldSponge.getObjectId())) { //sponge was this, please update
                     set = false;
                     break;
                 }
@@ -526,9 +422,6 @@ public class MapleMonster {
         nodepack = null;
         reflectpack = null;
         cancelDropItem();
-        if (listener != null) {
-            listener.monsterKilled();
-        }
         int v1 = highestDamageChar;
         this.highestDamageChar = 0; //reset so we dont kill twice
         return v1;
@@ -547,8 +440,8 @@ public class MapleMonster {
             case 8810119:
             case 8810120:
             case 8810121: //must update sponges
-                for (final int i : toSpawn) {
-                    final MapleMonster mob = MapleLifeFactory.getMonster(i);
+                for (int i : toSpawn) {
+                    MapleMonster mob = WzXML.MOB.findMonster(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
@@ -566,9 +459,9 @@ public class MapleMonster {
                 if (spongy != null) {
                     map.spawnRevives(spongy, this.getObjectId());
                     for (MapleMonster mons : map.getAllMonsters()) {
-                        if (mons.getObjectId() != spongy.getObjectId() && (mons.getSponge() == this || mons.getLinkOid() == this.getObjectId())) { //sponge was this, please update
+                        if (mons.getObjectId() != spongy.getObjectId() && (mons.getSponge() == this || mons.getSummonOption() == this.getObjectId())) { //sponge was this, please update
                             mons.setSponge(spongy);
-                            mons.setLinkOid(spongy.getObjectId());
+                            mons.setSummonOption(spongy.getObjectId());
                         }
                     }
                 }
@@ -581,10 +474,10 @@ public class MapleMonster {
             case 8820011:
             case 8820012:
             case 8820013: {
-                final List<MapleMonster> mobs = new ArrayList<>();
+                List<MapleMonster> mobs = new ArrayList<>();
 
-                for (final int i : toSpawn) {
-                    final MapleMonster mob = MapleLifeFactory.getMonster(i);
+                for (int i : toSpawn) {
+                    MapleMonster mob = WzXML.MOB.findMonster(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
@@ -617,8 +510,8 @@ public class MapleMonster {
                 break;
             }
             default: {
-                for (final int i : toSpawn) {
-                    final MapleMonster mob = MapleLifeFactory.getMonster(i);
+                for (int i : toSpawn) {
+                    MapleMonster mob = WzXML.MOB.findMonster(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
@@ -627,8 +520,8 @@ public class MapleMonster {
                     map.spawnRevives(mob, this.getObjectId());
 
                     if (mob.getId() == 9300216) {
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/clear").build()));
-                        map.broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/end/clear").build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Dojang/clear").build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("dojang/end/clear").build()));
                     }
                 }
                 break;
@@ -648,28 +541,7 @@ public class MapleMonster {
         return carnivalTeam;
     }
 
-    public final MapleCharacter getController() {
-        return controller.get();
-    }
-
-    public final void setController(final MapleCharacter controller) {
-        this.controller = new WeakReference<>(controller);
-    }
-
-    public final void switchController(final MapleCharacter newController, final boolean immediateAggro) {
-        final MapleCharacter controllers = getController();
-        if (controllers == newController) {
-            return;
-        } else if (controllers != null) {
-            controllers.stopControllingMonster(this);
-            controllers.SendPacket(ResCMobPool.MobChangeController(this));
-        }
-        newController.controlMonster(this, immediateAggro);
-        setController(newController);
-        if (immediateAggro) {
-            setControllerHasAggro(true);
-        }
-        setControllerKnowsAboutAggro(false);
+    public void switchShammosController(MapleCharacter newController, boolean immediateAggro) {
         if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
             if (lastNodeController != -1 && lastNodeController != newController.getId()) { //new controller, please re update
                 resetShammos(newController.getClient());
@@ -681,27 +553,11 @@ public class MapleMonster {
 
     public final void resetShammos(TacosClient client) {
         map.killAllMonsters(true);
-        map.broadcastMessage(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
-        for (MapleCharacter chr : map.getCharacters()) {
-            chr.changeMap(chr.getMap(), chr.getMap().getPortal(0));
+        map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
+        for (MapleCharacter chr : map.getAllPlayers()) {
+            chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }
         MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
-    }
-
-    public final void addListener(final MonsterListener listener) {
-        this.listener = listener;
-    }
-
-    public final boolean isControllerHasAggro() {
-        return controllerHasAggro;
-    }
-
-    public final void setControllerHasAggro(final boolean controllerHasAggro) {
-        this.controllerHasAggro = controllerHasAggro;
-    }
-
-    public final void setControllerKnowsAboutAggro(final boolean controllerKnowsAboutAggro) {
-        this.controllerKnowsAboutAggro = controllerKnowsAboutAggro;
     }
 
     public void sendSpawnData(TacosClient client) {
@@ -731,45 +587,6 @@ public class MapleMonster {
         if (getId() == 9300275 && map.getId() >= 921120100 && map.getId() < 921120500) { //shammos
             resetShammos(client);
         }
-    }
-
-    @Override
-    public final String toString() {
-        final StringBuilder sb = new StringBuilder();
-
-        sb.append(stats.getName());
-        sb.append("(");
-        sb.append(getId());
-        sb.append(") at X");
-        sb.append(getPosition().x);
-        sb.append("/ Y");
-        sb.append(getPosition().y);
-        sb.append(" with ");
-        sb.append(getHp());
-        sb.append("/ ");
-        sb.append(getMobMaxHp());
-        sb.append("hp, ");
-        sb.append(getMp());
-        sb.append("/ ");
-        sb.append(getMobMaxMp());
-        sb.append(" mp (alive: ");
-        sb.append(isAlive());
-        sb.append(" oid: ");
-        sb.append(getObjectId());
-        sb.append(") || Controller name : ");
-        final MapleCharacter chr = controller.get();
-        sb.append(chr != null ? chr.getName() : "null");
-        sb.append(") || Sponge name : ");
-        final MapleMonster spnge = sponge.get();
-        sb.append(spnge != null ? spnge.stats.getName() : "null");
-        sb.append(" linkoid: ");
-        sb.append(getLinkOid());
-
-        return sb.toString();
-    }
-
-    public final MapleMapObjectType getType() {
-        return MapleMapObjectType.MONSTER;
     }
 
     public final OdinEventInstanceManager getEventInstance() {
@@ -930,43 +747,6 @@ public class MapleMonster {
         return stats.getBuffToGive();
     }
 
-    private final class PoisonTask implements Runnable {
-
-        private final int poisonDamage;
-        private final MapleCharacter chr;
-        private final MonsterStatusEffect status;
-        private final Runnable cancelTask;
-        private final boolean shadowWeb;
-        private final MapleMap map;
-
-        private PoisonTask(final int poisonDamage, final MapleCharacter chr, final MonsterStatusEffect status, final Runnable cancelTask, final boolean shadowWeb) {
-            this.poisonDamage = poisonDamage;
-            this.chr = chr;
-            this.status = status;
-            this.cancelTask = cancelTask;
-            this.shadowWeb = shadowWeb;
-            this.map = chr.getMap();
-        }
-
-        @Override
-        public void run() {
-            long damage = poisonDamage;
-            if (damage >= hp) {
-                damage = hp - 1;
-                if (!shadowWeb) {
-                    cancelTask.run();
-                    status.cancelTask();
-                }
-            }
-            if (hp > 1 && damage > 0) {
-                damage(chr, damage, false);
-                if (shadowWeb) {
-                    map.broadcastMessage(ResCMobPool.MobDamaged(getParent(), (int) damage, 0), getPosition());
-                }
-            }
-        }
-    }
-
     public MapleMonster getParent() {
         return this;
     }
@@ -1028,7 +808,7 @@ public class MapleMonster {
 
         @Override
         public final List<AttackingMapleCharacter> getAttackers() {
-            final MapleCharacter chr = map.getCharacterById(chrid);
+            final MapleCharacter chr = map.getPlayerById(chrid);
             if (chr != null) {
                 return Collections.singletonList(new AttackingMapleCharacter(chr, lastAttackTime));
             } else {
@@ -1048,7 +828,7 @@ public class MapleMonster {
 
         @Override
         public void killedMob(final MapleMap map, final int baseExp, final boolean mostDamage, final int lastSkill) {
-            final MapleCharacter chr = map.getCharacterById(chrid);
+            final MapleCharacter chr = map.getPlayerById(chrid);
             if (chr != null && chr.isAlive()) {
                 giveExpToCharacter(chr, baseExp, mostDamage, 1, (byte) 0, (byte) 0, (byte) 0, lastSkill);
             }
@@ -1120,7 +900,7 @@ public class MapleMonster {
         public List<AttackingMapleCharacter> getAttackers() {
             final List<AttackingMapleCharacter> ret = new ArrayList<>(attackers.size());
             for (final Entry<Integer, OnePartyAttacker> entry : attackers.entrySet()) {
-                final MapleCharacter chr = map.getCharacterById(entry.getKey());
+                final MapleCharacter chr = map.getPlayerById(entry.getKey());
                 if (chr != null) {
                     ret.add(new AttackingMapleCharacter(chr, entry.getValue().lastAttackTime));
                 }
@@ -1131,7 +911,7 @@ public class MapleMonster {
         private final Map<MapleCharacter, OnePartyAttacker> resolveAttackers() {
             final Map<MapleCharacter, OnePartyAttacker> ret = new HashMap<>(attackers.size());
             for (final Entry<Integer, OnePartyAttacker> aentry : attackers.entrySet()) {
-                final MapleCharacter chr = map.getCharacterById(aentry.getKey());
+                final MapleCharacter chr = map.getPlayerById(aentry.getKey());
                 if (chr != null) {
                     ret.put(chr, aentry.getValue());
                 }
@@ -1193,7 +973,7 @@ public class MapleMonster {
                 expApplicable = new ArrayList<>();
                 for (final MaplePartyCharacter partychar : party.getMembers()) {
                     if (attacker.getKey().getLevel() - partychar.getLevel() <= 5 || stats.getLevel() - partychar.getLevel() <= 5) {
-                        pchr = map.getCharacterById(partychar.getId());
+                        pchr = map.getPlayerById(partychar.getId());
                         if (pchr != null) {
                             if (pchr.isAlive() && pchr.getMap() == map) {
                                 expApplicable.add(pchr);
@@ -1266,24 +1046,15 @@ public class MapleMonster {
         }
     }
 
-    public int getLinkOid() {
-        return linkoid;
-    }
-
-    public void setLinkOid(int lo) {
-        this.linkoid = lo;
-    }
-
     public int getStolen() {
         return stolen;
     }
 
     public void handleSteal(MapleCharacter chr) {
         Skill steal = SkillFactory.getSkill(4201004);
-        final int level = chr.getSkillLevel(steal);
+        int level = chr.getSkillLevel(steal);
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
-            final MapleMonsterInformationProvider mi = MapleMonsterInformationProvider.getInstance();
-            final List<MonsterDropEntry> dropEntry = new ArrayList<>(mi.retrieveDrop(getId()));
+            ArrayList<MonsterDropEntry> dropEntry = new ArrayList<>(TacosReward.getMonsterDrops(getId()));
             Collections.shuffle(dropEntry);
             Item idrop;
             for (MonsterDropEntry d : dropEntry) {
@@ -1295,7 +1066,7 @@ public class MapleMonster {
                         idrop = new Item(d.itemId, (byte) 0, (short) (d.Maximum != 1 ? Randomizer.nextInt(d.Maximum - d.Minimum) + d.Minimum : 1), (byte) 0);
                     }
                     stolen = d.itemId;
-                    map.spawnMobDrop(idrop, map.calcDropPos(new Point(getPosition()), getPosition()), this, chr, (byte) 0, (short) 0);
+                    map.spawnMobDrop(idrop, map.calcDropPos(new Point(getPosition()), getPosition()), this, chr, (byte) 0, (short) 0, 0);
                     break;
                 }
             }
@@ -1329,21 +1100,5 @@ public class MapleMonster {
 
     public void setNodePacket(ServerPacket np) {
         this.nodepack = np;
-    }
-
-    public OpsMobAppear getAT() {
-        return this.appear_type;
-    }
-
-    public void setAT(OpsMobAppear appear_type) {
-        this.appear_type = appear_type;
-    }
-
-    public int getATEx() {
-        return this.nAppearType;
-    }
-
-    public void setATEx(int nAppearType) {
-        this.nAppearType = nAppearType;
     }
 }

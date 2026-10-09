@@ -23,150 +23,44 @@ package odin.server.maps;
 import java.awt.Point;
 import odin.client.inventory.Item;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
-import tacos.packet.response.ResCDropPool;
-import tacos.packet.response.ResCDropPool.EnterType;
-import tacos.packet.response.ResCDropPool.LeaveType;
-import tacos.server.map.TacosMap;
+import tacos.server.map.object.TacosDrop;
 
-public class MapleMapItem {
+public class MapleMapItem extends TacosDrop {
 
-    private Point position = new Point();
-    private int objectId;
+    private byte type;
 
-    public Point getPosition() {
-        return new Point(position);
-    }
-
-    public void setPosition(Point position) {
-        this.position.x = position.x;
-        this.position.y = position.y;
-    }
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
-
-    protected Item item;
-    protected Object dropper;
-    protected int character_ownerid;
-    protected int meso = 0;
-    protected int questid = -1;
-    protected byte type;
-    protected boolean pickedUp = false;
-    protected boolean playerDrop;
-    protected boolean randDrop = false;
-    protected long nextExpiry = 0;
-    protected long nextFFA = 0;
-    private long time = 0;
-
-    public MapleMapItem(Item item, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop) {
-        setPosition(position);
-        this.item = item;
-        this.dropper = dropper;
-        this.character_ownerid = owner.getId();
+    public MapleMapItem(Item item, Point position, MapleCharacter owner, byte type, boolean playerDrop) {
         this.type = type;
-        this.playerDrop = playerDrop;
+        super(item, 0, 0);
+        setOwnerId(owner.getId());
+        setPosition(position);
+        setPlayerDrop(playerDrop);
     }
 
-    public MapleMapItem(Item item, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop, int questid) {
-        setPosition(position);
-        this.item = item;
-        this.dropper = dropper;
-        this.character_ownerid = owner.getId();
+    public MapleMapItem(Item item, Point position, MapleCharacter owner, byte type, boolean playerDrop, int quest_id) {
         this.type = type;
-        this.playerDrop = playerDrop;
-        this.questid = questid;
+        super(item, quest_id, 0);
+        setOwnerId(owner.getId());
+        setPosition(position);
+        setPlayerDrop(playerDrop);
     }
 
-    public MapleMapItem(int meso, Point position, Object dropper, MapleCharacter owner, byte type, boolean playerDrop) {
-        setPosition(position);
-        this.item = null;
-        this.dropper = dropper;
-        this.character_ownerid = owner.getId();
-        this.meso = meso;
+    public MapleMapItem(int meso, Point position, MapleCharacter owner, byte type, boolean playerDrop) {
         this.type = type;
-        this.playerDrop = playerDrop;
+        super(null, 0, meso);
+        setOwnerId(owner.getId());
+        setPosition(position);
+        setPlayerDrop(playerDrop);
     }
 
     public MapleMapItem(Point position, Item item) {
-        setPosition(position);
-        this.item = item;
-        this.character_ownerid = 0;
         this.type = 2;
-        this.playerDrop = false;
-        this.randDrop = true;
-    }
-
-    public final Item getItem() {
-        return item;
-    }
-
-    public final int getQuest() {
-        return questid;
-    }
-
-    public final int getItemId() {
-        if (getMeso() > 0) {
-            return meso;
-        }
-        return item.getItemId();
-    }
-
-    public final Object getDropper() {
-        return dropper;
-    }
-
-    public final int getOwner() {
-        return character_ownerid;
-    }
-
-    public final int getMeso() {
-        return meso;
-    }
-
-    public final boolean isPlayerDrop() {
-        return playerDrop;
+        super(item, 0, 0);
+        setOwnerId(0);
+        setPosition(position);
     }
 
     public byte getDropType() {
         return type;
-    }
-
-    public final MapleMapObjectType getType() {
-        return MapleMapObjectType.ITEM;
-    }
-
-    public void sendSpawnData(final TacosClient client) {
-        if (questid <= 0 || client.getPlayer().getQuestStatus(questid) == 1) {
-            client.SendPacket(ResCDropPool.DropEnterField(this, EnterType.NO_ANIMATION, getPosition()));
-        }
-    }
-
-    public void sendDestroyData(final TacosClient client) {
-        client.SendPacket(ResCDropPool.DropLeaveField(this, LeaveType.NO_ANIMATION));
-    }
-
-    public long getTime() {
-        return this.time;
-    }
-
-    public void registerExpire(final long time) {
-        this.time = System.currentTimeMillis();
-        nextExpiry = this.time + time;
-    }
-
-    public void registerFFA(final long time) {
-        nextFFA = System.currentTimeMillis() + time;
-    }
-
-    public void expire(TacosMap map) {
-        pickedUp = true;
-        map.broadcastMessage(ResCDropPool.DropLeaveField(this, LeaveType.EXPIRED));
-        map.removeMapObject(this);
     }
 }

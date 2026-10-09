@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.wz.MobWz.MobBanInfo;
 
 public class MapleMonsterStats {
 
@@ -62,7 +63,7 @@ public class MapleMonsterStats {
     private Map<Element, ElementalEffectiveness> resistance = new HashMap<>();
     private List<Integer> revives = new ArrayList<>();
     private List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
-    private BanishInfo banish;
+    private MobBanInfo banish;
 
     public int getExp() {
         return exp;
@@ -132,11 +133,11 @@ public class MapleMonsterStats {
         this.onlyNormalAttack = onlyNormalAttack;
     }
 
-    public BanishInfo getBanishInfo() {
+    public MobBanInfo getBanishInfo() {
         return banish;
     }
 
-    public void setBanishInfo(BanishInfo banish) {
+    public void setBanishInfo(MobBanInfo banish) {
         this.banish = banish;
     }
 

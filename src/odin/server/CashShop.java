@@ -31,11 +31,11 @@ import odin.client.inventory.MaplePet;
 import odin.client.inventory.ItemLoader;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
-import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.query.DQ_Gifts;
 import tacos.packet.response.ResCCashShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.server.TacosWorld;
 
 public class CashShop {
 
@@ -125,7 +125,7 @@ public class CashShop {
 
     public Item toItem(CashItemInfo cItem, int uniqueid, String gift) {
         if (uniqueid <= 0) {
-            uniqueid = MapleInventoryIdentifier.getInstance();
+            uniqueid = TacosWorld.getNextItemUniqueId();
         }
         long period = cItem.getPeriod();
         if (period <= 0 || GameConstants.isPet(cItem.getId())) {

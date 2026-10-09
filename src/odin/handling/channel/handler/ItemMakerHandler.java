@@ -162,7 +162,7 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                     return true;
                 }
                 if (GameConstants.isOtherGem(toCreate)) {
@@ -200,7 +200,7 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                     return true;
                 }
                 {
@@ -260,7 +260,7 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                 }
                 return true;
             }
@@ -277,13 +277,13 @@ public class ItemMakerHandler {
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
 
                 return true;
             }
             case RECIPE_CLASS_EQUIP_DISASSEMBLE: {
                 int itemId = cp.Decode4();
-                cp.Decode4();
+                int unk1 = cp.Decode4();
                 int slot = cp.Decode4();
 
                 final Item toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
@@ -303,7 +303,7 @@ public class ItemMakerHandler {
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                chr.getMap().broadcastMessage(chr, ResCUserRemote.ItemMakerResultTo(chr, true), false);
+                chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                 return true;
             }
             default: {

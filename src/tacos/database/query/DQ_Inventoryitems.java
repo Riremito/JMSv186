@@ -29,7 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.MapleInventoryIdentifier;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleRing;
@@ -37,6 +36,7 @@ import odin.constants.GameConstants;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.server.TacosWorld;
 
 /**
  *
@@ -186,7 +186,7 @@ public class DQ_Inventoryitems {
                                 }
                             } else {
                                 //O_O hackish fix
-                                final int new_unique = MapleInventoryIdentifier.getInstance();
+                                int new_unique = TacosWorld.getNextItemUniqueId();
                                 item.setUniqueId(new_unique);
                                 item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
                             }
@@ -210,7 +210,7 @@ public class DQ_Inventoryitems {
             try (PreparedStatement ps = con.prepareStatement("SELECT MAX(uniqueid) FROM " + DB_TABLE_NAME)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        ret = rs.getInt(1) + 1;
+                        ret = rs.getInt(1);
                     }
                 }
             }
@@ -220,5 +220,4 @@ public class DQ_Inventoryitems {
 
         return ret;
     }
-
 }

@@ -52,11 +52,7 @@ public class ResCMobPool {
 
         sp.Encode1(1); // 1 = Control normal, 5 = Control none
         sp.Encode4(monster.getId());
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(0);
-        }
-
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
         sp.EncodeBuffer(CMob_SetTemporaryStat(monster));
         sp.EncodeBuffer(CMob_Init(monster)); // if mob is not found in the map, extra data is read.
         return sp;
@@ -80,24 +76,24 @@ public class ResCMobPool {
     public static byte[] CMob_Init(MapleMonster monster) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode2(monster.getPosition().x); // m_ptPosPrev.x
-        data.Encode2(monster.getPosition().y); // m_ptPosPrev.y
-        data.Encode1(monster.getStance()); // m_nMoveAction_CS
-        data.Encode2(monster.getFh()); // pvcMobActiveObj, Fh  causes fall down, credit to 垂垂 for fixing mob fall down issue
-        data.Encode2(monster.getOriginFh()); // m_pInterface
+        data.Encode2(monster.getX()); // m_ptCurPos.x
+        data.Encode2(monster.getY()); // m_ptCurPos.y
+        data.Encode1(monster.getStance()); // m_bMoveAction
+        data.Encode2(monster.getFootholdId()); // m_nFootholdSN, Fh  causes fall down, credit to 垂垂 for fixing mob fall down issue
+        data.Encode2(monster.getHomeFoothold()); // m_nHomeFoothold
 
         OpsMobAppear ops_at = monster.getAT();
         switch (ops_at) {
             case MOBAPPEAR_NORMAL, MOBAPPEAR_REGEN, MOBAPPEAR_SUSPENDED, MOBAPPEAR_DELAY -> {
-                data.Encode1(monster.getAT().get()); // nAppearType
+                data.Encode1(monster.getAT().get()); // nAppearType, m_nSummonType
             }
             case MOBAPPEAR_REVIVED -> {
-                data.Encode1(monster.getAT().get()); // nAppearType
-                data.Encode4(monster.getLinkOid()); // dwOption
+                data.Encode1(monster.getAT().get()); // nAppearType, m_nSummonType
+                data.Encode4(monster.getSummonOption()); // m_dwSummonOption
             }
             case MOBAPPEAR_EFFECT -> {
-                data.Encode1(monster.getATEx()); // nAppearType
-                data.Encode4(monster.getLinkOid()); // dwOption
+                data.Encode1(monster.getATEx()); // nAppearType, m_nSummonType
+                data.Encode4(monster.getSummonOption()); // m_dwSummonOption
             }
         }
 
@@ -120,15 +116,10 @@ public class ResCMobPool {
             return data.getBytes();
         }
         // JMS146
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)) {
-            data.Encode4(0); // nEffectItemID
-        }
+        data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // nEffectItemID
         // JMS186, GMS95
         // not in KMST330, TWMS125
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 74) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55)) {
-            data.Encode4(0); // m_nPhase
-        }
-
+        data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 67) || Config.GreaterOrEqual(Region.JMS, 165) || Config.GreaterOrEqual(Region.CMS, 74) || Config.GreaterOrEqual(Region.TWMS, 96) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55)); // m_nPhase
         return data.getBytes();
     }
 
@@ -147,11 +138,10 @@ public class ResCMobPool {
     }
 
     // CMobPool::OnMobChangeController
-    public static ServerPacket MobChangeController(MapleMonster monster, boolean aggro) {
+    public static ServerPacket MobChangeController(MapleMonster monster, int nLevel) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
 
-        int nLevel = aggro ? 2 : 1;
-        sp.Encode1(nLevel); // nLevel, local or not.
+        sp.Encode1(nLevel); // nLevel, 2 = aggro, 1 = control, 0 = stop
 
         // GMS95
         if (Config.GreaterOrEqual(Region.GMS, 95)) {
@@ -173,10 +163,7 @@ public class ResCMobPool {
             }
             // CMobPool::SetLocalMob
             sp.Encode4(monster.getId()); // dwTemplateID
-
-            if (Config.GreaterOrEqual(Region.JMS, 302)) {
-                sp.Encode1(0);
-            }
+            sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
 
             if (Config.LessOrEqual(Region.KMS, 3)) {
                 // none.
@@ -189,14 +176,6 @@ public class ResCMobPool {
             // no packet data.
         }
 
-        return sp;
-    }
-
-    public static ServerPacket MobChangeController(MapleMonster monster) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
-
-        sp.Encode1(0);
-        sp.Encode4(monster.getObjectId());
         return sp;
     }
 
@@ -235,15 +214,11 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); // dwMobID
         sp.Encode2(moveid);
-        sp.Encode1(monster.isControllerHasAggro() ? 1 : 0);
-        sp.Encode2(monster.getMp());
+        sp.Encode1(monster.getNextAttackPossible() ? 1 : 0); // bNextAttackPossible
+        sp.Encode2(monster.getMp()); // m_nMP
         sp.Encode1(skillId);
         sp.Encode1(skillLevel);
-
-        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-            sp.Encode4(0);
-        }
-
+        sp.Encode4(0, Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         return sp;
     }
 
@@ -392,8 +367,8 @@ public class ResCMobPool {
 
         sp.Encode4(monster.getObjectId()); //?
         sp.Encode4(map.getNodeInfo().getNodes().size());
-        sp.Encode4(monster.getPosition().x);
-        sp.Encode4(monster.getPosition().y);
+        sp.Encode4(monster.getX());
+        sp.Encode4(monster.getY());
         for (MapleNodes.MapleNodeInfo mni : map.getNodeInfo().getNodes()) {
             sp.Encode4(mni.x);
             sp.Encode4(mni.y);

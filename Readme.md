@@ -33,19 +33,13 @@
 + `JMSv186` という名前のフォルダであるものとして以下の手順を進めていく。
 ### wz_xml
 + 利用するバージョンのXMLを https://github.com/Riremito/wz_xml から取得し、解凍を行う。
+    + もしくはHaRepacker等でエクスポートしても同じだが、JMSの特殊な暗号化に対応したものが存在しない注意
 + JMS147の場合は `JMSv186/wz_xml/xml_JMS_v147/` に必要なファイルを設置する。
 ### scripts
 + Scriptを https://github.com/Riremito/jms_scripts から取得する。
 + `JMSv186/scripts/scripts_jms/` に必要なファイルを設置する。
 ### データベース
-+ Wampserverを実行し、phpmyadminへブラウザからアクセスする。
-    + ユーザー名 `root`, パスワード `空欄` で管理画面へ入れます。
-+ JMS147の場合は `jms_v147` という名前のデータベースを作成する。
-+ 作成したデータベースに `JMSv186/sql` フォルダ内のファイルを以下の順序でインポートする。
-    + `jms_v147_empty.sql`
-    + `init_data_set.sql`
-        + こちらはインポートしなくても問題ない。
-
++ サーバー実行時に自動生成されます。
 ## ビルド
 + NetBeansでプロジェクトを開く。
 + プロパティを開き、ライブラリにClassPathに `JMSv186/lib` フォルダに存在する全ての.jarファイルを追加する。
@@ -68,14 +62,7 @@
 + TODO
 
 ## クライアント
-### 入手方法
-+ フルクライアントを入手する
-    + Web Archiveや[ragezone](https://forum.ragezone.com/threads/maplestory-client-localhost-archive.1101897/)で探す
-+ LocalHostクライアントを入手する
-    + [ragezone](https://forum.ragezone.com/threads/some-localhost-clients-kms-jms-cms-twms.1225637/)で探す
-+ `JMS_v147.0_L.exe` などのLocalHostクライアントをフルクライアントのフォルダに入れる。
-### 実行方法
-+ LocalHostクライアントを実行する。
++ ragezoneやweb archiveで拾ってくる
 ### その他
 + [バグ修正と起動高速化ツール](https://github.com/Riremito/iGPUplz)
     + JMS187以下で画面が崩壊する場合は必須

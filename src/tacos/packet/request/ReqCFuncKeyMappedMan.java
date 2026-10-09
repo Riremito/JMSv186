@@ -20,7 +20,7 @@ package tacos.packet.request;
 
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
-import odin.client.SkillMacro;
+import tacos.client.TacosSingleMacro;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -44,17 +44,7 @@ public class ReqCFuncKeyMappedMan {
 
         switch (header) {
             case CP_UserMacroSysDataModified: {
-                byte macro_count = cp.Decode1();
-                for (int i = 0; i < macro_count; i++) {
-                    String name = cp.DecodeStr();
-                    byte shout = cp.Decode1();
-                    int skill_id_1 = cp.Decode4();
-                    int skill_id_2 = cp.Decode4();
-                    int skill_id_3 = cp.Decode4();
-
-                    chr.updateMacros(i, new SkillMacro(skill_id_1, skill_id_2, skill_id_3, name, shout, i));
-                }
-
+                OnUserMacroSysDataModified(chr, cp);
                 return true;
             }
             case CP_FuncKeyMappedModified: {
@@ -70,6 +60,32 @@ public class ReqCFuncKeyMappedMan {
         }
 
         return false;
+    }
+
+    public static boolean OnUserMacroSysDataModified(MapleCharacter chr, ClientPacket cp) {
+        // MACROSYSDATA::Encode
+        byte macro_count = cp.Decode1();
+        if (macro_count <= 0 || 6 <= macro_count) {
+            return false;
+        }
+
+        for (int index = 0; index < macro_count; index++) {
+            String name = cp.DecodeStr(); // sName
+            boolean bMute = cp.Decode1() != 0; // bMute
+            int skill_id_1 = cp.Decode4(); // aSkill[0]
+            int skill_id_2 = cp.Decode4(); // aSkill[1]
+            int skill_id_3 = cp.Decode4(); // aSkill[2]
+
+            TacosSingleMacro tsm = new TacosSingleMacro();
+            tsm.setName(name);
+            tsm.setMute(bMute);
+            tsm.setSkill1(skill_id_1);
+            tsm.setSkill2(skill_id_2);
+            tsm.setSkill3(skill_id_3);
+            chr.getMacros().put(index, tsm);
+        }
+
+        return true;
     }
 
     public static boolean OnFuncKeyMappedModified(MapleCharacter chr, ClientPacket cp) {

@@ -20,7 +20,7 @@ package tacos;
 
 import tacos.config.Content;
 import tacos.property.Property;
-import tacos.shared.SharedExpTable;
+import tacos.shared.TacosSharedExpTable;
 import tacos.database.DatabaseConnection;
 import odin.handling.channel.MapleGuildRanking;
 import java.sql.SQLException;
@@ -86,7 +86,7 @@ public class Start {
         //Content.showContentList();
         // update exp table
         DebugLogger.SetupLog("EXP_TABLE");
-        SharedExpTable.init();
+        TacosSharedExpTable.init();
         // update packet enum values
         DebugLogger.SetupLog("PACKET_OPS");
         tacos.packet.ops.PacketOps.initAll();
@@ -101,11 +101,8 @@ public class Start {
         }
         DQ_Accounts.resetLoginState();
 
-        EtcTimer.getInstance().start();
         MapTimer.getInstance().start();
-        MobTimer.getInstance().start();
         CloneTimer.getInstance().start();
-        EventTimer.getInstance().start();
 
         /*
         DebugLogger.SetupLog("INFO");
@@ -151,10 +148,7 @@ public class Start {
                     } catch (SQLException ex) {
                     }
                     MapTimer.getInstance().stop();
-                    MobTimer.getInstance().stop();
                     CloneTimer.getInstance().stop();
-                    EventTimer.getInstance().stop();
-                    EtcTimer.getInstance().stop();
                     DebugLogger.InfoLog("shutdown OK!");
                 }
         ));

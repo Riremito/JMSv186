@@ -18,23 +18,18 @@
  */
 package tacos.server.map;
 
+import tacos.server.map.object.TacosMapObject;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
@@ -42,32 +37,25 @@ import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.handling.world.PartyOperation;
 import tacos.odin.OdinEventManager;
-import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import odin.server.life.MapleNPC;
-import odin.server.life.SpawnDispatch;
 import odin.server.maps.MapScriptMethods;
-import odin.server.maps.MapleDoor;
-import odin.server.maps.MapleDynamicPortal;
+import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
 import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
 import odin.server.maps.MapleReactor;
-import odin.server.maps.MapleSummon;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import tacos.client.TacosCharacter;
-import tacos.client.TacosDragon;
-import tacos.client.TacosSkillPet;
+import tacos.server.map.object.TacosDragon;
+import tacos.server.map.object.TacosSkillPet;
 import tacos.constants.TacosConstants;
-import tacos.debug.DebugLogger;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
@@ -90,9 +78,16 @@ import tacos.packet.response.Res_JMS_CInstancePortalPool;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFieldEffect;
+import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.script.TacosScriptEvent;
 import tacos.server.TacosWorld;
+import tacos.server.TacosTask;
+import tacos.server.map.object.TacosDrop.DropEnterType;
+import tacos.server.map.object.TacosDrop.DropLeaveType;
+import tacos.server.map.object.TacosMysticDoor;
+import tacos.server.map.object.TacosPet;
+import tacos.server.map.object.TacosSummon;
 
 /**
  *
@@ -101,168 +96,37 @@ import tacos.server.TacosWorld;
 public class TacosMap extends TacosMapData {
 
     protected int channel;
-    protected Map<MapleMapObjectType, LinkedHashMap<Integer, Object>> mapobjects;
+
     protected int runningOid = 100000;
-    protected List<MapleCharacter> characters = new ArrayList<>();
-    protected List<Object> monsterSpawn = new ArrayList<>();
-    protected AtomicInteger spawnedMonstersOnMap = new AtomicInteger(0);
-    protected long lastSpawnTime = 0;
-    protected boolean isSpawns = true;
-    protected int maxRegularSpawn = 0;
     protected Map<String, Integer> environment = new LinkedHashMap<>();
     protected boolean squadTimer = false;
     protected String squad = "";
     protected ScheduledFuture<?> squadSchedule;
     protected MapleMapEffect mapEffect;
-    // no idea.
-    protected Lock mutex = new ReentrantLock();
-    protected ReentrantReadWriteLock charactersLock = new ReentrantReadWriteLock();
-    protected Map<MapleMapObjectType, ReentrantReadWriteLock> mapobjectlocks;
 
     public TacosMap(int mapid, int channel) {
         super(mapid);
         this.channel = channel;
-
-        EnumMap<MapleMapObjectType, LinkedHashMap<Integer, Object>> objsMap = new EnumMap<>(MapleMapObjectType.class);
-        EnumMap<MapleMapObjectType, ReentrantReadWriteLock> objlockmap = new EnumMap<>(MapleMapObjectType.class);
-        for (MapleMapObjectType type : MapleMapObjectType.values()) {
-            objsMap.put(type, new LinkedHashMap<>());
-            objlockmap.put(type, new ReentrantReadWriteLock());
-        }
-        this.mapobjects = Collections.unmodifiableMap(objsMap);
-        this.mapobjectlocks = Collections.unmodifiableMap(objlockmap);
-    }
-
-    // AbstractMapleMapObjectとAbstractPlayerStoreの統合(フラット化)に伴い、
-    // mapobjectsはObject型で格納されるようになったため、位置/ID/種別の取得はここでinstanceof分岐して行う。
-    // 新しくmapobjectsに格納される型を追加した場合は、この4メソッドにも分岐を追加すること。
-    public static Point dispatchGetPosition(Object o) {
-        if (o instanceof MapleMonster) {
-            return ((MapleMonster) o).getPosition();
-        } else if (o instanceof MapleNPC) {
-            return ((MapleNPC) o).getPosition();
-        } else if (o instanceof MapleSummon) {
-            return ((MapleSummon) o).getPosition();
-        } else if (o instanceof TacosCharacter) {
-            return ((TacosCharacter) o).getPosition();
-        } else if (o instanceof MapleMist) {
-            return ((MapleMist) o).getPosition();
-        } else if (o instanceof MapleDynamicPortal) {
-            return ((MapleDynamicPortal) o).getPosition();
-        } else if (o instanceof MapleMapItem) {
-            return ((MapleMapItem) o).getPosition();
-        } else if (o instanceof MapleReactor) {
-            return ((MapleReactor) o).getPosition();
-        } else if (o instanceof MapleDoor) {
-            return ((MapleDoor) o).getPosition();
-        } else if (o instanceof MapleMiniGame) {
-            return ((MapleMiniGame) o).getPosition();
-        } else if (o instanceof MaplePlayerShop) {
-            return ((MaplePlayerShop) o).getPosition();
-        } else if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getPosition();
-        }
-        throw new IllegalArgumentException("dispatchGetPosition: unknown map object type: " + o);
-    }
-
-    public static int dispatchGetObjectId(Object o) {
-        if (o instanceof MapleMonster) {
-            return ((MapleMonster) o).getObjectId();
-        } else if (o instanceof MapleNPC) {
-            return ((MapleNPC) o).getObjectId();
-        } else if (o instanceof MapleSummon) {
-            return ((MapleSummon) o).getObjectId();
-        } else if (o instanceof TacosCharacter) {
-            return ((TacosCharacter) o).getObjectId();
-        } else if (o instanceof MapleMist) {
-            return ((MapleMist) o).getObjectId();
-        } else if (o instanceof MapleDynamicPortal) {
-            return ((MapleDynamicPortal) o).getObjectId();
-        } else if (o instanceof MapleMapItem) {
-            return ((MapleMapItem) o).getObjectId();
-        } else if (o instanceof MapleReactor) {
-            return ((MapleReactor) o).getObjectId();
-        } else if (o instanceof MapleDoor) {
-            return ((MapleDoor) o).getObjectId();
-        } else if (o instanceof MapleMiniGame) {
-            return ((MapleMiniGame) o).getObjectId();
-        } else if (o instanceof MaplePlayerShop) {
-            return ((MaplePlayerShop) o).getObjectId();
-        } else if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getObjectId();
-        }
-        throw new IllegalArgumentException("dispatchGetObjectId: unknown map object type: " + o);
-    }
-
-    public static void dispatchSetObjectId(Object o, int id) {
-        if (o instanceof MapleMonster) {
-            ((MapleMonster) o).setObjectId(id);
-        } else if (o instanceof MapleNPC) {
-            ((MapleNPC) o).setObjectId(id);
-        } else if (o instanceof MapleSummon) {
-            ((MapleSummon) o).setObjectId(id);
-        } else if (o instanceof TacosCharacter) {
-            ((TacosCharacter) o).setObjectId(id);
-        } else if (o instanceof MapleMist) {
-            ((MapleMist) o).setObjectId(id);
-        } else if (o instanceof MapleDynamicPortal) {
-            ((MapleDynamicPortal) o).setObjectId(id);
-        } else if (o instanceof MapleMapItem) {
-            ((MapleMapItem) o).setObjectId(id);
-        } else if (o instanceof MapleReactor) {
-            ((MapleReactor) o).setObjectId(id);
-        } else if (o instanceof MapleDoor) {
-            ((MapleDoor) o).setObjectId(id);
-        } else if (o instanceof MapleMiniGame) {
-            ((MapleMiniGame) o).setObjectId(id);
-        } else if (o instanceof MaplePlayerShop) {
-            ((MaplePlayerShop) o).setObjectId(id);
-        } else if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).setObjectId(id);
-        } else {
-            throw new IllegalArgumentException("dispatchSetObjectId: unknown map object type: " + o);
-        }
-    }
-
-    public static MapleMapObjectType dispatchGetType(Object o) {
-        if (o instanceof MapleMonster) {
-            return ((MapleMonster) o).getType();
-        } else if (o instanceof MapleNPC) {
-            return ((MapleNPC) o).getType();
-        } else if (o instanceof MapleSummon) {
-            return ((MapleSummon) o).getType();
-        } else if (o instanceof TacosCharacter) {
-            return ((TacosCharacter) o).getType();
-        } else if (o instanceof MapleMist) {
-            return ((MapleMist) o).getType();
-        } else if (o instanceof MapleDynamicPortal) {
-            return ((MapleDynamicPortal) o).getType();
-        } else if (o instanceof MapleMapItem) {
-            return ((MapleMapItem) o).getType();
-        } else if (o instanceof MapleReactor) {
-            return ((MapleReactor) o).getType();
-        } else if (o instanceof MapleDoor) {
-            return ((MapleDoor) o).getType();
-        } else if (o instanceof MapleMiniGame) {
-            return ((MapleMiniGame) o).getType();
-        } else if (o instanceof MaplePlayerShop) {
-            return ((MaplePlayerShop) o).getType();
-        } else if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getType();
-        }
-        throw new IllegalArgumentException("dispatchGetType: unknown map object type: " + o);
+        this.time_created = System.currentTimeMillis();
     }
 
     public int getChannel() {
         return this.channel;
     }
 
-    public void setSpawns(final boolean fm) {
-        this.isSpawns = fm;
+    private long time_created = 0;
+
+    private long getTimeCreated() {
+        return this.time_created;
     }
 
-    public List<Object> getMonsterSpawn() {
-        return this.monsterSpawn;
+    private long getTimer(long time_current) {
+        if (getTimeLimit() <= 0) {
+            return 0;
+        }
+        long timer = getTimeLimit() * 1000;
+        long time_end = getTimeCreated() + timer;
+        return (time_end - time_current) / 1000;
     }
 
     public Map<String, Integer> getEnvironment() {
@@ -288,66 +152,43 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    // object
-    public List<Object> getMapObjects(MapleMapObjectType type) {
-        List<Object> mmos = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(type).values()) {
-            mmos.add(mmo);
+    // player.
+    private LinkedHashMap<Integer, MapleCharacter> players = new LinkedHashMap<>();
+
+    public void addPlayer(MapleCharacter chr) {
+        this.players.put(chr.getObjectId(), chr);
+    }
+
+    public boolean removePlayer(int object_id) {
+        return this.players.remove(object_id) != null;
+    }
+
+    public List<MapleCharacter> getAllPlayers() {
+        ArrayList<MapleCharacter> ret = new ArrayList<>();
+        for (MapleCharacter chr : this.players.values()) {
+            ret.add(chr);
         }
-        return mmos;
+        return ret;
     }
 
-    public Object getMapObject(int oid, MapleMapObjectType type) {
-        return this.mapobjects.get(type).get(oid);
+    public MapleCharacter getPlayerByOid(int object_id) {
+        return this.players.get(object_id);
     }
 
-    public void addMapObject(Object mapobject) {
-        this.runningOid++;
-        dispatchSetObjectId(mapobject, this.runningOid);
-        this.mapobjects.get(dispatchGetType(mapobject)).put(this.runningOid, mapobject);
-    }
-
-    public void spawnRangedMapObject(Object mapobject, ServerPacket packet) {
-        for (MapleCharacter player : this.characters) {
-            if (player.getViewRangeSq() < player.getPosition().distanceSq(dispatchGetPosition(mapobject))) {
-                continue;
+    public MapleCharacter getPlayerById(int id) {
+        for (MapleCharacter player : this.players.values()) {
+            if (player.getId() == id) {
+                return player;
             }
-            // visible object
-            player.addVisibleMapObject(mapobject);
-            // send spawn packet
-            if (packet == null) {
-                continue;
-            }
-            if (mapobject instanceof MapleSummon) {
-                MapleSummon summon = (MapleSummon) mapobject;
-                if (summon.isChangedMap() && summon.getOwnerId() != player.getId()) {
-                    continue;
-                }
-            }
-            if (mapobject instanceof MapleMapItem) {
-                MapleMapItem mitem = (MapleMapItem) mapobject;
-                if (0 < mitem.getQuest() && player.getQuestStatus(mitem.getQuest()) != 1) {
-                    continue;
-                }
-            }
-            player.SendPacket(packet);
         }
+        return null;
     }
 
-    public void removeMapObject(Object obj) {
-        this.mapobjects.get(dispatchGetType(obj)).remove(dispatchGetObjectId(obj));
-    }
-
-    public List<Object> getMapObjectsInRect(Rectangle box, List<MapleMapObjectType> MapObject_types) {
-        List<Object> ret = new ArrayList<>();
-        for (MapleMapObjectType type : MapObject_types) {
-            Iterator<Object> ltr = this.mapobjects.get(type).values().iterator();
-            Object obj;
-            while (ltr.hasNext()) {
-                obj = ltr.next();
-                if (box.contains(dispatchGetPosition(obj))) {
-                    ret.add(obj);
-                }
+    public List<MapleCharacter> getPlayersInRect(Rectangle box) {
+        ArrayList<MapleCharacter> ret = new ArrayList<>();
+        for (MapleCharacter chr : this.players.values()) {
+            if (box.contains(chr.getPosition())) {
+                ret.add(chr);
             }
         }
         return ret;
@@ -355,7 +196,7 @@ public class TacosMap extends TacosMapData {
 
     public List<MapleCharacter> getPlayersInRectAndInList(Rectangle box, List<MapleCharacter> chrList) {
         List<MapleCharacter> character = new LinkedList<>();
-        Iterator<MapleCharacter> ltr = this.characters.iterator();
+        Iterator<MapleCharacter> ltr = this.players.values().iterator();
         MapleCharacter a;
         while (ltr.hasNext()) {
             a = ltr.next();
@@ -366,25 +207,8 @@ public class TacosMap extends TacosMapData {
         return character;
     }
 
-    public List<MapleCharacter> getCharacters() {
-        List<MapleCharacter> chars = new ArrayList<>();
-        for (MapleCharacter mc : this.characters) {
-            chars.add(mc);
-        }
-        return chars;
-    }
-
-    public MapleCharacter getCharacterById(int id) {
-        for (MapleCharacter mc : this.characters) {
-            if (mc.getId() == id) {
-                return mc;
-            }
-        }
-        return null;
-    }
-
     public int getCharactersSize() {
-        return this.characters.size();
+        return this.players.size();
     }
 
     private String fe_change_bgm = "";
@@ -392,7 +216,7 @@ public class TacosMap extends TacosMapData {
     public void setChangeBGM(String wz_path) {
         this.fe_change_bgm = wz_path;
         if (!getChangeBGM().equals("")) {
-            broadcastMessage(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
+            broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
         }
     }
 
@@ -404,31 +228,6 @@ public class TacosMap extends TacosMapData {
         if (!getChangeBGM().equals("")) {
             chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_ChangeBGM, PB_FieldEffect.builder().wz_path(getChangeBGM()).build()));
         }
-    }
-
-    public void SplitSendPacket(int x, int y) {
-        int number = this.map_split.getSplitMap(x, y);
-        int row = number / this.map_split.getCol();
-        int col = number % this.map_split.getCol();
-
-        for (int i = 0; i < this.map_split.getRow(); i++) {
-            if (i < (row - 1) || (row + 1) < i) {
-                continue;
-            }
-            for (int j = 0; j < this.map_split.getCol(); j++) {
-                if (j < (col - 1) || (col + 1) < j) {
-                    continue;
-                }
-            }
-        }
-    }
-
-    public List<Integer> getStateList() {
-        List<Integer> state = new ArrayList<>();
-        for (int i = 0; i < this.map_split.getSplit(); i++) {
-            state.add(0);
-        }
-        return state;
     }
 
     public boolean sendInitialization(MapleCharacter chr) {
@@ -484,11 +283,11 @@ public class TacosMap extends TacosMapData {
         switch (map_id) {
             case TacosConstants.MAP_ID_ZAKUM: {
                 if (boss_id == TacosConstants.MOB_ID_ZAKUM) {
-                    broadcastMessage(ResCField.ZakumTimer(true, 5));
-                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.ZakumTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
                     return true;
                 }
-                broadcastMessage(ResCField.ZakumTimer(false, 5));
+                broadcastPacket(ResCField.ZakumTimer(false, 5));
                 return true;
             }
             case TacosConstants.MAP_ID_HORNTAIL: {
@@ -496,39 +295,39 @@ public class TacosMap extends TacosMapData {
                     // 大変な挑戦の終わりにホンテールを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS164)
                     // 大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！ (JMS302)
                     world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").build()));
-                    broadcastMessage(ResCField.Clock(exit_timer));
-                    broadcastMessage(ResCField.HontaleTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.HontaleTimer(true, 5));
                     return true;
                 }
-                broadcastMessage(ResCField.HontaleTimer(false, 5));
+                broadcastPacket(ResCField.HontaleTimer(false, 5));
                 return true;
             }
             case TacosConstants.MAP_ID_PINKBEAN: {
                 if (boss_id == TacosConstants.MOB_ID_PINKBEAN) {
                     // 不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！ (JMS164-302)
                     world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("不屈の闘志でピンクビーンを退けた遠征隊の諸君！　君たちが真の時間の覇者だ！").build()));
-                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.Clock(exit_timer));
                     return true;
                 }
                 return true;
             }
             case TacosConstants.MAP_ID_CHAOS_ZAKUM: {
                 if (boss_id == TacosConstants.MOB_ID_CHAOS_ZAKUM) {
-                    broadcastMessage(ResCField.ChaosZakumTimer(true, 5));
-                    broadcastMessage(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.ChaosZakumTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
                     return true;
                 }
-                broadcastMessage(ResCField.ChaosZakumTimer(false, 5));
+                broadcastPacket(ResCField.ChaosZakumTimer(false, 5));
                 return true;
             }
             case TacosConstants.MAP_ID_CHAOS_HORNTAIL: {
                 if (boss_id == TacosConstants.MOB_ID_CHAOS_HORNTAIL) {
                     world.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("大変な挑戦の終わりにホーンテイルを撃破した遠征隊よ！貴方達が本当のリプレの英雄だ！").build()));
-                    broadcastMessage(ResCField.Clock(exit_timer));
-                    broadcastMessage(ResCField.HontaleTimer(true, 5));
+                    broadcastPacket(ResCField.Clock(exit_timer));
+                    broadcastPacket(ResCField.HontaleTimer(true, 5));
                     return true;
                 }
-                broadcastMessage(ResCField.HontaleTimer(false, 5));
+                broadcastPacket(ResCField.HontaleTimer(false, 5));
                 return true;
             }
             default: {
@@ -547,9 +346,12 @@ public class TacosMap extends TacosMapData {
     }
 
     public void userEnterField(MapleCharacter chr) {
-        this.characters.add(chr);
-        this.mapobjects.get(MapleMapObjectType.PLAYER).put(chr.getObjectId(), chr); // object id.
+        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition(), MapSplitState.ACTIVE);
 
+        addPlayer(chr); // object id.
+        updateAreaOnEnter(chr.getId(), chr.getPosition().x, chr.getPosition().y);
+
+        checkMasterMonsterTime(chr);
         // no split.
         sendChangeBGM(chr);
         if (!getNodeInfo().getPlatforms().isEmpty()) {
@@ -562,433 +364,352 @@ public class TacosMap extends TacosMapData {
         updateParty(chr);
         sendMapEffect(chr);
         if (0 < getTimeLimit()) {
-            chr.DebugMsg("timeLimit = " + getTimeLimit());
-            if (getForcedReturnMap() != null) {
-                chr.startMapTimeLimitTask(getTimeLimit(), getForcedReturnMap());
-            }
+            chr.SendPacket(ResCField.Clock((int) getTimer(System.currentTimeMillis())));
         }
         sendExpedition(chr, null);
 
-        // split.
-        List<Integer> enter_state = getStateList();
-        int enter_x = chr.getPosition().x;
-        int enter_y = chr.getPosition().y;
-        int enter_number = this.map_split.getSplitMap(enter_x, enter_y);
-        int enter_row = enter_number / this.map_split.getCol();
-        int enter_col = enter_number % this.map_split.getCol();
-        for (int row = 0; row < this.map_split.getRow(); row++) {
-            if (row < (enter_row - 1) || (enter_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
-                if (col < (enter_col - 1) || (enter_col + 1) < col) {
-                    continue;
-                }
-                enter_state.set((row * this.map_split.getCol()) + col, 1);
-            }
-        }
-
-        for (MapleCharacter player : this.characters) {
+        for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
-            if (this.map_split.getSplit() < player_number) {
+            int player_number = split.find(player.getPosition());
+            if (split.getTotal() <= player_number) {
                 continue;
             }
-            int player_state = enter_state.get(player_number);
-            if ((player_state & 1) != 0) {
+            if (area_states.get(player_number) == MapSplitState.ACTIVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
             }
         }
         // mob
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
-            MapleMonster mob = (MapleMonster) mmo;
-            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (MapleMonster monster : this.monsters.values()) {
+            chr.SendPacket(ResCMobPool.MobEnterField(monster));
+
+            int number = split.find(monster.getPosition().x, monster.getPosition().y);
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCMobPool.MobEnterField(mob));
-                if (mob.getController() == null || mob.getController() == chr) {
-                    mob.setController(chr);
-                    chr.SendPacket(ResCMobPool.MobChangeController(mob, mob.isFirstAttack()));
-                    chr.controlMonster(mob, mob.isFirstAttack());
-                    mob.setControllerHasAggro(mob.isFirstAttack());
-                    mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
+                if (monster.getOwnerId() == 0) {
+                    monster.setOwnerId(chr.getId());
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
             }
         }
         // npc
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
-            MapleNPC npc = (MapleNPC) mmo;
-            int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (MapleNPC npc : this.npcs.values()) {
+            int number = split.find(npc.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
-                //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
+                chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
             }
         }
         // hired merchant
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
-            HiredMerchant employee = (HiredMerchant) mmo;
-            int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
-            if (this.map_split.getSplit() < number) {
-                continue;
-            }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
-            }
+        for (HiredMerchant employee : this.merchants.values()) {
+            chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
         }
         // drop
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
-            MapleMapItem drop = (MapleMapItem) mmo;
+        for (MapleMapItem drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuest();
+            int quest_id = drop.getQuestId();
             if (0 < quest_id) {
                 if (chr.getQuestStatus(quest_id) != 1) {
                     continue;
                 }
             }
-            int number = this.map_split.getSplitMap(drop.getPosition().x, drop.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = split.find(drop.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, DropEnterType.SILENT, drop.getPosition()));
             }
         }
         // mist
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
-            MapleMist mist = (MapleMist) mmo;
-            int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (MapleMist mist : this.mists.values()) {
+            int number = split.find(mist.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
             }
         }
         // mystic door
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
-            MapleDoor door = (MapleDoor) mmo;
-            int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
-            if (this.map_split.getSplit() < number) {
-                continue;
-            }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door.getLink(), false));
-            }
+        for (TacosMysticDoor door : this.doors.values()) {
+            chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door));
         }
         // mechanic gate
         // pinkbean cake event portal
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal instance_portal = (MapleDynamicPortal) mmo;
-            int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (TacosDynamicPortal instance_portal : this.dynamicPortals.values()) {
+            int number = split.find(instance_portal.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == MapSplitState.ACTIVE) {
                 chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
             }
         }
         // reactor
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            MapleReactor reactor = (MapleReactor) mmo;
-            int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
-            if (this.map_split.getSplit() < number) {
-                continue;
-            }
-            int state = enter_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
-            }
+        for (MapleReactor reactor : this.reactors.values()) {
+            chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
         }
     }
 
     public void userLeaveField(MapleCharacter chr) {
-        this.characters.remove(chr);
-        removeMapObject(chr);
+        ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition(), MapSplitState.ACTIVE);
+        removePlayer(chr.getObjectId());
+        updateAreaOnLeave(chr.getId(), chr.getPosition().x, chr.getPosition().y);
 
-        List<Integer> leave_state = getStateList();
-        int leave_x = chr.getPosition().x;
-        int leave_y = chr.getPosition().y;
-        int leave_number = this.map_split.getSplitMap(leave_x, leave_y);
-        int leave_row = leave_number / this.map_split.getCol();
-        int leave_col = leave_number % this.map_split.getCol();
-        for (int row = 0; row < this.map_split.getRow(); row++) {
-            if (row < (leave_row - 1) || (leave_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
-                if (col < (leave_col - 1) || (leave_col + 1) < col) {
-                    continue;
-                }
-                leave_state.set((row * this.map_split.getCol()) + col, 4);
-            }
-        }
-
-        for (MapleCharacter player : this.characters) {
+        for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
-            if (this.map_split.getSplit() < player_number) {
+            int player_number = split.find(player.getPosition());
+            if (split.getTotal() <= player_number) {
                 continue;
             }
-            int player_state = leave_state.get(player_number);
-            if ((player_state & 4) != 0) {
+            if (area_states.get(player_number) == MapSplitState.ACTIVE) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr));
             }
         }
         // mob
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
-            MapleMonster mob = (MapleMonster) mmo;
-            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
-            if (this.map_split.getSplit() < number) {
-                continue;
-            }
-            int state = leave_state.get(number);
-            if ((state & 4) != 0) {
-                if (mob.getController() == chr) {
-                    mob.setController(null);
-                    mob.setControllerHasAggro(false);
-                    mob.setControllerKnowsAboutAggro(false);
-                    updateMonsterController(mob);
+        for (MapleMonster monster : this.monsters.values()) {
+            if (monster.getOwnerId() == chr.getId()) {
+                int next_owner_id = getAreaOwnerIds().get(split.find(monster.getPosition()));
+                monster.setOwnerId(next_owner_id);
+                MapleCharacter area_owner = getPlayerByOid(next_owner_id);
+                if (area_owner != null) {
+                    area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
             }
         }
+
+        linkedObjectLeaveField(chr);
     }
 
     public void userMove(MapleCharacter chr, ParseCMovePath move_path) {
-        List<Integer> move_state = getStateList();
-        int prev_x = chr.getPosition().x;
-        int prev_y = chr.getPosition().y;
-        int next_x = move_path.getX();
-        int next_y = move_path.getY();
+        ArrayList<MapSplitState> area_states = split.getMoveArea(chr.getPosition().x, chr.getPosition().y, move_path.getX(), move_path.getY());
+        updateAreaOnMove(chr.getId(), chr.getPosition().x, chr.getPosition().y, move_path.getX(), move_path.getY());
 
-        int prev_number = this.map_split.getSplitMap(prev_x, prev_y);
-        int prev_row = prev_number / this.map_split.getCol();
-        int prev_col = prev_number % this.map_split.getCol();
-        // move & leave
-        for (int row = 0; row < this.map_split.getRow(); row++) {
-            if (row < (prev_row - 1) || (prev_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
-                if (col < (prev_col - 1) || (prev_col + 1) < col) {
-                    continue;
-                }
-                move_state.set((row * this.map_split.getCol()) + col, 2 | 4); // 2 = move, 4 = leave
-            }
-        }
-        // enter & move
-        int next_number = this.map_split.getSplitMap(next_x, next_y);
-        int next_row = next_number / this.map_split.getCol();
-        int next_col = next_number % this.map_split.getCol();
-        for (int row = 0; row < this.map_split.getRow(); row++) {
-            if (row < (next_row - 1) || (next_row + 1) < row) {
-                continue;
-            }
-            for (int col = 0; col < this.map_split.getCol(); col++) {
-                if (col < (next_col - 1) || (next_col + 1) < col) {
-                    continue;
-                }
-                if (move_state.get((row * this.map_split.getCol()) + col) != 0) {
-                    move_state.set((row * this.map_split.getCol()) + col, 2); // 2 = move
-                } else {
-                    move_state.set((row * this.map_split.getCol()) + col, 1 | 2); // 1 = enter, 2 = move
-                }
-            }
-        }
-        for (MapleCharacter player : this.characters) {
+        for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
             }
-            int player_number = this.map_split.getSplitMap(player.getPosition().x, player.getPosition().y);
-            if (this.map_split.getSplit() < player_number) {
+            int player_number = split.find(player.getPosition());
+            if (split.getTotal() <= player_number) {
                 continue;
             }
-            int player_state = move_state.get(player_number);
-            if ((player_state & 1) != 0) {
+            if (area_states.get(player_number) == MapSplitState.ENTER_MOVE) {
                 player.SendPacket(ResCUserPool.UserEnterField(chr));
+                for (TacosPet pet : chr.getPets()) {
+                    player.SendPacket(ResCUser_Pet.TransferField(chr, pet));
+                }
+                for (TacosSummon summon : chr.getSummons()) {
+                    player.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
+                }
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
+                for (TacosPet pet : player.getPets()) {
+                    chr.SendPacket(ResCUser_Pet.TransferField(player, pet));
+                }
+                for (TacosSummon summon : player.getSummons()) {
+                    chr.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
+                }
             }
-            if ((player_state & 2) != 0) {
+            if (area_states.get(player_number) == MapSplitState.MOVE) {
                 player.SendPacket(ResCUserRemote.UserMove(chr, move_path));
             }
-            if ((player_state & 4) != 0) {
+            if (area_states.get(player_number) == MapSplitState.MOVE_LEAVE) {
                 player.SendPacket(ResCUserPool.UserLeaveField(chr));
                 chr.SendPacket(ResCUserPool.UserLeaveField(player));
             }
         }
         // mob
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
-            MapleMonster mob = (MapleMonster) mmo;
-            int number = this.map_split.getSplitMap(mob.getPosition().x, mob.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (MapleMonster monster : this.monsters.values()) {
+            int number = split.find(monster.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = move_state.get(number);
-
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCMobPool.MobEnterField(mob));
-                if (mob.getController() == null || mob.getController() == chr) {
-                    mob.setController(chr);
-                    chr.SendPacket(ResCMobPool.MobChangeController(mob, mob.isFirstAttack()));
-                    chr.controlMonster(mob, mob.isFirstAttack());
-                    mob.setControllerHasAggro(mob.isFirstAttack());
-                    mob.setControllerKnowsAboutAggro(mob.isFirstAttack());
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
+                if (monster.getOwnerId() == 0) {
+                    monster.setOwnerId(chr.getId());
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
             }
-            if ((state & 4) != 0) {
-                chr.SendPacket(ResCMobPool.MobLeaveField(mob, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
+                if (monster.getOwnerId() == chr.getId()) {
+                    monster.setOwnerId(0);
+                    chr.SendPacket(ResCMobPool.MobChangeController(monster, 0));
+                    MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+                    if (area_owner != null) {
+                        monster.setOwnerId(area_owner.getId());
+                        area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                    }
+                }
             }
         }
         // npc
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
-            MapleNPC npc = (MapleNPC) mmo;
-            int number = this.map_split.getSplitMap(npc.getPosition().x, npc.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (MapleNPC npc : this.npcs.values()) {
+            int number = split.find(npc.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCNpcPool.NpcEnterField(npc, true));
-                //chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true, true));
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
+                chr.SendPacket(ResCNpcPool.NpcEnterField(npc));
+                chr.SendPacket(ResCNpcPool.NpcChangeController(npc, true));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCNpcPool.NpcLeaveField(npc));
             }
         }
         // hired merchant
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
-            HiredMerchant employee = (HiredMerchant) mmo;
-            int number = this.map_split.getSplitMap(employee.getPosition().x, employee.getPosition().y);
-            if (this.map_split.getSplit() < number) {
-                continue;
-            }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
-            }
-            if ((state & 4) != 0) {
-                chr.SendPacket(ResCEmployeePool.EmployeeLeaveField(employee));
-            }
+        for (HiredMerchant employee : this.merchants.values()) {
+            // none.
         }
         // drop
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
-            MapleMapItem drop = (MapleMapItem) mmo;
+        for (MapleMapItem drop : this.drops.values()) {
             // quest item.
-            int quest_id = drop.getQuest();
+            int quest_id = drop.getQuestId();
             if (0 < quest_id) {
                 if (chr.getQuestStatus(quest_id) != 1) {
                     continue;
                 }
             }
-            int number = this.map_split.getSplitMap(drop.getPosition().x, drop.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+            int number = split.find(drop.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCDropPool.DropEnterField(drop, ResCDropPool.EnterType.NO_ANIMATION, drop.getPosition()));
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
+                chr.SendPacket(ResCDropPool.DropEnterField(drop, DropEnterType.SILENT, drop.getPosition()));
             }
-            if ((state & 4) != 0) {
-                chr.SendPacket(ResCDropPool.DropLeaveField(drop, ResCDropPool.LeaveType.NO_ANIMATION));
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
+                chr.SendPacket(ResCDropPool.DropLeaveField(drop, DropLeaveType.REMOVE));
             }
         }
         // mist
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MIST).values()) {
-            MapleMist mist = (MapleMist) mmo;
-            int number = this.map_split.getSplitMap(mist.getPosition().x, mist.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (MapleMist mist : this.mists.values()) {
+            int number = split.find(mist.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(mist));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
                 chr.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(mist));
             }
         }
         // mystic door
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
-            MapleDoor door = (MapleDoor) mmo;
-            int number = this.map_split.getSplitMap(door.getPosition().x, door.getPosition().y);
-            if (this.map_split.getSplit() < number) {
-                continue;
-            }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
-            }
-            if ((state & 4) != 0) {
-                chr.SendPacket(ResCTownPortalPool.TownPortalRemoved(door));
-            }
+        for (TacosMysticDoor door : this.doors.values()) {
+            // none.
         }
         // mechanic gate
         // pinkbean cake event portal
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal instance_portal = (MapleDynamicPortal) mmo;
-            int number = this.map_split.getSplitMap(instance_portal.getPosition().x, instance_portal.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (TacosDynamicPortal instance_portal : this.dynamicPortals.values()) {
+            int number = split.find(instance_portal.getPosition());
+            if (split.getTotal() <= number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
+            if (area_states.get(number) == MapSplitState.ENTER_MOVE) {
                 chr.SendPacket(Res_JMS_CInstancePortalPool.InstancePortalCreated(instance_portal));
             }
-            if ((state & 4) != 0) {
+            if (area_states.get(number) == MapSplitState.MOVE_LEAVE) {
             }
         }
         // reactor
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            MapleReactor reactor = (MapleReactor) mmo;
-            int number = this.map_split.getSplitMap(reactor.getPosition().x, reactor.getPosition().y);
-            if (this.map_split.getSplit() < number) {
+        for (MapleReactor reactor : this.reactors.values()) {
+            // none.
+        }
+    }
+
+    public void sendText(String text) {
+        broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    public void sendPinkText(String text) {
+        broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    public void sendYellowText(String text) {
+        broadcastPacket(ResCWvsContext.SetWeekEventMessage(text));
+    }
+
+    // to all.
+    public void broadcastPacket(ServerPacket packet) {
+        for (MapleCharacter player : getAllPlayers()) {
+            player.SendPacket(packet);
+        }
+    }
+
+    // to remote users.
+    public void broadcastPacket(ServerPacket packet, int sender_id) {
+        for (MapleCharacter player : getAllPlayers()) {
+            if (player.getId() != sender_id) {
+                player.SendPacket(packet);
+            }
+        }
+    }
+
+    public void splitSendPacket(TacosMapObject object, ServerPacket packet) {
+        splitSendPacket(object, packet, 0);
+    }
+
+    public void splitSendPacket(TacosMapObject object, ServerPacket packet, int sender_id) {
+        ArrayList<MapSplitState> area_states = split.getArea(object.getPosition(), MapSplitState.ACTIVE);
+
+        for (MapleCharacter player : this.players.values()) {
+            int player_number = split.find(player.getPosition());
+            if (split.getTotal() <= player_number) {
                 continue;
             }
-            int state = move_state.get(number);
-            if ((state & 1) != 0) {
-                chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
+            // ignore self
+            if (player.getId() == sender_id) {
+                continue;
             }
-            if ((state & 4) != 0) {
-                chr.SendPacket(ResCReactorPool.ReactorLeaveField(reactor));
+            if (area_states.get(player_number) == MapSplitState.ACTIVE) {
+                player.SendPacket(packet);
             }
         }
     }
 
     public void linkedObjectEnterField(TacosCharacter chr) {
+        // pet.
+        for (TacosPet pet : chr.getPets()) {
+            splitSendPacket(chr, ResCUser_Pet.TransferField(chr, pet));
+        }
+        // summon.
+        for (TacosSummon summon : chr.getSummons()) {
+            splitSendPacket(chr, ResCSummonedPool.SummonedEnterField(summon, false));
+        }
         // evan dragon
         TacosDragon dragon = chr.getDragon();
         if (dragon != null) {
             dragon.reset(chr);
-            broadcastMessage(ResCUser_Dragon.DragonEnterField(dragon));
+            splitSendPacket(chr, ResCUser_Dragon.DragonEnterField(dragon));
         }
         // kanna fox
         TacosSkillPet skill_pet = chr.getSkillPet();
         if (skill_pet != null) {
             skill_pet.reset(chr);
-            broadcastMessage(ResCUser_SkillPet.SkillPetTransferField(skill_pet));
+            splitSendPacket(chr, ResCUser_SkillPet.SkillPetTransferField(skill_pet));
         }
     }
 
     public void linkedObjectLeaveField(TacosCharacter chr) {
+        // pet.
+        for (TacosPet pet : chr.getPets()) {
+            removePet(pet);
+        }
+        // summon.
+        for (TacosSummon summon : chr.getSummons()) {
+            removeSummon(summon);
+        }
         // evan dragon
         TacosDragon dragon = chr.getDragon();
         if (dragon != null) {
@@ -1001,136 +722,242 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public MapleSummon getSummonByOid(int oid) {
-        Object mmo = getMapObject(oid, MapleMapObjectType.SUMMON);
-        if (mmo == null) {
-            return null;
+    private ArrayList<Integer> area_owner_ids = null;
+
+    public ArrayList<Integer> getAreaOwnerIds() {
+        if (this.area_owner_ids == null) {
+            this.area_owner_ids = new ArrayList<>(Collections.nCopies(split.getTotal(), 0));
         }
-        return (MapleSummon) mmo;
+        return this.area_owner_ids;
     }
 
-    public void spawnSummon(MapleSummon summon) {
-        addMapObject(summon);
-        spawnRangedMapObject(summon, ResCSummonedPool.SummonedEnterField(summon, true));
+    public void updateAreaOnEnter(int owner_id, int x, int y) {
+        ArrayList<MapSplitState> area_states = split.getArea(x, y, MapSplitState.ACTIVE);
+        for (int index = 0; index < area_states.size(); index++) {
+            if (area_states.get(index) == MapSplitState.ACTIVE) {
+                if (getAreaOwnerIds().get(index) == 0) {
+                    getAreaOwnerIds().set(index, owner_id);
+                    continue;
+                }
+            }
+        }
     }
 
-    public List<MapleMonster> getAllMonsters() {
-        ArrayList<MapleMonster> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.MONSTER).values()) {
-            ret.add((MapleMonster) mmo);
+    public void updateAreaOnLeave(int owner_id, int x, int y) {
+        ArrayList<MapSplitState> area_states = split.getArea(x, y, MapSplitState.ACTIVE);
+        for (int index = 0; index < area_states.size(); index++) {
+            if (area_states.get(index) == MapSplitState.ACTIVE) {
+                if (getAreaOwnerIds().get(index) == owner_id) {
+                    // next user.
+                    int next_owner_id = getNextAreaOwnerId(owner_id, index);
+                    getAreaOwnerIds().set(index, next_owner_id);
+                    continue;
+                }
+            }
+        }
+    }
+
+    public void updateAreaOnMove(int owner_id, int prev_x, int prev_y, int next_x, int next_y) {
+        ArrayList<MapSplitState> area_states = split.getMoveArea(prev_x, prev_y, next_x, next_y);
+        for (int index = 0; index < area_states.size(); index++) {
+            if (area_states.get(index) == MapSplitState.ENTER_MOVE) {
+                if (getAreaOwnerIds().get(index) == 0) {
+                    getAreaOwnerIds().set(index, owner_id);
+                    continue;
+                }
+            }
+            if (area_states.get(index) == MapSplitState.MOVE_LEAVE) {
+                if (getAreaOwnerIds().get(index) == owner_id) {
+                    // next user.
+                    int next_owner_id = getNextAreaOwnerId(owner_id, index);
+                    getAreaOwnerIds().set(index, next_owner_id);
+                    continue;
+                }
+            }
+        }
+    }
+
+    public int getNextAreaOwnerId(int owner_id, int index) {
+        for (MapleCharacter player : getAllPlayers()) {
+            if (player.getId() == owner_id) {
+                continue;
+            }
+            ArrayList<MapSplitState> area_states = split.getArea(player.getPosition().x, player.getPosition().y, MapSplitState.ACTIVE);
+            if (area_states.get(index) == MapSplitState.ACTIVE) {
+                return player.getId();
+            }
+        }
+        return 0;
+    }
+
+    // pet.
+    private LinkedHashMap<Integer, TacosPet> pets = new LinkedHashMap<>();
+
+    public void addPet(TacosPet pet) {
+        if (pet.getObjectId() == 0) {
+            pet.setObjectId();
+        }
+        this.pets.put(pet.getObjectId(), pet);
+    }
+
+    public void removePet(TacosPet pet) {
+        this.pets.remove(pet.getObjectId());
+    }
+
+    public List<TacosPet> getAllPets() {
+        ArrayList<TacosPet> ret = new ArrayList<>();
+        for (TacosPet pet : this.pets.values()) {
+            ret.add(pet);
         }
         return ret;
     }
 
-    public MapleMonster getMonsterById(int id) {
-        MapleMonster ret = null;
-        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
-        while (itr.hasNext()) {
-            MapleMonster n = (MapleMonster) itr.next();
-            if (n.getId() == id) {
-                ret = n;
-                break;
+    public TacosPet getPetByOid(int object_id) {
+        return this.pets.get(object_id);
+    }
+
+    // summon.
+    private LinkedHashMap<Integer, TacosSummon> summons = new LinkedHashMap<>();
+
+    public void addSummon(TacosSummon summon) {
+        if (summon.getObjectId() == 0) {
+            summon.setObjectId();
+        }
+        this.summons.put(summon.getObjectId(), summon);
+        broadcastPacket(ResCSummonedPool.SummonedEnterField(summon, true));
+    }
+
+    public void removeSummon(TacosSummon summon) {
+        this.summons.remove(summon.getObjectId());
+        broadcastPacket(ResCSummonedPool.SummonedLeaveField(summon, true));
+    }
+
+    public List<TacosSummon> getAllSummons() {
+        ArrayList<TacosSummon> ret = new ArrayList<>();
+        for (TacosSummon summon : this.summons.values()) {
+            ret.add(summon);
+        }
+        return ret;
+    }
+
+    public TacosSummon getSummonByOid(int object_id) {
+        return this.summons.get(object_id);
+    }
+
+    // monster.
+    private LinkedHashMap<Integer, MapleMonster> monsters = new LinkedHashMap<>();
+
+    public MapleMonster getMonsterByOid(int object_id) {
+        return this.monsters.get(object_id);
+    }
+
+    public List<MapleMonster> getAllMonsters() {
+        ArrayList<MapleMonster> ret = new ArrayList<>();
+        for (MapleMonster monster : this.monsters.values()) {
+            ret.add(monster);
+        }
+        return ret;
+    }
+
+    public List<MapleMonster> getMonstersInRect(Rectangle box) {
+        ArrayList<MapleMonster> ret = new ArrayList<>();
+        for (MapleMonster monster : this.monsters.values()) {
+            if (box.contains(monster.getPosition())) {
+                ret.add(monster);
             }
         }
         return ret;
     }
 
+    public void addMonster(MapleMonster monster) {
+        if (monster.getObjectId() == 0) {
+            monster.setObjectId();
+        }
+        this.monsters.put(monster.getObjectId(), monster);
+    }
+
+    public boolean removeMonster(int object_id) {
+        this.monsters.remove(object_id);
+        // remove from spawn point.
+        for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
+            MapleMonster monster = sp.getMonster();
+            if (monster != null) {
+                if (monster.getObjectId() == object_id) {
+                    sp.removeMonster();
+                    return true;
+                }
+            }
+        }
+        // remove from boss spawn point.
+        for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
+            MapleMonster monster = bsp.getMonster();
+            if (monster != null) {
+                if (monster.getObjectId() == object_id) {
+                    bsp.removeMonster(this);
+                    return true;
+                }
+            }
+        }
+        // no spwan point.
+        return true;
+    }
+
+    // script.
+    public void setSpawns(boolean spawns) {
+    }
+
+    public MapleMonster getMonsterById(int id) {
+        for (MapleMonster monster : this.monsters.values()) {
+            if (monster.getId() == id) {
+                return monster;
+            }
+        }
+        return null;
+    }
+
     public int countMonsterById(int id) {
         int ret = 0;
-        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.MONSTER).values().iterator();
-        while (itr.hasNext()) {
-            MapleMonster n = (MapleMonster) itr.next();
-            if (n.getId() == id) {
+        for (MapleMonster monster : this.monsters.values()) {
+            if (monster.getId() == id) {
                 ret++;
             }
         }
         return ret;
     }
 
-    public MapleMonster getMonsterByOid(int oid) {
-        Object mmo = getMapObject(oid, MapleMapObjectType.MONSTER);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleMonster) mmo;
-    }
-
     public int getNumMonsters() {
-        return mapobjects.get(MapleMapObjectType.MONSTER).size();
+        return this.monsters.size();
     }
 
     public int getSpawnedMonstersOnMap() {
-        return this.spawnedMonstersOnMap.get();
-    }
-
-    public boolean updateMonsterController(MapleMonster monster) {
-        if (!monster.isAlive()) {
-            return false;
-        }
-
-        if (monster.getController() != null) {
-            if (monster.getController().getMap() != this) {
-                monster.getController().stopControllingMonster(monster);
-            } else { // Everything is fine :)
-                return false;
-            }
-        }
-
-        int mincontrolled = -1;
-        MapleCharacter newController = null;
-
-        Iterator<MapleCharacter> ltr = this.characters.iterator();
-        MapleCharacter chr;
-        while (ltr.hasNext()) {
-            chr = ltr.next();
-            if ((chr.getControlledSize() < mincontrolled || mincontrolled == -1)) {
-                mincontrolled = chr.getControlledSize();
-                newController = chr;
-            }
-        }
-        if (newController != null) {
-            if (monster.isFirstAttack()) {
-                newController.controlMonster(monster, true);
-                monster.setControllerHasAggro(true);
-                monster.setControllerKnowsAboutAggro(true);
-            } else {
-                newController.controlMonster(monster, false);
-            }
-        }
-
-        return true;
+        return this.monsters.size();
     }
 
     public void removeMonster(MapleMonster monster) {
-        this.spawnedMonstersOnMap.decrementAndGet();
-        broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
-        removeMapObject(monster);
+        removeMonster(monster.getObjectId());
+        broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
     }
 
     public void killMonster(MapleMonster monster) {
-        this.spawnedMonstersOnMap.decrementAndGet();
         monster.setHp(0);
         monster.spawnRevives();
-        broadcastMessage(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
-        removeMapObject(monster);
+        removeMonster(monster.getObjectId());
+        broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
     }
 
     public void killAllMonsters(boolean animate) {
-        for (Object monstermo : getAllMonsters()) {
-            MapleMonster monster = (MapleMonster) monstermo;
-            this.spawnedMonstersOnMap.decrementAndGet();
+        for (MapleMonster monster : getAllMonsters()) {
             monster.setHp(0);
-            broadcastMessage(ResCMobPool.MobLeaveField(monster, animate ? OpsMobLeaveField.MOBLEAVEFIELD_ETC : OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
-            removeMapObject(monster);
+            removeMonster(monster.getObjectId());
+            broadcastPacket(ResCMobPool.MobLeaveField(monster, animate ? OpsMobLeaveField.MOBLEAVEFIELD_ETC : OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
         }
     }
 
     public boolean killMonster(int monsId) {
-        for (Object mmo : getAllMonsters()) {
-            if (((MapleMonster) mmo).getId() == monsId) {
-                this.spawnedMonstersOnMap.decrementAndGet();
-                removeMapObject(mmo);
-                broadcastMessage(ResCMobPool.MobLeaveField((MapleMonster) mmo, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
+        for (MapleMonster monster : getAllMonsters()) {
+            if (monster.getId() == monsId) {
+                removeMonster(monster.getObjectId());
+                broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
                 return true;
             }
         }
@@ -1142,166 +969,341 @@ public class TacosMap extends TacosMapData {
 
         if (ra > 0) {
             MapTimer.getInstance().schedule(() -> {
-                if (monster == getMapObject(monster.getObjectId(), monster.getType())) {
+                if (monster == getMonsterByOid(monster.getObjectId())) {
                     killMonster(monster);
                 }
             }, ra * 1000);
         }
     }
 
+    public boolean setMobOwner(MapleMonster monster) {
+        if (monster.getOwnerId() != 0) {
+            return false;
+        }
+        MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(split.find(monster.getPosition().x, monster.getPosition().y)));
+        if (area_owner != null) {
+            monster.setOwnerId(area_owner.getId());
+            area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+            return true;
+        }
+        return false;
+    }
+
     public void spawnRevives(MapleMonster monster, int oid) {
         checkRemoveAfter(monster);
-        monster.setLinkOid(oid);
+        monster.setSummonOption(oid);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REVIVED);
-        addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
+        addMonster(monster);
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
-        this.spawnedMonstersOnMap.incrementAndGet();
+        setMobOwner(monster);
     }
 
     public void spawnMonster(MapleMonster monster, int spawnType) {
         OpsMobAppear ops_at = OpsMobAppear.find(spawnType);
 
         checkRemoveAfter(monster);
-        addMapObject(monster);
+        addMonster(monster);
         monster.setAT(ops_at != OpsMobAppear.UNKNOWN ? ops_at : OpsMobAppear.MOBAPPEAR_EFFECT);
         monster.setATEx(spawnType);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
-        this.spawnedMonstersOnMap.incrementAndGet();
+        setMobOwner(monster);
     }
 
     public int spawnMonsterWithEffect(MapleMonster monster, int effect, Point pos) {
         monster.setPosition(pos);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
-        addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
+        addMonster(monster);
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
         monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
-        this.spawnedMonstersOnMap.incrementAndGet();
+        setMobOwner(monster);
         return monster.getObjectId();
     }
 
     public void spawnFakeMonster(MapleMonster monster) {
         monster.setFake(true);
         monster.setAT(OpsMobAppear.MOBAPPEAR_SUSPENDED);
-        addMapObject(monster);
-        spawnRangedMapObject(monster, ResCMobPool.MobEnterField(monster));
-        updateMonsterController(monster);
-        this.spawnedMonstersOnMap.incrementAndGet();
+        addMonster(monster);
+        broadcastPacket(ResCMobPool.MobEnterField(monster));
+        setMobOwner(monster);
+    }
+
+    // master monster.
+    private final ArrayList<TacosBossSpawnPoint> boss_spawn_point = new ArrayList<>();
+
+    public ArrayList<TacosBossSpawnPoint> getBossSpawnPoint() {
+        return this.boss_spawn_point;
+    }
+
+    public void addMasterMonster() {
+        TacosBossSpawnPoint bsp = TacosBossSpawnPoint.getMasterMonster((MapleMap) this);
+        if (bsp != null) {
+            getBossSpawnPoint().add(bsp);
+        }
+    }
+
+    private boolean checkMasterMonsterTime(TacosCharacter chr) {
+        if (getBossSpawnPoint().isEmpty()) {
+            return false;
+        }
+        TacosBossSpawnPoint bsp = getBossSpawnPoint().get(0);
+        if (bsp == null) {
+            return false;
+        }
+        if (bsp.getMonster() != null) {
+            return false;
+        }
+
+        long next_time = 0;
+        long current_time = System.currentTimeMillis();
+        if (bsp.getLastRegenTime() != 0) {
+            next_time = bsp.getLastRegenTime() + bsp.getMobTime();
+            if (current_time < next_time) {
+                next_time -= current_time;
+            } else {
+                next_time = 0;
+            }
+        }
+
+        chr.DebugMsg("Master Monster : " + String.format("%.1f", (double) next_time / 1000 / 60) + " minutes.");
+        return true;
+    }
+
+    // npc.
+    private LinkedHashMap<Integer, MapleNPC> npcs = new LinkedHashMap<>();
+
+    public void addNPC(MapleNPC npc) {
+        if (npc.getObjectId() == 0) {
+            npc.setObjectId();
+        }
+        this.npcs.put(npc.getObjectId(), npc);
+        broadcastPacket(ResCNpcPool.NpcEnterField(npc));
+    }
+
+    public boolean removeNPC(MapleNPC npc) {
+        this.npcs.remove(npc.getObjectId());
+        broadcastPacket(ResCNpcPool.NpcLeaveField(npc));
+        // remove from spawn point.
+        for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
+            MapleNPC npc_sp = sp.getNPC();
+            if (npc_sp != null) {
+                if (npc_sp.getObjectId() == npc.getObjectId()) {
+                    sp.removeNPC();
+                    return true;
+                }
+            }
+        }
+        // no spwan point.
+        return true;
     }
 
     public List<MapleNPC> getAllNPCs() {
         ArrayList<MapleNPC> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.NPC).values()) {
-            ret.add((MapleNPC) mmo);
+        for (MapleNPC npc : this.npcs.values()) {
+            ret.add(npc);
         }
         return ret;
     }
 
-    public boolean containsNPC(int npcid) {
-        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-        while (itr.hasNext()) {
-            MapleNPC n = (MapleNPC) itr.next();
-            if (n.getId() == npcid) {
+    public boolean containsNPC(int npc_id) {
+        for (MapleNPC npc : this.npcs.values()) {
+            if (npc.getId() == npc_id) {
                 return true;
             }
         }
         return false;
     }
 
-    public MapleNPC getNPCById(int id) {
-        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-        while (itr.hasNext()) {
-            MapleNPC n = (MapleNPC) itr.next();
-            if (n.getId() == id) {
-                return n;
+    public MapleNPC getNPCById(int npc_id) {
+        for (MapleNPC npc : this.npcs.values()) {
+            if (npc.getId() == npc_id) {
+                return npc;
             }
         }
         return null;
     }
 
-    public MapleNPC getNPCByOid(int oid) {
-        Object mmo = getMapObject(oid, MapleMapObjectType.NPC);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleNPC) mmo;
+    public MapleNPC getNPCByOid(int object_id) {
+        return this.npcs.get(object_id);
     }
 
-    public void spawnNpc(int id, Point pos) {
-        MapleNPC npc = MapleLifeFactory.getNPC(id);
+    // used by script.
+    public void spawnNpc(int npc_id, Point pos) {
+        MapleNPC npc = new MapleNPC(npc_id);
         npc.setPosition(pos);
         npc.setCy(pos.y);
         npc.setRx0(pos.x + 50);
         npc.setRx1(pos.x - 50);
-        npc.setFh(getFootholds().findBelow(pos).getId());
-        npc.setCustom(true);
-        addMapObject(npc);
-        broadcastMessage(ResCNpcPool.NpcEnterField(npc, true));
+        npc.setFootholdId(findBelow(pos).getId());
+        addNPC(npc);
     }
 
-    public void removeNpc(int npcid) {
-        Iterator<Object> itr = mapobjects.get(MapleMapObjectType.NPC).values().iterator();
-        while (itr.hasNext()) {
-            MapleNPC npc = (MapleNPC) itr.next();
-            if (npc.isCustom() && npc.getId() == npcid) {
-                broadcastMessage(ResCNpcPool.NpcLeaveField(npc));
-                itr.remove();
-            }
+    public boolean removeNPCById(int npc_id) {
+        MapleNPC npc = getNPCById(npc_id);
+        if (npc == null) {
+            return false;
         }
+
+        removeNPC(npc);
+        return true;
     }
 
-    public List<Object> getAllHiredMerchants() {
-        ArrayList<Object> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
-            ret.add(mmo);
+    // mist.
+    private LinkedHashMap<Integer, MapleMist> mists = new LinkedHashMap<>();
+
+    public void addMist(MapleMist mist) {
+        if (mist.getObjectId() == 0) {
+            mist.setObjectId();
+        }
+        this.mists.put(mist.getObjectId(), mist);
+        splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaCreated(mist));
+    }
+
+    public boolean removeMist(MapleMist mist) {
+        this.mists.remove(mist.getObjectId());
+        splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaRemoved(mist));
+        return true;
+    }
+
+    public List<MapleMist> getAllMists() {
+        ArrayList<MapleMist> ret = new ArrayList<>();
+        for (MapleMist mist : this.mists.values()) {
+            ret.add(mist);
         }
         return ret;
     }
 
-    public void spawnMerchant(MapleCharacter chr) {
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.HIRED_MERCHANT).values()) {
-            ((HiredMerchant) obj).sendSpawnData(chr.getClient());
+    // merchant.
+    private final LinkedHashMap<Integer, HiredMerchant> merchants = new LinkedHashMap<>();
+
+    public void addMerchant(HiredMerchant merchant) {
+        if (merchant.getObjectId() == 0) {
+            merchant.setObjectId();
         }
+        this.merchants.put(merchant.getObjectId(), merchant);
+        broadcastPacket(ResCEmployeePool.EmployeeEnterField(merchant));
     }
 
-    public List<MapleMapItem> getAllItems() {
+    public void removeMerchant(HiredMerchant merchant) {
+        this.merchants.remove(merchant.getObjectId());
+        broadcastPacket(ResCEmployeePool.EmployeeLeaveField(merchant));
+    }
+
+    public List<HiredMerchant> getAllMerchants() {
+        ArrayList<HiredMerchant> ret = new ArrayList<>();
+        for (HiredMerchant merchant : this.merchants.values()) {
+            ret.add(merchant);
+        }
+        return ret;
+    }
+
+    public HiredMerchant getMerchantByOid(int object_id) {
+        return this.merchants.get(object_id);
+    }
+
+    // mini game.
+    private LinkedHashMap<Integer, MapleMiniGame> miniGames = new LinkedHashMap<>();
+
+    public void addMiniGame(MapleMiniGame game) {
+        this.runningOid++;
+        game.setObjectId(this.runningOid);
+        this.miniGames.put(game.getObjectId(), game);
+    }
+
+    public boolean removeMiniGame(int object_id) {
+        return this.miniGames.remove(object_id) != null;
+    }
+
+    public List<MapleMiniGame> getAllMiniGames() {
+        ArrayList<MapleMiniGame> ret = new ArrayList<>();
+        for (MapleMiniGame game : this.miniGames.values()) {
+            ret.add(game);
+        }
+        return ret;
+    }
+
+    public MapleMiniGame getMiniGameByOid(int object_id) {
+        return this.miniGames.get(object_id);
+    }
+
+    // player shop.
+    private LinkedHashMap<Integer, MaplePlayerShop> playerShops = new LinkedHashMap<>();
+
+    public void addPlayerShop(MaplePlayerShop shop) {
+        this.runningOid++;
+        shop.setObjectId(this.runningOid);
+        this.playerShops.put(shop.getObjectId(), shop);
+    }
+
+    public boolean removePlayerShop(int object_id) {
+        return this.playerShops.remove(object_id) != null;
+    }
+
+    public List<MaplePlayerShop> getAllPlayerShops() {
+        ArrayList<MaplePlayerShop> ret = new ArrayList<>();
+        for (MaplePlayerShop shop : this.playerShops.values()) {
+            ret.add(shop);
+        }
+        return ret;
+    }
+
+    public MaplePlayerShop getPlayerShopByOid(int object_id) {
+        return this.playerShops.get(object_id);
+    }
+
+    // drop item.
+    private final LinkedHashMap<Integer, MapleMapItem> drops = new LinkedHashMap<>();
+
+    public void addDrop(MapleMapItem drop) {
+        if (drop.getObjectId() == 0) {
+            drop.setObjectId();
+        }
+        this.drops.put(drop.getObjectId(), drop);
+    }
+
+    public boolean removeDrop(int object_id) {
+        this.drops.remove(object_id);
+        return true;
+    }
+
+    public MapleMapItem getDropByOid(int object_id) {
+        return this.drops.get(object_id);
+    }
+
+    public List<MapleMapItem> getAllDrops() {
         ArrayList<MapleMapItem> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.ITEM).values()) {
-            ret.add((MapleMapItem) mmo);
+        for (MapleMapItem drop : this.drops.values()) {
+            ret.add(drop);
         }
         return ret;
     }
 
     public int getItemsSize() {
-        return this.mapobjects.get(MapleMapObjectType.ITEM).size();
+        return this.drops.size();
     }
 
-    public void spawnMesoDrop(int meso, Point position, Object dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
+    public void spawnMesoDrop(int meso, Point position, Point dropperPosition, MapleCharacter owner, boolean playerDrop, byte droptype) {
         Point droppos = calcDropPos(position, position);
-        MapleMapItem mdrop = new MapleMapItem(meso, droppos, dropper, owner, droptype, playerDrop);
-        addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, droppos, dispatchGetPosition(dropper)));
-
-        if (!getEverlast()) {
-            mdrop.registerExpire(120000);
-            if (droptype == 0 || droptype == 1) {
-                mdrop.registerFFA(30000);
-            }
-        }
+        MapleMapItem mdrop = new MapleMapItem(meso, droppos, owner, droptype, playerDrop);
+        addDrop(mdrop);
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, droppos, dropperPosition));
     }
 
-    public void spawnMobMesoDrop(int meso, Point position, Object dropper, MapleCharacter owner, boolean playerDrop, byte droptype) {
-        MapleMapItem mdrop = new MapleMapItem(meso, position, dropper, owner, droptype, playerDrop);
-        addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, position, dispatchGetPosition(dropper)));
-        mdrop.registerExpire(120000);
-        if (droptype == 0 || droptype == 1) {
-            mdrop.registerFFA(30000);
-        }
+    public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype, int delay) {
+        MapleMapItem mdrop = new MapleMapItem(meso, position, owner, droptype, playerDrop);
+        addDrop(mdrop);
+        mdrop.setDelay(delay);
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, position, dropper.getPosition()));
+        mdrop.setDelay(0);
+    }
+
+    public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short quest_id, int delay) {
+        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, chr, droptype, false, quest_id);
+        addDrop(mdrop);
+        mdrop.setDelay(delay);
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
+        mdrop.setDelay(0);
     }
 
     public void spawnAutoDrop(int itemid, Point pos) {
@@ -1313,35 +1315,67 @@ public class TacosMap extends TacosMapData {
             idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
         }
         MapleMapItem mdrop = new MapleMapItem(pos, idrop);
-        addMapObject(mdrop);
-        spawnRangedMapObject(mdrop, ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.ANIMATION, pos, pos));
-        broadcastMessage(ResCDropPool.DropEnterField(mdrop, ResCDropPool.EnterType.PICK_UP_ENABLED, pos, pos));
-        mdrop.registerExpire(120000);
+        addDrop(mdrop);
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, pos, pos));
+        broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.UPDATE, pos, pos));
     }
 
-    public List<Object> getAllDoors() {
-        ArrayList<Object> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.DOOR).values()) {
-            ret.add(mmo);
+    // mystic door.
+    private LinkedHashMap<Integer, TacosMysticDoor> doors = new LinkedHashMap<>();
+
+    public void addDoor(TacosMysticDoor door) {
+        if (door.getObjectId() == 0) {
+            door.setObjectId();
+        }
+        this.doors.put(door.getObjectId(), door);
+        broadcastPacket(ResCTownPortalPool.TownPortalCreated(door));
+    }
+
+    public boolean removeDoor(TacosMysticDoor door) {
+        this.doors.remove(door.getObjectId());
+        broadcastPacket(ResCTownPortalPool.TownPortalRemoved(door));
+        return true;
+    }
+
+    public List<TacosMysticDoor> getAllDoors() {
+        ArrayList<TacosMysticDoor> ret = new ArrayList<>();
+        for (TacosMysticDoor door : this.doors.values()) {
+            ret.add(door);
         }
         return ret;
     }
 
-    public void spawnDoor(MapleDoor door) {
-        DebugLogger.DebugLog("Spawn Door : " + door.getMapId());
-        addMapObject(door);
-        spawnRangedMapObject(door, null);
+    public TacosMysticDoor getDoorByOid(int object_id) {
+        return this.doors.get(object_id);
     }
 
-    public void spawnDynamicPortal(MapleCharacter chr) {
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            ((MapleDynamicPortal) obj).sendSpawnPacket(chr.getClient());
+    // dynamic portal.
+    private LinkedHashMap<Integer, TacosDynamicPortal> dynamicPortals = new LinkedHashMap<>();
+
+    public void addDynamicPortal(TacosDynamicPortal dynamic_portal) {
+        dynamic_portal.setObjectId();
+        this.dynamicPortals.put(dynamic_portal.getObjectId(), dynamic_portal);
+        splitSendPacket(dynamic_portal, Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
+    }
+
+    public boolean removeDynamicPortal(int object_id) {
+        return this.dynamicPortals.remove(object_id) != null;
+    }
+
+    public List<TacosDynamicPortal> getAllDynamicPortals() {
+        ArrayList<TacosDynamicPortal> ret = new ArrayList<>();
+        for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
+            ret.add(dynamic_portal);
         }
+        return ret;
     }
 
-    public MapleDynamicPortal findDynamicPortal(int portal_id) {
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
+    public TacosDynamicPortal getDynamicPortalByOid(int object_id) {
+        return this.dynamicPortals.get(object_id);
+    }
+
+    public TacosDynamicPortal findDynamicPortal(int portal_id) {
+        for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
             if (dynamic_portal.getObjectId() == portal_id) {
                 return dynamic_portal;
             }
@@ -1349,189 +1383,82 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public MapleDynamicPortal findDynamicPortalLink(int map_id_to) {
-        DebugLogger.InfoLog("findDynamicPortalLink map_id_to" + map_id_to);
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.DYNAMIC_PORTAL).values()) {
-            MapleDynamicPortal dynamic_portal = (MapleDynamicPortal) obj;
-
-            DebugLogger.InfoLog("findDynamicPortalLink obj_to" + dynamic_portal.getMapID());
-            if (dynamic_portal.getMapID() == map_id_to) {
+    public TacosDynamicPortal findDynamicPortalLink(int map_id_to) {
+        for (TacosDynamicPortal dynamic_portal : this.dynamicPortals.values()) {
+            if (dynamic_portal.getMapId() == map_id_to) {
                 return dynamic_portal;
             }
         }
         return null;
     }
 
-    public void spawnDynamicPortal(MapleDynamicPortal dynamic_portal) {
-        addMapObject(dynamic_portal);
-        spawnRangedMapObject(dynamic_portal, Res_JMS_CInstancePortalPool.InstancePortalCreated(dynamic_portal));
+    // reactor.
+    private LinkedHashMap<Integer, MapleReactor> reactors = new LinkedHashMap<>();
+
+    public void resetReactors() {
+        for (MapleReactor reactor : this.reactors.values()) {
+            reactor.forceHitReactor((byte) 0);
+        }
     }
 
     public List<MapleReactor> getAllReactors() {
         ArrayList<MapleReactor> ret = new ArrayList<>();
-        for (Object mmo : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            ret.add((MapleReactor) mmo);
+        for (MapleReactor reactor : this.reactors.values()) {
+            ret.add(reactor);
         }
         return ret;
     }
 
-    public MapleReactor getReactorById(int id) {
-        MapleReactor ret = null;
-        Iterator<Object> itr = this.mapobjects.get(MapleMapObjectType.REACTOR).values().iterator();
-        while (itr.hasNext()) {
-            MapleReactor n = (MapleReactor) itr.next();
-            if (n.getReactorId() == id) {
-                ret = n;
-                break;
-            }
+    public void addReactor(MapleReactor reactor) {
+        if (reactor.getObjectId() == 0) {
+            reactor.setObjectId();
         }
-        return ret;
+        this.reactors.put(reactor.getObjectId(), reactor);
+        broadcastPacket(ResCReactorPool.ReactorEnterField(reactor));
     }
 
-    public MapleReactor getReactorByOid(int oid) {
-        Object mmo = getMapObject(oid, MapleMapObjectType.REACTOR);
-        if (mmo == null) {
-            return null;
-        }
-        return (MapleReactor) mmo;
+    public void removeReactor(MapleReactor reactor) {
+        this.reactors.remove(reactor.getObjectId());
+        broadcastPacket(ResCReactorPool.ReactorLeaveField(reactor));
     }
 
-    public MapleReactor getReactorByName(final String name) {
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            MapleReactor mr = ((MapleReactor) obj);
-            if (mr.getName().equalsIgnoreCase(name)) {
-                return mr;
+    public MapleReactor getReactorByOid(int object_id) {
+        return this.reactors.get(object_id);
+    }
+
+    public MapleReactor getReactorByName(String name) {
+        for (MapleReactor reactor : this.reactors.values()) {
+            if (reactor.getName().equalsIgnoreCase(name)) {
+                return reactor;
             }
         }
         return null;
     }
 
-    public void resetReactors() {
-        setReactorState((byte) 0);
-    }
-
-    // unused
+    // used by script
     public void setReactorState() {
-        setReactorState((byte) 1);
-    }
-
-    public void setReactorState(byte state) {
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            ((MapleReactor) obj).forceHitReactor((byte) state);
+        for (MapleReactor reactor : this.reactors.values()) {
+            reactor.forceHitReactor((byte) 1);
         }
     }
 
+    // used by script
     public void shuffleReactors() {
-        shuffleReactors(0, 9999999); //all
+        shuffleReactors(0, 9999999);
     }
 
+    // used by script
     public void shuffleReactors(int first, int last) {
         List<Point> points = new ArrayList<>();
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            MapleReactor mr = (MapleReactor) obj;
-            if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
+        for (MapleReactor mr : this.reactors.values()) {
+            if (mr.getId() >= first && mr.getId() <= last) {
                 points.add(mr.getPosition());
             }
         }
         Collections.shuffle(points);
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            MapleReactor mr = (MapleReactor) obj;
-            if (mr.getReactorId() >= first && mr.getReactorId() <= last) {
+        for (MapleReactor mr : this.reactors.values()) {
+            if (mr.getId() >= first && mr.getId() <= last) {
                 mr.setPosition(points.remove(points.size() - 1));
-            }
-        }
-    }
-
-    public void spawnReactor(MapleReactor reactor) {
-        addMapObject(reactor);
-        spawnRangedMapObject(reactor, ResCReactorPool.ReactorEnterField(reactor));
-    }
-
-    public void respawnReactor(MapleReactor reactor) {
-        reactor.setState((byte) 0);
-        reactor.setAlive(true);
-        spawnReactor(reactor);
-    }
-
-    public void destroyReactor(int oid) {
-        MapleReactor reactor = getReactorByOid(oid);
-        broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
-        reactor.setAlive(false);
-        removeMapObject(reactor);
-        reactor.setTimerActive(false);
-
-        if (reactor.getDelay() > 0) {
-            MapTimer.getInstance().schedule(new Runnable() {
-
-                @Override
-                public final void run() {
-                    respawnReactor(reactor);
-                }
-            }, reactor.getDelay());
-        }
-    }
-
-    public void reloadReactors() {
-        List<MapleReactor> toSpawn = new ArrayList<>();
-        for (Object obj : this.mapobjects.get(MapleMapObjectType.REACTOR).values()) {
-            final MapleReactor reactor = (MapleReactor) obj;
-            broadcastMessage(ResCReactorPool.ReactorLeaveField(reactor));
-            reactor.setAlive(false);
-            reactor.setTimerActive(false);
-            toSpawn.add(reactor);
-        }
-        for (MapleReactor r : toSpawn) {
-            removeMapObject(r);
-            if (r.getReactorId() != 9980000 && r.getReactorId() != 9980001) { //guardians cpq
-                respawnReactor(r);
-            }
-        }
-    }
-
-    // self and other players in range.
-    public void broadcastMessage(ServerPacket packet, Point rangedFrom) {
-        broadcastMessageInternal(null, packet, rangedFrom, false);
-    }
-
-    // other players in range.
-    public void broadcastMessageTo(TacosCharacter source, ServerPacket packet, Point rangedFrom) {
-        broadcastMessageInternal(source, packet, rangedFrom, false);
-    }
-
-    // self and other players.
-    public void broadcastMessage(ServerPacket packet) {
-        broadcastMessageInternal(null, packet, null, true);
-    }
-
-    // self and other players, or other players.
-    public void broadcastMessage(TacosCharacter source, ServerPacket packet, boolean repeatToSource) {
-        broadcastMessageInternal(repeatToSource ? null : source, packet, source.getPosition(), true);
-    }
-
-    private void broadcastMessageInternal(TacosCharacter source, ServerPacket packet, Point rangedFrom, boolean ignoreRange) {
-        Iterator<MapleCharacter> ltr = characters.iterator();
-        TacosCharacter chr;
-        while (ltr.hasNext()) {
-            chr = ltr.next();
-            if (source == null || chr.getId() != source.getId()) {
-                if (ignoreRange || rangedFrom.distanceSq(chr.getPosition()) <= chr.getViewRangeSq()) {
-                    chr.SendPacket(packet);
-                }
-            }
-        }
-    }
-
-    public void returnEverLastItem(final MapleCharacter chr) {
-        for (final Object o : getAllItems()) {
-            final MapleMapItem item = ((MapleMapItem) o);
-            if (item.getOwner() == chr.getId()) {
-                broadcastMessage(ResCDropPool.DropLeaveField(item, ResCDropPool.LeaveType.PICK_UP, chr, 0), item.getPosition());
-                if (item.getMeso() > 0) {
-                    chr.gainMeso(item.getMeso(), false);
-                } else {
-                    MapleInventoryManipulator.addFromDrop(chr.getClient(), item.getItem(), false);
-                }
-                removeMapObject(item);
             }
         }
     }
@@ -1646,112 +1573,37 @@ public class TacosMap extends TacosMapData {
         return TacosScriptEvent.getInstance().getEventManager(em);
     }
 
+    // used by script
     public void resetFully() {
         resetFully(true);
     }
 
+    // used by script
     public void resetFully(boolean respawn) {
         setChangeBGM("");
-        killAllMonsters(false);
-        reloadReactors();
-        removeDrops();
-        resetSpawns();
         cancelSquadSchedule();
         resetPortals();
         environment.clear();
-        if (respawn) {
-            respawn(true);
-        }
     }
 
-    public void removeDrops() {
-        List<MapleMapItem> items = getAllItems();
-        for (MapleMapItem i : items) {
-            i.expire(this);
+    public void removeAllObjects() {
+        // remove.
+        setChangeBGM("");
+        for (MapleMonster monster : getAllMonsters()) {
+            removeMonster(monster);
         }
-    }
-
-    public void resetSpawns() {
-        boolean changed = false;
-        Iterator<Object> sss = monsterSpawn.iterator();
-        while (sss.hasNext()) {
-            if (SpawnDispatch.getCarnivalId(sss.next()) > -1) {
-                sss.remove();
-                changed = true;
-            }
+        for (MapleReactor reactor : getAllReactors()) {
+            removeReactor(reactor);
         }
-        setSpawns(true);
-        if (changed) {
-            loadMonsterRate(true);
+        for (MapleNPC npc : getAllNPCs()) {
+            removeNPC(npc);
         }
-    }
-
-    public void loadMonsterRate(boolean first) {
-        final int spawnSize = monsterSpawn.size();
-        maxRegularSpawn = Math.round(spawnSize * getMonsterRate());
-        if (maxRegularSpawn < 2) {
-            maxRegularSpawn = 2;
-        } else if (maxRegularSpawn > spawnSize) {
-            maxRegularSpawn = spawnSize - (spawnSize / 15);
+        for (MapleMapItem mmi : getAllDrops()) {
+            removeDrop(mmi.getObjectId());
+            broadcastPacket(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
         }
-        if (getFixedMob() > 0) {
-            maxRegularSpawn = getFixedMob();
-        }
-        Collection<Object> newSpawn = new LinkedList<>();
-        Collection<Object> newBossSpawn = new LinkedList<>();
-        for (final Object s : monsterSpawn) {
-            if (SpawnDispatch.getCarnivalTeam(s) >= 2) {
-                continue; // Remove carnival spawned mobs
-            }
-            if (SpawnDispatch.getMonster(s).getStats().isBoss()) {
-                newBossSpawn.add(s);
-            } else {
-                newSpawn.add(s);
-            }
-        }
-        monsterSpawn.clear();
-        monsterSpawn.addAll(newBossSpawn);
-        monsterSpawn.addAll(newSpawn);
-
-        if (first && spawnSize > 0) {
-            lastSpawnTime = 0; // 即沸き
-        }
-    }
-
-    public void respawn(boolean force) {
-        lastSpawnTime = System.currentTimeMillis();
-        if (force) { //cpq quick hack
-            int numShouldSpawn = monsterSpawn.size() - spawnedMonstersOnMap.get();
-
-            if (numShouldSpawn > 0) {
-                int spawned = 0;
-
-                for (Object spawnPoint : monsterSpawn) {
-                    SpawnDispatch.spawnMonster(spawnPoint, this);
-                    spawned++;
-                    if (spawned >= numShouldSpawn) {
-                        break;
-                    }
-                }
-            }
-        } else {
-            int numShouldSpawn = maxRegularSpawn - spawnedMonstersOnMap.get();
-            if (numShouldSpawn > 0) {
-                int spawned = 0;
-
-                List<Object> randomSpawn = new ArrayList<>(monsterSpawn);
-                Collections.shuffle(randomSpawn);
-
-                for (Object spawnPoint : randomSpawn) {
-                    if (SpawnDispatch.shouldSpawn(spawnPoint)) {
-                        SpawnDispatch.spawnMonster(spawnPoint, this);
-                        spawned++;
-                    }
-                    if (spawned >= numShouldSpawn) {
-                        break;
-                    }
-                }
-            }
+        for (MapleMist mist : getAllMists()) {
+            removeMist(mist);
         }
     }
 
@@ -1764,26 +1616,143 @@ public class TacosMap extends TacosMapData {
         return TacosWorld.find(0).getChannelServer(channel).findMap(getForcedReturnId());
     }
 
-    public boolean updateSpawn() {
-        respawn(false);
-        return true;
-    }
+    // update task.
+    private final TacosTask task_map = new TacosTask();
+    private final TacosTask task_drop_removal = new TacosTask();
+    private final TacosTask task_mob_regen = new TacosTask();
+    private final TacosTask task_boss_regen = new TacosTask();
+    private final TacosTask task_reactor_regen = new TacosTask();
+    private final TacosTask task_mist = new TacosTask();
 
-    // update.
-    private long time = 0;
-
-    public boolean updateTime(long time, long interval) {
-        if (this.time == 0) {
-            this.time = time;
+    public boolean update(MapleCharacter player, long time_current) {
+        // map update.
+        if (!this.task_map.check(time_current, 1000)) {
             return false;
         }
-
-        long delta = time - this.time;
-        if (interval <= delta) {
-            this.time = time;
-            return true;
+        // clock.
+        if (0 < getTimeLimit()) {
+            if (getTimer(time_current) <= 0) {
+                MapleMap map_to = player.getChannelServer().findMap(getForcedReturnId());
+                if (map_to == null) {
+                    map_to = player.getChannelServer().findMap(TacosConstants.DEFAULT_RETURN_MAP_ID);
+                }
+                player.changeMapPortal(map_to, map_to.getPortal(0));
+                return true;
+            }
         }
 
-        return false;
+        ArrayList<MapSplitState> area_states = getSplit().getArea(player.getPosition().x, player.getPosition().y, MapSplitState.ACTIVE);
+        // drop removal.
+        if (this.task_drop_removal.check(time_current, 5000)) {
+            for (MapleMapItem mmi : getAllDrops()) {
+                if (mmi.checkTime(time_current, 120000)) {
+                    removeDrop(mmi.getObjectId());
+                    broadcastPacket(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
+                }
+            }
+        }
+        // mob regen.
+        if (this.task_mob_regen.check(time_current, 7000)) {
+            for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
+                if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
+                    MapleMonster monster = sp.regen((MapleMap) this);
+                    if (monster != null) {
+                        addMonster(monster);
+                        broadcastPacket(ResCMobPool.MobEnterField(monster));
+                        monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
+                        monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
+
+                        int number = getSplit().find(monster.getPosition());
+                        MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+                        if (area_owner != null) {
+                            monster.setOwnerId(area_owner.getId());
+                            area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                        }
+                    }
+                }
+            }
+        }
+        // master monster.
+        if (this.task_boss_regen.check(time_current, 7000)) {
+            for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
+                if (bsp.getLastRegenTime() + bsp.getMobTime() <= time_current) {
+                    MapleMonster monster = bsp.regen((MapleMap) this);
+                    if (monster != null) {
+                        addMonster(monster);
+                        if (!bsp.getMessage().isEmpty()) {
+                            sendText(bsp.getMessage());
+                        }
+                        broadcastPacket(ResCMobPool.MobEnterField(monster));
+                        monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
+                        monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
+
+                        int number = getSplit().find(monster.getPosition());
+                        MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+                        if (area_owner != null) {
+                            monster.setOwnerId(area_owner.getId());
+                            area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
+                        }
+                    }
+                }
+            }
+        }
+        // reactor regen.
+        if (this.task_reactor_regen.check(time_current, 5000)) {
+            for (TacosReactorSpawnPoint sp : getReactorSpawnPoint()) {
+                if (1 <= sp.getReactorTime()) {
+                    if (sp.getLastRegenTime() + sp.getReactorTime() <= time_current) {
+                        MapleReactor reactor = sp.regen((MapleMap) this);
+                        if (reactor != null) {
+                            addReactor(reactor);
+                        }
+                    }
+                }
+            }
+        }
+        // mist.
+        if (this.task_mist.check(time_current, 1000)) {
+            for (MapleMist mist : getAllMists()) {
+                // TODO : fix interval.
+                switch (mist.isPoisonMist()) {
+                    case 1 -> {
+                        for (MapleMonster monster : getMonstersInRect(mist.getBox())) {
+                            if (mist.makeChanceResult()) {
+                                player.DebugMsg("Mist : " + mist.getObjectId() + " -> " + monster.getObjectId());
+                                int max_hp = (int) monster.getMobMaxHp();
+                                int damage = max_hp / (70 - mist.getSkillLevel());
+                                //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, mist.getDuration(), false);
+                                monster.setHp(Math.max(1, monster.getHp() - damage));
+                                splitSendPacket(monster, ResCMobPool.MobDamaged(monster, damage, 0));
+                                /*
+                            if (mist.getOwnerId() == chr.getId()) {
+                                chr.SendPacket(ResCMobPool.MobHPIndicator(monster, (int) Math.ceil(monster.getHp() * 100.0 / max_hp)));
+                            }
+                                 */
+                            }
+                        }
+                    }
+                    case 2 -> {
+                        /*
+                    for (Object player : map.getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
+                        if (mist.makeChanceResult()) {
+                            ((MapleCharacter) player).addMP((int) (mist.getSource().getX() * (((MapleCharacter) player).getStat().getMaxMp() / 100.0)));
+                        }
+                    }
+                         */
+                    }
+                    case 3 -> {
+                    }
+                    default -> {
+                    }
+                }
+                // mist removal.
+                if (mist.checkTime(time_current, mist.getDuration())) {
+                    player.DebugMsg("Mist : removed, " + mist.getObjectId());
+                    removeMist(mist);
+                }
+            }
+        }
+
+        return true;
     }
 }

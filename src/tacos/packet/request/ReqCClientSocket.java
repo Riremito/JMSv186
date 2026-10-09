@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import odin.client.MapleCharacter;
 import tacos.constants.MapleClientState;
 import odin.client.MapleQuestStatus;
-import odin.client.inventory.MaplePet;
 import tacos.config.ContentState;
 import tacos.config.Region;
 import tacos.database.LazyDatabase;
@@ -37,7 +36,6 @@ import odin.server.MTSStorage;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCClientSocket;
 import tacos.packet.response.ResCFuncKeyMappedMan;
-import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsQuestRecordMessage;
@@ -55,7 +53,6 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsCashItem;
-import static tacos.packet.request.ReqCLogin.SetDefaultEquip;
 import tacos.packet.response.ResCCashShop;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserLocal;
@@ -248,8 +245,6 @@ public class ReqCClientSocket {
                     chr.updateMapById(chr.getPosMap(), chr.getPortal());
                 }
                 client.getChannelServer().getOnlinePlayers().add(chr);
-                // pet
-                chr.spawnSavedPets();
                 // group            
                 if (chr.getParty() != null) {
                     client.getWorld().getParty().updateParty(chr.getParty().getId(), PartyOperation.LOG_ONOFF, new MaplePartyCharacter(chr));
@@ -282,12 +277,6 @@ public class ReqCClientSocket {
                 // initialize
                 chr.updateStat(); // TWMS148 gets weird stat without sending this.
                 chr.SendPacket(ResCWvsContext.ForcedStatReset());
-                // pet
-                for (final MaplePet pet : chr.getPets()) {
-                    if (pet.getSummoned()) {
-                        chr.SendPacket(ResCUser_Pet.Activated(chr, pet));
-                    }
-                }
                 if (Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check() || Region.BMS.check() || Region.VMS.check()) {
                     chr.SendPacket(ResCFuncKeyMappedMan.PetConsumeItemInit_JMS131(chr));
                 } else {
@@ -349,14 +338,10 @@ public class ReqCClientSocket {
                 // your pet
                 // [entering map]
                 MapleMap map = chr.getMap();
+                chr.updatePets();
+                chr.updateSummons();
                 map.userEnterField(chr);
                 map.linkedObjectEnterField(chr);
-
-                for (final MaplePet pet : chr.getPets()) {
-                    if (pet.getSummoned()) {
-                        map.broadcastMessage(chr, ResCUser_Pet.TransferField(chr, pet), true);
-                    }
-                }
                 break;
             }
             case ITC_SERVER: {
@@ -477,7 +462,7 @@ public class ReqCClientSocket {
         chr_koc.setBuddylist(20);
 
         for (int item_id : item_ids) {
-            SetDefaultEquip(chr_koc, item_id);
+            ReqCLogin.SetDefaultEquip(chr_koc, item_id);
         }
 
         chr_koc.saveNewCharToDB();

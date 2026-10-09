@@ -93,7 +93,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 }
                 item_use.run();
                 if (action == 0) {
-                    chr.changeMap(map_id);
+                    chr.changeMapById(map_id);
                 } else {
                     chr.changeMapWithCoordinate(map_id, chr.getPosition().x, chr.getPosition().y);
                 }
@@ -128,7 +128,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 final int buff = miip.getStateChangeItem(cash_item_id);
                 if (buff != 0) {
-                    for (MapleCharacter mChar : map.getCharacters()) {
+                    for (MapleCharacter mChar : map.getAllPlayers()) {
                         miip.getItemEffect(buff).applyTo(mChar);
                     }
                 }
@@ -174,7 +174,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             {
                 String message = cp.DecodeStr();
                 chr.setADBoard(message);
-                map.broadcastMessage(ResCUser.UserADBoard(chr));
+                map.broadcastPacket(ResCUser.UserADBoard(chr));
                 chr.updateInv();
                 return true;
             }
@@ -308,7 +308,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 Equip equip = (Equip) item;
                 equip.resetPotential(cash_item_id == 5062001 || cash_item_id == 5062003, cash_item_id == 5062002 || cash_item_id == 5062003);
                 chr.SendPacket(ResCUser.UserItemUnreleaseEffect(chr));
-                chr.getMap().broadcastMessage(chr, ResCUser.UserItemUnreleaseEffect(chr), false);
+                chr.getMap().splitSendPacket(chr, ResCUser.UserItemUnreleaseEffect(chr), chr.getId());
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, equip).build()));
                 //MapleInventoryManipulator.addById(chr.getClient(), 2430112, (short) 1);
                 return true;
@@ -489,7 +489,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 MaplePet pet = null;
 
                 if (Config.LessOrEqual(Region.JMS, 147)) {
-                    pet = chr.getPet(0);
+                    pet = chr.getPetByIndex(0);
                 } else {
                     long pet_uid = cp.Decode8();
                     pet = chr.getPetByUniqueId(pet_uid);
@@ -505,7 +505,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 // new name
                 pet.setName(pet_name);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
-                chr.getMap().broadcastMessage(chr, ResCUser_Pet.PetNameChanged(chr, pet, pet_name), true);
+                chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetNameChanged(chr, pet, pet_name), chr.getId());
                 return true;
             }
             default: {

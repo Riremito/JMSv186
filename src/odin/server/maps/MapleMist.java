@@ -20,91 +20,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
-import java.awt.Point;
 import java.awt.Rectangle;
 import odin.client.Skill;
 import odin.client.MapleCharacter;
-import tacos.client.TacosClient;
 import odin.client.SkillFactory;
-import tacos.packet.response.ResCAffectedAreaPool;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
-import tacos.packet.ServerPacket;
+import tacos.server.map.object.TacosMist;
 
-public class MapleMist {
+public class MapleMist extends TacosMist {
 
-    private int objectId;
-
-    public int getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(int id) {
-        this.objectId = id;
-    }
-
-    private Rectangle mistPosition;
     private MapleStatEffect source;
     private MobSkill skill;
     private boolean isMobMist;
     private int skillDelay;
     private int skilllevel;
     private int isPoisonMist;
-    private int ownerId;
 
-    public MapleMist(Rectangle mistPosition, MapleMonster mob, MobSkill skill) {
-        this.mistPosition = mistPosition;
-        this.ownerId = mob.getId();
+    public MapleMist(Rectangle mistPosition, MapleMonster mob, MobSkill skill, int dur) {
         this.skill = skill;
         this.skilllevel = skill.getSkillLevel();
 
         isMobMist = true;
         isPoisonMist = 0;
         skillDelay = 0;
+
+        setOwnerId(mob.getId());
+        setPosition(mistPosition.getLocation());
+        setDuration(dur);
+        setBox(mistPosition);
     }
 
-    public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source) {
-        this.mistPosition = mistPosition;
-        this.ownerId = owner.getId();
+    public MapleMist(Rectangle mistPosition, MapleCharacter owner, MapleStatEffect source, int dur) {
         this.source = source;
         this.skillDelay = 8;
         this.isMobMist = false;
         this.skilllevel = owner.getSkillLevel(SkillFactory.getSkill(source.getSourceId()));
 
         switch (source.getSourceId()) {
-            case 4221006: // Smoke Screen
+            case 4221006 -> // Smoke Screen
                 isPoisonMist = 0;
-                break;
-            case 14111006:
-            case 2111003: // FP mist
-            case 12111005: // Flame wizard, [Flame Gear]
+            case 14111006, 2111003, 12111005 -> // Flame wizard, [Flame Gear]
                 isPoisonMist = 1;
-                break;
-            case 22161003: //Recovery Aura
+            case 22161003 -> // FP mist
+                //Recovery Aura
                 isPoisonMist = 2;
-                break;
         }
-    }
 
-    //fake
-    public MapleMist(Rectangle mistPosition, MapleCharacter owner) {
-        this.mistPosition = mistPosition;
-        this.ownerId = owner.getId();
-        this.source = new MapleStatEffect();
-        this.source.setSourceId(2111003);
-        this.skilllevel = 30;
-        isMobMist = false;
-        isPoisonMist = 0;
-        skillDelay = 8;
-    }
-
-    public MapleMapObjectType getType() {
-        return MapleMapObjectType.MIST;
-    }
-
-    public Point getPosition() {
-        return mistPosition.getLocation();
+        setOwnerId(owner.getId());
+        setPosition(mistPosition.getLocation());
+        setDuration(dur);
+        setBox(mistPosition);
     }
 
     public Skill getSourceSkill() {
@@ -127,35 +94,12 @@ public class MapleMist {
         return skilllevel;
     }
 
-    public int getOwnerId() {
-        return ownerId;
-    }
-
     public MobSkill getMobSkill() {
         return this.skill;
     }
 
-    public Rectangle getBox() {
-        return mistPosition;
-    }
-
     public MapleStatEffect getSource() {
         return source;
-    }
-
-    public void setPosition(Point position) {
-    }
-
-    public ServerPacket fakeSpawnData(int level) {
-        return ResCAffectedAreaPool.AffectedAreaCreated(this);
-    }
-
-    public void sendSpawnData(TacosClient client) {
-        client.SendPacket(ResCAffectedAreaPool.AffectedAreaCreated(this));
-    }
-
-    public void sendDestroyData(TacosClient client) {
-        client.SendPacket(ResCAffectedAreaPool.AffectedAreaRemoved(this));
     }
 
     public boolean makeChanceResult() {

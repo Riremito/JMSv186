@@ -60,11 +60,7 @@ public class ResCUserRemote {
 
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
-
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            sp.Encode1(attack.m_nLevel); // m_nLevel
-        }
-
+        sp.Encode1(attack.m_nLevel, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // m_nLevel
         sp.Encode1(attack.SkillLevel); // nSLV
 
         if (attack.SkillLevel != 0) {
@@ -180,10 +176,7 @@ public class ResCUserRemote {
         sp.Encode4(uhd.dwCharacterID);
         sp.Encode1(uhd.nAttackIdx);
         sp.Encode4(uhd.nDamage); // internal damage
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode1(0); // critical
-        }
+        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302)); // critical
 
         if (uhd.dwTemplateID != 0) {
             sp.Encode4(uhd.dwTemplateID); // dwTemplateID
@@ -238,11 +231,7 @@ public class ResCUserRemote {
 
         sp.Encode4(characterid);
         sp.Encode4(itemid);
-
-        if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            sp.Encode4(0);
-        }
-
+        sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302));
         return sp;
     }
 

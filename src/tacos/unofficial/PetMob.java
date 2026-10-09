@@ -18,7 +18,6 @@
  */
 package tacos.unofficial;
 
-import odin.server.life.MapleLifeFactory;
 import odin.server.life.MapleMonster;
 import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
@@ -27,6 +26,7 @@ import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -43,7 +43,7 @@ public class PetMob implements IPetEx {
 
     @Override
     public void SendPacket(ServerPacket packet) {
-        this.character.getMap().broadcastMessage(packet);
+        this.character.getMap().broadcastPacket(packet);
     }
 
     @Override
@@ -54,10 +54,10 @@ public class PetMob implements IPetEx {
             return false;
         }
 
-        this.monster = MapleLifeFactory.getMonster(id);
+        this.monster = WzXML.MOB.findMonster(id);
         this.monster.setPosition(this.character.getPosition());
-        this.monster.setFH(this.character.getFH());
-        this.monster.setOriginFh(this.character.getFH());
+        this.monster.setFootholdId(this.character.getFootholdId());
+        this.monster.setHomeFoothold(this.character.getFootholdId());
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         SendPacket(ResCMobPool.MobEnterField(this.monster));
         this.monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
@@ -82,8 +82,8 @@ public class PetMob implements IPetEx {
         }
 
         boolean is_left = (move_path.getMoveAction() & 1) != 0;
-        move_path.update(this.monster);
-        this.monster.setOriginFh(move_path.getFootHoldId());
+        this.monster.update(move_path);
+        this.monster.setHomeFoothold(move_path.getFootHoldId());
 
         SendPacket(ResCMobPool.MobMove(this.monster, false, is_left ? 1 : 0, 0, move_path));
         return true;

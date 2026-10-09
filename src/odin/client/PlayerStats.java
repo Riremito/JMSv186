@@ -82,7 +82,6 @@ public class PlayerStats {
     public int element_light;
     public int element_psn;
     public boolean equippedWelcomeBackRing;
-    public boolean equippedFairy;
     public boolean hasMeso;
     public boolean hasItem;
     public boolean hasVac;
@@ -321,7 +320,6 @@ public class PlayerStats {
         mpRecoverProp = 0;
         mpRestore = 0;
         equippedWelcomeBackRing = false;
-        equippedFairy = false;
         hasMeso = false;
         hasItem = false;
         hasPartyBonus = false;
@@ -384,9 +382,6 @@ public class PlayerStats {
                     break;
                 case 1112127:
                     equippedWelcomeBackRing = true;
-                    break;
-                case 1122017:
-                    equippedFairy = true;
                     break;
                 case 1812000:
                     hasMeso = true;
@@ -641,7 +636,7 @@ public class PlayerStats {
                     .player(chr)
                     .build();
             chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemLevelUp));
-            chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), false);
+            chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), chr.getId());
         }
         return changed;
     }

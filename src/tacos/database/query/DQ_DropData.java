@@ -22,10 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
-import odin.client.inventory.MapleInventoryType;
-import odin.constants.GameConstants;
+import java.util.ArrayList;
 import odin.server.life.MonsterDropEntry;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
@@ -38,19 +35,16 @@ public class DQ_DropData {
 
     public static final String DB_TABLE_NAME = "drop_data";
 
-    public static List<MonsterDropEntry> getDrops(int monsterId) {
-        List<MonsterDropEntry> ret = new LinkedList<>();
+    public static ArrayList<MonsterDropEntry> getDropByMobId(int mob_id) {
+        ArrayList<MonsterDropEntry> ret = new ArrayList<>();
 
         Connection con = DatabaseConnection.getConnection();
         try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE dropperid = ?")) {
-            ps.setInt(1, monsterId);
+            ps.setInt(1, mob_id);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     int itemid = rs.getInt("itemid");
                     int chance = rs.getInt("chance");
-                    if (GameConstants.getInventoryType(itemid) == MapleInventoryType.EQUIP) {
-                        chance *= 10; //in GMS/SEA it was raised
-                    }
                     ret.add(new MonsterDropEntry(
                             itemid,
                             chance,
@@ -65,5 +59,4 @@ public class DQ_DropData {
 
         return ret;
     }
-
 }

@@ -43,11 +43,11 @@ public class Req_Farm {
 
         switch (header) {
             case CP_JMS_FarmEnter: {
-                chr.changeMap(809100000);
+                chr.changeMapById(809100000);
                 return true;
             }
             case CP_JMS_FarmLeave: {
-                chr.changeMap(100000000); // test
+                chr.changeMapById(100000000); // test
                 return true;
             }
             default: {

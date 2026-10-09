@@ -38,6 +38,7 @@ public class ReqCUser_FoxMan {
             return false;
         }
 
+        // TODO : fox man check.
         switch (header) {
             case CP_FoxManMove: {
                 OnFoxManMove(chr, cp);
@@ -50,19 +51,16 @@ public class ReqCUser_FoxMan {
                 break;
             }
         }
+
         return false;
     }
 
     public static boolean OnFoxManMove(MapleCharacter chr, ClientPacket cp) {
-
-        // TODO fox check.
-        // CMovePath::Decode
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
+            // TODO : fox man update.
+            chr.getMap().splitSendPacket(chr, ResCUser_FoxMan.FoxManMove(chr, move_path), chr.getId());
         }
-
-        chr.getMap().broadcastMessageTo(chr, ResCUser_FoxMan.FoxManMove(chr, move_path), chr.getPosition());
         return true;
     }
-
 }

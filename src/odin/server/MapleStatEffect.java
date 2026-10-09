@@ -16,20 +16,14 @@ import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatusEffect;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
-import java.util.Arrays;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
-import tacos.packet.response.ResCTownPortalPool;
 import odin.server.life.MapleMonster;
-import odin.server.maps.MapleDoor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapObjectType;
 import odin.server.maps.MapleMist;
-import odin.server.maps.MapleSummon;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.MapleData;
-import tacos.packet.ops.OpsMoveAbility;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -427,7 +421,7 @@ public class MapleStatEffect {
             }
         } else if (!primary && isResurrection()) {
             hpchange = stat.getMaxHp();
-            applyto.setStance(0); //TODO fix death bug, player doesnt spawn on other screen
+            applyto.setMoveAction(0); //TODO fix death bug, player doesnt spawn on other screen
         }
         if (isMPRecovery()) {
             final int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);
@@ -476,7 +470,7 @@ public class MapleStatEffect {
         } else if (cp != 0 && applyto.getCarnivalParty() != null) {
             applyto.getCarnivalParty().addCP(applyto, cp);
             applyto.CPUpdate(false, applyto.getAvailableCP(), applyto.getTotalCP(), 0);
-            for (MapleCharacter chr : applyto.getMap().getCharacters()) {
+            for (MapleCharacter chr : applyto.getMap().getAllPlayers()) {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
             }
         }
@@ -488,48 +482,10 @@ public class MapleStatEffect {
                 applyMonsterBuff(applyfrom);
             }
         }
-        OpsMoveAbility summonMovementType = getSummonMovementType();
-        if (summonMovementType != null) {
-            final MapleSummon tosummon = new MapleSummon(applyfrom, this, new Point(pos == null ? applyfrom.getPosition() : pos), summonMovementType);
-            if (!tosummon.isPuppet()) {
-            }
-            applyfrom.getMap().spawnSummon(tosummon);
-            applyfrom.getSummons().put(sourceid, tosummon);
-            tosummon.addHP((short) x);
-            if (isBeholder()) {
-                tosummon.addHP((short) 1);
-            }
-        } else if (isMagicDoor()) { // Magic Door
-            if (!applyto.getDoors().isEmpty()) {
-                applyto.removeDoor();
-                applyto.silentPartyUpdate();
-            }
-            MapleDoor door = new MapleDoor(applyto, new Point(applyto.getPosition()), sourceid); // Current Map door
-            if (door.getTownPortal() != null) {
-                MapleDoor townDoor = new MapleDoor(door); // Town door
-                door.setLink(townDoor);
-                door.getTown().spawnDoor(townDoor);
-                townDoor.setLink(door);
-
-                applyto.getMap().spawnDoor(door);
-                applyto.addDoor(door);
-                applyto.addDoor(townDoor);
-                //applyto.SendPacket(MysticDoorResponse.setMysticDoorInfo(door));
-
-                if (applyto.getParty() != null) { // update town doors
-                    //applyto.silentPartyUpdate();
-                }
-
-                applyto.SendPacket(ResCTownPortalPool.TownPortalCreated(door, false));
-
-            } else {
-                applyto.dropMessage(5, "You may not spawn a door because all doors in the town are taken.");
-            }
-
-        } else if (isMist()) {
-            final Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
-            final MapleMist mist = new MapleMist(bounds, applyfrom, this);
-            applyfrom.getMap().spawnMist(mist, getDuration(), false);
+        if (isMist()) {
+            Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
+            MapleMist mist = new MapleMist(bounds, applyfrom, this, getDuration());
+            applyfrom.getMap().addMist(mist);
 
         } else if (isTimeLeap()) {
             applyto.getCoolTime().timeLeap();
@@ -546,7 +502,7 @@ public class MapleStatEffect {
             } else {
                 target = applyto.findMap(moveTo);
             }
-            applyto.changeMap(target, target.getPortal(0));
+            applyto.changeMapPortal(target, target.getPortal(0));
             return true;
         }
         return false;
@@ -560,14 +516,14 @@ public class MapleStatEffect {
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
-                for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
+                for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
                     if (chr.getParty() != null && chr.getParty().equals(applyfrom.getParty()) && chr.isAlive()) {
                         membrs++;
                     }
                 }
                 List<MapleCharacter> awarded = new ArrayList<>();
                 while (awarded.size() < Math.min(membrs, y)) {
-                    for (MapleCharacter chr : applyfrom.getMap().getCharacters()) {
+                    for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {
                             awarded.add(chr);
                         }
@@ -580,16 +536,14 @@ public class MapleStatEffect {
                             .skill_id(sourceid)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
-                    chr.getMap().broadcastMessage(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), false);
+                    chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), chr.getId());
                 }
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            final List<Object> affecteds = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.PLAYER));
+            final List<MapleCharacter> affecteds = applyfrom.getMap().getPlayersInRect(bounds);
 
-            for (final Object affectedmo : affecteds) {
-                final MapleCharacter affected = (MapleCharacter) affectedmo;
-
+            for (final MapleCharacter affected : affecteds) {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);
@@ -599,7 +553,7 @@ public class MapleStatEffect {
                                 .skill_id(sourceid)
                                 .build();
                         affected.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_SkillAffected, pb));
-                        affected.getMap().broadcastMessage(affected, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), false);
+                        affected.getMap().splitSendPacket(affected, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillAffected, pb), affected.getId());
                     }
                     if (isTimeLeap()) {
                         affected.getCoolTime().timeLeap();
@@ -609,15 +563,14 @@ public class MapleStatEffect {
         }
     }
 
-    private final void applyMonsterBuff(final MapleCharacter applyfrom) {
-        final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-        final List<Object> affected = applyfrom.getMap().getMapObjectsInRect(bounds, Arrays.asList(MapleMapObjectType.MONSTER));
+    private void applyMonsterBuff(MapleCharacter applyfrom) {
+        Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
         int i = 0;
 
-        for (final Object mo : affected) {
+        for (MapleMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
             if (makeChanceResult()) {
                 for (Map.Entry<MonsterStatus, Integer> stat : getMonsterStati().entrySet()) {
-                    ((MapleMonster) mo).applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
+                    monster.applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
                 }
             }
             i++;
@@ -627,7 +580,7 @@ public class MapleStatEffect {
         }
     }
 
-    private final Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
+    private Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
         if (lt == null || rb == null) {
             return new Rectangle(posFrom.x, posFrom.y, facingLeft ? 1 : -1, 1);
         }
@@ -1017,56 +970,6 @@ public class MapleStatEffect {
         return level;
     }
 
-    public OpsMoveAbility getSummonMovementType() {
-        if (!skill) {
-            return null;
-        }
-        switch (sourceid) {
-            case 3211002: // puppet sniper
-            case 3111002: // puppet ranger
-            case 33111003:
-            case 13111004: // puppet cygnus
-            case 5211001: // octopus - pirate
-            case 5220002: // advanced octopus - pirate
-            case 4341006:
-            case 35111002:
-            case 35111005: //TEMP
-            case 35111004: //TEMP
-            //case 35111011: //TEMP
-            case 35121009:
-            //case 35121010: //TEMP
-            case 35121011:
-                //case 4111007: //TEMP
-                return OpsMoveAbility.MOVEABILITY_STOP;
-            case 3211005: // golden eagle
-            case 3111005: // golden hawk
-            case 33111005:
-            case 2311006: // summon dragon
-            case 3221005: // frostprey
-            case 3121006: // phoenix
-                return OpsMoveAbility.MOVEABILITY_FLY;
-            case 5211002: // bird - pirate
-                return OpsMoveAbility.MOVEABILITY_FLY_RANDOM;
-            case 32111006: //reaper
-                return OpsMoveAbility.MOVEABILITY_WALK_RANDOM;
-            case 1321007: // beholder
-            case 2121005: // elquines
-            case 2221005: // ifrit
-            case 2321003: // bahamut
-            case 12111004: // Ifrit
-            case 11001004: // soul
-            case 12001004: // flame
-            case 13001004: // storm
-            case 14001005: // darkness
-            case 15001004: // lightning
-            case 35111001:
-            case 35111010:
-            case 35111009:
-                return OpsMoveAbility.MOVEABILITY_WALK;
-        }
-        return null;
-    }
-
     public final int getSourceId() {
         return sourceid;
     }
@@ -1095,5 +998,13 @@ public class MapleStatEffect {
 
     public final int getExp() {
         return exp;
+    }
+
+    public int getMpCon() {
+        return this.mpCon;
+    }
+
+    public int getHpCon() {
+        return this.hpCon;
     }
 }

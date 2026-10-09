@@ -418,6 +418,7 @@ public class ResCUserLocal {
         return sp;
     }
 
+    // unimplemented, buggy.
     public static ServerPacket PollQuestion(String questions[], String answers[][]) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_Poll_Question);
 
@@ -430,6 +431,7 @@ public class ResCUserLocal {
                 sp.EncodeStr(answers[i][j]);
             }
         }
+
         return sp;
     }
 
@@ -438,7 +440,7 @@ public class ResCUserLocal {
 
         sp.Encode4(skill_id);
 
-        if (Config.GreaterOrEqual(Region.JMS, 302) | Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
             sp.Encode4(cool_time);
         } else {
             sp.Encode2(cool_time);

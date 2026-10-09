@@ -23,7 +23,7 @@ import odin.client.inventory.Item;
 import tacos.config.Config;
 import tacos.config.Content;
 import tacos.config.Region;
-import tacos.shared.SharedDate;
+import tacos.shared.TacosSharedDate;
 import tacos.packet.ServerPacket;
 
 /**
@@ -161,29 +161,22 @@ public class RD_GW_ItemSlotBase {
                     break;
                 }
 
-                if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104)) {
+                if (Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
                     data.Encode4(equip.getFlag());
                 } else {
                     data.Encode2(equip.getFlag()); // item._ZtlSecureTear_nAttribute
                 }
                 // リバース武器
-                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)
-                        || Region.VMS.check() || Config.GreaterOrEqual(Region.GMS, 68)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 68) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check()) {
                     data.Encode1(0); // item._ZtlSecureTear_nLevelUpType
                     data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // item._ZtlSecureTear_nLevel
                     data.Encode4(equip.getExpPercentage() * 4); // item._ZtlSecureTear_nEXP
                 }
                 // 耐久度
-                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 84)) {
-                    data.Encode4(equip.getDurability()); // item._ZtlSecureTear_nDurability
-                }
+                data.Encode4(equip.getDurability(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 84) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // item._ZtlSecureTear_nDurability
                 // ビシャスのハンマー
-                if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.GMS, 73) || Region.BMS.check()) {
-                    data.Encode4(equip.getViciousHammer()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
-                }
-                if (Config.GreaterOrEqual(Region.KMS, 127) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-                    data.Encode2(0);
-                }
+                data.Encode4(equip.getViciousHammer(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 73) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()); // item._ZtlSecureTear_nIUC, JMS v302 MAX = 0xDF (15 / (13+2))
+                data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 127) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
                 if (Config.GreaterOrEqual(Region.GMS, 126)) {
                     data.Encode2(0);
                     data.Encode4(0);
@@ -200,19 +193,13 @@ public class RD_GW_ItemSlotBase {
                     data.Encode2(0); // option._ZtlSecureTear_nSocket1, v302 潜在能力4個目?
                     data.Encode2(0); // option._ZtlSecureTear_nSocket2, v302 カナトコ?
                 }
-                if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-                    data.Encode2(0);
-                }
-                if (Config.GreaterOrEqual(Region.EMS, 89) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-                    data.Encode2(0);
-                }
-                if (Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
+                data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
+                data.Encode2(0, Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
+                if (Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111)) {
                     data.Encode2(0);
                     data.Encode2(0);
                 }
-                if (Config.GreaterOrEqual(Region.GMS, 126)) {
-                    data.Encode2(0);
-                }
+                data.Encode2(0, Config.GreaterOrEqual(Region.GMS, 126));
                 if (Config.GreaterOrEqual(Region.JMS, 302)) {
                     data.Encode2(0); // v302, Alien Stone
                     data.Encode4(0);
@@ -222,7 +209,7 @@ public class RD_GW_ItemSlotBase {
                 if (!hasUniqueId) {
                     data.Encode8(0);
                 }
-                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.GMS, 68)) {
+                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 68) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
                     data.Encode8(0);
                     data.Encode4(-1);
                 }
@@ -255,7 +242,7 @@ public class RD_GW_ItemSlotBase {
                 data.Encode2(item.getPet().getCloseness()); // nTameness_CS
                 data.Encode1(item.getPet().getFullness()); // nRepleteness_CS
                 // 魔法の効力期限, Windows時間
-                data.Encode8(SharedDate.getMagicalExpirationDate()); // dateDead
+                data.Encode8(TacosSharedDate.getMagicalExpirationDate()); // dateDead
                 if (Config.LessOrEqual(Region.KMS, 3)) {
                     break;
                 }
@@ -264,13 +251,9 @@ public class RD_GW_ItemSlotBase {
                 if (Config.LessOrEqual(Region.KMS, 31)) {
                     break;
                 }
-                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 68) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check()) {
-                    // 魔法の時間, デンデン専用 (残り時間)
-                    data.Encode4((item.getItemId() == 5000054) ? 3600 : 0); // nRemainLife_CS
-                }
-                if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-                    data.Encode2(0); // nAttribute_CS
-                }
+                // 魔法の時間, デンデン専用 (残り時間)
+                data.Encode4((item.getItemId() == 5000054) ? 3600 : 0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 68) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Region.VMS.check()); // nRemainLife_CS
+                data.Encode2(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // nAttribute_CS
                 if (Config.LessOrEqual(Region.GMS, 95) || Config.LessOrEqual(Region.EMS, 70)) {
                     break;
                 }
@@ -279,12 +262,8 @@ public class RD_GW_ItemSlotBase {
                     data.Encode1(item.getPet().getSummoned() ? 1 : 0);
                     data.Encode4(0);
                 }
-                if (Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89)) {
-                    data.Encode4(0);
-                }
-                if (Config.GreaterOrEqual(Region.KMS, 197)) {
-                    data.Encode2(0);
-                }
+                data.Encode4(0, Config.GreaterOrEqual(Region.KMS, 169) || Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.GMS, 126) || Config.GreaterOrEqual(Region.EMS, 89));
+                data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 197));
                 break;
             }
             // Consume, Install, Etc, Cash
@@ -315,9 +294,7 @@ public class RD_GW_ItemSlotBase {
                 }
                 if (item_img_num == 223) {
                     // KMST only
-                    if (Config.Equal(Region.KMST, 391)) {
-                        data.Encode8(0);
-                    }
+                    data.Encode8(0, Config.Equal(Region.KMST, 391));
                 }
 
                 if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.JMST, 110)) {
@@ -443,117 +420,117 @@ public class RD_GW_ItemSlotBase {
             long flag1 = -1;
             long flag2 = -1;
             data.Encode4((int) flag1);
-            if ((flag1 & 0x01) > 0) {
+            if ((flag1 & 0x01) != 0) {
                 data.Encode1(equip.getUpgradeSlots());
             }
-            if ((flag1 & 0x02) > 0) {
+            if ((flag1 & 0x02) != 0) {
                 data.Encode1(equip.getLevel());
             }
             // x16
-            if ((flag1 & 0x04) > 0) {
+            if ((flag1 & 0x04) != 0) {
                 data.Encode2(equip.getStr());
             }
-            if ((flag1 & 0x08) > 0) {
+            if ((flag1 & 0x08) != 0) {
                 data.Encode2(equip.getDex());
             }
-            if ((flag1 & 0x10) > 0) {
+            if ((flag1 & 0x10) != 0) {
                 data.Encode2(equip.getInt());
             }
-            if ((flag1 & 0x20) > 0) {
+            if ((flag1 & 0x20) != 0) {
                 data.Encode2(equip.getLuk());
             }
-            if ((flag1 & 0x40) > 0) {
+            if ((flag1 & 0x40) != 0) {
                 data.Encode2(equip.getHp());
             }
-            if ((flag1 & 0x80) > 0) {
+            if ((flag1 & 0x80) != 0) {
                 data.Encode2(equip.getMp());
             }
-            if ((flag1 & 0x100) > 0) {
+            if ((flag1 & 0x100) != 0) {
                 data.Encode2(equip.getWatk());
             }
-            if ((flag1 & 0x200) > 0) {
+            if ((flag1 & 0x200) != 0) {
                 data.Encode2(equip.getMatk());
             }
-            if ((flag1 & 0x400) > 0) {
+            if ((flag1 & 0x400) != 0) {
                 data.Encode2(equip.getWdef());
             }
-            if ((flag1 & 0x800) > 0) {
+            if ((flag1 & 0x800) != 0) {
                 data.Encode2(equip.getMdef());
             }
-            if ((flag1 & 0x1000) > 0) {
+            if ((flag1 & 0x1000) != 0) {
                 data.Encode2(equip.getAcc());
             }
-            if ((flag1 & 0x2000) > 0) {
+            if ((flag1 & 0x2000) != 0) {
                 data.Encode2(equip.getAvoid());
             }
-            if ((flag1 & 0x4000) > 0) {
+            if ((flag1 & 0x4000) != 0) {
                 data.Encode2(equip.getHands());
             }
-            if ((flag1 & 0x8000) > 0) {
+            if ((flag1 & 0x8000) != 0) {
                 data.Encode2(equip.getSpeed());
             }
-            if ((flag1 & 0x10000) > 0) {
+            if ((flag1 & 0x10000) != 0) {
                 data.Encode2(equip.getJump()); // niJump
             }
-            if ((flag1 & 0x20000) > 0) {
+            if ((flag1 & 0x20000) != 0) {
                 data.Encode2(equip.getFlag()); // nAttribute
             }
-            if ((flag1 & 0x40000) > 0) {
+            if ((flag1 & 0x40000) != 0) {
                 data.Encode1(0); // nLevelUpType
             }
-            if ((flag1 & 0x80000) > 0) {
+            if ((flag1 & 0x80000) != 0) {
                 data.Encode1(Math.max(equip.getBaseLevel(), equip.getEquipLevel())); // nLevel
             }
-            if ((flag1 & 0x100000) > 0) {
+            if ((flag1 & 0x100000) != 0) {
                 data.Encode8(equip.getExpPercentage() * 4); // nEXP64
             }
-            if ((flag1 & 0x200000) > 0) {
+            if ((flag1 & 0x200000) != 0) {
                 data.Encode4(equip.getDurability()); // nDurability
             }
-            if ((flag1 & 0x400000) > 0) {
+            if ((flag1 & 0x400000) != 0) {
                 data.Encode4(equip.getViciousHammer()); // nIUC
             }
-            if ((flag1 & 0x800000) > 0) {
+            if ((flag1 & 0x800000) != 0) {
                 data.Encode2(0); // niPVPDamage
             }
-            if ((flag1 & 0x1000000) > 0) {
+            if ((flag1 & 0x1000000) != 0) {
                 data.Encode1(0); // niReduceReq
             }
-            if ((flag1 & 0x2000000) > 0) {
+            if ((flag1 & 0x2000000) != 0) {
                 data.Encode2(0); // nSpecialAttribute
             }
-            if ((flag1 & 0x4000000) > 0) {
+            if ((flag1 & 0x4000000) != 0) {
                 data.Encode4(0); // nDurabilityMax
             }
-            if ((flag1 & 0x8000000) > 0) {
+            if ((flag1 & 0x8000000) != 0) {
                 data.Encode1(0); // niIncReq
             }
-            if ((flag1 & 0x10000000L) > 0) {
+            if ((flag1 & 0x10000000L) != 0) {
                 data.Encode1(0); // nGrowthEnchant
             }
-            if ((flag1 & 0x20000000L) > 0) {
+            if ((flag1 & 0x20000000L) != 0) {
                 data.Encode1(0); // nPSEnchant
             }
-            if ((flag1 & 0x40000000L) > 0) {
+            if ((flag1 & 0x40000000L) != 0) {
                 data.Encode1(0); // nBDR
             }
-            if ((flag1 & 0x80000000L) > 0) {
+            if ((flag1 & 0x80000000L) != 0) {
                 data.Encode1(0); // nIMDR
             }
             data.Encode4((int) flag2);
-            if ((flag2 & 0x01) > 0) {
+            if ((flag2 & 0x01) != 0) {
                 data.Encode1(0); // nDamR
             }
-            if ((flag2 & 0x02) > 0) {
+            if ((flag2 & 0x02) != 0) {
                 data.Encode1(0); // nStatR
             }
-            if ((flag2 & 0x04) > 0) {
+            if ((flag2 & 0x04) != 0) {
                 data.Encode1(-1); // nCuttable
             }
-            if ((flag2 & 0x08) > 0) {
+            if ((flag2 & 0x08) != 0) {
                 data.Encode8(0); // nExGradeOption
             }
-            if ((flag2 & 0x10) > 0) {
+            if ((flag2 & 0x10) != 0) {
                 data.Encode4(0); // nItemState
             }
         }
@@ -603,12 +580,8 @@ public class RD_GW_ItemSlotBase {
             data.Encode8(item.getUniqueId());
         }
 
-        data.Encode8(SharedDate.getNoExpirationDate());
-
-        if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.GMS, 111)) {
-            data.Encode4(0);
-        }
-
+        data.Encode8(TacosSharedDate.getNoExpirationDate());
+        data.Encode4(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 76));
         return data.getBytes();
     }
 }

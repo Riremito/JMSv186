@@ -194,5 +194,4 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
 
         return false;
     }
-
 }
