@@ -212,7 +212,7 @@ public class ParseCUser_Attack {
         attack.Y = chr.getPosition().y;
         attack.FieldKey = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         // DR_Check
-        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330) || Region.HKMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330)) {
             // none
         } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int unk1 = cp.Decode4(); // pDrInfo.dr0
@@ -220,7 +220,7 @@ public class ParseCUser_Attack {
         }
         attack.HitKey = cp.Decode1(); // nDamagePerMob | (16 * nCount)
         // DR_Check
-        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330) || Region.HKMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330)) {
             // none
         } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int unk3 = cp.Decode4(); // pDrInfo.dr2
@@ -233,7 +233,7 @@ public class ParseCUser_Attack {
         }
         // v95 1 byte cd->nCombatOrders
         byte unk5 = cp.Decode1(Config.GreaterOrEqual(Region.GMS, 95));
-        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330) || Region.HKMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 114) || Config.LessOrEqual(Region.KMST, 330)) {
             // none
         } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int unk6 = cp.Decode4(); // get_rand of DR_Check
@@ -272,7 +272,7 @@ public class ParseCUser_Attack {
                 attack.exJablin = cp.Decode1();
             }
         }
-        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 165) || Region.HKMS.check() || Region.BMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Region.BMS.check()) {
             attack.AttackActionKey = cp.Decode1();
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15)
@@ -320,7 +320,7 @@ public class ParseCUser_Attack {
                 }
             }
 
-            if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.THMS, 87) || Region.HKMS.check()) {
+            if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.THMS, 87)) {
                 // none
             } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
                 int unk29 = cp.Decode4(); // CMob::GetCrc(v366->pMob)
@@ -328,7 +328,7 @@ public class ParseCUser_Attack {
 
             attack.damages.put(nTargetID, damage_list); // add damage list.
         }
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             if (attack.header == ClientPacketHeader.CP_UserShootAttack) {
                 short unk30 = cp.Decode2();
                 short unk31 = cp.Decode2();
