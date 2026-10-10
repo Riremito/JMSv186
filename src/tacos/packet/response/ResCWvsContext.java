@@ -159,7 +159,7 @@ public class ResCWvsContext {
         sp.Encode1(0, Config.Between(Region.TWMS, 74, 93) || Config.Between(Region.EMS, 55, 76));
         sp.EncodeBuffer(RD_CharacterStat.EncodeChangeStat(chr, statmask));
         if (Config.PreBB()) {
-            if (Region.JMS.check() || Region.JMST.check()) {
+            if (Region.JMS.check() || Region.JMST.check() || Region.CMS.check()) {
                 // Pet
                 if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
                     int v5 = 0; // CVecCtrlUser::AddMovementInfo
@@ -400,9 +400,9 @@ public class ResCWvsContext {
                         break;
                     }
                     case PICKUP_MESO: {
-                        sp.Encode1(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+                        sp.Encode1(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
                         sp.Encode4(pb.Inc_Meso);
-                        if (Config.LessOrEqual(Region.JMS, 131)) {
+                        if (Config.LessOrEqual(Region.JMS, 131) || Config.LessOrEqual(Region.CMS, 73)) {
                             sp.Encode2(0); // Internet cafe bonus
                         } else {
                             sp.Encode4(0);

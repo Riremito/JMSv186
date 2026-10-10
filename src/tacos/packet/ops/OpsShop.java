@@ -177,7 +177,7 @@ public enum OpsShop implements IPacketOps {
             ShopRes_RechargeUnknown.set(12);
             return;
         }
-        if (Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 91)) {
+        if (Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 91)) {
             ShopReq_Buy.set(0);
             ShopReq_Sell.set(1);
             ShopReq_Recharge.set(2);

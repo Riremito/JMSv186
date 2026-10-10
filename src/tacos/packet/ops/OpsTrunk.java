@@ -165,7 +165,7 @@ public enum OpsTrunk implements IPacketOps {
             return;
         }
 
-        if (Config.GreaterOrEqual(Region.CMS, 88)) {
+        if (Config.GreaterOrEqual(Region.CMS, 73)) {
             TrunkReq_Close.set(3);
             TrunkReq_GetItem.set(4);
             TrunkReq_PutItem.set(5);
