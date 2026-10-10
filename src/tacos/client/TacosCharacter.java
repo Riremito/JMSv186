@@ -268,8 +268,8 @@ public class TacosCharacter extends TacosPlayer {
             getCalcDamage().setSeed(getCalcDamage().random(), getCalcDamage().random(), getCalcDamage().random());
         }
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
-            SendPacket(ResCStage.SetField_JMS_302((MapleCharacter) this, 1, bCharacterData, 0));
-            SendPacket(ResCStage.SetField_JMS_302((MapleCharacter) this, 2, bCharacterData, -1));
+            SendPacket(ResCStage.SetField_JMS302((MapleCharacter) this, 1, bCharacterData, 0));
+            SendPacket(ResCStage.SetField_JMS302((MapleCharacter) this, 2, bCharacterData, -1));
             return;
         }
 

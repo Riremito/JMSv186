@@ -21,6 +21,7 @@ package tacos.packet.response;
 import odin.client.MapleCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
+import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.RD_CUser;
@@ -37,13 +38,23 @@ public class ResCUserPool {
 
         sp.Encode4(chr.getId());
 
-        if (Config.Equal(Region.JMS, 147)) {
-            sp.EncodeBuffer(RD_CUser.CUserRemote_Init_JMS147(chr));
-        } else if (Config.GreaterOrEqual(Region.JMS, 302)) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.EncodeBuffer(RD_CUser.CUserRemote_Init_JMS302(chr));
         } else {
             sp.EncodeBuffer(RD_CUser.CUserRemote_Init(chr));
         }
+
+        // FieldSpecificData?
+        int map_id = chr.getMap().getId();
+        if (TacosConstants.is_coconut(map_id)) {
+            sp.Encode1(chr.getCoconutTeam());
+            return sp;
+        }
+        if (TacosConstants.is_monster_carnival(map_id)) {
+            sp.Encode1((chr.getCarnivalParty() != null) ? chr.getCarnivalParty().getTeam() : 0);
+            return sp;
+        }
+
         return sp;
     }
 

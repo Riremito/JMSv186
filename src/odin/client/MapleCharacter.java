@@ -252,24 +252,6 @@ public class MapleCharacter extends TacosCharacter {
         sendStatChanged();
     }
 
-    public boolean checkSpecificMap(int map_id_base, int map_id_range) {
-        int map_id = getMapId();
-
-        if (map_id_base == 0) {
-            return false;
-        }
-
-        if ((map_id / map_id_base) != 1) {
-            return false;
-        }
-
-        if ((map_id - map_id_base) >= map_id_range) {
-            return false;
-        }
-
-        return true;
-    }
-
     public final String getBlessOfFairyOrigin() {
         return this.BlessOfFairy_Origin;
     }

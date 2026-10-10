@@ -122,6 +122,14 @@ public class TacosConstants {
         return false;
     }
 
+    public static boolean is_monster_carnival(int map_id) {
+        // 980000000
+        if ((map_id / 10000) == 98000) {
+            return true;
+        }
+        return false;
+    }
+
     public static final int MAP_ID_ZAKUM = 280030000;
     public static final int MAP_ID_HORNTAIL = 240060200;
     public static final int MAP_ID_PINKBEAN = 270050100;

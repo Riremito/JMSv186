@@ -24,6 +24,7 @@ import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.ShopDispatch;
+import tacos.client.TacosBuff;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
@@ -68,114 +69,41 @@ public class RD_CUser {
     public static byte[] CUserRemote_Init(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        data.Encode1(chr.getLevel(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        data.EncodeStr(chr.getName());
-        data.EncodeStr("", Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
-        // guild
-        MapleGuild gs = null;
-        if (0 < chr.getGuildId()) {
-            gs = chr.getWorld().getGuild().getGuild(chr.getGuildId());
-        }
-        if (gs != null) {
-            // guild info
-            data.EncodeStr(gs.getName());
-            data.Encode2(gs.getLogoBG());
-            data.Encode1(gs.getLogoBGColor());
-            data.Encode2(gs.getLogo());
-            data.Encode1(gs.getLogoColor());
-        } else {
-            // empty guild
-            data.EncodeStr("");
-            data.Encode2(0);
-            data.Encode1(0);
-            data.Encode2(0);
-            data.Encode1(0);
-        }
-        data.Encode8(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // buff mask.
-        data.Encode8(0); // buff mask.
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 187)); // buff mask.
-            data.Encode1(0); //start of energy charge
-            data.Encode1(0);
-            data.Encode2(chr.getJob());
-        }
-        data.EncodeBuffer(RD_AvatarLook.Encode(chr));
-        data.Encode4(0); //this is CHARID to follow
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)) {
-            data.Encode4(0); //probably charid following
-            data.Encode4(0);
-            if (Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76)) {
-                data.Encode4(0);
-                data.Encode4(0);
-                data.Encode4(0);
-            }
-            data.Encode4(0);
-        }
-        data.Encode4(chr.getActiveEffectItem());
-        data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getX());
-        data.Encode2(chr.getY());
-        data.Encode1(chr.getMoveAction());
-        data.Encode2(0); // FH
-        data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // bShowAdminEffect
-        data.Encode1(0); // pet size
-        data.Encode4(chr.getMount().getLevel()); // mount lvl
-        data.Encode4(chr.getMount().getExp()); // exp
-        data.Encode4(chr.getMount().getFatigue()); // tiredness
-        // MiniRoomBalloon (ゲーム) 1 byte flag + data
-        data.EncodeBuffer(RD_Structure.AnnounceBox(chr)); // m_nMiniRoomType
-        // ADBoardBalloon (黒板) 1 byte flag + data
-        {
-            data.Encode1(chr.getADBoard() != null && chr.getADBoard().length() > 0 ? 1 : 0); // m_bADBoardRemote
-            if (chr.getADBoard() != null && chr.getADBoard().length() > 0) {
-                data.EncodeStr(chr.getADBoard());
-            }
-        }
-        data.Encode1(0); // CoupleRecord, count4 -> buf0x10 4
-        data.Encode1(0); // FriendRecord, count4 -> buf0x10 4
-        // MarriageRecord 1 byte flag + data
-        {
-            data.Encode1(0); // MarriageRecord
-        }
-        data.Encode1(chr.getEffectMask()); // Effect
-        data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // NewYearCardRecord
-        data.Encode4(0); // not in KMST, in GMS v95: m_nPhase
-        // 特殊マップ専用
-        // MonsterCarnival
-        if (chr.checkSpecificMap(980000000, 1000) || chr.checkSpecificMap(980030000, 1000)) {
-            data.Encode1((chr.getCarnivalParty() != null) ? chr.getCarnivalParty().getTeam() : 0); // sub_5CD27E
-        } // Coconut
-        else if (chr.checkSpecificMap(109080000, 1000)) {
-            data.Encode1(chr.getCoconutTeam()); // 0059F0ED
-        }
-
-        return data.getBytes();
-    }
-
-    public static byte[] CUserRemote_Init_JMS147(MapleCharacter chr) {
-        MapleGuild guild = null;
         Object shop = chr.getPlayerShop();
+        MapleGuild guild = null;
         if (0 < chr.getGuildId()) {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
-        ServerPacket data = new ServerPacket();
 
-        data.EncodeStr(chr.getName());
-        data.EncodeStr((guild != null) ? guild.getName() : "");
-        data.Encode2((guild != null) ? guild.getLogoBG() : 0);
-        data.Encode1((guild != null) ? guild.getLogoBGColor() : 0);
-        data.Encode2((guild != null) ? guild.getLogo() : 0);
-        data.Encode1((guild != null) ? guild.getLogoColor() : 0);
-        data.EncodeBuffer(RD_CUser.SecondaryStat_EncodeForRemote_JMS147(chr));
-        data.Encode2(0);
-        data.EncodeBuffer(RD_AvatarLook.Encode(chr));
+        data.Encode1(chr.getLevel(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+        data.EncodeStr(chr.getName()); // m_sCharacterName
+        data.EncodeStr("", Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
+        // guild.
+        data.EncodeStr((guild != null) ? guild.getName() : ""); // m_sGuildName
+        data.Encode2((guild != null) ? guild.getLogoBG() : 0); // m_nGuildMarkBg
+        data.Encode1((guild != null) ? guild.getLogoBGColor() : 0); // m_nGuildMarkBgColor
+        data.Encode2((guild != null) ? guild.getLogo() : 0); // m_nGuildMark
+        data.Encode1((guild != null) ? guild.getLogoColor() : 0); // m_nGuildMarkColor
+
+        data.EncodeBuffer(RD_CUser.SecondaryStat_EncodeForRemote_JMS147(chr)); // SecondaryStat::DecodeForRemote
+        data.Encode2(chr.getJob()); // m_nJobCode
+        data.EncodeBuffer(RD_AvatarLook.Encode(chr)); // AvatarLook::AvatarLook
+
         data.Encode4(0); // m_dwDriverID
-        data.Encode4(chr.getActiveEffectItem());
-        data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0);
-        data.Encode2(chr.getX());
-        data.Encode2(chr.getY());
+        data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180));// m_dwPassenserID
+        data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186));// nChocoCount
+        data.Encode4(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
+        data.Encode4(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
+        data.Encode4(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
+        data.Encode4(chr.getActiveEffectItem()); // nActiveEffectItemID
+        data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180)); // m_nCompletedSetItemID
+        data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0); // m_nPortableChairID
+        data.Encode2(chr.getX()); // x
+        data.Encode2(chr.getY()); // y
         data.Encode1(chr.getMoveAction()); // m_nMoveAction
-        data.Encode2(chr.getFootholdId());
+        data.Encode2(chr.getFootholdId()); // foothold
+        data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // bShowAdminEffect
+        // pet.
         for (int i = 0; i < 4; i++) {
             MaplePet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
@@ -184,12 +112,13 @@ public class RD_CUser {
             }
             data.EncodeBuffer(RD_CUser.CPet_Init(pet));
         }
+        // riding.
         data.Encode4(chr.getMount().getLevel()); // m_nTamingMobLevel
         data.Encode4(chr.getMount().getExp()); // m_nTamingMobExp
         data.Encode4(chr.getMount().getFatigue()); // m_nTamingMobFatigue
+        // miniroom.
         data.Encode1((shop != null) ? ShopDispatch.getGameType(shop) : 0); // m_nMiniRoomType
         if (shop != null && ShopDispatch.getGameType(shop) != 0) {
-            // AnnounceBox & Interaction : TODO Remove
             data.Encode4(ShopDispatch.getObjectId(shop)); // m_dwMiniRoomSN
             data.EncodeStr(ShopDispatch.getDescription(shop)); // m_sMiniRoomTitle
             data.Encode1((ShopDispatch.getPassword(shop).length() != 0) ? 1 : 0); // m_bPrivate
@@ -198,34 +127,49 @@ public class RD_CUser {
             data.Encode1(ShopDispatch.getMaxSize(shop)); // m_nMaxUsers
             data.Encode1(ShopDispatch.isOpen(shop) ? 0 : 1); // m_bGameOn
         }
+        // adboard.
         boolean is_adboard = (chr.getADBoard() != null) && (0 < chr.getADBoard().length());
         data.Encode1(is_adboard ? 1 : 0); // m_bADBoardRemote
         if (is_adboard) {
             data.EncodeStr(chr.getADBoard());
         }
-
+        // couple.
         boolean is_couple = false;
         data.Encode1(is_couple ? 1 : 0);
         if (is_couple) {
-            data.Encode8(0);
-            data.Encode8(0);
-            data.Encode4(0);
+            data.Encode8(0); // m_liCoupleItemSN
+            data.Encode8(0); // m_liPairItemSN
+            data.Encode4(0); // nItemID
         }
+        // friendship.
         boolean is_friend = false;
         data.Encode1(is_friend ? 1 : 0);
         if (is_friend) {
-            data.Encode8(0);
-            data.Encode8(0);
-            data.Encode4(0);
+            data.Encode8(0); // m_liFriendshipItemSN
+            data.Encode8(0); // m_liFriendshipPairItemSN
+            data.Encode4(0); // nItemID
         }
+        // marriage.
         data.Encode1((0 < chr.getMarriageId()) ? 1 : 0);
         if (0 < chr.getMarriageId()) {
             data.Encode4(chr.getId()); // m_dwMarriageCharacterID
             data.Encode4(chr.getMarriageId()); // m_dwMarriagePairCharacterID
             data.Encode4(chr.getMarriageItemId()); // m_nWeddingRingID
         }
+        // effect.
         data.Encode1(chr.getEffectMask()); // m_nDelayedEffectFlag
+        // new year card.
+        boolean is_new_year_card = false;
+        data.Encode1(is_new_year_card ? 1 : 0, Config.Equal(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 95));
+        if (is_new_year_card) {
+            int new_year_card_count = 0;
+            data.Encode4(new_year_card_count);
+            for (int i = 0; i < new_year_card_count; i++) {
+                data.Encode4(0); // id.
+            }
+        }
 
+        data.Encode4(0, (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) && !Config.Equal(Region.KMST, 330)); // m_nPhase, not in KMST330
         return data.getBytes();
     }
 
@@ -356,9 +300,12 @@ public class RD_CUser {
     public static byte[] SecondaryStat_EncodeForRemote_JMS147(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
-        data.EncodeZeroBytes(16);
-        data.Encode1(0);
-        data.Encode1(0);
+        for (int empty_mask : TacosBuff.getBuffBuffer()) {
+            data.Encode4(empty_mask); // uFlagTemp
+        }
+
+        data.Encode1(0); // nDefenseAtt_CS
+        data.Encode1(0); // nDefenseState_CS
         return data.getBytes();
     }
 

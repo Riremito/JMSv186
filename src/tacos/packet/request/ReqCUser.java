@@ -887,7 +887,7 @@ public class ReqCUser {
 
     public static boolean OnUserMove(MapleCharacter chr, ClientPacket cp, MapleMap map) {
         // not in TWMS148, CMS104, but in TWMS125
-        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.GreaterOrEqual(Region.JMS, 180) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int unk1 = cp.Decode4(); // -1
             int unk2 = cp.Decode4(); // -1
         }
@@ -895,7 +895,7 @@ public class ReqCUser {
         byte unk3 = cp.Decode1(); // unk
 
         // not in TWMS148, CMS104, but in TWMS125
-        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.GreaterOrEqual(Region.JMS, 180) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int unk4 = cp.Decode4(); // -1
             int unk5 = cp.Decode4(); // -1
             int unk6 = cp.Decode4();
