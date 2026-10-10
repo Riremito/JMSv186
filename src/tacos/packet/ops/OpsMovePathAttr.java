@@ -38,7 +38,7 @@ public enum OpsMovePathAttr {
     MPA_STATCHANGE,
     MPA_SITDOWN,
     MPA_STARTFALLDOWN,
-    MPA_FALLDOWN(12), // required
+    MPA_FALLDOWN, // required
     MPA_STARTWINGS,
     MPA_WINGS,
     MPA_ARAN_ADJUST,
@@ -84,28 +84,17 @@ public enum OpsMovePathAttr {
     }
 
     public static void init() {
-        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.CMS, 73) || Config.Equal(Region.BMS, 24)) {
-            MPA_FALLDOWN.set(15);
-            return;
-        }
+        // JMS302
         if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
             MPA_FALLDOWN.set(14);
             return;
         }
-        if (Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.GMS, 95)) {
+        // KMS112, JMS186
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) {
             MPA_FALLDOWN.set(12);
             return;
         }
-        if (Config.GreaterOrEqual(Region.JMS, 147)) {
-            MPA_FALLDOWN.set(15);
-            return;
-        }
-        if (Config.GreaterOrEqual(Region.GMS, 83)) {
-            MPA_FALLDOWN.set(15);
-            return;
-        }
-
-        MPA_FALLDOWN.set(12);
-        return;
+        // KMS55-95, JMS147-180, CMS73
+        MPA_FALLDOWN.set(15);
     }
 }

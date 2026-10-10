@@ -158,9 +158,12 @@ public class RD_CUser {
         }
         // effect.
         data.Encode1(chr.getEffectMask()); // m_nDelayedEffectFlag
+        // unk.
+        data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.Equal(Region.JMS, 180));
+
         // new year card.
         boolean is_new_year_card = false;
-        data.Encode1(is_new_year_card ? 1 : 0, Config.Equal(Region.JMS, 180) || Config.GreaterOrEqual(Region.GMS, 95));
+        data.Encode1(is_new_year_card ? 1 : 0, Config.GreaterOrEqual(Region.GMS, 95));
         if (is_new_year_card) {
             int new_year_card_count = 0;
             data.Encode4(new_year_card_count);

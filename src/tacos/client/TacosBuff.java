@@ -85,12 +85,12 @@ public class TacosBuff {
         if (Config.PostBB()) {
             return new int[5]; // 20
         }
-        // JMS180-186 (Pre-BB)
-        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 180) || Config.Equal(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83)) {
+        // KMS84, JMS180-186 (Pre-BB)
+        if (Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.Equal(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83)) {
             return new int[4]; // 16
         }
         // KMS1 = none or 4.
-        // JMS131-164, KMS1-65, BMS24
+        // JMS131-165, KMS1-71, BMS24
         return new int[1]; // 4
     }
 

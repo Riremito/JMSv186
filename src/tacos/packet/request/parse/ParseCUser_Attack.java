@@ -257,9 +257,9 @@ public class ParseCUser_Attack {
         } else if (Config.PostBB()) {
             byte unk16 = cp.Decode1();
         }
-        if (Config.LessOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.GMS, 95)) {
+        if (Config.GreaterOrEqual(Region.GMS, 95)) {
             // none
-        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.BMS, 24)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int unk17 = cp.Decode4(); // Crc
         }
         attack.tKeyDown = 0;
@@ -272,7 +272,7 @@ public class ParseCUser_Attack {
                 attack.exJablin = cp.Decode1();
             }
         }
-        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 164) || Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Region.BMS.check()) {
+        if (Config.LessOrEqual(Region.KMS, 71) || Config.LessOrEqual(Region.JMS, 164) || Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Region.BMS.check()) {
             attack.AttackActionKey = cp.Decode1(); // to JMS164.
         } else {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15), from JMS165.
