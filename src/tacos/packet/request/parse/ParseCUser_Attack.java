@@ -272,10 +272,10 @@ public class ParseCUser_Attack {
                 attack.exJablin = cp.Decode1();
             }
         }
-        if (Config.LessOrEqual(Region.KMS, 71) || Config.LessOrEqual(Region.JMS, 164) || Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Region.BMS.check()) {
-            attack.AttackActionKey = cp.Decode1(); // to JMS164.
-        } else {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 165)) {
             attack.AttackActionKey = cp.Decode2(); // nAttackAction & 0x7FFF | (bLeft << 15), from JMS165.
+        } else {
+            attack.AttackActionKey = cp.Decode1(); // to JMS164.
         }
         if (Config.LessOrEqual(Region.KMST, 330) || Config.Equal(Region.JMS, 187)) {
             // none

@@ -60,7 +60,7 @@ public class ResCUserRemote {
 
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
-        sp.Encode1(attack.m_nLevel, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // m_nLevel
+        sp.Encode1(attack.m_nLevel, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // m_nLevel
         sp.Encode1(attack.SkillLevel); // nSLV
 
         if (attack.SkillLevel != 0) {
@@ -81,10 +81,10 @@ public class ResCUserRemote {
 
         sp.Encode1(attack.BuffKey); // bSerialAttack
 
-        if (Config.LessOrEqual(Region.KMS, 71) || Config.LessOrEqual(Region.JMS, 164)) {
-            sp.Encode1(attack.AttackActionKey);
-        } else {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 165)) {
             sp.Encode2(attack.AttackActionKey);
+        } else {
+            sp.Encode1(attack.AttackActionKey);
         }
 
         sp.Encode1(attack.nAttackSpeed); // nActionSpeed
@@ -101,11 +101,11 @@ public class ResCUserRemote {
                 sp.Encode1(entry.getValue().size()); // hits
             }
             for (Integer damage : entry.getValue()) {
-                if (Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 180) || Config.LessOrEqual(Region.KMST, 330)) {
-                    sp.Encode4(damage); // damage
-                } else {
+                if ((Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) && !Config.Equal(Region.KMST, 330)) {
                     sp.Encode1((damage & 0x80000000) != 0 ? 1 : 0); // critical.
-                    sp.Encode4(damage & 0x7FFFFFFF);
+                    sp.Encode4(damage & 0x7FFFFFFF); // remove critical bit.
+                } else {
+                    sp.Encode4(damage); // critical bit is already set.
                 }
             }
         }

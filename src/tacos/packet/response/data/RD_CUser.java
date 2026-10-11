@@ -97,12 +97,20 @@ public class RD_CUser {
         data.Encode4(0, Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
         data.Encode4(chr.getActiveEffectItem()); // nActiveEffectItemID
         data.Encode4(0, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 180)); // m_nCompletedSetItemID
+        // CMS73
+        data.EncodeStr("", Config.Between(Region.CMS, 73, 85));
+        data.EncodeStr("", Config.Between(Region.CMS, 73, 85));
+        data.Encode2(0, Config.Between(Region.CMS, 73, 85));
+        data.Encode2(0, Config.Between(Region.CMS, 73, 85));
+
         data.Encode4(GameConstants.getInventoryType(chr.getChair()) == MapleInventoryType.SETUP ? chr.getChair() : 0); // m_nPortableChairID
         data.Encode2(chr.getX()); // x
         data.Encode2(chr.getY()); // y
         data.Encode1(chr.getMoveAction()); // m_nMoveAction
         data.Encode2(chr.getFootholdId()); // foothold
+        // GMS95
         data.Encode1(0, Config.GreaterOrEqual(Region.GMS, 95)); // bShowAdminEffect
+
         // pet.
         for (int i = 0; i < 4; i++) {
             MaplePet pet = chr.getPetByIndex(i);
@@ -159,7 +167,7 @@ public class RD_CUser {
         // effect.
         data.Encode1(chr.getEffectMask()); // m_nDelayedEffectFlag
         // unk.
-        data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.Equal(Region.JMS, 180));
+        data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.Equal(Region.JMS, 180) || Config.Equal(Region.CMS, 73));
 
         // new year card.
         boolean is_new_year_card = false;
