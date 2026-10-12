@@ -75,6 +75,8 @@ public class RD_CUser {
             guild = chr.getWorld().getGuild().getGuild(chr.getGuildId());
         }
 
+        boolean is_older_version = Config.LessOrEqual(Region.JMS, 131);
+
         data.Encode1(chr.getLevel(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
         data.EncodeStr(chr.getName()); // m_sCharacterName
         data.EncodeStr("", Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
@@ -86,7 +88,7 @@ public class RD_CUser {
         data.Encode1((guild != null) ? guild.getLogoColor() : 0); // m_nGuildMarkColor
 
         data.EncodeBuffer(RD_CUser.SecondaryStat_EncodeForRemote_JMS147(chr)); // SecondaryStat::DecodeForRemote
-        data.Encode2(chr.getJob()); // m_nJobCode
+        data.Encode2(chr.getJob(), !is_older_version); // m_nJobCode
         data.EncodeBuffer(RD_AvatarLook.Encode(chr)); // AvatarLook::AvatarLook
 
         data.Encode4(0); // m_dwDriverID
@@ -315,6 +317,11 @@ public class RD_CUser {
             data.Encode4(empty_mask); // uFlagTemp
         }
 
+        // JMS131
+        if (Config.LessOrEqual(Region.JMS, 131)) {
+            return data.getBytes();
+        }
+        // JMS147
         data.Encode1(0); // nDefenseAtt_CS
         data.Encode1(0); // nDefenseState_CS
         return data.getBytes();
