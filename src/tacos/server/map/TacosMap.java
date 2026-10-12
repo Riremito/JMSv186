@@ -368,6 +368,29 @@ public class TacosMap extends TacosMapData {
         }
         sendExpedition(chr, null);
 
+        splitSendPacket(chr, ResCUserPool.UserEnterField(chr), chr.getId());
+        // pet.
+        chr.updatePets();
+        for (TacosPet pet : chr.getPets()) {
+            splitSendPacket(chr, ResCUser_Pet.TransferField(chr, pet));
+        }
+        // summon.
+        chr.updateSummons();
+        for (TacosSummon summon : chr.getSummons()) {
+            splitSendPacket(chr, ResCSummonedPool.SummonedEnterField(summon, false));
+        }
+        // evan dragon
+        chr.updateDragon();
+        if (chr.getDragon() != null) {
+            splitSendPacket(chr, ResCUser_Dragon.DragonEnterField(chr.getDragon()));
+        }
+        // kanna fox
+        chr.updateSkillPet();
+        if (chr.getSkillPet() != null) {
+            splitSendPacket(chr, ResCUser_SkillPet.SkillPetTransferField(chr.getSkillPet()));
+        }
+
+        // to local player.
         for (MapleCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
@@ -378,8 +401,23 @@ public class TacosMap extends TacosMapData {
                 continue;
             }
             if (area_states.get(player_number) == MapSplitState.ACTIVE) {
-                player.SendPacket(ResCUserPool.UserEnterField(chr));
                 chr.SendPacket(ResCUserPool.UserEnterField(player));
+                // pet.
+                for (TacosPet pet : player.getPets()) {
+                    chr.SendPacket(ResCUser_Pet.TransferField(player, pet));
+                }
+                // summon.
+                for (TacosSummon summon : player.getSummons()) {
+                    chr.SendPacket(ResCSummonedPool.SummonedEnterField(summon, false));
+                }
+                // evan dragon
+                if (player.getDragon() != null) {
+                    chr.SendPacket(ResCUser_Dragon.DragonEnterField(player.getDragon()));
+                }
+                // kanna fox
+                if (player.getSkillPet() != null) {
+                    chr.SendPacket(ResCUser_SkillPet.SkillPetTransferField(player.getSkillPet()));
+                }
             }
         }
         // mob
@@ -675,29 +713,6 @@ public class TacosMap extends TacosMapData {
             if (area_states.get(player_number) == MapSplitState.ACTIVE) {
                 player.SendPacket(packet);
             }
-        }
-    }
-
-    public void linkedObjectEnterField(TacosCharacter chr) {
-        // pet.
-        for (TacosPet pet : chr.getPets()) {
-            splitSendPacket(chr, ResCUser_Pet.TransferField(chr, pet));
-        }
-        // summon.
-        for (TacosSummon summon : chr.getSummons()) {
-            splitSendPacket(chr, ResCSummonedPool.SummonedEnterField(summon, false));
-        }
-        // evan dragon
-        TacosDragon dragon = chr.getDragon();
-        if (dragon != null) {
-            dragon.reset(chr);
-            splitSendPacket(chr, ResCUser_Dragon.DragonEnterField(dragon));
-        }
-        // kanna fox
-        TacosSkillPet skill_pet = chr.getSkillPet();
-        if (skill_pet != null) {
-            skill_pet.reset(chr);
-            splitSendPacket(chr, ResCUser_SkillPet.SkillPetTransferField(skill_pet));
         }
     }
 

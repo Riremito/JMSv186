@@ -442,10 +442,7 @@ public class TacosCharacter extends TacosPlayer {
             map_from.userLeaveField((MapleCharacter) this);
             updateMap(map_to, (portal_to != null) ? portal_to : this.map.getPortal(0)); // for dynamic portal
             sendSetField(false);
-            updatePets();
-            updateSummons();
             map_to.userEnterField((MapleCharacter) this);
-            map_to.linkedObjectEnterField(this);
             stats.relocHeal();
         }
 
@@ -1211,6 +1208,13 @@ public class TacosCharacter extends TacosPlayer {
         return false;
     }
 
+    public void updateSkillPet() {
+        if (this.skill_pet != null) {
+            this.skill_pet.reset(this);
+            this.skill_pet.setObjectId();
+        }
+    }
+
     protected TacosDragon dragon = null;
 
     public TacosDragon getDragon() {
@@ -1232,6 +1236,13 @@ public class TacosCharacter extends TacosPlayer {
             return true;
         }
         return false;
+    }
+
+    public void updateDragon() {
+        if (this.dragon != null) {
+            this.dragon.reset(this);
+            this.dragon.setObjectId();
+        }
     }
 
     // coconut

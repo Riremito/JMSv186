@@ -170,7 +170,7 @@ public class ReqCSummonedPool {
         short unk30 = cp.Decode2(Config.LessOrEqual(Region.JMS, 147)); // X
         short unk31 = cp.Decode2(Config.LessOrEqual(Region.JMS, 147)); // Y
 
-        map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, attack_info));
+        map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, attack_info), chr.getId());
 
         for (SummonDamage damage : attack_info.getDamages()) {
             MapleMonster monster = map.getMonsterByOid(damage.getMobObjectId());
