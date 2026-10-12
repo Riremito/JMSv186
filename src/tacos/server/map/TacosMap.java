@@ -88,6 +88,7 @@ import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosSummon;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -1145,13 +1146,15 @@ public class TacosMap extends TacosMapData {
 
     // used by script.
     public void spawnNpc(int npc_id, Point pos) {
-        MapleNPC npc = new MapleNPC(npc_id);
-        npc.setPosition(pos);
-        npc.setCy(pos.y);
-        npc.setRx0(pos.x + 50);
-        npc.setRx1(pos.x - 50);
-        npc.setFootholdId(findBelow(pos).getId());
-        addNPC(npc);
+        MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+        if (npc != null) {
+            npc.setPosition(pos);
+            npc.setCy(pos.y);
+            npc.setRx0(pos.x + 50);
+            npc.setRx1(pos.x - 50);
+            npc.setFootholdId(findBelow(pos).getId());
+            addNPC(npc);
+        }
     }
 
     public boolean removeNPCById(int npc_id) {

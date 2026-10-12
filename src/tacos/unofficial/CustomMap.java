@@ -31,6 +31,7 @@ import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -74,13 +75,15 @@ public class CustomMap {
                 continue;
             }
 
-            MapleNPC npc = new MapleNPC(npc_id);
-            npc.setPosition(new Point(npc_x, npc_y));
-            npc.setCy(npc_y);
-            npc.setRx0(npc_x + 50);
-            npc.setRx1(npc_x - 50);
-            npc.setFootholdId(npc_fh);
-            map.addNPC(npc);
+            MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+            if (npc != null) {
+                npc.setPosition(new Point(npc_x, npc_y));
+                npc.setCy(npc_y);
+                npc.setRx0(npc_x + 50);
+                npc.setRx1(npc_x - 50);
+                npc.setFootholdId(npc_fh);
+                map.addNPC(npc);
+            }
         }
 
         return true;

@@ -121,7 +121,7 @@ public class Event_PyramidSubway {
 
                 public void run() {
                     if (map.countMonsterById(9300021) <= (stage == 4 ? 1 : 2)) {
-                        map.spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(9300021), new Point(pos));
+                        map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(9300021), new Point(pos));
                     }
                 }
             }, 10000L);

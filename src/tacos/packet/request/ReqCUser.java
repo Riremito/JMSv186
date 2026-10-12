@@ -1346,10 +1346,8 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc.getId());
             return true;
         }
-        if (npc.hasShop()) {
-            chr.DebugMsg("OnUserSelectNpc : " + npc.getId() + ", shop");
-            chr.setConversation(1);
-            npc.sendShop(client);
+        if (TacosNpcShop.startDatabaseNpcShop(chr, npc.getId())) {
+            chr.DebugMsg("OnUserSelectNpc (DatabaseNpcShop) : " + npc.getId());
             return true;
         }
 
@@ -2628,8 +2626,10 @@ public class ReqCUser {
         }
         for (SimpleImmutableEntry<Integer, Integer> summon_data : summon_info) {
             if (Randomizer.nextInt(100) < summon_data.getValue()) {
-                MapleMonster monster = WzXML.MOB.findMonster(summon_data.getKey());
-                chr.getMap().spawnMonster_sSack(monster, chr.getPosition(), 0);
+                MapleMonster monster = WzXML.MOB.createMob(summon_data.getKey());
+                if (monster != null) {
+                    chr.getMap().spawnMonster_sSack(monster, chr.getPosition(), 0);
+                }
             }
         }
         return true;

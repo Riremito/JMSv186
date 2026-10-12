@@ -18,7 +18,9 @@
  */
 package tacos.wz;
 
+import odin.server.life.MapleNPC;
 import tacos.config.Content;
+import tacos.debug.DebugLogger;
 
 /**
  *
@@ -28,5 +30,13 @@ public class NpcWz extends WzXML {
 
     public NpcWz() {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Npc" : "Npc.wz");
+    }
+
+    public MapleNPC createNpc(int npc_id) {
+        if (!WzDataStorage.NPC.check(npc_id)) {
+            DebugLogger.ErrorLog("createNpc : invalid id, " + npc_id);
+            return null;
+        }
+        return new MapleNPC(npc_id);
     }
 }

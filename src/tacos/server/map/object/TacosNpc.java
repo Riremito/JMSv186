@@ -31,6 +31,10 @@ public class TacosNpc extends TacosMapObject {
     private boolean hide = false;
     private int cy;
 
+    public TacosNpc(int npc_id) {
+        this.id = npc_id;
+    }
+
     public int getId() {
         return this.id;
     }

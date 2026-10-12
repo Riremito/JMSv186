@@ -20,21 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import tacos.client.TacosClient;
-import odin.server.MapleShopFactory;
 import tacos.server.map.object.TacosNpc;
 
 public class MapleNPC extends TacosNpc {
 
     public MapleNPC(int npc_id) {
-        setId(npc_id);
-    }
-
-    public boolean hasShop() {
-        return MapleShopFactory.getInstance().getShopForNPC(getId()) != null;
-    }
-
-    public void sendShop(TacosClient client) {
-        MapleShopFactory.getInstance().getShopForNPC(getId()).sendShop(client);
+        super(npc_id);
     }
 }

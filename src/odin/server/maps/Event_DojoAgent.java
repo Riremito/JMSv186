@@ -388,7 +388,7 @@ public class Event_DojoAgent {
 
                 @Override
                 public void run() {
-                    map.spawnMonsterWithEffect(WzXML.MOB.findMonster(mobid), 15, rand == 0 ? point1 : rand == 1 ? point2 : point3);
+                    map.spawnMonsterWithEffect(WzXML.MOB.createMob(mobid), 15, rand == 0 ? point1 : rand == 1 ? point2 : point3);
                 }
             }, 3000);
         }

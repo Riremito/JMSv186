@@ -123,8 +123,10 @@ public class TacosCommandTest {
                 List<MapleMonster> monsters = map.getAllMonsters();
                 MapleMonster monster = null;
                 if (map.getAllMonsters().isEmpty()) {
-                    monster = WzXML.MOB.findMonster(130101);
-                    map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
+                    monster = WzXML.MOB.createMob(130101);
+                    if (monster != null) {
+                        map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
+                    }
                 } else {
                     monster = monsters.get(0);
                 }

@@ -34,11 +34,11 @@ public class DQ_Shops {
 
     public static final String DB_TABLE_NAME = "shops";
 
-    public static MapleShop load(int id, boolean isShopId) {
+    public static MapleShop load(int npc_id) {
         try {
             Connection con = DatabaseConnection.getConnection();
-            try (PreparedStatement ps = con.prepareStatement(isShopId ? "SELECT * FROM " + DB_TABLE_NAME + " WHERE shopid = ?" : "SELECT * FROM " + DB_TABLE_NAME + " WHERE npcid = ?")) {
-                ps.setInt(1, id);
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE npcid = ?")) {
+                ps.setInt(1, npc_id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return new MapleShop(rs.getInt("shopid"), rs.getInt("npcid"));
@@ -51,5 +51,4 @@ public class DQ_Shops {
 
         return null;
     }
-
 }

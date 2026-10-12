@@ -78,7 +78,7 @@ public class ReqCField_MonsterCarnival {
                 chr.sendStatChanged(true);
                 return;
             }
-            MapleMonster mons = WzXML.MOB.findMonster(mobs.get(num).getKey());
+            MapleMonster mons = WzXML.MOB.createMob(mobs.get(num).getKey());
             if (mons != null && chr.getMap().makeCarnivalSpawn(chr.getCarnivalParty().getTeam(), mons, num)) {
                 chr.getCarnivalParty().useCP(chr, mobs.get(num).getValue());
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);

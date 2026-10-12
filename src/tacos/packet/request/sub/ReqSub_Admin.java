@@ -26,6 +26,7 @@ import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -275,7 +276,10 @@ public class ReqSub_Admin {
             return false;
         }
 
-        MapleNPC npc = new MapleNPC(npc_id);
+        MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+        if (npc == null) {
+            return false;
+        }
         Point npc_xy = new Point(x, y);
         npc.setPosition(npc_xy);
         npc.setCy(x);

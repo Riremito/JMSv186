@@ -185,20 +185,18 @@ public class TacosCommandAdmin {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
-                if (!WzDataStorage.NPC.check(npc_id)) {
-                    chr.DebugMsg("npc : invalid id.");
-                    return true;
-                }
-                MapleNPC npc = new MapleNPC(npc_id);
-                npc.setPosition(chr.getPosition());
-                npc.setCy(chr.getPosition().y);
-                npc.setRx0(chr.getPosition().x - 50);
-                npc.setRx1(chr.getPosition().x + 50);
-                npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
-                npc.setFootholdId(chr.getFootholdId());
+                MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+                if (npc != null) {
+                    npc.setPosition(chr.getPosition());
+                    npc.setCy(chr.getPosition().y);
+                    npc.setRx0(chr.getPosition().x - 50);
+                    npc.setRx1(chr.getPosition().x + 50);
+                    npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
+                    npc.setFootholdId(chr.getFootholdId());
 
-                map.addNPC(npc);
-                chr.DebugMsg("npc : " + npc_id);
+                    map.addNPC(npc);
+                    chr.DebugMsg("npc : " + npc_id);
+                }
                 return true;
             }
             case "/pnpc" -> {
@@ -328,8 +326,10 @@ public class TacosCommandAdmin {
                 }
 
                 for (int i = 0; i < count; i++) {
-                    MapleMonster monster = WzXML.MOB.findMonster(mob_id);
-                    map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
+                    MapleMonster monster = WzXML.MOB.createMob(mob_id);
+                    if (monster != null) {
+                        map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
+                    }
                 }
 
                 chr.DebugMsg("mob : " + mob_id);

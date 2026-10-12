@@ -151,7 +151,7 @@ public final class MapleMap extends TacosMap {
                     if (mons.getId() == 8800000) {
                         Point pos = mons.getPosition();
                         this.killAllMonsters(true);
-                        spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(8800000), pos);
+                        spawnMonsterOnGroundBelow(WzXML.MOB.createMob(8800000), pos);
                         break;
                     }
                 }
@@ -171,7 +171,7 @@ public final class MapleMap extends TacosMap {
                     if (mons.getId() == 8800100) {
                         Point pos = mons.getPosition();
                         this.killAllMonsters(true);
-                        spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(8800100), pos);
+                        spawnMonsterOnGroundBelow(WzXML.MOB.createMob(8800100), pos);
                         break;
                     }
                 }
@@ -214,7 +214,7 @@ public final class MapleMap extends TacosMap {
 
     // 多分Reactorの中心座標とサイズが必要, Map上の座標を利用すると足場より下に設置されているように見えるので落下する
     public void spawnZakum(MapleReactor zakum_reactor) {
-        MapleMonster mainb = WzXML.MOB.findMonster(8800000);
+        MapleMonster mainb = WzXML.MOB.createMob(8800000);
         int reactor_fh_id = findBelow(zakum_reactor.getMobSpawnPoint()).getId();
         Point zakum_pos = new Point(zakum_reactor.getMobSpawnPoint());
         zakum_pos.y = getFootholds().get(reactor_fh_id).getY1() - 1;
@@ -229,7 +229,7 @@ public final class MapleMap extends TacosMap {
         spawnFakeMonster(mainb);
         int[] zakpart = {8800003, 8800004, 8800005, 8800006, 8800007, 8800008, 8800009, 8800010};
         for (int i : zakpart) {
-            MapleMonster part = WzXML.MOB.findMonster(i);
+            MapleMonster part = WzXML.MOB.createMob(i);
             part.setPosition(zakum_pos);
             part.setFootholdId(reactor_fh_id);
             mainb.setHomeFoothold(reactor_fh_id);
@@ -419,7 +419,7 @@ public final class MapleMap extends TacosMap {
     // used by script
     public void spawnChaosZakum(int x, int y) {
         Point pos = new Point(x, y);
-        MapleMonster mainb = WzXML.MOB.findMonster(8800100);
+        MapleMonster mainb = WzXML.MOB.createMob(8800100);
         Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
         mainb.setPosition(spos);
         mainb.setFake(true);
@@ -431,7 +431,7 @@ public final class MapleMap extends TacosMap {
             8800108, 8800109, 8800110};
 
         for (int i : zakpart) {
-            MapleMonster part = WzXML.MOB.findMonster(i);
+            MapleMonster part = WzXML.MOB.createMob(i);
             part.setPosition(spos);
 
             spawnMonster(part, -2);

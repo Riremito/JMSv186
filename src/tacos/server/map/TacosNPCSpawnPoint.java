@@ -25,6 +25,7 @@ import tacos.debug.DebugLogger;
 import tacos.wz.MapleData;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzDataTool;
+import tacos.wz.WzXML;
 import tacos.wz.ids.DWI_Block;
 
 /**
@@ -78,7 +79,11 @@ public class TacosNPCSpawnPoint {
             return null;
         }
 
-        this.npc = new MapleNPC(this.id);
+        this.npc = WzXML.NPC.createNpc(this.id);
+        if (this.npc == null) {
+            return null;
+        }
+
         this.npc.setPosition(new Point(this.x, this.y));
         this.npc.setFootholdId(this.fh);
         this.npc.setF(npc.getF() == 1 ? 0 : 1);

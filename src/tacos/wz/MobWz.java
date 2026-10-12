@@ -43,6 +43,25 @@ public class MobWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Mob" : "Mob.wz");
     }
 
+    private final Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
+
+    public MapleMonster createMob(int mob_id) {
+        if (!WzDataStorage.MOB.check(mob_id)) {
+            DebugLogger.ErrorLog("createMob : invalid id, " + mob_id);
+            return null;
+        }
+
+        MapleMonsterStats stats = this.monsterStats.get(mob_id);
+        if (stats == null) {
+            stats = WzXML.MOB.loadMonsterStats(mob_id);
+            if (stats == null) {
+                return null;
+            }
+            this.monsterStats.put(mob_id, stats);
+        }
+        return new MapleMonster(mob_id, stats);
+    }
+
     public MapleData getImg(int mob_id) {
         String target_img_path = String.format("%07d.img", mob_id);
         return getData(target_img_path);
@@ -292,19 +311,5 @@ public class MobWz extends WzXML {
             return false;
         }
         return groups.contains(mob_id);
-    }
-
-    private final Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
-
-    public MapleMonster findMonster(int mob_id) {
-        MapleMonsterStats stats = this.monsterStats.get(mob_id);
-        if (stats == null) {
-            stats = WzXML.MOB.loadMonsterStats(mob_id);
-            if (stats == null) {
-                return null;
-            }
-            this.monsterStats.put(mob_id, stats);
-        }
-        return new MapleMonster(mob_id, stats);
     }
 }

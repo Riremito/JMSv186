@@ -61,30 +61,31 @@ public class TacosBossSpawnPoint {
         if (this.monster != null) {
             return null;
         }
-        this.monster = WzXML.MOB.findMonster(this.id);
-
-        int sp_count = map.getMonsterSpawnPoint().size();
-        if (sp_count != 0) {
-            TacosSpawnPoint target_sp = map.getMonsterSpawnPoint().get(Randomizer.nextInt(sp_count));
-            this.monster.setPosition(target_sp.getX(), target_sp.getY());
-            this.monster.setFootholdId(target_sp.getFh());
-            this.monster.setHomeFoothold(target_sp.getFh());
-        } else {
-            Point pos = getRandomXY(map);
-            int foothold_id = findFootholdId(map, pos);
-            if (foothold_id == 0) {
-                pos.setLocation(0, 0);
-                foothold_id = findFootholdId(map, pos);
+        this.monster = WzXML.MOB.createMob(this.id);
+        if (this.monster != null) {
+            int sp_count = map.getMonsterSpawnPoint().size();
+            if (sp_count != 0) {
+                TacosSpawnPoint target_sp = map.getMonsterSpawnPoint().get(Randomizer.nextInt(sp_count));
+                this.monster.setPosition(target_sp.getX(), target_sp.getY());
+                this.monster.setFootholdId(target_sp.getFh());
+                this.monster.setHomeFoothold(target_sp.getFh());
+            } else {
+                Point pos = getRandomXY(map);
+                int foothold_id = findFootholdId(map, pos);
+                if (foothold_id == 0) {
+                    pos.setLocation(0, 0);
+                    foothold_id = findFootholdId(map, pos);
+                }
+                this.monster.setPosition(pos);
+                this.monster.setFootholdId(foothold_id);
+                this.monster.setHomeFoothold(foothold_id);
             }
-            this.monster.setPosition(pos);
-            this.monster.setFootholdId(foothold_id);
-            this.monster.setHomeFoothold(foothold_id);
-        }
 
-        this.monster.setObjectId();
-        this.monster.setMap(map); // TODO : remove from monster object.
-        this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
-        this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
+            this.monster.setObjectId();
+            this.monster.setMap(map); // TODO : remove from monster object.
+            this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
+            this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
+        }
         this.lastRegenTime = System.currentTimeMillis();
         updateSharedMap(map, this.lastRegenTime);
         return this.monster;

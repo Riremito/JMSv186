@@ -188,7 +188,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void spawnMobOnMap(final int id, final int qty, final int x, final int y, final int map) {
         for (int i = 0; i < qty; i++) {
-            getMap(map).spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), new Point(x, y));
+            getMap(map).spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), new Point(x, y));
         }
     }
 
@@ -202,7 +202,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     private final void spawnMob(final int id, final int qty, final Point pos) {
         for (int i = 0; i < qty; i++) {
-            client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), pos);
+            client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), pos);
         }
     }
 
@@ -999,7 +999,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void spawnBossAtNPC(int id, int x, int y, int type) {
-        getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), new Point(x, y), type);
+        getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), new Point(x, y), type);
     }
 
     // multiple monsters, remote location
@@ -1010,7 +1010,7 @@ public abstract class OdinAbstractPlayerInteraction {
     // handler for all spawnMonster
     public void spawnMonster(int id, int qty, Point pos) {
         for (int i = 0; i < qty; i++) {
-            getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(id), pos);
+            getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), pos);
         }
     }
 

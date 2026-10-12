@@ -19,8 +19,11 @@
 package tacos.server.map;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import odin.client.MapleCharacter;
 import odin.server.MapleItemInformationProvider;
+import odin.server.MapleShop;
 import tacos.debug.DebugShop;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.NpcShopData;
@@ -31,6 +34,7 @@ import tacos.wz.ServerImg.NpcShopData;
  */
 public class TacosNpcShop {
 
+    // create npc shop from server img.
     public static boolean startNpcShop(MapleCharacter chr, int npc_id) {
         ArrayList<NpcShopData> items = ServerImg.BMS8.getNpcShopData(npc_id);
         // not a npc shop.
@@ -45,6 +49,29 @@ public class TacosNpcShop {
             ds.addItem(item.getItem(), item.getPrice(), 1, item_slot_max);
         }
         ds.start(chr);
+        return true;
+    }
+
+    // create npc shop from database.
+    private static final Map<Integer, MapleShop> shops = new HashMap<>();
+
+    private static MapleShop getDatabaseNpcShop(int npc_id) {
+        if (shops.containsKey(npc_id)) {
+            return shops.get(npc_id);
+        }
+
+        MapleShop ret = MapleShop.createFromDB(npc_id);
+        shops.put(npc_id, ret);
+        return ret;
+    }
+
+    public static boolean startDatabaseNpcShop(MapleCharacter chr, int npc_id) {
+        MapleShop shop = getDatabaseNpcShop(npc_id);
+        if (shop == null) {
+            return false;
+        }
+
+        shop.sendShop(chr.getClient());
         return true;
     }
 }

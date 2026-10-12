@@ -441,7 +441,7 @@ public class MapleMonster extends TacosMonster {
             case 8810120:
             case 8810121: //must update sponges
                 for (int i : toSpawn) {
-                    MapleMonster mob = WzXML.MOB.findMonster(i);
+                    MapleMonster mob = WzXML.MOB.createMob(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
@@ -477,7 +477,7 @@ public class MapleMonster extends TacosMonster {
                 List<MapleMonster> mobs = new ArrayList<>();
 
                 for (int i : toSpawn) {
-                    MapleMonster mob = WzXML.MOB.findMonster(i);
+                    MapleMonster mob = WzXML.MOB.createMob(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {
@@ -511,7 +511,7 @@ public class MapleMonster extends TacosMonster {
             }
             default: {
                 for (int i : toSpawn) {
-                    MapleMonster mob = WzXML.MOB.findMonster(i);
+                    MapleMonster mob = WzXML.MOB.createMob(i);
 
                     mob.setPosition(getPosition());
                     if (dropsDisabled()) {

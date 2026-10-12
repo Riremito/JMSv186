@@ -23,7 +23,7 @@ import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
-import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -47,11 +47,11 @@ public class PetNPC implements IPetEx {
     public boolean spawn(int npc_id) {
         remove();
 
-        if (!WzDataStorage.NPC.check(npc_id)) {
+        this.npc = WzXML.NPC.createNpc(npc_id);
+        if (this.npc == null) {
             return false;
         }
 
-        this.npc = new MapleNPC(npc_id);
         this.npc.setCy(this.character.getPosition().y);
         this.npc.setRx0(this.character.getPosition().x + 50);
         this.npc.setRx1(this.character.getPosition().x - 50);

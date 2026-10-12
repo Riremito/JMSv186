@@ -43,29 +43,19 @@ public class MapleShop {
         rechargeableItems.add(2070011);
         rechargeableItems.add(2070012);
         rechargeableItems.add(2070013);
-//	rechargeableItems.add(2070014); // Doesn't Exist [Devil Rain]
-//	rechargeableItems.add(2070015); // Beginner Star
         rechargeableItems.add(2070016);
-//	rechargeableItems.add(2070017); // Doesn't Exist
-//        rechargeableItems.add(2070018); // Balanced Fury
         rechargeableItems.add(2070019); // Magic Throwing Star
-
         rechargeableItems.add(2330000);
         rechargeableItems.add(2330001);
         rechargeableItems.add(2330002);
         rechargeableItems.add(2330003);
         rechargeableItems.add(2330004);
         rechargeableItems.add(2330005);
-//	rechargeableItems.add(2330006); // Beginner Bullet
         rechargeableItems.add(2330007);
-
         rechargeableItems.add(2331000); // Capsules
         rechargeableItems.add(2332000); // Capsules
     }
 
-    /**
-     * Creates a new instance of MapleShop
-     */
     public MapleShop(int id, int npcId) {
         this.id = id;
         this.npcId = npcId;
@@ -209,8 +199,8 @@ public class MapleShop {
         return null;
     }
 
-    public static MapleShop createFromDB(int id, boolean isShopId) {
-        MapleShop ret = DQ_Shops.load(id, isShopId);
+    public static MapleShop createFromDB(int npc_id) {
+        MapleShop ret = DQ_Shops.load(npc_id);
         if (ret == null) {
             return null;
         }
@@ -228,7 +218,7 @@ public class MapleShop {
             }
         }
         for (Integer recharge : recharges) {
-            ret.addItem(new MapleShopItem((short) 1000, recharge.intValue(), 0, 0, 0));
+            ret.addItem(new MapleShopItem((short) 1000, recharge, 0, 0, 0));
         }
         return ret;
     }

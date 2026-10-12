@@ -275,11 +275,13 @@ public class TacosCommandDebug {
                 for (int i = 0; i < mob_count; i++) {
                     int mobid = WzDataStorage.MOB.getRandom();
                     DebugLogger.InfoLog("random spawn: " + mobid);
-                    MapleMonster mob = WzXML.MOB.findMonster(mobid);
-                    map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
+                    MapleMonster mob = WzXML.MOB.createMob(mobid);
+                    if (mob != null) {
+                        map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
 
-                    chr.DebugMsg("randomspawn : " + mob.getId() + " - " + mob.getStats().getName());
-                    DebugLogger.InfoLog("randomspawn : " + mob.getId() + " - " + mob.getStats().getName());
+                        chr.DebugMsg("randomspawn : " + mob.getId() + " - " + mob.getStats().getName());
+                        DebugLogger.InfoLog("randomspawn : " + mob.getId() + " - " + mob.getStats().getName());
+                    }
                 }
 
                 return true;

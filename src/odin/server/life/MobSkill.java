@@ -210,7 +210,7 @@ public class MobSkill {
                 for (Integer mobId : getSummons()) {
                     MapleMonster toSpawn = null;
                     try {
-                        toSpawn = WzXML.MOB.findMonster(GameConstants.getCustomSpawnID(monster.getId(), mobId));
+                        toSpawn = WzXML.MOB.createMob(GameConstants.getCustomSpawnID(monster.getId(), mobId));
                     } catch (RuntimeException e) { //monster doesn't exist
                         continue;
                     }

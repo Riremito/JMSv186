@@ -90,7 +90,7 @@ public class AramiaFireWorks {
 
         for (int i = 0; i < arrayMob.length; i++) {
             pos = new Point(arrayX[i], arrayY[i]);
-            map.spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(arrayMob[i]), pos);
+            map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(arrayMob[i]), pos);
         }
     }
 

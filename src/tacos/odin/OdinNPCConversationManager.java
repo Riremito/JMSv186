@@ -40,7 +40,6 @@ import odin.client.SkillEntry;
 import odin.server.MapleCarnivalParty;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
-import odin.server.MapleShopFactory;
 import odin.server.MapleSquad;
 import odin.server.maps.MapleMap;
 import odin.server.maps.Event_DojoAgent;
@@ -465,11 +464,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         TacosStorage storage = client.getPlayer().getStorage();
         storage.setNpcId(npc);
         client.SendPacket(ResCTrunkDlg.TrunkResult(client.getPlayer().getStorage(), OpsTrunk.TrunkRes_OpenTrunkDlg));
-    }
-
-    public void openShop(int id) {
-        client.getPlayer().DebugMsg("ShopID = " + id + ", MapID = " + client.getPlayer().getPosMap());
-        MapleShopFactory.getInstance().getShop(id).sendShop(client);
     }
 
     public MapleShop CreateCustomShop(int id) {

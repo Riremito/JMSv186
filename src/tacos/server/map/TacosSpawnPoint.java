@@ -81,14 +81,16 @@ public class TacosSpawnPoint {
             return null;
         }
 
-        this.monster = WzXML.MOB.findMonster(this.id);
-        this.monster.setObjectId();
-        this.monster.setMap(map); // TODO : remove from monster object.
-        this.monster.setPosition(new Point(this.x, this.y));
-        this.monster.setFootholdId(this.fh);
-        this.monster.setHomeFoothold(this.fh);
-        this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
-        this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
+        this.monster = WzXML.MOB.createMob(this.id);
+        if (this.monster != null) {
+            this.monster.setObjectId();
+            this.monster.setMap(map); // TODO : remove from monster object.
+            this.monster.setPosition(new Point(this.x, this.y));
+            this.monster.setFootholdId(this.fh);
+            this.monster.setHomeFoothold(this.fh);
+            this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
+            this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
+        }
         this.lastRegenTime = System.currentTimeMillis();
         return this.monster;
     }
