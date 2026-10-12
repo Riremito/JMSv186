@@ -19,14 +19,14 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
-import java.util.List;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
-import odin.server.life.SummonAttackEntry;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.RD_CSummoned;
 import tacos.server.map.object.TacosSummon;
+import tacos.server.map.object.TacosSummon.TacosSummonAttackInfo;
+import tacos.server.map.object.TacosSummon.TacosSummonAttackInfo.SummonDamage;
 
 /**
  *
@@ -74,29 +74,30 @@ public class ResCSummonedPool {
         return sp;
     }
 
-    // v131 broken
-    public static ServerPacket SummonedAttack(TacosSummon summon, byte animation, List<SummonAttackEntry> allDamage, int level) {
+    // CSummoned::OnAttack
+    public static ServerPacket SummonedAttack(TacosSummon summon, TacosSummonAttackInfo attack_info) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SummonedAttack);
 
-        sp.Encode4(summon.getOwnerId());
+        sp.Encode4(summon.getOwnerId()); // dwCharacterID
 
         if (Config.LessOrEqual(Region.JMS, 131)) {
-            sp.Encode4(summon.getSkillID());
+            sp.Encode4(summon.getSkillID()); // nSkillID
         } else {
-            sp.Encode4(summon.getObjectId());
+            sp.Encode4(summon.getObjectId()); // object id
         }
 
-        sp.Encode1(level - 1, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); //? guess
-        sp.Encode1(animation);
-        sp.Encode1(allDamage.size());
-
-        for (SummonAttackEntry attackEntry : allDamage) {
-            sp.Encode4(attackEntry.getMonster().getObjectId());
-            sp.Encode1(Config.LessOrEqual(Region.JMS, 131) ? 6 : 7);
-            sp.Encode4(attackEntry.getDamage()); // damage
+        // CSummoned::OnAttack
+        sp.Encode1(attack_info.getCharLevel(), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // m_nCharLevel
+        sp.Encode1(attack_info.getAction()); // (bLeft << 7) | nAction
+        sp.Encode1(attack_info.getDamages().size()); // nMobCount
+        // ATTACKINFO
+        for (SummonDamage damage : attack_info.getDamages()) {
+            sp.Encode4(damage.getMobObjectId()); // dwMobID
+            sp.Encode1(damage.getHitAction()); // nHitAction
+            sp.Encode4(damage.getDamage()); // aDamage[i], aDamageSvr[0]
         }
 
-        sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
+        sp.Encode1(0); // unused, JMS187
         return sp;
     }
 
@@ -132,5 +133,4 @@ public class ResCSummonedPool {
         sp.Encode1(0);
         return sp;
     }
-
 }

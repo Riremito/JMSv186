@@ -22,19 +22,18 @@ import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
-import java.util.ArrayList;
-import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCSummonedPool;
 import odin.server.life.MapleMonster;
-import odin.server.life.SummonAttackEntry;
 import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMoveAbility;
 import tacos.packet.ops.OpsSkill;
 import tacos.server.map.object.TacosSummon;
+import tacos.server.map.object.TacosSummon.TacosSummonAttackInfo;
+import tacos.server.map.object.TacosSummon.TacosSummonAttackInfo.SummonDamage;
 
 /**
  *
@@ -125,96 +124,59 @@ public class ReqCSummonedPool {
     public static void OnAttack(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
         MapleMap map = chr.getMap();
 
-        if (Config.Equal(Region.KMST, 330)) {
-            int tick = cp.Decode4();
-            byte animation = cp.Decode1();
-            byte numAttacked = cp.Decode1();
-            short x = cp.Decode2(); // x
-            short y = cp.Decode2(); // y
-            short x2 = cp.Decode2(); // x
-            short y2 = cp.Decode2(); // y
-
-            List<SummonAttackEntry> allDamage = new ArrayList<>();
-
-            for (int i = 0; i < numAttacked; i++) {
-                int mob_object_id = cp.Decode4();
-                int mob_id = cp.Decode4();
-                byte unk1 = cp.Decode1();
-                byte unk2 = cp.Decode1();
-                byte unk3 = cp.Decode1();
-                byte unk4 = cp.Decode1();
-                short unk5 = cp.Decode2();
-                short unk6 = cp.Decode2();
-                short unk7 = cp.Decode2();
-                short unk8 = cp.Decode2();
-                short unk9 = cp.Decode2();
-                int damage = cp.Decode4();
-
-                MapleMonster mob = map.getMonsterByOid(mob_object_id);
-                if (mob == null) {
-                    continue;
-                }
-                allDamage.add(new SummonAttackEntry(mob, damage));
-            }
-
-            map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), chr.getId());
-
-            for (SummonAttackEntry attackEntry : allDamage) {
-                int toDamage = attackEntry.getDamage();
-                MapleMonster mob = attackEntry.getMonster();
-                mob.damage(chr, toDamage, true);
-            }
-            if (summon.getSkill() == OpsSkill.VALKYRIE_GABIOTA) {
-                chr.removeSummon(summon);
-            }
-            return;
+        boolean is_dr_check = Config.Equal(Region.KMST, 330);
+        if (!is_dr_check) {
+            int dr0 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+            int dr1 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
         }
+        int update_time = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+        if (!is_dr_check) {
+            int dr2 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+            int dr3 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+        }
+        byte nAction = cp.Decode1(); // nAction & 0x7F | (bLeft << 7)
+        if (!is_dr_check) {
+            int dwKey = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+            int Crc32 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+        }
+        byte nMobCount = cp.Decode1();
+        short x1 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // x
+        short y1 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // y
+        short x2 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // x
+        short y2 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // y
+        int RepeatSkillPoint = cp.Decode4(Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.JMS, 302));
 
-        int unk10 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        int unk11 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        int tick = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        int unk12 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        int unk13 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        byte animation = cp.Decode1();
-        int unk14 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        int unk15 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
-        byte numAttacked = cp.Decode1();
-        short unk16 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // x
-        short unk17 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // y
-        short unk18 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // x
-        short unk19 = cp.Decode2(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // y
-        int unk302_0 = cp.Decode4(Config.GreaterOrEqual(Region.JMS, 302));
+        TacosSummonAttackInfo attack_info = new TacosSummonAttackInfo();
+        attack_info.setCharLevel(chr.getLevel());
+        attack_info.setAction(nAction);
 
-        List<SummonAttackEntry> allDamage = new ArrayList<>();
-        for (int i = 0; i < numAttacked; i++) {
+        for (int i = 0; i < nMobCount; i++) {
             int mob_object_id = cp.Decode4();
-            int mob_id = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // MobID
-            byte unk21 = cp.Decode1();
-            byte unk22 = cp.Decode1();
-            byte unk23 = cp.Decode1();
-            byte unk24 = cp.Decode1();
+            int dwTemplateID = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // dwTemplateID
+            byte nHitAction = cp.Decode1(); // nHitAction
+            byte nForeAction = cp.Decode1(); // nForeAction & 0x7F | (IsLeft << 7)
+            byte nFrameIdx = cp.Decode1(); // nFrameIdx
+            byte CalcDamageStatIndex = cp.Decode1(); // CalcDamageStatIndex
             short unk25 = cp.Decode2();
             short unk26 = cp.Decode2();
             short unk27 = cp.Decode2();
             short unk28 = cp.Decode2();
-            short unk29 = cp.Decode2();
-            int damage = cp.Decode4();
+            short tDelay = cp.Decode2(); // tDelay
+            int damage = cp.Decode4(); // aDamage[i]
 
-            MapleMonster mob = map.getMonsterByOid(mob_object_id);
-            if (mob != null) {
-                allDamage.add(new SummonAttackEntry(mob, damage));
-            }
+            attack_info.addDamage(mob_object_id, nHitAction, damage);
         }
-
+        int Crc = cp.Decode4(Config.GreaterOrEqual(Region.GMS, 95)); // skill CRC
         short unk30 = cp.Decode2(Config.LessOrEqual(Region.JMS, 147)); // X
         short unk31 = cp.Decode2(Config.LessOrEqual(Region.JMS, 147)); // Y
 
-        map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, animation, allDamage, chr.getLevel()), chr.getId());
+        map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, attack_info));
 
-        for (SummonAttackEntry attackEntry : allDamage) {
-            int toDamage = attackEntry.getDamage();
-            MapleMonster mob = attackEntry.getMonster();
-            mob.damage(chr, toDamage, true);
+        for (SummonDamage damage : attack_info.getDamages()) {
+            MapleMonster monster = map.getMonsterByOid(damage.getMobObjectId());
+            if (monster != null) {
+                monster.damage(chr, damage.getDamage(), true);
+            }
         }
         if (summon.getSkill() == OpsSkill.VALKYRIE_GABIOTA) {
             chr.removeSummon(summon);
