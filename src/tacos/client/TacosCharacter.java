@@ -1521,6 +1521,16 @@ public class TacosCharacter extends TacosPlayer {
         return this.dwPosMap;
     }
 
+    private int conv_state = 0;
+
+    public int getConversation() {
+        return this.conv_state;
+    }
+
+    public void setConversation(int conv_state) {
+        this.conv_state = conv_state;
+    }
+
     // script.
     public boolean EnterPointShop() {
         ReqCUser.OnUserMigrateToCashShopRequest(client, (MapleCharacter) this);

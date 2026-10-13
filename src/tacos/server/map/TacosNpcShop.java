@@ -52,6 +52,11 @@ public class TacosNpcShop {
         return true;
     }
 
+    // create npc shop from script.
+    public static MapleShop createScriptNpcShop(int npc_id) {
+        return new MapleShop(npc_id, npc_id);
+    }
+
     // create npc shop from database.
     private static final Map<Integer, MapleShop> shops = new HashMap<>();
 
@@ -71,7 +76,7 @@ public class TacosNpcShop {
             return false;
         }
 
-        shop.sendShop(chr.getClient());
+        shop.sendShop(chr);
         return true;
     }
 }

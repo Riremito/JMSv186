@@ -46,7 +46,6 @@ import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
 import odin.server.MapleItemInformationProvider;
-import odin.handling.channel.MapleGuildRanking;
 import tacos.database.query.DQ_Hiredmerchants;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
@@ -57,28 +56,21 @@ import javax.script.Invocable;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.ops.OpsScriptMan;
-import tacos.packet.response.ResCParcelDlg;
 import tacos.packet.response.ResCField;
-import tacos.packet.response.ResCRPSGameDlg;
-import tacos.packet.response.ResCStoreBankDlg;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleShop;
-import odin.server.MapleShopItem;
 import odin.server.MapleStatEffect;
 import odin.server.Timer.CloneTimer;
 import odin.server.maps.Event_PyramidSubway;
-import tacos.client.TacosStorage;
-import tacos.packet.ops.OpsRPS;
-import tacos.packet.ops.OpsTrunk;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCScriptMan;
-import tacos.packet.response.ResCTrunkDlg;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
 import tacos.server.TacosChannel;
+import tacos.server.map.TacosNpcShop;
 
 public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
@@ -151,6 +143,10 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public void dispose() {
         TacosScriptNPC.getInstance().dispose(client);
         TacosScriptQuest.getInstance().dispose(client);
+    }
+
+    public void sendRepairWindow() {
+        client.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, npc));
     }
 
     public void askMapSelection(final String sel) {
@@ -459,25 +455,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         return 1;
     }
 
-    public void sendStorage() {
-        client.getPlayer().setConversation(4);
-        TacosStorage storage = client.getPlayer().getStorage();
-        storage.setNpcId(npc);
-        client.SendPacket(ResCTrunkDlg.TrunkResult(client.getPlayer().getStorage(), OpsTrunk.TrunkRes_OpenTrunkDlg));
-    }
-
-    public MapleShop CreateCustomShop(int id) {
-        MapleShop shop = new MapleShop(id, id);
-        return shop;
-    }
-
-    public void CustomShopAdd(MapleShop shop, int itemid, int price) {
-        shop.addItem(new MapleShopItem((short) 1000, itemid, price, 0, 0));
-    }
-
-    public void OpenCustomShop(MapleShop shop) {
-        client.getPlayer().DebugMsg("Custom Shop, MapID = " + client.getPlayer().getPosMap());
-        shop.sendShop(client);
+    public MapleShop createScriptNpcShop(int npc_id) {
+        return TacosNpcShop.createScriptNpcShop(npc_id);
     }
 
     public int gainGachaponItem(int id, int quantity) {
@@ -787,10 +766,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         client.getPlayer().gainMeso(-5000000, true, false, true);
     }
 
-    public void displayGuildRanks() {
-        client.SendPacket(ResCWvsContext.showGuildRanks(npc, MapleGuildRanking.getInstance().getRank()));
-    }
-
     public boolean removePlayerFromInstance() {
         return false;
     }
@@ -885,21 +860,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public long getMerchantMesos() {
         return DQ_Hiredmerchants.getMesos(getPlayer().getId());
-    }
-
-    public void openDuey() {
-        client.getPlayer().setConversation(1);
-        client.SendPacket(ResCParcelDlg.Open(false, true));
-    }
-
-    public void openMerchantItemStore() {
-        client.getPlayer().setConversation(3);
-        client.SendPacket(ResCStoreBankDlg.merchItemStore((byte) 0x22));
-        client.getPlayer().dropMessage(5, "Please enter ANY 13 characters.");
-    }
-
-    public void sendRepairWindow() {
-        client.SendPacket(ResCUserLocal.UserOpenUIWithOption(OpsUI.UI_REPAIRDURABILITY, npc));
     }
 
     public final int getDojoPoints() {
@@ -1200,10 +1160,6 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             return false;
         }
         return MapleInventoryManipulator.drop(client, inv, (short) slot, (short) quantity, true);
-    }
-
-    public void sendRPS() {
-        client.SendPacket(ResCRPSGameDlg.RPSGame(OpsRPS.RPSRes_Open, 0, 0, this.npc));
     }
 
     public final void setQuestRecord(Object ch, final int questid, final String data) {

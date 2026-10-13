@@ -18,6 +18,8 @@
  */
 package tacos.wz;
 
+import java.util.HashMap;
+import lombok.Getter;
 import odin.server.life.MapleNPC;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
@@ -38,5 +40,51 @@ public class NpcWz extends WzXML {
             return null;
         }
         return new MapleNPC(npc_id);
+    }
+
+    public MapleData getImg(int npc_id) {
+        String target_img_path = String.format("%07d.img", npc_id);
+        return getData(target_img_path);
+    }
+
+    @Getter
+    public class NpcInfo {
+
+        private int guildRank;
+        private int parcel;
+        private int rpsGame;
+        private String script;
+        private int storebank;
+        private int trunkGet;
+        private int trunkPut;
+    }
+
+    private final HashMap<Integer, NpcInfo> npc_info_list = new HashMap<>();
+
+    public NpcInfo getNpcInfo(int npc_id) {
+        NpcInfo ret = this.npc_info_list.get(npc_id);
+        if (ret != null) {
+            return ret;
+        }
+        ret = new NpcInfo();
+
+        MapleData md_npc_img = getImg(npc_id);
+        if (md_npc_img != null) {
+            MapleData md_info = md_npc_img.getChildByPath("info");
+            if (md_info != null) {
+                ret.guildRank = WzDataTool.getIntPath("guildRank", md_info, 0);
+                ret.parcel = WzDataTool.getIntPath("parcel", md_info, 0);
+                ret.rpsGame = WzDataTool.getIntPath("rpsGame", md_info, 0);
+                ret.storebank = WzDataTool.getIntPath("storebank", md_info, 0);
+                ret.trunkGet = WzDataTool.getIntPath("trunkGet", md_info, 0);
+                ret.trunkPut = WzDataTool.getIntPath("trunkPut", md_info, 0);
+                MapleData md_script = md_info.getChildByPath("script");
+                if (md_script != null) {
+                    ret.script = WzDataTool.getStringPath("0/script", md_script, "");
+                }
+            }
+        }
+        this.npc_info_list.put(npc_id, ret);
+        return ret;
     }
 }

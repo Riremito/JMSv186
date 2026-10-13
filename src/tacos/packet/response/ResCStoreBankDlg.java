@@ -30,7 +30,7 @@ import tacos.packet.response.data.RD_GW_ItemSlotBase;
  */
 public class ResCStoreBankDlg {
 
-    public static ServerPacket merchItemStore(final byte op) {
+    public static ServerPacket merchItemStore(byte op) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         // [28 01] [22 01] - Invalid Asiasoft Passport
@@ -48,14 +48,14 @@ public class ResCStoreBankDlg {
         return sp;
     }
 
-    public static ServerPacket merchItem_Message(final byte op) {
+    public static ServerPacket merchItem_Message(byte op) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
         sp.Encode1(op);
         return sp;
     }
 
-    public static ServerPacket sendHiredMerchantMessage(final byte type) {
+    public static ServerPacket sendHiredMerchantMessage(byte type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankGetAllResult);
 
         // 07 = send title box
@@ -67,7 +67,7 @@ public class ResCStoreBankDlg {
         return sp;
     }
 
-    public static ServerPacket merchItemStore_ItemData(final MerchItemPackage pack) {
+    public static ServerPacket merchItemStore_ItemData(MerchItemPackage pack) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_StoreBankResult);
 
         sp.Encode1(35);
@@ -77,11 +77,10 @@ public class ResCStoreBankDlg {
         sp.Encode4(pack.getMesos());
         sp.Encode1(0);
         sp.Encode1(pack.getItems().size());
-        for (final Item item : pack.getItems()) {
+        for (Item item : pack.getItems()) {
             sp.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
         }
         sp.EncodeZeroBytes(3);
         return sp;
     }
-
 }

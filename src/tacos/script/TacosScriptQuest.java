@@ -124,14 +124,14 @@ public class TacosScriptQuest extends TacosScript {
     }
 
     public boolean dispose(TacosClient client) {
+        client.getPlayer().setConversation(0);
+
         OdinNPCConversationManager npccm = cms.get(client);
         if (npccm == null) {
-            client.getPlayer().setConversation(0);
             return false;
         }
+
         cms.remove(client);
-        client.getPlayer().setConversation(0);
         return true;
     }
-
 }

@@ -83,7 +83,9 @@ import tacos.database.LazyDatabase;
 import tacos.debug.DebugShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.client.inventory.MaplePet;
+import odin.handling.channel.MapleGuildRanking;
 import tacos.client.TacosDoorSkill;
+import tacos.client.TacosStorage;
 import tacos.client.TacosSummonSkill;
 import tacos.command.TacosCommand;
 import tacos.packet.ClientPacketHeader;
@@ -96,14 +98,20 @@ import tacos.packet.ops.OpsMemo;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsQuest;
+import tacos.packet.ops.OpsRPS;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
+import tacos.packet.ops.OpsTrunk;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.packet.request.sub.ReqSub_Admin;
 import tacos.packet.request.sub.ReqSub_FriendRequest;
 import tacos.packet.response.ResCDropPool;
+import tacos.packet.response.ResCParcelDlg;
+import tacos.packet.response.ResCRPSGameDlg;
+import tacos.packet.response.ResCStoreBankDlg;
+import tacos.packet.response.ResCTrunkDlg;
 import tacos.packet.response.builder.PB_UserEffect;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -113,6 +121,7 @@ import tacos.server.map.object.TacosDrop.DropLeaveType;
 import tacos.server.map.object.TacosMysticDoor;
 import tacos.shared.TacosShared;
 import tacos.wz.MobWz.MobAttackInfo;
+import tacos.wz.NpcWz.NpcInfo;
 import tacos.wz.WzXML;
 import tacos.wz.opt.FieldOpt;
 
@@ -1333,7 +1342,6 @@ public class ReqCUser {
         TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
         MapleNPC npc = map.getNPCByOid(m_dwNpcId);
-
         if (npc == null) {
             DebugLogger.ErrorLog("OnUserSelectNpc : npc");
             return false;
@@ -1342,17 +1350,49 @@ public class ReqCUser {
             chr.DebugMsg("OnUserSelectNpc : getConversation = " + chr.getConversation());
             return false;
         }
-        if (TacosNpcShop.startNpcShop(chr, npc.getId())) {
-            chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc.getId());
+        int npc_id = npc.getId();
+        // npc shop from server img.
+        if (TacosNpcShop.startNpcShop(chr, npc_id)) {
+            chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc_id);
             return true;
         }
-        if (TacosNpcShop.startDatabaseNpcShop(chr, npc.getId())) {
-            chr.DebugMsg("OnUserSelectNpc (DatabaseNpcShop) : " + npc.getId());
+        // npc from wz.
+        NpcInfo npc_info = WzXML.NPC.getNpcInfo(npc_id);
+        if (npc_info.getTrunkGet() != 0 || npc_info.getTrunkPut() != 0) {
+            TacosStorage storage = client.getPlayer().getStorage();
+            storage.setNpcId(npc_id);
+            client.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_OpenTrunkDlg));
+            chr.DebugMsg("OnUserSelectNpc (Trunk) : " + npc_id);
             return true;
         }
-
-        chr.DebugMsg("OnUserSelectNpc : " + npc.getId());
-        return TacosScriptNPC.getInstance().start(client, npc.getId());
+        if (npc_info.getStorebank() != 0) {
+            chr.SendPacket(ResCStoreBankDlg.merchItemStore((byte) 0x22));
+            chr.DebugMsg("OnUserSelectNpc (Storebank) : " + npc_id);
+            return true;
+        }
+        if (npc_info.getRpsGame() != 0) {
+            chr.SendPacket(ResCRPSGameDlg.RPSGame(OpsRPS.RPSRes_Open, 0, 0, npc_id));
+            chr.DebugMsg("OnUserSelectNpc (RpsGame) : " + npc_id);
+            return true;
+        }
+        if (npc_info.getParcel() != 0) {
+            chr.SendPacket(ResCParcelDlg.Open(false, true));
+            chr.DebugMsg("OnUserSelectNpc (Parcel) : " + npc_id);
+            return true;
+        }
+        if (npc_info.getGuildRank() != 0) {
+            chr.SendPacket(ResCWvsContext.showGuildRanks(npc_id, MapleGuildRanking.getInstance().getRank()));
+            chr.DebugMsg("OnUserSelectNpc (GuildRank) : " + npc_id);
+            return true;
+        }
+        // npc shop from database.
+        if (TacosNpcShop.startDatabaseNpcShop(chr, npc_id)) {
+            chr.DebugMsg("OnUserSelectNpc (DatabaseNpcShop) : " + npc_id);
+            return true;
+        }
+        // npc from script.
+        chr.DebugMsg("OnUserSelectNpc : " + npc_id);
+        return TacosScriptNPC.getInstance().start(client, npc_id);
     }
 
     public static boolean OnUserRemoteShopOpenRequest(MapleCharacter chr, ClientPacket cp) {

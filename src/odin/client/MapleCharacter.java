@@ -37,7 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import tacos.shared.TacosSharedExpTable;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MaplePartyCharacter;
@@ -117,7 +116,6 @@ public class MapleCharacter extends TacosCharacter {
     private boolean smega;
     private boolean hasTutorialSummon = false;
     private boolean canSetBeansNum;
-    private transient AtomicInteger inst;
     private transient Deque<MapleCarnivalChallenge> pendingCarnivalRequests;
     private transient MapleCarnivalParty carnivalParty;
     private transient MapleShop shop;
@@ -158,8 +156,6 @@ public class MapleCharacter extends TacosCharacter {
         wishlist = new int[10];
         rocks = new int[10];
         regrocks = new int[5];
-        inst = new AtomicInteger();
-        inst.set(0); // 1 = NPC/ Quest, 2 = Duey, 3 = Hired Merch store, 4 = Storage
         pendingCarnivalRequests = new LinkedList<>();
         savedLocations = new int[SavedLocationType.values().length];
         for (int i = 0; i < SavedLocationType.values().length; i++) {
@@ -1077,10 +1073,6 @@ public class MapleCharacter extends TacosCharacter {
 
     public void setPlayerShop(Object playerShop) {
         this.playerShop = playerShop;
-    }
-
-    public void setConversation(int inst) {
-        this.inst.set(inst);
     }
 
     public void setCarnivalParty(MapleCarnivalParty party) {
@@ -2144,11 +2136,6 @@ public class MapleCharacter extends TacosCharacter {
         } else {
             client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
         }
-    }
-
-    // used by script
-    public int getConversation() {
-        return inst.get();
     }
 
     // used by script

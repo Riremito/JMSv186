@@ -62,15 +62,23 @@ public class MapleShop {
         items = new LinkedList<>();
     }
 
-    public void addItem(MapleShopItem item) {
-        if (WzDataStorage.ITEM.check(item.getItemId())) {
-            items.add(item);
-        }
+    // used by script.
+    public boolean add(int item_id, int price) {
+        return addItem(new MapleShopItem((short) MapleItemInformationProvider.getInstance().getSlotMax(item_id), item_id, price, 0, 0));
     }
 
-    public void sendShop(TacosClient client) {
-        client.getPlayer().setShop(this);
-        client.SendPacket(ResCShopDlg.OpenShopDlg(client, getNpcId(), items));
+    public boolean addItem(MapleShopItem item) {
+        if (!WzDataStorage.ITEM.check(item.getItemId())) {
+            return false;
+        }
+
+        items.add(item);
+        return true;
+    }
+
+    public void sendShop(MapleCharacter chr) {
+        chr.setShop(this);
+        chr.SendPacket(ResCShopDlg.OpenShopDlg(chr.getClient(), getNpcId(), items));
     }
 
     public boolean buy(TacosClient client, MapleCharacter chr, int itemId, short quantity) {
