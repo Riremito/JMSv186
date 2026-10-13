@@ -42,7 +42,7 @@ public class NpcWz extends WzXML {
         return new MapleNPC(npc_id);
     }
 
-    public MapleData getImg(int npc_id) {
+    private MapleData getImg(int npc_id) {
         String target_img_path = String.format("%07d.img", npc_id);
         return getData(target_img_path);
     }
@@ -73,11 +73,12 @@ public class NpcWz extends WzXML {
             ret.guildRank = md_npc_img.getInt("info/guildRank");
             ret.parcel = md_npc_img.getInt("info/parcel");
             ret.rpsGame = md_npc_img.getInt("info/rpsGame");
+            ret.script = md_npc_img.getString("info/script/0/script");
             ret.storebank = md_npc_img.getInt("info/storebank");
             ret.trunkGet = md_npc_img.getInt("info/trunkGet");
             ret.trunkPut = md_npc_img.getInt("info/trunkPut");
-            ret.script = md_npc_img.getString("info/script/0/script");
         }
+
         this.npc_info_list.put(npc_id, ret);
         return ret;
     }

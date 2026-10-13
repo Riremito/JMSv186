@@ -50,6 +50,11 @@ public class ReqCTrunkDlg {
 
         switch (OpsTrunk.find(mode)) {
             case TrunkReq_GetItem: {
+                if (chr.getMeso() < storage.getFeeGet()) {
+                    chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_GetNoMoney));
+                    return false;
+                }
+
                 byte type = cp.Decode1();
                 byte slot = cp.Decode1();
                 Item item = storage.getItem(type, slot);
@@ -64,13 +69,13 @@ public class ReqCTrunkDlg {
                 }
 
                 MapleInventoryManipulator.addFromDrop(client, item, false);
+                chr.gainMeso(-storage.getFeeGet(), false, true, false);
                 storage.setLastModified(type);
                 chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_GetSuccess));
                 return true;
             }
             case TrunkReq_PutItem: {
-                // 手数料不足
-                if (chr.getMeso() < 100) {
+                if (chr.getMeso() < storage.getFeePut()) {
                     chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_PutNoMoney));
                     return false;
                 }
@@ -121,7 +126,6 @@ public class ReqCTrunkDlg {
                     if (GameConstants.isThrowingStar(itemId) || GameConstants.isBullet(itemId)) {
                         quantity = item.getQuantity();
                     }
-                    chr.gainMeso(-100, false, true, false);
                     MapleInventoryManipulator.removeFromSlot(client, type, slot, quantity, false);
                     item.setQuantity(quantity);
                 } else {
@@ -129,6 +133,7 @@ public class ReqCTrunkDlg {
                     return false;
                 }
 
+                chr.gainMeso(-storage.getFeePut(), false, true, false);
                 storage.putItem(item);
                 storage.setLastModified(type.getType());
                 chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_PutSuccess));

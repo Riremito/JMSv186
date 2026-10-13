@@ -1361,6 +1361,8 @@ public class ReqCUser {
         if (npc_info.getTrunkGet() != 0 || npc_info.getTrunkPut() != 0) {
             TacosStorage storage = client.getPlayer().getStorage();
             storage.setNpcId(npc_id);
+            storage.setFeeGet(npc_info.getTrunkGet());
+            storage.setFeePut(npc_info.getTrunkPut());
             client.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_OpenTrunkDlg));
             chr.DebugMsg("OnUserSelectNpc (Trunk) : " + npc_id);
             return true;
