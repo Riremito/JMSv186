@@ -340,6 +340,17 @@ public class TacosCommandDebug {
                 return true;
             }
             case "/portal" -> {
+                for (TacosPortal portal : map.getPortals()) {
+                    int map_id = portal.getTargetMapId();
+                    int type = portal.getType();
+                    if (map_id == map.getId() || (map_id == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID && portal.getScriptName() == null)) {
+                        continue;
+                    }
+                    chr.DebugMsg(portal.getId() + " : " + map_id + "(" + type + "), " + portal.getScriptName());
+                }
+                return true;
+            }
+            case "/portals" -> {
                 ArrayList<Integer> map_ids = new ArrayList<>();
 
                 for (TacosPortal portal : map.getPortals()) {
@@ -350,14 +361,14 @@ public class TacosCommandDebug {
                         continue;
                     }
 
-                    chr.DebugMsg(map_id + "(" + type + "), " + portal.getScriptName());
+                    chr.DebugMsg(portal.getId() + " : " + map_id + "(" + type + "), " + portal.getScriptName());
                     map_ids.add(map_id);
                 }
                 if (map_ids.isEmpty()) {
                     map_ids.add(map.getId());
                 }
 
-                chr.DebugMsg("portal : " + map_ids.size());
+                chr.DebugMsg("portals : " + map_ids.size());
                 DebugMan_Warp dm = new DebugMan_Warp(map_ids);
                 dm.start(chr);
                 return true;

@@ -458,5 +458,25 @@ public class WzXML {
         public Iterator<MapleData> iterator() {
             return getChildren().iterator();
         }
+
+        @Override
+        public int getInt(String path) {
+            return WzDataTool.getInt(getChildByPath(path), 0);
+        }
+
+        @Override
+        public int getInt(String path, int def) {
+            return WzDataTool.getInt(getChildByPath(path), def);
+        }
+
+        @Override
+        public String getString(String path) {
+            return WzDataTool.getString(getChildByPath(path), "");
+        }
+
+        @Override
+        public String getString(String path, String def) {
+            return WzDataTool.getString(getChildByPath(path), def);
+        }
     }
 }

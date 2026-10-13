@@ -1391,7 +1391,7 @@ public class ReqCUser {
             return true;
         }
         // npc from script.
-        chr.DebugMsg("OnUserSelectNpc : " + npc_id);
+        chr.DebugMsg("OnUserSelectNpc : " + npc_id + ", " + npc_info.getScript());
         return TacosScriptNPC.getInstance().start(client, npc_id);
     }
 

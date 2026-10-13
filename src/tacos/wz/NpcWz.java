@@ -70,19 +70,13 @@ public class NpcWz extends WzXML {
 
         MapleData md_npc_img = getImg(npc_id);
         if (md_npc_img != null) {
-            MapleData md_info = md_npc_img.getChildByPath("info");
-            if (md_info != null) {
-                ret.guildRank = WzDataTool.getIntPath("guildRank", md_info, 0);
-                ret.parcel = WzDataTool.getIntPath("parcel", md_info, 0);
-                ret.rpsGame = WzDataTool.getIntPath("rpsGame", md_info, 0);
-                ret.storebank = WzDataTool.getIntPath("storebank", md_info, 0);
-                ret.trunkGet = WzDataTool.getIntPath("trunkGet", md_info, 0);
-                ret.trunkPut = WzDataTool.getIntPath("trunkPut", md_info, 0);
-                MapleData md_script = md_info.getChildByPath("script");
-                if (md_script != null) {
-                    ret.script = WzDataTool.getStringPath("0/script", md_script, "");
-                }
-            }
+            ret.guildRank = md_npc_img.getInt("info/guildRank");
+            ret.parcel = md_npc_img.getInt("info/parcel");
+            ret.rpsGame = md_npc_img.getInt("info/rpsGame");
+            ret.storebank = md_npc_img.getInt("info/storebank");
+            ret.trunkGet = md_npc_img.getInt("info/trunkGet");
+            ret.trunkPut = md_npc_img.getInt("info/trunkPut");
+            ret.script = md_npc_img.getString("info/script/0/script");
         }
         this.npc_info_list.put(npc_id, ret);
         return ret;
