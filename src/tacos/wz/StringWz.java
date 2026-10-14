@@ -178,8 +178,8 @@ public class StringWz extends WzXML {
 
     public MapleData getCash() {
         if (img_Cash == null) {
-            if (getItem() == null) {
-                img_Cash = getData("Cash.img");
+            img_Cash = getData("Cash.img");
+            if (img_Cash != null) {
                 img_Cash = checkSubDirectory(img_Cash, "Cash");
                 return img_Cash;
             }
@@ -190,8 +190,8 @@ public class StringWz extends WzXML {
 
     public MapleData getConsume() {
         if (img_Consume == null) {
-            if (getItem() == null) {
-                img_Consume = getData("Consume.img");
+            img_Consume = getData("Consume.img");
+            if (img_Consume != null) {
                 img_Consume = checkSubDirectory(img_Consume, "Con");
                 return img_Consume;
             }
@@ -202,8 +202,8 @@ public class StringWz extends WzXML {
 
     public MapleData getEqp() {
         if (img_Eqp == null) {
-            if (getItem() == null) {
-                img_Eqp = getData("Eqp.img");
+            img_Eqp = getData("Eqp.img");
+            if (img_Eqp != null) {
                 img_Eqp = checkSubDirectory(img_Eqp, "Eqp");
                 return img_Eqp;
             }
@@ -214,8 +214,8 @@ public class StringWz extends WzXML {
 
     public MapleData getEtc() {
         if (img_Etc == null) {
-            if (getItem() == null) {
-                img_Etc = getData("Etc.img");
+            img_Etc = getData("Etc.img");
+            if (img_Etc != null) {
                 img_Etc = checkSubDirectory(img_Etc, "Etc");
                 return img_Etc;
             }
@@ -226,8 +226,8 @@ public class StringWz extends WzXML {
 
     public MapleData getIns() {
         if (img_Ins == null) {
-            if (getItem() == null) {
-                img_Ins = getData("Ins.img");
+            img_Ins = getData("Ins.img");
+            if (img_Ins != null) {
                 img_Ins = checkSubDirectory(img_Ins, "Ins");
                 return img_Ins;
             }
@@ -238,8 +238,9 @@ public class StringWz extends WzXML {
 
     public MapleData getPet() {
         if (img_Pet == null) {
+            boolean is_newer = getData("PetDialog.img") != null;
             // please do not use old PetDialog.img (Pet.img)
-            if (getItem() == null) {
+            if (is_newer) {
                 img_Pet = getData("Pet.img");
                 img_Pet = checkSubDirectory(img_Pet, "Pet");
                 return img_Pet;
