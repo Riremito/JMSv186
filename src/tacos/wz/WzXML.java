@@ -467,7 +467,7 @@ public class WzXML {
 
         @Override
         public int getIntExpression(String path, int common_level, int def) {
-            return WzDataTool.getIntExpression(path, getChildByPath(path), def, common_level);
+            return WzDataTool.getIntExpression(getChildByPath(path), common_level, def);
         }
 
         @Override

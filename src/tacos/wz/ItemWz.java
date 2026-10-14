@@ -291,7 +291,7 @@ public class ItemWz extends WzXML {
     private Map<SimpleImmutableEntry<Integer, Integer>, PetCommand> map_petCommands = null;
     private Map<Integer, Integer> map_petHunger = null;
 
-    public PetCommand getPetCommand(final int petId, final int skillId) {
+    public PetCommand getPetCommand(int petId, int skillId) {
         if (map_petCommands == null) {
             map_petCommands = new HashMap<>();
         }
@@ -312,7 +312,7 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public int getHunger(final int petId) {
+    public int getHunger(int petId) {
         if (map_petHunger == null) {
             map_petHunger = new HashMap<>();
         }
@@ -342,11 +342,11 @@ public class ItemWz extends WzXML {
         return null;
     }
 
-    public short loadSlotMax(final int itemId) {
+    public short loadSlotMax(int itemId) {
         short ret = 0;
-        final MapleData item = getResolvedItemData(itemId);
+        MapleData item = getResolvedItemData(itemId);
         if (item != null) {
-            final MapleData smEntry = item.getChildByPath("info/slotMax");
+            MapleData smEntry = item.getChildByPath("info/slotMax");
             if (smEntry == null) {
                 if (GameConstants.getInventoryType(itemId) == MapleInventoryType.EQUIP) {
                     ret = 1;
@@ -360,20 +360,20 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public int loadWholePrice(final int itemId) {
-        final MapleData item = getResolvedItemData(itemId);
+    public int loadWholePrice(int itemId) {
+        MapleData item = getResolvedItemData(itemId);
         if (item == null) {
             return -1;
         }
-        final MapleData pData = item.getChildByPath("info/price");
+        MapleData pData = item.getChildByPath("info/price");
         if (pData == null) {
             return -1;
         }
         return WzDataTool.getInt(pData);
     }
 
-    public double loadPrice(final int itemId) {
-        final MapleData item = getResolvedItemData(itemId);
+    public double loadPrice(int itemId) {
+        MapleData item = getResolvedItemData(itemId);
         if (item == null) {
             return -1;
         }
@@ -394,16 +394,16 @@ public class ItemWz extends WzXML {
         return pEntry;
     }
 
-    public Map<String, Byte> loadItemMakeStats(final int itemId) {
+    public Map<String, Byte> loadItemMakeStats(int itemId) {
         if (itemId / 10000 != 425) {
             return null;
         }
-        final Map<String, Byte> ret = new LinkedHashMap<>();
-        final MapleData item = getResolvedItemData(itemId);
+        Map<String, Byte> ret = new LinkedHashMap<>();
+        MapleData item = getResolvedItemData(itemId);
         if (item == null) {
             return null;
         }
-        final MapleData info = item.getChildByPath("info");
+        MapleData info = item.getChildByPath("info");
         if (info == null) {
             return null;
         }
@@ -426,13 +426,13 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public Map<Integer, Map<String, Integer>> loadEquipIncrements(final int itemId) {
-        final Map<Integer, Map<String, Integer>> ret = new LinkedHashMap<>();
-        final MapleData item = getResolvedItemData(itemId);
+    public Map<Integer, Map<String, Integer>> loadEquipIncrements(int itemId) {
+        Map<Integer, Map<String, Integer>> ret = new LinkedHashMap<>();
+        MapleData item = getResolvedItemData(itemId);
         if (item == null) {
             return null;
         }
-        final MapleData info = item.getChildByPath("info/level/info");
+        MapleData info = item.getChildByPath("info/level/info");
         if (info == null) {
             return null;
         }
@@ -443,18 +443,18 @@ public class ItemWz extends WzXML {
                     incs.put(data.getName().substring(3), dat.getInt(data.getName()));
                 }
             }
-            ret.put(Integer.parseInt(dat.getName()), incs);
+            ret.put(Integer.valueOf(dat.getName()), incs);
         }
         return ret;
     }
 
-    public Map<Integer, List<Integer>> loadEquipSkills(final int itemId) {
-        final Map<Integer, List<Integer>> ret = new LinkedHashMap<>();
-        final MapleData item = getResolvedItemData(itemId);
+    public Map<Integer, List<Integer>> loadEquipSkills(int itemId) {
+        Map<Integer, List<Integer>> ret = new LinkedHashMap<>();
+        MapleData item = getResolvedItemData(itemId);
         if (item == null) {
             return null;
         }
-        final MapleData info = item.getChildByPath("info/level/case");
+        MapleData info = item.getChildByPath("info/level/case");
         if (info == null) {
             return null;
         }
@@ -472,17 +472,17 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public Map<String, Integer> loadEquipStats(final int itemId) {
-        final Map<String, Integer> ret = new LinkedHashMap<>();
-        final MapleData item = getResolvedItemData(itemId);
+    public Map<String, Integer> loadEquipStats(int itemId) {
+        Map<String, Integer> ret = new LinkedHashMap<>();
+        MapleData item = getResolvedItemData(itemId);
         if (item == null) {
             return null;
         }
-        final MapleData info = item.getChildByPath("info");
+        MapleData info = item.getChildByPath("info");
         if (info == null) {
             return null;
         }
-        for (final MapleData data : info.getChildren()) {
+        for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
                 ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
@@ -514,30 +514,30 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public List<Integer> loadScrollReqs(final int itemId) {
-        final List<Integer> ret = new ArrayList<>();
-        final MapleData data = getResolvedItemData(itemId).getChildByPath("req");
+    public List<Integer> loadScrollReqs(int itemId) {
+        List<Integer> ret = new ArrayList<>();
+        MapleData data = getResolvedItemData(itemId).getChildByPath("req");
 
         if (data == null) {
             return ret;
         }
-        for (final MapleData req : data.getChildren()) {
+        for (MapleData req : data.getChildren()) {
             ret.add(WzDataTool.getInt(req));
         }
         return ret;
     }
 
-    public List<SimpleImmutableEntry<Integer, Integer>> loadSummonMobs(final int itemId) {
+    public List<SimpleImmutableEntry<Integer, Integer>> loadSummonMobs(int itemId) {
         if (!GameConstants.isSummonSack(itemId)) {
             return null;
         }
-        final MapleData data = getResolvedItemData(itemId).getChildByPath("mob");
+        MapleData data = getResolvedItemData(itemId).getChildByPath("mob");
         if (data == null) {
             return null;
         }
-        final List<SimpleImmutableEntry<Integer, Integer>> mobPairs = new ArrayList<>();
+        List<SimpleImmutableEntry<Integer, Integer>> mobPairs = new ArrayList<>();
 
-        for (final MapleData child : data.getChildren()) {
+        for (MapleData child : data.getChildren()) {
             mobPairs.add(new SimpleImmutableEntry<>(
                     child.getInt("id"),
                     child.getInt("prob")));
@@ -545,21 +545,21 @@ public class ItemWz extends WzXML {
         return mobPairs;
     }
 
-    public int loadCardMobId(final int id) {
+    public int loadCardMobId(int id) {
         MapleData data = getResolvedItemData(id);
         return data.getInt("info/mob");
     }
 
-    public short loadItemMakeLevel(final int itemId) {
+    public short loadItemMakeLevel(int itemId) {
         if (itemId / 10000 != 400) {
             return 0;
         }
         return (short) getResolvedItemData(itemId).getInt("info/lv");
     }
 
-    public byte loadConsumeOnPickup(final int itemId) {
+    public byte loadConsumeOnPickup(int itemId) {
         // 0 = not, 1 = consume on pickup, 2 = consume + party
-        final MapleData data = getResolvedItemData(itemId);
+        MapleData data = getResolvedItemData(itemId);
         byte consume = (byte) data.getInt("spec/consumeOnPickup");
         if (consume == 0) {
             consume = (byte) data.getInt("specEx/consumeOnPickup");
@@ -572,21 +572,21 @@ public class ItemWz extends WzXML {
         return consume;
     }
 
-    public boolean loadDropRestricted(final int itemId) {
-        final MapleData data = getResolvedItemData(itemId);
+    public boolean loadDropRestricted(int itemId) {
+        MapleData data = getResolvedItemData(itemId);
 
         return data.getInt("info/tradeBlock") == 1 || data.getInt("info/quest") == 1;
     }
 
-    public boolean loadPickupRestricted(final int itemId) {
+    public boolean loadPickupRestricted(int itemId) {
         return getResolvedItemData(itemId).getInt("info/only") == 1;
     }
 
-    public boolean loadAccountShared(final int itemId) {
+    public boolean loadAccountShared(int itemId) {
         return getResolvedItemData(itemId).getInt("info/accountSharable") == 1;
     }
 
-    public int loadStateChangeItem(final int itemId) {
+    public int loadStateChangeItem(int itemId) {
         return getResolvedItemData(itemId).getInt("info/stateChangeItem");
     }
 
@@ -595,31 +595,31 @@ public class ItemWz extends WzXML {
     }
 
     // info/damaとか
-    public int loadIntField(final int itemId, final String text) {
+    public int loadIntField(int itemId, String text) {
         return getResolvedItemData(itemId).getInt(text);
     }
 
-    public boolean loadPickupBlocked(final int itemId) {
+    public boolean loadPickupBlocked(int itemId) {
         return getResolvedItemData(itemId).getInt("info/pickUpBlock") == 1;
     }
 
-    public boolean loadCantSell(final int itemId) { //true = cant sell, false = can sell
+    public boolean loadCantSell(int itemId) { //true = cant sell, false = can sell
         return getResolvedItemData(itemId).getInt("info/notSale") == 1;
     }
 
-    public SimpleImmutableEntry<Integer, List<StructRewardItem>> loadRewardItem(final int itemid) {
-        final MapleData data = getResolvedItemData(itemid);
+    public SimpleImmutableEntry<Integer, List<StructRewardItem>> loadRewardItem(int itemid) {
+        MapleData data = getResolvedItemData(itemid);
         if (data == null) {
             return null;
         }
-        final MapleData rewards = data.getChildByPath("reward");
+        MapleData rewards = data.getChildByPath("reward");
         if (rewards == null) {
             return null;
         }
         int totalprob = 0; // As there are some rewards with prob above 2000, we can't assume it's always 100
         List<StructRewardItem> all = new ArrayList<>();
 
-        for (final MapleData reward : rewards) {
+        for (MapleData reward : rewards) {
             StructRewardItem struct = new StructRewardItem();
 
             struct.itemid = reward.getInt("item");
@@ -636,20 +636,20 @@ public class ItemWz extends WzXML {
         return new SimpleImmutableEntry<>(totalprob, all);
     }
 
-    public Map<String, Integer> loadSkillStats(final int itemId) {
+    public Map<String, Integer> loadSkillStats(int itemId) {
         if (!(itemId / 10000 == 228 || itemId / 10000 == 229 || itemId / 10000 == 562)) { // Skillbook and mastery book
             return null;
         }
-        final MapleData item = getResolvedItemData(itemId);
+        MapleData item = getResolvedItemData(itemId);
         if (item == null) {
             return null;
         }
-        final MapleData info = item.getChildByPath("info");
+        MapleData info = item.getChildByPath("info");
         if (info == null) {
             return null;
         }
-        final Map<String, Integer> ret = new LinkedHashMap<>();
-        for (final MapleData data : info.getChildren()) {
+        Map<String, Integer> ret = new LinkedHashMap<>();
+        for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
                 ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
@@ -658,7 +658,7 @@ public class ItemWz extends WzXML {
         ret.put("reqSkillLevel", info.getInt("reqSkillLevel"));
         ret.put("success", info.getInt("success"));
 
-        final MapleData skill = info.getChildByPath("skill");
+        MapleData skill = info.getChildByPath("skill");
 
         for (int i = 0; i < skill.getChildren().size(); i++) { // List of allowed skillIds
             ret.put("skillid" + i, skill.getInt(Integer.toString(i)));
@@ -666,19 +666,18 @@ public class ItemWz extends WzXML {
         return ret;
     }
 
-    public SimpleImmutableEntry<Integer, List<Integer>> loadQuestItemInfo(final int itemId) {
+    public SimpleImmutableEntry<Integer, List<Integer>> loadQuestItemInfo(int itemId) {
         if (itemId / 10000 != 422 || getResolvedItemData(itemId) == null) {
             return null;
         }
-        final MapleData itemD = getResolvedItemData(itemId).getChildByPath("info");
+        MapleData itemD = getResolvedItemData(itemId).getChildByPath("info");
         if (itemD == null || itemD.getChildByPath("consumeItem") == null) {
             return null;
         }
-        final List<Integer> consumeItems = new ArrayList<>();
+        List<Integer> consumeItems = new ArrayList<>();
         for (MapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(WzDataTool.getInt(consume, 0));
         }
         return new SimpleImmutableEntry<>(itemD.getInt("questId"), consumeItems);
     }
-
 }

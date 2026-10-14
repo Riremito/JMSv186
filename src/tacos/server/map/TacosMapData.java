@@ -423,7 +423,7 @@ public class TacosMapData {
         this.soaring = WzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0;
         this.personalShop = WzDataTool.getInt(mapData.getChildByPath("info/personalShop"), 0) > 0;
         this.lvForceMove = WzDataTool.getInt(mapData.getChildByPath("info/lvForceMove"), 0);
-        this.decHP = (int) WzDataTool.getLong(mapData.getChildByPath("info/decHP"), 0L);
+        this.decHP = (int) mapData.getLong("info/decHP", 0L);
         this.decHPInterval = WzDataTool.getInt(mapData.getChildByPath("info/decHPInterval"), 10000);
         this.protectItem = WzDataTool.getInt(mapData.getChildByPath("info/protectItem"), 0);
         this.forcedReturnMap = WzDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID);
@@ -431,7 +431,7 @@ public class TacosMapData {
         this.fieldLimit = WzDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0);
         this.onFirstUserEnter = WzDataTool.getString(mapData.getChildByPath("info/onFirstUserEnter"), "");
         this.onUserEnter = WzDataTool.getString(mapData.getChildByPath("info/onUserEnter"), "");
-        this.recoveryRate = WzDataTool.getFloat(mapData.getChildByPath("info/recovery"), 1.0f);
+        this.recoveryRate = mapData.getFloat("info/recovery", 1.0f);
         this.fixedMob = WzDataTool.getInt(mapData.getChildByPath("info/fixedMobCapacity"), 0);
         this.consumeItemCoolTime = WzDataTool.getInt(mapData.getChildByPath("info/consumeItemCoolTime"), 0);
 

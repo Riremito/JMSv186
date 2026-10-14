@@ -37,31 +37,17 @@ public class WzDataTool {
         return (String) data.getData();
     }
 
-    // with path.
-    public static int getIntPath(String path, MapleData data, int def) {
-        return getInt(data.getChildByPath(path), def);
-    }
-
-    public static Float getFloatPath(String path, MapleData data, float def) {
-        return getFloat(data.getChildByPath(path), def);
-    }
-
-    public static String getStringPath(String path, MapleData data, String def) {
-        return getString(data.getChildByPath(path), def);
-    }
-
     // PostBB Skill.wz
-    public static int getIntExpression(String path, MapleData source, int def, int common_level) {
+    public static int getIntExpression(MapleData data, int common_level, int def) {
         if (common_level == 0) {
-            return getIntPath(path, source, def);
+            return getInt(data, def);
         }
-        MapleData data = source.getChildByPath(path);
         if (data == null) {
             //DebugLogger.XmlDataLog(null, "getIntExpression");
             return def;
         }
         if (data.getType() != DataType.STRING) {
-            return getIntPath(path, source, def);
+            return getInt(data, def);
         }
         // post bb
         return WzDataExpression.getInt(getString(data), common_level);
