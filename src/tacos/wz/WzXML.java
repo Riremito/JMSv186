@@ -461,7 +461,12 @@ public class WzXML {
 
         // read data.
         @Override
-        public int getIntExpression(String path, int def, int common_level) {
+        public int getIntExpression(String path, int common_level) {
+            return getIntExpression(path, common_level, 0);
+        }
+
+        @Override
+        public int getIntExpression(String path, int common_level, int def) {
             return WzDataTool.getIntExpression(path, getChildByPath(path), def, common_level);
         }
 
@@ -486,8 +491,38 @@ public class WzXML {
         }
 
         @Override
+        public Float getFloat(String path) {
+            return getFloat(path, 0.0f);
+        }
+
+        @Override
         public Float getFloat(String path, float def) {
             return WzDataTool.getFloat(getChildByPath(path), def);
+        }
+
+        @Override
+        public Double getDouble(String path) {
+            return getDouble(path, 0.0);
+        }
+
+        @Override
+        public Double getDouble(String path, double def) {
+            return WzDataTool.getDouble(getChildByPath(path), def);
+        }
+
+        @Override
+        public Point getPoint(String path) {
+            return WzDataTool.getPoint(getChildByPath(path));
+        }
+
+        @Override
+        public long getLong(String path) {
+            return getLong(path, 0L);
+        }
+
+        @Override
+        public long getLong(String path, long def) {
+            return WzDataTool.getLong(getChildByPath(path), def);
         }
     }
 }
