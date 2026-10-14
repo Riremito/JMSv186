@@ -459,6 +459,12 @@ public class WzXML {
             return getChildren().iterator();
         }
 
+        // read data.
+        @Override
+        public int getIntExpression(String path, int def, int common_level) {
+            return WzDataTool.getIntExpression(path, getChildByPath(path), def, common_level);
+        }
+
         @Override
         public int getInt(String path) {
             return WzDataTool.getInt(getChildByPath(path), 0);
@@ -477,6 +483,11 @@ public class WzXML {
         @Override
         public String getString(String path, String def) {
             return WzDataTool.getString(getChildByPath(path), def);
+        }
+
+        @Override
+        public Float getFloat(String path, float def) {
+            return WzDataTool.getFloat(getChildByPath(path), def);
         }
     }
 }

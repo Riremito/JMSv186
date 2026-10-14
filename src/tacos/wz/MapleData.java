@@ -35,6 +35,8 @@ public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
 
     public Object getData();
 
+    public int getIntExpression(String path, int def, int common_level);
+
     public int getInt(String path);
 
     public int getInt(String path, int def);
@@ -42,4 +44,6 @@ public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
     public String getString(String path);
 
     public String getString(String path, String def);
+
+    public Float getFloat(String path, float def);
 }
