@@ -89,11 +89,11 @@ public class ServerImg {
             items = new ArrayList<>();
             for (MapleData md_data : md_npc_shop.getChildren()) {
                 NpcShopData item = new NpcShopData();
-                item.item = WzDataTool.getIntPath("item", md_data, 0);
-                item.price = WzDataTool.getIntPath("price", md_data, 0);
-                item.period = WzDataTool.getIntPath("period", md_data, 0);
-                item.stock = WzDataTool.getIntPath("stock", md_data, 0);
-                String unitPrice_str = WzDataTool.getStringPath("prob", md_data, "[R8]0.0").replace("[R8]", "");
+                item.item = md_data.getInt("item");
+                item.price = md_data.getInt("price");
+                item.period = md_data.getInt("period");
+                item.stock = md_data.getInt("stock");
+                String unitPrice_str = md_data.getString("prob", "[R8]0.0").replace("[R8]", "");
                 item.unitPrice = Double.parseDouble(unitPrice_str);
                 if (item.price == 0) {
                     // TODO : star and bullet recharge.
@@ -151,12 +151,12 @@ public class ServerImg {
             list_reward = new ArrayList<>();
             for (MapleData mob_drop : mob_drop_table.getChildren()) {
                 RewardData reward = new RewardData();
-                reward.money = WzDataTool.getIntPath("money", mob_drop, 0);
-                reward.item = WzDataTool.getIntPath("item", mob_drop, 0);
-                String prob_str = WzDataTool.getStringPath("prob", mob_drop, "[R8]0.0").replace("[R8]", "");
+                reward.money = mob_drop.getInt("money");
+                reward.item = mob_drop.getInt("item");
+                String prob_str = mob_drop.getString("prob", "[R8]0.0").replace("[R8]", "");
                 reward.prob = (int) (Double.parseDouble(prob_str) * PROB_MAX);
-                reward.min = WzDataTool.getIntPath("min", mob_drop, 1);
-                reward.max = WzDataTool.getIntPath("max", mob_drop, 1);
+                reward.min = mob_drop.getInt("min", 1);
+                reward.max = mob_drop.getInt("max", 1);
 
                 if (reward.item != 0) {
                     if (!WzDataStorage.ITEM.check(reward.item)) {

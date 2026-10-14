@@ -277,23 +277,23 @@ public class MapleStatEffect {
         if (source == null) {
             return ret;
         }
-        ret.duration = WzDataTool.getIntExpression("time", source, -1, common_level);
-        ret.hp = (short) WzDataTool.getIntExpression("hp", source, 0, common_level);
-        ret.hpR = WzDataTool.getIntExpression("hpR", source, 0, common_level) / 100.0;
-        ret.mp = (short) WzDataTool.getIntExpression("mp", source, 0, common_level);
-        ret.mpR = WzDataTool.getIntExpression("mpR", source, 0, common_level) / 100.0;
-        ret.mhpR = (byte) WzDataTool.getIntExpression("mhpR", source, 0, common_level);
-        ret.mmpR = (byte) WzDataTool.getIntExpression("mmpR", source, 0, common_level);
-        ret.mpCon = (short) WzDataTool.getIntExpression("mpCon", source, 0, common_level);
-        ret.hpCon = (short) WzDataTool.getIntExpression("hpCon", source, 0, common_level);
-        ret.prop = (short) WzDataTool.getIntExpression("prop", source, 100, common_level);
-        ret.cooldown = WzDataTool.getIntExpression("cooltime", source, 0, common_level);
-        ret.expinc = WzDataTool.getIntExpression("expinc", source, 0, common_level);
-        ret.morphId = WzDataTool.getIntExpression("morph", source, 0, common_level);
-        ret.cp = WzDataTool.getIntExpression("cp", source, 0, common_level);
-        ret.nuffSkill = WzDataTool.getIntExpression("nuffSkill", source, 0, common_level);
-        ret.mobCount = (byte) WzDataTool.getIntExpression("mobCount", source, 1, common_level);
-        ret.exp = WzDataTool.getIntExpression("exp", source, 0, common_level);
+        ret.duration = source.getIntExpression("time", common_level, -1);
+        ret.hp = (short) source.getIntExpression("hp", common_level);
+        ret.hpR = source.getIntExpression("hpR", common_level) / 100.0;
+        ret.mp = (short) source.getIntExpression("mp", common_level);
+        ret.mpR = source.getIntExpression("mpR", common_level) / 100.0;
+        ret.mhpR = (byte) source.getIntExpression("mhpR", common_level);
+        ret.mmpR = (byte) source.getIntExpression("mmpR", common_level);
+        ret.mpCon = (short) source.getIntExpression("mpCon", common_level);
+        ret.hpCon = (short) source.getIntExpression("hpCon", common_level);
+        ret.prop = (short) source.getIntExpression("prop", common_level, 100);
+        ret.cooldown = source.getIntExpression("cooltime", common_level);
+        ret.expinc = source.getIntExpression("expinc", common_level);
+        ret.morphId = source.getIntExpression("morph", common_level);
+        ret.cp = source.getIntExpression("cp", common_level);
+        ret.nuffSkill = source.getIntExpression("nuffSkill", common_level);
+        ret.mobCount = (byte) source.getIntExpression("mobCount", common_level, 1);
+        ret.exp = source.getIntExpression("exp", common_level);
 
         if (skill) {
             switch (sourceid) {
@@ -318,28 +318,28 @@ public class MapleStatEffect {
             ret.duration *= 1000; // items have their times stored in ms, of course
             ret.overTime = overTime || ret.isMorph() || ret.isPirateMorph() || ret.isFinalAttack();
         }
-        ret.mastery = (byte) WzDataTool.getIntExpression("mastery", source, 0, common_level);
-        ret.watk = (short) WzDataTool.getIntExpression("pad", source, 0, common_level);
-        ret.wdef = (short) WzDataTool.getIntExpression("pdd", source, 0, common_level);
-        ret.matk = (short) WzDataTool.getIntExpression("mad", source, 0, common_level);
-        ret.mdef = (short) WzDataTool.getIntExpression("mdd", source, 0, common_level);
-        ret.ehp = (short) WzDataTool.getIntExpression("emhp", source, 0, common_level);
-        ret.emp = (short) WzDataTool.getIntExpression("emmp", source, 0, common_level);
-        ret.ewatk = (short) WzDataTool.getIntExpression("epad", source, 0, common_level);
-        ret.ewdef = (short) WzDataTool.getIntExpression("epdd", source, 0, common_level);
-        ret.emdef = (short) WzDataTool.getIntExpression("emdd", source, 0, common_level);
-        ret.acc = (short) WzDataTool.getIntExpression("acc", source, 0, common_level);
-        ret.avoid = (short) WzDataTool.getIntExpression("eva", source, 0, common_level);
-        ret.speed = (short) WzDataTool.getIntExpression("speed", source, 0, common_level);
-        ret.jump = (short) WzDataTool.getIntExpression("jump", source, 0, common_level);
-        ret.expBuff = WzDataTool.getIntExpression("expBuff", source, 0, common_level);
-        ret.cashup = WzDataTool.getIntExpression("cashBuff", source, 0, common_level);
-        ret.itemup = WzDataTool.getIntExpression("itemupbyitem", source, 0, common_level);
-        ret.mesoup = WzDataTool.getIntExpression("mesoupbyitem", source, 0, common_level);
-        ret.berserk = WzDataTool.getIntExpression("berserk", source, 0, common_level);
-        ret.berserk2 = WzDataTool.getIntExpression("berserk2", source, 0, common_level);
+        ret.mastery = (byte) source.getIntExpression("mastery", common_level);
+        ret.watk = (short) source.getIntExpression("pad", common_level);
+        ret.wdef = (short) source.getIntExpression("pdd", common_level);
+        ret.matk = (short) source.getIntExpression("mad", common_level);
+        ret.mdef = (short) source.getIntExpression("mdd", common_level);
+        ret.ehp = (short) source.getIntExpression("emhp", common_level);
+        ret.emp = (short) source.getIntExpression("emmp", common_level);
+        ret.ewatk = (short) source.getIntExpression("epad", common_level);
+        ret.ewdef = (short) source.getIntExpression("epdd", common_level);
+        ret.emdef = (short) source.getIntExpression("emdd", common_level);
+        ret.acc = (short) source.getIntExpression("acc", common_level);
+        ret.avoid = (short) source.getIntExpression("eva", common_level);
+        ret.speed = (short) source.getIntExpression("speed", common_level);
+        ret.jump = (short) source.getIntExpression("jump", common_level);
+        ret.expBuff = source.getIntExpression("expBuff", common_level);
+        ret.cashup = source.getIntExpression("cashBuff", common_level);
+        ret.itemup = source.getIntExpression("itemupbyitem", common_level);
+        ret.mesoup = source.getIntExpression("mesoupbyitem", common_level);
+        ret.berserk = source.getIntExpression("berserk", common_level);
+        ret.berserk2 = source.getIntExpression("berserk2", common_level);
         ret.booster = 0;
-        ret.illusion = WzDataTool.getIntExpression("illusion", source, 0, common_level);
+        ret.illusion = source.getIntExpression("illusion", common_level);
 
         final MapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
@@ -347,17 +347,17 @@ public class MapleStatEffect {
             ret.rb = WzDataTool.getPoint(source.getChildByPath("rb"));
         }
 
-        ret.x = WzDataTool.getIntExpression("x", source, 0, common_level);
-        ret.y = WzDataTool.getIntExpression("y", source, 0, common_level);
-        ret.z = WzDataTool.getIntExpression("z", source, 0, common_level);
-        ret.damage = (short) WzDataTool.getIntExpression("damage", source, 0, common_level);
-        ret.attackCount = (byte) WzDataTool.getIntExpression("attackCount", source, 1, common_level);
-        ret.bulletCount = (byte) WzDataTool.getIntExpression("bulletCount", source, 1, common_level);
-        ret.bulletConsume = WzDataTool.getIntExpression("bulletConsume", source, 0, common_level);
-        ret.moneyCon = WzDataTool.getIntExpression("moneyCon", source, 0, common_level);
-        ret.itemCon = WzDataTool.getIntPath("itemCon", source, 0);
-        ret.itemConNo = WzDataTool.getIntPath("itemConNo", source, 0);
-        ret.moveTo = WzDataTool.getIntPath("moveTo", source, -1);
+        ret.x = source.getIntExpression("x", common_level);
+        ret.y = source.getIntExpression("y", common_level);
+        ret.z = source.getIntExpression("z", common_level);
+        ret.damage = (short) source.getIntExpression("damage", common_level);
+        ret.attackCount = (byte) source.getIntExpression("attackCount", common_level, 1);
+        ret.bulletCount = (byte) source.getIntExpression("bulletCount", common_level, 1);
+        ret.bulletConsume = source.getIntExpression("bulletConsume", common_level);
+        ret.moneyCon = source.getIntExpression("moneyCon", common_level);
+        ret.itemCon = source.getInt("itemCon");
+        ret.itemConNo = source.getInt("itemConNo");
+        ret.moveTo = source.getInt("moveTo", -1);
 
         ret.checkData();
         return ret;

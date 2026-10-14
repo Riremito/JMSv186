@@ -166,57 +166,57 @@ public class ItemWz extends WzXML {
             for (MapleData level : dat.getChildByPath("level")) {
                 PotentialOptionData pod = new PotentialOptionData();
 
-                pod.optionType = WzDataTool.getIntPath("info/optionType", dat, 0);
-                pod.reqLevel = WzDataTool.getIntPath("info/reqLevel", dat, 0);
-                pod.face = WzDataTool.getStringPath("face", level, "");
-                pod.boss = WzDataTool.getIntPath("boss", level, 0) > 0;
+                pod.optionType = dat.getInt("info/optionType");
+                pod.reqLevel = dat.getInt("info/reqLevel");
+                pod.face = level.getString("face");
+                pod.boss = level.getInt("boss") > 0;
                 pod.potentialID = Integer.parseInt(dat.getName());
-                pod.attackType = (short) WzDataTool.getIntPath("attackType", level, 0);
-                pod.incMHP = (short) WzDataTool.getIntPath("incMHP", level, 0);
-                pod.incMMP = (short) WzDataTool.getIntPath("incMMP", level, 0);
-                pod.incSTR = (byte) WzDataTool.getIntPath("incSTR", level, 0);
-                pod.incDEX = (byte) WzDataTool.getIntPath("incDEX", level, 0);
-                pod.incINT = (byte) WzDataTool.getIntPath("incINT", level, 0);
-                pod.incLUK = (byte) WzDataTool.getIntPath("incLUK", level, 0);
-                pod.incACC = (byte) WzDataTool.getIntPath("incACC", level, 0);
-                pod.incEVA = (byte) WzDataTool.getIntPath("incEVA", level, 0);
-                pod.incSpeed = (byte) WzDataTool.getIntPath("incSpeed", level, 0);
-                pod.incJump = (byte) WzDataTool.getIntPath("incJump", level, 0);
-                pod.incPAD = (byte) WzDataTool.getIntPath("incPAD", level, 0);
-                pod.incMAD = (byte) WzDataTool.getIntPath("incMAD", level, 0);
-                pod.incPDD = (byte) WzDataTool.getIntPath("incPDD", level, 0);
-                pod.incMDD = (byte) WzDataTool.getIntPath("incMDD", level, 0);
-                pod.prop = (byte) WzDataTool.getIntPath("prop", level, 0);
-                pod.time = (byte) WzDataTool.getIntPath("time", level, 0);
-                pod.incSTRr = (byte) WzDataTool.getIntPath("incSTRr", level, 0);
-                pod.incDEXr = (byte) WzDataTool.getIntPath("incDEXr", level, 0);
-                pod.incINTr = (byte) WzDataTool.getIntPath("incINTr", level, 0);
-                pod.incLUKr = (byte) WzDataTool.getIntPath("incLUKr", level, 0);
-                pod.incMHPr = (byte) WzDataTool.getIntPath("incMHPr", level, 0);
-                pod.incMMPr = (byte) WzDataTool.getIntPath("incMMPr", level, 0);
-                pod.incACCr = (byte) WzDataTool.getIntPath("incACCr", level, 0);
-                pod.incEVAr = (byte) WzDataTool.getIntPath("incEVAr", level, 0);
-                pod.incPADr = (byte) WzDataTool.getIntPath("incPADr", level, 0);
-                pod.incMADr = (byte) WzDataTool.getIntPath("incMADr", level, 0);
-                pod.incPDDr = (byte) WzDataTool.getIntPath("incPDDr", level, 0);
-                pod.incMDDr = (byte) WzDataTool.getIntPath("incMDDr", level, 0);
-                pod.incCr = (byte) WzDataTool.getIntPath("incCr", level, 0);
-                pod.incDAMr = (byte) WzDataTool.getIntPath("incDAMr", level, 0);
-                pod.RecoveryHP = (byte) WzDataTool.getIntPath("RecoveryHP", level, 0);
-                pod.RecoveryMP = (byte) WzDataTool.getIntPath("RecoveryMP", level, 0);
-                pod.HP = (byte) WzDataTool.getIntPath("HP", level, 0);
-                pod.MP = (byte) WzDataTool.getIntPath("MP", level, 0);
-                pod.level = (byte) WzDataTool.getIntPath("level", level, 0);
-                pod.ignoreTargetDEF = (byte) WzDataTool.getIntPath("ignoreTargetDEF", level, 0);
-                pod.ignoreDAM = (byte) WzDataTool.getIntPath("ignoreDAM", level, 0);
-                pod.DAMreflect = (byte) WzDataTool.getIntPath("DAMreflect", level, 0);
-                pod.mpconReduce = (byte) WzDataTool.getIntPath("mpconReduce", level, 0);
-                pod.mpRestore = (byte) WzDataTool.getIntPath("mpRestore", level, 0);
-                pod.incMesoProp = (byte) WzDataTool.getIntPath("incMesoProp", level, 0);
-                pod.incRewardProp = (byte) WzDataTool.getIntPath("incRewardProp", level, 0);
-                pod.incAllskill = (byte) WzDataTool.getIntPath("incAllskill", level, 0);
-                pod.ignoreDAMr = (byte) WzDataTool.getIntPath("ignoreDAMr", level, 0);
-                pod.RecoveryUP = (byte) WzDataTool.getIntPath("RecoveryUP", level, 0);
+                pod.attackType = (short) level.getInt("attackType");
+                pod.incMHP = (short) level.getInt("incMHP");
+                pod.incMMP = (short) level.getInt("incMMP");
+                pod.incSTR = (byte) level.getInt("incSTR");
+                pod.incDEX = (byte) level.getInt("incDEX");
+                pod.incINT = (byte) level.getInt("incINT");
+                pod.incLUK = (byte) level.getInt("incLUK");
+                pod.incACC = (byte) level.getInt("incACC");
+                pod.incEVA = (byte) level.getInt("incEVA");
+                pod.incSpeed = (byte) level.getInt("incSpeed");
+                pod.incJump = (byte) level.getInt("incJump");
+                pod.incPAD = (byte) level.getInt("incPAD");
+                pod.incMAD = (byte) level.getInt("incMAD");
+                pod.incPDD = (byte) level.getInt("incPDD");
+                pod.incMDD = (byte) level.getInt("incMDD");
+                pod.prop = (byte) level.getInt("prop");
+                pod.time = (byte) level.getInt("time");
+                pod.incSTRr = (byte) level.getInt("incSTRr");
+                pod.incDEXr = (byte) level.getInt("incDEXr");
+                pod.incINTr = (byte) level.getInt("incINTr");
+                pod.incLUKr = (byte) level.getInt("incLUKr");
+                pod.incMHPr = (byte) level.getInt("incMHPr");
+                pod.incMMPr = (byte) level.getInt("incMMPr");
+                pod.incACCr = (byte) level.getInt("incACCr");
+                pod.incEVAr = (byte) level.getInt("incEVAr");
+                pod.incPADr = (byte) level.getInt("incPADr");
+                pod.incMADr = (byte) level.getInt("incMADr");
+                pod.incPDDr = (byte) level.getInt("incPDDr");
+                pod.incMDDr = (byte) level.getInt("incMDDr");
+                pod.incCr = (byte) level.getInt("incCr");
+                pod.incDAMr = (byte) level.getInt("incDAMr");
+                pod.RecoveryHP = (byte) level.getInt("RecoveryHP");
+                pod.RecoveryMP = (byte) level.getInt("RecoveryMP");
+                pod.HP = (byte) level.getInt("HP");
+                pod.MP = (byte) level.getInt("MP");
+                pod.level = (byte) level.getInt("level");
+                pod.ignoreTargetDEF = (byte) level.getInt("ignoreTargetDEF");
+                pod.ignoreDAM = (byte) level.getInt("ignoreDAM");
+                pod.DAMreflect = (byte) level.getInt("DAMreflect");
+                pod.mpconReduce = (byte) level.getInt("mpconReduce");
+                pod.mpRestore = (byte) level.getInt("mpRestore");
+                pod.incMesoProp = (byte) level.getInt("incMesoProp");
+                pod.incRewardProp = (byte) level.getInt("incRewardProp");
+                pod.incAllskill = (byte) level.getInt("incAllskill");
+                pod.ignoreDAMr = (byte) level.getInt("ignoreDAMr");
+                pod.RecoveryUP = (byte) level.getInt("RecoveryUP");
 
                 switch (pod.potentialID) {
                     case 31001:
@@ -304,8 +304,8 @@ public class ItemWz extends WzXML {
         int prob = 0;
         int inc = 0;
         if (skillData != null) {
-            prob = WzDataTool.getIntPath("interact/" + skillId + "/prob", skillData, 0);
-            inc = WzDataTool.getIntPath("interact/" + skillId + "/inc", skillData, 0);
+            prob = skillData.getInt("interact/" + skillId + "/prob");
+            inc = skillData.getInt("interact/" + skillId + "/inc");
         }
         PetCommand ret = new PetCommand(petId, skillId, prob, inc);
         map_petCommands.put(new SimpleImmutableEntry<>(petId, skillId), ret);
@@ -407,21 +407,21 @@ public class ItemWz extends WzXML {
         if (info == null) {
             return null;
         }
-        ret.put("incPAD", (byte) WzDataTool.getIntPath("incPAD", info, 0)); // WATK
-        ret.put("incMAD", (byte) WzDataTool.getIntPath("incMAD", info, 0)); // MATK
-        ret.put("incACC", (byte) WzDataTool.getIntPath("incACC", info, 0)); // ACC
-        ret.put("incEVA", (byte) WzDataTool.getIntPath("incEVA", info, 0)); // AVOID
-        ret.put("incSpeed", (byte) WzDataTool.getIntPath("incSpeed", info, 0)); // SPEED
-        ret.put("incJump", (byte) WzDataTool.getIntPath("incJump", info, 0)); // JUMP
-        ret.put("incMaxHP", (byte) WzDataTool.getIntPath("incMaxHP", info, 0)); // HP
-        ret.put("incMaxMP", (byte) WzDataTool.getIntPath("incMaxMP", info, 0)); // MP
-        ret.put("incSTR", (byte) WzDataTool.getIntPath("incSTR", info, 0)); // STR
-        ret.put("incINT", (byte) WzDataTool.getIntPath("incINT", info, 0)); // INT
-        ret.put("incLUK", (byte) WzDataTool.getIntPath("incLUK", info, 0)); // LUK
-        ret.put("incDEX", (byte) WzDataTool.getIntPath("incDEX", info, 0)); // DEX
+        ret.put("incPAD", (byte) info.getInt("incPAD")); // WATK
+        ret.put("incMAD", (byte) info.getInt("incMAD")); // MATK
+        ret.put("incACC", (byte) info.getInt("incACC")); // ACC
+        ret.put("incEVA", (byte) info.getInt("incEVA")); // AVOID
+        ret.put("incSpeed", (byte) info.getInt("incSpeed")); // SPEED
+        ret.put("incJump", (byte) info.getInt("incJump")); // JUMP
+        ret.put("incMaxHP", (byte) info.getInt("incMaxHP")); // HP
+        ret.put("incMaxMP", (byte) info.getInt("incMaxMP")); // MP
+        ret.put("incSTR", (byte) info.getInt("incSTR")); // STR
+        ret.put("incINT", (byte) info.getInt("incINT")); // INT
+        ret.put("incLUK", (byte) info.getInt("incLUK")); // LUK
+        ret.put("incDEX", (byte) info.getInt("incDEX")); // DEX
 //	ret.put("incReqLevel", MapleDataTool.getInt("incReqLevel", info, 0)); // IDK!
-        ret.put("randOption", (byte) WzDataTool.getIntPath("randOption", info, 0)); // Black Crystal Wa/MA
-        ret.put("randStat", (byte) WzDataTool.getIntPath("randStat", info, 0)); // Dark Crystal - Str/Dex/int/Luk
+        ret.put("randOption", (byte) info.getInt("randOption")); // Black Crystal Wa/MA
+        ret.put("randStat", (byte) info.getInt("randStat")); // Dark Crystal - Str/Dex/int/Luk
 
         return ret;
     }
@@ -440,7 +440,7 @@ public class ItemWz extends WzXML {
             Map<String, Integer> incs = new HashMap<>();
             for (MapleData data : dat.getChildren()) { //why we have to do this? check if number has skills or not
                 if (data.getName().length() > 3) {
-                    incs.put(data.getName().substring(3), WzDataTool.getIntPath(data.getName(), dat, 0));
+                    incs.put(data.getName().substring(3), dat.getInt(data.getName()));
                 }
             }
             ret.put(Integer.parseInt(dat.getName()), incs);
@@ -463,7 +463,7 @@ public class ItemWz extends WzXML {
                 if (data.getName().length() == 1) { //the numbers all them are one digit. everything else isnt so we're lucky here..
                     List<Integer> adds = new ArrayList<>();
                     for (MapleData skil : data.getChildByPath("Skill").getChildren()) {
-                        adds.add(WzDataTool.getIntPath("id", skil, 0));
+                        adds.add(skil.getInt("id"));
                     }
                     ret.put(Integer.valueOf(data.getName()), adds);
                 }
@@ -487,28 +487,28 @@ public class ItemWz extends WzXML {
                 ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
         }
-        ret.put("tuc", WzDataTool.getIntPath("tuc", info, 0));
-        ret.put("reqLevel", WzDataTool.getIntPath("reqLevel", info, 0));
-        ret.put("reqJob", WzDataTool.getIntPath("reqJob", info, 0));
-        ret.put("reqSTR", WzDataTool.getIntPath("reqSTR", info, 0));
-        ret.put("reqDEX", WzDataTool.getIntPath("reqDEX", info, 0));
-        ret.put("reqINT", WzDataTool.getIntPath("reqINT", info, 0));
-        ret.put("reqLUK", WzDataTool.getIntPath("reqLUK", info, 0));
-        ret.put("reqPOP", WzDataTool.getIntPath("reqPOP", info, 0));
-        ret.put("cash", WzDataTool.getIntPath("cash", info, 0));
+        ret.put("tuc", info.getInt("tuc"));
+        ret.put("reqLevel", info.getInt("reqLevel"));
+        ret.put("reqJob", info.getInt("reqJob"));
+        ret.put("reqSTR", info.getInt("reqSTR"));
+        ret.put("reqDEX", info.getInt("reqDEX"));
+        ret.put("reqINT", info.getInt("reqINT"));
+        ret.put("reqLUK", info.getInt("reqLUK"));
+        ret.put("reqPOP", info.getInt("reqPOP"));
+        ret.put("cash", info.getInt("cash"));
         ret.put("canLevel", info.getChildByPath("level") == null ? 0 : 1);
-        ret.put("cursed", WzDataTool.getIntPath("cursed", info, 0));
-        ret.put("success", WzDataTool.getIntPath("success", info, 0));
-        ret.put("setItemID", WzDataTool.getIntPath("setItemID", info, 0));
-        ret.put("equipTradeBlock", WzDataTool.getIntPath("equipTradeBlock", info, 0));
-        ret.put("durability", WzDataTool.getIntPath("durability", info, -1));
+        ret.put("cursed", info.getInt("cursed"));
+        ret.put("success", info.getInt("success"));
+        ret.put("setItemID", info.getInt("setItemID"));
+        ret.put("equipTradeBlock", info.getInt("equipTradeBlock"));
+        ret.put("durability", info.getInt("durability", -1));
 
         if (GameConstants.isMagicWeapon(itemId)) {
-            ret.put("elemDefault", WzDataTool.getIntPath("elemDefault", info, 100));
-            ret.put("incRMAS", WzDataTool.getIntPath("incRMAS", info, 100)); // Poison
-            ret.put("incRMAF", WzDataTool.getIntPath("incRMAF", info, 100)); // Fire
-            ret.put("incRMAL", WzDataTool.getIntPath("incRMAL", info, 100)); // Lightning
-            ret.put("incRMAI", WzDataTool.getIntPath("incRMAI", info, 100)); // Ice
+            ret.put("elemDefault", info.getInt("elemDefault", 100));
+            ret.put("incRMAS", info.getInt("incRMAS", 100)); // Poison
+            ret.put("incRMAF", info.getInt("incRMAF", 100)); // Fire
+            ret.put("incRMAL", info.getInt("incRMAL", 100)); // Lightning
+            ret.put("incRMAI", info.getInt("incRMAI", 100)); // Ice
         }
 
         return ret;
@@ -539,33 +539,33 @@ public class ItemWz extends WzXML {
 
         for (final MapleData child : data.getChildren()) {
             mobPairs.add(new SimpleImmutableEntry<>(
-                    WzDataTool.getIntPath("id", child, 0),
-                    WzDataTool.getIntPath("prob", child, 0)));
+                    child.getInt("id"),
+                    child.getInt("prob")));
         }
         return mobPairs;
     }
 
     public int loadCardMobId(final int id) {
         MapleData data = getResolvedItemData(id);
-        return WzDataTool.getIntPath("info/mob", data, 0);
+        return data.getInt("info/mob");
     }
 
     public short loadItemMakeLevel(final int itemId) {
         if (itemId / 10000 != 400) {
             return 0;
         }
-        return (short) WzDataTool.getIntPath("info/lv", getResolvedItemData(itemId), 0);
+        return (short) getResolvedItemData(itemId).getInt("info/lv");
     }
 
     public byte loadConsumeOnPickup(final int itemId) {
         // 0 = not, 1 = consume on pickup, 2 = consume + party
         final MapleData data = getResolvedItemData(itemId);
-        byte consume = (byte) WzDataTool.getIntPath("spec/consumeOnPickup", data, 0);
+        byte consume = (byte) data.getInt("spec/consumeOnPickup");
         if (consume == 0) {
-            consume = (byte) WzDataTool.getIntPath("specEx/consumeOnPickup", data, 0);
+            consume = (byte) data.getInt("specEx/consumeOnPickup");
         }
         if (consume == 1) {
-            if (WzDataTool.getIntPath("spec/party", getResolvedItemData(itemId), 0) > 0) {
+            if (getResolvedItemData(itemId).getInt("spec/party") > 0) {
                 consume = 2;
             }
         }
@@ -575,36 +575,36 @@ public class ItemWz extends WzXML {
     public boolean loadDropRestricted(final int itemId) {
         final MapleData data = getResolvedItemData(itemId);
 
-        return WzDataTool.getIntPath("info/tradeBlock", data, 0) == 1 || WzDataTool.getIntPath("info/quest", data, 0) == 1;
+        return data.getInt("info/tradeBlock") == 1 || data.getInt("info/quest") == 1;
     }
 
     public boolean loadPickupRestricted(final int itemId) {
-        return WzDataTool.getIntPath("info/only", getResolvedItemData(itemId), 0) == 1;
+        return getResolvedItemData(itemId).getInt("info/only") == 1;
     }
 
     public boolean loadAccountShared(final int itemId) {
-        return WzDataTool.getIntPath("info/accountSharable", getResolvedItemData(itemId), 0) == 1;
+        return getResolvedItemData(itemId).getInt("info/accountSharable") == 1;
     }
 
     public int loadStateChangeItem(final int itemId) {
-        return WzDataTool.getIntPath("info/stateChangeItem", getResolvedItemData(itemId), 0);
+        return getResolvedItemData(itemId).getInt("info/stateChangeItem");
     }
 
     public int loadMeso(final int itemId) {
-        return WzDataTool.getIntPath("info/meso", getResolvedItemData(itemId), 0);
+        return getResolvedItemData(itemId).getInt("info/meso");
     }
 
     // info/damaとか
     public int loadIntField(final int itemId, final String text) {
-        return WzDataTool.getIntPath(text, getResolvedItemData(itemId), 0);
+        return getResolvedItemData(itemId).getInt(text);
     }
 
     public boolean loadPickupBlocked(final int itemId) {
-        return WzDataTool.getIntPath("info/pickUpBlock", getResolvedItemData(itemId), 0) == 1;
+        return getResolvedItemData(itemId).getInt("info/pickUpBlock") == 1;
     }
 
     public boolean loadCantSell(final int itemId) { //true = cant sell, false = can sell
-        return WzDataTool.getIntPath("info/notSale", getResolvedItemData(itemId), 0) == 1;
+        return getResolvedItemData(itemId).getInt("info/notSale") == 1;
     }
 
     public SimpleImmutableEntry<Integer, List<StructRewardItem>> loadRewardItem(final int itemid) {
@@ -622,12 +622,12 @@ public class ItemWz extends WzXML {
         for (final MapleData reward : rewards) {
             StructRewardItem struct = new StructRewardItem();
 
-            struct.itemid = WzDataTool.getIntPath("item", reward, 0);
-            struct.prob = (byte) WzDataTool.getIntPath("prob", reward, 0);
-            struct.quantity = (short) WzDataTool.getIntPath("count", reward, 0);
-            struct.effect = WzDataTool.getStringPath("Effect", reward, "");
-            struct.worldmsg = WzDataTool.getStringPath("worldMsg", reward, null);
-            struct.period = WzDataTool.getIntPath("period", reward, -1);
+            struct.itemid = reward.getInt("item");
+            struct.prob = (byte) reward.getInt("prob");
+            struct.quantity = (short) reward.getInt("count");
+            struct.effect = reward.getString("Effect");
+            struct.worldmsg = reward.getString("worldMsg", null);
+            struct.period = reward.getInt("period", -1);
 
             totalprob += struct.prob;
 
@@ -654,14 +654,14 @@ public class ItemWz extends WzXML {
                 ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
             }
         }
-        ret.put("masterLevel", WzDataTool.getIntPath("masterLevel", info, 0));
-        ret.put("reqSkillLevel", WzDataTool.getIntPath("reqSkillLevel", info, 0));
-        ret.put("success", WzDataTool.getIntPath("success", info, 0));
+        ret.put("masterLevel", info.getInt("masterLevel"));
+        ret.put("reqSkillLevel", info.getInt("reqSkillLevel"));
+        ret.put("success", info.getInt("success"));
 
         final MapleData skill = info.getChildByPath("skill");
 
         for (int i = 0; i < skill.getChildren().size(); i++) { // List of allowed skillIds
-            ret.put("skillid" + i, WzDataTool.getIntPath(Integer.toString(i), skill, 0));
+            ret.put("skillid" + i, skill.getInt(Integer.toString(i)));
         }
         return ret;
     }
@@ -678,7 +678,7 @@ public class ItemWz extends WzXML {
         for (MapleData consume : itemD.getChildByPath("consumeItem")) {
             consumeItems.add(WzDataTool.getInt(consume, 0));
         }
-        return new SimpleImmutableEntry<>(WzDataTool.getIntPath("questId", itemD, 0), consumeItems);
+        return new SimpleImmutableEntry<>(itemD.getInt("questId"), consumeItems);
     }
 
 }

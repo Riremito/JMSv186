@@ -54,7 +54,7 @@ public class ReactorWz extends WzXML {
         MapleData reactorData = getImg(reactor_id);
         MapleData link = reactorData.getChildByPath("info/link");
         if (link != null) {
-            link_id = WzDataTool.getIntPath("info/link", reactorData, 0);
+            link_id = reactorData.getInt("info/link");
             MapleReactorStats mrs_link = map_reactorStats.get(link_id);
             if (mrs_link != null) {
                 map_reactorStats.put(reactor_id, mrs_link);
@@ -78,9 +78,9 @@ public class ReactorWz extends WzXML {
             if (reactorInfoData_ != null && reactorInfoData_.getChildByPath("0") != null) {
                 MapleData reactorInfoData = reactorInfoData_.getChildByPath("0");
                 SimpleImmutableEntry<Integer, Integer> reactItem = null;
-                int type = WzDataTool.getIntPath("type", reactorInfoData, 0);
+                int type = reactorInfoData.getInt("type");
                 if (type == 100) { //reactor waits for item
-                    reactItem = new SimpleImmutableEntry<>(WzDataTool.getIntPath("0", reactorInfoData, 0), WzDataTool.getIntPath("1", reactorInfoData, 1));
+                    reactItem = new SimpleImmutableEntry<>(reactorInfoData.getInt("0"), reactorInfoData.getInt("1", 1));
                     if (!areaSet) { //only set area of effect for item-triggered reactors once
                         stats.setTL(WzDataTool.getPoint(reactorInfoData.getChildByPath("lt")));
                         stats.setBR(WzDataTool.getPoint(reactorInfoData.getChildByPath("rb")));
@@ -88,7 +88,7 @@ public class ReactorWz extends WzXML {
                     }
                 }
                 foundState = true;
-                stats.addState(i, type, reactItem, (byte) WzDataTool.getIntPath("state", reactorInfoData, 0), WzDataTool.getIntPath("timeOut", reactorInfoData_, -1));
+                stats.addState(i, type, reactItem, (byte) reactorInfoData.getInt("state"), reactorInfoData_.getInt("timeOut", -1));
             } else {
                 stats.addState(i, 999, null, (byte) (foundState ? -1 : (i + 1)), 0);
             }

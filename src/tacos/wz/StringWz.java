@@ -122,7 +122,7 @@ public class StringWz extends WzXML {
         if (strings == null) {
             return null;
         }
-        return WzDataTool.getStringPath("name", strings, null);
+        return strings.getString("name", null);
     }
 
     public String loadItemMsg(final int itemId) {
@@ -130,7 +130,7 @@ public class StringWz extends WzXML {
         if (strings == null) {
             return null;
         }
-        return WzDataTool.getStringPath("msg", strings, null);
+        return strings.getString("msg", null);
     }
 
     public MapleData getMob() {
@@ -142,7 +142,7 @@ public class StringWz extends WzXML {
     }
 
     public String getNpcName(int npc_id) {
-        return WzDataTool.getStringPath(npc_id + "/name", getNpc(), "MISSINGNO");
+        return getNpc().getString(npc_id + "/name", "MISSINGNO");
     }
 
     public MapleData getMap() {

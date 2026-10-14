@@ -236,7 +236,7 @@ public class TacosCommandDebug {
                     int mob_id = Integer.parseInt(mb_mob.getName());
 
                     for (MapleData mc_item : monster_card_items.getChildren()) {
-                        if (WzDataTool.getIntPath("info/mob", mc_item, 0) == mob_id) {
+                        if (mc_item.getInt("info/mob") == mob_id) {
                             int card_item_id = Integer.parseInt(mc_item.getName());
                             monster_book.add(card_item_id, 5, false);
                             break;
@@ -379,8 +379,8 @@ public class TacosCommandDebug {
                 for (int map_id : WzDataStorage.MAP.getIds()) {
                     MapleData data = WzXML.MAP.getImg(map_id);
                     if (data != null) {
-                        if (WzDataTool.getIntPath("info/town", data, 0) != 0) {
-                            int return_map_id = WzDataTool.getIntPath("info/returnMap", data, 0);
+                        if (data.getInt("info/town") != 0) {
+                            int return_map_id = data.getInt("info/returnMap");
                             if (map_id == return_map_id) {
                                 town_map_ids.add(map_id);
                             }

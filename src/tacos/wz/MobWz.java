@@ -126,48 +126,48 @@ public class MobWz extends WzXML {
         MapleData monsterInfoData = monsterData.getChildByPath("info");
         MapleMonsterStats stats = new MapleMonsterStats();
 
-        stats.setHp(WzDataTool.getIntPath("maxHP", monsterInfoData, 0));
-        int mp = WzDataTool.getIntPath("maxMP", monsterInfoData, 0);
+        stats.setHp(monsterInfoData.getInt("maxHP"));
+        int mp = monsterInfoData.getInt("maxMP");
         stats.setMp(isBrokenMPMob(mob_id) ? 30000 : mp);
 
-        stats.setExp(WzDataTool.getIntPath("exp", monsterInfoData, 0));
-        stats.setLevel((short) WzDataTool.getIntPath("level", monsterInfoData, 0));
-        stats.setRemoveAfter(WzDataTool.getIntPath("removeAfter", monsterInfoData, 0));
-        stats.setrareItemDropLevel((byte) WzDataTool.getIntPath("rareItemDropLevel", monsterInfoData, 0));
-        stats.setFixedDamage(WzDataTool.getIntPath("fixedDamage", monsterInfoData, -1));
-        stats.setOnlyNormalAttack(WzDataTool.getIntPath("onlyNormalAttack", monsterInfoData, 0) > 0);
-        stats.setBoss(WzDataTool.getIntPath("boss", monsterInfoData, 0) > 0 || mob_id == 8810018 || mob_id == 9410066 || (mob_id >= 8810118 && mob_id <= 8810122));
-        stats.setExplosiveReward(WzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
-        stats.setFfaLoot(WzDataTool.getIntPath("publicReward", monsterInfoData, 0) > 0);
-        stats.setUndead(WzDataTool.getIntPath("undead", monsterInfoData, 0) > 0);
-        stats.setName(WzDataTool.getStringPath(mob_id + "/name", WzXML.STRING.getMob(), "MISSINGNO"));
-        stats.setBuffToGive(WzDataTool.getIntPath("buff", monsterInfoData, -1));
-        stats.setFriendly(WzDataTool.getIntPath("damagedByMob", monsterInfoData, 0) > 0);
-        stats.setExplosiveReward(WzDataTool.getIntPath("explosiveReward", monsterInfoData, 0) > 0);
-        stats.setNoDoom(WzDataTool.getIntPath("noDoom", monsterInfoData, 0) > 0);
-        stats.setFfaLoot(WzDataTool.getIntPath("publicReward", monsterInfoData, 0) > 0);
-        stats.setCP((byte) WzDataTool.getIntPath("getCP", monsterInfoData, 0));
-        stats.setPoint(WzDataTool.getIntPath("point", monsterInfoData, 0));
-        stats.setDropItemPeriod(WzDataTool.getIntPath("dropItemPeriod", monsterInfoData, 0));
-        stats.setPhysicalDefense((short) WzDataTool.getIntPath("PDDamage", monsterInfoData, 0));
-        stats.setMagicDefense((short) WzDataTool.getIntPath("MDDamage", monsterInfoData, 0));
-        stats.setEva((short) WzDataTool.getIntPath("eva", monsterInfoData, 0));
-        final boolean hideHP = WzDataTool.getIntPath("HPgaugeHide", monsterInfoData, 0) > 0 || WzDataTool.getIntPath("hideHP", monsterInfoData, 0) > 0;
+        stats.setExp(monsterInfoData.getInt("exp"));
+        stats.setLevel((short) monsterInfoData.getInt("level"));
+        stats.setRemoveAfter(monsterInfoData.getInt("removeAfter"));
+        stats.setrareItemDropLevel((byte) monsterInfoData.getInt("rareItemDropLevel"));
+        stats.setFixedDamage(monsterInfoData.getInt("fixedDamage", -1));
+        stats.setOnlyNormalAttack(monsterInfoData.getInt("onlyNormalAttack") > 0);
+        stats.setBoss(monsterInfoData.getInt("boss") > 0 || mob_id == 8810018 || mob_id == 9410066 || (mob_id >= 8810118 && mob_id <= 8810122));
+        stats.setExplosiveReward(monsterInfoData.getInt("explosiveReward") > 0);
+        stats.setFfaLoot(monsterInfoData.getInt("publicReward") > 0);
+        stats.setUndead(monsterInfoData.getInt("undead") > 0);
+        stats.setName(WzXML.STRING.getMob().getString(mob_id + "/name", "MISSINGNO"));
+        stats.setBuffToGive(monsterInfoData.getInt("buff", -1));
+        stats.setFriendly(monsterInfoData.getInt("damagedByMob") > 0);
+        stats.setExplosiveReward(monsterInfoData.getInt("explosiveReward") > 0);
+        stats.setNoDoom(monsterInfoData.getInt("noDoom") > 0);
+        stats.setFfaLoot(monsterInfoData.getInt("publicReward") > 0);
+        stats.setCP((byte) monsterInfoData.getInt("getCP"));
+        stats.setPoint(monsterInfoData.getInt("point"));
+        stats.setDropItemPeriod(monsterInfoData.getInt("dropItemPeriod"));
+        stats.setPhysicalDefense((short) monsterInfoData.getInt("PDDamage"));
+        stats.setMagicDefense((short) monsterInfoData.getInt("MDDamage"));
+        stats.setEva((short) monsterInfoData.getInt("eva"));
+        final boolean hideHP = monsterInfoData.getInt("HPgaugeHide") > 0 || monsterInfoData.getInt("hideHP") > 0;
         final MapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
         if (selfd != null) {
-            stats.setSelfDHP(WzDataTool.getIntPath("hp", selfd, 0));
-            stats.setSelfD((byte) WzDataTool.getIntPath("action", selfd, -1));
+            stats.setSelfDHP(selfd.getInt("hp"));
+            stats.setSelfD((byte) selfd.getInt("action", -1));
         } else {
             stats.setSelfD((byte) -1);
         }
-        stats.setFirstAttack(WzDataTool.getIntPath("firstAttack", monsterInfoData, 0) > 0);
+        stats.setFirstAttack(monsterInfoData.getInt("firstAttack") > 0);
         if (stats.isBoss() || isDmgSponge(mob_id)) {
             if (hideHP || monsterInfoData.getChildByPath("hpTagColor") == null || monsterInfoData.getChildByPath("hpTagBgcolor") == null) {
                 stats.setTagColor(0);
                 stats.setTagBgColor(0);
             } else {
-                stats.setTagColor(WzDataTool.getIntPath("hpTagColor", monsterInfoData, 0));
-                stats.setTagBgColor(WzDataTool.getIntPath("hpTagBgcolor", monsterInfoData, 0));
+                stats.setTagColor(monsterInfoData.getInt("hpTagColor"));
+                stats.setTagBgColor(monsterInfoData.getInt("hpTagBgcolor"));
             }
         }
 
@@ -176,9 +176,9 @@ public class MobWz extends WzXML {
         if (md_info_ban != null) {
             // example, 7090000.img
             MobBanInfo mbd = new MobBanInfo();
-            mbd.banMsg = WzDataTool.getStringPath("banMsg", md_info_ban, ""); // info/ban/banMsg
-            mbd.field = WzDataTool.getIntPath("banMap/0/field", md_info_ban, TacosConstants.MAP_ID_PERION); // info/ban/banMap/0/field
-            mbd.portal = WzDataTool.getStringPath("banMap/0/portal", md_info_ban, "sp"); // info/ban/banMap/0/field/portal
+            mbd.banMsg = md_info_ban.getString("banMsg"); // info/ban/banMsg
+            mbd.field = md_info_ban.getInt("banMap/0/field", TacosConstants.MAP_ID_PERION); // info/ban/banMap/0/field
+            mbd.portal = md_info_ban.getString("banMap/0/portal", "sp"); // info/ban/banMap/0/field/portal
             stats.setBanishInfo(mbd);
         }
 
@@ -196,16 +196,16 @@ public class MobWz extends WzXML {
             int i = 0;
             List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
             while (monsterSkillData.getChildByPath(Integer.toString(i)) != null) {
-                skills.add(new SimpleImmutableEntry<>(WzDataTool.getIntPath(i + "/skill", monsterSkillData, 0), WzDataTool.getIntPath(i + "/level", monsterSkillData, 0)));
+                skills.add(new SimpleImmutableEntry<>(monsterSkillData.getInt(i + "/skill"), monsterSkillData.getInt(i + "/level")));
                 i++;
             }
             stats.setSkills(skills);
         }
 
-        decodeElementalString(stats, WzDataTool.getStringPath("elemAttr", monsterInfoData, ""));
+        decodeElementalString(stats, monsterInfoData.getString("elemAttr"));
 
         // Other data which isn;t in the mob, but might in the linked data
-        int link_id = WzDataTool.getIntPath("link", monsterInfoData, 0);
+        int link_id = monsterInfoData.getInt("link");
         if (link_id != 0) { // Store another copy, for faster processing.
             monsterData = getImg(link_id);
         }
@@ -261,16 +261,16 @@ public class MobWz extends WzXML {
         if (mobData != null) {
             MapleData infoData = mobData.getChildByPath("info/link");
             if (infoData != null) {
-                int link_id = WzDataTool.getIntPath("info/link", mobData, 0);
+                int link_id = mobData.getInt("info/link");
                 mobData = getImg(link_id);
             }
             MapleData attackData = mobData.getChildByPath("attack" + (attack + 1) + "/info");
             if (attackData != null) {
                 ret.deadlyAttack = attackData.getChildByPath("deadlyAttack") != null;
-                ret.mpBurn = WzDataTool.getIntPath("mpBurn", attackData, 0);
-                ret.disease = WzDataTool.getIntPath("disease", attackData, 0);
-                ret.level = WzDataTool.getIntPath("level", attackData, 0);
-                ret.conMP = WzDataTool.getIntPath("conMP", attackData, 0);
+                ret.mpBurn = attackData.getInt("mpBurn");
+                ret.disease = attackData.getInt("disease");
+                ret.level = attackData.getInt("level");
+                ret.conMP = attackData.getInt("conMP");
             }
         }
         map_mobAttacks.put(new SimpleImmutableEntry<>(mob.getId(), attack), ret);

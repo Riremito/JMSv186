@@ -83,16 +83,16 @@ public class SkillWz extends WzXML {
                             MapleData md_common = md_skill_data.getChildByPath("common");
                             if (md_common != null) {
                                 LinkedHashMap<Integer, TacosSummonSkill> level_list = new LinkedHashMap<>();
-                                int maxLevel = WzDataTool.getIntPath("maxLevel", md_common, 0);
+                                int maxLevel = md_common.getInt("maxLevel");
                                 for (int skill_level = 1; skill_level <= maxLevel; skill_level++) {
                                     TacosSummonSkill tss = new TacosSummonSkill(skill_id, skill_level);
-                                    tss.setItemCon(WzDataTool.getIntExpression("itemCon", md_common, 0, skill_level));
-                                    tss.setItemConNo(WzDataTool.getIntExpression("itemConNo", md_common, 0, skill_level));
-                                    tss.setMobCount(WzDataTool.getIntExpression("mobCount", md_common, 0, skill_level));
-                                    tss.setMpCon(WzDataTool.getIntExpression("mpCon", md_common, 0, skill_level));
-                                    tss.setProp(WzDataTool.getIntExpression("prop", md_common, 0, skill_level));
-                                    tss.setTime(WzDataTool.getIntExpression("time", md_common, 0, skill_level));
-                                    tss.setX(WzDataTool.getIntExpression("x", md_common, 1, skill_level));
+                                    tss.setItemCon(md_common.getIntExpression("itemCon", skill_level));
+                                    tss.setItemConNo(md_common.getIntExpression("itemConNo", skill_level));
+                                    tss.setMobCount(md_common.getIntExpression("mobCount", skill_level));
+                                    tss.setMpCon(md_common.getIntExpression("mpCon", skill_level));
+                                    tss.setProp(md_common.getIntExpression("prop", skill_level));
+                                    tss.setTime(md_common.getIntExpression("time", skill_level));
+                                    tss.setX(md_common.getIntExpression("x", skill_level, 1));
                                     level_list.put(skill_level, tss);
                                 }
                                 skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
@@ -106,17 +106,17 @@ public class SkillWz extends WzXML {
                             for (MapleData md_level_data : md_level.getChildren()) {
                                 int skill_level = Integer.parseInt(md_level_data.getName());
                                 TacosSummonSkill tss = new TacosSummonSkill(skill_id, skill_level);
-                                tss.setHs(WzDataTool.getStringPath("hs", md_level_data, ""));
-                                tss.setItemCon(WzDataTool.getIntPath("itemCon", md_level_data, 0));
-                                tss.setItemConNo(WzDataTool.getIntPath("itemConNo", md_level_data, 0));
-                                tss.setMad(WzDataTool.getIntPath("mad", md_level_data, 0));
-                                tss.setMastery(WzDataTool.getIntPath("mastery", md_level_data, 0));
-                                tss.setMobCount(WzDataTool.getIntPath("mobCount", md_level_data, 0));
-                                tss.setMpCon(WzDataTool.getIntPath("mpCon", md_level_data, 0));
-                                tss.setPad(WzDataTool.getIntPath("pad", md_level_data, 0));
-                                tss.setProp(WzDataTool.getIntPath("prop", md_level_data, 0));
-                                tss.setTime(WzDataTool.getIntPath("time", md_level_data, 0));
-                                tss.setX(WzDataTool.getIntPath("x", md_level_data, 1));
+                                tss.setHs(md_level_data.getString("hs"));
+                                tss.setItemCon(md_level_data.getInt("itemCon"));
+                                tss.setItemConNo(md_level_data.getInt("itemConNo"));
+                                tss.setMad(md_level_data.getInt("mad"));
+                                tss.setMastery(md_level_data.getInt("mastery"));
+                                tss.setMobCount(md_level_data.getInt("mobCount"));
+                                tss.setMpCon(md_level_data.getInt("mpCon"));
+                                tss.setPad(md_level_data.getInt("pad"));
+                                tss.setProp(md_level_data.getInt("prop"));
+                                tss.setTime(md_level_data.getInt("time"));
+                                tss.setX(md_level_data.getInt("x", 1));
                                 level_list.put(skill_level, tss);
                             }
                             skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
@@ -165,13 +165,13 @@ public class SkillWz extends WzXML {
                             MapleData md_common = md_skill_data.getChildByPath("common");
                             if (md_common != null) {
                                 LinkedHashMap<Integer, TacosDoorSkill> level_list = new LinkedHashMap<>();
-                                int maxLevel = WzDataTool.getIntPath("maxLevel", md_common, 0);
+                                int maxLevel = md_common.getInt("maxLevel");
                                 for (int skill_level = 1; skill_level <= maxLevel; skill_level++) {
                                     TacosDoorSkill tds = new TacosDoorSkill(skill_id, skill_level);
-                                    tds.setItemCon(WzDataTool.getIntExpression("itemCon", md_common, 0, skill_level));
-                                    tds.setItemConNo(WzDataTool.getIntExpression("itemConNo", md_common, 0, skill_level));
-                                    tds.setMpCon(WzDataTool.getIntExpression("mpCon", md_common, 0, skill_level));
-                                    tds.setTime(WzDataTool.getIntExpression("time", md_common, 0, skill_level));
+                                    tds.setItemCon(md_common.getIntExpression("itemCon", skill_level));
+                                    tds.setItemConNo(md_common.getIntExpression("itemConNo", skill_level));
+                                    tds.setMpCon(md_common.getIntExpression("mpCon", skill_level));
+                                    tds.setTime(md_common.getIntExpression("time", skill_level));
                                     level_list.put(skill_level, tds);
                                 }
                                 skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
@@ -185,10 +185,10 @@ public class SkillWz extends WzXML {
                             for (MapleData md_level_data : md_level.getChildren()) {
                                 int skill_level = Integer.parseInt(md_level_data.getName());
                                 TacosDoorSkill tds = new TacosDoorSkill(skill_id, skill_level);
-                                tds.setItemCon(WzDataTool.getIntPath("itemCon", md_level_data, 0));
-                                tds.setItemConNo(WzDataTool.getIntPath("itemConNo", md_level_data, 0));
-                                tds.setMpCon(WzDataTool.getIntPath("mpCon", md_level_data, 0));
-                                tds.setTime(WzDataTool.getIntPath("time", md_level_data, 0));
+                                tds.setItemCon(md_level_data.getInt("itemCon"));
+                                tds.setItemConNo(md_level_data.getInt("itemConNo"));
+                                tds.setMpCon(md_level_data.getInt("mpCon"));
+                                tds.setTime(md_level_data.getInt("time"));
                                 level_list.put(skill_level, tds);
                             }
                             skill_list.put(Integer.valueOf(md_skill_data.getName()), level_list);
@@ -231,14 +231,14 @@ public class SkillWz extends WzXML {
                 for (MapleData md_skill_data : md_skill.getChildren()) {
                     MapleData md_hit_0 = md_skill_data.getChildByPath("hit/0");
                     if (md_hit_0 != null) {
-                        int hitAfter = WzDataTool.getIntPath("hitAfter", md_hit_0, 0);
+                        int hitAfter = md_hit_0.getInt("hitAfter");
                         int skill_id = Integer.parseInt(md_skill_data.getName());
                         // postBB style, but not all skills are updated in BIGBANG.
                         if (Config.PostBB()) {
                             MapleData md_common = md_skill_data.getChildByPath("common");
                             if (md_common != null) {
                                 LinkedHashMap<Integer, TacosSkill> level_list = new LinkedHashMap<>();
-                                int maxLevel = WzDataTool.getIntPath("maxLevel", md_common, 0);
+                                int maxLevel = md_common.getInt("maxLevel");
                                 for (int skill_level = 1; skill_level <= maxLevel; skill_level++) {
                                     TacosSkill ts = new TacosSkill(skill_id, skill_level);
                                     ts.setHitAfter(hitAfter);
@@ -330,16 +330,16 @@ public class SkillWz extends WzXML {
         Skill ret = new Skill(id);
 
         boolean isBuff = false;
-        final int skillType = WzDataTool.getIntPath("skillType", data, -1);
-        final String elem = WzDataTool.getStringPath("elemAttr", data, null);
+        final int skillType = data.getInt("skillType", -1);
+        final String elem = data.getString("elemAttr", null);
         if (elem != null) {
             ret.setElement(Element.getFromChar(elem.charAt(0)));
         } else {
             ret.setElement(Element.NEUTRAL);
         }
-        ret.setInvisible(WzDataTool.getIntPath("invisible", data, 0) > 0);
-        ret.setTimeLimited(WzDataTool.getIntPath("timeLimited", data, 0) > 0);
-        ret.setMasterLevel(WzDataTool.getIntPath("masterLevel", data, 0));
+        ret.setInvisible(data.getInt("invisible") > 0);
+        ret.setTimeLimited(data.getInt("timeLimited") > 0);
+        ret.setMasterLevel(data.getInt("masterLevel"));
         final MapleData effect = data.getChildByPath("effect");
         if (skillType != -1) {
             if (skillType == 2) {
@@ -372,7 +372,7 @@ public class SkillWz extends WzXML {
             }
             ret.setAction(action);
             isBuff = effect != null && hit == null && ball == null;
-            isBuff |= action_ != null && WzDataTool.getStringPath("0", action_, "").equals("alert2");
+            isBuff |= action_ != null && action_.getString("0").equals("alert2");
             switch (id) {
                 case 2301002: // heal is alert2 but not overtime...
                 case 2111003: // poison mist
@@ -473,7 +473,7 @@ public class SkillWz extends WzXML {
             MapleData common = data.getChildByPath("common");
             if (common != null) {
                 // after bigbang updates
-                int max_level = WzDataTool.getIntPath("maxLevel", common, -1);
+                int max_level = common.getInt("maxLevel", -1);
                 for (int level = 1; level <= max_level; level++) {
                     ret.addEffect(MapleStatEffect.loadSkillEffectFromData(common, id, isBuff, (byte) level, level)); // 変数
                 }
@@ -495,7 +495,7 @@ public class SkillWz extends WzXML {
         int animationTime = 0;
         if (effect != null) {
             for (final MapleData effectEntry : effect) {
-                animationTime += WzDataTool.getIntPath("delay", effectEntry, 0);
+                animationTime += effectEntry.getInt("delay");
             }
         }
         ret.setAnimationTime(animationTime);
@@ -572,15 +572,15 @@ public class SkillWz extends WzXML {
 
         MobSkill ret = new MobSkill(skillId, level);
         ret.addSummons(toSummon);
-        ret.setCoolTime(WzDataTool.getIntPath("interval", skillData, 0) * 1000);
-        ret.setDuration(WzDataTool.getIntPath("time", skillData, 1) * 1000);
-        ret.setHp(WzDataTool.getIntPath("hp", skillData, 100));
+        ret.setCoolTime(skillData.getInt("interval") * 1000);
+        ret.setDuration(skillData.getInt("time", 1) * 1000);
+        ret.setHp(skillData.getInt("hp", 100));
         ret.setMpCon(WzDataTool.getInt(skillData.getChildByPath("mpCon"), 0));
-        ret.setSpawnEffect(WzDataTool.getIntPath("summonEffect", skillData, 0));
-        ret.setX(WzDataTool.getIntPath("x", skillData, 1));
-        ret.setY(WzDataTool.getIntPath("y", skillData, 1));
-        ret.setProp(WzDataTool.getIntPath("prop", skillData, 100) / 100f);
-        ret.setLimit((short) WzDataTool.getIntPath("limit", skillData, 0));
+        ret.setSpawnEffect(skillData.getInt("summonEffect"));
+        ret.setX(skillData.getInt("x", 1));
+        ret.setY(skillData.getInt("y", 1));
+        ret.setProp(skillData.getInt("prop", 100) / 100f);
+        ret.setLimit((short) skillData.getInt("limit"));
         ret.setLtRb(lt, rb);
 
         map_mobSkills.put(new SimpleImmutableEntry<>(skillId, level), ret);
@@ -602,13 +602,13 @@ public class SkillWz extends WzXML {
             // THMS meme
             int mobSkillID = 0;
             try {
-                mobSkillID = WzDataTool.getIntPath("mobSkillID", md, 0);
+                mobSkillID = md.getInt("mobSkillID");
             } catch (NumberFormatException e) {
                 // MCSkill.img/4/mobSkillID
                 DebugLogger.ErrorLog("MCSkill.img/" + md.getName() + "/mobSkillID");
                 continue;
             }
-            map_MCSkill.put(Integer.valueOf(md.getName()), new MapleCarnivalFactory.MCSkill(WzDataTool.getIntPath("spendCP", md, 0), mobSkillID, WzDataTool.getIntPath("level", md, 0), WzDataTool.getIntPath("target", md, 1) > 1));
+            map_MCSkill.put(Integer.valueOf(md.getName()), new MapleCarnivalFactory.MCSkill(md.getInt("spendCP"), mobSkillID, md.getInt("level"), md.getInt("target", 1) > 1));
         }
         return map_MCSkill;
     }
@@ -620,7 +620,7 @@ public class SkillWz extends WzXML {
 
         map_MCGuardian = new HashMap<>();
         for (MapleData md : getData("MCGuardian.img")) {
-            map_MCGuardian.put(Integer.valueOf(md.getName()), new MapleCarnivalFactory.MCSkill(WzDataTool.getIntPath("spendCP", md, 0), WzDataTool.getIntPath("mobSkillID", md, 0), WzDataTool.getIntPath("level", md, 0), true));
+            map_MCGuardian.put(Integer.valueOf(md.getName()), new MapleCarnivalFactory.MCSkill(md.getInt("spendCP"), md.getInt("mobSkillID"), md.getInt("level"), true));
         }
         return map_MCGuardian;
     }

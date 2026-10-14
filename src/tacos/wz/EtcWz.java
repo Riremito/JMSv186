@@ -69,10 +69,10 @@ public class EtcWz extends WzXML {
             switch (type) {
                 case 0: { // Caching of gem
                     for (MapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
-                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
-                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
+                        reqLevel = itemFolder.getInt("reqLevel");
+                        reqMakerLevel = (byte) itemFolder.getInt("reqSkillLevel");
+                        cost = itemFolder.getInt("meso");
+                        quantity = itemFolder.getInt("itemNum");
 //			totalupgrades = MapleDataTool.getInt("tuc", itemFolder, 0); // Gem is always 0
 
                         ret = new GemCreateEntry(cost, reqLevel, reqMakerLevel, quantity);
@@ -80,10 +80,10 @@ public class EtcWz extends WzXML {
                         for (MapleData rewardNRecipe : itemFolder.getChildren()) {
                             for (MapleData ind : rewardNRecipe.getChildren()) {
                                 if (rewardNRecipe.getName().equals("randomReward")) {
-                                    ret.addRandomReward(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("prob", ind, 0));
+                                    ret.addRandomReward(ind.getInt("item"), ind.getInt("prob"));
 // MapleDataTool.getInt("itemNum", ind, 0)
                                 } else if (rewardNRecipe.getName().equals("recipe")) {
-                                    ret.addReqRecipe(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
+                                    ret.addReqRecipe(ind.getInt("item"), ind.getInt("count"));
                                 }
                             }
                         }
@@ -97,19 +97,19 @@ public class EtcWz extends WzXML {
                 case 8: // Thief
                 case 16: { // Pirate
                     for (MapleData itemFolder : dataType.getChildren()) {
-                        reqLevel = WzDataTool.getIntPath("reqLevel", itemFolder, 0);
-                        reqMakerLevel = (byte) WzDataTool.getIntPath("reqSkillLevel", itemFolder, 0);
-                        cost = WzDataTool.getIntPath("meso", itemFolder, 0);
-                        quantity = WzDataTool.getIntPath("itemNum", itemFolder, 0);
-                        totalupgrades = (byte) WzDataTool.getIntPath("tuc", itemFolder, 0);
-                        stimulator = WzDataTool.getIntPath("catalyst", itemFolder, 0);
+                        reqLevel = itemFolder.getInt("reqLevel");
+                        reqMakerLevel = (byte) itemFolder.getInt("reqSkillLevel");
+                        cost = itemFolder.getInt("meso");
+                        quantity = itemFolder.getInt("itemNum");
+                        totalupgrades = (byte) itemFolder.getInt("tuc");
+                        stimulator = itemFolder.getInt("catalyst");
 
                         imt = new ItemMakerCreateEntry(cost, reqLevel, reqMakerLevel, quantity, totalupgrades, stimulator);
 
                         for (MapleData Recipe : itemFolder.getChildren()) {
                             for (MapleData ind : Recipe.getChildren()) {
                                 if (Recipe.getName().equals("recipe")) {
-                                    imt.addReqItem(WzDataTool.getIntPath("item", ind, 0), WzDataTool.getIntPath("count", ind, 0));
+                                    imt.addReqItem(ind.getInt("item"), ind.getInt("count"));
                                 }
                             }
                         }
@@ -126,21 +126,21 @@ public class EtcWz extends WzXML {
     }
 
     private CashItemInfo parseCommodityField(MapleData field) {
-        int SN = WzDataTool.getIntPath("SN", field, 0);
-        int ItemId = WzDataTool.getIntPath("ItemId", field, 0);
+        int SN = field.getInt("SN");
+        int ItemId = field.getInt("ItemId");
 
         return new CashItemInfo(ItemId,
-                WzDataTool.getIntPath("Count", field, 1),
-                WzDataTool.getIntPath("Price", field, 0),
+                field.getInt("Count", 1),
+                field.getInt("Price"),
                 SN,
-                WzDataTool.getIntPath("Period", field, 0),
-                WzDataTool.getIntPath("Gender", field, 2),
-                WzDataTool.getIntPath("OnSale", field, 0) > 0);
+                field.getInt("Period"),
+                field.getInt("Gender", 2),
+                field.getInt("OnSale") > 0);
     }
 
     public CashItemInfo findCommodityBySN(int item_SN) {
         for (MapleData field : getCommodity().getChildren()) {
-            int SN = WzDataTool.getIntPath("SN", field, 0);
+            int SN = field.getInt("SN");
             if (SN <= 0 || item_SN != SN) {
                 continue;
             }
@@ -151,7 +151,7 @@ public class EtcWz extends WzXML {
 
     public CashItemInfo findCommodityByItemId(int itemid) {
         for (MapleData field : getCommodity().getChildren()) {
-            int ItemId = WzDataTool.getIntPath("ItemId", field, 0);
+            int ItemId = field.getInt("ItemId");
             if (ItemId != itemid) {
                 continue;
             }
@@ -234,9 +234,9 @@ public class EtcWz extends WzXML {
         }
         // remove all onsale items.
         for (MapleData field : WzXML.ETC.getCommodity().getChildren()) {
-            int nItemId = WzDataTool.getIntPath("ItemId", field, 0);
-            int nSN = WzDataTool.getIntPath("SN", field, 0);
-            int bOnSale = WzDataTool.getIntPath("OnSale", field, 0);
+            int nItemId = field.getInt("ItemId");
+            int nSN = field.getInt("SN");
+            int bOnSale = field.getInt("OnSale");
             /*
             if (nItemId / 1000000 == 1) {
                 continue;

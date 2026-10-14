@@ -102,11 +102,11 @@ public class QuestWz extends WzXML {
     public QuestInfoData parseQuestInfo(MapleData questInfo) {
         QuestInfoData ret = new QuestInfoData();
         if (questInfo != null) {
-            ret.name = WzDataTool.getStringPath("name", questInfo, "");
-            ret.autoStart = WzDataTool.getIntPath("autoStart", questInfo, 0) == 1;
-            ret.autoPreComplete = WzDataTool.getIntPath("autoPreComplete", questInfo, 0) == 1;
-            ret.viewMedalItem = WzDataTool.getIntPath("viewMedalItem", questInfo, 0);
-            ret.selectedSkillID = WzDataTool.getIntPath("selectedSkillID", questInfo, 0);
+            ret.name = questInfo.getString("name");
+            ret.autoStart = questInfo.getInt("autoStart") == 1;
+            ret.autoPreComplete = questInfo.getInt("autoPreComplete") == 1;
+            ret.viewMedalItem = questInfo.getInt("viewMedalItem");
+            ret.selectedSkillID = questInfo.getInt("selectedSkillID");
         }
         return ret;
     }
@@ -233,7 +233,7 @@ public class QuestWz extends WzXML {
                 ret.dataStore = new LinkedList<>();
 
                 for (MapleData child : data) {
-                    ret.dataStore.add(new SimpleImmutableEntry<>(-1, WzDataTool.getIntPath("id", child, 0)));
+                    ret.dataStore.add(new SimpleImmutableEntry<>(-1, child.getInt("id")));
                 }
                 break;
             }
