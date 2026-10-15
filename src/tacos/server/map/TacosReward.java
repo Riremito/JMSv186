@@ -34,6 +34,7 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MonsterDropEntry;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosSkill;
+import tacos.config.Region;
 import tacos.constants.TacosConstants;
 import tacos.database.query.DQ_DropData;
 import tacos.unofficial.CustomMonsterBookDrop;
@@ -53,12 +54,14 @@ public class TacosReward {
         TacosSkill ts = (monster.getLastHitSkillId() != 0) ? WzXML.SKILL.getSkill(monster.getLastHitSkillId(), 1) : null; // temporary lv1.
         int hitAfter = (ts != null) ? ts.getHitAfter() : 0;
 
-        ArrayList<RewardData> list_reward = ServerImg.BMS8.getRewardData(mob_id);
+        int server_drop_rate = chr.getChannelServer().getDropRate();
+
+        ArrayList<RewardData> list_reward = Region.BMS.check() ? ServerImg.BMS8.getRewardData(mob_id) : ServerImg.JMS147.getRewardData(mob_id);
         if (list_reward != null) {
             MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
             int drop_count = 0;
             for (RewardData reward : list_reward) {
-                if (Randomizer.nextInt(ServerImg.PROB_MAX) <= reward.getProb()) {
+                if (Randomizer.nextInt(ServerImg.PROB_MAX) <= (reward.getProb() * server_drop_rate)) {
                     if (reward.getMoney() != 0) {
                         map.spawnMobMesoDrop(reward.getMoney(), map.calcDropPos(getDropPosition(monster, 0, drop_count), monster.getPosition()), monster, chr, false, (byte) 0, hitAfter);
                     } else {

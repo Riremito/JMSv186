@@ -49,6 +49,10 @@ public class Property_Java {
         return System.getProperty("user.dir") + "/wz_xml/xml_BMS_v8";
     }
 
+    public static String getDir_WzXml_JMS147() {
+        return System.getProperty("user.dir") + "/wz_xml/xml_JMS_v147";
+    }
+
     public static String getDir_Scripts() {
         return path_scripts;
     }

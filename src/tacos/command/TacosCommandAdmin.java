@@ -93,6 +93,16 @@ public class TacosCommandAdmin {
                 chr.DebugMsg("ResetPassword : " + dcmd.get(1));
                 return true;
             }
+            case "/droprate" -> {
+                int drop_rate = 1;
+                if (dcmd.check(1)) {
+                    drop_rate = dcmd.getInt(1);
+                }
+
+                chr.getChannelServer().setDropRate(drop_rate);
+                chr.DebugMsg("droprate : " + chr.getChannelServer().getDropRate());
+                return true;
+            }
             case "/players" -> {
                 TacosWorld world = chr.getWorld();
                 {

@@ -36,6 +36,7 @@ import tacos.property.Property_Java;
 public class ServerImg {
 
     public static final ServerImg BMS8 = new ServerImg(Property_Java.getDir_WzXml_BMS8());
+    public static final ServerImg JMS147 = new ServerImg(Property_Java.getDir_WzXml_JMS147());
 
     private ServerImg(String path) {
         setWzRoot(path);

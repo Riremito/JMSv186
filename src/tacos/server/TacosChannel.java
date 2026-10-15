@@ -175,8 +175,12 @@ public class TacosChannel extends TacosServer {
         return this.mesoRate;
     }
 
-    public final int getDropRate() {
+    public int getDropRate() {
         return this.dropRate;
+    }
+
+    public void setDropRate(int dropRate) {
+        this.dropRate = dropRate;
     }
 
     // merch

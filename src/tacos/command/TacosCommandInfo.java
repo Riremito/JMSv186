@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.server.life.MonsterDropEntry;
+import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosSpawnPoint;
@@ -76,15 +77,20 @@ public class TacosCommandInfo {
                         mob_ids.add(mob_id);
                     }
                 }
+                int server_drop_rate = chr.getChannelServer().getDropRate();
                 for (int mob_id : mob_ids) {
                     chr.DebugMsg("[" + mob_id + " - " + WzNameStorage.MOB.get(mob_id).getName() + "]");
-                    ArrayList<RewardData> list_reward = ServerImg.BMS8.getRewardData(mob_id);
+                    ArrayList<RewardData> list_reward = Region.BMS.check() ? ServerImg.BMS8.getRewardData(mob_id) : ServerImg.JMS147.getRewardData(mob_id);
                     if (list_reward != null) {
                         for (RewardData reward : list_reward) {
+                            double reward_prob = reward.getProb() * 100.0 / ServerImg.PROB_MAX * server_drop_rate;
+                            if (100.0 < reward_prob) {
+                                reward_prob = 100.0;
+                            }
                             if (reward.getItem() != 0) {
-                                chr.DebugMsgItem(reward.getItem() + " : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + WzNameStorage.ITEM.get(reward.getItem()).getName(), reward.getItem());
+                                chr.DebugMsgItem(reward.getItem() + " : " + String.format("%05.2f%%", reward_prob) + " - " + WzNameStorage.ITEM.get(reward.getItem()).getName(), reward.getItem());
                             } else {
-                                chr.DebugMsg("meso : " + String.format("%05.2f%%", reward.getProb() * 100.0 / ServerImg.PROB_MAX) + " - " + reward.getMoney());
+                                chr.DebugMsg("meso : " + String.format("%05.2f%%", reward_prob) + " - " + reward.getMoney());
                             }
                         }
                     }
