@@ -170,6 +170,11 @@ public class WzNameStorage {
             nd = new WzName();
             nd.setId(id);
             nd.setAvailable(false);
+        } else {
+            // some item ids in String.wz is duplicated.
+            if (!nd.getName().equals(NO_STRING_DATA)) {
+                DebugLogger.ErrorLog("updateName : " + id + ", " + nd.getName() + " -> " + name);
+            }
         }
 
         nd.setName(name);

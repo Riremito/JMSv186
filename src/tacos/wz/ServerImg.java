@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import lombok.Getter;
+import tacos.config.Config;
+import tacos.config.Region;
 import tacos.wz.WzXML.XmlDomData;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
@@ -37,6 +39,7 @@ public class ServerImg {
 
     public static final ServerImg BMS8 = new ServerImg(Property_Java.getDir_WzXml_BMS8());
     public static final ServerImg JMS147 = new ServerImg(Property_Java.getDir_WzXml_JMS147());
+    public static final ServerImg JMS186 = new ServerImg(Property_Java.getDir_WzXml_JMS186());
 
     private ServerImg(String path) {
         setWzRoot(path);
@@ -132,6 +135,55 @@ public class ServerImg {
         private int max;
     }
 
+    public static ArrayList<RewardData> getAutoRewardData(int mob_id) {
+        if (Region.BMS.check()) {
+            return BMS8.getRewardData(mob_id);
+        }
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            return JMS186.getRewardData(mob_id);
+        }
+        ArrayList<RewardData> ret = JMS147.getRewardData(mob_id);
+        if (ret == null || ret.isEmpty()) {
+            ret = JMS186.getRewardData(mob_id);
+        }
+        return ret;
+    }
+
+    // unofficial prob.
+    private boolean setProb(RewardData rd) {
+        if (rd.prob != 0) {
+            return false;
+        }
+        if (rd.money != 0) {
+            rd.prob = 650000; // 65%
+            return true;
+        }
+        int item_type = rd.item / 1000000;
+        int item_sub_type = rd.item / 10000;
+        switch (item_type) {
+            case 1 -> {
+                rd.prob = 1000;
+            }
+            case 2 -> {
+                switch (item_sub_type) {
+                    case 204, 207, 233, 238, 228, 229 -> {
+                        rd.prob = 1000;
+                    }
+                    default -> {
+                        rd.prob = 10000;
+                    }
+                }
+            }
+            case 4 -> {
+                rd.prob = (item_sub_type == 400) ? 500000 : 5000;
+            }
+            default -> {
+                rd.prob = 100;
+            }
+        }
+        return true;
+    }
+
     private final TreeMap<Integer, ArrayList<RewardData>> rewards = new TreeMap<>();
     public static final int PROB_MAX = 1000000;
 
@@ -164,6 +216,10 @@ public class ServerImg {
                         DebugLogger.ErrorLog("getRewardData : " + mob_id + ", invalid item = " + reward.item);
                         continue;
                     }
+                }
+
+                if (reward.prob == 0) {
+                    setProb(reward);
                 }
 
                 list_reward.add(reward);

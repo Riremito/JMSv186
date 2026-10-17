@@ -34,7 +34,6 @@ import odin.server.life.MapleMonster;
 import odin.server.life.MonsterDropEntry;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosSkill;
-import tacos.config.Region;
 import tacos.constants.TacosConstants;
 import tacos.database.query.DQ_DropData;
 import tacos.unofficial.CustomMonsterBookDrop;
@@ -56,7 +55,7 @@ public class TacosReward {
 
         int server_drop_rate = chr.getChannelServer().getDropRate();
 
-        ArrayList<RewardData> list_reward = Region.BMS.check() ? ServerImg.BMS8.getRewardData(mob_id) : ServerImg.JMS147.getRewardData(mob_id);
+        ArrayList<RewardData> list_reward = ServerImg.getAutoRewardData(mob_id);
         if (list_reward != null) {
             MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
             int drop_count = 0;
