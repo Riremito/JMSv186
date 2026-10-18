@@ -36,7 +36,7 @@ public class TacosNpcShop {
 
     // create npc shop from server img.
     public static boolean startNpcShop(MapleCharacter chr, int npc_id) {
-        ArrayList<NpcShopData> items = ServerImg.BMS8.getNpcShopData(npc_id);
+        ArrayList<NpcShopData> items = ServerImg.getAutoNpcShopData(npc_id);
         // not a npc shop.
         if (items == null) {
             return false;

@@ -1351,50 +1351,56 @@ public class ReqCUser {
             return false;
         }
         int npc_id = npc.getId();
+
+        return OnUserSelectNpcInternal(chr, npc_id, npc_id);
+    }
+
+    public static boolean OnUserSelectNpcInternal(MapleCharacter chr, int npc_script_id, int npc_id) {
+        TacosClient client = chr.getClient();
         // npc shop from server img.
-        if (TacosNpcShop.startNpcShop(chr, npc_id)) {
-            chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc_id);
+        if (TacosNpcShop.startNpcShop(chr, npc_script_id)) {
+            chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc_script_id);
             return true;
         }
         // npc from wz.
-        NpcInfo npc_info = WzXML.NPC.getNpcInfo(npc_id);
+        NpcInfo npc_info = WzXML.NPC.getNpcInfo(npc_script_id);
         if (npc_info.getTrunkGet() != 0 || npc_info.getTrunkPut() != 0) {
             TacosStorage storage = client.getPlayer().getStorage();
-            storage.setNpcId(npc_id);
+            storage.setNpcId(npc_script_id);
             storage.setFeeGet(npc_info.getTrunkGet());
             storage.setFeePut(npc_info.getTrunkPut());
             client.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_OpenTrunkDlg));
-            chr.DebugMsg("OnUserSelectNpc (Trunk) : " + npc_id);
+            chr.DebugMsg("OnUserSelectNpc (Trunk) : " + npc_script_id);
             return true;
         }
         if (npc_info.getStorebank() != 0) {
             chr.SendPacket(ResCStoreBankDlg.merchItemStore((byte) 0x22));
-            chr.DebugMsg("OnUserSelectNpc (Storebank) : " + npc_id);
+            chr.DebugMsg("OnUserSelectNpc (Storebank) : " + npc_script_id);
             return true;
         }
         if (npc_info.getRpsGame() != 0) {
-            chr.SendPacket(ResCRPSGameDlg.RPSGame(OpsRPS.RPSRes_Open, 0, 0, npc_id));
-            chr.DebugMsg("OnUserSelectNpc (RpsGame) : " + npc_id);
+            chr.SendPacket(ResCRPSGameDlg.RPSGame(OpsRPS.RPSRes_Open, 0, 0, npc_script_id));
+            chr.DebugMsg("OnUserSelectNpc (RpsGame) : " + npc_script_id);
             return true;
         }
         if (npc_info.getParcel() != 0) {
             chr.SendPacket(ResCParcelDlg.Open(false, true));
-            chr.DebugMsg("OnUserSelectNpc (Parcel) : " + npc_id);
+            chr.DebugMsg("OnUserSelectNpc (Parcel) : " + npc_script_id);
             return true;
         }
         if (npc_info.getGuildRank() != 0) {
-            chr.SendPacket(ResCWvsContext.showGuildRanks(npc_id, MapleGuildRanking.getInstance().getRank()));
-            chr.DebugMsg("OnUserSelectNpc (GuildRank) : " + npc_id);
+            chr.SendPacket(ResCWvsContext.showGuildRanks(npc_script_id, MapleGuildRanking.getInstance().getRank()));
+            chr.DebugMsg("OnUserSelectNpc (GuildRank) : " + npc_script_id);
             return true;
         }
         // npc shop from database.
-        if (TacosNpcShop.startDatabaseNpcShop(chr, npc_id)) {
-            chr.DebugMsg("OnUserSelectNpc (DatabaseNpcShop) : " + npc_id);
+        if (TacosNpcShop.startDatabaseNpcShop(chr, npc_script_id)) {
+            chr.DebugMsg("OnUserSelectNpc (DatabaseNpcShop) : " + npc_script_id);
             return true;
         }
         // npc from script.
-        chr.DebugMsg("OnUserSelectNpc : " + npc_id + ", " + npc_info.getScript());
-        return TacosScriptNPC.getInstance().start(client, npc_id);
+        chr.DebugMsg("OnUserSelectNpc : " + npc_script_id + ", " + npc_info.getScript());
+        return TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
     }
 
     public static boolean OnUserRemoteShopOpenRequest(MapleCharacter chr, ClientPacket cp) {

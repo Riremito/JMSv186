@@ -42,6 +42,7 @@ import tacos.debug.DebugJob;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.request.ReqCUser;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.script.TacosScriptNPC;
@@ -169,7 +170,7 @@ public class TacosCommandAdmin {
                 }
                 int npc_id = dcmd.getInt(1);
 
-                if (!WzDataStorage.NPC.check(npc_id) || !remoteNPCTalk(client, npc_id)) {
+                if (!WzDataStorage.NPC.check(npc_id) || !ReqCUser.OnUserSelectNpcInternal(chr, npc_id, npc_id)) {
                     chr.DebugMsg("npctalk : invalid id.");
                     return true;
                 }
@@ -183,7 +184,7 @@ public class TacosCommandAdmin {
                 }
                 int npc_id = dcmd.getInt(1);
                 // set Chief Stan
-                if (!WzDataStorage.NPC.check(npc_id) || !remoteNPCTalk(client, npc_id, 1012003)) {
+                if (!WzDataStorage.NPC.check(npc_id) || !ReqCUser.OnUserSelectNpcInternal(chr, npc_id, 1012003)) {
                     chr.DebugMsg("npctalk2 : invalid id.");
                     return true;
                 }
@@ -305,7 +306,7 @@ public class TacosCommandAdmin {
                 }
 
                 String boss_name = dcmd.get(1);
-                if (!bossTest(client, boss_name)) {
+                if (!bossTest(chr, boss_name)) {
                     chr.DebugMsg("bosstest : invalid Boss name.");
                     return true;
                 }
@@ -490,7 +491,7 @@ public class TacosCommandAdmin {
                 return true;
             }
             case "/jc", "/転職" -> {
-                remoteNPCTalk(client, 9330104, 1012003);
+                ReqCUser.OnUserSelectNpcInternal(chr, 9330104, 1012003);
                 return true;
             }
             default -> {
@@ -500,17 +501,7 @@ public class TacosCommandAdmin {
         return false;
     }
 
-    // bypass npc data checks
-    public static boolean remoteNPCTalk(TacosClient client, int npc_id) {
-        return remoteNPCTalk(client, npc_id, npc_id);
-    }
-
-    public static boolean remoteNPCTalk(TacosClient client, int npc_script_id, int npc_id) {
-        TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
-        return true;
-    }
-
-    public static boolean bossTest(TacosClient client, String boss_name) {
+    public static boolean bossTest(MapleCharacter chr, String boss_name) {
         int def_npc_id = 1012003; // Chief Stan
         int npc_id = 1012003;
 
@@ -608,9 +599,9 @@ public class TacosCommandAdmin {
         }
 
         if (WzDataStorage.NPC.check(npc_id)) {
-            remoteNPCTalk(client, npc_id);
+            ReqCUser.OnUserSelectNpcInternal(chr, npc_id, npc_id);
         } else {
-            remoteNPCTalk(client, npc_id, def_npc_id);
+            ReqCUser.OnUserSelectNpcInternal(chr, npc_id, def_npc_id);
         }
 
         return true;

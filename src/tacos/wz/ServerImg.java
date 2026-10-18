@@ -41,6 +41,27 @@ public class ServerImg {
     public static final ServerImg JMS147 = new ServerImg(Property_Java.getDir_WzXml_JMS147());
     public static final ServerImg JMS186 = new ServerImg(Property_Java.getDir_WzXml_JMS186());
 
+    public static ArrayList<NpcShopData> getAutoNpcShopData(int npc_id) {
+        if (Region.BMS.check()) {
+            return BMS8.getNpcShopData(npc_id);
+        }
+        return JMS186.getNpcShopData(npc_id);
+    }
+
+    public static ArrayList<RewardData> getAutoRewardData(int mob_id) {
+        if (Region.BMS.check()) {
+            return BMS8.getRewardData(mob_id);
+        }
+        if (Config.GreaterOrEqual(Region.JMS, 186)) {
+            return JMS186.getRewardData(mob_id);
+        }
+        ArrayList<RewardData> ret = JMS147.getRewardData(mob_id);
+        if (ret == null || ret.isEmpty()) {
+            ret = JMS186.getRewardData(mob_id);
+        }
+        return ret;
+    }
+
     private ServerImg(String path) {
         setWzRoot(path);
     }
@@ -133,20 +154,6 @@ public class ServerImg {
         private int prob;
         private int min;
         private int max;
-    }
-
-    public static ArrayList<RewardData> getAutoRewardData(int mob_id) {
-        if (Region.BMS.check()) {
-            return BMS8.getRewardData(mob_id);
-        }
-        if (Config.GreaterOrEqual(Region.JMS, 186)) {
-            return JMS186.getRewardData(mob_id);
-        }
-        ArrayList<RewardData> ret = JMS147.getRewardData(mob_id);
-        if (ret == null || ret.isEmpty()) {
-            ret = JMS186.getRewardData(mob_id);
-        }
-        return ret;
     }
 
     // unofficial prob.
