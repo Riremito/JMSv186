@@ -21,6 +21,7 @@ package tacos.command;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
@@ -48,6 +49,7 @@ import tacos.server.TacosChannel;
 import tacos.server.map.TacosBossSpawnPoint;
 import tacos.server.map.TacosFoothold;
 import tacos.server.map.TacosPortal;
+import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzName;
 import tacos.wz.WzNameStorage;
@@ -189,13 +191,8 @@ public class TacosCommandDebug {
                     return true;
                 }
 
-                MapleData npc_location = WzXML.ETC.getNpcLocation();
-                if (npc_location == null) {
-                    chr.DebugMsg("npclocation : NpcLocation.img is not found.");
-                    return true;
-                }
-                npc_location = npc_location.getChildByPath(Integer.toString(npc_id));
-                if (npc_location == null) {
+                List<Integer> npc_location_map_ids = WzXML.ETC.getNpcLocationMapIds(npc_id);
+                if (npc_location_map_ids == null) {
                     chr.DebugMsg("npclocation : NpcLocation.img/npc_id is not found.");
                     return true;
                 }
@@ -208,8 +205,7 @@ public class TacosCommandDebug {
                 }
 
                 nd_npc.sendDebugMsg(chr);
-                for (MapleData data : npc_location) {
-                    int map_id = npc_location.getInt(data.getName());
+                for (int map_id : npc_location_map_ids) {
                     WzName nd_map = WzNameStorage.MAP.get(map_id);
                     if (nd_map == null) {
                         chr.DebugMsg("ERROR.");
@@ -222,21 +218,19 @@ public class TacosCommandDebug {
             }
             case "/monsterbook" -> {
                 // Item.wz/Consume/0238.img/info/mob
-                MapleData monster_card_items = WzXML.ITEM.getItemImg(238);
+                Map<Integer, Integer> monster_card_items = WzXML.ITEM.getMonsterCardMobIds();
                 // String.wz/MonsterBook.img
-                MapleData monster_book_mobs = WzXML.STRING.getMonsterBook();
+                List<Integer> monster_book_mobs = WzXML.STRING.getMonsterBookMobIds();
                 if (monster_card_items == null || monster_book_mobs == null) {
                     return true;
                 }
 
                 TacosMonsterBook monster_book = chr.getMonsterBook();
 
-                for (MapleData mb_mob : monster_book_mobs.getChildren()) {
-                    int mob_id = Integer.parseInt(mb_mob.getName());
-
-                    for (MapleData mc_item : monster_card_items.getChildren()) {
-                        if (mc_item.getInt("info/mob") == mob_id) {
-                            int card_item_id = Integer.parseInt(mc_item.getName());
+                for (int mob_id : monster_book_mobs) {
+                    for (Map.Entry<Integer, Integer> mc_item : monster_card_items.entrySet()) {
+                        if (mc_item.getValue() == mob_id) {
+                            int card_item_id = mc_item.getKey();
                             monster_book.add(card_item_id, 5, false);
                             break;
                         }
@@ -376,10 +370,10 @@ public class TacosCommandDebug {
                 ArrayList<Integer> town_map_ids = new ArrayList<>();
 
                 for (int map_id : WzDataStorage.MAP.getIds()) {
-                    MapleData data = WzXML.MAP.getImg(map_id);
-                    if (data != null) {
-                        if (data.getInt("info/town") != 0) {
-                            int return_map_id = data.getInt("info/returnMap");
+                    MapWz.MapInfo map_info = WzXML.MAP.getMapInfo(map_id);
+                    if (map_info != null) {
+                        if (map_info.getTown() != 0) {
+                            int return_map_id = map_info.getReturnMap();
                             if (map_id == return_map_id) {
                                 town_map_ids.add(map_id);
                             }

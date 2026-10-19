@@ -655,11 +655,10 @@ public class MapleItemInformationProvider {
     public MapleStatEffect getItemEffect(int itemId) {
         MapleStatEffect ret = itemEffects.get(itemId);
         if (ret == null) {
-            MapleData item = getItemData(itemId);
-            if (item == null) {
+            if (getItemData(itemId) == null) {
                 return null;
             }
-            ret = MapleStatEffect.loadItemEffectFromData(item.getChildByPath("spec"), itemId);
+            ret = MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(itemId), itemId);
             itemEffects.put(itemId, ret);
         }
         return ret;

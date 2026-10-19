@@ -28,7 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import tacos.wz.MapleData;
+import tacos.wz.MapWz;
 import odin.server.maps.MapleNodes;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
@@ -277,23 +277,21 @@ public class TacosMapData {
     private int link_id;
 
     public boolean loadData() {
-        MapleData mapData = WzXML.MAP.getImg(this.map_id);
-        if (mapData == null) {
+        MapWz.MapInfo map_info = WzXML.MAP.getMapInfo(this.map_id);
+        if (map_info == null) {
             DebugLogger.ErrorLog("loadData : invalid map id = " + this.map_id);
             return false;
         }
-        this.link_id = mapData.getInt("info/link", -1);
+        this.link_id = map_info.getLink();
 
-        if (this.link_id != -1) {
-            mapData = WzXML.MAP.getImg(this.link_id);
-            if (mapData == null) {
-                DebugLogger.ErrorLog("loadData : invalid link id = " + this.link_id);
-                return false;
-            }
+        MapWz.MapImgInfo mapData = WzXML.MAP.getMapImgInfo(this.link_id != -1 ? this.link_id : this.map_id);
+        if (mapData == null) {
+            DebugLogger.ErrorLog("loadData : invalid link id = " + this.link_id);
+            return false;
         }
 
         // load info.
-        loadInfo(mapData);
+        loadInfo(mapData.getInfo());
         // load fh.
         loadFootHolds(mapData);
         setSplitData();
@@ -308,35 +306,31 @@ public class TacosMapData {
         return true;
     }
 
-    public boolean loadFootHolds(MapleData mapData) {
-        for (MapleData footRoot : mapData.getChildByPath("foothold")) {
-            for (MapleData footCat : footRoot) {
-                for (MapleData footHold : footCat) {
-                    TacosFoothold fh = new TacosFoothold();
-                    fh.setId(Integer.parseInt(footHold.getName()));
-                    fh.setX1(footHold.getInt("x1"));
-                    fh.setY1(footHold.getInt("y1"));
-                    fh.setX2(footHold.getInt("x2"));
-                    fh.setY2(footHold.getInt("y2"));
-                    fh.setPrev(footHold.getInt("prev"));
-                    fh.setNext(footHold.getInt("next"));
-                    getFootholds().put(fh.getId(), fh);
-                }
-            }
+    public boolean loadFootHolds(MapWz.MapImgInfo mapData) {
+        for (MapWz.FootholdInfo footHold : mapData.getFootholds()) {
+            TacosFoothold fh = new TacosFoothold();
+            fh.setId(footHold.getId());
+            fh.setX1(footHold.getX1());
+            fh.setY1(footHold.getY1());
+            fh.setX2(footHold.getX2());
+            fh.setY2(footHold.getY2());
+            fh.setPrev(footHold.getPrev());
+            fh.setNext(footHold.getNext());
+            getFootholds().put(fh.getId(), fh);
         }
         return true;
     }
 
-    public boolean loadPortals(MapleData mapData) {
+    public boolean loadPortals(MapWz.MapImgInfo mapData) {
         int nextDoorPortal = 0x80;
-        for (MapleData portal_data : mapData.getChildByPath("portal")) {
-            TacosPortal portal = new TacosPortal(portal_data.getInt("pt"));
+        for (MapWz.PortalInfo portal_data : mapData.getPortals()) {
+            TacosPortal portal = new TacosPortal(portal_data.getPt());
 
-            portal.setName(portal_data.getString("pn"));
-            portal.setTarget(portal_data.getString("tn"));
-            portal.setTargetMapId(portal_data.getInt("tm"));
-            portal.setPosition(new Point(portal_data.getInt("x"), portal_data.getInt("y")));
-            String script = portal_data.getString("script");
+            portal.setName(portal_data.getPn());
+            portal.setTarget(portal_data.getTn());
+            portal.setTargetMapId(portal_data.getTm());
+            portal.setPosition(new Point(portal_data.getX(), portal_data.getY()));
+            String script = portal_data.getScript();
             portal.setScriptName(script.equals("") ? null : script);
 
             if (portal.getType() == TacosPortal.DOOR_PORTAL) {
@@ -412,34 +406,34 @@ public class TacosMapData {
     private int time_mob_id;
     private String time_mob_message;
 
-    public boolean loadInfo(MapleData mapData) {
-        this.clock = mapData.getChildByPath("clock") != null;
-        this.returnMapId = mapData.getInt("info/returnMap");
-        this.createMobInterval = mapData.getInt("info/createMobInterval", 7000);
-        this.monsterRate = mapData.getFloat("info/mobRate");
-        this.everlast = mapData.getInt("info/everlast") > 0;
-        this.town = mapData.getInt("info/town") > 0;
-        this.soaring = mapData.getInt("info/needSkillForFly") > 0;
-        this.personalShop = mapData.getInt("info/personalShop") > 0;
-        this.lvForceMove = mapData.getInt("info/lvForceMove");
-        this.decHP = (int) mapData.getLong("info/decHP", 0L);
-        this.decHPInterval = mapData.getInt("info/decHPInterval", 10000);
-        this.protectItem = mapData.getInt("info/protectItem");
-        this.forcedReturnMap = mapData.getInt("info/forcedReturn", TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID);
-        this.timeLimit = mapData.getInt("info/timeLimit", -1);
-        this.fieldLimit = mapData.getInt("info/fieldLimit");
-        this.onFirstUserEnter = mapData.getString("info/onFirstUserEnter");
-        this.onUserEnter = mapData.getString("info/onUserEnter");
-        this.recoveryRate = mapData.getFloat("info/recovery", 1.0f);
-        this.fixedMob = mapData.getInt("info/fixedMobCapacity");
-        this.consumeItemCoolTime = mapData.getInt("info/consumeItemCoolTime");
+    public boolean loadInfo(MapWz.MapInfo info) {
+        this.clock = info.isClock();
+        this.returnMapId = info.getReturnMap();
+        this.createMobInterval = info.getCreateMobInterval();
+        this.monsterRate = info.getMobRate();
+        this.everlast = info.getEverlast() > 0;
+        this.town = info.getTown() > 0;
+        this.soaring = info.getNeedSkillForFly() > 0;
+        this.personalShop = info.getPersonalShop() > 0;
+        this.lvForceMove = info.getLvForceMove();
+        this.decHP = (int) info.getDecHP();
+        this.decHPInterval = info.getDecHPInterval();
+        this.protectItem = info.getProtectItem();
+        this.forcedReturnMap = info.getForcedReturn();
+        this.timeLimit = info.getTimeLimit();
+        this.fieldLimit = info.getFieldLimit();
+        this.onFirstUserEnter = info.getOnFirstUserEnter();
+        this.onUserEnter = info.getOnUserEnter();
+        this.recoveryRate = info.getRecovery();
+        this.fixedMob = info.getFixedMobCapacity();
+        this.consumeItemCoolTime = info.getConsumeItemCoolTime();
 
         if (this.returnMapId == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
             this.returnMapId = this.map_id;
         }
 
-        this.time_mob_id = mapData.getInt("info/timeMob/id");
-        this.time_mob_message = mapData.getString("info/timeMob/message", null);
+        this.time_mob_id = info.getTimeMobId();
+        this.time_mob_message = info.getTimeMobMessage();
         return true;
     }
 
@@ -520,9 +514,9 @@ public class TacosMapData {
     }
 
     // life node.
-    public boolean loadLife(MapleData mapData) {
-        for (MapleData life : mapData.getChildByPath("life")) {
-            String type = life.getString("type");
+    public boolean loadLife(MapWz.MapImgInfo mapData) {
+        for (MapWz.LifeInfo life : mapData.getLifes()) {
+            String type = life.getType();
 
             switch (type) {
                 case "m" -> {
@@ -547,12 +541,11 @@ public class TacosMapData {
     }
 
     // reactor node.
-    public boolean loadReactor(MapleData mapData) {
-        MapleData md_reactor = mapData.getChildByPath("reactor");
-        if (md_reactor == null) {
+    public boolean loadReactor(MapWz.MapImgInfo mapData) {
+        if (!mapData.isHasReactor()) {
             return false;
         }
-        for (MapleData reactor : md_reactor.getChildren()) {
+        for (MapWz.ReactorInfo reactor : mapData.getReactors()) {
             TacosReactorSpawnPoint sp = new TacosReactorSpawnPoint();
             if (sp.loadData(reactor)) {
                 this.reactor_spawn_point.add(sp);
@@ -564,102 +557,68 @@ public class TacosMapData {
     // nodes nodeInfo.
     private MapleNodes nodeInfo;
 
-    public boolean loadNodeInfo(MapleData mapData) {
+    public boolean loadNodeInfo(MapWz.MapImgInfo mapData) {
         this.nodeInfo = new MapleNodes(this.map_id);
-        MapleData md_node_info = mapData.getChildByPath("nodeInfo");
-        if (md_node_info != null) {
-            for (MapleData node : md_node_info) {
-                try {
-                    if (node.getName().equals("start")) {
-                        nodeInfo.setNodeStart(md_node_info.getInt(node.getName()));
-                        continue;
-                    } else if (node.getName().equals("end")) {
-                        nodeInfo.setNodeEnd(md_node_info.getInt(node.getName()));
-                        continue;
-                    }
-                    List<Integer> edges = new ArrayList<>();
-                    MapleData md_edge = node.getChildByPath("edge");
-                    if (md_edge != null) {
-                        for (MapleData edge : md_edge) {
-                            edges.add(md_edge.getInt(edge.getName(), -1));
-                        }
-                    }
-                    final MapleNodes.MapleNodeInfo mni = new MapleNodes.MapleNodeInfo(
-                            Integer.parseInt(node.getName()),
-                            node.getInt("key"),
-                            node.getInt("x"),
-                            node.getInt("y"),
-                            node.getInt("attr"), edges);
-                    nodeInfo.addNode(mni);
-                } catch (NumberFormatException e) {
-                } //start, end, edgeInfo = we dont need it
+        if (mapData.isHasNodeInfo()) {
+            if (mapData.getNodeStart() != null) {
+                nodeInfo.setNodeStart(mapData.getNodeStart());
+            }
+            if (mapData.getNodeEnd() != null) {
+                nodeInfo.setNodeEnd(mapData.getNodeEnd());
+            }
+            for (MapWz.NodeInfo node : mapData.getNodes()) {
+                final MapleNodes.MapleNodeInfo mni = new MapleNodes.MapleNodeInfo(
+                        node.getId(),
+                        node.getKey(),
+                        node.getX(),
+                        node.getY(),
+                        node.getAttr(), new ArrayList<>(node.getEdge()));
+                nodeInfo.addNode(mni);
             }
             nodeInfo.sortNodes();
         }
-        for (int i = 1; i <= 7; i++) {
-            if (mapData.getChildByPath(String.valueOf(i)) != null && mapData.getChildByPath(i + "/obj") != null) {
-                for (MapleData node : mapData.getChildByPath(i + "/obj")) {
-                    int sn_count = node.getInt("SN_count");
-                    String name = node.getString("name");
-                    int speed = node.getInt("speed");
-                    if (sn_count <= 0 || speed <= 0 || name.equals("")) {
-                        continue;
-                    }
-                    final List<Integer> SN = new ArrayList<>();
-                    for (int x = 0; x < sn_count; x++) {
-                        SN.add(node.getInt("SN" + x));
-                    }
-                    final MapleNodes.MaplePlatform mni = new MapleNodes.MaplePlatform(
-                            name, node.getInt("start", 2), speed,
-                            node.getInt("x1"),
-                            node.getInt("y1"),
-                            node.getInt("x2"),
-                            node.getInt("y2"),
-                            node.getInt("r"), SN);
-                    nodeInfo.addPlatform(mni);
-                }
+        for (MapWz.PlatformInfo node : mapData.getPlatforms()) {
+            int sn_count = node.getSnCount();
+            String name = node.getName();
+            int speed = node.getSpeed();
+            if (sn_count <= 0 || speed <= 0 || name.equals("")) {
+                continue;
             }
+            final List<Integer> SN = new ArrayList<>(node.getSn());
+            final MapleNodes.MaplePlatform mni = new MapleNodes.MaplePlatform(
+                    name, node.getStart(), speed,
+                    node.getX1(),
+                    node.getY1(),
+                    node.getX2(),
+                    node.getY2(),
+                    node.getR(), SN);
+            nodeInfo.addPlatform(mni);
         }
         // load areas (EG PQ platforms)
-        if (mapData.getChildByPath("area") != null) {
-            int x1, y1, x2, y2;
-            Rectangle mapArea;
-            for (MapleData area : mapData.getChildByPath("area")) {
-                x1 = area.getInt("x1");
-                y1 = area.getInt("y1");
-                x2 = area.getInt("x2");
-                y2 = area.getInt("y2");
-                mapArea = new Rectangle(x1, y1, (x2 - x1), (y2 - y1));
-                nodeInfo.addMapleArea(mapArea);
-            }
+        for (MapWz.AreaInfo area : mapData.getAreas()) {
+            int x1 = area.getX1();
+            int y1 = area.getY1();
+            int x2 = area.getX2();
+            int y2 = area.getY2();
+            Rectangle mapArea = new Rectangle(x1, y1, (x2 - x1), (y2 - y1));
+            nodeInfo.addMapleArea(mapArea);
         }
-        if (mapData.getChildByPath("monsterCarnival") != null) {
-            final MapleData mc = mapData.getChildByPath("monsterCarnival");
-            if (mc.getChildByPath("mobGenPos") != null) {
-                for (MapleData area : mc.getChildByPath("mobGenPos")) {
-                    nodeInfo.addMonsterPoint(area.getInt("x"),
-                            area.getInt("y"),
-                            area.getInt("fh"),
-                            area.getInt("cy"),
-                            area.getInt("team", -1));
-                }
-            }
-            if (mc.getChildByPath("mob") != null) {
-                for (MapleData area : mc.getChildByPath("mob")) {
-                    nodeInfo.addMobSpawn(area.getInt("id"), area.getInt("spendCP"));
-                }
-            }
-            if (mc.getChildByPath("guardianGenPos") != null) {
-                for (MapleData area : mc.getChildByPath("guardianGenPos")) {
-                    nodeInfo.addGuardianSpawn(new Point(area.getInt("x"), area.getInt("y")), area.getInt("team", -1));
-                }
-            }
-            MapleData md_skill = mc.getChildByPath("skill");
-            if (md_skill != null) {
-                for (MapleData area : md_skill) {
-                    nodeInfo.addSkillId(md_skill.getInt(area.getName()));
-                }
-            }
+        // monsterCarnival
+        for (MapWz.GenPosInfo area : mapData.getCarnivalMobGenPos()) {
+            nodeInfo.addMonsterPoint(area.getX(),
+                    area.getY(),
+                    area.getFh(),
+                    area.getCy(),
+                    area.getTeam());
+        }
+        for (MapWz.CarnivalMobInfo area : mapData.getCarnivalMobs()) {
+            nodeInfo.addMobSpawn(area.getId(), area.getSpendCP());
+        }
+        for (MapWz.GenPosInfo area : mapData.getCarnivalGuardianGenPos()) {
+            nodeInfo.addGuardianSpawn(new Point(area.getX(), area.getY()), area.getTeam());
+        }
+        for (int skill_id : mapData.getCarnivalSkills()) {
+            nodeInfo.addSkillId(skill_id);
         }
 
         return true;

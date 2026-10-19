@@ -341,6 +341,92 @@ public class ItemWz extends WzXML {
         return null;
     }
 
+    // Consume/0238.img, [card item id, info/mob]
+    public LinkedHashMap<Integer, Integer> getMonsterCardMobIds() {
+        MapleData md_cards = getItemImg(238);
+        if (md_cards == null) {
+            return null;
+        }
+        LinkedHashMap<Integer, Integer> ret = new LinkedHashMap<>();
+        for (MapleData md_card : md_cards.getChildren()) {
+            ret.put(Integer.parseInt(md_card.getName()), md_card.getInt("info/mob"));
+        }
+        return ret;
+    }
+
+    // info/spec
+    public class ItemSpecInfo extends StatEffectData {
+    }
+
+    public ItemSpecInfo getItemSpec(int itemId) {
+        MapleData item = getResolvedItemData(itemId);
+        if (item == null) {
+            return null;
+        }
+        return loadItemSpec(item.getChildByPath("spec"));
+    }
+
+    private ItemSpecInfo loadItemSpec(MapleData source) {
+        if (source == null) {
+            return null;
+        }
+        ItemSpecInfo ret = new ItemSpecInfo();
+        ret.time = source.getInt("time", -1);
+        ret.hp = source.getInt("hp");
+        ret.hpR = source.getInt("hpR");
+        ret.mp = source.getInt("mp");
+        ret.mpR = source.getInt("mpR");
+        ret.mhpR = source.getInt("mhpR");
+        ret.mmpR = source.getInt("mmpR");
+        ret.mpCon = source.getInt("mpCon");
+        ret.hpCon = source.getInt("hpCon");
+        ret.prop = source.getInt("prop", 100);
+        ret.cooltime = source.getInt("cooltime");
+        ret.expinc = source.getInt("expinc");
+        ret.morph = source.getInt("morph");
+        ret.cp = source.getInt("cp");
+        ret.nuffSkill = source.getInt("nuffSkill");
+        ret.mobCount = source.getInt("mobCount", 1);
+        ret.exp = source.getInt("exp");
+        ret.mastery = source.getInt("mastery");
+        ret.pad = source.getInt("pad");
+        ret.pdd = source.getInt("pdd");
+        ret.mad = source.getInt("mad");
+        ret.mdd = source.getInt("mdd");
+        ret.emhp = source.getInt("emhp");
+        ret.emmp = source.getInt("emmp");
+        ret.epad = source.getInt("epad");
+        ret.epdd = source.getInt("epdd");
+        ret.emdd = source.getInt("emdd");
+        ret.acc = source.getInt("acc");
+        ret.eva = source.getInt("eva");
+        ret.speed = source.getInt("speed");
+        ret.jump = source.getInt("jump");
+        ret.expBuff = source.getInt("expBuff");
+        ret.cashBuff = source.getInt("cashBuff");
+        ret.itemupbyitem = source.getInt("itemupbyitem");
+        ret.mesoupbyitem = source.getInt("mesoupbyitem");
+        ret.berserk = source.getInt("berserk");
+        ret.berserk2 = source.getInt("berserk2");
+        ret.illusion = source.getInt("illusion");
+        if (source.getChildByPath("lt") != null) {
+            ret.lt = source.getPoint("lt");
+            ret.rb = source.getPoint("rb");
+        }
+        ret.x = source.getInt("x");
+        ret.y = source.getInt("y");
+        ret.z = source.getInt("z");
+        ret.damage = source.getInt("damage");
+        ret.attackCount = source.getInt("attackCount", 1);
+        ret.bulletCount = source.getInt("bulletCount", 1);
+        ret.bulletConsume = source.getInt("bulletConsume");
+        ret.moneyCon = source.getInt("moneyCon");
+        ret.itemCon = source.getInt("itemCon");
+        ret.itemConNo = source.getInt("itemConNo");
+        ret.moveTo = source.getInt("moveTo", -1);
+        return ret;
+    }
+
     public short loadSlotMax(int itemId) {
         short ret = 0;
         MapleData item = getResolvedItemData(itemId);

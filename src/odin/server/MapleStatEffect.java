@@ -23,7 +23,7 @@ import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMist;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.wz.MapleData;
+import tacos.wz.StatEffectData;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -91,17 +91,12 @@ public class MapleStatEffect {
     private Point rb;
     private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
-    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level) {
-        return loadFromData(source, skillid, true, overtime, level, 0);
+    public static final MapleStatEffect loadSkillEffectFromData(final StatEffectData source, final int skillid, final boolean overtime, final byte level) {
+        return loadFromData(source, skillid, true, overtime, level);
     }
 
-    // after bigbang
-    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
-        return loadFromData(source, skillid, true, overtime, level, common_level);
-    }
-
-    public static final MapleStatEffect loadItemEffectFromData(final MapleData source, final int itemid) {
-        return loadFromData(source, itemid, false, false, (byte) 1, 0);
+    public static final MapleStatEffect loadItemEffectFromData(final StatEffectData source, final int itemid) {
+        return loadFromData(source, itemid, false, false, (byte) 1);
     }
 
     private boolean checkData() {
@@ -268,7 +263,7 @@ public class MapleStatEffect {
         return true;
     }
 
-    private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
+    private static MapleStatEffect loadFromData(final StatEffectData source, final int sourceid, final boolean skill, final boolean overTime, final byte level) {
         final MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
         ret.skill = skill;
@@ -276,23 +271,23 @@ public class MapleStatEffect {
         if (source == null) {
             return ret;
         }
-        ret.duration = source.getIntExpression("time", common_level, -1);
-        ret.hp = (short) source.getIntExpression("hp", common_level);
-        ret.hpR = source.getIntExpression("hpR", common_level) / 100.0;
-        ret.mp = (short) source.getIntExpression("mp", common_level);
-        ret.mpR = source.getIntExpression("mpR", common_level) / 100.0;
-        ret.mhpR = (byte) source.getIntExpression("mhpR", common_level);
-        ret.mmpR = (byte) source.getIntExpression("mmpR", common_level);
-        ret.mpCon = (short) source.getIntExpression("mpCon", common_level);
-        ret.hpCon = (short) source.getIntExpression("hpCon", common_level);
-        ret.prop = (short) source.getIntExpression("prop", common_level, 100);
-        ret.cooldown = source.getIntExpression("cooltime", common_level);
-        ret.expinc = source.getIntExpression("expinc", common_level);
-        ret.morphId = source.getIntExpression("morph", common_level);
-        ret.cp = source.getIntExpression("cp", common_level);
-        ret.nuffSkill = source.getIntExpression("nuffSkill", common_level);
-        ret.mobCount = (byte) source.getIntExpression("mobCount", common_level, 1);
-        ret.exp = source.getIntExpression("exp", common_level);
+        ret.duration = source.getTime();
+        ret.hp = (short) source.getHp();
+        ret.hpR = source.getHpR() / 100.0;
+        ret.mp = (short) source.getMp();
+        ret.mpR = source.getMpR() / 100.0;
+        ret.mhpR = (byte) source.getMhpR();
+        ret.mmpR = (byte) source.getMmpR();
+        ret.mpCon = (short) source.getMpCon();
+        ret.hpCon = (short) source.getHpCon();
+        ret.prop = (short) source.getProp();
+        ret.cooldown = source.getCooltime();
+        ret.expinc = source.getExpinc();
+        ret.morphId = source.getMorph();
+        ret.cp = source.getCp();
+        ret.nuffSkill = source.getNuffSkill();
+        ret.mobCount = (byte) source.getMobCount();
+        ret.exp = source.getExp();
 
         if (skill) {
             switch (sourceid) {
@@ -317,46 +312,43 @@ public class MapleStatEffect {
             ret.duration *= 1000; // items have their times stored in ms, of course
             ret.overTime = overTime || ret.isMorph() || ret.isPirateMorph() || ret.isFinalAttack();
         }
-        ret.mastery = (byte) source.getIntExpression("mastery", common_level);
-        ret.watk = (short) source.getIntExpression("pad", common_level);
-        ret.wdef = (short) source.getIntExpression("pdd", common_level);
-        ret.matk = (short) source.getIntExpression("mad", common_level);
-        ret.mdef = (short) source.getIntExpression("mdd", common_level);
-        ret.ehp = (short) source.getIntExpression("emhp", common_level);
-        ret.emp = (short) source.getIntExpression("emmp", common_level);
-        ret.ewatk = (short) source.getIntExpression("epad", common_level);
-        ret.ewdef = (short) source.getIntExpression("epdd", common_level);
-        ret.emdef = (short) source.getIntExpression("emdd", common_level);
-        ret.acc = (short) source.getIntExpression("acc", common_level);
-        ret.avoid = (short) source.getIntExpression("eva", common_level);
-        ret.speed = (short) source.getIntExpression("speed", common_level);
-        ret.jump = (short) source.getIntExpression("jump", common_level);
-        ret.expBuff = source.getIntExpression("expBuff", common_level);
-        ret.cashup = source.getIntExpression("cashBuff", common_level);
-        ret.itemup = source.getIntExpression("itemupbyitem", common_level);
-        ret.mesoup = source.getIntExpression("mesoupbyitem", common_level);
-        ret.berserk = source.getIntExpression("berserk", common_level);
-        ret.berserk2 = source.getIntExpression("berserk2", common_level);
+        ret.mastery = (byte) source.getMastery();
+        ret.watk = (short) source.getPad();
+        ret.wdef = (short) source.getPdd();
+        ret.matk = (short) source.getMad();
+        ret.mdef = (short) source.getMdd();
+        ret.ehp = (short) source.getEmhp();
+        ret.emp = (short) source.getEmmp();
+        ret.ewatk = (short) source.getEpad();
+        ret.ewdef = (short) source.getEpdd();
+        ret.emdef = (short) source.getEmdd();
+        ret.acc = (short) source.getAcc();
+        ret.avoid = (short) source.getEva();
+        ret.speed = (short) source.getSpeed();
+        ret.jump = (short) source.getJump();
+        ret.expBuff = source.getExpBuff();
+        ret.cashup = source.getCashBuff();
+        ret.itemup = source.getItemupbyitem();
+        ret.mesoup = source.getMesoupbyitem();
+        ret.berserk = source.getBerserk();
+        ret.berserk2 = source.getBerserk2();
         ret.booster = 0;
-        ret.illusion = source.getIntExpression("illusion", common_level);
+        ret.illusion = source.getIllusion();
 
-        final MapleData ltd = source.getChildByPath("lt");
-        if (ltd != null) {
-            ret.lt = source.getPoint("lt");
-            ret.rb = source.getPoint("rb");
-        }
+        ret.lt = source.getLt();
+        ret.rb = source.getRb();
 
-        ret.x = source.getIntExpression("x", common_level);
-        ret.y = source.getIntExpression("y", common_level);
-        ret.z = source.getIntExpression("z", common_level);
-        ret.damage = (short) source.getIntExpression("damage", common_level);
-        ret.attackCount = (byte) source.getIntExpression("attackCount", common_level, 1);
-        ret.bulletCount = (byte) source.getIntExpression("bulletCount", common_level, 1);
-        ret.bulletConsume = source.getIntExpression("bulletConsume", common_level);
-        ret.moneyCon = source.getIntExpression("moneyCon", common_level);
-        ret.itemCon = source.getInt("itemCon");
-        ret.itemConNo = source.getInt("itemConNo");
-        ret.moveTo = source.getInt("moveTo", -1);
+        ret.x = source.getX();
+        ret.y = source.getY();
+        ret.z = source.getZ();
+        ret.damage = (short) source.getDamage();
+        ret.attackCount = (byte) source.getAttackCount();
+        ret.bulletCount = (byte) source.getBulletCount();
+        ret.bulletConsume = source.getBulletConsume();
+        ret.moneyCon = source.getMoneyCon();
+        ret.itemCon = source.getItemCon();
+        ret.itemConNo = source.getItemConNo();
+        ret.moveTo = source.getMoveTo();
 
         ret.checkData();
         return ret;

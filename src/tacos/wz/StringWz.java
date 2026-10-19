@@ -137,6 +137,10 @@ public class StringWz extends WzXML {
         return getData("Mob.img");
     }
 
+    public String getMobName(int mob_id, String def) {
+        return getMob().getString(mob_id + "/name", def);
+    }
+
     public MapleData getNpc() {
         return getData("Npc.img");
     }
@@ -273,6 +277,18 @@ public class StringWz extends WzXML {
             }
         }
         return img_MonsterBook;
+    }
+
+    public List<Integer> getMonsterBookMobIds() {
+        MapleData md_book = getMonsterBook();
+        if (md_book == null) {
+            return null;
+        }
+        List<Integer> ret = new ArrayList<>();
+        for (MapleData md_mob : md_book.getChildren()) {
+            ret.add(Integer.parseInt(md_mob.getName()));
+        }
+        return ret;
     }
 
     public DropMonsterBook getMonseterBookDrop(int mob_id) {

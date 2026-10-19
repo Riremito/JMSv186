@@ -22,7 +22,7 @@ import java.awt.Point;
 import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
-import tacos.wz.MapleData;
+import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
 import tacos.wz.ids.DWI_Block;
@@ -47,17 +47,17 @@ public class TacosNPCSpawnPoint {
     private int x;
     private int y;
 
-    public boolean loadData(MapleData life) {
-        this.node_id = Integer.parseInt(life.getName());
-        this.cy = life.getInt("cy");
-        this.f = life.getInt("f");
-        this.fh = life.getInt("fh");
-        this.hide = life.getInt("hide");
-        this.id = life.getInt("id");
-        this.rx0 = life.getInt("rx0");
-        this.rx1 = life.getInt("rx1");
-        this.x = life.getInt("x");
-        this.y = life.getInt("y");
+    public boolean loadData(MapWz.LifeInfo life) {
+        this.node_id = life.getNodeId();
+        this.cy = life.getCy();
+        this.f = life.getF();
+        this.fh = life.getFh();
+        this.hide = life.getHide();
+        this.id = life.getId();
+        this.rx0 = life.getRx0();
+        this.rx1 = life.getRx1();
+        this.x = life.getX();
+        this.y = life.getY();
 
         if (!WzDataStorage.NPC.check(this.id)) {
             DebugLogger.ErrorLog("TacosNPCSpawnPoint : invalid npc id, " + this.id);
