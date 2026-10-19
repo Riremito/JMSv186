@@ -27,7 +27,6 @@ import odin.client.inventory.MaplePet;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
-import tacos.debug.DebugShop;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -179,12 +178,9 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 return true;
             }
             case 545: {
-                //MapleShopFactory.getInstance().getShop(11100).sendShop(chr.getClient());
-                // test
-                DebugShop ds = new DebugShop();
-                ds.setRechargeAll();
-                ds.setRandomItems(3);
-                ds.start(chr);
+                int npc_script_id = 9090000; // ミョミョ
+                int npc_id = npc_script_id;
+                ReqCUser.OnUserSelectNpcInternal(chr, npc_script_id, npc_id);
                 chr.updateInv();
                 return true;
             }

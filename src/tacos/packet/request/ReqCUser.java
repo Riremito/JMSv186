@@ -223,6 +223,10 @@ public class ReqCUser {
                 OnUserRemoteShopOpenRequest(chr, cp);
                 return true;
             }
+            case CP_JMS_UserPremiumShopOpenRequest: {
+                OnUserPremiumShopOpenRequest(chr, cp);
+                return true;
+            }
             case CP_UserScriptMessageAnswer: {
                 ReqCScriptMan.OnScriptMessageAnswer(chr, cp);
                 return true;
@@ -1358,7 +1362,7 @@ public class ReqCUser {
     public static boolean OnUserSelectNpcInternal(MapleCharacter chr, int npc_script_id, int npc_id) {
         TacosClient client = chr.getClient();
         // npc shop from server img.
-        if (TacosNpcShop.startNpcShop(chr, npc_script_id)) {
+        if (TacosNpcShop.startNpcShop(chr, npc_script_id, npc_id)) {
             chr.DebugMsg("OnUserSelectNpc (NpcShop) : " + npc_script_id);
             return true;
         }
@@ -1407,6 +1411,17 @@ public class ReqCUser {
         short item_slot = cp.Decode2();
 
         ReqCMiniRoomBaseDlg.remoteStore(chr, item_slot);
+        return true;
+    }
+
+    // JMS, プレミアムさすらいの商人ミョミョ
+    public static boolean OnUserPremiumShopOpenRequest(MapleCharacter chr, ClientPacket cp) {
+        short item_slot = cp.Decode2();
+        int item_id = cp.Decode4();
+
+        int npc_script_id = 9090000; // ミョミョ
+        int npc_id = 9010300; // プレミアムさすらいの商人ミョミョ
+        ReqCUser.OnUserSelectNpcInternal(chr, npc_script_id, npc_id);
         return true;
     }
 

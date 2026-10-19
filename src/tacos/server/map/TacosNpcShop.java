@@ -35,8 +35,8 @@ import tacos.wz.ServerImg.NpcShopData;
 public class TacosNpcShop {
 
     // create npc shop from server img.
-    public static boolean startNpcShop(MapleCharacter chr, int npc_id) {
-        ArrayList<NpcShopData> items = ServerImg.getAutoNpcShopData(npc_id);
+    public static boolean startNpcShop(MapleCharacter chr, int npc_script_id, int npc_id) {
+        ArrayList<NpcShopData> items = ServerImg.getAutoNpcShopData(npc_script_id);
         // not a npc shop.
         if (items == null) {
             return false;
