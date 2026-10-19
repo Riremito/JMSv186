@@ -1,6 +1,7 @@
 package odin.server;
 
 import java.util.ArrayList;
+import tacos.client.TacosCharacter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,6 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
@@ -48,22 +48,22 @@ public class MapleItemInformationProvider {
     protected Map<Integer, SimpleImmutableEntry<Integer, List<StructRewardItem>>> RewardItem = new HashMap<>();
     protected final Map<Integer, SimpleImmutableEntry<Integer, List<Integer>>> questItems = new HashMap<>();
 
-    public static final MapleItemInformationProvider getInstance() {
+    public static MapleItemInformationProvider getInstance() {
         return instance;
     }
 
-    protected final MapleData getStringData(final int itemId) {
+    protected MapleData getStringData(int itemId) {
         return WzXML.STRING.getItemStringData(itemId);
     }
 
-    protected final MapleData getItemData(int id) {
+    protected MapleData getItemData(int id) {
         return WzXML.ITEM.getResolvedItemData(id);
     }
 
     /**
      * returns the maximum of items in one slot
      */
-    public final short getSlotMax(final TacosClient client, final int itemId) {
+    public short getSlotMax(TacosClient client, int itemId) {
         if (slotMaxCache.containsKey(itemId)) {
             return slotMaxCache.get(itemId);
         }
@@ -76,11 +76,11 @@ public class MapleItemInformationProvider {
         return getSlotMax(null, item_id);
     }
 
-    public final int getWholePrice(final int itemId) {
+    public int getWholePrice(int itemId) {
         if (wholePriceCache.containsKey(itemId)) {
             return wholePriceCache.get(itemId);
         }
-        final int pEntry = WzXML.ITEM.loadWholePrice(itemId);
+        int pEntry = WzXML.ITEM.loadWholePrice(itemId);
         if (pEntry == -1) {
             return -1;
         }
@@ -88,11 +88,11 @@ public class MapleItemInformationProvider {
         return pEntry;
     }
 
-    public final double getPrice(final int itemId) {
+    public double getPrice(int itemId) {
         if (priceCache.containsKey(itemId)) {
             return priceCache.get(itemId);
         }
-        final double pEntry = WzXML.ITEM.loadPrice(itemId);
+        double pEntry = WzXML.ITEM.loadPrice(itemId);
         if (pEntry == -1) {
             return -1;
         }
@@ -100,11 +100,11 @@ public class MapleItemInformationProvider {
         return pEntry;
     }
 
-    public final Map<String, Byte> getItemMakeStats(final int itemId) {
+    public Map<String, Byte> getItemMakeStats(int itemId) {
         if (itemMakeStatsCache.containsKey(itemId)) {
             return itemMakeStatsCache.get(itemId);
         }
-        final Map<String, Byte> ret = WzXML.ITEM.loadItemMakeStats(itemId);
+        Map<String, Byte> ret = WzXML.ITEM.loadItemMakeStats(itemId);
         if (ret == null) {
             return null;
         }
@@ -162,11 +162,11 @@ public class MapleItemInformationProvider {
         return nEquip;
     }
 
-    public final Map<Integer, Map<String, Integer>> getEquipIncrements(final int itemId) {
+    public Map<Integer, Map<String, Integer>> getEquipIncrements(int itemId) {
         if (equipIncsCache.containsKey(itemId)) {
             return equipIncsCache.get(itemId);
         }
-        final Map<Integer, Map<String, Integer>> ret = WzXML.ITEM.loadEquipIncrements(itemId);
+        Map<Integer, Map<String, Integer>> ret = WzXML.ITEM.loadEquipIncrements(itemId);
         if (ret == null) {
             return null;
         }
@@ -174,11 +174,11 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final Map<Integer, List<Integer>> getEquipSkills(final int itemId) {
+    public Map<Integer, List<Integer>> getEquipSkills(int itemId) {
         if (equipSkillsCache.containsKey(itemId)) {
             return equipSkillsCache.get(itemId);
         }
-        final Map<Integer, List<Integer>> ret = WzXML.ITEM.loadEquipSkills(itemId);
+        Map<Integer, List<Integer>> ret = WzXML.ITEM.loadEquipSkills(itemId);
         if (ret == null) {
             return null;
         }
@@ -186,11 +186,11 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final Map<String, Integer> getEquipStats(int itemId) {
+    public Map<String, Integer> getEquipStats(int itemId) {
         if (equipStatsCache.containsKey(itemId)) {
             return equipStatsCache.get(itemId);
         }
-        final Map<String, Integer> ret = WzXML.ITEM.loadEquipStats(itemId);
+        Map<String, Integer> ret = WzXML.ITEM.loadEquipStats(itemId);
         if (ret == null) {
             return null;
         }
@@ -198,9 +198,9 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public final boolean canEquip(final Map<String, Integer> stats, final int itemid, final int level, final int job, final int fame, final int str, final int dex, final int luk, final int int_, final int supremacy) {
+    public boolean canEquip(Map<String, Integer> stats, int itemid, int level, int job, int fame, int str, int dex, int luk, int int_, int supremacy) {
         if ((level + supremacy) >= stats.get("reqLevel") && str >= stats.get("reqSTR") && dex >= stats.get("reqDEX") && luk >= stats.get("reqLUK") && int_ >= stats.get("reqINT")) {
-            final int fameReq = stats.get("reqPOP");
+            int fameReq = stats.get("reqPOP");
             if (fameReq != 0 && fame < fameReq) {
                 return false;
             }
@@ -209,43 +209,43 @@ public class MapleItemInformationProvider {
         return false;
     }
 
-    public final int getReqLevel(final int itemId) {
+    public int getReqLevel(int itemId) {
         if (getEquipStats(itemId) == null) {
             return 0;
         }
         return getEquipStats(itemId).get("reqLevel");
     }
 
-    public final int getSlots(final int itemId) {
+    public int getSlots(int itemId) {
         if (getEquipStats(itemId) == null) {
             return 0;
         }
         return getEquipStats(itemId).get("tuc");
     }
 
-    public final int getSetItemID(final int itemId) {
+    public int getSetItemID(int itemId) {
         if (getEquipStats(itemId) == null) {
             return 0;
         }
         return getEquipStats(itemId).get("setItemID");
     }
 
-    public final List<Integer> getScrollReqs(final int itemId) {
+    public List<Integer> getScrollReqs(int itemId) {
         if (scrollReqCache.containsKey(itemId)) {
             return scrollReqCache.get(itemId);
         }
-        final List<Integer> ret = WzXML.ITEM.loadScrollReqs(itemId);
+        List<Integer> ret = WzXML.ITEM.loadScrollReqs(itemId);
         scrollReqCache.put(itemId, ret);
         return ret;
     }
 
-    public final Item scrollEquipWithId(final Item equip, final Item scrollId, final boolean ws, final MapleCharacter chr, final int vegas) {
+    public Item scrollEquipWithId(Item equip, Item scrollId, boolean ws, TacosCharacter chr, int vegas) {
         if (equip.getType() == 1) { // See Item.java
-            final Equip nEquip = (Equip) equip;
-            final Map<String, Integer> stats = getEquipStats(scrollId.getItemId());
-            final Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
-            final int succ = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getSuccessTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("success"))));
-            final int curse = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getCurseTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("cursed"))));
+            Equip nEquip = (Equip) equip;
+            Map<String, Integer> stats = getEquipStats(scrollId.getItemId());
+            Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
+            int succ = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getSuccessTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("success"))));
+            int curse = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getCurseTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("cursed"))));
             int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
 
             if (scrollId.getItemId() == 2049100) {
@@ -289,7 +289,7 @@ public class MapleItemInformationProvider {
                     }
                     default: {
                         if (GameConstants.isChaosScroll(scrollId.getItemId())) {
-                            final int z = GameConstants.getChaosNumber(scrollId.getItemId());
+                            int z = GameConstants.getChaosNumber(scrollId.getItemId());
                             if (nEquip.getStr() > 0) {
                                 nEquip.setStr((short) (nEquip.getStr() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
                             }
@@ -334,7 +334,7 @@ public class MapleItemInformationProvider {
                             }
                             break;
                         } else if (GameConstants.isEquipScroll(scrollId.getItemId())) {
-                            final int chanc = Math.max((scrollId.getItemId() == 2049300 ? 100 : 80) - (nEquip.getEnhance() * 10), 10);
+                            int chanc = Math.max((scrollId.getItemId() == 2049300 ? 100 : 80) - (nEquip.getEnhance() * 10), 10);
                             // all success
                             /*
                             if (Randomizer.nextInt(100) > chanc) {
@@ -395,7 +395,7 @@ public class MapleItemInformationProvider {
                             break;
                         } else if (GameConstants.isPotentialScroll(scrollId.getItemId())) {
                             if (nEquip.getHidden() == 0 && nEquip.getRank() == 0) {
-                                final int chanc = scrollId.getItemId() == 2049400 ? 90 : 70;
+                                int chanc = scrollId.getItemId() == 2049400 ? 90 : 70;
                                 //if (Randomizer.nextInt(100) > chanc) {
                                 //    return null; //destroyed, nib
                                 //}
@@ -404,7 +404,7 @@ public class MapleItemInformationProvider {
                             break;
                         } else {
                             for (Entry<String, Integer> stat : stats.entrySet()) {
-                                final String key = stat.getKey();
+                                String key = stat.getKey();
 
                                 if (key.equals("STR")) {
                                     nEquip.setStr((short) (nEquip.getStr() + stat.getValue().intValue()));
@@ -472,17 +472,17 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
-    public final Item getEquipById(int equipId) {
+    public Item getEquipById(int equipId) {
         return getEquipById(equipId, -1);
     }
 
-    public final Item getEquipById(final int equipId, final int ringId) {
-        final Equip nEquip = new Equip(equipId, (byte) 0, ringId, (byte) 0);
+    public Item getEquipById(int equipId, int ringId) {
+        Equip nEquip = new Equip(equipId, (byte) 0, ringId, (byte) 0);
         nEquip.setQuantity((short) 1);
-        final Map<String, Integer> stats = getEquipStats(equipId);
+        Map<String, Integer> stats = getEquipStats(equipId);
         if (stats != null) {
             for (Entry<String, Integer> stat : stats.entrySet()) {
-                final String key = stat.getKey();
+                String key = stat.getKey();
 
                 if (key.equals("STR")) {
                     nEquip.setStr((short) stat.getValue().intValue());
@@ -529,17 +529,17 @@ public class MapleItemInformationProvider {
         return nEquip.copy();
     }
 
-    private final short getRandStat(final short defaultValue, final int maxRange) {
+    private short getRandStat(short defaultValue, int maxRange) {
         if (defaultValue == 0) {
             return 0;
         }
         // vary no more than ceil of 10% of stat
-        final int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
+        int lMaxRange = (int) Math.min(Math.ceil(defaultValue * 0.1), maxRange);
 
         return (short) ((defaultValue - lMaxRange) + Math.floor(Math.random() * (lMaxRange * 2 + 1)));
     }
 
-    public final Equip RireSabaStats(final Equip equip) {
+    public Equip RireSabaStats(Equip equip) {
         int r = (int) Math.floor(Math.random() * 5) + 1;
         int min = 0;
         int range = 5;
@@ -629,7 +629,7 @@ public class MapleItemInformationProvider {
         return equip;
     }
 
-    public final Equip randomizeStats(Equip equip) {
+    public Equip randomizeStats(Equip equip) {
         if (ContentCustom.CC_EQUIP_STAT_RANDOMIZER.get()) {
             return RireSabaStats(equip);
         }
@@ -655,21 +655,20 @@ public class MapleItemInformationProvider {
     public MapleStatEffect getItemEffect(int itemId) {
         MapleStatEffect ret = itemEffects.get(itemId);
         if (ret == null) {
-            MapleData item = getItemData(itemId);
-            if (item == null) {
+            if (getItemData(itemId) == null) {
                 return null;
             }
-            ret = MapleStatEffect.loadItemEffectFromData(item.getChildByPath("spec"), itemId);
+            ret = MapleStatEffect.loadItemEffectFromData(WzXML.ITEM.getItemSpec(itemId), itemId);
             itemEffects.put(itemId, ret);
         }
         return ret;
     }
 
-    public final List<SimpleImmutableEntry<Integer, Integer>> getSummonMobs(final int itemId) {
+    public List<SimpleImmutableEntry<Integer, Integer>> getSummonMobs(int itemId) {
         if (summonMobCache.containsKey(itemId)) {
             return summonMobCache.get(itemId);
         }
-        final List<SimpleImmutableEntry<Integer, Integer>> mobPairs = WzXML.ITEM.loadSummonMobs(itemId);
+        List<SimpleImmutableEntry<Integer, Integer>> mobPairs = WzXML.ITEM.loadSummonMobs(itemId);
         if (mobPairs == null) {
             return null;
         }
@@ -693,33 +692,33 @@ public class MapleItemInformationProvider {
         return monsterBookID.get(id);
     }
 
-    public final boolean canScroll(final int scrollid, final int itemid) {
+    public boolean canScroll(int scrollid, int itemid) {
         return (scrollid / 100) % 100 == (itemid / 10000) % 100;
     }
 
-    public final String getName(final int itemId) {
+    public String getName(int itemId) {
         if (nameCache.containsKey(itemId)) {
             return nameCache.get(itemId);
         }
-        final String ret = WzXML.STRING.loadItemName(itemId);
+        String ret = WzXML.STRING.loadItemName(itemId);
         nameCache.put(itemId, ret);
         return ret;
     }
 
-    public final String getMsg(final int itemId) {
+    public String getMsg(int itemId) {
         if (msgCache.containsKey(itemId)) {
             return msgCache.get(itemId);
         }
-        final String ret = WzXML.STRING.loadItemMsg(itemId);
+        String ret = WzXML.STRING.loadItemMsg(itemId);
         msgCache.put(itemId, ret);
         return ret;
     }
 
-    public final short getItemMakeLevel(final int itemId) {
+    public short getItemMakeLevel(int itemId) {
         if (itemMakeLevel.containsKey(itemId)) {
             return itemMakeLevel.get(itemId);
         }
-        final short lvl = WzXML.ITEM.loadItemMakeLevel(itemId);
+        short lvl = WzXML.ITEM.loadItemMakeLevel(itemId);
         itemMakeLevel.put(itemId, lvl);
         return lvl;
     }
@@ -729,88 +728,88 @@ public class MapleItemInformationProvider {
         if (consumeOnPickupCache.containsKey(itemId)) {
             return consumeOnPickupCache.get(itemId);
         }
-        final byte consume = WzXML.ITEM.loadConsumeOnPickup(itemId);
+        byte consume = WzXML.ITEM.loadConsumeOnPickup(itemId);
         consumeOnPickupCache.put(itemId, consume);
         return consume;
     }
 
-    public final boolean isDropRestricted(final int itemId) {
+    public boolean isDropRestricted(int itemId) {
         if (dropRestrictionCache.containsKey(itemId)) {
             return dropRestrictionCache.get(itemId);
         }
-        final boolean trade = WzXML.ITEM.loadDropRestricted(itemId);
+        boolean trade = WzXML.ITEM.loadDropRestricted(itemId);
         dropRestrictionCache.put(itemId, trade);
         return trade;
     }
 
-    public final boolean isPickupRestricted(final int itemId) {
+    public boolean isPickupRestricted(int itemId) {
         if (pickupRestrictionCache.containsKey(itemId)) {
             return pickupRestrictionCache.get(itemId);
         }
-        final boolean bRestricted = WzXML.ITEM.loadPickupRestricted(itemId);
+        boolean bRestricted = WzXML.ITEM.loadPickupRestricted(itemId);
 
         pickupRestrictionCache.put(itemId, bRestricted);
         return bRestricted;
     }
 
-    public final boolean isAccountShared(final int itemId) {
+    public boolean isAccountShared(int itemId) {
         if (accCache.containsKey(itemId)) {
             return accCache.get(itemId);
         }
-        final boolean bRestricted = WzXML.ITEM.loadAccountShared(itemId);
+        boolean bRestricted = WzXML.ITEM.loadAccountShared(itemId);
 
         accCache.put(itemId, bRestricted);
         return bRestricted;
     }
 
-    public final int getStateChangeItem(final int itemId) {
+    public int getStateChangeItem(int itemId) {
         if (stateChangeCache.containsKey(itemId)) {
             return stateChangeCache.get(itemId);
         }
-        final int triggerItem = WzXML.ITEM.loadStateChangeItem(itemId);
+        int triggerItem = WzXML.ITEM.loadStateChangeItem(itemId);
         stateChangeCache.put(itemId, triggerItem);
         return triggerItem;
     }
 
-    public final int getMeso(final int itemId) {
+    public int getMeso(int itemId) {
         if (mesoCache.containsKey(itemId)) {
             return mesoCache.get(itemId);
         }
-        final int triggerItem = WzXML.ITEM.loadMeso(itemId);
+        int triggerItem = WzXML.ITEM.loadMeso(itemId);
         mesoCache.put(itemId, triggerItem);
         return triggerItem;
     }
 
     // info/damaとか
-    public final int getInt(final int itemId, final String text) {
+    public int getInt(int itemId, String text) {
         return WzXML.ITEM.loadIntField(itemId, text);
     }
 
-    public final boolean isPickupBlocked(final int itemId) {
+    public boolean isPickupBlocked(int itemId) {
         if (blockPickupCache.containsKey(itemId)) {
             return blockPickupCache.get(itemId);
         }
-        final boolean iRestricted = WzXML.ITEM.loadPickupBlocked(itemId);
+        boolean iRestricted = WzXML.ITEM.loadPickupBlocked(itemId);
 
         blockPickupCache.put(itemId, iRestricted);
         return iRestricted;
     }
 
-    public final boolean cantSell(final int itemId) { //true = cant sell, false = can sell
+    public boolean cantSell(int itemId) { //true = cant sell, false = can sell
         if (notSaleCache.containsKey(itemId)) {
             return notSaleCache.get(itemId);
         }
-        final boolean bRestricted = WzXML.ITEM.loadCantSell(itemId);
+        boolean bRestricted = WzXML.ITEM.loadCantSell(itemId);
 
         notSaleCache.put(itemId, bRestricted);
         return bRestricted;
     }
 
-    public SimpleImmutableEntry<Integer, List<StructRewardItem>> getRewardItem(final int itemid) {
+    public SimpleImmutableEntry<Integer, List<StructRewardItem>> getRewardItem(int itemid) {
         if (RewardItem.containsKey(itemid)) {
             return RewardItem.get(itemid);
         }
-        final SimpleImmutableEntry<Integer, List<StructRewardItem>> toreturn = WzXML.ITEM.loadRewardItem(itemid);
+        SimpleImmutableEntry<Integer, List<StructRewardItem>> toreturn = WzXML.ITEM.loadRewardItem(itemid);
         if (toreturn == null) {
             return null;
         }
@@ -818,11 +817,11 @@ public class MapleItemInformationProvider {
         return toreturn;
     }
 
-    public final Map<String, Integer> getSkillStats(final int itemId) {
+    public Map<String, Integer> getSkillStats(int itemId) {
         if (SkillStatsCache.containsKey(itemId)) {
             return SkillStatsCache.get(itemId);
         }
-        final Map<String, Integer> ret = WzXML.ITEM.loadSkillStats(itemId);
+        Map<String, Integer> ret = WzXML.ITEM.loadSkillStats(itemId);
         if (ret == null) {
             return null;
         }
@@ -834,7 +833,7 @@ public class MapleItemInformationProvider {
         if (questItems.containsKey(itemId)) {
             return questItems.get(itemId);
         }
-        final SimpleImmutableEntry<Integer, List<Integer>> questItem = WzXML.ITEM.loadQuestItemInfo(itemId);
+        SimpleImmutableEntry<Integer, List<Integer>> questItem = WzXML.ITEM.loadQuestItemInfo(itemId);
         if (questItem == null) {
             return null;
         }
@@ -842,14 +841,14 @@ public class MapleItemInformationProvider {
         return questItem;
     }
 
-    public final boolean itemExists(final int itemId) {
+    public boolean itemExists(int itemId) {
         if (GameConstants.getInventoryType(itemId) == MapleInventoryType.UNDEFINED) {
             return false;
         }
         return getItemData(itemId) != null;
     }
 
-    public final boolean isCash(final int itemId) {
+    public boolean isCash(int itemId) {
         if (getEquipStats(itemId) == null) {
             return GameConstants.getInventoryType(itemId) == MapleInventoryType.CASH;
         }

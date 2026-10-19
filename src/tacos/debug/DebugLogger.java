@@ -18,8 +18,8 @@
  */
 package tacos.debug;
 
-import odin.client.MapleCharacter;
 import tacos.config.DeveloperMode;
+import tacos.client.TacosCharacter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -95,7 +95,7 @@ public class DebugLogger {
         return true;
     }
 
-    public static boolean DebugLog(MapleCharacter chr, String log_text) {
+    public static boolean DebugLog(TacosCharacter chr, String log_text) {
         if (!DeveloperMode.DM_LOG_DEBUG.get()) {
             return false;
         }

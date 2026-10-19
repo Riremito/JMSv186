@@ -20,7 +20,6 @@ package tacos.packet.response.data;
 
 import java.util.ArrayList;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.config.Config;
@@ -133,12 +132,12 @@ public class RD_CStage {
     }
 
     // CITC::CITC
-    public static byte[] CITC_CITC(MapleCharacter chr) {
+    public static byte[] CITC_CITC(TacosCharacter chr) {
         return CITC_LoadData(chr);
     }
 
     // CITC::LoadData
-    public static byte[] CITC_LoadData(MapleCharacter chr) {
+    public static byte[] CITC_LoadData(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeStr(chr.getClient().getMapleId()); // m_sNexonClubID
@@ -152,7 +151,7 @@ public class RD_CStage {
     }
 
     // CCashShop::CCashShop
-    public static byte[] CCashShop_CCashShop(MapleCharacter chr) {
+    public static byte[] CCashShop_CCashShop(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeBuffer(RD_CStage.CCashShop_LoadData(chr));
@@ -163,7 +162,7 @@ public class RD_CStage {
     }
 
     // CCashShop::LoadData
-    public static byte[] CCashShop_LoadData(MapleCharacter chr) {
+    public static byte[] CCashShop_LoadData(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(1, Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.BMS.check()); // m_bCashShopAuthorized

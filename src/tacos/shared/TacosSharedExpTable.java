@@ -60,7 +60,7 @@ public class TacosSharedExpTable {
         return false;
     }
 
-    public static int getExpNeededForLevel(final int level) {
+    public static int getExpNeededForLevel(int level) {
         if (level < 0 || level >= exp_table.length) {
             return 0;
         }

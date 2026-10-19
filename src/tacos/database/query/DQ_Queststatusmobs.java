@@ -19,6 +19,7 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class DQ_Queststatusmobs {
     /**
      * NOTE: unlike {@code add}, this declares {@code throws SQLException}
      * instead of catching it internally, since it is called from
-     * MapleCharacter.loadCharFromDB (via DQ_Queststatus.loadAll), which
+     * TacosCharacter.loadCharFromDB (via DQ_Queststatus.loadAll), which
      * relies on the exception propagating to its own outer catch block.
      */
     public static Map<Integer, Integer> loadAll(int queststatusid) throws SQLException {

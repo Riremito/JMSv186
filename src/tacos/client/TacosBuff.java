@@ -19,11 +19,11 @@
 package tacos.client;
 
 import java.util.ArrayList;
+import tacos.server.map.TacosMap;
 import odin.client.Skill;
 import odin.client.SkillFactory;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
-import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -123,7 +123,7 @@ public class TacosBuff {
     }
 
     public boolean update(int buff_id) {
-        MapleMap map = this.chr.getMap();
+        TacosMap map = this.chr.getMap();
         MapleStatEffect effect = null;
         // skill or item.
         if (0 < buff_id) {

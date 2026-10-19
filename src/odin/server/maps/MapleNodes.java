@@ -55,11 +55,11 @@ public class MapleNodes {
         this.mapid = mapid;
     }
 
-    public void setNodeStart(final int ns) {
+    public void setNodeStart(int ns) {
         this.nodeStart = ns;
     }
 
-    public void setNodeEnd(final int ns) {
+    public void setNodeEnd(int ns) {
         this.nodeEnd = ns;
     }
 
@@ -142,7 +142,7 @@ public class MapleNodes {
         }
     }
 
-    public void addMapleArea(final Rectangle rec) {
+    public void addMapleArea(Rectangle rec) {
         areas.add(rec);
     }
 
@@ -150,7 +150,7 @@ public class MapleNodes {
         return new ArrayList<>(areas);
     }
 
-    public Rectangle getArea(final int index) {
+    public Rectangle getArea(int index) {
         return getAreas().get(index);
     }
 

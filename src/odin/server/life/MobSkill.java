@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.constants.GameConstants;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
+import tacos.server.map.object.TacosMist;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Map;
@@ -28,10 +31,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
-import odin.client.MapleCharacter;
 import odin.client.status.MonsterStatus;
 import java.util.EnumMap;
-import odin.server.maps.MapleMist;
 import tacos.wz.MobWz.MobBanInfo;
 import tacos.wz.WzXML;
 
@@ -106,7 +107,7 @@ public class MobSkill {
         this.limit = limit;
     }
 
-    public void applyEffect(MapleCharacter player, MapleMonster monster, boolean skill) {
+    public void applyEffect(TacosCharacter player, TacosMonster monster, boolean skill) {
         Map<MonsterStatus, Integer> stats = new EnumMap<>(MonsterStatus.class);
         List<Integer> reflection = new LinkedList<>();
 
@@ -146,8 +147,8 @@ public class MobSkill {
             case 114:
                 if (lt != null && rb != null && skill && monster != null) {
                     Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-                    final int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
-                    for (MapleMonster target : monster.getMap().getMonstersInRect(bounds)) {
+                    int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
+                    for (TacosMonster target : monster.getMap().getMonstersInRect(bounds)) {
                         target.heal(hp, getY(), true);
                     }
                 } else if (monster != null) {
@@ -162,7 +163,7 @@ public class MobSkill {
                     MobBanInfo info = monster.getStats().getBanishInfo();
                     if (info != null) {
                         if (lt != null && rb != null && skill && player != null) {
-                            for (MapleCharacter chr : getPlayersInRange(monster, player)) {
+                            for (TacosCharacter chr : getPlayersInRange(monster, player)) {
                                 chr.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
                             }
                         } else if (player != null) {
@@ -173,7 +174,7 @@ public class MobSkill {
                 break;
             case 131: // Mist
                 if (monster != null) {
-                    monster.getMap().addMist(new MapleMist(calculateBoundingBox(monster.getPosition(), true), monster, this, x * 10));
+                    monster.getMap().addMist(new TacosMist(calculateBoundingBox(monster.getPosition(), true), monster.getId(), getSkillLevel(), x * 10, this, null));
                 }
                 break;
             case 140:
@@ -208,7 +209,7 @@ public class MobSkill {
                     return;
                 }
                 for (Integer mobId : getSummons()) {
-                    MapleMonster toSpawn = null;
+                    TacosMonster toSpawn = null;
                     try {
                         toSpawn = WzXML.MOB.createMob(GameConstants.getCustomSpawnID(monster.getId(), mobId));
                     } catch (RuntimeException e) { //monster doesn't exist
@@ -325,13 +326,13 @@ public class MobSkill {
             myrb = new Point(lt.x * -1 + posFrom.x, rb.y + posFrom.y);
             mylt = new Point(rb.x * -1 + posFrom.x, lt.y + posFrom.y);
         }
-        final Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
+        Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
         return bounds;
     }
 
-    private List<MapleCharacter> getPlayersInRange(MapleMonster monster, MapleCharacter player) {
-        final Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-        List<MapleCharacter> players = new ArrayList<>();
+    private List<TacosCharacter> getPlayersInRange(TacosMonster monster, TacosCharacter player) {
+        Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
+        List<TacosCharacter> players = new ArrayList<>();
         players.add(player);
         return monster.getMap().getPlayersInRectAndInList(bounds, players);
     }

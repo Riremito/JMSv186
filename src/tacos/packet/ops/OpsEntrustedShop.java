@@ -88,7 +88,7 @@ public enum OpsEntrustedShop implements IPacketOps {
     }
 
     public static OpsEntrustedShop find(int val) {
-        for (final OpsEntrustedShop ops : OpsEntrustedShop.values()) {
+        for (OpsEntrustedShop ops : OpsEntrustedShop.values()) {
             if (ops.get() == val) {
                 return ops;
             }

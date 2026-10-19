@@ -18,9 +18,9 @@
  */
 package tacos.command;
 
-import odin.client.MapleCharacter;
-import odin.server.maps.MapleMap;
 import odin.server.maps.SavedLocationType;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.packet.request.ReqCUser;
 
 /**
@@ -29,8 +29,8 @@ import tacos.packet.request.ReqCUser;
  */
 public class TacosCommandPlayer {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
-        MapleMap map = chr.getMap();
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+        TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
             // enable actions.
@@ -71,7 +71,7 @@ public class TacosCommandPlayer {
                 return true;
             }
             case "/wh" -> {
-                for (MapleCharacter player : chr.getChannelServer().getOnlinePlayers().get()) {
+                for (TacosCharacter player : chr.getChannelServer().getOnlinePlayers().get()) {
                     if (player.getId() != chr.getId()) {
                         player.changeMapWithCoordinate(map.getId(), chr.getX(), chr.getY());
                     }

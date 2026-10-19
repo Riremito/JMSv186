@@ -21,8 +21,8 @@
  */
 package odin.handling.world.family;
 
-import odin.client.MapleCharacter;
 import java.util.ArrayList;
+import tacos.client.TacosCharacter;
 import java.util.List;
 
 public class MapleFamilyCharacter {
@@ -44,7 +44,7 @@ public class MapleFamilyCharacter {
 
     // either read from active character...
     // if it's online
-    public MapleFamilyCharacter(MapleCharacter chr, int fid, int sid, int j1, int j2) {
+    public MapleFamilyCharacter(TacosCharacter chr, int fid, int sid, int j1, int j2) {
         name = chr.getName();
         level = chr.getLevel();
         id = chr.getId();

@@ -74,7 +74,7 @@ public enum OpsTrunk implements IPacketOps {
     }
 
     public static OpsTrunk find(int val) {
-        for (final OpsTrunk ops : values()) {
+        for (OpsTrunk ops : values()) {
             if (ops.get() == val) {
                 return ops;
             }
@@ -83,7 +83,7 @@ public enum OpsTrunk implements IPacketOps {
     }
 
     private static void reset() {
-        for (final OpsTrunk ops : OpsTrunk.values()) {
+        for (OpsTrunk ops : OpsTrunk.values()) {
             ops.set(-1);
         }
     }

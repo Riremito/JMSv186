@@ -75,7 +75,7 @@ public enum OpsMREnterResult implements IPacketOps {
     }
 
     public static OpsMREnterResult find(int val) {
-        for (final OpsMREnterResult ops : OpsMREnterResult.values()) {
+        for (OpsMREnterResult ops : OpsMREnterResult.values()) {
             if (ops.get() == val) {
                 return ops;
             }

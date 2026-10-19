@@ -19,12 +19,10 @@
 package tacos.server.map;
 
 import java.awt.Point;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleReactor;
+import tacos.server.map.object.TacosReactor;
 import tacos.debug.DebugLogger;
-import tacos.wz.MapleData;
+import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 
 /**
  *
@@ -40,17 +38,17 @@ public class TacosReactorSpawnPoint {
     private int x;
     private int y;
 
-    public boolean loadData(MapleData md_reactor) {
-        this.node_id = Integer.parseInt(md_reactor.getName());
-        this.f = WzDataTool.getInt(md_reactor.getChildByPath("f"), 0);
-        this.id = WzDataTool.getInt(md_reactor.getChildByPath("id"), 0);
-        this.name = WzDataTool.getString(md_reactor.getChildByPath("name"), "");
-        this.reactorTime = WzDataTool.getInt(md_reactor.getChildByPath("reactorTime"), 0);
+    public boolean loadData(MapWz.ReactorInfo md_reactor) {
+        this.node_id = md_reactor.getNodeId();
+        this.f = md_reactor.getF();
+        this.id = md_reactor.getId();
+        this.name = md_reactor.getName();
+        this.reactorTime = md_reactor.getReactorTime();
         if (1 <= this.reactorTime) {
             this.reactorTime *= 1000;
         }
-        this.x = WzDataTool.getInt(md_reactor.getChildByPath("x"));
-        this.y = WzDataTool.getInt(md_reactor.getChildByPath("y"));
+        this.x = md_reactor.getX();
+        this.y = md_reactor.getY();
 
         if (!WzDataStorage.REACTOR.check(this.id)) {
             DebugLogger.ErrorLog("TacosReactorSpawnPoint : invalid reactor id, " + this.id);
@@ -64,15 +62,15 @@ public class TacosReactorSpawnPoint {
         return this.reactorTime;
     }
 
-    private MapleReactor reactor = null;
+    private TacosReactor reactor = null;
     private long last_regen_time = 0;
 
-    public MapleReactor regen(MapleMap map) {
+    public TacosReactor regen(TacosMap map) {
         if (this.reactor != null) {
             return null;
         }
 
-        this.reactor = new MapleReactor(this.id);
+        this.reactor = new TacosReactor(this.id);
         this.reactor.setFacingDirection(this.f);
         this.reactor.setName(this.name);
         this.reactor.setState((byte) 0);
@@ -82,7 +80,7 @@ public class TacosReactorSpawnPoint {
         return this.reactor;
     }
 
-    public MapleReactor getReactor() {
+    public TacosReactor getReactor() {
         return this.reactor;
     }
 

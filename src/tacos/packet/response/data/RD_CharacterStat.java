@@ -18,9 +18,8 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosPet;
 import odin.client.PlayerStats;
-import odin.client.inventory.MaplePet;
 import tacos.config.Content;
 import tacos.config.Region;
 import odin.constants.GameConstants;
@@ -36,7 +35,7 @@ import tacos.packet.ops.OpsChangeStat;
 public class RD_CharacterStat {
 
     // GW_CharacterStat::Decode
-    public static byte[] Encode(MapleCharacter chr) {
+    public static byte[] Encode(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(chr.getId()); // dwCharacterID
@@ -84,7 +83,7 @@ public class RD_CharacterStat {
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             // is_extendsp_job
             if (GameConstants.is_extendsp_job(chr.getJob())) {
-                final int size = chr.getRemainingSpSize();
+                int size = chr.getRemainingSpSize();
                 // ExtendSP::Decode
                 data.Encode1(size);
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {
@@ -385,7 +384,7 @@ public class RD_CharacterStat {
     }
 
     // GW_CharacterStat::DecodeMoney
-    public static byte[] EncodeMoney(MapleCharacter chr) {
+    public static byte[] EncodeMoney(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
         if (Config.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode8(chr.getMeso());
@@ -396,7 +395,7 @@ public class RD_CharacterStat {
     }
 
     // DecodeBuffer size 0x0C
-    public static byte[] EncodePachinko(MapleCharacter chr) {
+    public static byte[] EncodePachinko(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(chr.getId());
@@ -430,7 +429,7 @@ public class RD_CharacterStat {
         }
         // Pet 1
         if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
-            MaplePet pet = chr.getPetByIndex(0);
+            TacosPet pet = chr.getPetByIndex(0);
             data.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // Level
@@ -539,12 +538,12 @@ public class RD_CharacterStat {
         // v188 ここから+1
         // Pet 2
         if ((statmask & OpsChangeStat.CS_PETSN2.get()) != 0) {
-            MaplePet pet = chr.getPetByIndex(1);
+            TacosPet pet = chr.getPetByIndex(1);
             data.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // Pet 3
         if ((statmask & OpsChangeStat.CS_PETSN3.get()) != 0) {
-            MaplePet pet = chr.getPetByIndex(2);
+            TacosPet pet = chr.getPetByIndex(2);
             data.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // 兵法書, GashaExp

@@ -19,6 +19,7 @@
 package tacos.database.query;
 
 import tacos.database.InvTypeDB;
+import tacos.server.map.object.TacosPet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -30,7 +31,6 @@ import java.util.Map;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleRing;
 import odin.constants.GameConstants;
 import tacos.database.DatabaseConnection;
@@ -180,7 +180,7 @@ public class DQ_Inventoryitems {
                         item.setGiftFrom(item_sender);
                         if (GameConstants.isPet(item.getItemId())) {
                             if (item.getUniqueId() > -1) {
-                                MaplePet pet = MaplePet.loadFromDb(item.getItemId(), item.getUniqueId(), item.getPosition());
+                                TacosPet pet = TacosPet.loadFromDb(item.getItemId(), item.getUniqueId(), item.getPosition());
                                 if (pet != null) {
                                     item.setPet(pet);
                                 }
@@ -188,7 +188,7 @@ public class DQ_Inventoryitems {
                                 //O_O hackish fix
                                 int new_unique = TacosWorld.getNextItemUniqueId();
                                 item.setUniqueId(new_unique);
-                                item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
+                                item.setPet(TacosPet.createPet(item.getItemId(), new_unique));
                             }
                         }
                         items.put(inventory_item_uid, new SimpleImmutableEntry<>(item.copy(), mit));

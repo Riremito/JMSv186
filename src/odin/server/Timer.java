@@ -48,13 +48,13 @@ public abstract class Timer {
 
             @Override
             public Thread newThread(Runnable r) {
-                final Thread t = new Thread(r);
+                Thread t = new Thread(r);
                 t.setName(tname + "-Worker-" + threadNumber.getAndIncrement());
                 return t;
             }
         };
 
-        final ScheduledThreadPoolExecutor stpe = new ScheduledThreadPoolExecutor(3, thread);
+        ScheduledThreadPoolExecutor stpe = new ScheduledThreadPoolExecutor(3, thread);
         stpe.setKeepAliveTime(10, TimeUnit.MINUTES);
         stpe.allowCoreThreadTimeOut(true);
         stpe.setCorePoolSize(4);

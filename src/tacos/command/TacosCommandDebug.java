@@ -19,18 +19,19 @@
 package tacos.command;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleMonster;
 import tacos.wz.MapleData;
-import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMonsterBook;
 import tacos.constants.TacosConstants;
@@ -48,8 +49,8 @@ import tacos.server.TacosChannel;
 import tacos.server.map.TacosBossSpawnPoint;
 import tacos.server.map.TacosFoothold;
 import tacos.server.map.TacosPortal;
+import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzName;
 import tacos.wz.WzNameStorage;
 import tacos.wz.WzXML;
@@ -61,8 +62,8 @@ import tacos.wz.ids.DWI_Random;
  */
 public class TacosCommandDebug {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
-        MapleMap map = chr.getMap();
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+        TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
             case "/search" -> {
@@ -190,13 +191,8 @@ public class TacosCommandDebug {
                     return true;
                 }
 
-                MapleData npc_location = WzXML.ETC.getNpcLocation();
-                if (npc_location == null) {
-                    chr.DebugMsg("npclocation : NpcLocation.img is not found.");
-                    return true;
-                }
-                npc_location = npc_location.getChildByPath(Integer.toString(npc_id));
-                if (npc_location == null) {
+                List<Integer> npc_location_map_ids = WzXML.ETC.getNpcLocationMapIds(npc_id);
+                if (npc_location_map_ids == null) {
                     chr.DebugMsg("npclocation : NpcLocation.img/npc_id is not found.");
                     return true;
                 }
@@ -209,8 +205,7 @@ public class TacosCommandDebug {
                 }
 
                 nd_npc.sendDebugMsg(chr);
-                for (MapleData data : npc_location) {
-                    int map_id = WzDataTool.getInt(data);
+                for (int map_id : npc_location_map_ids) {
                     WzName nd_map = WzNameStorage.MAP.get(map_id);
                     if (nd_map == null) {
                         chr.DebugMsg("ERROR.");
@@ -223,21 +218,19 @@ public class TacosCommandDebug {
             }
             case "/monsterbook" -> {
                 // Item.wz/Consume/0238.img/info/mob
-                MapleData monster_card_items = WzXML.ITEM.getItemImg(238);
+                Map<Integer, Integer> monster_card_items = WzXML.ITEM.getMonsterCardMobIds();
                 // String.wz/MonsterBook.img
-                MapleData monster_book_mobs = WzXML.STRING.getMonsterBook();
+                List<Integer> monster_book_mobs = WzXML.STRING.getMonsterBookMobIds();
                 if (monster_card_items == null || monster_book_mobs == null) {
                     return true;
                 }
 
                 TacosMonsterBook monster_book = chr.getMonsterBook();
 
-                for (MapleData mb_mob : monster_book_mobs.getChildren()) {
-                    int mob_id = Integer.parseInt(mb_mob.getName());
-
-                    for (MapleData mc_item : monster_card_items.getChildren()) {
-                        if (mc_item.getInt("info/mob") == mob_id) {
-                            int card_item_id = Integer.parseInt(mc_item.getName());
+                for (int mob_id : monster_book_mobs) {
+                    for (Map.Entry<Integer, Integer> mc_item : monster_card_items.entrySet()) {
+                        if (mc_item.getValue() == mob_id) {
+                            int card_item_id = mc_item.getKey();
                             monster_book.add(card_item_id, 5, false);
                             break;
                         }
@@ -275,7 +268,7 @@ public class TacosCommandDebug {
                 for (int i = 0; i < mob_count; i++) {
                     int mobid = WzDataStorage.MOB.getRandom();
                     DebugLogger.InfoLog("random spawn: " + mobid);
-                    MapleMonster mob = WzXML.MOB.createMob(mobid);
+                    TacosMonster mob = WzXML.MOB.createMob(mobid);
                     if (mob != null) {
                         map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
 
@@ -303,7 +296,7 @@ public class TacosCommandDebug {
             }
             case "/randommap" -> {
                 int mapid = WzDataStorage.MAP.getRandom();
-                MapleMap map_to = chr.findMap(mapid);
+                TacosMap map_to = chr.findMap(mapid);
                 chr.changeMapPortal(map_to, map_to.getPortal(0));
 
                 chr.DebugMsg("randommap : " + map_to.getId());
@@ -377,10 +370,10 @@ public class TacosCommandDebug {
                 ArrayList<Integer> town_map_ids = new ArrayList<>();
 
                 for (int map_id : WzDataStorage.MAP.getIds()) {
-                    MapleData data = WzXML.MAP.getImg(map_id);
-                    if (data != null) {
-                        if (data.getInt("info/town") != 0) {
-                            int return_map_id = data.getInt("info/returnMap");
+                    MapWz.MapInfo map_info = WzXML.MAP.getMapInfo(map_id);
+                    if (map_info != null) {
+                        if (map_info.getTown() != 0) {
+                            int return_map_id = map_info.getReturnMap();
                             if (map_id == return_map_id) {
                                 town_map_ids.add(map_id);
                             }

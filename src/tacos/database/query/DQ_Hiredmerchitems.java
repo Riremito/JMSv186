@@ -19,9 +19,9 @@
 package tacos.database.query;
 
 import odin.client.inventory.Equip;
+import tacos.server.map.object.TacosPet;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import odin.client.inventory.MapleRing;
 import odin.constants.GameConstants;
 import java.sql.Connection;
@@ -146,7 +146,7 @@ public class DQ_Hiredmerchitems {
                 item.setGiftFrom(rs.getString("sender"));
                 if (GameConstants.isPet(item.getItemId())) {
                     if (item.getUniqueId() > -1) {
-                        MaplePet pet = MaplePet.loadFromDb(item.getItemId(), item.getUniqueId(), item.getPosition());
+                        TacosPet pet = TacosPet.loadFromDb(item.getItemId(), item.getUniqueId(), item.getPosition());
                         if (pet != null) {
                             item.setPet(pet);
                         }
@@ -154,7 +154,7 @@ public class DQ_Hiredmerchitems {
                         //O_O hackish fix
                         int new_unique = TacosWorld.getNextItemUniqueId();
                         item.setUniqueId(new_unique);
-                        item.setPet(MaplePet.createPet(item.getItemId(), new_unique));
+                        item.setPet(TacosPet.createPet(item.getItemId(), new_unique));
                     }
                 }
                 items.put(rs.getInt("inventoryitemid"), new SimpleImmutableEntry<>(item.copy(), mit));
@@ -215,7 +215,7 @@ public class DQ_Hiredmerchitems {
         query_2.append(")");
         ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
         PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        final Iterator<SimpleImmutableEntry<Item, MapleInventoryType>> iter = items.iterator();
+        Iterator<SimpleImmutableEntry<Item, MapleInventoryType>> iter = items.iterator();
         SimpleImmutableEntry<Item, MapleInventoryType> pair;
         while (iter.hasNext()) {
             pair = iter.next();

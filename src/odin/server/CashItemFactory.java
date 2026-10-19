@@ -16,15 +16,15 @@ public class CashItemFactory {
     private final Map<Integer, CashItemInfo> itemStats = new HashMap<>();
     private final Map<Integer, CashModInfo> itemMods = new HashMap<>();
 
-    public static final CashItemFactory getInstance() {
+    public static CashItemFactory getInstance() {
         return instance;
     }
 
     protected CashItemFactory() {
     }
 
-    public final CashItemInfo getItem(int item_SN) {
-        final CashItemInfo cii = itemStats.get(item_SN);
+    public CashItemInfo getItem(int item_SN) {
+        CashItemInfo cii = itemStats.get(item_SN);
 
         // OK
         if (cii != null) {
@@ -39,7 +39,7 @@ public class CashItemFactory {
         return stats;
     }
 
-    public final int getItemSN(int itemid) {
+    public int getItemSN(int itemid) {
         for (Entry<Integer, CashItemInfo> ci : itemStats.entrySet()) {
             if (ci.getValue().getId() == itemid) {
                 return ci.getValue().getSN();
@@ -56,7 +56,7 @@ public class CashItemFactory {
         return 0;
     }
 
-    public final CashModInfo getModInfo(int sn) {
+    public CashModInfo getModInfo(int sn) {
         CashModInfo ret = itemMods.get(sn);
         if (ret == null) {
             if (initialized) {

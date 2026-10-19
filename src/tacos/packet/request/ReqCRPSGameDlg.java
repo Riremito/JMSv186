@@ -19,12 +19,12 @@
 package tacos.packet.request;
 
 import java.util.Random;
-import odin.client.MapleCharacter;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.ClientPacket;
-import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsRPS;
 import tacos.packet.ops.OpsUserEffect;
@@ -39,12 +39,12 @@ import tacos.packet.response.builder.PB_UserEffect;
 public class ReqCRPSGameDlg {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -62,7 +62,7 @@ public class ReqCRPSGameDlg {
         return false;
     }
 
-    public static boolean OnRPSGame(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnRPSGame(TacosCharacter chr, ClientPacket cp) {
         TacosClient client = chr.getClient();
         int tax = 1000;
         int refund = 500;

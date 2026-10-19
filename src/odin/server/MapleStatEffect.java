@@ -1,12 +1,15 @@
 package odin.server;
 
 import odin.client.Skill;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
+import tacos.server.map.object.TacosMist;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import odin.client.inventory.Item;
@@ -19,15 +22,11 @@ import odin.constants.GameConstants;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
-import odin.server.life.MapleMonster;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMist;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.wz.MapleData;
+import tacos.wz.StatEffectData;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.wz.WzDataTool;
 
 public class MapleStatEffect {
 
@@ -92,17 +91,12 @@ public class MapleStatEffect {
     private Point rb;
     private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
-    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level) {
-        return loadFromData(source, skillid, true, overtime, level, 0);
+    public static MapleStatEffect loadSkillEffectFromData(StatEffectData source, int skillid, boolean overtime, byte level) {
+        return loadFromData(source, skillid, true, overtime, level);
     }
 
-    // after bigbang
-    public static final MapleStatEffect loadSkillEffectFromData(final MapleData source, final int skillid, final boolean overtime, final byte level, int common_level) {
-        return loadFromData(source, skillid, true, overtime, level, common_level);
-    }
-
-    public static final MapleStatEffect loadItemEffectFromData(final MapleData source, final int itemid) {
-        return loadFromData(source, itemid, false, false, (byte) 1, 0);
+    public static MapleStatEffect loadItemEffectFromData(StatEffectData source, int itemid) {
+        return loadFromData(source, itemid, false, false, (byte) 1);
     }
 
     private boolean checkData() {
@@ -269,31 +263,31 @@ public class MapleStatEffect {
         return true;
     }
 
-    private static MapleStatEffect loadFromData(final MapleData source, final int sourceid, final boolean skill, final boolean overTime, final byte level, int common_level) {
-        final MapleStatEffect ret = new MapleStatEffect();
+    private static MapleStatEffect loadFromData(StatEffectData source, int sourceid, boolean skill, boolean overTime, byte level) {
+        MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
         ret.skill = skill;
         ret.level = level;
         if (source == null) {
             return ret;
         }
-        ret.duration = source.getIntExpression("time", common_level, -1);
-        ret.hp = (short) source.getIntExpression("hp", common_level);
-        ret.hpR = source.getIntExpression("hpR", common_level) / 100.0;
-        ret.mp = (short) source.getIntExpression("mp", common_level);
-        ret.mpR = source.getIntExpression("mpR", common_level) / 100.0;
-        ret.mhpR = (byte) source.getIntExpression("mhpR", common_level);
-        ret.mmpR = (byte) source.getIntExpression("mmpR", common_level);
-        ret.mpCon = (short) source.getIntExpression("mpCon", common_level);
-        ret.hpCon = (short) source.getIntExpression("hpCon", common_level);
-        ret.prop = (short) source.getIntExpression("prop", common_level, 100);
-        ret.cooldown = source.getIntExpression("cooltime", common_level);
-        ret.expinc = source.getIntExpression("expinc", common_level);
-        ret.morphId = source.getIntExpression("morph", common_level);
-        ret.cp = source.getIntExpression("cp", common_level);
-        ret.nuffSkill = source.getIntExpression("nuffSkill", common_level);
-        ret.mobCount = (byte) source.getIntExpression("mobCount", common_level, 1);
-        ret.exp = source.getIntExpression("exp", common_level);
+        ret.duration = source.getTime();
+        ret.hp = (short) source.getHp();
+        ret.hpR = source.getHpR() / 100.0;
+        ret.mp = (short) source.getMp();
+        ret.mpR = source.getMpR() / 100.0;
+        ret.mhpR = (byte) source.getMhpR();
+        ret.mmpR = (byte) source.getMmpR();
+        ret.mpCon = (short) source.getMpCon();
+        ret.hpCon = (short) source.getHpCon();
+        ret.prop = (short) source.getProp();
+        ret.cooldown = source.getCooltime();
+        ret.expinc = source.getExpinc();
+        ret.morphId = source.getMorph();
+        ret.cp = source.getCp();
+        ret.nuffSkill = source.getNuffSkill();
+        ret.mobCount = (byte) source.getMobCount();
+        ret.exp = source.getExp();
 
         if (skill) {
             switch (sourceid) {
@@ -318,61 +312,58 @@ public class MapleStatEffect {
             ret.duration *= 1000; // items have their times stored in ms, of course
             ret.overTime = overTime || ret.isMorph() || ret.isPirateMorph() || ret.isFinalAttack();
         }
-        ret.mastery = (byte) source.getIntExpression("mastery", common_level);
-        ret.watk = (short) source.getIntExpression("pad", common_level);
-        ret.wdef = (short) source.getIntExpression("pdd", common_level);
-        ret.matk = (short) source.getIntExpression("mad", common_level);
-        ret.mdef = (short) source.getIntExpression("mdd", common_level);
-        ret.ehp = (short) source.getIntExpression("emhp", common_level);
-        ret.emp = (short) source.getIntExpression("emmp", common_level);
-        ret.ewatk = (short) source.getIntExpression("epad", common_level);
-        ret.ewdef = (short) source.getIntExpression("epdd", common_level);
-        ret.emdef = (short) source.getIntExpression("emdd", common_level);
-        ret.acc = (short) source.getIntExpression("acc", common_level);
-        ret.avoid = (short) source.getIntExpression("eva", common_level);
-        ret.speed = (short) source.getIntExpression("speed", common_level);
-        ret.jump = (short) source.getIntExpression("jump", common_level);
-        ret.expBuff = source.getIntExpression("expBuff", common_level);
-        ret.cashup = source.getIntExpression("cashBuff", common_level);
-        ret.itemup = source.getIntExpression("itemupbyitem", common_level);
-        ret.mesoup = source.getIntExpression("mesoupbyitem", common_level);
-        ret.berserk = source.getIntExpression("berserk", common_level);
-        ret.berserk2 = source.getIntExpression("berserk2", common_level);
+        ret.mastery = (byte) source.getMastery();
+        ret.watk = (short) source.getPad();
+        ret.wdef = (short) source.getPdd();
+        ret.matk = (short) source.getMad();
+        ret.mdef = (short) source.getMdd();
+        ret.ehp = (short) source.getEmhp();
+        ret.emp = (short) source.getEmmp();
+        ret.ewatk = (short) source.getEpad();
+        ret.ewdef = (short) source.getEpdd();
+        ret.emdef = (short) source.getEmdd();
+        ret.acc = (short) source.getAcc();
+        ret.avoid = (short) source.getEva();
+        ret.speed = (short) source.getSpeed();
+        ret.jump = (short) source.getJump();
+        ret.expBuff = source.getExpBuff();
+        ret.cashup = source.getCashBuff();
+        ret.itemup = source.getItemupbyitem();
+        ret.mesoup = source.getMesoupbyitem();
+        ret.berserk = source.getBerserk();
+        ret.berserk2 = source.getBerserk2();
         ret.booster = 0;
-        ret.illusion = source.getIntExpression("illusion", common_level);
+        ret.illusion = source.getIllusion();
 
-        final MapleData ltd = source.getChildByPath("lt");
-        if (ltd != null) {
-            ret.lt = WzDataTool.getPoint(source.getChildByPath("lt"));
-            ret.rb = WzDataTool.getPoint(source.getChildByPath("rb"));
-        }
+        ret.lt = source.getLt();
+        ret.rb = source.getRb();
 
-        ret.x = source.getIntExpression("x", common_level);
-        ret.y = source.getIntExpression("y", common_level);
-        ret.z = source.getIntExpression("z", common_level);
-        ret.damage = (short) source.getIntExpression("damage", common_level);
-        ret.attackCount = (byte) source.getIntExpression("attackCount", common_level, 1);
-        ret.bulletCount = (byte) source.getIntExpression("bulletCount", common_level, 1);
-        ret.bulletConsume = source.getIntExpression("bulletConsume", common_level);
-        ret.moneyCon = source.getIntExpression("moneyCon", common_level);
-        ret.itemCon = source.getInt("itemCon");
-        ret.itemConNo = source.getInt("itemConNo");
-        ret.moveTo = source.getInt("moveTo", -1);
+        ret.x = source.getX();
+        ret.y = source.getY();
+        ret.z = source.getZ();
+        ret.damage = (short) source.getDamage();
+        ret.attackCount = (byte) source.getAttackCount();
+        ret.bulletCount = (byte) source.getBulletCount();
+        ret.bulletConsume = source.getBulletConsume();
+        ret.moneyCon = source.getMoneyCon();
+        ret.itemCon = source.getItemCon();
+        ret.itemConNo = source.getItemConNo();
+        ret.moveTo = source.getMoveTo();
 
         ret.checkData();
         return ret;
     }
 
-    public void applyPassive(MapleCharacter applyto, Object obj) {
+    public void applyPassive(TacosCharacter applyto, Object obj) {
         if (makeChanceResult()) {
             switch (sourceid) { // MP eater
                 case 2100000:
                 case 2200000:
                 case 2300000:
-                    if (!(obj instanceof MapleMonster)) {
+                    if (!(obj instanceof TacosMonster)) {
                         return;
                     }
-                    MapleMonster mob = (MapleMonster) obj; // x is absorb percentage
+                    TacosMonster mob = (TacosMonster) obj; // x is absorb percentage
                     if (!mob.getStats().isBoss()) {
                         int absorbMp = Math.min((int) (mob.getMobMaxMp() * (getX() / 100.0)), mob.getMp());
                         if (absorbMp > 0) {
@@ -387,22 +378,23 @@ public class MapleStatEffect {
         }
     }
 
-    public final boolean applyTo(MapleCharacter chr) {
+    public boolean applyTo(TacosCharacter chr) {
         return applyTo(chr, chr, true, null, duration);
     }
 
-    public final boolean applyTo(MapleCharacter chr, Point pos) {
+    public boolean applyTo(TacosCharacter chr, Point pos) {
         return applyTo(chr, chr, true, pos, duration);
     }
 
-    private final boolean applyTo(final MapleCharacter applyfrom, final MapleCharacter applyto, final boolean primary, final Point pos) {
+    private boolean applyTo(TacosCharacter applyfrom, TacosCharacter applyto, boolean primary, Point pos) {
         return applyTo(applyfrom, applyto, primary, pos, duration);
     }
 
-    public final boolean applyTo(final MapleCharacter applyfrom, final MapleCharacter applyto, final boolean primary, final Point pos, int newDuration) {
+    public boolean applyTo(TacosCharacter applyfrom, TacosCharacter applyto, boolean primary, Point pos, int newDuration) {
+        TacosMap map = applyfrom.getMap();
         if (isHeal() && (applyfrom.getMapId() == 749040100 || applyto.getMapId() == 749040100)) {
             return false;
-        } else if (sourceid == 33101004 && applyfrom.getMap().isTown()) {
+        } else if (sourceid == 33101004 && map.isTown()) {
             applyfrom.dropMessage(5, "You may not use this skill in towns.");
             applyfrom.updateStat();
             return false; //not supposed to
@@ -410,7 +402,7 @@ public class MapleStatEffect {
         int hpchange = calcHPChange(applyfrom, primary);
         int mpchange = calcMPChange(applyfrom, primary);
 
-        final PlayerStats stat = applyto.getStat();
+        PlayerStats stat = applyto.getStat();
         if (primary) {
             if (itemConNo != 0) {
                 if (ContentState.CS_LOCK_LOSING_STONE.get()) {
@@ -424,7 +416,7 @@ public class MapleStatEffect {
             applyto.setMoveAction(0); //TODO fix death bug, player doesnt spawn on other screen
         }
         if (isMPRecovery()) {
-            final int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);
+            int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);
             if (stat.getHp() > toDecreaseHP) {
                 hpchange += -toDecreaseHP; // -10% of max HP
             } else {
@@ -470,7 +462,7 @@ public class MapleStatEffect {
         } else if (cp != 0 && applyto.getCarnivalParty() != null) {
             applyto.getCarnivalParty().addCP(applyto, cp);
             applyto.CPUpdate(false, applyto.getAvailableCP(), applyto.getTotalCP(), 0);
-            for (MapleCharacter chr : applyto.getMap().getAllPlayers()) {
+            for (TacosCharacter chr : applyto.getMap().getAllPlayers()) {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
             }
         }
@@ -484,8 +476,8 @@ public class MapleStatEffect {
         }
         if (isMist()) {
             Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
-            MapleMist mist = new MapleMist(bounds, applyfrom, this, getDuration());
-            applyfrom.getMap().addMist(mist);
+            TacosMist mist = new TacosMist(bounds, applyfrom.getId(), applyfrom.getSkillLevel(SkillFactory.getSkill(getSourceId())), getDuration(), null, this);
+            map.addMist(mist);
 
         } else if (isTimeLeap()) {
             applyto.getCoolTime().timeLeap();
@@ -494,9 +486,9 @@ public class MapleStatEffect {
         return true;
     }
 
-    public final boolean applyReturnScroll(final MapleCharacter applyto) {
+    public boolean applyReturnScroll(TacosCharacter applyto) {
         if (moveTo != -1) {
-            MapleMap target;
+            TacosMap target;
             if (moveTo == 999999999) {
                 target = applyto.getMap().getReturnMap();
             } else {
@@ -508,28 +500,29 @@ public class MapleStatEffect {
         return false;
     }
 
-    private final boolean isSoulStone() {
+    private boolean isSoulStone() {
         return skill && sourceid == 22181003;
     }
 
-    private final void applyBuff(final MapleCharacter applyfrom, int newDuration) {
+    private void applyBuff(TacosCharacter applyfrom, int newDuration) {
+        TacosMap map = applyfrom.getMap();
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
-                for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
+                for (TacosCharacter chr : map.getAllPlayers()) {
                     if (chr.getParty() != null && chr.getParty().equals(applyfrom.getParty()) && chr.isAlive()) {
                         membrs++;
                     }
                 }
-                List<MapleCharacter> awarded = new ArrayList<>();
+                List<TacosCharacter> awarded = new ArrayList<>();
                 while (awarded.size() < Math.min(membrs, y)) {
-                    for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
+                    for (TacosCharacter chr : map.getAllPlayers()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {
                             awarded.add(chr);
                         }
                     }
                 }
-                for (MapleCharacter chr : awarded) {
+                for (TacosCharacter chr : awarded) {
                     applyTo(applyfrom, chr, false, null, newDuration);
                     PB_UserEffect pb = PB_UserEffect.builder()
                             .player(chr)
@@ -540,10 +533,10 @@ public class MapleStatEffect {
                 }
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
-            final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            final List<MapleCharacter> affecteds = applyfrom.getMap().getPlayersInRect(bounds);
+            Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
+            List<TacosCharacter> affecteds = map.getPlayersInRect(bounds);
 
-            for (final MapleCharacter affected : affecteds) {
+            for (TacosCharacter affected : affecteds) {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);
@@ -563,11 +556,11 @@ public class MapleStatEffect {
         }
     }
 
-    private void applyMonsterBuff(MapleCharacter applyfrom) {
+    private void applyMonsterBuff(TacosCharacter applyfrom) {
         Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
         int i = 0;
 
-        for (MapleMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
+        for (TacosMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
             if (makeChanceResult()) {
                 for (Map.Entry<MonsterStatus, Integer> stat : getMonsterStati().entrySet()) {
                     monster.applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
@@ -580,7 +573,7 @@ public class MapleStatEffect {
         }
     }
 
-    private Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
+    private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
         if (lt == null || rb == null) {
             return new Rectangle(posFrom.x, posFrom.y, facingLeft ? 1 : -1, 1);
         }
@@ -596,11 +589,11 @@ public class MapleStatEffect {
         return new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
     }
 
-    public final void setDuration(int d) {
+    public void setDuration(int d) {
         this.duration = d;
     }
 
-    private final int calcHPChange(final MapleCharacter applyfrom, final boolean primary) {
+    private int calcHPChange(TacosCharacter applyfrom, boolean primary) {
         int hpchange = 0;
         if (hp != 0) {
             if (!skill) {
@@ -624,7 +617,7 @@ public class MapleStatEffect {
         }
         switch (this.sourceid) {
             case 4211001: // Chakra
-                final PlayerStats stat = applyfrom.getStat();
+                PlayerStats stat = applyfrom.getStat();
                 int v42 = getY() + 100;
                 int v38 = Randomizer.rand(1, 100) + 100;
                 hpchange = (int) ((v38 * stat.getLuk() * 0.033 + stat.getDex()) * v42 * 0.002);
@@ -634,11 +627,11 @@ public class MapleStatEffect {
         return hpchange;
     }
 
-    private static final int makeHealHP(double rate, double stat, double lowerfactor, double upperfactor) {
+    private static int makeHealHP(double rate, double stat, double lowerfactor, double upperfactor) {
         return (int) ((Math.random() * ((int) (stat * upperfactor * rate) - (int) (stat * lowerfactor * rate) + 1)) + (int) (stat * lowerfactor * rate));
     }
 
-    private static final int getElementalAmp(final int job) {
+    private static int getElementalAmp(int job) {
         switch (job) {
             case 211:
             case 212:
@@ -658,7 +651,7 @@ public class MapleStatEffect {
         return -1;
     }
 
-    private final int calcMPChange(final MapleCharacter applyfrom, final boolean primary) {
+    private int calcMPChange(TacosCharacter applyfrom, boolean primary) {
         int mpchange = 0;
         if (mp != 0) {
             if (primary) {
@@ -674,10 +667,10 @@ public class MapleStatEffect {
             if (mpCon != 0) {
                 double mod = 1.0;
 
-                final int ElemSkillId = getElementalAmp(applyfrom.getJob());
+                int ElemSkillId = getElementalAmp(applyfrom.getJob());
                 if (ElemSkillId != -1) {
-                    final Skill amp = SkillFactory.getSkill(ElemSkillId);
-                    final int ampLevel = applyfrom.getSkillLevel(amp);
+                    Skill amp = SkillFactory.getSkill(ElemSkillId);
+                    int ampLevel = applyfrom.getSkillLevel(amp);
                     if (ampLevel > 0) {
                         MapleStatEffect ampStat = amp.getEffect(ampLevel);
                         mod = ampStat.getX() / 100.0;
@@ -689,10 +682,10 @@ public class MapleStatEffect {
         return mpchange;
     }
 
-    private final int alchemistModifyVal(final MapleCharacter chr, final int val, final boolean withX) {
+    private int alchemistModifyVal(TacosCharacter chr, int val, boolean withX) {
         if (!skill) {
             int offset = chr.getStat().RecoveryUP;
-            final MapleStatEffect alchemistEffect = getAlchemistEffect(chr);
+            MapleStatEffect alchemistEffect = getAlchemistEffect(chr);
             if (alchemistEffect != null) {
                 offset += (withX ? alchemistEffect.getX() : alchemistEffect.getY());
             } else {
@@ -703,7 +696,7 @@ public class MapleStatEffect {
         return val;
     }
 
-    private final MapleStatEffect getAlchemistEffect(final MapleCharacter chr) {
+    private MapleStatEffect getAlchemistEffect(TacosCharacter chr) {
         Skill al;
         switch (chr.getJob()) {
             case 411:
@@ -731,11 +724,11 @@ public class MapleStatEffect {
         return null;
     }
 
-    public final void setSourceId(final int newid) {
+    public void setSourceId(int newid) {
         sourceid = newid;
     }
 
-    private final boolean isGmBuff() {
+    private boolean isGmBuff() {
         switch (sourceid) {
             case 1005: // echo of hero acts like a gm buff
             case 10001005: // cygnus Echo
@@ -754,11 +747,11 @@ public class MapleStatEffect {
         }
     }
 
-    private final boolean isEnergyCharge() {
+    private boolean isEnergyCharge() {
         return skill && (sourceid == 5110001 || sourceid == 15100004);
     }
 
-    private final boolean isMonsterBuff() {
+    private boolean isMonsterBuff() {
         switch (sourceid) {
             case 1201006: // threaten
             case 2101003: // fp slow
@@ -782,7 +775,7 @@ public class MapleStatEffect {
         return false;
     }
 
-    private final boolean isPartyBuff() {
+    private boolean isPartyBuff() {
         if (lt == null || rb == null || !partyBuff) {
             return isSoulStone();
         }
@@ -803,59 +796,59 @@ public class MapleStatEffect {
         return true;
     }
 
-    public final boolean isHeal() {
+    public boolean isHeal() {
         return sourceid == 2301002 || sourceid == 9101000;
     }
 
-    public final boolean isResurrection() {
+    public boolean isResurrection() {
         return sourceid == 9001005 || sourceid == 2321006;
     }
 
-    public final boolean isTimeLeap() {
+    public boolean isTimeLeap() {
         return sourceid == 5121010;
     }
 
-    public final short getHp() {
+    public short getHp() {
         return hp;
     }
 
-    public final short getMp() {
+    public short getMp() {
         return mp;
     }
 
-    public final short getWatk() {
+    public short getWatk() {
         return watk;
     }
 
-    public final short getMatk() {
+    public short getMatk() {
         return matk;
     }
 
-    public final short getWdef() {
+    public short getWdef() {
         return wdef;
     }
 
-    public final short getMdef() {
+    public short getMdef() {
         return mdef;
     }
 
-    public final short getAcc() {
+    public short getAcc() {
         return acc;
     }
 
-    public final short getAvoid() {
+    public short getAvoid() {
         return avoid;
     }
 
-    public final short getHands() {
+    public short getHands() {
         return hands;
     }
 
-    public final short getSpeed() {
+    public short getSpeed() {
         return speed;
     }
 
-    public final short getJump() {
+    public short getJump() {
         return jump;
     }
 
@@ -863,23 +856,23 @@ public class MapleStatEffect {
         return oss;
     }
 
-    public final int getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public final int getX() {
+    public int getX() {
         return x;
     }
 
-    public final int getY() {
+    public int getY() {
         return y;
     }
 
-    public final short getDamage() {
+    public short getDamage() {
         return damage;
     }
 
-    public final byte getMobCount() {
+    public byte getMobCount() {
         return mobCount;
     }
 
@@ -887,23 +880,23 @@ public class MapleStatEffect {
         return cooldown;
     }
 
-    public final Map<MonsterStatus, Integer> getMonsterStati() {
+    public Map<MonsterStatus, Integer> getMonsterStati() {
         return monsterStatus;
     }
 
-    public final boolean isBeholder() {
+    public boolean isBeholder() {
         return skill && sourceid == 1321007;
     }
 
-    public final boolean isMPRecovery() {
+    public boolean isMPRecovery() {
         return skill && sourceid == 5101005;
     }
 
-    public final boolean isMagicDoor() {
+    public boolean isMagicDoor() {
         return skill && (sourceid == 2311002 || sourceid == 8001 || sourceid == 10008001 || sourceid == 20008001 || sourceid == 20018001 || sourceid == 30008001);
     }
 
-    public final boolean isPoison() {
+    public boolean isPoison() {
         switch (sourceid) {
             case 2111003:
             case 2101005:
@@ -918,15 +911,15 @@ public class MapleStatEffect {
         return false;
     }
 
-    private final boolean isMist() {
+    private boolean isMist() {
         return skill && (sourceid == 2111003 || sourceid == 4221006 || sourceid == 12111005 || sourceid == 14111006 || sourceid == 22161003); // poison mist, smokescreen and flame gear, recovery aura
     }
 
-    private final boolean isSpiritClaw() {
+    private boolean isSpiritClaw() {
         return skill && sourceid == 4121006;
     }
 
-    public final boolean isPirateMorph() {
+    public boolean isPirateMorph() {
         switch (sourceid) {
             case 15111002:
             case 5111005:
@@ -936,11 +929,11 @@ public class MapleStatEffect {
         return false;
     }
 
-    public final boolean isMorph() {
+    public boolean isMorph() {
         return morphId > 0;
     }
 
-    public final int getMorph() {
+    public int getMorph() {
         switch (sourceid) {
             case 15111002:
             case 5111005:
@@ -955,8 +948,8 @@ public class MapleStatEffect {
         return morphId;
     }
 
-    public final int getMorph(final MapleCharacter chr) {
-        final int morph = getMorph();
+    public int getMorph(TacosCharacter chr) {
+        int morph = getMorph();
         switch (morph) {
             case 1000:
             case 1001:
@@ -966,15 +959,15 @@ public class MapleStatEffect {
         return morph;
     }
 
-    public final byte getLevel() {
+    public byte getLevel() {
         return level;
     }
 
-    public final int getSourceId() {
+    public int getSourceId() {
         return sourceid;
     }
 
-    public final boolean isFinalAttack() {
+    public boolean isFinalAttack() {
         switch (sourceid) {
             case 13101002:
             case 11101002:
@@ -988,15 +981,15 @@ public class MapleStatEffect {
      * @return true if the effect should happen based on it's probablity, false
      * otherwise
      */
-    public final boolean makeChanceResult() {
+    public boolean makeChanceResult() {
         return prop == 100 || Randomizer.nextInt(99) < prop;
     }
 
-    public final short getProb() {
+    public short getProb() {
         return prop;
     }
 
-    public final int getExp() {
+    public int getExp() {
         return exp;
     }
 

@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import java.util.List;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMapleTV;
 import tacos.packet.response.data.RD_AvatarLook;
@@ -31,7 +31,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCMapleTVMan {
 
-    public static ServerPacket MapleTVUpdateMessage(byte nFlag, int m_nMessageType, MapleCharacter chr_from, List<String> messages, MapleCharacter chr_to) {
+    public static ServerPacket MapleTVUpdateMessage(byte nFlag, int m_nMessageType, TacosCharacter chr_from, List<String> messages, TacosCharacter chr_to) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapleTVUpdateMessage);
 
         if (chr_to == null) {

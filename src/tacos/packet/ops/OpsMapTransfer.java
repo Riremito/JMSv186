@@ -58,7 +58,7 @@ public enum OpsMapTransfer implements IPacketOps {
     }
 
     public static OpsMapTransfer find(int val) {
-        for (final OpsMapTransfer ops : values()) {
+        for (OpsMapTransfer ops : values()) {
             if (ops.get() == val) {
                 return ops;
             }

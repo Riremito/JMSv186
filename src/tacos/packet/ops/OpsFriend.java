@@ -70,7 +70,7 @@ public enum OpsFriend implements IPacketOps {
     }
 
     public static OpsFriend find(int val) {
-        for (final OpsFriend o : OpsFriend.values()) {
+        for (OpsFriend o : OpsFriend.values()) {
             if (o.get() == val) {
                 return o;
             }

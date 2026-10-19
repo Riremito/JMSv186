@@ -18,6 +18,7 @@
  */
 package tacos.server.map.object;
 
+import java.awt.Point;
 import odin.client.inventory.Item;
 
 /**
@@ -31,11 +32,16 @@ public class TacosDrop extends TacosMapObject {
     private int meso = 0;
     private boolean player_drop = false;
     private int delay = 0;
+    private byte type;
 
-    public TacosDrop(Item item, int quest_id, int meso) {
+    public TacosDrop(Item item, int meso, int quest_id, Point position, int owner_id, byte type, boolean player_drop) {
         this.item = item;
-        this.quest_id = quest_id;
         this.meso = meso;
+        this.quest_id = quest_id;
+        this.type = type;
+        this.player_drop = player_drop;
+        setOwnerId(owner_id);
+        setPosition(position);
     }
 
     public Item getItem() {
@@ -71,6 +77,10 @@ public class TacosDrop extends TacosMapObject {
 
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public byte getDropType() {
+        return this.type;
     }
 
     private DropEnterType enter_type = DropEnterType.NORMAL;

@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosSingleMacro;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -36,7 +36,7 @@ import tacos.packet.response.ResCFuncKeyMappedMan;
 public class ReqCFuncKeyMappedMan {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (chr == null) {
             return false;
@@ -62,7 +62,7 @@ public class ReqCFuncKeyMappedMan {
         return false;
     }
 
-    public static boolean OnUserMacroSysDataModified(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserMacroSysDataModified(TacosCharacter chr, ClientPacket cp) {
         // MACROSYSDATA::Encode
         byte macro_count = cp.Decode1();
         if (macro_count <= 0 || 6 <= macro_count) {
@@ -88,7 +88,7 @@ public class ReqCFuncKeyMappedMan {
         return true;
     }
 
-    public static boolean OnFuncKeyMappedModified(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnFuncKeyMappedModified(TacosCharacter chr, ClientPacket cp) {
         int funckey_type = cp.Decode4();
 
         switch (OpsFuncKeyMapped.find(funckey_type)) {

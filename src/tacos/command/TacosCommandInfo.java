@@ -19,17 +19,16 @@
 package tacos.command;
 
 import java.util.ArrayList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.client.MapleCharacter;
 import odin.server.life.MonsterDropEntry;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosSpawnPoint;
-import tacos.wz.MapleData;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.RewardData;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzNameStorage;
 import tacos.wz.WzXML;
 
@@ -39,8 +38,9 @@ import tacos.wz.WzXML;
  */
 public class TacosCommandInfo {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
 
+        TacosMap map = chr.getMap();
         switch (dcmd.get(0)) {
             // server.
             case "/threadid" -> {
@@ -61,7 +61,7 @@ public class TacosCommandInfo {
             }
             // map.
             case "/mobtime" -> {
-                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+                for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
                     if (sp.getMobTime() != 0) {
                         chr.DebugMsg(String.format("mobtime : %.1f hours.", (double) sp.getMobTime() / 1000 / 3600));
                     }
@@ -70,7 +70,7 @@ public class TacosCommandInfo {
             }
             case "/dropinfo" -> {
                 ArrayList<Integer> mob_ids = new ArrayList<>();
-                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+                for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
                     int mob_id = sp.getId();
                     if (!mob_ids.contains(mob_id)) {
                         mob_ids.add(mob_id);
@@ -107,7 +107,7 @@ public class TacosCommandInfo {
         return false;
     }
 
-    private static boolean checkMapData(MapleCharacter chr) {
+    private static boolean checkMapData(TacosCharacter chr) {
         List<Integer> mob_ids = new ArrayList<>();
         List<Integer> mob_counts = new ArrayList<>();
         for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
@@ -124,8 +124,7 @@ public class TacosCommandInfo {
         for (int i = 0; i < mob_ids.size(); i++) {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
-            MapleData md_mob = WzXML.STRING.getMob().getChildByPath(Integer.toString(mob_id));
-            String mob_name = md_mob != null ? WzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
+            String mob_name = WzXML.STRING.getMobName(mob_id, "NO_NAME");
             if (!WzDataStorage.MOB.check(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
                 continue;

@@ -129,7 +129,7 @@ public enum OpsBodyPart {
     }
 
     public static OpsBodyPart find(int val) {
-        for (final OpsBodyPart o : OpsBodyPart.values()) {
+        for (OpsBodyPart o : OpsBodyPart.values()) {
             if (o.get() == val) {
                 return o;
             }

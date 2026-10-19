@@ -21,15 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosPet;
+import tacos.server.map.object.TacosMonster;
+import tacos.server.map.object.TacosReactor;
 import java.util.List;
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.Skill;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.handling.world.MapleParty;
@@ -38,11 +41,8 @@ import odin.handling.world.guild.MapleGuild;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleReactor;
 import odin.server.maps.SavedLocationType;
 import odin.server.maps.Event_DojoAgent;
-import odin.server.life.MapleMonster;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsFieldEffect;
@@ -73,15 +73,15 @@ public abstract class OdinAbstractPlayerInteraction {
         this.client = client;
     }
 
-    public final TacosClient getClient() {
+    public TacosClient getClient() {
         return client;
     }
 
-    public final TacosClient getC() {
+    public TacosClient getC() {
         return client;
     }
 
-    public MapleCharacter getChar() {
+    public TacosCharacter getChar() {
         return client.getPlayer();
     }
 
@@ -89,191 +89,196 @@ public abstract class OdinAbstractPlayerInteraction {
         return client.getChannelServer();
     }
 
-    public final MapleCharacter getPlayer() {
+    public TacosCharacter getPlayer() {
         return client.getPlayer();
     }
 
-    public final OdinEventInstanceManager getEventInstance() {
+    public OdinEventInstanceManager getEventInstance() {
         return null;
     }
 
-    public final void warp(final int map) {
-        final MapleMap mapz = getWarpMap(map);
+    public void warp(int map) {
+        TacosCharacter chr = client.getPlayer();
+        TacosMap mapz = getWarpMap(map);
         try {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            chr.changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
+            chr.changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
-    public final void warp_Instanced(final int map) {
-        final MapleMap mapz = getMap_Instanced(map);
+    public void warp_Instanced(int map) {
+        TacosCharacter chr = client.getPlayer();
+        TacosMap mapz = getMap_Instanced(map);
         try {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            chr.changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
+            chr.changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
-    public final void warp(final int map, final int portal) {
-        final MapleMap mapz = getWarpMap(map);
-        if (portal != 0 && map == client.getPlayer().getMapId()) { //test
-            final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
+    public void warp(int map, int portal) {
+        TacosCharacter chr = client.getPlayer();
+        TacosMap mapz = getWarpMap(map);
+        if (portal != 0 && map == chr.getMapId()) { //test
+            Point portalPos = new Point(chr.getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 client.SendPacket(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
             } else {
-                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+                chr.changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+            chr.changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
-    public final void warpS(final int map, final int portal) {
-        final MapleMap mapz = getWarpMap(map);
+    public void warpS(int map, int portal) {
+        TacosMap mapz = getWarpMap(map);
         client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
     }
 
-    public final void warp(final int map, String portal) {
-        final MapleMap mapz = getWarpMap(map);
+    public void warp(int map, String portal) {
+        TacosCharacter chr = client.getPlayer();
+        TacosMap mapz = getWarpMap(map);
         if (map == 109060000 || map == 109060002 || map == 109060004) {
             portal = mapz.getSnowballPortal();
         }
-        if (map == client.getPlayer().getMapId()) { //test
-            final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
+        if (map == chr.getMapId()) { //test
+            Point portalPos = new Point(chr.getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.SendPacket(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
+                client.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortal(portal).getId()));
             } else {
-                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+                chr.changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+            chr.changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
-    public final void warpS(final int map, String portal) {
-        final MapleMap mapz = getWarpMap(map);
+    public void warpS(int map, String portal) {
+        TacosMap mapz = getWarpMap(map);
         if (map == 109060000 || map == 109060002 || map == 109060004) {
             portal = mapz.getSnowballPortal();
         }
         client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
     }
 
-    public final void warpMap(final int mapid, final int portal) {
-        final MapleMap map = getMap(mapid);
-        for (MapleCharacter chr : client.getPlayer().getMap().getAllPlayers()) {
+    public void warpMap(int mapid, int portal) {
+        TacosMap map = getMap(mapid);
+        for (TacosCharacter chr : client.getPlayer().getMap().getAllPlayers()) {
             chr.changeMapPortal(map, map.getPortal(portal));
         }
     }
 
-    private MapleMap getWarpMap(final int map) {
+    private TacosMap getWarpMap(int map) {
         return getPlayer().findMap(map);
     }
 
-    public final MapleMap getMap() {
+    public TacosMap getMap() {
         return client.getPlayer().getMap();
     }
 
-    public final MapleMap getMap(final int map) {
+    public TacosMap getMap(int map) {
         return getWarpMap(map);
     }
 
-    public final MapleMap getMap_Instanced(final int map) {
+    public TacosMap getMap_Instanced(int map) {
         return getMap(map);
     }
 
-    public void spawnMonster(final int id, final int qty) {
+    public void spawnMonster(int id, int qty) {
         spawnMob(id, qty, new Point(client.getPlayer().getPosition()));
     }
 
-    public final void spawnMobOnMap(final int id, final int qty, final int x, final int y, final int map) {
+    public void spawnMobOnMap(int id, int qty, int x, int y, int map) {
         for (int i = 0; i < qty; i++) {
             getMap(map).spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), new Point(x, y));
         }
     }
 
-    public final void spawnMob(final int id, final int qty, final int x, final int y) {
+    public void spawnMob(int id, int qty, int x, int y) {
         spawnMob(id, qty, new Point(x, y));
     }
 
-    public final void spawnMob(final int id, final int x, final int y) {
+    public void spawnMob(int id, int x, int y) {
         spawnMob(id, 1, new Point(x, y));
     }
 
-    private final void spawnMob(final int id, final int qty, final Point pos) {
+    private void spawnMob(int id, int qty, Point pos) {
         for (int i = 0; i < qty; i++) {
             client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(id), pos);
         }
     }
 
-    public final void killMob(int ids) {
+    public void killMob(int ids) {
         client.getPlayer().getMap().killMonster(ids);
     }
 
-    public final void killAllMob() {
+    public void killAllMob() {
         client.getPlayer().getMap().killAllMonsters(true);
     }
 
-    public final void addHP(final int delta) {
+    public void addHP(int delta) {
         client.getPlayer().addHP(delta);
     }
 
-    public final int getPlayerStat(final String type) {
+    public int getPlayerStat(String type) {
+        TacosCharacter chr = client.getPlayer();
         if (type.equals("LVL")) {
-            return client.getPlayer().getLevel();
+            return chr.getLevel();
         } else if (type.equals("STR")) {
-            return client.getPlayer().getStat().getStr();
+            return chr.getStat().getStr();
         } else if (type.equals("DEX")) {
-            return client.getPlayer().getStat().getDex();
+            return chr.getStat().getDex();
         } else if (type.equals("INT")) {
-            return client.getPlayer().getStat().getInt();
+            return chr.getStat().getInt();
         } else if (type.equals("LUK")) {
-            return client.getPlayer().getStat().getLuk();
+            return chr.getStat().getLuk();
         } else if (type.equals("HP")) {
-            return client.getPlayer().getStat().getHp();
+            return chr.getStat().getHp();
         } else if (type.equals("MP")) {
-            return client.getPlayer().getStat().getMp();
+            return chr.getStat().getMp();
         } else if (type.equals("MAXHP")) {
-            return client.getPlayer().getStat().getMaxHp();
+            return chr.getStat().getMaxHp();
         } else if (type.equals("MAXMP")) {
-            return client.getPlayer().getStat().getMaxMp();
+            return chr.getStat().getMaxMp();
         } else if (type.equals("RAP")) {
-            return client.getPlayer().getRemainingAp();
+            return chr.getRemainingAp();
         } else if (type.equals("RSP")) {
-            return client.getPlayer().getRemainingSp();
+            return chr.getRemainingSp();
         } else if (type.equals("GID")) {
-            return client.getPlayer().getGuildId();
+            return chr.getGuildId();
         } else if (type.equals("GRANK")) {
-            return client.getPlayer().getGuildRank();
+            return chr.getGuildRank();
         } else if (type.equals("ARANK")) {
-            return client.getPlayer().getAllianceRank();
+            return chr.getAllianceRank();
         } else if (type.equals("GM")) {
-            return client.getPlayer().isGM() ? 1 : 0;
+            return chr.isGM() ? 1 : 0;
         } else if (type.equals("ADMIN")) {
-            return client.getPlayer().isAdmin() ? 1 : 0;
+            return chr.isAdmin() ? 1 : 0;
         } else if (type.equals("GENDER")) {
-            return client.getPlayer().getGender();
+            return chr.getGender();
         } else if (type.equals("FACE")) {
-            return client.getPlayer().getFace();
+            return chr.getFace();
         } else if (type.equals("HAIR")) {
-            return client.getPlayer().getHair();
+            return chr.getHair();
         }
         return -1;
     }
 
-    public final String getName() {
+    public String getName() {
         return client.getPlayer().getName();
     }
 
-    public final boolean haveItem(final int itemid, final int quantity) {
+    public boolean haveItem(int itemid, int quantity) {
         return haveItem(itemid, quantity, false, true);
     }
 
-    public final boolean haveItem(final int itemid, final int quantity, final boolean checkEquipped, final boolean greaterOrEquals) {
+    public boolean haveItem(int itemid, int quantity, boolean checkEquipped, boolean greaterOrEquals) {
         return client.getPlayer().haveItem(itemid, quantity, checkEquipped, greaterOrEquals);
     }
 
-    public final boolean canHold() {
+    public boolean canHold() {
         for (int i = 1; i <= 5; i++) {
             if (client.getPlayer().getInventory(MapleInventoryType.getByType((byte) i)).getNextFreeSlot() <= -1) {
                 return false;
@@ -282,68 +287,69 @@ public abstract class OdinAbstractPlayerInteraction {
         return true;
     }
 
-    public final boolean canHold(final int itemid) {
+    public boolean canHold(int itemid) {
         return client.getPlayer().getInventory(GameConstants.getInventoryType(itemid)).getNextFreeSlot() > -1;
     }
 
-    public final boolean canHold(final int itemid, final int quantity) {
+    public boolean canHold(int itemid, int quantity) {
         return MapleInventoryManipulator.checkSpace(client, itemid, quantity, "");
     }
 
-    public final MapleQuestStatus getQuestRecord(final int id) {
+    public MapleQuestStatus getQuestRecord(int id) {
         return client.getPlayer().getQuestNAdd(MapleQuest.getInstance(id));
     }
 
-    public final boolean isQuestActive(final int id) {
+    public boolean isQuestActive(int id) {
         return getQuestStatus(id) == 1;
     }
 
-    public final boolean isQuestFinished(final int id) {
+    public boolean isQuestFinished(int id) {
         return getQuestStatus(id) == 2;
     }
 
-    public final void showQuestMsg(final String msg) {
+    public void showQuestMsg(String msg) {
         client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_SystemMessage, PB_Message.builder().str(msg).build()));
     }
 
-    public final void forceStartQuest(final int id, final String data) {
+    public void forceStartQuest(int id, String data) {
         MapleQuest.getInstance(id).forceStart(client.getPlayer(), 0, data);
     }
 
-    public final void forceStartQuest(final int id, final int data, final boolean filler) {
+    public void forceStartQuest(int id, int data, boolean filler) {
         MapleQuest.getInstance(id).forceStart(client.getPlayer(), 0, filler ? String.valueOf(data) : null);
     }
 
-    public void forceStartQuest(final int id) {
+    public void forceStartQuest(int id) {
         MapleQuest.getInstance(id).forceStart(client.getPlayer(), 0, null);
     }
 
-    public void forceCompleteQuest(final int id) {
+    public void forceCompleteQuest(int id) {
         MapleQuest.getInstance(id).forceComplete(getPlayer(), 0);
     }
 
-    public void spawnNpc(final int npcId) {
-        client.getPlayer().getMap().spawnNpc(npcId, client.getPlayer().getPosition());
+    public void spawnNpc(int npcId) {
+        TacosCharacter chr = client.getPlayer();
+        chr.getMap().spawnNpc(npcId, chr.getPosition());
     }
 
-    public final void spawnNpc(final int npcId, final int x, final int y) {
+    public void spawnNpc(int npcId, int x, int y) {
         client.getPlayer().getMap().spawnNpc(npcId, new Point(x, y));
     }
 
-    public final void spawnNpc(final int npcId, final Point pos) {
+    public void spawnNpc(int npcId, Point pos) {
         client.getPlayer().getMap().spawnNpc(npcId, pos);
     }
 
-    public final void removeNpc(final int mapid, final int npcId) {
+    public void removeNpc(int mapid, int npcId) {
         getPlayer().findMap(mapid).removeNPCById(npcId);
     }
 
-    public final void forceStartReactor(final int mapid, final int id) {
-        MapleMap map = getPlayer().findMap(mapid);
-        MapleReactor react;
+    public void forceStartReactor(int mapid, int id) {
+        TacosMap map = getPlayer().findMap(mapid);
+        TacosReactor react;
 
-        for (final Object remo : map.getAllReactors()) {
-            react = (MapleReactor) remo;
+        for (Object remo : map.getAllReactors()) {
+            react = (TacosReactor) remo;
             if (react.getId() == id) {
                 react.forceStartReactor(client);
                 break;
@@ -351,12 +357,12 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public final void destroyReactor(final int mapid, final int id) {
-        MapleMap map = getPlayer().findMap(mapid);
-        MapleReactor react;
+    public void destroyReactor(int mapid, int id) {
+        TacosMap map = getPlayer().findMap(mapid);
+        TacosReactor react;
 
-        for (final Object remo : map.getAllReactors()) {
-            react = (MapleReactor) remo;
+        for (Object remo : map.getAllReactors()) {
+            react = (TacosReactor) remo;
             if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
@@ -364,12 +370,12 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public final void hitReactor(final int mapid, final int id) {
-        MapleMap map = getPlayer().findMap(mapid);
-        MapleReactor react;
+    public void hitReactor(int mapid, int id) {
+        TacosMap map = getPlayer().findMap(mapid);
+        TacosReactor react;
 
-        for (final Object remo : map.getAllReactors()) {
-            react = (MapleReactor) remo;
+        for (Object remo : map.getAllReactors()) {
+            react = (TacosReactor) remo;
             if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
@@ -377,60 +383,61 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public final void gainNX(final int amount) {
+    public void gainNX(int amount) {
         client.getPlayer().modifyCSPoints(1, amount, true);
     }
 
-    public final void gainItemPeriod(final int id, final short quantity, final int period) { //period is in days
+    public void gainItemPeriod(int id, short quantity, int period) { //period is in days
         gainItem(id, quantity, false, period, -1, "");
     }
 
-    public final void gainItemPeriod(final int id, final short quantity, final long period, final String owner) { //period is in days
+    public void gainItemPeriod(int id, short quantity, long period, String owner) { //period is in days
         gainItem(id, quantity, false, period, -1, owner);
     }
 
-    public final void gainItem(final int id, final short quantity) {
+    public void gainItem(int id, short quantity) {
         gainItem(id, quantity, false, 0, -1, "");
     }
 
-    public final void gainItem(final int id, final short quantity, final boolean randomStats) {
+    public void gainItem(int id, short quantity, boolean randomStats) {
         gainItem(id, quantity, randomStats, 0, -1, "");
     }
 
-    public final void Gashapon(final int id, final short quantity) {
+    public void Gashapon(int id, short quantity) {
         Item item_info = gainItem(id, quantity, true, 0, -1, "");
         if (item_info != null) {
             this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_GACHAPONANNOUNCE, PB_BroadcastMsg.builder().chr(client.getPlayer()).message("をガシャポンで手に入れました。おめでとうございます！").item(item_info).build()));
         }
     }
 
-    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final int slots) {
+    public Item gainItem(int id, short quantity, boolean randomStats, int slots) {
         return gainItem(id, quantity, randomStats, 0, slots, "");
     }
 
-    public final Item gainItem(final int id, final short quantity, final long period) {
+    public Item gainItem(int id, short quantity, long period) {
         return gainItem(id, quantity, false, period, -1, "");
     }
 
-    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots) {
+    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots) {
         return gainItem(id, quantity, randomStats, period, slots, "");
     }
 
-    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner) {
+    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner) {
         return gainItem(id, quantity, randomStats, period, slots, owner, client);
     }
 
-    public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final TacosClient target) {
+    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner, TacosClient target) {
+        TacosCharacter chr = target.getPlayer();
         Item item_info = null;
         if (quantity >= 0) {
-            final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-            final MapleInventoryType type = GameConstants.getInventoryType(id);
+            MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+            MapleInventoryType type = GameConstants.getInventoryType(id);
 
             if (!MapleInventoryManipulator.checkSpace(target, id, quantity, "")) {
                 return null;
             }
             if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(id) && !GameConstants.isBullet(id)) {
-                final Equip item = (Equip) (randomStats ? ii.randomizeStats((Equip) ii.getEquipById(id)) : ii.getEquipById(id));
+                Equip item = (Equip) (randomStats ? ii.randomizeStats((Equip) ii.getEquipById(id)) : ii.getEquipById(id));
                 if (period > 0) {
                     item.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
                 }
@@ -440,11 +447,11 @@ public abstract class OdinAbstractPlayerInteraction {
                 if (owner != null) {
                     item.setOwner(owner);
                 }
-                final String name = ii.getName(id);
+                String name = ii.getName(id);
                 if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
-                    final String msg = "You have attained title <" + name + ">";
-                    target.getPlayer().dropMessage(-1, msg);
-                    target.getPlayer().dropMessage(5, msg);
+                    String msg = "You have attained title <" + name + ">";
+                    chr.dropMessage(-1, msg);
+                    chr.dropMessage(5, msg);
                 }
                 MapleInventoryManipulator.addbyItem(target, item.copy());
                 item_info = item;
@@ -463,64 +470,65 @@ public abstract class OdinAbstractPlayerInteraction {
         return item_info;
     }
 
-    public final void changeMusic(final String songName) {
+    public void changeMusic(String songName) {
         getPlayer().getMap().setChangeBGM(songName);
     }
 
     // npc/9201006.js
-    public final void worldMessage(final int type, final String message) {
+    public void worldMessage(int type, String message) {
         this.client.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
-    public final void mapMessage(final String message) {
+    public void mapMessage(String message) {
         client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
-    public final void guildMessage(final String message) {
+    public void guildMessage(String message) {
         client.getWorld().getGuild().guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(message).build()));
     }
 
-    public final void playerMessage(final int type, final String message) {
+    public void playerMessage(int type, String message) {
         DebugLogger.DebugLog("playerMessage is called.");
         client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
     }
 
-    public final void mapMessage(final int type, final String message) {
+    public void mapMessage(int type, String message) {
         DebugLogger.DebugLog("mapMessage is called.");
         client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
     }
 
-    public final void guildMessage(final int type, final String message) {
+    public void guildMessage(int type, String message) {
         DebugLogger.DebugLog("guildMessage is called.");
         if (getPlayer().getGuildId() > 0) {
             client.getWorld().getGuild().guildPacket(getPlayer().getGuildId(), ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
         }
     }
 
-    public final MapleGuild getGuild() {
+    public MapleGuild getGuild() {
         return getGuild(getPlayer().getGuildId());
     }
 
-    public final MapleGuild getGuild(int guildid) {
+    public MapleGuild getGuild(int guildid) {
         return client.getWorld().getGuild().getGuild(guildid);
     }
 
-    public final MapleParty getParty() {
+    public MapleParty getParty() {
         return client.getPlayer().getParty();
     }
 
-    public final boolean isLeader() {
+    public boolean isLeader() {
         if (getParty() == null) {
             return false;
         }
         return getParty().getLeader().getId() == client.getPlayer().getId();
     }
 
-    public final boolean isAllPartyMembersAllowedJob(final int job) {
-        if (client.getPlayer().getParty() == null) {
+    public boolean isAllPartyMembersAllowedJob(int job) {
+        TacosCharacter chr = client.getPlayer();
+        if (chr.getParty() == null) {
             return false;
         }
-        for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
+        for (MaplePartyCharacter mem : chr.getParty().getMembers()) {
             if (mem.getJobId() / 100 != job) {
                 return false;
             }
@@ -528,12 +536,13 @@ public abstract class OdinAbstractPlayerInteraction {
         return true;
     }
 
-    public final boolean allMembersHere() {
-        if (client.getPlayer().getParty() == null) {
+    public boolean allMembersHere() {
+        TacosCharacter player = client.getPlayer();
+        if (player.getParty() == null) {
             return false;
         }
-        for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
-            final MapleCharacter chr = client.getPlayer().getMap().getPlayerById(mem.getId());
+        for (MaplePartyCharacter mem : player.getParty().getMembers()) {
+            TacosCharacter chr = player.getMap().getPlayerById(mem.getId());
             if (chr == null) {
                 return false;
             }
@@ -541,22 +550,22 @@ public abstract class OdinAbstractPlayerInteraction {
         return true;
     }
 
-    public final void warpParty(final int mapId) {
+    public void warpParty(int mapId) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
             warp(mapId, 0);
             return;
         }
-        final MapleMap target = getMap(mapId);
+        TacosMap target = getMap(mapId);
 
-        for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+        for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
+            TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.changeMapPortal(target, target.getPortal(0));
             }
         }
     }
 
-    public final void warpParty(final int mapId, final int portal) {
+    public void warpParty(int mapId, int portal) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
             if (portal < 0) {
                 warp(mapId);
@@ -565,11 +574,11 @@ public abstract class OdinAbstractPlayerInteraction {
             }
             return;
         }
-        final boolean rand = portal < 0;
-        final MapleMap target = getMap(mapId);
+        boolean rand = portal < 0;
+        TacosMap target = getMap(mapId);
 
-        for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+        for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
+            TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 if (rand) {
                     try {
@@ -584,15 +593,15 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public final void warpParty_Instanced(final int mapId) {
+    public void warpParty_Instanced(int mapId) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
             warp_Instanced(mapId);
             return;
         }
-        final MapleMap target = getMap_Instanced(mapId);
+        TacosMap target = getMap_Instanced(mapId);
 
-        for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+        for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
+            TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.changeMapPortal(target, target.getPortal(0));
             }
@@ -608,11 +617,12 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void gainExpR(int gain) {
-        client.getPlayer().gainExp(gain * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
+        TacosCharacter chr = client.getPlayer();
+        chr.gainExp(gain * chr.getChannelServer().getExpRate(), true, true, true);
     }
 
-    public final void givePartyItems(final int id, final short quantity, final List<MapleCharacter> party) {
-        for (MapleCharacter chr : party) {
+    public void givePartyItems(int id, short quantity, List<TacosCharacter> party) {
+        for (TacosCharacter chr : party) {
             if (quantity >= 0) {
                 MapleInventoryManipulator.addById(chr.getClient(), id, quantity);
             } else {
@@ -627,84 +637,85 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public final void givePartyItems(final int id, final short quantity) {
+    public void givePartyItems(int id, short quantity) {
         givePartyItems(id, quantity, false);
     }
 
-    public final void givePartyItems(final int id, final short quantity, final boolean removeAll) {
+    public void givePartyItems(int id, short quantity, boolean removeAll) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
             gainItem(id, (short) (removeAll ? -getPlayer().itemQuantity(id) : quantity));
             return;
         }
 
-        for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+        for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
+            TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 gainItem(id, (short) (removeAll ? -player.itemQuantity(id) : quantity), false, 0, 0, "", player.getClient());
             }
         }
     }
 
-    public final void givePartyExp(final int amount, final List<MapleCharacter> party) {
-        for (final MapleCharacter chr : party) {
+    public void givePartyExp(int amount, List<TacosCharacter> party) {
+        for (TacosCharacter chr : party) {
             chr.gainExp(amount * chr.getChannelServer().getExpRate(), true, true, true);
         }
     }
 
-    public final void givePartyExp(final int amount) {
+    public void givePartyExp(int amount) {
+        TacosCharacter character = client.getPlayer();
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
-            gainExp(amount * client.getPlayer().getChannelServer().getExpRate());
+            gainExp(amount * character.getChannelServer().getExpRate());
             return;
         }
-        for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+        for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
+            TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
-                player.gainExp(amount * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
+                player.gainExp(amount * character.getChannelServer().getExpRate(), true, true, true);
             }
         }
     }
 
-    public final void givePartyNX(final int amount, final List<MapleCharacter> party) {
-        for (final MapleCharacter chr : party) {
+    public void givePartyNX(int amount, List<TacosCharacter> party) {
+        for (TacosCharacter chr : party) {
             chr.modifyCSPoints(1, amount, true);
         }
     }
 
-    public final void givePartyNX(final int amount) {
+    public void givePartyNX(int amount) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
             gainNX(amount);
             return;
         }
-        for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+        for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
+            TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.modifyCSPoints(1, amount, true);
             }
         }
     }
 
-    public final void endPartyQuest(final int amount, final List<MapleCharacter> party) {
-        for (final MapleCharacter chr : party) {
+    public void endPartyQuest(int amount, List<TacosCharacter> party) {
+        for (TacosCharacter chr : party) {
             chr.endPartyQuest(amount);
         }
     }
 
-    public final void endPartyQuest(final int amount) {
+    public void endPartyQuest(int amount) {
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
             getPlayer().endPartyQuest(amount);
             return;
         }
-        for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            final MapleCharacter player = getMap().getPlayerById(chr.getId());
+        for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
+            TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
                 player.endPartyQuest(amount);
             }
         }
     }
 
-    public final void removeFromParty(final int id, final List<MapleCharacter> party) {
-        for (final MapleCharacter chr : party) {
-            final int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
+    public void removeFromParty(int id, List<TacosCharacter> party) {
+        for (TacosCharacter chr : party) {
+            int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
                 MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(id), id, possesed, true, false);
 
@@ -717,18 +728,18 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public final void removeFromParty(final int id) {
+    public void removeFromParty(int id) {
         givePartyItems(id, (short) 0, true);
     }
 
-    public final void useSkill(final int skill, final int level) {
+    public void useSkill(int skill, int level) {
         if (level <= 0) {
             return;
         }
         SkillFactory.getSkill(skill).getEffect(level).applyTo(client.getPlayer());
     }
 
-    public final void useItem(final int id) {
+    public void useItem(int id) {
         MapleItemInformationProvider.getInstance().getItemEffect(id).applyTo(client.getPlayer());
         client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_GiveBuffMessage, PB_Message.builder().ItemID(id).build()));
     }
@@ -740,20 +751,20 @@ public abstract class OdinAbstractPlayerInteraction {
         return 0;
     }
 
-    public final void removeAll(final int id) {
+    public void removeAll(int id) {
         client.getPlayer().removeAll(id);
     }
 
-    public final void gainCloseness(final int closeness, final int index) {
-        final MaplePet pet = getPlayer().getPetByIndex(index);
+    public void gainCloseness(int closeness, int index) {
+        TacosPet pet = getPlayer().getPetByIndex(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
             getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
         }
     }
 
-    public final void gainClosenessAll(final int closeness) {
-        for (final MaplePet pet : getPlayer().getPets()) {
+    public void gainClosenessAll(int closeness) {
+        for (TacosPet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
                 getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
@@ -761,25 +772,25 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public final void resetMap(final int mapid) {
+    public void resetMap(int mapid) {
         getMap(mapid).resetFully();
     }
 
-    public final void openNpc(final int id) {
+    public void openNpc(int id) {
         TacosScriptNPC.getInstance().start(getClient(), id);
     }
 
-    public final void openNpc(final TacosClient target, final int id) {
+    public void openNpc(TacosClient target, int id) {
         TacosScriptNPC.getInstance().start(target, id);
     }
 
-    public final int getMapId() {
+    public int getMapId() {
         return client.getPlayer().getMap().getId();
     }
 
-    public final boolean haveMonster(final int mobid) {
+    public boolean haveMonster(int mobid) {
         for (Object obj : client.getPlayer().getMap().getAllMonsters()) {
-            final MapleMonster mob = (MapleMonster) obj;
+            TacosMonster mob = (TacosMonster) obj;
             if (mob.getId() == mobid) {
                 return true;
             }
@@ -787,27 +798,27 @@ public abstract class OdinAbstractPlayerInteraction {
         return false;
     }
 
-    public final int getChannelNumber() {
+    public int getChannelNumber() {
         return client.getChannelId();
     }
 
-    public final int getMonsterCount(final int mapid) {
+    public int getMonsterCount(int mapid) {
         return getPlayer().findMap(mapid).getNumMonsters();
     }
 
-    public final void teachSkill(final int id, final byte level, final byte masterlevel) {
+    public void teachSkill(int id, byte level, byte masterlevel) {
         getPlayer().changeSkillLevel(SkillFactory.getSkill(id), level, masterlevel);
     }
 
-    public final void teachSkill(final int id, byte level) {
-        final Skill skil = SkillFactory.getSkill(id);
+    public void teachSkill(int id, byte level) {
+        Skill skil = SkillFactory.getSkill(id);
         if (getPlayer().getSkillLevel(skil) > level) {
             level = getPlayer().getSkillLevel(skil);
         }
         getPlayer().changeSkillLevel(skil, level, skil.getMaxLevel());
     }
 
-    public final void dojo_getUp() {
+    public void dojo_getUp() {
         client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) 1207).str("pt=1;min=4;belt=1;tuto=1").build())); //todo
         client.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_PlayPortalSE));
         client.SendPacket(ResCUserLocal.UserTeleport((byte) 6));
@@ -818,14 +829,15 @@ public abstract class OdinAbstractPlayerInteraction {
         client.SendPacket(ResCUserLocal.UserTeleport((byte) porta_id));
     }
 
-    public final boolean dojoAgent_NextMap(final boolean dojo, final boolean fromresting) {
+    public boolean dojoAgent_NextMap(boolean dojo, boolean fromresting) {
+        TacosCharacter chr = client.getPlayer();
         if (dojo) {
-            return Event_DojoAgent.warpNextMap(client.getPlayer(), fromresting);
+            return Event_DojoAgent.warpNextMap(chr, fromresting);
         }
-        return Event_DojoAgent.warpNextMap_Agent(client.getPlayer(), fromresting);
+        return Event_DojoAgent.warpNextMap_Agent(chr, fromresting);
     }
 
-    public final int dojo_getPts() {
+    public int dojo_getPts() {
         return client.getPlayer().getDojo();
     }
 
@@ -833,90 +845,91 @@ public abstract class OdinAbstractPlayerInteraction {
         return null;
     }
 
-    public final int getSavedLocation(final String loc) {
-        final Integer ret = client.getPlayer().getSavedLocation(SavedLocationType.fromString(loc));
+    public int getSavedLocation(String loc) {
+        Integer ret = client.getPlayer().getSavedLocation(SavedLocationType.fromString(loc));
         if (ret == null || ret == -1) {
             return 100000000;
         }
         return ret;
     }
 
-    public final void saveLocation(final String loc) {
+    public void saveLocation(String loc) {
         client.getPlayer().saveLocation(SavedLocationType.fromString(loc));
     }
 
-    public final void saveReturnLocation(final String loc) {
-        client.getPlayer().saveLocation(SavedLocationType.fromString(loc), client.getPlayer().getMap().getReturnMap().getId());
+    public void saveReturnLocation(String loc) {
+        TacosCharacter chr = client.getPlayer();
+        chr.saveLocation(SavedLocationType.fromString(loc), chr.getMap().getReturnMap().getId());
     }
 
-    public final void clearSavedLocation(final String loc) {
+    public void clearSavedLocation(String loc) {
         client.getPlayer().clearSavedLocation(SavedLocationType.fromString(loc));
     }
 
-    public final void summonMsg(final String msg) {
+    public void summonMsg(String msg) {
         if (!client.getPlayer().hasTutorialSummon()) {
             playerSummonHint(true);
         }
         client.SendPacket(ResCUserLocal.UserTutorMsg(msg));
     }
 
-    public final void summonMsg(final int type) {
+    public void summonMsg(int type) {
         if (!client.getPlayer().hasTutorialSummon()) {
             playerSummonHint(true);
         }
         client.SendPacket(ResCUserLocal.UserTutorMsg(type));
     }
 
-    public final void showInstruction(final String msg, final int width, final int height) {
+    public void showInstruction(String msg, int width, int height) {
         client.SendPacket(ResCUserLocal.UserBalloonMsg(msg, width, height));
     }
 
-    public final void playerSummonHint(final boolean summon) {
+    public void playerSummonHint(boolean summon) {
         client.getPlayer().setTutorialSummon(summon);
         client.SendPacket(ResCUserLocal.UserHireTutor(summon));
     }
 
-    public final String getInfoQuest(final int id) {
+    public String getInfoQuest(int id) {
         return client.getPlayer().getInfoQuest(id);
     }
 
-    public final void updateInfoQuest(final int id, final String data) {
+    public void updateInfoQuest(int id, String data) {
         client.getPlayer().updateInfoQuest(id, data);
     }
 
-    public final boolean getEvanIntroState(final String data) {
+    public boolean getEvanIntroState(String data) {
         return getInfoQuest(22013).equals(data);
     }
 
-    public final void updateEvanIntroState(final String data) {
+    public void updateEvanIntroState(String data) {
         updateInfoQuest(22013, data);
     }
 
-    public final void Aran_Start() {
+    public void Aran_Start() {
         client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Sound, PB_FieldEffect.builder().wz_path("Aran/balloon").build()));
     }
 
-    public final void evanTutorial(final String data, final int v1) {
+    public void evanTutorial(String data, int v1) {
         client.SendPacket(ResCScriptMan.getEvanTutorial(data));
     }
 
-    public final void AranTutInstructionalBubble(final String data) {
+    public void AranTutInstructionalBubble(String data) {
         client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
-    public final void ShowWZEffect(final String data) {
+    public void ShowWZEffect(String data) {
         client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon(data));
     }
 
-    public final void showWZEffect(final String data) {
+    public void showWZEffect(String data) {
         client.SendPacket(ResCUserLocal.ShowWZEffect(data));
     }
 
-    public final void EarnTitleMsg(final String data) {
+    public void EarnTitleMsg(String data) {
         client.SendPacket(ResCWvsContext.ScriptProgressMessage(data));
     }
 
-    public final void MovieClipIntroUI(final boolean enabled) {
+    public void MovieClipIntroUI(boolean enabled) {
         client.SendPacket(ResCUserLocal.SetStandAloneMode(enabled));
         client.SendPacket(ResCUserLocal.SetDirectionMode(enabled));
     }
@@ -925,7 +938,7 @@ public abstract class OdinAbstractPlayerInteraction {
         return MapleInventoryType.getByType((byte) i);
     }
 
-    public String getItemName(final int id) {
+    public String getItemName(int id) {
         return MapleItemInformationProvider.getInstance().getName(id);
     }
 
@@ -943,7 +956,7 @@ public abstract class OdinAbstractPlayerInteraction {
             fullness = 100;
         }
         try {
-            MapleInventoryManipulator.addById(client, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
+            MapleInventoryManipulator.addById(client, id, (short) 1, "", TacosPet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
@@ -953,7 +966,7 @@ public abstract class OdinAbstractPlayerInteraction {
         MapleInventoryManipulator.removeFromSlot(client, getInvType(invType), slot, quantity, true);
     }
 
-    public void gainGP(final int gp) {
+    public void gainGP(int gp) {
         if (getPlayer().getGuildId() <= 0) {
             return;
         }
@@ -975,9 +988,9 @@ public abstract class OdinAbstractPlayerInteraction {
         return getPlayer().itemQuantity(itemid);
     }
 
-    public boolean isAllReactorState(final int reactorId, final int state) {
+    public boolean isAllReactorState(int reactorId, int state) {
         boolean ret = false;
-        for (MapleReactor r : getMap().getAllReactors()) {
+        for (TacosReactor r : getMap().getAllReactors()) {
             if (r.getId() == reactorId) {
                 ret = r.getState() == state;
             }
@@ -1014,7 +1027,7 @@ public abstract class OdinAbstractPlayerInteraction {
         }
     }
 
-    public void sendNPCText(final String text, final int npc) {
+    public void sendNPCText(String text, int npc) {
         getMap().broadcastPacket(ResCScriptMan.ScriptMessage(npc, OpsScriptMan.SM_SAY, (byte) 0, text, false, false));
     }
 

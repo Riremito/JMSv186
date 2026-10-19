@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -369,7 +369,7 @@ public class ReqCLogin {
             return false;
         }
 
-        MapleCharacter chr = new MapleCharacter();
+        TacosCharacter chr = new TacosCharacter();
         chr.init_step1();
         chr.setClient(client);
         chr.setFace(face_id);
@@ -412,7 +412,7 @@ public class ReqCLogin {
         return true;
     }
 
-    public static boolean SetDefaultEquip(MapleCharacter newchar, int item_id) {
+    public static boolean SetDefaultEquip(TacosCharacter newchar, int item_id) {
         if (!WzDataStorage.ITEM.check(item_id)) {
             DebugLogger.ErrorLog("SetDefaultEquip, item_id = " + item_id);
             return false;

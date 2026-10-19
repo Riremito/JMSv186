@@ -51,7 +51,7 @@ public enum OpsMapleTV implements IPacketOps {
     }
 
     public static OpsMapleTV find(int val) {
-        for (final OpsMapleTV ops : OpsMapleTV.values()) {
+        for (OpsMapleTV ops : OpsMapleTV.values()) {
             if (ops.get() == val) {
                 return ops;
             }

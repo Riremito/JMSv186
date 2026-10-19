@@ -19,8 +19,8 @@
 package tacos.command;
 
 import java.awt.Point;
-import odin.client.MapleCharacter;
-import odin.server.maps.MapleMap;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosDynamicPortal;
 import tacos.wz.WzDataStorage;
 
@@ -30,8 +30,8 @@ import tacos.wz.WzDataStorage;
  */
 public class TacosCommandCustom {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
-        MapleMap map = chr.getMap();
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+        TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
             case "/petcharacter" -> {

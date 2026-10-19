@@ -59,7 +59,7 @@ public class ResCUser_Pet {
         }
 
         public static DeActivatedMsg find(int val) {
-            for (final DeActivatedMsg o : DeActivatedMsg.values()) {
+            for (DeActivatedMsg o : DeActivatedMsg.values()) {
                 if (o.get() == val) {
                     return o;
                 }

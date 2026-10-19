@@ -127,7 +127,7 @@ public class TacosServer {
         return this.server_type;
     }
 
-    protected final void setType(TacosServerType server_type) {
+    protected void setType(TacosServerType server_type) {
         this.server_type = server_type;
     }
 }

@@ -110,13 +110,13 @@ public class ParseCMovePath {
         }
         data = cp.DecodeAll();
         // offset
-        final int offset_start_x = 0;
-        final int offset_start_y = 2;
+        int offset_start_x = 0;
+        int offset_start_y = 2;
         int offset_end_x = 0;
         int offset_end_y = 0;
         int offset_end_fh = 0;
         int offset_end_action = 0;
-        final int tail_data_size = getTailDataSize(cp); // for only mob.
+        int tail_data_size = getTailDataSize(cp); // for only mob.
 
         // not work for KMS92.
         if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 83) || Region.BMS.check()) {

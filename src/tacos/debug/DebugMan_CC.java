@@ -18,8 +18,8 @@
  */
 package tacos.debug;
 
-import odin.client.MapleCharacter;
 import java.util.ArrayList;
+import tacos.client.TacosCharacter;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -29,13 +29,13 @@ import tacos.wz.WzDataStorage;
 public class DebugMan_CC extends DebugMan implements IDebugMan {
 
     @Override
-    public boolean start(MapleCharacter chr) {
+    public boolean start(TacosCharacter chr) {
         super.start(this, chr);
         return true;
     }
 
     @Override
-    public boolean end(MapleCharacter chr) {
+    public boolean end(TacosCharacter chr) {
         super.end(chr);
         return true;
     }
@@ -49,7 +49,7 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
         UNKNWON;
     }
 
-    public ArrayList<Integer> getIdsTest(MapleCharacter chr, int answer) {
+    public ArrayList<Integer> getIdsTest(TacosCharacter chr, int answer) {
         ArrayList<Integer> ids = new ArrayList<>();
         if (answer == AvatarType.SKIN.ordinal()) {
             for (int skin_id : WzDataStorage.SKIN.getIds()) {
@@ -112,7 +112,7 @@ public class DebugMan_CC extends DebugMan implements IDebugMan {
     private int avatar_type = -1;
 
     @Override
-    public boolean action(MapleCharacter chr, int status, int answer) {
+    public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0: {
                 NpcTag nt = new NpcTag();

@@ -54,7 +54,7 @@ public enum Ops_Whisper implements IPacketOps {
     }
 
     public static Ops_Whisper find(int val) {
-        for (final Ops_Whisper ops : Ops_Whisper.values()) {
+        for (Ops_Whisper ops : Ops_Whisper.values()) {
             if (ops.get() == val) {
                 return ops;
             }

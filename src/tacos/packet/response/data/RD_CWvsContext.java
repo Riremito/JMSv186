@@ -19,9 +19,8 @@
 package tacos.packet.response.data;
 
 import odin.client.BuddylistEntry;
-import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosPet;
 import java.util.Collection;
-import odin.client.inventory.MaplePet;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosForcedStat;
 import tacos.config.Config;
@@ -87,7 +86,7 @@ public class RD_CWvsContext {
     }
 
     // CWvsContext::CFriend::Reset
-    public static byte[] CFriend_Reset(MapleCharacter chr) {
+    public static byte[] CFriend_Reset(TacosCharacter chr) {
         Collection<BuddylistEntry> friend_list = chr.getBuddylist().getBuddies();
 
         ServerPacket data_friend = new ServerPacket();
@@ -117,11 +116,11 @@ public class RD_CWvsContext {
     }
     
         // CUIUserInfo::SetMultiPetInfo
-    public static byte[] CUIUserInfo_SetMultiPetInfo_GMS95(MapleCharacter chr) {
+    public static byte[] CUIUserInfo_SetMultiPetInfo_GMS95(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         // GMS does not have first pet checks inside this function.
-        MaplePet pet = chr.getPetByIndex(0);
+        TacosPet pet = chr.getPetByIndex(0);
         data.Encode4(pet.getPetItemId()); // dwTemplateID
         data.EncodeStr(pet.getName());
         data.Encode1(pet.getLevel()); // nLevel
@@ -134,11 +133,11 @@ public class RD_CWvsContext {
     }
 
     // CUIUserInfo::SetPetInfo (KMS)
-    public static byte[] CUIUserInfo_SetPetInfo(MapleCharacter chr) {
+    public static byte[] CUIUserInfo_SetPetInfo(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPetByIndex(i);
+            TacosPet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
@@ -157,7 +156,7 @@ public class RD_CWvsContext {
         return data.getBytes();
     }
 
-    public static byte[] CUIUserInfo_SetPetInfo_JMS131(MapleCharacter chr, MaplePet pet) {
+    public static byte[] CUIUserInfo_SetPetInfo_JMS131(TacosCharacter chr, TacosPet pet) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(pet.getPetItemId()); // dwTemplateID

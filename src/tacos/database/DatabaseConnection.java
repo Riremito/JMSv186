@@ -46,7 +46,7 @@ public class DatabaseConnection {
     private static final ThreadLocal<Connection> connected = new ThreadLocalConnection();
     public static final int RETURN_GENERATED_KEYS = 1;
 
-    public static final Connection getConnection() {
+    public static Connection getConnection() {
         return connected.get();
     }
 
@@ -100,8 +100,8 @@ public class DatabaseConnection {
         return false;
     }
 
-    public static final void closeAll() throws SQLException {
-        for (final Connection disconnect : ThreadLocalConnection.allConnections) {
+    public static void closeAll() throws SQLException {
+        for (Connection disconnect : ThreadLocalConnection.allConnections) {
             disconnect.close();
         }
     }
@@ -150,10 +150,10 @@ public class DatabaseConnection {
         public static final Collection<Connection> allConnections = new LinkedList<>();
 
         @Override
-        protected final Connection initialValue() {
+        protected Connection initialValue() {
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver"); // touch the mysql driver
-            } catch (final ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 System.err.println("ERROR" + e);
             }
             try {

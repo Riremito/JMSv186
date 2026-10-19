@@ -63,7 +63,7 @@ public enum OpsTransferField implements IPacketOps {
     }
 
     public static OpsTransferField find(int val) {
-        for (final OpsTransferField ops : OpsTransferField.values()) {
+        for (OpsTransferField ops : OpsTransferField.values()) {
             if (ops.get() == val) {
                 return ops;
             }

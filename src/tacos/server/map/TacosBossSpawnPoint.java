@@ -19,11 +19,10 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import lombok.Data;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
-import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.server.TacosWorld;
@@ -40,24 +39,24 @@ public class TacosBossSpawnPoint {
     private int id;
     private int mobTime;
     private String message = "";
-    private MapleMonster monster = null;
+    private TacosMonster monster = null;
     private long lastRegenTime = 0;
     private ArrayList<Integer> sharedMapIds = new ArrayList<>();
 
-    private Point getRandomXY(MapleMap map) {
+    private Point getRandomXY(TacosMap map) {
         int x = map.wall.getLeft() + Randomizer.nextInt(map.screen.getWidth());
         int y = map.wall.getTop() + Randomizer.nextInt(map.screen.getHeight());
 
         return new Point(x, y);
     }
 
-    private int findFootholdId(MapleMap map, Point pos) {
+    private int findFootholdId(TacosMap map, Point pos) {
         TacosFoothold foothold = map.findBelow(pos);
 
         return (foothold != null) ? foothold.getId() : 0;
     }
 
-    public MapleMonster regen(MapleMap map) {
+    public TacosMonster regen(TacosMap map) {
         if (this.monster != null) {
             return null;
         }
@@ -100,7 +99,7 @@ public class TacosBossSpawnPoint {
     private void updateSharedMap(TacosMap map, long current_time) {
         for (int shared_map_id : this.sharedMapIds) {
             if (map.getId() != shared_map_id) {
-                MapleMap shared_map = TacosWorld.find(0).getChannelServer(map.getChannel()).findMap(shared_map_id);
+                TacosMap shared_map = TacosWorld.find(0).getChannelServer(map.getChannel()).findMap(shared_map_id);
                 if (shared_map != null && !shared_map.getBossSpawnPoint().isEmpty()) {
                     TacosBossSpawnPoint shared_bsp = shared_map.getBossSpawnPoint().get(0);
                     if (shared_bsp != null) {
@@ -112,7 +111,7 @@ public class TacosBossSpawnPoint {
     }
 
     // master monster data.
-    public static TacosBossSpawnPoint getMasterMonster(MapleMap map) {
+    public static TacosBossSpawnPoint getMasterMonster(TacosMap map) {
         TacosBossSpawnPoint bsp = new TacosBossSpawnPoint();
 
         switch (map.getId()) {

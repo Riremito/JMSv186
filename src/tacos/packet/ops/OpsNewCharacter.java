@@ -65,7 +65,7 @@ public enum OpsNewCharacter {
     }
 
     public static OpsNewCharacter find(int val) {
-        for (final OpsNewCharacter o : OpsNewCharacter.values()) {
+        for (OpsNewCharacter o : OpsNewCharacter.values()) {
             if (o.get() == val) {
                 return o;
             }

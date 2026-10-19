@@ -18,8 +18,8 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
+import tacos.client.TacosCharacter;
 import odin.client.Skill;
 import odin.client.SkillEntry;
 import odin.client.inventory.MapleRing;
@@ -46,12 +46,12 @@ import tacos.shared.TacosSharedDate;
 public class RD_CharacterData {
 
     // CharacterData::Decode
-    public static byte[] Encode(MapleCharacter chr) {
+    public static byte[] Encode(TacosCharacter chr) {
         return Encode(chr, -1);
     }
 
     // CharacterData::Decode
-    public static byte[] Encode(MapleCharacter chr, long datamask) {
+    public static byte[] Encode(TacosCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
 
         if (Region.KMSB.check() || Config.LessOrEqual(Region.KMS, 46) || Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check()) {
@@ -497,7 +497,7 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static final byte[] InventoryInfo(MapleCharacter chr, long datamask) {
+    public static byte[] InventoryInfo(TacosCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
         // アイテム欄の数
         // v165-v194
@@ -643,7 +643,7 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static byte[] Encode_302_1(MapleCharacter chr, long datamask) {
+    public static byte[] Encode_302_1(TacosCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
 
         // 008ABA10
@@ -819,7 +819,7 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static byte[] Encode_302_2(MapleCharacter chr, long datamask) {
+    public static byte[] Encode_302_2(TacosCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
 
         // 00552C00
@@ -841,13 +841,13 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static byte[] addSkillInfo(MapleCharacter chr) {
+    public static byte[] addSkillInfo(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(1, Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
-        final Map<Skill, SkillEntry> skills = chr.getSkills();
+        Map<Skill, SkillEntry> skills = chr.getSkills();
         data.Encode2(skills.size());
-        for (final Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
+        for (Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
             data.Encode4(skill.getKey().getId());
             data.Encode4(skill.getValue().skillevel);
 
@@ -867,13 +867,13 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static byte[] addQuestInfo(final MapleCharacter chr) {
+    public static byte[] addQuestInfo(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
-        final List<MapleQuestStatus> started = chr.getStartedQuests();
+        List<MapleQuestStatus> started = chr.getStartedQuests();
 
         data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         data.Encode2(started.size());
-        for (final MapleQuestStatus q : started) {
+        for (MapleQuestStatus q : started) {
             data.Encode2(q.getQuest().getId());
             data.EncodeStr(q.getCustomData() != null ? q.getCustomData() : "");
         }
@@ -885,7 +885,7 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static byte[] addQuestComplete(MapleCharacter chr) {
+    public static byte[] addQuestComplete(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
@@ -900,7 +900,7 @@ public class RD_CharacterData {
     }
 
     // v165, v186
-    public static final byte[] addRingInfo(final MapleCharacter chr) {
+    public static byte[] addRingInfo(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
         SimpleImmutableEntry<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
         List<MapleRing> cRing = aRing.getKey();
@@ -950,9 +950,9 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static final byte[] addRocksInfo(final MapleCharacter chr) {
+    public static byte[] addRocksInfo(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
-        final int[] mapz = chr.getRegRocks();
+        int[] mapz = chr.getRegRocks();
         for (int i = 0; i < 5; i++) { // VIP teleport map
             data.Encode4(mapz[i]);
         }
@@ -961,7 +961,7 @@ public class RD_CharacterData {
             return data.getBytes();
         }
 
-        final int[] map = chr.getRocks();
+        int[] map = chr.getRocks();
         for (int i = 0; i < 10; i++) { // VIP teleport map
             data.Encode4(map[i]);
         }
@@ -981,12 +981,12 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
+    public static byte[] QuestInfoPacket(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
         Map<Integer, String> questinfo = chr.getInfoQuest_Map();
 
         data.Encode2(questinfo.size());
-        for (final Map.Entry<Integer, String> q : questinfo.entrySet()) {
+        for (Map.Entry<Integer, String> q : questinfo.entrySet()) {
             data.Encode2(q.getKey());
             data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }

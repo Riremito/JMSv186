@@ -18,9 +18,9 @@
  */
 package tacos.server.map.object;
 
-import odin.client.MapleCharacter;
-import odin.server.maps.MapleMap;
 import tacos.server.map.TacosPortal;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -46,8 +46,8 @@ public class TacosDynamicPortal extends TacosMapObject {
     }
 
     // official InstancePortal usage. 749050100 to 749050200.
-    public boolean leavePinkBeanCakeEvent(MapleCharacter chr) {
-        MapleMap map_to = chr.findMap(this.map_id);
+    public boolean leavePinkBeanCakeEvent(TacosCharacter chr) {
+        TacosMap map_to = chr.findMap(this.map_id);
 
         if (map_to == null) {
             return false;
@@ -60,8 +60,8 @@ public class TacosDynamicPortal extends TacosMapObject {
     }
 
     // unofficial usage.
-    public boolean enterDynamicPortal(MapleCharacter chr) {
-        MapleMap map_to = chr.findMap(this.map_id);
+    public boolean enterDynamicPortal(TacosCharacter chr) {
+        TacosMap map_to = chr.findMap(this.map_id);
 
         if (map_to == null) {
             return false;

@@ -42,7 +42,7 @@ public class StringWz extends WzXML {
         return md;
     }
 
-    public MapleData getItemStringData(final int itemId) {
+    public MapleData getItemStringData(int itemId) {
         String cat = null;
         MapleData data;
 
@@ -117,16 +117,16 @@ public class StringWz extends WzXML {
         }
     }
 
-    public String loadItemName(final int itemId) {
-        final MapleData strings = getItemStringData(itemId);
+    public String loadItemName(int itemId) {
+        MapleData strings = getItemStringData(itemId);
         if (strings == null) {
             return null;
         }
         return strings.getString("name", null);
     }
 
-    public String loadItemMsg(final int itemId) {
-        final MapleData strings = getItemStringData(itemId);
+    public String loadItemMsg(int itemId) {
+        MapleData strings = getItemStringData(itemId);
         if (strings == null) {
             return null;
         }
@@ -135,6 +135,10 @@ public class StringWz extends WzXML {
 
     public MapleData getMob() {
         return getData("Mob.img");
+    }
+
+    public String getMobName(int mob_id, String def) {
+        return getMob().getString(mob_id + "/name", def);
     }
 
     public MapleData getNpc() {
@@ -156,7 +160,7 @@ public class StringWz extends WzXML {
     public String getSkillName(int skill_id) {
         MapleData skillroot = getSkill().getChildByPath(String.format("%07d", skill_id));
         if (skillroot != null) {
-            return WzDataTool.getString(skillroot.getChildByPath("name"), "");
+            return skillroot.getString("name");
         }
         return null;
     }
@@ -275,6 +279,18 @@ public class StringWz extends WzXML {
         return img_MonsterBook;
     }
 
+    public List<Integer> getMonsterBookMobIds() {
+        MapleData md_book = getMonsterBook();
+        if (md_book == null) {
+            return null;
+        }
+        List<Integer> ret = new ArrayList<>();
+        for (MapleData md_mob : md_book.getChildren()) {
+            ret.add(Integer.parseInt(md_mob.getName()));
+        }
+        return ret;
+    }
+
     public DropMonsterBook getMonseterBookDrop(int mob_id) {
         if (list_drop_monsterbook == null) {
             list_drop_monsterbook = new ArrayList<>();
@@ -299,7 +315,7 @@ public class StringWz extends WzXML {
                         break;
                     }
                     for (MapleData md_drop_item : md_reward.getChildren()) {
-                        int item_id = WzDataTool.getInt(md_drop_item);
+                        int item_id = md_reward.getInt(md_drop_item.getName());
                         if (!WzDataStorage.ITEM.check(item_id)) {
                             DebugLogger.ErrorLog("invalid monsterbook drop : " + item_id);
                             continue;

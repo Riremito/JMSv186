@@ -19,7 +19,7 @@
 package tacos.packet.request;
 
 import tacos.client.TacosClient;
-import odin.server.maps.MapleMap;
+import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosSkillPet;
 import tacos.packet.ClientPacket;
@@ -39,7 +39,7 @@ public class ReqCUser_SkillPet {
             return false;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return false;
         }

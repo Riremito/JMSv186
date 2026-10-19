@@ -119,7 +119,7 @@ public enum OpsMiniRoomProtocol implements IPacketOps {
     }
 
     public static OpsMiniRoomProtocol find(int val) {
-        for (final OpsMiniRoomProtocol ops : OpsMiniRoomProtocol.values()) {
+        for (OpsMiniRoomProtocol ops : OpsMiniRoomProtocol.values()) {
             if (ops.get() == val) {
                 return ops;
             }

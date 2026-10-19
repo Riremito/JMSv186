@@ -18,9 +18,8 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
+import tacos.client.TacosCharacter;
 import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.ShopDispatch;
@@ -66,7 +65,7 @@ public class RD_CUser {
     }
 
     // CUserRemote::Init
-    public static byte[] CUserRemote_Init(MapleCharacter chr) {
+    public static byte[] CUserRemote_Init(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         Object shop = chr.getPlayerShop();
@@ -115,7 +114,7 @@ public class RD_CUser {
 
         // pet.
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPetByIndex(i);
+            TacosPet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
@@ -186,7 +185,7 @@ public class RD_CUser {
         return data.getBytes();
     }
 
-    public static byte[] CUserRemote_Init_JMS302(MapleCharacter chr) {
+    public static byte[] CUserRemote_Init_JMS302(TacosCharacter chr) {
         MapleGuild guild = null;
         Object shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
@@ -239,7 +238,7 @@ public class RD_CUser {
         data.Encode2(chr.getFootholdId());
 
         for (int i = 0; i < 4; i++) {
-            MaplePet pet = chr.getPetByIndex(i);
+            TacosPet pet = chr.getPetByIndex(i);
             data.Encode1(pet != null ? 1 : 0); // 3 -> null
             if (pet == null) {
                 break;
@@ -310,7 +309,7 @@ public class RD_CUser {
     }
 
     // SecondaryStat::DecodeForRemote
-    public static byte[] SecondaryStat_EncodeForRemote_JMS147(MapleCharacter chr) {
+    public static byte[] SecondaryStat_EncodeForRemote_JMS147(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         for (int empty_mask : TacosBuff.getBuffBuffer()) {
@@ -327,7 +326,7 @@ public class RD_CUser {
         return data.getBytes();
     }
 
-    public static byte[] SecondaryStat_EncodeForRemote_JMS302(MapleCharacter chr) {
+    public static byte[] SecondaryStat_EncodeForRemote_JMS302(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeZeroBytes(32);

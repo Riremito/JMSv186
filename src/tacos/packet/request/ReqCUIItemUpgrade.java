@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsCashItem;
@@ -32,7 +32,7 @@ import tacos.packet.response.ResCUIItemUpgrade;
 public class ReqCUIItemUpgrade {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -50,7 +50,7 @@ public class ReqCUIItemUpgrade {
         return false;
     }
 
-    public static boolean OnItemUpgradeComplete(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnItemUpgradeComplete(TacosCharacter chr, ClientPacket cp) {
         int action = cp.Decode4(); // CashItemReq
         int hammered = cp.Decode4(); // 用途不明
         // 関数に成功可否を渡しても良いと思われるが、成功確率が100%なので意味がない

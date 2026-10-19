@@ -159,7 +159,7 @@ public enum OpsCashItemFailReason {
     }
 
     public static OpsCashItemFailReason find(int val) {
-        for (final OpsCashItemFailReason o : OpsCashItemFailReason.values()) {
+        for (OpsCashItemFailReason o : OpsCashItemFailReason.values()) {
             if (o.get() == val) {
                 return o;
             }

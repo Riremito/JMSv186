@@ -18,14 +18,14 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_Coconut;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -35,13 +35,13 @@ import tacos.packet.ClientPacketHeader;
 public class ReqCField_Coconut {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
         // 109080000
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -141,7 +141,7 @@ public class ReqCField_Coconut {
 
     }
 
-    private static void OnCoconutHit(MapleCharacter chr, short nTarget, short nDelay) {
+    private static void OnCoconutHit(TacosCharacter chr, short nTarget, short nDelay) {
         MapleCoconut coconut_map = null;
         if (coconut_map == null) {
             return;
@@ -153,33 +153,34 @@ public class ReqCField_Coconut {
         if (System.currentTimeMillis() < nut.getHitTime()) {
             return;
         }
+        TacosMap map = chr.getMap();
         if (nut.getHits() > 2 && Math.random() < 0.4 && !nut.isStopped()) {
             nut.setHittable(false);
             if (Math.random() < 0.01 && coconut_map.getStopped() > 0) {
                 nut.setStopped(true);
                 coconut_map.stopCoconut();
-                chr.getMap().broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
+                map.broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
                 return;
             }
             nut.resetHits();
             if (Math.random() < 0.05 && coconut_map.getBombings() > 0) {
-                chr.getMap().broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 2));
+                map.broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 2));
                 coconut_map.bombCoconut();
             } else if (coconut_map.getFalling() > 0) {
-                chr.getMap().broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 3));
+                map.broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 3));
                 coconut_map.fallCoconut();
                 if (chr.getCoconutTeam() == 0) {
                     coconut_map.addMapleScore();
-                    chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(chr.getName() + " of Team Maple knocks down a coconut.").build()));
+                    map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(chr.getName() + " of Team Maple knocks down a coconut.").build()));
                 } else {
                     coconut_map.addStoryScore();
-                    chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(chr.getName() + " of Team Story knocks down a coconut.").build()));
+                    map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(chr.getName() + " of Team Story knocks down a coconut.").build()));
                 }
-                chr.getMap().broadcastPacket(ResCField_Coconut.CoconutScore(coconut_map.getCoconutScore()));
+                map.broadcastPacket(ResCField_Coconut.CoconutScore(coconut_map.getCoconutScore()));
             }
         } else {
             nut.hit();
-            chr.getMap().broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
+            map.broadcastPacket(ResCField_Coconut.CoconutHit(nTarget, nDelay, 1));
         }
     }
 }

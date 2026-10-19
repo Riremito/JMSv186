@@ -257,35 +257,35 @@ public class GameConstants {
     private static final int[] mountexp = {0, 6, 25, 50, 105, 134, 196, 254, 263, 315, 367, 430, 543, 587, 679, 725, 897, 1146, 1394, 1701, 2247,
         2543, 2898, 3156, 3313, 3584, 3923, 4150, 4305, 4550};
 
-    public static int getMountExpNeededForLevel(final int level) {
+    public static int getMountExpNeededForLevel(int level) {
         return mountexp[level - 1];
     }
 
-    public static int getTimelessRequiredEXP(final int level) {
+    public static int getTimelessRequiredEXP(int level) {
         return 70 + (level * 10);
     }
 
-    public static int getReverseRequiredEXP(final int level) {
+    public static int getReverseRequiredEXP(int level) {
         return 60 + (level * 5);
     }
 
-    public static boolean isJobFamily(final int baseJob, final int currentJob) {
+    public static boolean isJobFamily(int baseJob, int currentJob) {
         return currentJob >= baseJob && currentJob / 100 == baseJob / 100;
     }
 
-    public static boolean isKOC(final int job) {
+    public static boolean isKOC(int job) {
         return job >= 1000 && job < 2000;
     }
 
-    public static boolean isEvan(final int job) {
+    public static boolean isEvan(int job) {
         return job == 2001 || (job >= 2200 && job <= 2218);
     }
 
-    public static boolean isAran(final int job) {
+    public static boolean isAran(int job) {
         return job >= 2000 && job <= 2112 && job != 2001;
     }
 
-    public static boolean isResist(final int job) {
+    public static boolean isResist(int job) {
         return job >= 3000 && job <= 3512;
     }
 
@@ -341,11 +341,11 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean isAdventurer(final int job) {
+    public static boolean isAdventurer(int job) {
         return job >= 0 && job < 1000;
     }
 
-    public static boolean isRecoveryIncSkill(final int id) {
+    public static boolean isRecoveryIncSkill(int id) {
         switch (id) {
             case 1110000:
             case 2000000:
@@ -358,11 +358,11 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean isLinkedAranSkill(final int id) {
+    public static boolean isLinkedAranSkill(int id) {
         return getLinkedAranSkill(id) != id;
     }
 
-    public static int getLinkedAranSkill(final int id) {
+    public static int getLinkedAranSkill(int id) {
         switch (id) {
             case 21110007:
             case 21110008:
@@ -387,7 +387,7 @@ public class GameConstants {
         return id;
     }
 
-    public static int getBOF_ForJob(final int job) {
+    public static int getBOF_ForJob(int job) {
         if (isAdventurer(job)) {
             return 12;
         } else if (isKOC(job)) {
@@ -400,7 +400,7 @@ public class GameConstants {
         return 20000012;
     }
 
-    public static boolean isElementAmp_Skill(final int skill) {
+    public static boolean isElementAmp_Skill(int skill) {
         switch (skill) {
             case 2110001:
             case 2210001:
@@ -411,7 +411,7 @@ public class GameConstants {
         return false;
     }
 
-    public static int getMPEaterForJob(final int job) {
+    public static int getMPEaterForJob(int job) {
         switch (job) {
             case 210:
             case 211:
@@ -429,7 +429,7 @@ public class GameConstants {
         return 2100000; // Default, in case GM
     }
 
-    public static boolean isPyramidSkill(final int skill) {
+    public static boolean isPyramidSkill(int skill) {
         switch (skill) {
             case 1020:
             case 10001020:
@@ -441,7 +441,7 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean isMulungSkill(final int skill) {
+    public static boolean isMulungSkill(int skill) {
         switch (skill) {
             case 1009:
             case 1010:
@@ -463,44 +463,44 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean isThrowingStar(final int itemId) {
+    public static boolean isThrowingStar(int itemId) {
         return itemId / 10000 == 207;
     }
 
-    public static boolean isBullet(final int itemId) {
+    public static boolean isBullet(int itemId) {
         return itemId / 10000 == 233;
     }
 
-    public static boolean isRechargable(final int itemId) {
+    public static boolean isRechargable(int itemId) {
         return isThrowingStar(itemId) || isBullet(itemId);
     }
 
-    public static boolean isOverall(final int itemId) {
+    public static boolean isOverall(int itemId) {
         return itemId / 10000 == 105;
     }
 
-    public static boolean isPet(final int itemId) {
+    public static boolean isPet(int itemId) {
         return itemId / 10000 == 500;
     }
 
-    public static boolean isMagicWeapon(final int itemId) {
-        final int s = itemId / 10000;
+    public static boolean isMagicWeapon(int itemId) {
+        int s = itemId / 10000;
         return s == 137 || s == 138;
     }
 
-    public static boolean isWeapon(final int itemId) {
+    public static boolean isWeapon(int itemId) {
         return itemId >= 1300000 && itemId < 1500000;
     }
 
-    public static MapleInventoryType getInventoryType(final int itemId) {
-        final byte type = (byte) (itemId / 1000000);
+    public static MapleInventoryType getInventoryType(int itemId) {
+        byte type = (byte) (itemId / 1000000);
         if (type < 1 || type > 5) {
             return MapleInventoryType.UNDEFINED;
         }
         return MapleInventoryType.getByType(type);
     }
 
-    public static boolean isEquip(final int itemId) {
+    public static boolean isEquip(int itemId) {
         return itemId / 1000000 == 1;
     }
 
@@ -531,7 +531,7 @@ public class GameConstants {
         return scrollId / 100 == 20494;
     }
 
-    public static boolean isSpecialScroll(final int scrollId) {
+    public static boolean isSpecialScroll(int scrollId) {
         switch (scrollId) {
             case 2040727: // Spikes on show
             case 2041058: // Cape for Cold protection
@@ -563,19 +563,19 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean isUse(final int id) {
+    public static boolean isUse(int id) {
         return id >= 2000000 && id <= 2490000;
     }
 
-    public static boolean isSummonSack(final int id) {
+    public static boolean isSummonSack(int id) {
         return id / 10000 == 210;
     }
 
-    public static boolean isGem(final int id) {
+    public static boolean isGem(int id) {
         return id >= 4250000 && id <= 4251402;
     }
 
-    public static boolean isOtherGem(final int id) {
+    public static boolean isOtherGem(int id) {
         switch (id) {
             case 4001174:
             case 4001175:
@@ -603,11 +603,11 @@ public class GameConstants {
         return false;
     }
 
-    public static boolean isCustomQuest(final int id) {
+    public static boolean isCustomQuest(int id) {
         return id > 99999;
     }
 
-    public static int getTaxAmount(final int meso) {
+    public static int getTaxAmount(int meso) {
         if (meso >= 100000000) {
             return (int) Math.round(0.06 * meso);
         } else if (meso >= 25000000) {
@@ -624,7 +624,7 @@ public class GameConstants {
         return 0;
     }
 
-    public static int EntrustedStoreTax(final int meso) {
+    public static int EntrustedStoreTax(int meso) {
         if (meso >= 100000000) {
             return (int) Math.round(0.03 * meso);
         } else if (meso >= 25000000) {
@@ -641,7 +641,7 @@ public class GameConstants {
         return 0;
     }
 
-    public static byte gachaponRareItem(final int id) {
+    public static byte gachaponRareItem(int id) {
         switch (id) {
             case 2340000: // White Scroll
             case 2049100: // Chaos Scroll
@@ -849,7 +849,7 @@ public class GameConstants {
         return false;
     }
 
-    public static int Equipment_Bonus_EXP(final int itemid) { // TODO : Add Time for more exp increase
+    public static int Equipment_Bonus_EXP(int itemid) { // TODO : Add Time for more exp increase
         switch (itemid) {
             case 1122017:
                 return 10;
@@ -866,7 +866,7 @@ public class GameConstants {
         return 0;
     }
 
-    public static int getMaxLevel(final int itemId) {
+    public static int getMaxLevel(int itemId) {
         if (isTimelessItem(itemId)) {
             return 5;
         } else if (isReverseItem(itemId)) {
@@ -913,7 +913,7 @@ public class GameConstants {
         return 0;
     }
 
-    public static MonsterStatus getStatFromWeapon(final int itemid) {
+    public static MonsterStatus getStatFromWeapon(int itemid) {
         switch (itemid) {
             case 1302109:
             case 1312041:
@@ -951,7 +951,7 @@ public class GameConstants {
         return null;
     }
 
-    public static int getSkillBook(final int job) {
+    public static int getSkillBook(int job) {
         if (job >= 2210 && job <= 2218) {
             return job - 2209;
         }
@@ -972,7 +972,7 @@ public class GameConstants {
         return 0;
     }
 
-    public static int getSkillBookForSkill(final int skillid) {
+    public static int getSkillBookForSkill(int skillid) {
         return getSkillBook(skillid / 10000);
     }
 
@@ -997,7 +997,7 @@ public class GameConstants {
         return itemId / 1000 == 2047;
     }
 
-    public static int getSuccessTablet(final int scrollId, final int level) {
+    public static int getSuccessTablet(int scrollId, int level) {
         if (scrollId % 1000 / 100 == 2) { //2047_2_00 = armor, 2047_3_00 = accessory
             switch (level) {
                 case 0:
@@ -1056,7 +1056,7 @@ public class GameConstants {
         }
     }
 
-    public static int getCurseTablet(final int scrollId, final int level) {
+    public static int getCurseTablet(int scrollId, int level) {
         if (scrollId % 1000 / 100 == 2) { //2047_2_00 = armor, 2047_3_00 = accessory
             switch (level) {
                 case 0:
@@ -1115,11 +1115,11 @@ public class GameConstants {
         }
     }
 
-    public static boolean isAccessory(final int itemId) {
+    public static boolean isAccessory(int itemId) {
         return (itemId >= 1010000 && itemId < 1040000) || (itemId >= 1122000 && itemId < 1153000) || (itemId >= 1112000 && itemId < 1113000);
     }
 
-    public static final boolean isMountItemAvailable(final int mountid, final int jobid) {
+    public static boolean isMountItemAvailable(int mountid, int jobid) {
         if (jobid != 900 && mountid / 10000 == 190) {
             if (isKOC(jobid)) {
                 if (mountid < 1902005 || mountid > 1902007) {
@@ -1142,15 +1142,15 @@ public class GameConstants {
         return true;
     }
 
-    public static boolean isEvanDragonItem(final int itemId) {
+    public static boolean isEvanDragonItem(int itemId) {
         return itemId >= 1940000 && itemId < 1980000; //194 = mask, 195 = pendant, 196 = wings, 197 = tail
     }
 
-    public static boolean canScroll(final int itemId) {
+    public static boolean canScroll(int itemId) {
         return itemId / 100000 != 19 && itemId / 100000 != 16; //no mech/taming/dragon
     }
 
-    public static boolean canHammer(final int itemId) {
+    public static boolean canHammer(int itemId) {
         switch (itemId) {
             case 1122000:
             case 1122076: //ht, chaos ht
@@ -1162,7 +1162,7 @@ public class GameConstants {
         return true;
     }
 
-    public static int getMasterySkill(final int job) {
+    public static int getMasterySkill(int job) {
         if (job >= 1410 && job <= 1412) {
             return 14100000;
         } else if (job >= 410 && job <= 412) {
@@ -1173,11 +1173,11 @@ public class GameConstants {
         return 0;
     }
 
-    public static int getExpRate_Quest(final int level) {
+    public static int getExpRate_Quest(int level) {
         return (level >= 30 ? (level >= 70 ? (level >= 120 ? 4 : 3) : 2) : 1);
     }
 
-    public static boolean isCustomReactItem(final int rid, final int iid, final int original) {
+    public static boolean isCustomReactItem(int rid, int iid, int original) {
         if (rid == 2008006) { //orbis pq LOL
             return iid == (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 4001055);
             //4001056 = sunday. 4001062 = saturday

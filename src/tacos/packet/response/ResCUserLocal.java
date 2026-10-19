@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -49,7 +48,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserEmotionLocal(MapleCharacter chr, int expression) {
+    public static ServerPacket UserEmotionLocal(TacosCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotionLocal);
 
         sp.EncodeBuffer(RD_CUser.Emotion(expression));
@@ -129,7 +128,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket showOwnHpHealed(final int amount) {
+    public static ServerPacket showOwnHpHealed(int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(10); //Type
@@ -155,7 +154,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket ShowWZEffect(final String data) {
+    public static ServerPacket ShowWZEffect(String data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(19);
@@ -163,7 +162,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket showOwnPetLevelUp(final int index) {
+    public static ServerPacket showOwnPetLevelUp(int index) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(4);
@@ -172,7 +171,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket AranTutInstructionalBalloon(final String data) {
+    public static ServerPacket AranTutInstructionalBalloon(String data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectLocal);
 
         sp.Encode1(OpsUserEffect.UserEffect_AvatarOriented.get());
@@ -223,7 +222,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserQuestResult(MapleCharacter player, int quest, int npc, OpsQuest oq) {
+    public static ServerPacket UserQuestResult(TacosCharacter player, int quest, int npc, OpsQuest oq) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
 
         sp.Encode1(oq.get());
@@ -355,7 +354,7 @@ public class ResCUserLocal {
     }
 
     // チャット欄へのテキスト表示
-    public static ServerPacket UserChatMsg(final String msg) {
+    public static ServerPacket UserChatMsg(String msg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChatMsg);
 
         /*
@@ -402,7 +401,7 @@ public class ResCUserLocal {
     }
 
     public static ServerPacket UserFollowCharacterFailed(int error) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacterFailed);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacterFailed);
 
         /*
         0x00    原因不明の理由で自動追尾を申請できませんでした。

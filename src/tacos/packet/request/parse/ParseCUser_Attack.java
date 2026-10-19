@@ -19,18 +19,18 @@
 package tacos.packet.request.parse;
 
 import java.awt.Point;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import odin.client.Skill;
-import odin.client.MapleCharacter;
 import odin.client.SkillFactory;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleStatEffect;
-import odin.server.life.MapleMonster;
 import tacos.client.TacosBuff.Buff;
 import tacos.client.TacosCalcDamage;
 import tacos.config.Config;
@@ -104,20 +104,20 @@ public class ParseCUser_Attack {
         return (HitKey >> 4) & 0x0F; // nCount
     }
 
-    public MapleStatEffect getAttackEffect(MapleCharacter chr, int skillLevel, Skill skill_) {
+    public MapleStatEffect getAttackEffect(TacosCharacter chr, int skillLevel, Skill skill_) {
         if (GameConstants.isMulungSkill(skill) || GameConstants.isPyramidSkill(skill)) {
             skillLevel = 1;
         } else if (skillLevel <= 0) {
             return null;
         }
         if (GameConstants.isLinkedAranSkill(skill)) {
-            final Skill skillLink = SkillFactory.getSkill(skill);
+            Skill skillLink = SkillFactory.getSkill(skill);
             return skillLink.getEffect(skillLevel);
         }
         return skill_.getEffect(skillLevel);
     }
 
-    public boolean setCritical(MapleCharacter chr) {
+    public boolean setCritical(TacosCharacter chr) {
         int critical_rate = chr.getCriticalRate().get();
 
         for (Map.Entry<Integer, ArrayList<Integer>> entry : this.damages.entrySet()) {
@@ -125,7 +125,7 @@ public class ParseCUser_Attack {
             int[] randoms = chr.getCalcDamage().getRandoms(7);
 
             int mob_object_id = entry.getKey();
-            MapleMonster monster = chr.getMap().getMonsterByOid(mob_object_id);
+            TacosMonster monster = chr.getMap().getMonsterByOid(mob_object_id);
             boolean is_boss = false;
             if (monster != null) {
                 is_boss = monster.getStats().isBoss();
@@ -162,7 +162,7 @@ public class ParseCUser_Attack {
         return true;
     }
 
-    public boolean setBullet(MapleCharacter chr) {
+    public boolean setBullet(TacosCharacter chr) {
         if (this.nShootRange0a == 0) {
             // soul arrow?
             return false;
@@ -199,7 +199,7 @@ public class ParseCUser_Attack {
     }
 
     // BMS CUser::OnAttack
-    public static ParseCUser_Attack parse(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
+    public static ParseCUser_Attack parse(TacosCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         ParseCUser_Attack attack = new ParseCUser_Attack();
         attack.header = header;
         attack.CharacterId = chr.getId();

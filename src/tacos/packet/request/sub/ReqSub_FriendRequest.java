@@ -19,8 +19,8 @@
 package tacos.packet.request.sub;
 
 import odin.client.BuddyList;
+import tacos.client.TacosCharacter;
 import odin.client.BuddylistEntry;
-import odin.client.MapleCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -37,7 +37,7 @@ import tacos.server.TacosFriend;
 public class ReqSub_FriendRequest {
 
     // CP_FriendRequest
-    public static boolean OnFriendRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnFriendRequest(TacosCharacter chr, ClientPacket cp) {
         byte flag = cp.Decode1();
         OpsFriend ops_req = OpsFriend.find(flag);
         DebugLogger.DebugLog("OnFriendRequest : " + ops_req + " (" + flag + ")");
@@ -81,7 +81,7 @@ public class ReqSub_FriendRequest {
                         chr.SendPacket(ResCWvsContext.FriendResult(OpsFriend.FriendRes_SetFriend_FullOther, PB_Friend.builder().build()));
                         return true;
                     }
-                    MapleCharacter online_friend = friend.getCharacter();
+                    TacosCharacter online_friend = friend.getCharacter();
                     BuddylistEntry ble_hidden = new BuddylistEntry(chr.getName(), chr.getId(), friend_tag, chr.getChannelId(), true, chr.getLevel(), chr.getJob());
                     ble_hidden.setHidden(true);
                     online_friend.getBuddylist().put(ble_hidden);
@@ -108,7 +108,7 @@ public class ReqSub_FriendRequest {
                     return true;
                 }
 
-                MapleCharacter friend = chr.getWorld().findOnlinePlayerById(friend_id);
+                TacosCharacter friend = chr.getWorld().findOnlinePlayerById(friend_id);
                 if (friend != null) {
                     BuddylistEntry ble_offline = friend.getBuddylist().get(chr.getId());
                     if (ble_offline != null) {
@@ -126,7 +126,7 @@ public class ReqSub_FriendRequest {
                 int friend_id = cp.Decode4();
                 chr.getBuddylist().remove(friend_id);
 
-                MapleCharacter friend = chr.getWorld().findOnlinePlayerById(friend_id);
+                TacosCharacter friend = chr.getWorld().findOnlinePlayerById(friend_id);
                 if (friend != null) {
                     BuddylistEntry ble_offline = friend.getBuddylist().get(chr.getId());
                     if (ble_offline != null) {

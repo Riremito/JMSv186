@@ -46,7 +46,7 @@ public enum MapleClientState {
     }
 
     public static MapleClientState find(int val) {
-        for (final MapleClientState o : MapleClientState.values()) {
+        for (MapleClientState o : MapleClientState.values()) {
             if (o.get() == val) {
                 return o;
             }

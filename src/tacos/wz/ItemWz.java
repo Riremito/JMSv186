@@ -321,8 +321,7 @@ public class ItemWz extends WzXML {
             return found;
         }
 
-        MapleData hungerData = getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
-        Integer ret = WzDataTool.getInt(hungerData, 1);
+        Integer ret = getData("Pet/" + petId + ".img").getInt("info/hungry", 1);
         map_petHunger.put(petId, ret);
         return ret;
     }
@@ -342,6 +341,92 @@ public class ItemWz extends WzXML {
         return null;
     }
 
+    // Consume/0238.img, [card item id, info/mob]
+    public LinkedHashMap<Integer, Integer> getMonsterCardMobIds() {
+        MapleData md_cards = getItemImg(238);
+        if (md_cards == null) {
+            return null;
+        }
+        LinkedHashMap<Integer, Integer> ret = new LinkedHashMap<>();
+        for (MapleData md_card : md_cards.getChildren()) {
+            ret.put(Integer.parseInt(md_card.getName()), md_card.getInt("info/mob"));
+        }
+        return ret;
+    }
+
+    // info/spec
+    public class ItemSpecInfo extends StatEffectData {
+    }
+
+    public ItemSpecInfo getItemSpec(int itemId) {
+        MapleData item = getResolvedItemData(itemId);
+        if (item == null) {
+            return null;
+        }
+        return loadItemSpec(item.getChildByPath("spec"));
+    }
+
+    private ItemSpecInfo loadItemSpec(MapleData source) {
+        if (source == null) {
+            return null;
+        }
+        ItemSpecInfo ret = new ItemSpecInfo();
+        ret.time = source.getInt("time", -1);
+        ret.hp = source.getInt("hp");
+        ret.hpR = source.getInt("hpR");
+        ret.mp = source.getInt("mp");
+        ret.mpR = source.getInt("mpR");
+        ret.mhpR = source.getInt("mhpR");
+        ret.mmpR = source.getInt("mmpR");
+        ret.mpCon = source.getInt("mpCon");
+        ret.hpCon = source.getInt("hpCon");
+        ret.prop = source.getInt("prop", 100);
+        ret.cooltime = source.getInt("cooltime");
+        ret.expinc = source.getInt("expinc");
+        ret.morph = source.getInt("morph");
+        ret.cp = source.getInt("cp");
+        ret.nuffSkill = source.getInt("nuffSkill");
+        ret.mobCount = source.getInt("mobCount", 1);
+        ret.exp = source.getInt("exp");
+        ret.mastery = source.getInt("mastery");
+        ret.pad = source.getInt("pad");
+        ret.pdd = source.getInt("pdd");
+        ret.mad = source.getInt("mad");
+        ret.mdd = source.getInt("mdd");
+        ret.emhp = source.getInt("emhp");
+        ret.emmp = source.getInt("emmp");
+        ret.epad = source.getInt("epad");
+        ret.epdd = source.getInt("epdd");
+        ret.emdd = source.getInt("emdd");
+        ret.acc = source.getInt("acc");
+        ret.eva = source.getInt("eva");
+        ret.speed = source.getInt("speed");
+        ret.jump = source.getInt("jump");
+        ret.expBuff = source.getInt("expBuff");
+        ret.cashBuff = source.getInt("cashBuff");
+        ret.itemupbyitem = source.getInt("itemupbyitem");
+        ret.mesoupbyitem = source.getInt("mesoupbyitem");
+        ret.berserk = source.getInt("berserk");
+        ret.berserk2 = source.getInt("berserk2");
+        ret.illusion = source.getInt("illusion");
+        if (source.getChildByPath("lt") != null) {
+            ret.lt = source.getPoint("lt");
+            ret.rb = source.getPoint("rb");
+        }
+        ret.x = source.getInt("x");
+        ret.y = source.getInt("y");
+        ret.z = source.getInt("z");
+        ret.damage = source.getInt("damage");
+        ret.attackCount = source.getInt("attackCount", 1);
+        ret.bulletCount = source.getInt("bulletCount", 1);
+        ret.bulletConsume = source.getInt("bulletConsume");
+        ret.moneyCon = source.getInt("moneyCon");
+        ret.itemCon = source.getInt("itemCon");
+        ret.itemConNo = source.getInt("itemConNo");
+        ret.moveTo = source.getInt("moveTo", -1);
+        return ret;
+    }
+
     public short loadSlotMax(int itemId) {
         short ret = 0;
         MapleData item = getResolvedItemData(itemId);
@@ -354,7 +439,7 @@ public class ItemWz extends WzXML {
                     ret = 100;
                 }
             } else {
-                ret = (short) WzDataTool.getInt(smEntry);
+                ret = (short) item.getInt("info/slotMax");
             }
         }
         return ret;
@@ -369,7 +454,7 @@ public class ItemWz extends WzXML {
         if (pData == null) {
             return -1;
         }
-        return WzDataTool.getInt(pData);
+        return item.getInt("info/price");
     }
 
     public double loadPrice(int itemId) {
@@ -380,13 +465,13 @@ public class ItemWz extends WzXML {
         Double pEntry;
         MapleData pData = item.getChildByPath("info/unitPrice");
         if (pData != null) {
-            pEntry = WzDataTool.getDouble(pData, 1.0);
+            pEntry = item.getDouble("info/unitPrice", 1.0);
         } else {
             pData = item.getChildByPath("info/price");
             if (pData == null) {
                 return -1;
             }
-            pEntry = (double) WzDataTool.getInt(pData, 1);
+            pEntry = (double) item.getInt("info/price", 1);
         }
         if (itemId == 2070019 || itemId == 2330007) {
             pEntry = 1.0;
@@ -484,7 +569,7 @@ public class ItemWz extends WzXML {
         }
         for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
+                ret.put(data.getName().substring(3), info.getInt(data.getName()));
             }
         }
         ret.put("tuc", info.getInt("tuc"));
@@ -522,7 +607,7 @@ public class ItemWz extends WzXML {
             return ret;
         }
         for (MapleData req : data.getChildren()) {
-            ret.add(WzDataTool.getInt(req));
+            ret.add(data.getInt(req.getName()));
         }
         return ret;
     }
@@ -590,7 +675,7 @@ public class ItemWz extends WzXML {
         return getResolvedItemData(itemId).getInt("info/stateChangeItem");
     }
 
-    public int loadMeso(final int itemId) {
+    public int loadMeso(int itemId) {
         return getResolvedItemData(itemId).getInt("info/meso");
     }
 
@@ -651,7 +736,7 @@ public class ItemWz extends WzXML {
         Map<String, Integer> ret = new LinkedHashMap<>();
         for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
+                ret.put(data.getName().substring(3), info.getInt(data.getName()));
             }
         }
         ret.put("masterLevel", info.getInt("masterLevel"));
@@ -675,8 +760,9 @@ public class ItemWz extends WzXML {
             return null;
         }
         List<Integer> consumeItems = new ArrayList<>();
-        for (MapleData consume : itemD.getChildByPath("consumeItem")) {
-            consumeItems.add(WzDataTool.getInt(consume, 0));
+        MapleData md_consume_item = itemD.getChildByPath("consumeItem");
+        for (MapleData consume : md_consume_item) {
+            consumeItems.add(md_consume_item.getInt(consume.getName()));
         }
         return new SimpleImmutableEntry<>(itemD.getInt("questId"), consumeItems);
     }

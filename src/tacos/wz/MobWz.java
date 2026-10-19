@@ -19,12 +19,12 @@
 package tacos.wz;
 
 import tacos.config.Content;
+import tacos.server.map.object.TacosMonster;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import odin.server.life.MapleMonster;
 import odin.server.life.MapleMonsterStats;
 import odin.server.life.Element;
 import odin.server.life.ElementalEffectiveness;
@@ -45,7 +45,7 @@ public class MobWz extends WzXML {
 
     private final Map<Integer, MapleMonsterStats> monsterStats = new HashMap<>();
 
-    public MapleMonster createMob(int mob_id) {
+    public TacosMonster createMob(int mob_id) {
         if (!WzDataStorage.MOB.check(mob_id)) {
             DebugLogger.ErrorLog("createMob : invalid id, " + mob_id);
             return null;
@@ -59,7 +59,7 @@ public class MobWz extends WzXML {
             }
             this.monsterStats.put(mob_id, stats);
         }
-        return new MapleMonster(mob_id, stats);
+        return new TacosMonster(mob_id, stats);
     }
 
     public MapleData getImg(int mob_id) {
@@ -83,7 +83,7 @@ public class MobWz extends WzXML {
         return false;
     }
 
-    private boolean isDmgSponge(final int mid) {
+    private boolean isDmgSponge(int mid) {
         switch (mid) {
             case 8810018:
             case 8810118:
@@ -152,8 +152,8 @@ public class MobWz extends WzXML {
         stats.setPhysicalDefense((short) monsterInfoData.getInt("PDDamage"));
         stats.setMagicDefense((short) monsterInfoData.getInt("MDDamage"));
         stats.setEva((short) monsterInfoData.getInt("eva"));
-        final boolean hideHP = monsterInfoData.getInt("HPgaugeHide") > 0 || monsterInfoData.getInt("hideHP") > 0;
-        final MapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
+        boolean hideHP = monsterInfoData.getInt("HPgaugeHide") > 0 || monsterInfoData.getInt("hideHP") > 0;
+        MapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
         if (selfd != null) {
             stats.setSelfDHP(selfd.getInt("hp"));
             stats.setSelfD((byte) selfd.getInt("action", -1));
@@ -186,12 +186,12 @@ public class MobWz extends WzXML {
         if (reviveInfo != null) {
             List<Integer> revives = new LinkedList<>();
             for (MapleData bdata : reviveInfo) {
-                revives.add(WzDataTool.getInt(bdata));
+                revives.add(reviveInfo.getInt(bdata.getName()));
             }
             stats.setRevives(revives);
         }
 
-        final MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
+        MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
         if (monsterSkillData != null) {
             int i = 0;
             List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
@@ -247,7 +247,7 @@ public class MobWz extends WzXML {
 
     private Map<SimpleImmutableEntry<Integer, Integer>, MobAttackInfo> map_mobAttacks = null;
 
-    public MobAttackInfo getMobAttackInfo(MapleMonster mob, int attack) {
+    public MobAttackInfo getMobAttackInfo(TacosMonster mob, int attack) {
         if (map_mobAttacks == null) {
             map_mobAttacks = new HashMap<>();
         }
@@ -287,12 +287,13 @@ public class MobWz extends WzXML {
         for (MapleDataDirectoryEntry mapz : getRootDirectory().getSubDirectories()) {
             if (mapz.getName().equals("QuestCountGroup")) {
                 for (MapleDataEntity entry : mapz.getFiles()) {
-                    final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
+                    int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
                     MapleData dat = getData("QuestCountGroup/" + entry.getName());
-                    if (dat != null && dat.getChildByPath("info") != null) {
+                    MapleData md_info = (dat != null) ? dat.getChildByPath("info") : null;
+                    if (md_info != null) {
                         List<Integer> z = new ArrayList<>();
-                        for (MapleData da : dat.getChildByPath("info")) {
-                            z.add(WzDataTool.getInt(da, 0));
+                        for (MapleData da : md_info) {
+                            z.add(md_info.getInt(da.getName()));
                         }
                         map_QuestCountGroup.put(id, z);
                     } else {

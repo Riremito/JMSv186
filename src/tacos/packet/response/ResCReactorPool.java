@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleReactor;
+import tacos.server.map.object.TacosReactor;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -29,7 +29,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCReactorPool {
 
     // CReactorPool::OnReactorChangeState
-    public static ServerPacket ReactorChangeState(MapleReactor reactor, int tActionDelay) {
+    public static ServerPacket ReactorChangeState(TacosReactor reactor, int tActionDelay) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorChangeState);
 
         sp.Encode4(reactor.getObjectId()); // dwID
@@ -43,7 +43,7 @@ public class ResCReactorPool {
     }
 
     // CReactorPool::OnReactorMove
-    public static ServerPacket ReactorMove(MapleReactor reactor) {
+    public static ServerPacket ReactorMove(TacosReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorMove);
 
         sp.Encode4(reactor.getObjectId()); // dwID
@@ -53,7 +53,7 @@ public class ResCReactorPool {
     }
 
     // CReactorPool::OnReactorEnterField
-    public static ServerPacket ReactorEnterField(MapleReactor reactor) {
+    public static ServerPacket ReactorEnterField(TacosReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorEnterField);
 
         sp.Encode4(reactor.getObjectId()); // dwID
@@ -67,7 +67,7 @@ public class ResCReactorPool {
     }
 
     // CReactorPool::OnReactorLeaveField
-    public static ServerPacket ReactorLeaveField(MapleReactor reactor) {
+    public static ServerPacket ReactorLeaveField(TacosReactor reactor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ReactorLeaveField);
 
         sp.Encode4(reactor.getObjectId()); // dwID

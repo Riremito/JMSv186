@@ -70,7 +70,7 @@ public enum OpsChangeStat {
     }
 
     public static OpsChangeStat find(int val) {
-        for (final OpsChangeStat o : OpsChangeStat.values()) {
+        for (OpsChangeStat o : OpsChangeStat.values()) {
             if (o.get() == val) {
                 return o;
             }

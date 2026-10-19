@@ -7,15 +7,15 @@ public class MapleCarnivalFactory {
 
     private final static MapleCarnivalFactory instance = new MapleCarnivalFactory();
 
-    public static final MapleCarnivalFactory getInstance() {
+    public static MapleCarnivalFactory getInstance() {
         return instance;
     }
 
-    public MCSkill getSkill(final int id) {
+    public MCSkill getSkill(int id) {
         return WzXML.SKILL.getMCSkill().get(id);
     }
 
-    public MCSkill getGuardian(final int id) {
+    public MCSkill getGuardian(int id) {
         return WzXML.SKILL.getMCGuardian().get(id);
     }
 

@@ -19,20 +19,19 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.life.MonsterDropEntry;
-import odin.server.maps.MapleMap;
 import tacos.client.TacosSkill;
 import tacos.constants.TacosConstants;
 import tacos.database.query.DQ_DropData;
@@ -47,8 +46,8 @@ import tacos.wz.WzXML;
  */
 public class TacosReward {
 
-    public static boolean getReward(MapleCharacter chr, MapleMonster monster) {
-        MapleMap map = monster.getMap();
+    public static boolean getReward(TacosCharacter chr, TacosMonster monster) {
+        TacosMap map = monster.getMap();
         int mob_id = monster.getId();
         TacosSkill ts = (monster.getLastHitSkillId() != 0) ? WzXML.SKILL.getSkill(monster.getLastHitSkillId(), 1) : null; // temporary lv1.
         int hitAfter = (ts != null) ? ts.getHitAfter() : 0;
@@ -108,8 +107,8 @@ public class TacosReward {
         return ret;
     }
 
-    public static int dropFromDatabase(MapleCharacter chr, MapleMonster monster) {
-        MapleMap map = monster.getMap();
+    public static int dropFromDatabase(TacosCharacter chr, TacosMonster monster) {
+        TacosMap map = monster.getMap();
 
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         byte drop_type = (byte) (monster.getStats().isExplosiveReward() ? 3 : monster.getStats().isFfaLoot() ? 2 : chr.getParty() != null ? 1 : 0);
@@ -170,7 +169,7 @@ public class TacosReward {
         return dropped_count;
     }
 
-    public static Point getDropPosition(MapleMonster monster, int drop_type, int dropped_count) {
+    public static Point getDropPosition(TacosMonster monster, int drop_type, int dropped_count) {
         Point drop_pos = monster.getPosition();
 
         if (drop_type == 3) {

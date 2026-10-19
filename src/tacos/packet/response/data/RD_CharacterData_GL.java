@@ -18,8 +18,8 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import tacos.config.Config;
+import tacos.client.TacosCharacter;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
 
@@ -29,7 +29,7 @@ import tacos.packet.ServerPacket;
  */
 public class RD_CharacterData_GL {
 
-    public static boolean Encode_TeleportRock_Below(MapleCharacter chr, long datamask, ServerPacket data) {
+    public static boolean Encode_TeleportRock_Below(TacosCharacter chr, long datamask, ServerPacket data) {
         // GMS126-131
         if (Config.GreaterOrEqual(Region.GMS, 126)) {
             if ((datamask & 0x20000L) != 0) {

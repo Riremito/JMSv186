@@ -82,8 +82,8 @@ public class ReactorWz extends WzXML {
                 if (type == 100) { //reactor waits for item
                     reactItem = new SimpleImmutableEntry<>(reactorInfoData.getInt("0"), reactorInfoData.getInt("1", 1));
                     if (!areaSet) { //only set area of effect for item-triggered reactors once
-                        stats.setTL(WzDataTool.getPoint(reactorInfoData.getChildByPath("lt")));
-                        stats.setBR(WzDataTool.getPoint(reactorInfoData.getChildByPath("rb")));
+                        stats.setTL(reactorInfoData.getPoint("lt"));
+                        stats.setBR(reactorInfoData.getPoint("rb"));
                         areaSet = true;
                     }
                 }

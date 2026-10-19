@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -38,7 +38,7 @@ import tacos.packet.response.builder.PB_InvOp;
 public class ReqCUIGoldHammer {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -60,7 +60,7 @@ public class ReqCUIGoldHammer {
         return false;
     }
 
-    public static boolean OnGoldHammerRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnGoldHammerRequest(TacosCharacter chr, ClientPacket cp) {
         int update_time = cp.Decode4();
         int nPOS = cp.Decode4();
         int nItemID = cp.Decode4();
@@ -94,7 +94,7 @@ public class ReqCUIGoldHammer {
         return true;
     }
 
-    public static boolean OnGoldHammerComplete(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnGoldHammerComplete(TacosCharacter chr, ClientPacket cp) {
         int unk1 = cp.Decode4();
         int unk2 = cp.Decode4();
 

@@ -19,6 +19,7 @@
 package tacos.script;
 
 import javax.script.Invocable;
+import tacos.client.TacosCharacter;
 import javax.script.ScriptEngine;
 import tacos.client.TacosClient;
 import tacos.odin.OdinNPCConversationManager;
@@ -49,6 +50,7 @@ public class TacosScriptNPC extends TacosScript {
     }
 
     public boolean start(TacosClient client, int npc_script_id, int npc_icon_id) {
+        TacosCharacter chr = client.getPlayer();
         DebugMsg(client, TacosScriptType.NPC, npc_script_id);
 
         String npc_script_path = TacosScriptType.NPC.get() + npc_script_id;
@@ -67,7 +69,7 @@ public class TacosScriptNPC extends TacosScript {
         IScriptNPC_with_start script_ws = ((Invocable) engine).getInterface(IScriptNPC_with_start.class);
         if (script_ws != null) {
             DebugLogger.DebugLog("IScriptNPC_with_start is detected.");
-            client.getPlayer().setConversation(1);
+            chr.setConversation(1);
             script_ws.start();
             return true;
         }
@@ -78,7 +80,7 @@ public class TacosScriptNPC extends TacosScript {
             return false;
         }
 
-        client.getPlayer().setConversation(1);
+        chr.setConversation(1);
         script.action(1, 0, 0);
         return true;
     }
@@ -103,13 +105,14 @@ public class TacosScriptNPC extends TacosScript {
     }
 
     public boolean dispose(TacosClient client) {
+        TacosCharacter chr = client.getPlayer();
         OdinNPCConversationManager npccm = cms.get(client);
         if (npccm == null) {
-            client.getPlayer().setConversation(0);
+            chr.setConversation(0);
             return false;
         }
         cms.remove(client);
-        client.getPlayer().setConversation(0);
+        chr.setConversation(0);
         return true;
     }
 }

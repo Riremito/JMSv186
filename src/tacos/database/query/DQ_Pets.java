@@ -19,10 +19,10 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.server.map.object.TacosPet;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import odin.client.inventory.MaplePet;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 
@@ -34,7 +34,7 @@ public class DQ_Pets {
 
     public static final String DB_TABLE_NAME = "pets";
 
-    public static boolean load(MaplePet pet, int petId) {
+    public static boolean load(TacosPet pet, int petId) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM " + DB_TABLE_NAME + " WHERE petid = ?")) {
@@ -58,7 +58,7 @@ public class DQ_Pets {
         return false;
     }
 
-    public static boolean save(MaplePet pet) {
+    public static boolean save(TacosPet pet) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET name = ?, level = ?, closeness = ?, fullness = ?, seconds = ? WHERE petid = ?")) {

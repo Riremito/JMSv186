@@ -61,11 +61,11 @@ public class MTSStorage {
         cart_mutex = new ReentrantReadWriteLock();
     }
 
-    public static final MTSStorage getInstance() {
+    public static MTSStorage getInstance() {
         return instance;
     }
 
-    public static final void load() {
+    public static void load() {
 
         if (instance == null) {
             instance = new MTSStorage();
@@ -74,16 +74,16 @@ public class MTSStorage {
 
     }
 
-    public final boolean check(final int packageid) {
+    public boolean check(int packageid) {
         return getSingleItem(packageid) != null;
     }
 
-    public final boolean checkCart(final int packageid, final int charID) {
-        final MTSItemInfo item = getSingleItem(packageid);
+    public boolean checkCart(int packageid, int charID) {
+        MTSItemInfo item = getSingleItem(packageid);
         return item != null && item.getCharacterId() != charID;
     }
 
-    public final MTSItemInfo getSingleItem(final int packageid) {
+    public MTSItemInfo getSingleItem(int packageid) {
         mutex.readLock().lock();
         try {
             return buyNow.get(packageid);
@@ -92,8 +92,8 @@ public class MTSStorage {
         }
     }
 
-    public final void addToBuyNow(final MTSCart cart, final Item item, final int price, final int cid, final String seller, final long expiration) {
-        final int id;
+    public void addToBuyNow(MTSCart cart, Item item, int price, int cid, String seller, long expiration) {
+        int id;
         mutex.writeLock().lock();
         try {
             id = packageId.incrementAndGet();
@@ -104,12 +104,12 @@ public class MTSStorage {
         cart.addToNotYetSold(id);
     }
 
-    public final boolean removeFromBuyNow(final int id, final int cidBought, final boolean check) {
+    public boolean removeFromBuyNow(int id, int cidBought, boolean check) {
         Item item = null;
         mutex.writeLock().lock();
         try {
             if (buyNow.containsKey(id)) {
-                final MTSItemInfo r = buyNow.get(id);
+                MTSItemInfo r = buyNow.get(id);
                 if (!check || r.getCharacterId() == cidBought) {
                     item = r.getItem();
                     buyNow.remove(id);
@@ -135,7 +135,7 @@ public class MTSStorage {
         return item != null;
     }
 
-    public final void loadBuyNow() {
+    public void loadBuyNow() {
         int lastPackage = 0;
         int cId;
         Map<Integer, SimpleImmutableEntry<Item, MapleInventoryType>> items;
@@ -159,7 +159,7 @@ public class MTSStorage {
         packageId.set(lastPackage);
     }
 
-    public final void saveBuyNow(boolean isShutDown) {
+    public void saveBuyNow(boolean isShutDown) {
         if (this.end) {
             return;
         }
@@ -167,11 +167,11 @@ public class MTSStorage {
         if (isShutDown) {
             System.out.println("Saving MTS...");
         }
-        final Map<Integer, ArrayList<Item>> expire = new HashMap<>();
-        final List<Integer> toRemove = new ArrayList<>();
-        final long now = System.currentTimeMillis();
-        final Map<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> items = new HashMap<>();
-        final List<DQ_MtsItems.TabOneRow> rowsToSave = new ArrayList<>();
+        Map<Integer, ArrayList<Item>> expire = new HashMap<>();
+        List<Integer> toRemove = new ArrayList<>();
+        long now = System.currentTimeMillis();
+        Map<Integer, ArrayList<SimpleImmutableEntry<Item, MapleInventoryType>>> items = new HashMap<>();
+        List<DQ_MtsItems.TabOneRow> rowsToSave = new ArrayList<>();
         mutex.writeLock().lock(); //lock wL so rL will also be locked
         try {
             for (MTSItemInfo m : buyNow.values()) {
@@ -232,13 +232,13 @@ public class MTSStorage {
         lastUpdate = System.currentTimeMillis();
     }
 
-    public final void checkExpirations() {
+    public void checkExpirations() {
         if ((System.currentTimeMillis() - lastUpdate) > 3600000) { //every hour
             saveBuyNow(false);
         }
     }
 
-    public final MTSCart getCart(final int characterId) {
+    public MTSCart getCart(int characterId) {
         MTSCart ret;
         cart_mutex.readLock().lock();
         try {
@@ -265,7 +265,7 @@ public class MTSStorage {
         try {
             List<MTSItemInfo> nys = new ArrayList<>();
             MTSItemInfo r;
-            final List<Integer> nyss = new ArrayList<>(cart.getNotYetSold());
+            List<Integer> nyss = new ArrayList<>(cart.getNotYetSold());
             for (int i : nyss) {
                 r = buyNow.get(i);
                 if (r == null) {
@@ -280,7 +280,7 @@ public class MTSStorage {
         }
     }
 
-    public final List<MTSItemInfo> getBuyNow(int type, int page) {
+    public List<MTSItemInfo> getBuyNow(int type, int page) {
         //page * 16 = FIRST item thats displayed
         int size = buyNow.size() / 16 + (buyNow.size() % 16 > 0 ? 1 : 0);
         List<MTSItemInfo> ret = new ArrayList<>();

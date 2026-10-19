@@ -48,7 +48,7 @@ public enum OpsQuestRecordMessage {
     }
 
     public static OpsQuestRecordMessage get(int v) {
-        for (final OpsQuestRecordMessage f : OpsQuestRecordMessage.values()) {
+        for (OpsQuestRecordMessage f : OpsQuestRecordMessage.values()) {
             if (f.get() == v) {
                 return f;
             }

@@ -47,6 +47,23 @@ public class EtcWz extends WzXML {
         return getData("NpcLocation.img");
     }
 
+    // NpcLocation.img/npc_id
+    public List<Integer> getNpcLocationMapIds(int npc_id) {
+        MapleData md_npc_location = getNpcLocation();
+        if (md_npc_location == null) {
+            return null;
+        }
+        MapleData md_npc = md_npc_location.getChildByPath(Integer.toString(npc_id));
+        if (md_npc == null) {
+            return null;
+        }
+        List<Integer> ret = new ArrayList<>();
+        for (MapleData md_map : md_npc) {
+            ret.add(md_npc.getInt(md_map.getName()));
+        }
+        return ret;
+    }
+
     public MapleData getItemMake() {
         return getData("ItemMake.img");
     }
@@ -176,15 +193,16 @@ public class EtcWz extends WzXML {
         }
 
         list_fn = new ArrayList<>();
-        for (final MapleData data : getForbiddenName().getChildren()) {
-            list_fn.add(WzDataTool.getString(data));
+        MapleData md_forbidden_name = getForbiddenName();
+        for (MapleData data : md_forbidden_name.getChildren()) {
+            list_fn.add(md_forbidden_name.getString(data.getName()));
         }
 
         return list_fn;
     }
 
     public boolean isForbiddenName(String character_name) {
-        for (final String forbidden_name : getFN()) {
+        for (String forbidden_name : getFN()) {
             if (character_name.contains(forbidden_name)) {
                 return true;
             }

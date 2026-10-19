@@ -59,7 +59,7 @@ public enum OpsTransferChannel implements IPacketOps {
 
     // not used
     public static IPacketOps find(int val) {
-        for (final IPacketOps ops : values()) {
+        for (IPacketOps ops : values()) {
             if (ops.get() == val) {
                 return ops;
             }

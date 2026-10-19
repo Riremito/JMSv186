@@ -19,9 +19,9 @@
 package tacos.server.map;
 
 import java.util.ArrayList;
+import tacos.client.TacosCharacter;
 import java.util.HashMap;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleShop;
 import tacos.debug.DebugShop;
@@ -35,7 +35,7 @@ import tacos.wz.ServerImg.NpcShopData;
 public class TacosNpcShop {
 
     // create npc shop from server img.
-    public static boolean startNpcShop(MapleCharacter chr, int npc_script_id, int npc_id) {
+    public static boolean startNpcShop(TacosCharacter chr, int npc_script_id, int npc_id) {
         ArrayList<NpcShopData> items = ServerImg.getAutoNpcShopData(npc_script_id);
         // not a npc shop.
         if (items == null) {
@@ -70,7 +70,7 @@ public class TacosNpcShop {
         return ret;
     }
 
-    public static boolean startDatabaseNpcShop(MapleCharacter chr, int npc_id) {
+    public static boolean startDatabaseNpcShop(TacosCharacter chr, int npc_id) {
         MapleShop shop = getDatabaseNpcShop(npc_id);
         if (shop == null) {
             return false;

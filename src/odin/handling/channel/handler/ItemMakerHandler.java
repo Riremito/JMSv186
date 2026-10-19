@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleCharacter;
 import java.util.List;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.Map;
 import odin.client.inventory.Item;
@@ -74,7 +75,7 @@ public class ItemMakerHandler {
         }
 
         public static RecipeClass find(int value) {
-            for (final RecipeClass ops : RecipeClass.values()) {
+            for (RecipeClass ops : RecipeClass.values()) {
                 if (ops.get() == value) {
                     return ops;
                 }
@@ -113,7 +114,7 @@ public class ItemMakerHandler {
         }
 
         public static ItemMakerResult find(int value) {
-            for (final ItemMakerResult ops : ItemMakerResult.values()) {
+            for (ItemMakerResult ops : ItemMakerResult.values()) {
                 if (ops.get() == value) {
                     return ops;
                 }
@@ -122,16 +123,17 @@ public class ItemMakerHandler {
         }
     }
 
-    public static boolean OnItemMakeRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnItemMakeRequest(ClientPacket cp, TacosCharacter chr) {
         TacosClient client = chr.getClient();
         int type = cp.Decode4();
 
+        TacosMap map = chr.getMap();
         switch (RecipeClass.find(type)) {
             case RECIPE_CLASS_NORMAL: {
                 int toCreate = cp.Decode4();
 
                 if (GameConstants.isGem(toCreate)) {
-                    final GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
+                    GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
                     if (gem == null) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 1");
                         return false;
@@ -144,13 +146,13 @@ public class ItemMakerHandler {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 3");
                         return false;
                     }
-                    final int randGemGiven = getRandomGem(gem.getRandomReward());
+                    int randGemGiven = getRandomGem(gem.getRandomReward());
 
-                    if (client.getPlayer().getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
+                    if (chr.getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 4");
                         return false;
                     }
-                    final int taken = checkRequiredNRemove(client, gem.getReqRecipes());
+                    int taken = checkRequiredNRemove(client, gem.getReqRecipes());
                     if (taken == 0) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 5");
                         return false;
@@ -162,11 +164,11 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                     return true;
                 }
                 if (GameConstants.isOtherGem(toCreate)) {
-                    final GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
+                    GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
                     if (gem == null) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 6");
                         return false;
@@ -200,14 +202,14 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                     return true;
                 }
                 {
                     boolean stimulator = cp.Decode1() > 0;
                     int numEnchanter = cp.Decode4();
 
-                    final ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(toCreate);
+                    ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(toCreate);
                     if (create == null) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 11");
                         return false;
@@ -235,18 +237,18 @@ public class ItemMakerHandler {
 
                     chr.gainMeso(-create.getCost(), false);
 
-                    final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    final Equip toGive = (Equip) ii.getEquipById(toCreate);
+                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                    Equip toGive = (Equip) ii.getEquipById(toCreate);
 
                     if (stimulator || numEnchanter > 0) {
-                        if (client.getPlayer().haveItem(create.getStimulator(), 1, false, true)) {
+                        if (chr.haveItem(create.getStimulator(), 1, false, true)) {
                             ii.randomizeStats(toGive);
                             MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
                         }
                         for (int i = 0; i < numEnchanter; i++) {
                             int enchant = cp.Decode4();
-                            if (client.getPlayer().haveItem(enchant, 1, false, true)) {
-                                final Map<String, Byte> stats = ii.getItemMakeStats(enchant);
+                            if (chr.haveItem(enchant, 1, false, true)) {
+                                Map<String, Byte> stats = ii.getItemMakeStats(enchant);
                                 if (stats != null) {
                                     addEnchantStats(stats, toGive);
                                     MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, enchant, 1, false, false);
@@ -260,7 +262,7 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                 }
                 return true;
             }
@@ -277,7 +279,7 @@ public class ItemMakerHandler {
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
 
                 return true;
             }
@@ -286,16 +288,16 @@ public class ItemMakerHandler {
                 int unk1 = cp.Decode4();
                 int slot = cp.Decode4();
 
-                final Item toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
+                Item toUse = chr.getInventory(MapleInventoryType.EQUIP).getItem((short) slot);
                 if (toUse == null || toUse.getItemId() != itemId || toUse.getQuantity() < 1) {
                     DebugLogger.ErrorLog("RECIPE_CLASS_EQUIP_DISASSEMBLE");
                     return false;
                 }
 
-                final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+                MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
                 if (!ii.isDropRestricted(itemId) && !ii.isAccountShared(itemId)) {
-                    final int[] toGive = getCrystal(itemId, ii.getReqLevel(itemId));
+                    int[] toGive = getCrystal(itemId, ii.getReqLevel(itemId));
                     MapleInventoryManipulator.addById(client, toGive[0], (byte) toGive[1]);
                     MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.EQUIP, (short) slot, (byte) 1, false);
                 }
@@ -303,7 +305,7 @@ public class ItemMakerHandler {
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                 return true;
             }
             default: {
@@ -315,9 +317,9 @@ public class ItemMakerHandler {
         return false;
     }
 
-    private static final int getCreateCrystal(final int etc) {
+    private static int getCreateCrystal(int etc) {
         int itemid;
-        final short level = MapleItemInformationProvider.getInstance().getItemMakeLevel(etc);
+        short level = MapleItemInformationProvider.getInstance().getItemMakeLevel(etc);
 
         if (level >= 31 && level <= 50) {
             itemid = 4260000;
@@ -343,7 +345,7 @@ public class ItemMakerHandler {
         return itemid;
     }
 
-    private static final int[] getCrystal(final int itemid, final int level) {
+    private static int[] getCrystal(int itemid, int level) {
         int[] all = new int[2];
         all[0] = -1;
         if (level >= 31 && level <= 50) {
@@ -375,7 +377,7 @@ public class ItemMakerHandler {
         return all;
     }
 
-    private static final void addEnchantStats(final Map<String, Byte> stats, final Equip item) {
+    private static void addEnchantStats(Map<String, Byte> stats, Equip item) {
         short s = stats.get("incPAD");
         if (s != 0) {
             item.setWatk((short) (item.getWatk() + s));
@@ -426,8 +428,8 @@ public class ItemMakerHandler {
         }
         s = stats.get("randOption");
         if (s > 0) {
-            final boolean success = Randomizer.nextBoolean();
-            final int ma = item.getMatk(), wa = item.getWatk();
+            boolean success = Randomizer.nextBoolean();
+            int ma = item.getMatk(), wa = item.getWatk();
             if (wa > 0) {
                 item.setWatk((short) (success ? (wa + s) : (wa - s)));
             }
@@ -437,8 +439,8 @@ public class ItemMakerHandler {
         }
         s = stats.get("randStat");
         if (s > 0) {
-            final boolean success = Randomizer.nextBoolean();
-            final int str = item.getStr(), dex = item.getDex(), luk = item.getLuk(), int_ = item.getInt();
+            boolean success = Randomizer.nextBoolean();
+            int str = item.getStr(), dex = item.getDex(), luk = item.getLuk(), int_ = item.getInt();
             if (str > 0) {
                 item.setStr((short) (success ? (str + s) : (str - s)));
             }
@@ -454,11 +456,11 @@ public class ItemMakerHandler {
         }
     }
 
-    private static final int getRandomGem(final List<SimpleImmutableEntry<Integer, Integer>> rewards) {
+    private static int getRandomGem(List<SimpleImmutableEntry<Integer, Integer>> rewards) {
         int itemid;
-        final List<Integer> items = new ArrayList<>();
+        List<Integer> items = new ArrayList<>();
 
-        for (final SimpleImmutableEntry p : rewards) {
+        for (SimpleImmutableEntry p : rewards) {
             itemid = (Integer) p.getKey();
             for (int i = 0; i < (Integer) p.getValue(); i++) {
                 items.add(itemid);
@@ -467,31 +469,32 @@ public class ItemMakerHandler {
         return items.get(Randomizer.nextInt(items.size()));
     }
 
-    private static final int checkRequiredNRemove(final TacosClient client, final List<SimpleImmutableEntry<Integer, Integer>> recipe) {
+    private static int checkRequiredNRemove(TacosClient client, List<SimpleImmutableEntry<Integer, Integer>> recipe) {
         int itemid = 0;
-        for (final SimpleImmutableEntry<Integer, Integer> p : recipe) {
+        for (SimpleImmutableEntry<Integer, Integer> p : recipe) {
             if (!client.getPlayer().haveItem(p.getKey(), p.getValue(), false, true)) {
                 return 0;
             }
         }
-        for (final SimpleImmutableEntry<Integer, Integer> p : recipe) {
+        for (SimpleImmutableEntry<Integer, Integer> p : recipe) {
             itemid = p.getKey();
             MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(itemid), itemid, p.getValue(), false, false);
         }
         return itemid;
     }
 
-    private static final boolean hasSkill(final TacosClient client, final int reqlvl) {
-        if (GameConstants.isKOC(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
-        } else if (GameConstants.isAran(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(20001007)) >= reqlvl;
-        } else if (GameConstants.isEvan(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(20011007)) >= reqlvl;
-        } else if (GameConstants.isResist(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(30001007)) >= reqlvl;
+    private static boolean hasSkill(TacosClient client, int reqlvl) {
+        TacosCharacter chr = client.getPlayer();
+        if (GameConstants.isKOC(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
+        } else if (GameConstants.isAran(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(20001007)) >= reqlvl;
+        } else if (GameConstants.isEvan(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(20011007)) >= reqlvl;
+        } else if (GameConstants.isResist(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(30001007)) >= reqlvl;
         } else {
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(1007)) >= reqlvl;
+            return chr.getSkillLevel(SkillFactory.getSkill(1007)) >= reqlvl;
         }
     }
 }

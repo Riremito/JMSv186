@@ -45,47 +45,47 @@ public class Skill {
         this.id = id;
     }
 
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setElement(final Element element) {
+    public void setElement(Element element) {
         this.element = element;
     }
 
-    public void setLevel(final byte level) {
+    public void setLevel(byte level) {
         this.level = level;
     }
 
-    public void setAnimationTime(final int animationTime) {
+    public void setAnimationTime(int animationTime) {
         this.animationTime = animationTime;
     }
 
-    public void setRequiredSkill(final int requiredSkill) {
+    public void setRequiredSkill(int requiredSkill) {
         this.requiredSkill = requiredSkill;
     }
 
-    public void setMasterLevel(final int masterLevel) {
+    public void setMasterLevel(int masterLevel) {
         this.masterLevel = masterLevel;
     }
 
-    public void setAction(final boolean action) {
+    public void setAction(boolean action) {
         this.action = action;
     }
 
-    public void setInvisible(final boolean invisible) {
+    public void setInvisible(boolean invisible) {
         this.invisible = invisible;
     }
 
-    public void setChargeSkill(final boolean chargeskill) {
+    public void setChargeSkill(boolean chargeskill) {
         this.chargeskill = chargeskill;
     }
 
-    public void setTimeLimited(final boolean timeLimited) {
+    public void setTimeLimited(boolean timeLimited) {
         this.timeLimited = timeLimited;
     }
 
-    public void addEffect(final MapleStatEffect effect) {
+    public void addEffect(MapleStatEffect effect) {
         this.effects.add(effect);
     }
 
@@ -97,7 +97,7 @@ public class Skill {
         return name;
     }
 
-    public MapleStatEffect getEffect(final int level) {
+    public MapleStatEffect getEffect(int level) {
         if (effects.size() < level) {
             if (!effects.isEmpty()) { //incAllskill
                 return effects.get(effects.size() - 1);

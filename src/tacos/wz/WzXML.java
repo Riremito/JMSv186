@@ -19,6 +19,9 @@
 package tacos.wz;
 
 import tacos.property.Property_Java;
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+import net.objecthunter.exp4j.function.Function;
 import java.awt.Point;
 import java.util.Collections;
 import java.util.HashMap;
@@ -308,11 +311,11 @@ public class WzXML {
         private Node node;
         private File imageDataDir;
 
-        private XmlDomData(final Node node) {
+        private XmlDomData(Node node) {
             this.node = node;
         }
 
-        public XmlDomData(final FileInputStream fis, final File imageDataDir) {
+        public XmlDomData(FileInputStream fis, File imageDataDir) {
             try {
                 DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -328,8 +331,8 @@ public class WzXML {
         }
 
         @Override
-        public MapleData getChildByPath(final String path) {
-            final String segments[] = path.split("/");
+        public MapleData getChildByPath(String path) {
+            String segments[] = path.split("/");
             if (segments[0].equals("..")) {
                 return ((MapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
             }
@@ -340,7 +343,7 @@ public class WzXML {
                 boolean foundChild = false;
                 for (int i = 0; i < childNodes.getLength(); i++) {
                     try {
-                        final Node childNode = childNodes.item(i);
+                        Node childNode = childNodes.item(i);
                         if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segment)) {
                             myNode = childNode;
                             foundChild = true;
@@ -353,19 +356,19 @@ public class WzXML {
                     return null;
                 }
             }
-            final XmlDomData ret = new XmlDomData(myNode);
+            XmlDomData ret = new XmlDomData(myNode);
             ret.imageDataDir = new File(imageDataDir, getName() + "/" + path).getParentFile();
             return ret;
         }
 
         @Override
         public List<MapleData> getChildren() {
-            final List<MapleData> ret = new ArrayList<>();
-            final NodeList childNodes = node.getChildNodes();
+            List<MapleData> ret = new ArrayList<>();
+            NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
-                final Node childNode = childNodes.item(i);
+                Node childNode = childNodes.item(i);
                 if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE) {
-                    final XmlDomData child = new XmlDomData(childNode);
+                    XmlDomData child = new XmlDomData(childNode);
                     child.imageDataDir = new File(imageDataDir, getName());
                     ret.add(child);
                 }
@@ -375,8 +378,8 @@ public class WzXML {
 
         @Override
         public Object getData() {
-            final NamedNodeMap attributes = node.getAttributes();
-            final DataType type = getType();
+            NamedNodeMap attributes = node.getAttributes();
+            DataType type = getType();
             switch (type) {
                 case DOUBLE: {
                     return Double.valueOf(attributes.getNamedItem("value").getNodeValue());
@@ -405,8 +408,8 @@ public class WzXML {
         }
 
         @Override
-        public final DataType getType() {
-            final String nodeName = node.getNodeName();
+        public DataType getType() {
+            String nodeName = node.getNodeName();
             switch (nodeName) {
                 case "imgdir":
                     return DataType.PROPERTY;
@@ -440,11 +443,11 @@ public class WzXML {
 
         @Override
         public MapleDataEntity getParent() {
-            final Node parentNode = node.getParentNode();
+            Node parentNode = node.getParentNode();
             if (parentNode.getNodeType() == Node.DOCUMENT_NODE) {
                 return null; // can't traverse outside the img file - TODO is this a problem?
             }
-            final XmlDomData parentData = new XmlDomData(parentNode);
+            XmlDomData parentData = new XmlDomData(parentNode);
             parentData.imageDataDir = imageDataDir.getParentFile();
             return parentData;
         }
@@ -467,27 +470,27 @@ public class WzXML {
 
         @Override
         public int getIntExpression(String path, int common_level, int def) {
-            return WzDataTool.getIntExpression(getChildByPath(path), common_level, def);
+            return dataToIntExpression(getChildByPath(path), common_level, def);
         }
 
         @Override
         public int getInt(String path) {
-            return WzDataTool.getInt(getChildByPath(path), 0);
+            return dataToInt(getChildByPath(path), 0);
         }
 
         @Override
         public int getInt(String path, int def) {
-            return WzDataTool.getInt(getChildByPath(path), def);
+            return dataToInt(getChildByPath(path), def);
         }
 
         @Override
         public String getString(String path) {
-            return WzDataTool.getString(getChildByPath(path), "");
+            return dataToString(getChildByPath(path), "");
         }
 
         @Override
         public String getString(String path, String def) {
-            return WzDataTool.getString(getChildByPath(path), def);
+            return dataToString(getChildByPath(path), def);
         }
 
         @Override
@@ -497,7 +500,7 @@ public class WzXML {
 
         @Override
         public Float getFloat(String path, float def) {
-            return WzDataTool.getFloat(getChildByPath(path), def);
+            return dataToFloat(getChildByPath(path), def);
         }
 
         @Override
@@ -507,12 +510,12 @@ public class WzXML {
 
         @Override
         public Double getDouble(String path, double def) {
-            return WzDataTool.getDouble(getChildByPath(path), def);
+            return dataToDouble(getChildByPath(path), def);
         }
 
         @Override
         public Point getPoint(String path) {
-            return WzDataTool.getPoint(getChildByPath(path));
+            return dataToPoint(getChildByPath(path));
         }
 
         @Override
@@ -522,7 +525,184 @@ public class WzXML {
 
         @Override
         public long getLong(String path, long def) {
-            return WzDataTool.getLong(getChildByPath(path), def);
+            return dataToLong(getChildByPath(path), def);
+        }
+
+        // convert data.
+        // PostBB Skill.wz
+        private static int dataToIntExpression(MapleData data, int common_level, int def) {
+            if (common_level == 0) {
+                return dataToInt(data, def);
+            }
+            if (data == null) {
+                //DebugLogger.XmlDataLog(null, "getIntExpression");
+                return def;
+            }
+            if (data.getType() != DataType.STRING) {
+                return dataToInt(data, def);
+            }
+            // post bb
+            return evalIntExpression((String) data.getData(), common_level);
+        }
+
+        // get data.
+        private static int dataToInt(MapleData data, int def) {
+            if (data == null) {
+                //DebugLogger.XmlDataLog(null, "getInt");
+                return def;
+            }
+            Object ret = data.getData();
+            if (ret == null) {
+                DebugLogger.XmlDataLog(data, "getInt def");
+                return def;
+            }
+
+            switch (data.getType()) {
+                case SHORT:
+                    DebugLogger.XmlDataLog(data, "getInt = short");
+                    return (Short) ret;
+                case INT: {
+                    return (Integer) ret;
+                }
+                case FLOAT: {
+                    return ((Float) ret).intValue();
+                }
+                case DOUBLE: {
+                    return ((Double) ret).intValue();
+                }
+                case STRING: {
+                    DebugLogger.XmlDataLog(data, "getInt = string");
+                    return Integer.parseInt((String) ret);
+                }
+                default: {
+                    DebugLogger.XmlDataLog(data, "getInt = others");
+                    break;
+                }
+            }
+
+            return (Integer) ret;
+        }
+
+        // for Map.wz, 749050100.img, info/decHP, pinkbean cake map
+        private static long dataToLong(MapleData data, long def) {
+            if (data == null) {
+                DebugLogger.XmlDataLog(null, "getLong");
+                return def;
+            }
+            if (data.getType() != DataType.STRING) {
+                return (long) dataToInt(data, (int) def);
+            }
+            String ret = (String) data.getData();
+            if (ret == null) {
+                DebugLogger.XmlDataLog(data, "getLong def");
+                return def;
+            }
+            return Long.parseLong(ret);
+        }
+
+        // for Map.wz, info/recovery
+        private static Float dataToFloat(MapleData data, float def) {
+            if (data == null) {
+                DebugLogger.XmlDataLog(null, "getFloat");
+                return def;
+            }
+            Float ret = (Float) data.getData();
+            if (ret == null) {
+                DebugLogger.XmlDataLog(data, "getFloat def");
+                return def;
+            }
+            return (Float) data.getData();
+        }
+
+        // for Item.wz, unitPrice star/bullet
+        private static Double dataToDouble(MapleData data, double def) {
+            if (data == null) {
+                DebugLogger.XmlDataLog(null, "getDouble");
+                return def;
+            }
+            Double ret = (Double) data.getData();
+            if (ret == null) {
+                DebugLogger.XmlDataLog(data, "getDouble def");
+                return def;
+            }
+            return ret;
+        }
+
+        private static String dataToString(MapleData data, String def) {
+            if (data == null) {
+                //DebugLogger.XmlDataLog(null, "getString");
+                return def;
+            }
+            String ret = (String) data.getData();
+            if (ret == null) {
+                DebugLogger.XmlDataLog(data, "getString def");
+                return def;
+            }
+            return ret;
+        }
+
+        // for Reactor.wz, lt, rb
+        private static Point dataToPoint(MapleData data) {
+            if (data == null) {
+                DebugLogger.XmlDataLog(null, "getPoint");
+                return null;
+            }
+            Point ret = (Point) data.getData();
+            if (ret == null) {
+                DebugLogger.XmlDataLog(data, "getPoint def");
+                return null;
+            }
+            return ret;
+        }
+
+        // expression for post BB Skill.wz.
+        private static int evalIntExpression(String val, int level) {
+            // not an expression.
+            if (val.matches("-?\\d+")) {
+                return Integer.parseInt(val);
+            }
+            // expression for post BB Skill.wz. (JMS187+)
+
+            // EMS89 fix.
+            if (val.contains("=")) {
+                DebugLogger.ErrorLog("TacosWzExpression : = is found. " + val);
+                val = val.replace("=", "");
+            }
+
+            ExpressionBuilder builder = new ExpressionBuilder(val);
+            builder.variable("x"); // x : skill level.
+            builder.variable("y"); // y : skill level? (KMS169)
+
+            // thank you teto and chronos.
+            Function ceil = new Function("u", 1) {
+                @Override
+                public double apply(double... doubles) {
+                    return Math.ceil(doubles[0]);
+                }
+            };
+
+            Function floor = new Function("d", 1) {
+                @Override
+                public double apply(double... doubles) {
+                    return Math.floor(doubles[0]);
+                }
+            };
+
+            // allowed, space, ()*+, -./0123456789, duxy
+            if (!val.matches("[\\s\\(-\\+\\--9duxy]+")) {
+                DebugLogger.ErrorLog("TacosWzExpression : " + val);
+                System.exit(0);
+            }
+
+            builder.function(ceil); // u : 切り上げ
+            builder.function(floor); // d : 切り捨て
+            Expression expression = builder.build();
+
+            expression.setVariable("x", level);
+            expression.setVariable("y", level);
+
+            int ret = (int) expression.evaluate();
+            return ret;
         }
     }
 }

@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import java.awt.Point;
 import java.util.concurrent.ScheduledFuture;
@@ -50,8 +51,8 @@ public class Event_PyramidSubway {
     private ScheduledFuture<?> yetiSchedule;
     //type: -1 = subway, 0-3 = difficulty of nett's pyramid.
 
-    public Event_PyramidSubway(final MapleCharacter chr) {
-        final int mapid = chr.getMapId();
+    public Event_PyramidSubway(TacosCharacter chr) {
+        int mapid = chr.getMapId();
         if (mapid / 10000 == 91032) {
             type = -1;
         } else {
@@ -75,7 +76,7 @@ public class Event_PyramidSubway {
         }
     }
 
-    public final void fullUpdate(final MapleCharacter chr, final int stage) {
+    public void fullUpdate(TacosCharacter chr, int stage) {
         broadcastEnergy(chr, "massacre_party", chr.getParty() == null ? 0 : chr.getParty().getMembers().size()); //huh
         broadcastEnergy(chr, "massacre_miss", miss);
         broadcastEnergy(chr, "massacre_cool", cool);
@@ -85,7 +86,7 @@ public class Event_PyramidSubway {
         broadcastUpdate(chr);
     }
 
-    public final void commenceTimerNextMap(final MapleCharacter chr, final int stage) {
+    public void commenceTimerNextMap(TacosCharacter chr, int stage) {
         if (timerSchedule != null) {
             timerSchedule.cancel(false);
             timerSchedule = null;
@@ -94,11 +95,11 @@ public class Event_PyramidSubway {
             yetiSchedule.cancel(false);
             yetiSchedule = null;
         }
-        final MapleMap ourMap = chr.getMap();
-        final int time = (type == -1 ? 180 : (stage == 1 ? 240 : 300)) - 1;
+        TacosMap ourMap = chr.getMap();
+        int time = (type == -1 ? 180 : (stage == 1 ? 240 : 300)) - 1;
         if (chr.getParty() != null && chr.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : chr.getParty().getMembers()) {
-                final MapleCharacter target = ourMap.getPlayerById(mpc.getId());
+                TacosCharacter target = ourMap.getPlayerById(mpc.getId());
                 if (target != null) {
                     target.SendPacket(ResCField.Clock(time));
                     target.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/first/number/" + stage).build()));
@@ -115,8 +116,8 @@ public class Event_PyramidSubway {
             fullUpdate(chr, stage);
         }
         if (type != -1 && (stage == 4 || stage == 5)) { //yetis. temporary
-            final Point pos = chr.getPosition();
-            final MapleMap map = chr.getMap();
+            Point pos = chr.getPosition();
+            TacosMap map = chr.getMap();
             yetiSchedule = MapTimer.getInstance().register(new Runnable() {
 
                 public void run() {
@@ -142,7 +143,7 @@ public class Event_PyramidSubway {
         }, time * 1000L);
     }
 
-    public final void onKill(final MapleCharacter player) {
+    public void onKill(TacosCharacter player) {
         kill++;
         if (Randomizer.nextInt(100) < 5) { //monster properties coolDamage and coolDamageProb determine this, will code later
             cool++;
@@ -170,7 +171,7 @@ public class Event_PyramidSubway {
         broadcastEnergy(player, "massacre_hit", kill);
     }
 
-    public final void onChangeMap(final MapleCharacter player, final int newmapid) {
+    public void onChangeMap(TacosCharacter player, int newmapid) {
         if ((newmapid == 910330001 && type == -1) || (newmapid == 926020001 + type && type != -1)) {
             succeed(player);
         } else {
@@ -187,15 +188,15 @@ public class Event_PyramidSubway {
         }
     }
 
-    public final void succeed(final MapleCharacter player) {
-        final MapleQuestStatus record = player.getQuestNAdd(MapleQuest.getInstance(type == -1 ? 7662 : 7760));
+    public void succeed(TacosCharacter player) {
+        MapleQuestStatus record = player.getQuestNAdd(MapleQuest.getInstance(type == -1 ? 7662 : 7760));
         String data = record.getCustomData();
         if (data == null) {
             record.setCustomData("0");
             data = record.getCustomData();
         }
-        final int mons = Integer.parseInt(data);
-        final int tk = kill + cool;
+        int mons = Integer.parseInt(data);
+        int tk = kill + cool;
         record.setCustomData(String.valueOf(mons + tk));
         byte rank = 4;
         if (type == -1) {
@@ -313,8 +314,8 @@ public class Event_PyramidSubway {
         dispose(player);
     }
 
-    public final void fail(final MapleCharacter player) {
-        final MapleMap map;
+    public void fail(TacosCharacter player) {
+        TacosMap map;
         if (type == -1) {
             map = player.findMap(910320001);
         } else {
@@ -324,8 +325,8 @@ public class Event_PyramidSubway {
         dispose(player);
     }
 
-    public final void dispose(final MapleCharacter player) {
-        final boolean lead = energyBarDecrease != null && timerSchedule != null;
+    public void dispose(TacosCharacter player) {
+        boolean lead = energyBarDecrease != null && timerSchedule != null;
         if (energyBarDecrease != null) {
             energyBarDecrease.cancel(false);
             energyBarDecrease = null;
@@ -345,11 +346,11 @@ public class Event_PyramidSubway {
         player.setPyramidSubway(null);
     }
 
-    public final void broadcastUpdate(final MapleCharacter player) {
-        final MapleMap map = player.getMap();
+    public void broadcastUpdate(TacosCharacter player) {
+        TacosMap map = player.getMap();
         if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
-                final MapleCharacter chr = map.getPlayerById(mpc.getId());
+                TacosCharacter chr = map.getPlayerById(mpc.getId());
                 if (chr != null) {
                     chr.SendPacket(ResCField_Massacre.MassacreIncGauge(energybar));
                 }
@@ -359,18 +360,18 @@ public class Event_PyramidSubway {
         }
     }
 
-    public final void broadcastEffect(final MapleCharacter player, final String effect) {
+    public void broadcastEffect(TacosCharacter player, String effect) {
         player.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path(effect).build()));
     }
 
-    public final void broadcastEnergy(final MapleCharacter player, final String type, final int amount) {
+    public void broadcastEnergy(TacosCharacter player, String type, int amount) {
         player.SendPacket(ResCWvsContext.sendString(1, type, String.valueOf(amount)));
     }
 
-    public static boolean warpStartSubway(MapleCharacter player) {
-        final int mapid = 910320100;
+    public static boolean warpStartSubway(TacosCharacter player) {
+        int mapid = 910320100;
         for (int i = 0; i < 5; i++) {
-            final MapleMap map = player.findMap(mapid + i);
+            TacosMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 changeMap(player, map, 25, 30);
@@ -380,11 +381,11 @@ public class Event_PyramidSubway {
         return false;
     }
 
-    public static boolean warpBonusSubway(MapleCharacter player) {
-        final int mapid = 910320010;
+    public static boolean warpBonusSubway(TacosCharacter player) {
+        int mapid = 910320010;
 
         for (int i = 0; i < 20; i++) {
-            final MapleMap map = player.findMap(mapid + i);
+            TacosMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMapPortal(map, map.getPortal(0));//solo
@@ -394,18 +395,18 @@ public class Event_PyramidSubway {
         return false;
     }
 
-    public static boolean warpNextMap_Subway(MapleCharacter player) {
-        final int currentmap = player.getMapId();
-        final int thisStage = (currentmap - 910320100) / 100;
+    public static boolean warpNextMap_Subway(TacosCharacter player) {
+        int currentmap = player.getMapId();
+        int thisStage = (currentmap - 910320100) / 100;
 
-        MapleMap map = player.getMap();
+        TacosMap map = player.getMap();
         clearMap(map, true);
         if (thisStage >= 2) {
             map = player.findMap(910330001);
             changeMap(player, map, 1, 200, 1);
             return true;
         }
-        final int nextmapid = 910320100 + ((thisStage + 1) * 100);
+        int nextmapid = 910320100 + ((thisStage + 1) * 100);
         for (int i = 0; i < 5; i++) {
             map = player.findMap(nextmapid + i);
             if (map.getCharactersSize() == 0) {
@@ -417,8 +418,8 @@ public class Event_PyramidSubway {
         return false;
     }
 
-    public static boolean warpStartPyramid(MapleCharacter player, final int difficulty) {
-        final int mapid = 926010100 + (difficulty * 1000);
+    public static boolean warpStartPyramid(TacosCharacter player, int difficulty) {
+        int mapid = 926010100 + (difficulty * 1000);
         int minLevel = 40, maxLevel = 60;
         switch (difficulty) {
             case 1:
@@ -433,7 +434,7 @@ public class Event_PyramidSubway {
                 break;
         }
         for (int i = 0; i < 5; i++) {
-            final MapleMap map = player.findMap(mapid + i);
+            TacosMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 changeMap(player, map, minLevel, maxLevel);
@@ -443,10 +444,10 @@ public class Event_PyramidSubway {
         return false;
     }
 
-    public static boolean warpBonusPyramid(MapleCharacter player, int difficulty) {
-        final int mapid = 926010010 + (difficulty * 20);
+    public static boolean warpBonusPyramid(TacosCharacter player, int difficulty) {
+        int mapid = 926010010 + (difficulty * 20);
         for (int i = 0; i < 20; i++) {
-            final MapleMap map = player.findMap(mapid + i);
+            TacosMap map = player.findMap(mapid + i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMapPortal(map, map.getPortal(0));//solo
@@ -456,18 +457,18 @@ public class Event_PyramidSubway {
         return false;
     }
 
-    public static boolean warpNextMap_Pyramid(MapleCharacter player, int difficulty) {
-        final int currentmap = player.getMapId();
-        final int thisStage = (currentmap - (926010100 + (difficulty * 1000))) / 100;
+    public static boolean warpNextMap_Pyramid(TacosCharacter player, int difficulty) {
+        int currentmap = player.getMapId();
+        int thisStage = (currentmap - (926010100 + (difficulty * 1000))) / 100;
 
-        MapleMap map = player.getMap();
+        TacosMap map = player.getMap();
         clearMap(map, true);
         if (thisStage >= 4) {
             map = player.findMap(926020001 + difficulty);
             changeMap(player, map, 1, 200, 1);
             return true;
         }
-        final int nextmapid = 926010100 + ((thisStage + 1) * 100) + (difficulty * 1000);
+        int nextmapid = 926010100 + ((thisStage + 1) * 100) + (difficulty * 1000);
         for (int i = 0; i < 5; i++) {
             map = player.findMap(nextmapid + i);
             if (map.getCharactersSize() == 0) {
@@ -479,15 +480,15 @@ public class Event_PyramidSubway {
         return false;
     }
 
-    private static final void changeMap(final MapleCharacter player, final MapleMap map, final int minLevel, final int maxLevel) {
+    private static void changeMap(TacosCharacter player, TacosMap map, int minLevel, int maxLevel) {
         changeMap(player, map, minLevel, maxLevel, 0);
     }
 
-    private static final void changeMap(final MapleCharacter player, final MapleMap map, final int minLevel, final int maxLevel, final int clear) {
-        final MapleMap oldMap = player.getMap();
+    private static void changeMap(TacosCharacter player, TacosMap map, int minLevel, int maxLevel, int clear) {
+        TacosMap oldMap = player.getMap();
         if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
             for (MaplePartyCharacter mpc : player.getParty().getMembers()) {
-                final MapleCharacter chr = oldMap.getPlayerById(mpc.getId());
+                TacosCharacter chr = oldMap.getPlayerById(mpc.getId());
                 if (chr != null && chr.getId() != player.getId() && chr.getLevel() >= minLevel && chr.getLevel() <= maxLevel) {
                     if (clear == 1) {
                         chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/clear").build()));
@@ -506,7 +507,7 @@ public class Event_PyramidSubway {
         player.changeMapPortal(map, map.getPortal(0));
     }
 
-    private static final void clearMap(final MapleMap map, final boolean check) {
+    private static void clearMap(TacosMap map, boolean check) {
         if (check && map.getCharactersSize() > 0) {
             return;
         }

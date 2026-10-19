@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.world;
 
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 
 public class MaplePartyCharacter {
 
@@ -32,7 +32,7 @@ public class MaplePartyCharacter {
     private int mapid;
     private boolean online;
 
-    public MaplePartyCharacter(MapleCharacter maplechar) {
+    public MaplePartyCharacter(TacosCharacter maplechar) {
         this.name = maplechar.getName();
         this.level = maplechar.getLevel();
         this.channel = maplechar.getClient().getChannelId();

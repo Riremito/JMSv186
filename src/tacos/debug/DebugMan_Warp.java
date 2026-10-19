@@ -19,7 +19,7 @@
 package tacos.debug;
 
 import java.util.ArrayList;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -45,19 +45,19 @@ public class DebugMan_Warp extends DebugMan implements IDebugMan {
     }
 
     @Override
-    public boolean start(MapleCharacter chr) {
+    public boolean start(TacosCharacter chr) {
         super.start(this, chr);
         return true;
     }
 
     @Override
-    public boolean end(MapleCharacter chr) {
+    public boolean end(TacosCharacter chr) {
         super.end(chr);
         return true;
     }
 
     @Override
-    public boolean action(MapleCharacter chr, int status, int answer) {
+    public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0: {
                 super.askMenu(chr, this.nt_first);

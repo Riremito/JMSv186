@@ -18,8 +18,8 @@
  */
 package tacos.database;
 
-import odin.client.MapleCharacter;
 import tacos.database.query.DQ_Root;
+import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
 
@@ -29,7 +29,7 @@ import java.util.ArrayList;
  */
 public class LazyDatabase {
 
-    public static boolean loadData(MapleCharacter chr) {
+    public static boolean loadData(TacosCharacter chr) {
         ArrayList<LazyData> lazy_data_list = chr.getLazyDataList();
         lazy_data_list.clear();
         for (LazyDataNames ldn : LazyDataNames.values()) {
@@ -86,7 +86,7 @@ public class LazyDatabase {
         return true;
     }
 
-    public static boolean saveData(MapleCharacter chr) {
+    public static boolean saveData(TacosCharacter chr) {
         ArrayList<LazyData> lazy_data_list = chr.getLazyDataList();
 
         for (LazyData ld : lazy_data_list) {
