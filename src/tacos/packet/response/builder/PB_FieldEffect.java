@@ -19,7 +19,7 @@
 package tacos.packet.response.builder;
 
 import lombok.Builder;
-import odin.server.life.MapleMonster;
+import tacos.server.map.object.TacosMonster;
 
 /**
  *
@@ -29,7 +29,7 @@ import odin.server.life.MapleMonster;
 public class PB_FieldEffect {
 
     public String wz_path;
-    public MapleMonster monster;
+    public TacosMonster monster;
     public int type;
     public int delay;
 }

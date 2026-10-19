@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
@@ -33,7 +34,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import tacos.debug.DebugLogger;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -388,7 +388,7 @@ public class MapScriptMethods {
             }
             case shammos_Fenter: {
                 if (chr.getMapId() >= 921120100 && chr.getMapId() < 921120500) {
-                    MapleMonster shammos = WzXML.MOB.createMob(9300275);
+                    TacosMonster shammos = WzXML.MOB.createMob(9300275);
                     map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortal(0).getPosition()), 12);
                     shammos.switchShammosController(chr, false);
                     client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, map));

@@ -19,13 +19,13 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosMonster;
 import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCSummonedPool;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
@@ -173,7 +173,7 @@ public class ReqCSummonedPool {
         map.splitSendPacket(summon, ResCSummonedPool.SummonedAttack(summon, attack_info), chr.getId());
 
         for (SummonDamage damage : attack_info.getDamages()) {
-            MapleMonster monster = map.getMonsterByOid(damage.getMobObjectId());
+            TacosMonster monster = map.getMonsterByOid(damage.getMobObjectId());
             if (monster != null) {
                 monster.damage(chr, damage.getDamage(), true);
             }

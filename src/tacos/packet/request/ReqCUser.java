@@ -19,6 +19,8 @@
 package tacos.packet.request;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosPet;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosNpc;
 import tacos.server.map.object.TacosDrop;
 import odin.client.Skill;
@@ -70,7 +72,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
@@ -82,7 +83,6 @@ import tacos.config.ContentState;
 import tacos.database.LazyDatabase;
 import tacos.debug.DebugShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.client.inventory.MaplePet;
 import odin.handling.channel.MapleGuildRanking;
 import tacos.client.TacosDoorSkill;
 import tacos.client.TacosStorage;
@@ -1030,7 +1030,7 @@ public class ReqCUser {
 
         boolean is_steal = attack.skill == OpsSkill.THIEF_STEAL.get();
         for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
-            MapleMonster monster = map.getMonsterByOid(entry.getKey());
+            TacosMonster monster = map.getMonsterByOid(entry.getKey());
             if (monster == null) {
                 DebugLogger.ErrorLog("attack : err 3.");
                 continue;
@@ -1149,7 +1149,7 @@ public class ReqCUser {
             return true;
         }
 
-        MapleMonster monster = map.getMonsterByOid(m_dwMobID);
+        TacosMonster monster = map.getMonsterByOid(m_dwMobID);
         if (monster == null || monster.getId() != uhd.dwTemplateID) {
             return true;
         }
@@ -1489,7 +1489,7 @@ public class ReqCUser {
 
         Item item = chr.getInventory(MapleInventoryType.CASH).getItem(item_slot);
         if (item != null) {
-            MaplePet pet = item.getPet();
+            TacosPet pet = item.getPet();
             if (pet != null) {
                 if (chr.getPetByUniqueId(pet.getUniqueId()) == null) {
                     pet.setSummoned(true);
@@ -2309,7 +2309,7 @@ public class ReqCUser {
                 byte tDelay = cp.Decode1(); // Left
 
                 for (int i = 0; i < nMobCount; i++) {
-                    MapleMonster monster = map.getMonsterByOid(monster_ids.get(i));
+                    TacosMonster monster = map.getMonsterByOid(monster_ids.get(i));
                     if (monster == null) {
                         continue;
                     }
@@ -2689,7 +2689,7 @@ public class ReqCUser {
         }
         for (SimpleImmutableEntry<Integer, Integer> summon_data : summon_info) {
             if (Randomizer.nextInt(100) < summon_data.getValue()) {
-                MapleMonster monster = WzXML.MOB.createMob(summon_data.getKey());
+                TacosMonster monster = WzXML.MOB.createMob(summon_data.getKey());
                 if (monster != null) {
                     map.spawnMonster_sSack(monster, chr.getPosition(), 0);
                 }
@@ -2730,7 +2730,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserBridleItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id, int mob_oid) {
-        MapleMonster mob = map.getMonsterByOid(mob_oid);
+        TacosMonster mob = map.getMonsterByOid(mob_oid);
 
         if (mob == null) {
             return false;

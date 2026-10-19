@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.constants.GameConstants;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosMist;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -106,7 +107,7 @@ public class MobSkill {
         this.limit = limit;
     }
 
-    public void applyEffect(MapleCharacter player, MapleMonster monster, boolean skill) {
+    public void applyEffect(MapleCharacter player, TacosMonster monster, boolean skill) {
         Map<MonsterStatus, Integer> stats = new EnumMap<>(MonsterStatus.class);
         List<Integer> reflection = new LinkedList<>();
 
@@ -147,7 +148,7 @@ public class MobSkill {
                 if (lt != null && rb != null && skill && monster != null) {
                     Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
                     int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
-                    for (MapleMonster target : monster.getMap().getMonstersInRect(bounds)) {
+                    for (TacosMonster target : monster.getMap().getMonstersInRect(bounds)) {
                         target.heal(hp, getY(), true);
                     }
                 } else if (monster != null) {
@@ -208,7 +209,7 @@ public class MobSkill {
                     return;
                 }
                 for (Integer mobId : getSummons()) {
-                    MapleMonster toSpawn = null;
+                    TacosMonster toSpawn = null;
                     try {
                         toSpawn = WzXML.MOB.createMob(GameConstants.getCustomSpawnID(monster.getId(), mobId));
                     } catch (RuntimeException e) { //monster doesn't exist
@@ -329,7 +330,7 @@ public class MobSkill {
         return bounds;
     }
 
-    private List<MapleCharacter> getPlayersInRange(MapleMonster monster, MapleCharacter player) {
+    private List<MapleCharacter> getPlayersInRange(TacosMonster monster, MapleCharacter player) {
         Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
         List<MapleCharacter> players = new ArrayList<>();
         players.add(player);

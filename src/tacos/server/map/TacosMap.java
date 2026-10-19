@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import tacos.server.map.object.TacosMapObject;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
 import tacos.server.map.object.TacosMist;
@@ -44,7 +45,6 @@ import tacos.odin.OdinEventManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
@@ -273,7 +273,7 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public boolean sendExpedition(MapleCharacter chr, MapleMonster monster) {
+    public boolean sendExpedition(MapleCharacter chr, TacosMonster monster) {
         int boss_id = 0;
         if (monster != null) {
             boss_id = monster.getId();
@@ -422,7 +422,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mob
-        for (MapleMonster monster : this.monsters.values()) {
+        for (TacosMonster monster : this.monsters.values()) {
             chr.SendPacket(ResCMobPool.MobEnterField(monster));
 
             int number = split.find(monster.getPosition().x, monster.getPosition().y);
@@ -518,7 +518,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mob
-        for (MapleMonster monster : this.monsters.values()) {
+        for (TacosMonster monster : this.monsters.values()) {
             if (monster.getOwnerId() == chr.getId()) {
                 int next_owner_id = getAreaOwnerIds().get(split.find(monster.getPosition()));
                 monster.setOwnerId(next_owner_id);
@@ -570,7 +570,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mob
-        for (MapleMonster monster : this.monsters.values()) {
+        for (TacosMonster monster : this.monsters.values()) {
             int number = split.find(monster.getPosition());
             if (split.getTotal() <= number) {
                 continue;
@@ -861,23 +861,23 @@ public class TacosMap extends TacosMapData {
     }
 
     // monster.
-    private LinkedHashMap<Integer, MapleMonster> monsters = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosMonster> monsters = new LinkedHashMap<>();
 
-    public MapleMonster getMonsterByOid(int object_id) {
+    public TacosMonster getMonsterByOid(int object_id) {
         return this.monsters.get(object_id);
     }
 
-    public List<MapleMonster> getAllMonsters() {
-        ArrayList<MapleMonster> ret = new ArrayList<>();
-        for (MapleMonster monster : this.monsters.values()) {
+    public List<TacosMonster> getAllMonsters() {
+        ArrayList<TacosMonster> ret = new ArrayList<>();
+        for (TacosMonster monster : this.monsters.values()) {
             ret.add(monster);
         }
         return ret;
     }
 
-    public List<MapleMonster> getMonstersInRect(Rectangle box) {
-        ArrayList<MapleMonster> ret = new ArrayList<>();
-        for (MapleMonster monster : this.monsters.values()) {
+    public List<TacosMonster> getMonstersInRect(Rectangle box) {
+        ArrayList<TacosMonster> ret = new ArrayList<>();
+        for (TacosMonster monster : this.monsters.values()) {
             if (box.contains(monster.getPosition())) {
                 ret.add(monster);
             }
@@ -885,7 +885,7 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public void addMonster(MapleMonster monster) {
+    public void addMonster(TacosMonster monster) {
         if (monster.getObjectId() == 0) {
             monster.setObjectId();
         }
@@ -896,7 +896,7 @@ public class TacosMap extends TacosMapData {
         this.monsters.remove(object_id);
         // remove from spawn point.
         for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
-            MapleMonster monster = sp.getMonster();
+            TacosMonster monster = sp.getMonster();
             if (monster != null) {
                 if (monster.getObjectId() == object_id) {
                     sp.removeMonster();
@@ -906,7 +906,7 @@ public class TacosMap extends TacosMapData {
         }
         // remove from boss spawn point.
         for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
-            MapleMonster monster = bsp.getMonster();
+            TacosMonster monster = bsp.getMonster();
             if (monster != null) {
                 if (monster.getObjectId() == object_id) {
                     bsp.removeMonster(this);
@@ -922,8 +922,8 @@ public class TacosMap extends TacosMapData {
     public void setSpawns(boolean spawns) {
     }
 
-    public MapleMonster getMonsterById(int id) {
-        for (MapleMonster monster : this.monsters.values()) {
+    public TacosMonster getMonsterById(int id) {
+        for (TacosMonster monster : this.monsters.values()) {
             if (monster.getId() == id) {
                 return monster;
             }
@@ -933,7 +933,7 @@ public class TacosMap extends TacosMapData {
 
     public int countMonsterById(int id) {
         int ret = 0;
-        for (MapleMonster monster : this.monsters.values()) {
+        for (TacosMonster monster : this.monsters.values()) {
             if (monster.getId() == id) {
                 ret++;
             }
@@ -949,12 +949,12 @@ public class TacosMap extends TacosMapData {
         return this.monsters.size();
     }
 
-    public void removeMonster(MapleMonster monster) {
+    public void removeMonster(TacosMonster monster) {
         removeMonster(monster.getObjectId());
         broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
     }
 
-    public void killMonster(MapleMonster monster) {
+    public void killMonster(TacosMonster monster) {
         monster.setHp(0);
         monster.spawnRevives();
         removeMonster(monster.getObjectId());
@@ -962,7 +962,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void killAllMonsters(boolean animate) {
-        for (MapleMonster monster : getAllMonsters()) {
+        for (TacosMonster monster : getAllMonsters()) {
             monster.setHp(0);
             removeMonster(monster.getObjectId());
             broadcastPacket(ResCMobPool.MobLeaveField(monster, animate ? OpsMobLeaveField.MOBLEAVEFIELD_ETC : OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP));
@@ -970,7 +970,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public boolean killMonster(int monsId) {
-        for (MapleMonster monster : getAllMonsters()) {
+        for (TacosMonster monster : getAllMonsters()) {
             if (monster.getId() == monsId) {
                 removeMonster(monster.getObjectId());
                 broadcastPacket(ResCMobPool.MobLeaveField(monster, OpsMobLeaveField.MOBLEAVEFIELD_ETC));
@@ -980,7 +980,7 @@ public class TacosMap extends TacosMapData {
         return false;
     }
 
-    public void checkRemoveAfter(MapleMonster monster) {
+    public void checkRemoveAfter(TacosMonster monster) {
         int ra = monster.getStats().getRemoveAfter();
 
         if (ra > 0) {
@@ -992,7 +992,7 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public boolean setMobOwner(MapleMonster monster) {
+    public boolean setMobOwner(TacosMonster monster) {
         if (monster.getOwnerId() != 0) {
             return false;
         }
@@ -1005,7 +1005,7 @@ public class TacosMap extends TacosMapData {
         return false;
     }
 
-    public void spawnRevives(MapleMonster monster, int oid) {
+    public void spawnRevives(TacosMonster monster, int oid) {
         checkRemoveAfter(monster);
         monster.setSummonOption(oid);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REVIVED);
@@ -1015,7 +1015,7 @@ public class TacosMap extends TacosMapData {
         setMobOwner(monster);
     }
 
-    public void spawnMonster(MapleMonster monster, int spawnType) {
+    public void spawnMonster(TacosMonster monster, int spawnType) {
         OpsMobAppear ops_at = OpsMobAppear.find(spawnType);
 
         checkRemoveAfter(monster);
@@ -1027,7 +1027,7 @@ public class TacosMap extends TacosMapData {
         setMobOwner(monster);
     }
 
-    public int spawnMonsterWithEffect(MapleMonster monster, int effect, Point pos) {
+    public int spawnMonsterWithEffect(TacosMonster monster, int effect, Point pos) {
         monster.setPosition(pos);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         addMonster(monster);
@@ -1037,7 +1037,7 @@ public class TacosMap extends TacosMapData {
         return monster.getObjectId();
     }
 
-    public void spawnFakeMonster(MapleMonster monster) {
+    public void spawnFakeMonster(TacosMonster monster) {
         monster.setFake(true);
         monster.setAT(OpsMobAppear.MOBAPPEAR_SUSPENDED);
         addMonster(monster);
@@ -1308,7 +1308,7 @@ public class TacosMap extends TacosMapData {
         broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, droppos, dropperPosition));
     }
 
-    public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype, int delay) {
+    public void spawnMobMesoDrop(int meso, Point position, TacosMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype, int delay) {
         TacosDrop mdrop = new TacosDrop(null, meso, 0, position, owner.getId(), droptype, playerDrop);
         addDrop(mdrop);
         mdrop.setDelay(delay);
@@ -1316,7 +1316,7 @@ public class TacosMap extends TacosMapData {
         mdrop.setDelay(0);
     }
 
-    public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short quest_id, int delay) {
+    public void spawnMobDrop(Item idrop, Point dropPos, TacosMonster mob, MapleCharacter chr, byte droptype, short quest_id, int delay) {
         TacosDrop mdrop = new TacosDrop(idrop, 0, quest_id, dropPos, chr.getId(), droptype, false);
         addDrop(mdrop);
         mdrop.setDelay(delay);
@@ -1607,7 +1607,7 @@ public class TacosMap extends TacosMapData {
     public void removeAllObjects() {
         // remove.
         setChangeBGM("");
-        for (MapleMonster monster : getAllMonsters()) {
+        for (TacosMonster monster : getAllMonsters()) {
             removeMonster(monster);
         }
         for (TacosReactor reactor : getAllReactors()) {
@@ -1673,7 +1673,7 @@ public class TacosMap extends TacosMapData {
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
                 if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
-                    MapleMonster monster = sp.regen((MapleMap) this);
+                    TacosMonster monster = sp.regen((MapleMap) this);
                     if (monster != null) {
                         addMonster(monster);
                         broadcastPacket(ResCMobPool.MobEnterField(monster));
@@ -1694,7 +1694,7 @@ public class TacosMap extends TacosMapData {
         if (this.task_boss_regen.check(time_current, 7000)) {
             for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
                 if (bsp.getLastRegenTime() + bsp.getMobTime() <= time_current) {
-                    MapleMonster monster = bsp.regen((MapleMap) this);
+                    TacosMonster monster = bsp.regen((MapleMap) this);
                     if (monster != null) {
                         addMonster(monster);
                         if (!bsp.getMessage().isEmpty()) {
@@ -1733,7 +1733,7 @@ public class TacosMap extends TacosMapData {
                 // TODO : fix interval.
                 switch (mist.isPoisonMist()) {
                     case 1 -> {
-                        for (MapleMonster monster : getMonstersInRect(mist.getBox())) {
+                        for (TacosMonster monster : getMonstersInRect(mist.getBox())) {
                             if (mist.makeChanceResult()) {
                                 player.DebugMsg("Mist : " + mist.getObjectId() + " -> " + monster.getObjectId());
                                 int max_hp = (int) monster.getMobMaxHp();

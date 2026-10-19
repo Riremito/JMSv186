@@ -19,11 +19,11 @@
 package tacos.packet.request.sub;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosPet;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import tacos.config.Region;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;
@@ -482,7 +482,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
     public static boolean cashItem517_PetNameChange(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
         switch (cash_item_id) {
             case 5170000: {
-                MaplePet pet = null;
+                TacosPet pet = null;
 
                 if (Config.LessOrEqual(Region.JMS, 147)) {
                     pet = chr.getPetByIndex(0);

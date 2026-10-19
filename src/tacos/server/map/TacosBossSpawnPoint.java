@@ -19,10 +19,10 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import lombok.Data;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
@@ -40,7 +40,7 @@ public class TacosBossSpawnPoint {
     private int id;
     private int mobTime;
     private String message = "";
-    private MapleMonster monster = null;
+    private TacosMonster monster = null;
     private long lastRegenTime = 0;
     private ArrayList<Integer> sharedMapIds = new ArrayList<>();
 
@@ -57,7 +57,7 @@ public class TacosBossSpawnPoint {
         return (foothold != null) ? foothold.getId() : 0;
     }
 
-    public MapleMonster regen(MapleMap map) {
+    public TacosMonster regen(MapleMap map) {
         if (this.monster != null) {
             return null;
         }

@@ -18,8 +18,8 @@
  */
 package tacos.client;
 
-import odin.client.inventory.MaplePet;
 import tacos.packet.ops.OpsChangeStat;
+import tacos.server.map.object.TacosPet;
 
 /**
  *
@@ -77,7 +77,7 @@ public class TacosLastStat {
         this.gasha_exp = chr.getGashaEXP();
 
         // pet
-        MaplePet pet = chr.getPetByIndex(0);
+        TacosPet pet = chr.getPetByIndex(0);
         if (pet != null) {
             this.pet1 = pet.getUniqueId();
         }
@@ -172,9 +172,9 @@ public class TacosLastStat {
             this.statmask |= OpsChangeStat.CS_TEMPEXP.get();
         }
         // pet
-        MaplePet new_pet1 = chr.getPetByIndex(0);
-        MaplePet new_pet2 = chr.getPetByIndex(1);
-        MaplePet new_pet3 = chr.getPetByIndex(2);
+        TacosPet new_pet1 = chr.getPetByIndex(0);
+        TacosPet new_pet2 = chr.getPetByIndex(1);
+        TacosPet new_pet3 = chr.getPetByIndex(2);
         long new_pet1_val = (new_pet1 != null) ? new_pet1.getUniqueId() : 0;
         long new_pet2_val = (new_pet2 != null) ? new_pet2.getUniqueId() : 0;
         long new_pet3_val = (new_pet3 != null) ? new_pet3.getUniqueId() : 0;

@@ -19,6 +19,7 @@
 package tacos.command;
 
 import odin.client.Skill;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
 import odin.client.MapleCharacter;
@@ -33,7 +34,6 @@ import java.awt.Point;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleMonster;
 import odin.server.life.PlayerNPC;
 import odin.server.maps.MapleMap;
 import tacos.database.query.DQ_Accounts;
@@ -337,7 +337,7 @@ public class TacosCommandAdmin {
                 }
 
                 for (int i = 0; i < count; i++) {
-                    MapleMonster monster = WzXML.MOB.createMob(mob_id);
+                    TacosMonster monster = WzXML.MOB.createMob(mob_id);
                     if (monster != null) {
                         map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
                     }
@@ -351,7 +351,7 @@ public class TacosCommandAdmin {
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
                 }
-                for (MapleMonster mob : map.getAllMonsters()) {
+                for (TacosMonster mob : map.getAllMonsters()) {
                     if (count <= 0) {
                         break;
                     }

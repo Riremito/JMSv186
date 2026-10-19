@@ -19,11 +19,11 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosDrop;
 import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -65,7 +65,7 @@ public class ReqCUser_Pet {
             return true;
         }
 
-        MaplePet pet = null;
+        TacosPet pet = null;
         // outside CUser
         if (Config.LessOrEqual(Region.JMS, 147)) {
             long pet_uid = Config.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
@@ -116,7 +116,7 @@ public class ReqCUser_Pet {
     }
 
     public static boolean OnPetFood(MapleCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
-        MaplePet pet = chr.getPetByIndex(0);
+        TacosPet pet = chr.getPetByIndex(0);
         MapleMap map = chr.getMap();
 
         if (pet == null || map == null) {
@@ -145,7 +145,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetMove(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetMove(MapleCharacter chr, MapleMap map, TacosPet pet, ClientPacket cp) {
         byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 302));
 
         ParseCMovePath move_path = new ParseCMovePath();
@@ -157,7 +157,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetAction(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetAction(MapleCharacter chr, MapleMap map, TacosPet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
@@ -172,7 +172,7 @@ public class ReqCUser_Pet {
         if (petIndex == -1) {
             return;
         }
-        MaplePet pet = chr.getPetByIndex(petIndex);
+        TacosPet pet = chr.getPetByIndex(petIndex);
         if (pet == null) {
             return;
         }
@@ -190,7 +190,7 @@ public class ReqCUser_Pet {
                     newCloseness = 30000;
                 }
                 pet.setCloseness(newCloseness);
-                if (newCloseness >= MaplePet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
+                if (newCloseness >= TacosPet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
                     map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
@@ -202,7 +202,7 @@ public class ReqCUser_Pet {
         map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
     }
 
-    public static boolean OnPetDropPickUpRequest(MapleCharacter chr, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetDropPickUpRequest(MapleCharacter chr, TacosPet pet, ClientPacket cp) {
         byte unk1 = cp.Decode1(); // unk
         int timestamp = cp.Decode4();
         short drop_x = cp.Decode2();

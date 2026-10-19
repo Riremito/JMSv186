@@ -19,6 +19,7 @@
 package tacos.packet.request.parse;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleStatEffect;
-import odin.server.life.MapleMonster;
 import tacos.client.TacosBuff.Buff;
 import tacos.client.TacosCalcDamage;
 import tacos.config.Config;
@@ -125,7 +125,7 @@ public class ParseCUser_Attack {
             int[] randoms = chr.getCalcDamage().getRandoms(7);
 
             int mob_object_id = entry.getKey();
-            MapleMonster monster = chr.getMap().getMonsterByOid(mob_object_id);
+            TacosMonster monster = chr.getMap().getMonsterByOid(mob_object_id);
             boolean is_boss = false;
             if (monster != null) {
                 is_boss = monster.getStats().isBoss();

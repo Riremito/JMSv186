@@ -19,9 +19,9 @@
 package tacos.command;
 
 import java.util.List;
+import tacos.server.map.object.TacosMonster;
 import odin.client.MapleCharacter;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosForcedStat;
@@ -120,8 +120,8 @@ public class TacosCommandTest {
                 return true;
             }
             case "/mobtest" -> {
-                List<MapleMonster> monsters = map.getAllMonsters();
-                MapleMonster monster = null;
+                List<TacosMonster> monsters = map.getAllMonsters();
+                TacosMonster monster = null;
                 if (map.getAllMonsters().isEmpty()) {
                     monster = WzXML.MOB.createMob(130101);
                     if (monster != null) {
@@ -220,7 +220,7 @@ public class TacosCommandTest {
         return false;
     }
 
-    public static void mobTest(MapleCharacter chr, MapleMonster monster, int index) {
+    public static void mobTest(MapleCharacter chr, TacosMonster monster, int index) {
         switch (index) {
             case 1 -> {
                 chr.SendPacket(ResCMobPool.MobAttackedByMob(monster, 1, 7777));

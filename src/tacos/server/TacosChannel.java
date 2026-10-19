@@ -19,6 +19,7 @@
 package tacos.server;
 
 import java.util.HashMap;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
 import java.util.LinkedList;
@@ -28,7 +29,6 @@ import odin.client.MapleCharacter;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.server.MapleSquad;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
@@ -122,7 +122,7 @@ public class TacosChannel extends TacosServer {
         }
         // mob spawn just after generating map for test.
         for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
-            MapleMonster monster = sp.regen(map);
+            TacosMonster monster = sp.regen(map);
             if (monster != null) {
                 map.addMonster(monster);
                 monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);

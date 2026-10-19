@@ -1,6 +1,7 @@
 package odin.server;
 
 import odin.client.Skill;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosMist;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -20,7 +21,6 @@ import odin.constants.GameConstants;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.StatEffectData;
@@ -360,10 +360,10 @@ public class MapleStatEffect {
                 case 2100000:
                 case 2200000:
                 case 2300000:
-                    if (!(obj instanceof MapleMonster)) {
+                    if (!(obj instanceof TacosMonster)) {
                         return;
                     }
-                    MapleMonster mob = (MapleMonster) obj; // x is absorb percentage
+                    TacosMonster mob = (TacosMonster) obj; // x is absorb percentage
                     if (!mob.getStats().isBoss()) {
                         int absorbMp = Math.min((int) (mob.getMobMaxMp() * (getX() / 100.0)), mob.getMp());
                         if (absorbMp > 0) {
@@ -560,7 +560,7 @@ public class MapleStatEffect {
         Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
         int i = 0;
 
-        for (MapleMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
+        for (TacosMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
             if (makeChanceResult()) {
                 for (Map.Entry<MonsterStatus, Integer> stat : getMonsterStati().entrySet()) {
                     monster.applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);

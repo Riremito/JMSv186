@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client.inventory;
 
 import odin.constants.GameConstants;
+import tacos.server.map.object.TacosPet;
 
 public class Item {
 
@@ -31,7 +32,7 @@ public class Item {
     private short quantity;
     private byte flag;
     private long expiration = -1;
-    private MaplePet pet = null;
+    private TacosPet pet = null;
     private String owner = "";
     private String GameMaster_log = null;
     private String giftFrom = "";
@@ -133,11 +134,11 @@ public class Item {
         this.uniqueid = id;
     }
 
-    public MaplePet getPet() {
+    public TacosPet getPet() {
         return pet;
     }
 
-    public void setPet(MaplePet pet) {
+    public void setPet(TacosPet pet) {
         this.pet = pet;
     }
 

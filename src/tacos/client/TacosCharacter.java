@@ -37,7 +37,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleMount;
-import odin.client.inventory.MaplePet;
 import odin.constants.GameConstants;
 import odin.handling.world.family.MapleFamilyCharacter;
 import odin.handling.world.guild.MapleGuildCharacter;
@@ -1003,13 +1002,13 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     // pet.
-    private final ArrayList<MaplePet> pets = new ArrayList<>();
+    private final ArrayList<TacosPet> pets = new ArrayList<>();
 
-    public ArrayList<MaplePet> getPets() {
+    public ArrayList<TacosPet> getPets() {
         return this.pets;
     }
 
-    public MaplePet getPetByIndex(int index) {
+    public TacosPet getPetByIndex(int index) {
         if (this.pets.size() <= index) {
             return null;
         }
@@ -1025,7 +1024,7 @@ public class TacosCharacter extends TacosPlayer {
         return -1;
     }
 
-    public void removePet(MaplePet pet) {
+    public void removePet(TacosPet pet) {
         this.map.removePet(pet);
         this.map.broadcastPacket(ResCUser_Pet.Deactivated(this, pet, ResCUser_Pet.DeActivatedMsg.PET_NO_MSG)); // index is used inside thisi packet.
         int index = getPetIndex(pet);
@@ -1034,7 +1033,7 @@ public class TacosCharacter extends TacosPlayer {
         }
     }
 
-    public void addPet(MaplePet pet) {
+    public void addPet(TacosPet pet) {
         if (getPetByUniqueId(pet.getUniqueId()) != null) {
             return;
         }
@@ -1056,8 +1055,8 @@ public class TacosCharacter extends TacosPlayer {
         }
     }
 
-    public MaplePet getPetByUniqueId(long pet_uid) {
-        for (MaplePet pet : this.pets) {
+    public TacosPet getPetByUniqueId(long pet_uid) {
+        for (TacosPet pet : this.pets) {
             if (pet.getUniqueId() == pet_uid) {
                 return pet;
             }
@@ -1551,7 +1550,7 @@ public class TacosCharacter extends TacosPlayer {
         // buff.
         updateBuffs(time_current);
         // pet.
-        for (MaplePet pet : new ArrayList<>(getPets())) {
+        for (TacosPet pet : new ArrayList<>(getPets())) {
             //SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getInventory(MapleInventoryType.CASH).getItem(pet.getInventoryPosition())).build()));
         }
         // summon.
@@ -1912,7 +1911,7 @@ public class TacosCharacter extends TacosPlayer {
             int[] pet_slots = {-1, -1, -1};
             int pet_index = 0;
 
-            for (MaplePet pet : getPets()) {
+            for (TacosPet pet : getPets()) {
                 pet.saveToDb();
                 pet_slots[pet_index++] = pet.getInventoryPosition();
                 if (3 <= pet_index) {

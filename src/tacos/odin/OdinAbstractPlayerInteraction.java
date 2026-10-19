@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosPet;
+import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import java.util.List;
 import odin.client.inventory.Equip;
@@ -30,7 +32,6 @@ import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.handling.world.MapleParty;
@@ -42,7 +43,6 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
 import odin.server.maps.SavedLocationType;
 import odin.server.maps.Event_DojoAgent;
-import odin.server.life.MapleMonster;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsFieldEffect;
@@ -756,7 +756,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void gainCloseness(int closeness, int index) {
-        MaplePet pet = getPlayer().getPetByIndex(index);
+        TacosPet pet = getPlayer().getPetByIndex(index);
         if (pet != null) {
             pet.setCloseness(pet.getCloseness() + closeness);
             getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
@@ -764,7 +764,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void gainClosenessAll(int closeness) {
-        for (MaplePet pet : getPlayer().getPets()) {
+        for (TacosPet pet : getPlayer().getPets()) {
             if (pet != null) {
                 pet.setCloseness(pet.getCloseness() + closeness);
                 getClient().SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, getPlayer().getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
@@ -790,7 +790,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public boolean haveMonster(int mobid) {
         for (Object obj : client.getPlayer().getMap().getAllMonsters()) {
-            MapleMonster mob = (MapleMonster) obj;
+            TacosMonster mob = (TacosMonster) obj;
             if (mob.getId() == mobid) {
                 return true;
             }
@@ -956,7 +956,7 @@ public abstract class OdinAbstractPlayerInteraction {
             fullness = 100;
         }
         try {
-            MapleInventoryManipulator.addById(client, id, (short) 1, "", MaplePet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
+            MapleInventoryManipulator.addById(client, id, (short) 1, "", TacosPet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }

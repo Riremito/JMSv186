@@ -19,8 +19,8 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import lombok.Data;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
@@ -72,10 +72,10 @@ public class TacosSpawnPoint {
         return true;
     }
 
-    private MapleMonster monster = null;
+    private TacosMonster monster = null;
     private long lastRegenTime = 0;
 
-    public MapleMonster regen(MapleMap map) {
+    public TacosMonster regen(MapleMap map) {
         if (this.monster != null) {
             return null;
         }

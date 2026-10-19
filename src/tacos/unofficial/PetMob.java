@@ -18,8 +18,8 @@
  */
 package tacos.unofficial;
 
-import odin.server.life.MapleMonster;
 import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
@@ -34,7 +34,7 @@ import tacos.wz.WzXML;
 public class PetMob implements IPetEx {
 
     private TacosCharacter character;
-    private MapleMonster monster = null;
+    private TacosMonster monster = null;
 
     public PetMob(TacosCharacter character) {
         this.character = character;

@@ -19,6 +19,7 @@
 package tacos.command;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,6 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleMonster;
 import tacos.wz.MapleData;
 import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
@@ -268,7 +268,7 @@ public class TacosCommandDebug {
                 for (int i = 0; i < mob_count; i++) {
                     int mobid = WzDataStorage.MOB.getRandom();
                     DebugLogger.InfoLog("random spawn: " + mobid);
-                    MapleMonster mob = WzXML.MOB.createMob(mobid);
+                    TacosMonster mob = WzXML.MOB.createMob(mobid);
                     if (mob != null) {
                         map.spawnMonsterOnGroundBelow(mob, chr.getPosition());
 

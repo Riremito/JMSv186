@@ -19,6 +19,7 @@
 package tacos.unofficial;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.List;
 import odin.client.MapleCharacter;
@@ -28,7 +29,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
 import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
@@ -51,7 +51,7 @@ public class CustomMonsterBookDrop {
 
     private DropMonsterBook book_info = null;
 
-    public CustomMonsterBookDrop(MapleMonster monster) {
+    public CustomMonsterBookDrop(TacosMonster monster) {
         this.book_info = WzXML.STRING.getMonseterBookDrop(monster.getId());
     }
 
@@ -140,7 +140,7 @@ public class CustomMonsterBookDrop {
         return false;
     }
 
-    public static int dropFromMonsterBook(MapleCharacter player, MapleMonster monster) {
+    public static int dropFromMonsterBook(MapleCharacter player, TacosMonster monster) {
         MapleMap map = monster.getMap();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         byte drop_type = (byte) (monster.getStats().isExplosiveReward() ? 3 : monster.getStats().isFfaLoot() ? 2 : player.getParty() != null ? 1 : 0);

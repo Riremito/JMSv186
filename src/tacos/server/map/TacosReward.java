@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -30,7 +31,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.life.MonsterDropEntry;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosSkill;
@@ -47,7 +47,7 @@ import tacos.wz.WzXML;
  */
 public class TacosReward {
 
-    public static boolean getReward(MapleCharacter chr, MapleMonster monster) {
+    public static boolean getReward(MapleCharacter chr, TacosMonster monster) {
         MapleMap map = monster.getMap();
         int mob_id = monster.getId();
         TacosSkill ts = (monster.getLastHitSkillId() != 0) ? WzXML.SKILL.getSkill(monster.getLastHitSkillId(), 1) : null; // temporary lv1.
@@ -108,7 +108,7 @@ public class TacosReward {
         return ret;
     }
 
-    public static int dropFromDatabase(MapleCharacter chr, MapleMonster monster) {
+    public static int dropFromDatabase(MapleCharacter chr, TacosMonster monster) {
         MapleMap map = monster.getMap();
 
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -170,7 +170,7 @@ public class TacosReward {
         return dropped_count;
     }
 
-    public static Point getDropPosition(MapleMonster monster, int drop_type, int dropped_count) {
+    public static Point getDropPosition(TacosMonster monster, int drop_type, int dropped_count) {
         Point drop_pos = monster.getPosition();
 
         if (drop_type == 3) {

@@ -19,8 +19,8 @@
 package tacos.packet.response.data;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosPet;
 import odin.client.PlayerStats;
-import odin.client.inventory.MaplePet;
 import tacos.config.Content;
 import tacos.config.Region;
 import odin.constants.GameConstants;
@@ -430,7 +430,7 @@ public class RD_CharacterStat {
         }
         // Pet 1
         if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
-            MaplePet pet = chr.getPetByIndex(0);
+            TacosPet pet = chr.getPetByIndex(0);
             data.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // Level
@@ -539,12 +539,12 @@ public class RD_CharacterStat {
         // v188 ここから+1
         // Pet 2
         if ((statmask & OpsChangeStat.CS_PETSN2.get()) != 0) {
-            MaplePet pet = chr.getPetByIndex(1);
+            TacosPet pet = chr.getPetByIndex(1);
             data.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // Pet 3
         if ((statmask & OpsChangeStat.CS_PETSN3.get()) != 0) {
-            MaplePet pet = chr.getPetByIndex(2);
+            TacosPet pet = chr.getPetByIndex(2);
             data.Encode8((pet != null) ? pet.getUniqueId() : 0);
         }
         // 兵法書, GashaExp

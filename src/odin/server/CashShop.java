@@ -22,12 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server;
 
 import odin.client.inventory.Equip;
+import tacos.server.map.object.TacosPet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
-import odin.client.inventory.MaplePet;
 import odin.client.inventory.ItemLoader;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
@@ -149,7 +149,7 @@ public class CashShop {
             item.setExpiration((long) (System.currentTimeMillis() + (long) (period * 24 * 60 * 60 * 1000)));
             item.setGiftFrom(gift);
             if (GameConstants.isPet(cItem.getId())) {
-                MaplePet pet = MaplePet.createPet(cItem.getId(), uniqueid);
+                TacosPet pet = TacosPet.createPet(cItem.getId(), uniqueid);
                 if (pet != null) {
                     item.setPet(pet);
                 }

@@ -1,6 +1,7 @@
 package odin.server;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosPet;
 import odin.server.maps.MapleMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +11,6 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.PlayerStats;
-import odin.client.inventory.MaplePet;
 import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
@@ -63,7 +63,7 @@ public class MapleInventoryManipulator {
         return newSlot;
     }
 
-    public static int getUniqueId(int itemId, MaplePet pet) {
+    public static int getUniqueId(int itemId, TacosPet pet) {
         int uniqueid = -1;
         if (GameConstants.isPet(itemId)) {
             if (pet != null) {
@@ -89,15 +89,15 @@ public class MapleInventoryManipulator {
         return addId(client, itemId, quantity, owner, null, 0);
     }
 
-    public static boolean addById(TacosClient client, int itemId, short quantity, String owner, MaplePet pet) {
+    public static boolean addById(TacosClient client, int itemId, short quantity, String owner, TacosPet pet) {
         return addById(client, itemId, quantity, owner, pet, 0);
     }
 
-    public static boolean addById(TacosClient client, int itemId, short quantity, String owner, MaplePet pet, long period) {
+    public static boolean addById(TacosClient client, int itemId, short quantity, String owner, TacosPet pet, long period) {
         return addId(client, itemId, quantity, owner, pet, period) >= 0;
     }
 
-    public static byte addId(TacosClient client, int itemId, short quantity, String owner, MaplePet pet, long period) {
+    public static byte addId(TacosClient client, int itemId, short quantity, String owner, TacosPet pet, long period) {
         MapleCharacter chr = client.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && chr.haveItem(itemId, 1, true, false)) {
