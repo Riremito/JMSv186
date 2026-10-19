@@ -482,16 +482,17 @@ public class ItemMakerHandler {
     }
 
     private static final boolean hasSkill(final TacosClient client, final int reqlvl) {
-        if (GameConstants.isKOC(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
-        } else if (GameConstants.isAran(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(20001007)) >= reqlvl;
-        } else if (GameConstants.isEvan(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(20011007)) >= reqlvl;
-        } else if (GameConstants.isResist(client.getPlayer().getJob())) { // KoC Maker skill.
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(30001007)) >= reqlvl;
+        MapleCharacter chr = client.getPlayer();
+        if (GameConstants.isKOC(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
+        } else if (GameConstants.isAran(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(20001007)) >= reqlvl;
+        } else if (GameConstants.isEvan(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(20011007)) >= reqlvl;
+        } else if (GameConstants.isResist(chr.getJob())) { // KoC Maker skill.
+            return chr.getSkillLevel(SkillFactory.getSkill(30001007)) >= reqlvl;
         } else {
-            return client.getPlayer().getSkillLevel(SkillFactory.getSkill(1007)) >= reqlvl;
+            return chr.getSkillLevel(SkillFactory.getSkill(1007)) >= reqlvl;
         }
     }
 }

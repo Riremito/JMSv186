@@ -347,7 +347,8 @@ public class ReqCITC {
     }
 
     public static void MTSUpdate(TacosClient client, MTSCart cart) {
-        client.getPlayer().modifyCSPoints(1, MTSStorage.getInstance().getCart(client.getPlayer().getId()).getSetOwedNX(), false);
+        MapleCharacter chr = client.getPlayer();
+        chr.modifyCSPoints(1, MTSStorage.getInstance().getCart(chr.getId()).getSetOwedNX(), false);
         client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetNotifyCancelWishResult));
         doMTSPackets(client, cart);
     }

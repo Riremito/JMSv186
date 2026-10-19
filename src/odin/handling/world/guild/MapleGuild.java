@@ -565,6 +565,7 @@ public class MapleGuild {
     // so this will be running mostly on a channel server, unlike the rest
     // of the class
     public static final MapleGuildResponse sendInvite(final TacosClient client, final String targetName) {
+        MapleCharacter chr = client.getPlayer();
         final MapleCharacter mc = client.getChannelServer().getOnlinePlayers().findByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
@@ -572,7 +573,7 @@ public class MapleGuild {
         if (mc.getGuildId() > 0) {
             return MapleGuildResponse.ALREADY_IN_GUILD;
         }
-        mc.SendPacket(ResCWvsContext.guildInvite(client.getPlayer().getGuildId(), client.getPlayer().getName(), client.getPlayer().getLevel(), client.getPlayer().getJob()));
+        mc.SendPacket(ResCWvsContext.guildInvite(chr.getGuildId(), chr.getName(), chr.getLevel(), chr.getJob()));
         return null;
     }
 

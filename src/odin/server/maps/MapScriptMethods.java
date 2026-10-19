@@ -173,12 +173,13 @@ public class MapScriptMethods {
     };
 
     public static void startScript_FirstUser(TacosClient client, String scriptName) {
-        if (client.getPlayer() == null) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr == null) {
             return;
         } //o_O
         switch (onFirstUserEnter.fromString(scriptName)) {
             case dojang_Eff: {
-                int temp = (client.getPlayer().getMapId() - 925000000) / 100;
+                int temp = (chr.getMapId() - 925000000) / 100;
                 int stage = (int) (temp - ((temp / 100) * 100));
 
                 sendDojoClock(client, getTiming(stage) * 60);
@@ -195,138 +196,138 @@ public class MapScriptMethods {
             }
             //5120018 = ludi(none), 5120019 = orbis(start_itemTake - onUser)
             case moonrabbit_mapEnter: {
-                client.getPlayer().getMap().startMapEffect("Gather the Primrose Seeds around the moon and protect the Moon Bunny!", 5120016);
+                chr.getMap().startMapEffect("Gather the Primrose Seeds around the moon and protect the Moon Bunny!", 5120016);
                 break;
             }
             case StageMsg_together: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 103000800:
-                        client.getPlayer().getMap().startMapEffect("Solve the question and gather the amount of passes!", 5120017);
+                        chr.getMap().startMapEffect("Solve the question and gather the amount of passes!", 5120017);
                         break;
                     case 103000801:
-                        client.getPlayer().getMap().startMapEffect("Get on the ropes and unveil the correct combination!", 5120017);
+                        chr.getMap().startMapEffect("Get on the ropes and unveil the correct combination!", 5120017);
                         break;
                     case 103000802:
-                        client.getPlayer().getMap().startMapEffect("Get on the platforms and unveil the correct combination!", 5120017);
+                        chr.getMap().startMapEffect("Get on the platforms and unveil the correct combination!", 5120017);
                         break;
                     case 103000803:
-                        client.getPlayer().getMap().startMapEffect("Get on the barrels and unveil the correct combination!", 5120017);
+                        chr.getMap().startMapEffect("Get on the barrels and unveil the correct combination!", 5120017);
                         break;
                     case 103000804:
-                        client.getPlayer().getMap().startMapEffect("Defeat King Slime and his minions!", 5120017);
+                        chr.getMap().startMapEffect("Defeat King Slime and his minions!", 5120017);
                         break;
                 }
                 break;
             }
             case StageMsg_romio: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 926100000:
-                        client.getPlayer().getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120021);
+                        chr.getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120021);
                         break;
                     case 926100001:
-                        client.getPlayer().getMap().startMapEffect("Find  your way through this darkness!", 5120021);
+                        chr.getMap().startMapEffect("Find  your way through this darkness!", 5120021);
                         break;
                     case 926100100:
-                        client.getPlayer().getMap().startMapEffect("Fill the beakers to power the energy!", 5120021);
+                        chr.getMap().startMapEffect("Fill the beakers to power the energy!", 5120021);
                         break;
                     case 926100200:
-                        client.getPlayer().getMap().startMapEffect("Get the files for the experiment through each door!", 5120021);
+                        chr.getMap().startMapEffect("Get the files for the experiment through each door!", 5120021);
                         break;
                     case 926100203:
-                        client.getPlayer().getMap().startMapEffect("Please defeat all the monsters!", 5120021);
+                        chr.getMap().startMapEffect("Please defeat all the monsters!", 5120021);
                         break;
                     case 926100300:
-                        client.getPlayer().getMap().startMapEffect("Find your way through the Lab!", 5120021);
+                        chr.getMap().startMapEffect("Find your way through the Lab!", 5120021);
                         break;
                     case 926100401:
-                        client.getPlayer().getMap().startMapEffect("Please, protect my love!", 5120021);
+                        chr.getMap().startMapEffect("Please, protect my love!", 5120021);
 
                         break;
                 }
                 break;
             }
             case StageMsg_juliet: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 926110000:
-                        client.getPlayer().getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120022);
+                        chr.getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120022);
                         break;
                     case 926110001:
-                        client.getPlayer().getMap().startMapEffect("Find  your way through this darkness!", 5120022);
+                        chr.getMap().startMapEffect("Find  your way through this darkness!", 5120022);
                         break;
                     case 926110100:
-                        client.getPlayer().getMap().startMapEffect("Fill the beakers to power the energy!", 5120022);
+                        chr.getMap().startMapEffect("Fill the beakers to power the energy!", 5120022);
                         break;
                     case 926110200:
-                        client.getPlayer().getMap().startMapEffect("Get the files for the experiment through each door!", 5120022);
+                        chr.getMap().startMapEffect("Get the files for the experiment through each door!", 5120022);
                         break;
                     case 926110203:
-                        client.getPlayer().getMap().startMapEffect("Please defeat all the monsters!", 5120022);
+                        chr.getMap().startMapEffect("Please defeat all the monsters!", 5120022);
                         break;
                     case 926110300:
-                        client.getPlayer().getMap().startMapEffect("Find your way through the Lab!", 5120022);
+                        chr.getMap().startMapEffect("Find your way through the Lab!", 5120022);
                         break;
                     case 926110401:
-                        client.getPlayer().getMap().startMapEffect("Please, protect my love!", 5120022);
+                        chr.getMap().startMapEffect("Please, protect my love!", 5120022);
                         break;
                 }
                 break;
             }
             case party6weatherMsg: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 930000000:
-                        client.getPlayer().getMap().startMapEffect("Step in the portal to be transformed.", 5120023);
+                        chr.getMap().startMapEffect("Step in the portal to be transformed.", 5120023);
                         break;
                     case 930000100:
-                        client.getPlayer().getMap().startMapEffect("Defeat the poisoned monsters!", 5120023);
+                        chr.getMap().startMapEffect("Defeat the poisoned monsters!", 5120023);
                         break;
                     case 930000200:
-                        client.getPlayer().getMap().startMapEffect("Eliminate the spore that blocks the way by purifying the poison!", 5120023);
+                        chr.getMap().startMapEffect("Eliminate the spore that blocks the way by purifying the poison!", 5120023);
                         break;
                     case 930000300:
-                        client.getPlayer().getMap().startMapEffect("Uh oh! The forest is too confusing! Find me, quick!", 5120023);
+                        chr.getMap().startMapEffect("Uh oh! The forest is too confusing! Find me, quick!", 5120023);
                         break;
                     case 930000400:
-                        client.getPlayer().getMap().startMapEffect("Purify the monsters by getting Purification Marbles from me!", 5120023);
+                        chr.getMap().startMapEffect("Purify the monsters by getting Purification Marbles from me!", 5120023);
                         break;
                     case 930000500:
-                        client.getPlayer().getMap().startMapEffect("Find the Purple Magic Stone!", 5120023);
+                        chr.getMap().startMapEffect("Find the Purple Magic Stone!", 5120023);
                         break;
                     case 930000600:
-                        client.getPlayer().getMap().startMapEffect("Place the Magic Stone on the altar!", 5120023);
+                        chr.getMap().startMapEffect("Place the Magic Stone on the altar!", 5120023);
                         break;
                 }
                 break;
             }
             case StageMsg_davy: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 925100000:
-                        client.getPlayer().getMap().startMapEffect("Defeat the monsters outside of the ship to advance!", 5120020);
+                        chr.getMap().startMapEffect("Defeat the monsters outside of the ship to advance!", 5120020);
                         break;
                     case 925100100:
-                        client.getPlayer().getMap().startMapEffect("We must prove ourselves! Get me Pirate Medals!", 5120020);
+                        chr.getMap().startMapEffect("We must prove ourselves! Get me Pirate Medals!", 5120020);
                         break;
                     case 925100200:
-                        client.getPlayer().getMap().startMapEffect("Defeat the guards here to pass!", 5120020);
+                        chr.getMap().startMapEffect("Defeat the guards here to pass!", 5120020);
                         break;
                     case 925100300:
-                        client.getPlayer().getMap().startMapEffect("Eliminate the guards here to pass!", 5120020);
+                        chr.getMap().startMapEffect("Eliminate the guards here to pass!", 5120020);
                         break;
                     case 925100400:
-                        client.getPlayer().getMap().startMapEffect("Lock the doors! Seal the root of the Ship's power!", 5120020);
+                        chr.getMap().startMapEffect("Lock the doors! Seal the root of the Ship's power!", 5120020);
                         break;
                     case 925100500:
-                        client.getPlayer().getMap().startMapEffect("Destroy the Lord Pirate!", 5120020);
+                        chr.getMap().startMapEffect("Destroy the Lord Pirate!", 5120020);
                         break;
                 }
                 break;
             }
             case astaroth_summon: {
-                client.getPlayer().getMap().resetFully();
-                client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(9400633), new Point(600, -26)); //rough estimate
+                chr.getMap().resetFully();
+                chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(9400633), new Point(600, -26)); //rough estimate
                 break;
             }
             case boss_Ravana: { //event handles this so nothing for now until i find out something to do with it
-                client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
+                chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
                 break;
             }
             case killing_BonusSetting: { //spawns monsters according to mapid
@@ -336,7 +337,7 @@ public class MapScriptMethods {
                 //926010050-926010069 = 40 Yetis
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
-                client.getPlayer().getMap().resetFully();
+                chr.getMap().resetFully();
                 client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/bonus").build()));
                 client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/stage").build()));
                 Point pos1 = null, pos2 = null, pos3 = null;
@@ -344,31 +345,31 @@ public class MapScriptMethods {
                 int mobId = 0;
                 //9700019, 9700029
                 //9700021 = one thats invincible
-                if (client.getPlayer().getMapId() >= 910320010 && client.getPlayer().getMapId() <= 910320029) {
+                if (chr.getMapId() >= 910320010 && chr.getMapId() <= 910320029) {
                     pos1 = new Point(121, 218);
                     pos2 = new Point(396, 43);
                     pos3 = new Point(-63, 43);
                     mobId = 9700020;
                     spawnPer = 10;
-                } else if (client.getPlayer().getMapId() >= 926010010 && client.getPlayer().getMapId() <= 926010029) {
+                } else if (chr.getMapId() >= 926010010 && chr.getMapId() <= 926010029) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
                     mobId = 9700019;
                     spawnPer = 10;
-                } else if (client.getPlayer().getMapId() >= 926010030 && client.getPlayer().getMapId() <= 926010049) {
+                } else if (chr.getMapId() >= 926010030 && chr.getMapId() <= 926010049) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
                     mobId = 9700019;
                     spawnPer = 15;
-                } else if (client.getPlayer().getMapId() >= 926010050 && client.getPlayer().getMapId() <= 926010069) {
+                } else if (chr.getMapId() >= 926010050 && chr.getMapId() <= 926010069) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
                     mobId = 9700019;
                     spawnPer = 20;
-                } else if (client.getPlayer().getMapId() >= 926010070 && client.getPlayer().getMapId() <= 926010089) {
+                } else if (chr.getMapId() >= 926010070 && chr.getMapId() <= 926010089) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
@@ -378,44 +379,44 @@ public class MapScriptMethods {
                     break;
                 }
                 for (int i = 0; i < spawnPer; i++) {
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos1));
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos2));
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos3));
+                    chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos1));
+                    chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos2));
+                    chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos3));
                 }
                 break;
             }
             case shammos_Fenter: {
-                if (client.getPlayer().getMapId() >= 921120100 && client.getPlayer().getMapId() < 921120500) {
+                if (chr.getMapId() >= 921120100 && chr.getMapId() < 921120500) {
                     MapleMonster shammos = WzXML.MOB.createMob(9300275);
-                    client.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(client.getPlayer().getMap().getPortal(0).getPosition()), 12);
-                    shammos.switchShammosController(client.getPlayer(), false);
-                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, client.getPlayer().getMap()));
+                    chr.getMap().spawnMonsterWithEffectBelow(shammos, new Point(chr.getMap().getPortal(0).getPosition()), 12);
+                    shammos.switchShammosController(chr, false);
+                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, chr.getMap()));
 
                 }
                 break;
             }
             case PRaid_D_Fenter: {
-                switch (client.getPlayer().getMapId() % 10) {
+                switch (chr.getMapId() % 10) {
                     case 0:
-                        client.getPlayer().getMap().startMapEffect("Eliminate all the monsters!", 5120033);
+                        chr.getMap().startMapEffect("Eliminate all the monsters!", 5120033);
                         break;
                     case 1:
-                        client.getPlayer().getMap().startMapEffect("Break the boxes and eliminate the monsters!", 5120033);
+                        chr.getMap().startMapEffect("Break the boxes and eliminate the monsters!", 5120033);
                         break;
                     case 2:
-                        client.getPlayer().getMap().startMapEffect("Eliminate the Officer!", 5120033);
+                        chr.getMap().startMapEffect("Eliminate the Officer!", 5120033);
                         break;
                     case 3:
-                        client.getPlayer().getMap().startMapEffect("Eliminate all the monsters!", 5120033);
+                        chr.getMap().startMapEffect("Eliminate all the monsters!", 5120033);
                         break;
                     case 4:
-                        client.getPlayer().getMap().startMapEffect("Find the way to the other side!", 5120033);
+                        chr.getMap().startMapEffect("Find the way to the other side!", 5120033);
                         break;
                 }
                 break;
             }
             case PRaid_B_Fenter: {
-                client.getPlayer().getMap().startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
+                chr.getMap().startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
                 break;
             }
             case balog_summon:
@@ -426,7 +427,7 @@ public class MapScriptMethods {
             case killing_MapSetting:
             case Sky_TrapFEnter:
             case balog_bonusSetting: { //not needed
-                client.getPlayer().getMap().resetFully();
+                chr.getMap().resetFully();
                 break;
             }
             default: {
@@ -766,10 +767,11 @@ public class MapScriptMethods {
     }
 
     private static void reloadWitchTower(TacosClient client) {
-        final MapleMap map = client.getPlayer().getMap();
+        MapleCharacter chr = client.getPlayer();
+        final MapleMap map = chr.getMap();
         map.killAllMonsters(false);
 
-        final int level = client.getPlayer().getLevel();
+        final int level = chr.getLevel();
         int mob;
         if (level <= 10) {
             mob = 9300367;

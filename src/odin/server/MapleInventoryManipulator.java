@@ -478,13 +478,14 @@ public class MapleInventoryManipulator {
     }
 
     public static void removeFromSlot(final TacosClient client, final MapleInventoryType type, final short slot, short quantity, final boolean unlock, final boolean consume) {
-        if (client.getPlayer() == null || client.getPlayer().getInventory(type) == null) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr == null || chr.getInventory(type) == null) {
             return;
         }
-        final Item item = client.getPlayer().getInventory(type).getItem(slot);
+        final Item item = chr.getInventory(type).getItem(slot);
         if (item != null) {
             final boolean allowZero = consume && GameConstants.isRechargable(item.getItemId());
-            client.getPlayer().getInventory(type).removeItem(slot, quantity, allowZero);
+            chr.getInventory(type).removeItem(slot, quantity, allowZero);
 
             if (item.getQuantity() == 0 && !allowZero) {
                 client.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().remove(type, item.getPosition()).build()));
@@ -510,12 +511,13 @@ public class MapleInventoryManipulator {
     }
 
     public static void move(final TacosClient client, final MapleInventoryType type, final short src, final short dst) {
-        if (src < 0 || dst < 0 || dst > client.getPlayer().getInventory(type).getSlotLimit() || src == dst) {
+        MapleCharacter chr = client.getPlayer();
+        if (src < 0 || dst < 0 || dst > chr.getInventory(type).getSlotLimit() || src == dst) {
             return;
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final Item source = client.getPlayer().getInventory(type).getItem(src);
-        final Item initialTarget = client.getPlayer().getInventory(type).getItem(dst);
+        final Item source = chr.getInventory(type).getItem(src);
+        final Item initialTarget = chr.getInventory(type).getItem(dst);
         if (source == null) {
             return;
         }
@@ -525,7 +527,7 @@ public class MapleInventoryManipulator {
         }
         final short oldsrcQ = source.getQuantity();
         final short slotMax = ii.getSlotMax(client, source.getItemId());
-        client.getPlayer().getInventory(type).move(src, dst, slotMax);
+        chr.getInventory(type).move(src, dst, slotMax);
 
         if (!type.equals(MapleInventoryType.EQUIP) && initialTarget != null
                 && initialTarget.getItemId() == source.getItemId()

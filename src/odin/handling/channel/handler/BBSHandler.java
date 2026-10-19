@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import tacos.client.TacosClient;
+import odin.client.MapleCharacter;
 import odin.handling.world.guild.MapleBBSThread;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
@@ -36,7 +37,8 @@ public class BBSHandler {
     }
 
     public static final void BBSOperation(ClientPacket cp, final TacosClient client) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return; // expelled while viewing bbs or hax
         }
         int localthreadid = 0;
@@ -52,7 +54,7 @@ public class BBSHandler {
                 String text = correctLength(cp.DecodeStr(), 600);
                 final int icon = cp.Decode4();
                 if (icon >= 0x64 && icon <= 0x6a) {
-                    if (!client.getPlayer().haveItem(5290000 + icon - 0x64, 1, false, true)) {
+                    if (!chr.haveItem(5290000 + icon - 0x64, 1, false, true)) {
                         return; // hax, using an nx icon that s/he doesn't have
                     }
                 } else if (icon < 0 || icon > 2) {
@@ -90,56 +92,63 @@ public class BBSHandler {
     }
 
     private static void listBBSThreads(TacosClient client, int start) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return;
         }
-        client.SendPacket(ResCWvsContext.BBSThreadList(client.getWorld().getGuild().getBBS(client.getPlayer().getGuildId()), start));
+        client.SendPacket(ResCWvsContext.BBSThreadList(client.getWorld().getGuild().getBBS(chr.getGuildId()), start));
     }
 
     private static void newBBSReply(final TacosClient client, final int localthreadid, final String text) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return;
         }
-        client.getWorld().getGuild().addBBSReply(client.getPlayer().getGuildId(), localthreadid, text, client.getPlayer().getId());
+        client.getWorld().getGuild().addBBSReply(chr.getGuildId(), localthreadid, text, chr.getId());
         displayThread(client, localthreadid);
     }
 
     private static void editBBSThread(final TacosClient client, final String title, final String text, final int icon, final int localthreadid) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        client.getWorld().getGuild().editBBSThread(client.getPlayer().getGuildId(), localthreadid, title, text, icon, client.getPlayer().getId(), client.getPlayer().getGuildRank());
+        client.getWorld().getGuild().editBBSThread(chr.getGuildId(), localthreadid, title, text, icon, chr.getId(), chr.getGuildRank());
         displayThread(client, localthreadid);
     }
 
     private static void newBBSThread(final TacosClient client, final String title, final String text, final int icon, final boolean bNotice) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return; // expelled while viewing?
         }
-        displayThread(client, client.getWorld().getGuild().addBBSThread(client.getPlayer().getGuildId(), title, text, icon, bNotice, client.getPlayer().getId()));
+        displayThread(client, client.getWorld().getGuild().addBBSThread(chr.getGuildId(), title, text, icon, bNotice, chr.getId()));
     }
 
     private static final void deleteBBSThread(final TacosClient client, final int localthreadid) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return;
         }
-        client.getWorld().getGuild().deleteBBSThread(client.getPlayer().getGuildId(), localthreadid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
+        client.getWorld().getGuild().deleteBBSThread(chr.getGuildId(), localthreadid, chr.getId(), (int) chr.getGuildRank());
     }
 
     private static void deleteBBSReply(final TacosClient client, final int localthreadid, final int replyid) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return;
         }
 
-        client.getWorld().getGuild().deleteBBSReply(client.getPlayer().getGuildId(), localthreadid, replyid, client.getPlayer().getId(), (int) client.getPlayer().getGuildRank());
+        client.getWorld().getGuild().deleteBBSReply(chr.getGuildId(), localthreadid, replyid, chr.getId(), (int) chr.getGuildRank());
         displayThread(client, localthreadid);
     }
 
     private static void displayThread(final TacosClient client, final int localthreadid) {
-        if (client.getPlayer().getGuildId() <= 0) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             return;
         }
-        final List<MapleBBSThread> bbsList = client.getWorld().getGuild().getBBS(client.getPlayer().getGuildId());
+        final List<MapleBBSThread> bbsList = client.getWorld().getGuild().getBBS(chr.getGuildId());
         if (bbsList != null) {
             for (MapleBBSThread t : bbsList) {
                 if (t != null && t.localthreadID == localthreadid) {

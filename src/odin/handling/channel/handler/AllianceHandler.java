@@ -150,7 +150,8 @@ public class AllianceHandler {
     }
 
     public static final void DenyInvite(TacosClient client, final MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
-        final int inviteid = client.getWorld().getGuild().getInvitedId(client.getPlayer().getGuildId());
+        MapleCharacter player = client.getPlayer();
+        final int inviteid = client.getWorld().getGuild().getInvitedId(player.getGuildId());
         if (inviteid > 0) {
             final int newAlliance = client.getWorld().getAlliance().getAllianceLeader(inviteid);
             if (newAlliance > 0) {
@@ -158,7 +159,7 @@ public class AllianceHandler {
                 if (chr != null) {
                     chr.dropMessage(5, gs.getName() + " Guild has rejected the Guild Union invitation.");
                 }
-                client.getWorld().getGuild().setInvitedId(client.getPlayer().getGuildId(), 0);
+                client.getWorld().getGuild().setInvitedId(player.getGuildId(), 0);
             }
         }
     }

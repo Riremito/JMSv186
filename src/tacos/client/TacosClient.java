@@ -302,7 +302,7 @@ public class TacosClient extends BaseClient {
         if (chr != null) {
             chr.removalTask();
             chr.saveToDB(false);
-            LazyDatabase.saveData(getPlayer());
+            LazyDatabase.saveData(chr);
         }
         if (shutdown) {
             closeSession();

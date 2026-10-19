@@ -501,7 +501,8 @@ public class ReqCCashShop {
     }
 
     private static void doCSPackets(TacosClient client) {
-        client.SendPacket(ResCCashShop.CashShopQueryCashResult(client.getPlayer()));
-        client.getPlayer().getCashInventory().checkExpire(client);
+        MapleCharacter chr = client.getPlayer();
+        client.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
+        chr.getCashInventory().checkExpire(client);
     }
 }

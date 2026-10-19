@@ -287,6 +287,7 @@ public class ResCMiniRoomBaseDlg {
     }
 
     public static ServerPacket getTradeStart(TacosClient client, MapleTrade trade, byte number, boolean isPointTrade) {
+        MapleCharacter chr = client.getPlayer();
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
@@ -300,9 +301,9 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode2(trade.getPartner().getChr().getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87));
         }
         sp.Encode1(number);
-        sp.EncodeBuffer(RD_AvatarLook.Encode(client.getPlayer()));
-        sp.EncodeStr(client.getPlayer().getName());
-        sp.Encode2(client.getPlayer().getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87));
+        sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
+        sp.EncodeStr(chr.getName());
+        sp.Encode2(chr.getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87));
         sp.Encode1(-1);
         return sp;
     }

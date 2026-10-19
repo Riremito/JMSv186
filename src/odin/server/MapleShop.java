@@ -129,10 +129,11 @@ public class MapleShop {
     }
 
     public void sell(TacosClient client, MapleInventoryType type, byte slot, short quantity) {
+        MapleCharacter chr = client.getPlayer();
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
-        Item item = client.getPlayer().getInventory(type).getItem(slot);
+        Item item = chr.getInventory(type).getItem(slot);
         if (item == null) {
             return;
         }
@@ -161,14 +162,15 @@ public class MapleShop {
             }
             final int recvMesos = (int) Math.max(Math.ceil(price * quantity), 0);
             if (price != -1.0 && recvMesos > 0) {
-                client.getPlayer().gainMeso(recvMesos, false);
+                chr.gainMeso(recvMesos, false);
             }
             client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
         }
     }
 
     public boolean recharge(final TacosClient client, final byte slot) {
-        final Item item = client.getPlayer().getInventory(MapleInventoryType.USE).getItem(slot);
+        MapleCharacter chr = client.getPlayer();
+        final Item item = chr.getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
             client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
@@ -176,17 +178,17 @@ public class MapleShop {
         }
         final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         short slotMax = ii.getSlotMax(client, item.getItemId());
-        final int skill = GameConstants.getMasterySkill(client.getPlayer().getJob());
+        final int skill = GameConstants.getMasterySkill(chr.getJob());
 
         if (skill != 0) {
-            slotMax += client.getPlayer().getSkillLevel(SkillFactory.getSkill(skill)) * 10;
+            slotMax += chr.getSkillLevel(SkillFactory.getSkill(skill)) * 10;
         }
         if (item.getQuantity() < slotMax) {
             final int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
-            if (client.getPlayer().getMeso() >= price) {
+            if (chr.getMeso() >= price) {
                 item.setQuantity(slotMax);
                 client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));
-                client.getPlayer().gainMeso(-price, false, true, false);
+                chr.gainMeso(-price, false, true, false);
                 client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
                 return true;
             } else {

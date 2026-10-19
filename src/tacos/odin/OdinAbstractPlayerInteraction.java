@@ -98,34 +98,37 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void warp(final int map) {
+        MapleCharacter chr = client.getPlayer();
         final MapleMap mapz = getWarpMap(map);
         try {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            chr.changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
+            chr.changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
     public final void warp_Instanced(final int map) {
+        MapleCharacter chr = client.getPlayer();
         final MapleMap mapz = getMap_Instanced(map);
         try {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
+            chr.changeMapPortal(mapz, mapz.getPortal(Randomizer.nextInt(mapz.getPortals().size())));
         } catch (Exception e) {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(0));
+            chr.changeMapPortal(mapz, mapz.getPortal(0));
         }
     }
 
     public final void warp(final int map, final int portal) {
+        MapleCharacter chr = client.getPlayer();
         final MapleMap mapz = getWarpMap(map);
-        if (portal != 0 && map == client.getPlayer().getMapId()) { //test
-            final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
+        if (portal != 0 && map == chr.getMapId()) { //test
+            final Point portalPos = new Point(chr.getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
                 client.SendPacket(ResCUserLocal.UserTeleport((byte) portal)); //until we get packet for far movement, this will do
             } else {
-                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+                chr.changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+            chr.changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
@@ -135,19 +138,20 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void warp(final int map, String portal) {
+        MapleCharacter chr = client.getPlayer();
         final MapleMap mapz = getWarpMap(map);
         if (map == 109060000 || map == 109060002 || map == 109060004) {
             portal = mapz.getSnowballPortal();
         }
-        if (map == client.getPlayer().getMapId()) { //test
-            final Point portalPos = new Point(client.getPlayer().getMap().getPortal(portal).getPosition());
+        if (map == chr.getMapId()) { //test
+            final Point portalPos = new Point(chr.getMap().getPortal(portal).getPosition());
             if (portalPos.distanceSq(getPlayer().getPosition()) < 90000.0) { //estimation
-                client.SendPacket(ResCUserLocal.UserTeleport((byte) client.getPlayer().getMap().getPortal(portal).getId()));
+                client.SendPacket(ResCUserLocal.UserTeleport((byte) chr.getMap().getPortal(portal).getId()));
             } else {
-                client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+                chr.changeMapPortal(mapz, mapz.getPortal(portal));
             }
         } else {
-            client.getPlayer().changeMapPortal(mapz, mapz.getPortal(portal));
+            chr.changeMapPortal(mapz, mapz.getPortal(portal));
         }
     }
 
@@ -219,44 +223,45 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final int getPlayerStat(final String type) {
+        MapleCharacter chr = client.getPlayer();
         if (type.equals("LVL")) {
-            return client.getPlayer().getLevel();
+            return chr.getLevel();
         } else if (type.equals("STR")) {
-            return client.getPlayer().getStat().getStr();
+            return chr.getStat().getStr();
         } else if (type.equals("DEX")) {
-            return client.getPlayer().getStat().getDex();
+            return chr.getStat().getDex();
         } else if (type.equals("INT")) {
-            return client.getPlayer().getStat().getInt();
+            return chr.getStat().getInt();
         } else if (type.equals("LUK")) {
-            return client.getPlayer().getStat().getLuk();
+            return chr.getStat().getLuk();
         } else if (type.equals("HP")) {
-            return client.getPlayer().getStat().getHp();
+            return chr.getStat().getHp();
         } else if (type.equals("MP")) {
-            return client.getPlayer().getStat().getMp();
+            return chr.getStat().getMp();
         } else if (type.equals("MAXHP")) {
-            return client.getPlayer().getStat().getMaxHp();
+            return chr.getStat().getMaxHp();
         } else if (type.equals("MAXMP")) {
-            return client.getPlayer().getStat().getMaxMp();
+            return chr.getStat().getMaxMp();
         } else if (type.equals("RAP")) {
-            return client.getPlayer().getRemainingAp();
+            return chr.getRemainingAp();
         } else if (type.equals("RSP")) {
-            return client.getPlayer().getRemainingSp();
+            return chr.getRemainingSp();
         } else if (type.equals("GID")) {
-            return client.getPlayer().getGuildId();
+            return chr.getGuildId();
         } else if (type.equals("GRANK")) {
-            return client.getPlayer().getGuildRank();
+            return chr.getGuildRank();
         } else if (type.equals("ARANK")) {
-            return client.getPlayer().getAllianceRank();
+            return chr.getAllianceRank();
         } else if (type.equals("GM")) {
-            return client.getPlayer().isGM() ? 1 : 0;
+            return chr.isGM() ? 1 : 0;
         } else if (type.equals("ADMIN")) {
-            return client.getPlayer().isAdmin() ? 1 : 0;
+            return chr.isAdmin() ? 1 : 0;
         } else if (type.equals("GENDER")) {
-            return client.getPlayer().getGender();
+            return chr.getGender();
         } else if (type.equals("FACE")) {
-            return client.getPlayer().getFace();
+            return chr.getFace();
         } else if (type.equals("HAIR")) {
-            return client.getPlayer().getHair();
+            return chr.getHair();
         }
         return -1;
     }
@@ -323,7 +328,8 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void spawnNpc(final int npcId) {
-        client.getPlayer().getMap().spawnNpc(npcId, client.getPlayer().getPosition());
+        MapleCharacter chr = client.getPlayer();
+        chr.getMap().spawnNpc(npcId, chr.getPosition());
     }
 
     public final void spawnNpc(final int npcId, final int x, final int y) {
@@ -421,6 +427,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final Item gainItem(final int id, final short quantity, final boolean randomStats, final long period, final int slots, final String owner, final TacosClient target) {
+        MapleCharacter chr = target.getPlayer();
         Item item_info = null;
         if (quantity >= 0) {
             final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -443,8 +450,8 @@ public abstract class OdinAbstractPlayerInteraction {
                 final String name = ii.getName(id);
                 if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                     final String msg = "You have attained title <" + name + ">";
-                    target.getPlayer().dropMessage(-1, msg);
-                    target.getPlayer().dropMessage(5, msg);
+                    chr.dropMessage(-1, msg);
+                    chr.dropMessage(5, msg);
                 }
                 MapleInventoryManipulator.addbyItem(target, item.copy());
                 item_info = item;
@@ -517,10 +524,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean isAllPartyMembersAllowedJob(final int job) {
-        if (client.getPlayer().getParty() == null) {
+        MapleCharacter chr = client.getPlayer();
+        if (chr.getParty() == null) {
             return false;
         }
-        for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
+        for (final MaplePartyCharacter mem : chr.getParty().getMembers()) {
             if (mem.getJobId() / 100 != job) {
                 return false;
             }
@@ -529,11 +537,12 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean allMembersHere() {
-        if (client.getPlayer().getParty() == null) {
+        MapleCharacter player = client.getPlayer();
+        if (player.getParty() == null) {
             return false;
         }
-        for (final MaplePartyCharacter mem : client.getPlayer().getParty().getMembers()) {
-            final MapleCharacter chr = client.getPlayer().getMap().getPlayerById(mem.getId());
+        for (final MaplePartyCharacter mem : player.getParty().getMembers()) {
+            final MapleCharacter chr = player.getMap().getPlayerById(mem.getId());
             if (chr == null) {
                 return false;
             }
@@ -608,7 +617,8 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void gainExpR(int gain) {
-        client.getPlayer().gainExp(gain * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
+        MapleCharacter chr = client.getPlayer();
+        chr.gainExp(gain * chr.getChannelServer().getExpRate(), true, true, true);
     }
 
     public final void givePartyItems(final int id, final short quantity, final List<MapleCharacter> party) {
@@ -652,14 +662,15 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void givePartyExp(final int amount) {
+        MapleCharacter character = client.getPlayer();
         if (getPlayer().getParty() == null || getPlayer().getParty().getMembers().size() == 1) {
-            gainExp(amount * client.getPlayer().getChannelServer().getExpRate());
+            gainExp(amount * character.getChannelServer().getExpRate());
             return;
         }
         for (final MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             final MapleCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
-                player.gainExp(amount * client.getPlayer().getChannelServer().getExpRate(), true, true, true);
+                player.gainExp(amount * character.getChannelServer().getExpRate(), true, true, true);
             }
         }
     }
@@ -819,10 +830,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final boolean dojoAgent_NextMap(final boolean dojo, final boolean fromresting) {
+        MapleCharacter chr = client.getPlayer();
         if (dojo) {
-            return Event_DojoAgent.warpNextMap(client.getPlayer(), fromresting);
+            return Event_DojoAgent.warpNextMap(chr, fromresting);
         }
-        return Event_DojoAgent.warpNextMap_Agent(client.getPlayer(), fromresting);
+        return Event_DojoAgent.warpNextMap_Agent(chr, fromresting);
     }
 
     public final int dojo_getPts() {
@@ -846,7 +858,8 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public final void saveReturnLocation(final String loc) {
-        client.getPlayer().saveLocation(SavedLocationType.fromString(loc), client.getPlayer().getMap().getReturnMap().getId());
+        MapleCharacter chr = client.getPlayer();
+        chr.saveLocation(SavedLocationType.fromString(loc), chr.getMap().getReturnMap().getId());
     }
 
     public final void clearSavedLocation(final String loc) {

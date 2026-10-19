@@ -47,6 +47,7 @@ import tacos.script.TacosScriptNPC;
 public class InventoryHandler {
 
     public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
+        MapleCharacter player = client.getPlayer();
         int unk1 = cp.Decode4();
         final byte slot = (byte) cp.Decode2();
         final int itemId = cp.Decode4();
@@ -94,29 +95,29 @@ public class InventoryHandler {
                     if (warped) { // Removal of gold compass
                         MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430008, 1, false, false);
                     } else { // Or mabe some other message.
-                        client.getPlayer().dropMessage(5, "All maps are currently in use, please try again later.");
+                        player.dropMessage(5, "All maps are currently in use, please try again later.");
                     }
                     break;
                 }
                 case 2430112: //miracle cube
-                    if (client.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
-                        if (client.getPlayer().getInventory(MapleInventoryType.USE).countById(2430112) >= 25) {
+                    if (player.getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
+                        if (player.getInventory(MapleInventoryType.USE).countById(2430112) >= 25) {
                             if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, 25, true, false)) {
                                 MapleInventoryManipulator.addById(client, 2049400, (short) 1);
                             } else {
-                                client.getPlayer().dropMessage(5, "Please make some space.");
+                                player.dropMessage(5, "Please make some space.");
                             }
-                        } else if (client.getPlayer().getInventory(MapleInventoryType.USE).countById(2430112) >= 10) {
+                        } else if (player.getInventory(MapleInventoryType.USE).countById(2430112) >= 10) {
                             if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, 10, true, false)) {
                                 MapleInventoryManipulator.addById(client, 2049401, (short) 1);
                             } else {
-                                client.getPlayer().dropMessage(5, "Please make some space.");
+                                player.dropMessage(5, "Please make some space.");
                             }
                         } else {
-                            client.getPlayer().dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
+                            player.dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
                         }
                     } else {
-                        client.getPlayer().dropMessage(5, "Please make some space.");
+                        player.dropMessage(5, "Please make some space.");
                     }
                     break;
                 case 2430036: //croco 1 day
@@ -251,13 +252,13 @@ public class InventoryHandler {
             }
         }
         if (mountid > 0) {
-            mountid += (GameConstants.isAran(client.getPlayer().getJob()) ? 20000000 : (GameConstants.isEvan(client.getPlayer().getJob()) ? 20010000 : (GameConstants.isKOC(client.getPlayer().getJob()) ? 10000000 : (GameConstants.isResist(client.getPlayer().getJob()) ? 30000000 : 0))));
-            if (client.getPlayer().getSkillLevel(mountid) > 0) {
-                client.getPlayer().dropMessage(5, "You already have this skill.");
+            mountid += (GameConstants.isAran(player.getJob()) ? 20000000 : (GameConstants.isEvan(player.getJob()) ? 20010000 : (GameConstants.isKOC(player.getJob()) ? 10000000 : (GameConstants.isResist(player.getJob()) ? 30000000 : 0))));
+            if (player.getSkillLevel(mountid) > 0) {
+                player.dropMessage(5, "You already have this skill.");
             } else if (expiration_days > 0) {
                 MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
-                client.getPlayer().dropMessage(5, "The skill has been attained.");
+                player.changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
+                player.dropMessage(5, "The skill has been attained.");
             }
         }
         chr.updateInv();

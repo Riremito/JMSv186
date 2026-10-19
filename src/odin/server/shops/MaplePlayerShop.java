@@ -352,6 +352,7 @@ public class MaplePlayerShop {
     }
 
     public void buy(TacosClient client, int item, short quantity) {
+        MapleCharacter chr = client.getPlayer();
         MaplePlayerShopItem pItem = items.get(item);
         if (pItem.bundles > 0) {
             Item newItem = pItem.item.copy();
@@ -364,11 +365,11 @@ public class MaplePlayerShop {
                 newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
             }
             final int gainmeso = pItem.price * quantity;
-            if (client.getPlayer().getMeso() >= gainmeso) {
+            if (chr.getMeso() >= gainmeso) {
                 if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
                     pItem.bundles -= quantity;
-                    bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, client.getPlayer().getName()));
-                    client.getPlayer().gainMeso(-gainmeso, false);
+                    bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, chr.getName()));
+                    chr.gainMeso(-gainmeso, false);
                     getMCOwner().gainMeso(gainmeso, false);
                     if (pItem.bundles <= 0) {
                         boughtnumber++;
@@ -378,10 +379,10 @@ public class MaplePlayerShop {
                         }
                     }
                 } else {
-                    client.getPlayer().dropMessage(1, "Your inventory is full.");
+                    chr.dropMessage(1, "Your inventory is full.");
                 }
             } else {
-                client.getPlayer().dropMessage(1, "You do not have enough mesos.");
+                chr.dropMessage(1, "You do not have enough mesos.");
                 //}
             }
             getMCOwner().SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(this));
