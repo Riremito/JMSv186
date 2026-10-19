@@ -31,7 +31,6 @@ import odin.client.MapleQuestStatus;
 import odin.server.quest.MapleQuest;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import java.awt.Point;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
@@ -65,7 +64,7 @@ public class MapleMiniGame {
     protected int channel;
     protected int map;
     protected AtomicInteger meso = new AtomicInteger(0);
-    protected WeakReference<MapleCharacter> chrs[];
+    protected MapleCharacter chrs[];
     protected List<String> visitors = new LinkedList<>();
     protected List<BoughtItem> bought = new LinkedList<>();
     protected List<MaplePlayerShopItem> items = new LinkedList<>();
@@ -94,9 +93,9 @@ public class MapleMiniGame {
         this.pass = pass;
         this.map = owner.getMapId();
         this.channel = owner.getClient().getChannelId();
-        chrs = new WeakReference[slots - 1];
+        chrs = new MapleCharacter[slots - 1];
         for (int i = 0; i < chrs.length; i++) {
-            chrs[i] = new WeakReference<>(null);
+            chrs[i] = null;
         }
         this.GameType = GameType;
         this.points = new int[slots];
@@ -135,9 +134,9 @@ public class MapleMiniGame {
     }
 
     public void broadcastToVisitors(ServerPacket packet, boolean owner) {
-        for (WeakReference<MapleCharacter> chr : chrs) {
-            if (chr != null && chr.get() != null) {
-                chr.get().SendPacket(packet);
+        for (MapleCharacter chr : chrs) {
+            if (chr != null) {
+                chr.SendPacket(packet);
             }
         }
         if (getShopType() != HIRED_MERCHANT && owner && getMCOwner() != null) {
@@ -146,9 +145,9 @@ public class MapleMiniGame {
     }
 
     public void broadcastToVisitors(ServerPacket packet, int exception) {
-        for (WeakReference<MapleCharacter> chr : chrs) {
-            if (chr != null && chr.get() != null && getVisitorSlot(chr.get()) != exception) {
-                chr.get().SendPacket(packet);
+        for (MapleCharacter chr : chrs) {
+            if (chr != null && getVisitorSlot(chr) != exception) {
+                chr.SendPacket(packet);
             }
         }
         if (getShopType() != HIRED_MERCHANT && getMCOwner() != null && exception != ownerId) {
@@ -202,14 +201,14 @@ public class MapleMiniGame {
     }
 
     public MapleCharacter getVisitor(int num) {
-        return chrs[num].get();
+        return chrs[num];
     }
 
     public void addVisitor(MapleCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameNewVisitor(visitor, i, this));
-            chrs[i - 1] = new WeakReference<>(visitor);
+            chrs[i - 1] = visitor;
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
             }
@@ -221,13 +220,13 @@ public class MapleMiniGame {
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
-            chrs[slot - 1] = new WeakReference<>(null);
+            chrs[slot - 1] = null;
         }
     }
 
     public byte getVisitorSlot(MapleCharacter visitor) {
         for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] != null && chrs[i].get() != null && chrs[i].get().getId() == visitor.getId()) {
+            if (chrs[i] != null && chrs[i].getId() == visitor.getId()) {
                 return (byte) (i + 1);
             }
         }
@@ -246,7 +245,7 @@ public class MapleMiniGame {
                 }
                 broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
-                chrs[i] = new WeakReference<>(null);
+                chrs[i] = null;
             }
         }
     }
@@ -273,8 +272,8 @@ public class MapleMiniGame {
     public List<SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors() {
         List<SimpleImmutableEntry<Byte, MapleCharacter>> chrz = new LinkedList<>();
         for (byte i = 0; i < chrs.length; i++) { //include owner or no
-            if (chrs[i] != null && chrs[i].get() != null) {
-                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i].get()));
+            if (chrs[i] != null) {
+                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i]));
             }
         }
         return chrz;
@@ -298,7 +297,7 @@ public class MapleMiniGame {
 
     public byte getFreeSlot() {
         for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] == null || chrs[i].get() == null) {
+            if (chrs[i] == null) {
                 return (byte) (i + 1);
             }
         }
@@ -531,7 +530,7 @@ public class MapleMiniGame {
         for (int i = 0; i < slots; i++) {
             if (exitAfter[i]) {
                 exitAfter[i] = false;
-                exit(i == 0 ? getMCOwner() : chrs[i - 1].get());
+                exit(i == 0 ? getMCOwner() : chrs[i - 1]);
             }
         }
     }

@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import java.lang.ref.WeakReference;
 import java.sql.SQLException;
 import odin.server.Randomizer;
 import tacos.client.TacosCharacter;
@@ -34,7 +33,7 @@ public class MapleMount {
     private int fatigue;
     private int level;
     private boolean changed = false;
-    private WeakReference<TacosCharacter> owner;
+    private TacosCharacter owner;
 
     public MapleMount(TacosCharacter owner, int id, int skillid, int fatigue, int level, int exp) {
         this.itemid = id;
@@ -42,7 +41,7 @@ public class MapleMount {
         this.fatigue = fatigue;
         this.level = level;
         this.exp = exp;
-        this.owner = new WeakReference<>(owner);
+        this.owner = owner;
     }
 
     public void saveMount(int charid) throws SQLException {

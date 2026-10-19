@@ -8,7 +8,6 @@ import odin.constants.GameConstants;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
-import java.lang.ref.WeakReference;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
@@ -23,17 +22,17 @@ public class MapleTrade {
     private int exchangeMeso = 0;
     private boolean locked = false;
     private boolean isPointTrade = false;
-    private final WeakReference<MapleCharacter> wrchr;
+    private final MapleCharacter wrchr;
     private final byte tradingslot;
 
     public MapleTrade(byte tradingslot, MapleCharacter chr) {
         this.tradingslot = tradingslot;
-        this.wrchr = new WeakReference<>(chr);
+        this.wrchr = chr;
     }
 
     public MapleTrade(byte tradingslot, MapleCharacter chr, boolean isPointTrade) {
         this.tradingslot = tradingslot;
-        this.wrchr = new WeakReference<>(chr);
+        this.wrchr = chr;
         this.isPointTrade = isPointTrade;
     }
 
@@ -51,16 +50,16 @@ public class MapleTrade {
                 } else if (ItemFlag.KARMA_USE.check(flag)) {
                     item.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
                 }
-                MapleInventoryManipulator.addFromDrop(wrchr.get().getClient(), item, false);
+                MapleInventoryManipulator.addFromDrop(wrchr.getClient(), item, false);
             }
             exchangeItems.clear();
         }
         if (exchangeMeso > 0) {
-            wrchr.get().gainMeso(exchangeMeso - GameConstants.getTaxAmount(exchangeMeso), false, true, false);
+            wrchr.gainMeso(exchangeMeso - GameConstants.getTaxAmount(exchangeMeso), false, true, false);
         }
         exchangeMeso = 0;
 
-        wrchr.get().SendPacket(ResCMiniRoomBaseDlg.TradeMessage(tradingslot, (byte) 0x07));
+        wrchr.SendPacket(ResCMiniRoomBaseDlg.TradeMessage(tradingslot, (byte) 0x07));
     }
 
     public void cancel(TacosClient client) {
@@ -90,10 +89,10 @@ public class MapleTrade {
         if (locked || partner == null || meso <= 0 || this.meso + meso <= 0) {
             return;
         }
-        if (wrchr.get().getMeso() >= meso) {
-            wrchr.get().gainMeso(-meso, false, true, false);
+        if (wrchr.getMeso() >= meso) {
+            wrchr.gainMeso(-meso, false, true, false);
             this.meso += meso;
-            wrchr.get().SendPacket(ResCMiniRoomBaseDlg.getTradeMesoSet((byte) 0, this.meso));
+            wrchr.SendPacket(ResCMiniRoomBaseDlg.getTradeMesoSet((byte) 0, this.meso));
             if (partner != null) {
                 partner.getChr().SendPacket(ResCMiniRoomBaseDlg.getTradeMesoSet((byte) 1, this.meso));
             }
@@ -105,16 +104,16 @@ public class MapleTrade {
             return;
         }
         items.add(item);
-        wrchr.get().SendPacket(ResCMiniRoomBaseDlg.getTradeItemAdd((byte) 0, item));
+        wrchr.SendPacket(ResCMiniRoomBaseDlg.getTradeItemAdd((byte) 0, item));
         if (partner != null) {
             partner.getChr().SendPacket(ResCMiniRoomBaseDlg.getTradeItemAdd((byte) 1, item));
         }
     }
 
     public void chat(String message) {
-        wrchr.get().dropMessage(-2, wrchr.get().getName() + " : " + message);
+        wrchr.dropMessage(-2, wrchr.getName() + " : " + message);
         if (partner != null) {
-            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.shopChat(wrchr.get().getName() + " : " + message, 1));
+            partner.getChr().SendPacket(ResCMiniRoomBaseDlg.shopChat(wrchr.getName() + " : " + message, 1));
         }
     }
 
@@ -130,7 +129,7 @@ public class MapleTrade {
     }
 
     public MapleCharacter getChr() {
-        return wrchr.get();
+        return wrchr;
     }
 
     public int getNextTargetSlot() {
@@ -188,7 +187,7 @@ public class MapleTrade {
     }
 
     private int check() { //0 = fine, 1 = invent space not, 2 = pickupRestricted
-        if (wrchr.get().getMeso() + exchangeMeso < 0) {
+        if (wrchr.getMeso() + exchangeMeso < 0) {
             return 1;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -211,11 +210,11 @@ public class MapleTrade {
                     cash++;
                     break;
             }
-            if (ii.isPickupRestricted(item.getItemId()) && wrchr.get().getInventory(GameConstants.getInventoryType(item.getItemId())).findById(item.getItemId()) != null) {
+            if (ii.isPickupRestricted(item.getItemId()) && wrchr.getInventory(GameConstants.getInventoryType(item.getItemId())).findById(item.getItemId()) != null) {
                 return 2;
             }
         }
-        if (wrchr.get().getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < eq || wrchr.get().getInventory(MapleInventoryType.USE).getNumFreeSlot() < use || wrchr.get().getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < setup || wrchr.get().getInventory(MapleInventoryType.ETC).getNumFreeSlot() < etc || wrchr.get().getInventory(MapleInventoryType.CASH).getNumFreeSlot() < cash) {
+        if (wrchr.getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < eq || wrchr.getInventory(MapleInventoryType.USE).getNumFreeSlot() < use || wrchr.getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < setup || wrchr.getInventory(MapleInventoryType.ETC).getNumFreeSlot() < etc || wrchr.getInventory(MapleInventoryType.CASH).getNumFreeSlot() < cash) {
             return 1;
         }
         return 0;
@@ -257,8 +256,8 @@ public class MapleTrade {
             partner.cancel(partner.getChr().getClient());
             partner.getChr().setTrade(null);
         }
-        if (Localtrade.wrchr.get() != null) {
-            Localtrade.wrchr.get().setTrade(null);
+        if (Localtrade.wrchr != null) {
+            Localtrade.wrchr.setTrade(null);
         }
     }
 

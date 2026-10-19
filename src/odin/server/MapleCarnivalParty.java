@@ -3,7 +3,6 @@ package odin.server;
 import odin.client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
-import java.lang.ref.WeakReference;
 import odin.server.maps.MapleMap;
 
 /**
@@ -15,7 +14,7 @@ import odin.server.maps.MapleMap;
 public class MapleCarnivalParty {
 
     private List<Integer> members = new LinkedList<>();
-    private WeakReference<MapleCharacter> leader;
+    private MapleCharacter leader;
     private byte team;
     private int channel;
     private short availableCP = 0;
@@ -23,7 +22,7 @@ public class MapleCarnivalParty {
     private boolean winner = false;
 
     public MapleCarnivalParty(MapleCharacter owner, List<MapleCharacter> members1, byte team1) {
-        leader = new WeakReference<>(owner);
+        leader = owner;
         for (MapleCharacter mem : members1) {
             members.add(mem.getId());
             mem.setCarnivalParty(this);
@@ -49,7 +48,7 @@ public class MapleCarnivalParty {
 
     // used by script
     public MapleCharacter getLeader() {
-        return leader.get();
+        return leader;
     }
 
     // used by script

@@ -3,7 +3,6 @@ package odin.server;
 import java.util.LinkedList;
 import java.util.List;
 import odin.client.MapleCharacter;
-import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,7 +14,7 @@ import tacos.server.TacosWorld;
 
 public class MapleSquad {
 
-    private WeakReference<MapleCharacter> leader;
+    private MapleCharacter leader;
     private final String leaderName;
     private Map<String, String> members = new LinkedHashMap<>();
     private Map<String, String> bannedMembers = new LinkedHashMap<>();
@@ -28,7 +27,7 @@ public class MapleSquad {
     private ScheduledFuture<?> removal;
 
     public MapleSquad(int ch, String type, MapleCharacter leader, int expiration) {
-        this.leader = new WeakReference<>(leader);
+        this.leader = leader;
         this.members.put(leader.getName(), MapleCarnivalChallenge.getJobBasicNameById(leader.getJob()));
         this.leaderName = leader.getName();
         this.ch = ch;
@@ -42,11 +41,11 @@ public class MapleSquad {
     }
 
     public MapleMap getBeginMap() {
-        return this.leader.get().findMap(beginMapId);
+        return this.leader.findMap(beginMapId);
     }
 
     public MapleCharacter getChar(String name) {
-        return this.leader.get().getChannelServer().getOnlinePlayers().findByName(name);
+        return this.leader.getChannelServer().getOnlinePlayers().findByName(name);
     }
 
     private void scheduleRemoval(int time) {
@@ -227,9 +226,9 @@ public class MapleSquad {
 
     // used by script
     public MapleCharacter getLeader() {
-        if (leader == null || leader.get() == null) {
+        if (leader == null) {
             if (members.size() > 0 && getChar(leaderName) != null) {
-                leader = new WeakReference<>(getChar(leaderName));
+                leader = getChar(leaderName);
             } else {
                 if (status != 0) {
                     clear();
@@ -237,7 +236,7 @@ public class MapleSquad {
                 return null;
             }
         }
-        return leader.get();
+        return leader;
     }
 
     // used by script

@@ -24,7 +24,6 @@ import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.Item;
 import odin.client.inventory.Equip;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
@@ -96,7 +95,7 @@ public class PlayerStats {
     //same with incMesoProp/incRewardProp for now
     public double dam_r;
     public double bossdam_r;
-    private WeakReference<MapleCharacter> chr;
+    private MapleCharacter chr;
     private float shouldHealHP;
     private float shouldHealMP;
     private float speedMod;
@@ -116,7 +115,7 @@ public class PlayerStats {
 
     public PlayerStats(MapleCharacter chr) {
         // TODO, move str/dex/int etc here -_-
-        this.chr = new WeakReference<>(chr);
+        this.chr = chr;
     }
 
     //POTENTIALS:
@@ -177,7 +176,7 @@ public class PlayerStats {
         }
         this.hp = (short) thp;
 
-        MapleCharacter chra = chr.get();
+        MapleCharacter chra = chr;
         if (chra != null) {
             if (!silent) {
                 chra.updatePartyMemberHP();
@@ -269,7 +268,7 @@ public class PlayerStats {
     }
 
     public void recalcLocalStats(boolean first_login) {
-        MapleCharacter chra = chr.get();
+        MapleCharacter chra = chr;
         if (chra == null) {
             return;
         }
@@ -672,7 +671,7 @@ public class PlayerStats {
     }
 
     public void relocHeal() {
-        MapleCharacter chra = chr.get();
+        MapleCharacter chra = chr;
         if (chra == null) {
             return;
         }

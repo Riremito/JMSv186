@@ -4,7 +4,6 @@
  */
 package odin.server;
 
-import java.lang.ref.WeakReference;
 import odin.client.MapleCharacter;
 import odin.handling.world.MaplePartyCharacter;
 
@@ -15,11 +14,11 @@ import odin.handling.world.MaplePartyCharacter;
  */
 public class MapleCarnivalChallenge {
 
-    WeakReference<MapleCharacter> challenger;
+    MapleCharacter challenger;
     String challengeinfo = "";
 
     public MapleCarnivalChallenge(MapleCharacter challenger) {
-        this.challenger = new WeakReference<>(challenger);
+        this.challenger = challenger;
         challengeinfo += "#b";
         for (MaplePartyCharacter pc : challenger.getParty().getMembers()) {
             MapleCharacter chr = challenger.getMap().getPlayerById(pc.getId());
@@ -329,7 +328,7 @@ public class MapleCarnivalChallenge {
 
     // used by script
     public MapleCharacter getChallenger() {
-        return challenger.get();
+        return challenger;
     }
 
     // used by script

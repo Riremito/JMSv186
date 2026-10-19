@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.client.inventory.Equip;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -88,7 +87,7 @@ public class MapleMonster extends TacosMonster {
     private int mp;
     private int lastNode = -1;
     private int lastNodeController = -1;
-    private WeakReference<MapleMonster> sponge = new WeakReference<>(null);
+    private MapleMonster sponge = null;
     private int highestDamageChar = 0; // Just a reference for monster EXP distribution after dead
     private int stolen = -1; //monster can only be stolen ONCE
     private byte venom_counter;
@@ -148,7 +147,7 @@ public class MapleMonster extends TacosMonster {
     }
 
     public void setSponge(MapleMonster mob) {
-        sponge = new WeakReference<>(mob);
+        sponge = mob;
     }
 
     public void setMap(MapleMap map) {
@@ -202,7 +201,7 @@ public class MapleMonster extends TacosMonster {
     }
 
     public MapleMonster getSponge() {
-        return sponge.get();
+        return sponge;
     }
 
     public void damage(MapleCharacter from, long damage, boolean updateAttackTime) {
@@ -285,22 +284,22 @@ public class MapleMonster extends TacosMonster {
                 map.killMonster(this, from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
             }
         } else {
-            if (sponge.get() != null) {
-                if (sponge.get().hp > 0) { // If it's still alive, dont want double/triple rewards
+            if (sponge != null) {
+                if (sponge.hp > 0) { // If it's still alive, dont want double/triple rewards
                     // Sponge are always in the same map, so we can use this.map
                     // The only mob that uses sponge are PB/HT
-                    sponge.get().hp -= rDamage;
+                    sponge.hp -= rDamage;
 
-                    if (sponge.get().hp <= 0) {
-                        map.killMonster(sponge.get(), from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
+                    if (sponge.hp <= 0) {
+                        map.killMonster(sponge, from, true, false, OpsMobLeaveField.MOBLEAVEFIELD_ETC, lastSkill);
                     } else {
-                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(sponge.get()).build()));
+                        map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(sponge).build()));
                     }
                 }
             }
             if (hp > 0) {
                 hp -= rDamage;
-                if (sponge.get() == null/* && hp > 0*/) {
+                if (sponge == null/* && hp > 0*/) {
                     switch (stats.getHPDisplayType()) {
                         case 0:
                             map.broadcastPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_MobHPTag, PB_FieldEffect.builder().monster(this).build()));
@@ -353,8 +352,8 @@ public class MapleMonster extends TacosMonster {
         }
         if (broadcast) {
             map.broadcastPacket(ResCMobPool.MobDamaged(this, -hp, 0));
-        } else if (sponge.get() != null) { // else if, since only sponge doesn't broadcast
-            sponge.get().hp += hp;
+        } else if (sponge != null) { // else if, since only sponge doesn't broadcast
+            sponge.hp += hp;
         }
     }
 
@@ -406,7 +405,7 @@ public class MapleMonster extends TacosMonster {
             killer.getPyramidSubway().onKill(killer);
         }
         MapleMonster oldSponge = getSponge();
-        sponge = new WeakReference<>(null);
+        sponge = null;
         if (oldSponge != null && oldSponge.isAlive()) {
             boolean set = true;
             for (MapleMonster mons : map.getAllMonsters()) {
