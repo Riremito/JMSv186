@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.Collection;
+import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyCharacter;
 import tacos.packet.ServerPacket;
@@ -55,7 +55,7 @@ public class Family {
         return ret;
     }
 
-    public void memberFamilyUpdate(MapleFamilyCharacter mfc, MapleCharacter mc) {
+    public void memberFamilyUpdate(MapleFamilyCharacter mfc, TacosCharacter mc) {
         MapleFamily f = getFamily(mfc.getFamilyId());
         if (f != null) {
             f.memberLevelJobUpdate(mc);
@@ -85,7 +85,7 @@ public class Family {
     }
 
     public void setFamily(int familyid, int seniorid, int junior1, int junior2, int currentrep, int totalrep, int cid) {
-        MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
+        TacosCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
         if (mc == null) {
             return;
         }
@@ -117,7 +117,7 @@ public class Family {
         if (targetIds == exception) {
             return;
         }
-        final MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+        TacosCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
         if (player != null && player.getFamilyId() == guildid) {
             player.SendPacket(packet);
         }

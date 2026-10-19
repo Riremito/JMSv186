@@ -60,19 +60,19 @@ public class MapleQuestStatus {
         }
     }
 
-    public final MapleQuest getQuest() {
+    public MapleQuest getQuest() {
         return quest;
     }
 
-    public final byte getStatus() {
+    public byte getStatus() {
         return status;
     }
 
-    public final void setStatus(final byte status) {
+    public void setStatus(byte status) {
         this.status = status;
     }
 
-    public final void setNpc(final int npc) {
+    public void setNpc(int npc) {
         this.npc = npc;
     }
 
@@ -82,13 +82,13 @@ public class MapleQuestStatus {
 
     private void registerMobs() {
         killedMobs = new LinkedHashMap<>();
-        for (final int i : quest.getRelevantMobs().keySet()) {
+        for (int i : quest.getRelevantMobs().keySet()) {
             killedMobs.put(i, 0);
         }
     }
 
-    private int maxMob(final int mobid) {
-        for (final Map.Entry<Integer, Integer> qs : quest.getRelevantMobs().entrySet()) {
+    private int maxMob(int mobid) {
+        for (Map.Entry<Integer, Integer> qs : quest.getRelevantMobs().entrySet()) {
             if (qs.getKey() == mobid) {
                 return qs.getValue();
             }
@@ -96,15 +96,15 @@ public class MapleQuestStatus {
         return 0;
     }
 
-    public final boolean mobKilled(final int id, final int skillID) {
+    public boolean mobKilled(int id, int skillID) {
         if (quest != null && quest.getSkillID() > 0) {
             if (quest.getSkillID() != skillID) {
                 return false;
             }
         }
-        final Integer mob = killedMobs.get(id);
+        Integer mob = killedMobs.get(id);
         if (mob != null) {
-            final int mo = maxMob(id);
+            int mo = maxMob(id);
             if (mob >= mo) {
                 return false; //nothing happened
             }
@@ -124,7 +124,7 @@ public class MapleQuestStatus {
         return false;
     }
 
-    public void setMobKills(final int id, final int count) {
+    public void setMobKills(int id, int count) {
         if (killedMobs == null) {
             registerMobs(); //lol
         }
@@ -139,7 +139,7 @@ public class MapleQuestStatus {
     }
 
     public int getMobKills(int id) {
-        final Integer mob = killedMobs.get(id);
+        Integer mob = killedMobs.get(id);
         if (mob == null) {
             return 0;
         }
@@ -163,7 +163,7 @@ public class MapleQuestStatus {
     }
 
     // used by script
-    public final int getNpc() {
+    public int getNpc() {
         return npc;
     }
 

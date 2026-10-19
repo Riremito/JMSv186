@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
@@ -35,7 +34,7 @@ import tacos.packet.response.data.RD_Structure;
 public class ResCUser {
 
     // CUser::OnChat
-    public static ServerPacket UserChat(MapleCharacter chr, String message, boolean bOnlyBalloon) {
+    public static ServerPacket UserChat(TacosCharacter chr, String message, boolean bOnlyBalloon) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserChat);
 
         sp.Encode4(chr.getId());
@@ -47,7 +46,7 @@ public class ResCUser {
     }
 
     // CUser::OnADBoard
-    public static ServerPacket UserADBoard(MapleCharacter chr) {
+    public static ServerPacket UserADBoard(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserADBoard);
 
         String message = chr.getADBoard();
@@ -64,7 +63,7 @@ public class ResCUser {
     }
 
     // CUser::OnMiniRoomBalloon
-    public static ServerPacket sendPlayerShopBox(MapleCharacter chr) {
+    public static ServerPacket sendPlayerShopBox(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMiniRoomBalloon);
 
         sp.Encode4(chr.getId());
@@ -114,7 +113,7 @@ public class ResCUser {
     // CUser::ShowItemHyperUpgradeEffect
     // CUser::ShowItemOptionUpgradeEffect
     // CUser::ShowItemReleaseEffect
-    public static ServerPacket UserItemReleaseEffect(MapleCharacter chr, short equip_item_slot) {
+    public static ServerPacket UserItemReleaseEffect(TacosCharacter chr, short equip_item_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemReleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode2(equip_item_slot);
@@ -122,7 +121,7 @@ public class ResCUser {
     }
 
     // CUser::ShowItemUnreleaseEffect
-    public static ServerPacket UserItemUnreleaseEffect(MapleCharacter chr) {
+    public static ServerPacket UserItemUnreleaseEffect(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserItemUnreleaseEffect);
         sp.Encode4(chr.getId());
         sp.Encode1(1);
@@ -133,7 +132,7 @@ public class ResCUser {
     // CUser::OnHitByUser
     // CUser::OnTeslaTriangle
     // CUser::OnFollowCharacter
-    public static ServerPacket UserFollowCharacter(MapleCharacter chr, boolean bTransferField) {
+    public static ServerPacket UserFollowCharacter(TacosCharacter chr, boolean bTransferField) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserFollowCharacter);
 
         sp.Encode4(chr.getId()); // dwCharacterID (m_dwPassenserID)

@@ -19,7 +19,8 @@
 package tacos.packet.request;
 
 import java.util.ArrayList;
-import odin.client.MapleCharacter;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.constants.MapleClientState;
 import odin.client.MapleQuestStatus;
 import tacos.config.ContentState;
@@ -44,7 +45,6 @@ import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsFriend;
 import tacos.packet.response.builder.PB_Friend;
-import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
 import tacos.config.Config;
 import tacos.config.Content;
@@ -180,7 +180,7 @@ public class ReqCClientSocket {
             return false;
         }
         TacosWorld world = client.getWorld();
-        MapleCharacter transfer = world.findMigratingPlayer(character_id);
+        TacosCharacter transfer = world.findMigratingPlayer(character_id);
         // channge channel, enter & leave itc/cs.
         if (transfer != null) {
             TacosClient old_client = transfer.getClient();
@@ -225,7 +225,7 @@ public class ReqCClientSocket {
         switch (client.getServer().getType()) {
             case GAME_SERVER: {
                 // login or changechannel & leave itc/cs.
-                MapleCharacter chr = (transfer == null) ? MapleCharacter.loadCharFromDB(character_id, client, true) : transfer;
+                TacosCharacter chr = (transfer == null) ? TacosCharacter.loadCharFromDB(character_id, client, true) : transfer;
                 if (chr == null) {
                     client.loginFailed("OnMigrateIn : GAME_SERVER.");
                     return false;
@@ -337,11 +337,8 @@ public class ReqCClientSocket {
                 // [other players]
                 // your pet
                 // [entering map]
-                MapleMap map = chr.getMap();
-                chr.updatePets();
-                chr.updateSummons();
+                TacosMap map = chr.getMap();
                 map.userEnterField(chr);
-                map.linkedObjectEnterField(chr);
                 break;
             }
             case ITC_SERVER: {
@@ -432,7 +429,7 @@ public class ReqCClientSocket {
         }
 
         // create new character.
-        MapleCharacter chr_koc = new MapleCharacter();
+        TacosCharacter chr_koc = new TacosCharacter();
         chr_koc.init_step1();
         chr_koc.setClient(client);
         chr_koc.setFace(face_id);

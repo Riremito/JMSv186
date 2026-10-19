@@ -59,7 +59,7 @@ public class ResCUser_Pet {
         }
 
         public static DeActivatedMsg find(int val) {
-            for (final DeActivatedMsg o : DeActivatedMsg.values()) {
+            for (DeActivatedMsg o : DeActivatedMsg.values()) {
                 if (o.get() == val) {
                     return o;
                 }
@@ -74,7 +74,7 @@ public class ResCUser_Pet {
 
         sp.Encode4(chr.getId());
 
-        if (Config.Equal(Region.JMS, 147)) {
+        if (Config.GreaterOrEqual(Region.JMS, 147)) {
             sp.Encode1(chr.getPetIndex(pet));
             if (!transfer_field) {
                 sp.Encode1(spawn ? 1 : 0);

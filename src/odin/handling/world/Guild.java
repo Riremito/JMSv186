@@ -21,10 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.Collection;
+import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.handling.world.guild.MapleBBSThread;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
@@ -72,7 +72,7 @@ public class Guild {
         return null;
     }
 
-    public MapleGuild getGuild(MapleCharacter mc) {
+    public MapleGuild getGuild(TacosCharacter mc) {
         return getGuild(mc.getGuildId());
     }
 
@@ -195,31 +195,31 @@ public class Guild {
         }
     }
 
-    public int getGP(final int gid) {
-        final MapleGuild g = getGuild(gid);
+    public int getGP(int gid) {
+        MapleGuild g = getGuild(gid);
         if (g != null) {
             return g.getGP();
         }
         return 0;
     }
 
-    public int getInvitedId(final int gid) {
-        final MapleGuild g = getGuild(gid);
+    public int getInvitedId(int gid) {
+        MapleGuild g = getGuild(gid);
         if (g != null) {
             return g.getInvitedId();
         }
         return 0;
     }
 
-    public void setInvitedId(final int gid, final int inviteid) {
-        final MapleGuild g = getGuild(gid);
+    public void setInvitedId(int gid, int inviteid) {
+        MapleGuild g = getGuild(gid);
         if (g != null) {
             g.setInvitedId(inviteid);
         }
     }
 
-    public int getGuildLeader(final String guildName) {
-        final MapleGuild mga = getGuildByName(guildName);
+    public int getGuildLeader(String guildName) {
+        MapleGuild mga = getGuildByName(guildName);
         if (mga != null) {
             return mga.getLeaderId();
         }
@@ -233,45 +233,45 @@ public class Guild {
         }
     }
 
-    public List<MapleBBSThread> getBBS(final int gid) {
-        final MapleGuild g = getGuild(gid);
+    public List<MapleBBSThread> getBBS(int gid) {
+        MapleGuild g = getGuild(gid);
         if (g != null) {
             return g.getBBS();
         }
         return null;
     }
 
-    public int addBBSThread(final int guildid, final String title, final String text, final int icon, final boolean bNotice, final int posterID) {
-        final MapleGuild g = getGuild(guildid);
+    public int addBBSThread(int guildid, String title, String text, int icon, boolean bNotice, int posterID) {
+        MapleGuild g = getGuild(guildid);
         if (g != null) {
             return g.addBBSThread(title, text, icon, bNotice, posterID);
         }
         return -1;
     }
 
-    public final void editBBSThread(final int guildid, final int localthreadid, final String title, final String text, final int icon, final int posterID, final int guildRank) {
-        final MapleGuild g = getGuild(guildid);
+    public void editBBSThread(int guildid, int localthreadid, String title, String text, int icon, int posterID, int guildRank) {
+        MapleGuild g = getGuild(guildid);
         if (g != null) {
             g.editBBSThread(localthreadid, title, text, icon, posterID, guildRank);
         }
     }
 
-    public final void deleteBBSThread(final int guildid, final int localthreadid, final int posterID, final int guildRank) {
-        final MapleGuild g = getGuild(guildid);
+    public void deleteBBSThread(int guildid, int localthreadid, int posterID, int guildRank) {
+        MapleGuild g = getGuild(guildid);
         if (g != null) {
             g.deleteBBSThread(localthreadid, posterID, guildRank);
         }
     }
 
-    public final void addBBSReply(final int guildid, final int localthreadid, final String text, final int posterID) {
-        final MapleGuild g = getGuild(guildid);
+    public void addBBSReply(int guildid, int localthreadid, String text, int posterID) {
+        MapleGuild g = getGuild(guildid);
         if (g != null) {
             g.addBBSReply(localthreadid, text, posterID);
         }
     }
 
-    public final void deleteBBSReply(final int guildid, final int localthreadid, final int replyid, final int posterID, final int guildRank) {
-        final MapleGuild g = getGuild(guildid);
+    public void deleteBBSReply(int guildid, int localthreadid, int replyid, int posterID, int guildRank) {
+        MapleGuild g = getGuild(guildid);
         if (g != null) {
             g.deleteBBSReply(localthreadid, replyid, posterID, guildRank);
         }
@@ -283,7 +283,7 @@ public class Guild {
     }
 
     public void setGuildAndRank(int cid, int guildid, int rank, int alliancerank) {
-        MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
+        TacosCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
         if (mc == null) {
             return;
         }
@@ -303,7 +303,7 @@ public class Guild {
         if (targetIds == exception) {
             return;
         }
-        final MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+        TacosCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
         if (player != null && player.getGuildId() == guildid) {
             player.SendPacket(packet);
         }

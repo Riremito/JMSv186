@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosSingleMacro;
+import tacos.client.TacosCharacter;
 import tacos.config.Region;
 import java.util.Map;
 import tacos.config.Config;
@@ -34,7 +34,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCFuncKeyMappedMan {
 
     // CWvsContext::OnMacroSysDataInit
-    public static ServerPacket MacroSysDataInit(MapleCharacter chr) {
+    public static ServerPacket MacroSysDataInit(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MacroSysDataInit);
 
         // MACROSYSDATA::Decode
@@ -51,7 +51,7 @@ public class ResCFuncKeyMappedMan {
     }
 
     // CFuncKeyMappedMan::OnInit
-    public static ServerPacket FuncKeyMappedInit(MapleCharacter chr, boolean keymap_reset) {
+    public static ServerPacket FuncKeyMappedInit(TacosCharacter chr, boolean keymap_reset) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FuncKeyMappedInit);
 
         sp.Encode1(keymap_reset ? 1 : 0);
@@ -84,7 +84,7 @@ public class ResCFuncKeyMappedMan {
     }
 
     // CFuncKeyMappedMan::OnPetConsumeItemInit
-    public static ServerPacket PetConsumeItemInit(MapleCharacter chr) {
+    public static ServerPacket PetConsumeItemInit(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeItemInit);
 
         sp.Encode4(chr.getPetAutoHPItem());
@@ -92,7 +92,7 @@ public class ResCFuncKeyMappedMan {
     }
 
     // CFuncKeyMappedMan::OnPetConsumeMPItemInit
-    public static ServerPacket PetConsumeMPItemInit(MapleCharacter chr) {
+    public static ServerPacket PetConsumeMPItemInit(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeMPItemInit);
 
         sp.Encode4(chr.getPetAutoMPItem());
@@ -100,7 +100,7 @@ public class ResCFuncKeyMappedMan {
     }
 
     // JMS
-    public static ServerPacket PetConsumeCureItemInit(MapleCharacter chr) {
+    public static ServerPacket PetConsumeCureItemInit(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PetConsumeCureItemInit);
 
         sp.Encode4(chr.getPetAutoCureItem());
@@ -108,7 +108,7 @@ public class ResCFuncKeyMappedMan {
     }
 
     // CFuncKeyMappedMan::OnPetConsumeItemInit, JMS131
-    public static ServerPacket PetConsumeItemInit_JMS131(MapleCharacter chr) {
+    public static ServerPacket PetConsumeItemInit_JMS131(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PetConsumeItemInit);
 
         sp.Encode4(chr.getPetAutoHPItem());

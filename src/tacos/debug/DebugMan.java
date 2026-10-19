@@ -18,8 +18,8 @@
  */
 package tacos.debug;
 
-import odin.client.MapleCharacter;
 import java.util.ArrayList;
+import tacos.client.TacosCharacter;
 import tacos.packet.ops.OpsScriptMan;
 import tacos.packet.response.ResCScriptMan;
 
@@ -31,7 +31,7 @@ public class DebugMan {
 
     protected static final int DEFAULT_NPC_ID = 1012003;
 
-    public static boolean OnScriptMessageAnswer(MapleCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
+    public static boolean OnScriptMessageAnswer(TacosCharacter chr, OpsScriptMan ops, int nMsgType, int action, int m_nSelect) {
         IDebugMan dm = chr.getDebugMan();
         ((DebugMan) dm).updateStatus(action);
 
@@ -89,7 +89,7 @@ public class DebugMan {
         return false;
     }
 
-    public boolean start(IDebugMan debugMan, MapleCharacter chr) {
+    public boolean start(IDebugMan debugMan, TacosCharacter chr) {
         this.status = 0;
         chr.DebugMsg("DebugMan : started.");
         chr.setDebugMan(debugMan);
@@ -97,30 +97,30 @@ public class DebugMan {
         return true;
     }
 
-    public boolean end(MapleCharacter chr) {
+    public boolean end(TacosCharacter chr) {
         this.status = -1;
         chr.DebugMsg("DebugMan : finished.");
         chr.setDebugMan(null);
         return true;
     }
 
-    protected void askMenu(MapleCharacter chr, NpcTag nt) {
+    protected void askMenu(TacosCharacter chr, NpcTag nt) {
         askMenu(chr, nt, false, false);
     }
 
-    protected void say(MapleCharacter chr, NpcTag nt) {
+    protected void say(TacosCharacter chr, NpcTag nt) {
         say(chr, nt, false, false);
     }
 
-    protected void askAvatar(MapleCharacter chr, NpcTag nt, ArrayList<Integer> ids) {
+    protected void askAvatar(TacosCharacter chr, NpcTag nt, ArrayList<Integer> ids) {
         chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKAVATAR, (byte) 0, nt.get(), false, false, ids));
     }
 
-    protected void askMenu(MapleCharacter chr, NpcTag nt, boolean prev, boolean next) {
+    protected void askMenu(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
         chr.SendPacket(ResCScriptMan.ScriptMessage(DEFAULT_NPC_ID, OpsScriptMan.SM_ASKMENU, (byte) 0, nt.get(), prev, next));
     }
 
-    protected void say(MapleCharacter chr, NpcTag nt, boolean prev, boolean next) {
+    protected void say(TacosCharacter chr, NpcTag nt, boolean prev, boolean next) {
         if (nt.get().contains("#L")) {
             DebugLogger.ErrorLog("DebugMan : say.");
             askMenu(chr, nt, prev, next);

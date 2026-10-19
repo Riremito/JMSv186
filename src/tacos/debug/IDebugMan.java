@@ -18,7 +18,7 @@
  */
 package tacos.debug;
 
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -26,9 +26,9 @@ import odin.client.MapleCharacter;
  */
 public interface IDebugMan {
 
-    public boolean start(MapleCharacter chr);
+    public boolean start(TacosCharacter chr);
 
-    public boolean end(MapleCharacter chr);
+    public boolean end(TacosCharacter chr);
 
-    public boolean action(MapleCharacter chr, int status, int answer);
+    public boolean action(TacosCharacter chr, int status, int answer);
 }

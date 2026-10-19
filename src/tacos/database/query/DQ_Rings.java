@@ -19,10 +19,10 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleRing;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
@@ -55,7 +55,7 @@ public class DQ_Rings {
         return null;
     }
 
-    public static boolean add(int itemid, MapleCharacter chr, String player, int id, int[] ringId) {
+    public static boolean add(int itemid, TacosCharacter chr, String player, int id, int[] ringId) {
         Connection con = DatabaseConnection.getConnection();
 
         try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (ringId, itemid, partnerChrId, partnerName, partnerRingId) VALUES (?, ?, ?, ?, ?)")) {
@@ -85,7 +85,7 @@ public class DQ_Rings {
         return true;
     }
 
-    public static void remove(MapleCharacter player) {
+    public static void remove(TacosCharacter player) {
         try {
             Connection con = DatabaseConnection.getConnection();
             int otherId;

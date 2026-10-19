@@ -20,7 +20,6 @@ package tacos.server;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
 import odin.handling.world.Alliance;
 import odin.handling.world.Family;
@@ -69,7 +68,7 @@ public class TacosWorld {
     private ArrayList<TacosChannel> channels = new ArrayList<>();
     private TacosCashShop cashshop = null;
     private TacosITC itc = null;
-    private ArrayList<MapleCharacter> player_migrating = new ArrayList<>();
+    private ArrayList<TacosCharacter> player_migrating = new ArrayList<>();
     private final Party party = new Party();
     private final Guild guild = new Guild();
     private final Alliance alliance = new Alliance();
@@ -172,7 +171,7 @@ public class TacosWorld {
         return this.login;
     }
 
-    public boolean addMigratingPlayer(MapleCharacter player) {
+    public boolean addMigratingPlayer(TacosCharacter player) {
         if (this.player_migrating.contains(player)) {
             DebugLogger.DebugLog("addMigratingPlayer : NG.");
             return false;
@@ -181,8 +180,8 @@ public class TacosWorld {
         return true;
     }
 
-    public MapleCharacter findMigratingPlayer(int character_id) {
-        for (MapleCharacter chr_mig : this.player_migrating) {
+    public TacosCharacter findMigratingPlayer(int character_id) {
+        for (TacosCharacter chr_mig : this.player_migrating) {
             if (chr_mig.getId() == character_id) {
                 return chr_mig;
             }
@@ -191,8 +190,8 @@ public class TacosWorld {
         return null;
     }
 
-    public boolean removeMigratingPlayer(MapleCharacter player) {
-        MapleCharacter chr_mig = findMigratingPlayer(player.getId());
+    public boolean removeMigratingPlayer(TacosCharacter player) {
+        TacosCharacter chr_mig = findMigratingPlayer(player.getId());
         if (chr_mig == null) {
             DebugLogger.DebugLog("removeMigratingPlayer : NG.");
             return false;
@@ -201,12 +200,12 @@ public class TacosWorld {
         return true;
     }
 
-    public MapleCharacter findOnlinePlayer(String player_name) {
+    public TacosCharacter findOnlinePlayer(String player_name) {
         return findOnlinePlayer(player_name, true);
     }
 
-    public MapleCharacter findOnlinePlayer(String player_name, boolean cs_itc) {
-        MapleCharacter player = null;
+    public TacosCharacter findOnlinePlayer(String player_name, boolean cs_itc) {
+        TacosCharacter player = null;
         // channel servers
         for (TacosChannel ch_server : this.channels) {
             player = ch_server.getOnlinePlayers().findByName(player_name);
@@ -231,12 +230,12 @@ public class TacosWorld {
         return player;
     }
 
-    public MapleCharacter findOnlinePlayerById(int player_id) {
+    public TacosCharacter findOnlinePlayerById(int player_id) {
         return findOnlinePlayerById(player_id, true);
     }
 
-    public MapleCharacter findOnlinePlayerById(int player_id, boolean cs_itc) {
-        MapleCharacter player = null;
+    public TacosCharacter findOnlinePlayerById(int player_id, boolean cs_itc) {
+        TacosCharacter player = null;
         // channel servers
         for (TacosChannel ch_server : this.channels) {
             player = ch_server.getOnlinePlayers().findById(player_id);
@@ -357,7 +356,7 @@ public class TacosWorld {
         this.rooms.remove(room_id);
     }
 
-    public TacosRoom findRoom(MapleCharacter player) {
+    public TacosRoom findRoom(TacosCharacter player) {
         for (TacosRoom room : this.rooms.values()) {
             if (room.findPlayer(player)) {
                 return room;
@@ -398,7 +397,7 @@ public class TacosWorld {
     // update task.
     private final TacosTask task_world = new TacosTask();
 
-    public boolean update(MapleCharacter player, long time_current) {
+    public boolean update(TacosCharacter player, long time_current) {
         if (!this.task_world.check(time_current, 60000)) {
             return false;
         }

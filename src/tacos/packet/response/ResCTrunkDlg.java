@@ -142,5 +142,4 @@ public class ResCTrunkDlg {
 
         return data.getBytes();
     }
-
 }

@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import java.util.ArrayList;
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
 import java.util.List;
@@ -45,7 +44,7 @@ import tacos.packet.response.builder.PB_UserEffect;
 public class ResCUserRemote {
 
     // CUserRemote::OnMove
-    public static ServerPacket UserMove(MapleCharacter chr, ParseCMovePath data) {
+    public static ServerPacket UserMove(TacosCharacter chr, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMove);
 
         sp.Encode4(chr.getId());
@@ -54,13 +53,13 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnAttack
-    public static ServerPacket UserAttack(MapleCharacter chr, ParseCUser_Attack attack) {
+    public static ServerPacket UserAttack(TacosCharacter chr, ParseCUser_Attack attack) {
         ServerPacket sp = new ServerPacket(attack.getHeader());
         boolean is_hide_damage = ContentCustom.CC_HIDE_DAMAGE.get();
 
         sp.Encode4(attack.CharacterId); // dwCharacterID
         sp.Encode1(is_hide_damage ? attack.HitKey & 0xF0 : attack.HitKey); // nDamagePerMob, & 0xF0 to hide damages.
-        sp.Encode1(attack.m_nLevel, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // m_nLevel
+        sp.Encode1(attack.m_nLevel, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54)); // m_nLevel
         sp.Encode1(attack.SkillLevel); // nSLV
 
         if (attack.SkillLevel != 0) {
@@ -81,10 +80,10 @@ public class ResCUserRemote {
 
         sp.Encode1(attack.BuffKey); // bSerialAttack
 
-        if (Config.LessOrEqual(Region.JMS, 147)) {
-            sp.Encode1(attack.AttackActionKey);
-        } else {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 165)) {
             sp.Encode2(attack.AttackActionKey);
+        } else {
+            sp.Encode1(attack.AttackActionKey);
         }
 
         sp.Encode1(attack.nAttackSpeed); // nActionSpeed
@@ -101,11 +100,11 @@ public class ResCUserRemote {
                 sp.Encode1(entry.getValue().size()); // hits
             }
             for (Integer damage : entry.getValue()) {
-                if (Config.LessOrEqual(Region.JMS, 147) || Config.LessOrEqual(Region.KMST, 330)) {
-                    sp.Encode4(damage); // damage
-                } else {
+                if ((Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)) && !Config.Equal(Region.KMST, 330)) {
                     sp.Encode1((damage & 0x80000000) != 0 ? 1 : 0); // critical.
-                    sp.Encode4(damage & 0x7FFFFFFF);
+                    sp.Encode4(damage & 0x7FFFFFFF); // remove critical bit.
+                } else {
+                    sp.Encode4(damage); // critical bit is already set.
                 }
             }
         }
@@ -125,7 +124,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillPrepare
-    public static ServerPacket UserSkillPrepare(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
+    public static ServerPacket UserSkillPrepare(TacosCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillPrepare);
 
         sp.Encode4(chr.getId());
@@ -143,7 +142,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillCancel
-    public static ServerPacket UserSkillCancel(MapleCharacter chr, int nSkillID) {
+    public static ServerPacket UserSkillCancel(TacosCharacter chr, int nSkillID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillCancel);
 
         sp.Encode4(chr.getId());
@@ -208,7 +207,7 @@ public class ResCUserRemote {
     }
 
     // CUser::OnEmotion
-    public static ServerPacket UserEmotion(MapleCharacter chr, int expression) {
+    public static ServerPacket UserEmotion(TacosCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotion);
 
         sp.Encode4(chr.getId()); // remote
@@ -217,7 +216,7 @@ public class ResCUserRemote {
     }
 
     // CUser::SetActiveEffectItem
-    public static ServerPacket UserSetActiveEffectItem(MapleCharacter chr) {
+    public static ServerPacket UserSetActiveEffectItem(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActiveEffectItem);
 
         sp.Encode4(chr.getId());
@@ -278,7 +277,7 @@ public class ResCUserRemote {
         return sp;
     }
 
-    public static ServerPacket showPetLevelUp(MapleCharacter chr, int index) {
+    public static ServerPacket showPetLevelUp(TacosCharacter chr, int index) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());
@@ -302,7 +301,7 @@ public class ResCUserRemote {
     }
 
     //its likely that durability items use this
-    public static ServerPacket showHpHealed(int cid, final int amount) {
+    public static ServerPacket showHpHealed(int cid, int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(cid);
@@ -311,7 +310,7 @@ public class ResCUserRemote {
         return sp;
     }
 
-    public static ServerPacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
+    public static ServerPacket ItemMakerResultTo(TacosCharacter chr, boolean is_success) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());

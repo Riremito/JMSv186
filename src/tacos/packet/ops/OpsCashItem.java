@@ -302,7 +302,7 @@ public enum OpsCashItem implements IPacketOps {
     }
 
     public static OpsCashItem find(int val) {
-        for (final OpsCashItem o : OpsCashItem.values()) {
+        for (OpsCashItem o : OpsCashItem.values()) {
             if (o.get() == val) {
                 return o;
             }

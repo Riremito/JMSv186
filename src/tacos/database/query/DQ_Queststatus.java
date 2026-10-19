@@ -19,12 +19,12 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.server.quest.MapleQuest;
 import tacos.database.DatabaseConnection;
@@ -41,7 +41,7 @@ public class DQ_Queststatus {
     /**
      * NOTE: unlike {@code add}, load/save here declare
      * {@code throws SQLException} instead of catching it internally, since
-     * these are called from MapleCharacter.loadCharFromDB/saveToDB, which
+     * these are called from TacosCharacter.loadCharFromDB/saveToDB, which
      * manage their own outer try/catch and (for saveToDB) an explicit
      * transaction that must see any failure in order to roll back
      * correctly.
@@ -53,9 +53,9 @@ public class DQ_Queststatus {
             ps.setInt(1, characterId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    final MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
-                    final MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"));
-                    final long cTime = rs.getLong("time");
+                    MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
+                    MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"));
+                    long cTime = rs.getLong("time");
                     if (cTime > -1) {
                         status.setCompletionTime(cTime * 1000);
                     }
@@ -79,7 +79,7 @@ public class DQ_Queststatus {
 
         try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS); PreparedStatement pse = con.prepareStatement("INSERT INTO " + DQ_Queststatusmobs.DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?)")) {
             ps.setInt(1, characterId);
-            for (final MapleQuestStatus q : quests) {
+            for (MapleQuestStatus q : quests) {
                 ps.setInt(2, q.getQuest().getId());
                 ps.setInt(3, q.getStatus());
                 ps.setInt(4, (int) (q.getCompletionTime() / 1000));
@@ -102,7 +102,7 @@ public class DQ_Queststatus {
         }
     }
 
-    public static boolean add(MapleCharacter chr) {
+    public static boolean add(TacosCharacter chr) {
         if (!DatabaseConnection.setManual()) {
             return false;
         }

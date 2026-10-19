@@ -45,10 +45,10 @@ public class RD_AvatarLook {
         data.Encode4(demon_something, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89)); // demon something
         data.Encode1(0); // ignored byte
         data.Encode4(chr.getHair());
-        final Map<Byte, Integer> myEquip = new LinkedHashMap<>();
-        final Map<Byte, Integer> maskedEquip = new LinkedHashMap<>();
+        Map<Byte, Integer> myEquip = new LinkedHashMap<>();
+        Map<Byte, Integer> maskedEquip = new LinkedHashMap<>();
         MapleInventory equip = chr.getInventory(MapleInventoryType.EQUIPPED);
-        for (final Item item : equip.list()) {
+        for (Item item : equip.list()) {
             if (item.getPosition() < -128) {
                 //not visible
                 continue;
@@ -66,7 +66,7 @@ public class RD_AvatarLook {
                 maskedEquip.put(pos, item.getItemId());
             }
         }
-        for (final Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
+        for (Map.Entry<Byte, Integer> entry : myEquip.entrySet()) {
             data.Encode1(entry.getKey());
             data.Encode4(entry.getValue());
         }
@@ -75,14 +75,14 @@ public class RD_AvatarLook {
         if (Config.LessOrEqual(Region.KMS, 3)) {
             // nothing
         } else {
-            for (final Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
+            for (Map.Entry<Byte, Integer> entry : maskedEquip.entrySet()) {
                 data.Encode1(entry.getKey());
                 data.Encode4(entry.getValue());
             }
             data.Encode1(255); // ending markers
         }
         data.Encode1(255, Config.GreaterOrEqual(Region.JMS, 308) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 116)); // ending markers
-        final Item cWeapon = equip.getItem((byte) -111);
+        Item cWeapon = equip.getItem((byte) -111);
         data.Encode4(cWeapon != null ? cWeapon.getItemId() : 0); // nWeaponStickerID
         if (Region.BMS.check() || Region.VMS.check()) {
             data.Encode4(0);

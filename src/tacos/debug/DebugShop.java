@@ -18,8 +18,8 @@
  */
 package tacos.debug;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.Item;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import odin.constants.GameConstants;
@@ -46,7 +46,7 @@ public class DebugShop {
     protected static final int DEFAULT_NPC_ID = 1012003;
     protected static final int ITEM_ID_FOR_UNINITIALIZED_QUANTITY = 2000000;
 
-    public static boolean OnUserShopRequestHook(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserShopRequestHook(TacosCharacter chr, ClientPacket cp) {
         DebugShop ds = chr.getDebugShop();
 
         byte shop_req = cp.Decode1();
@@ -108,7 +108,7 @@ public class DebugShop {
         return shopStocks;
     }
 
-    public boolean start(MapleCharacter chr) {
+    public boolean start(TacosCharacter chr) {
         chr.DebugMsg("DebugShop : started.");
         if (!this.shopStocks.isEmpty()) {
             if (GameConstants.isRechargable(this.shopStocks.get(0).item_id)) {
@@ -123,7 +123,7 @@ public class DebugShop {
         return true;
     }
 
-    public boolean end(MapleCharacter chr) {
+    public boolean end(TacosCharacter chr) {
         chr.DebugMsg("DebugShop : finished.");
         chr.setDebugShop(null);
         return true;
@@ -251,7 +251,7 @@ public class DebugShop {
         return null;
     }
 
-    public boolean buy(MapleCharacter chr, int item_id, int quantity) {
+    public boolean buy(TacosCharacter chr, int item_id, int quantity) {
         ShopStock ss = getStock(item_id);
         if (ss == null) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyNoStock));
@@ -277,7 +277,7 @@ public class DebugShop {
         return true;
     }
 
-    public boolean sell(MapleCharacter chr, short item_slot, int item_id, int quantity) {
+    public boolean sell(TacosCharacter chr, short item_slot, int item_id, int quantity) {
         boolean is_recharge_item = GameConstants.isRechargable(item_id);
         Item item = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
         if (item == null) {
@@ -320,7 +320,7 @@ public class DebugShop {
         return true;
     }
 
-    public boolean recharge(MapleCharacter chr, short item_slot) {
+    public boolean recharge(TacosCharacter chr, short item_slot) {
         Item item = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item == null) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_RechargeUnknown));

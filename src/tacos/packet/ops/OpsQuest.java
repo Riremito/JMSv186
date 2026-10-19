@@ -89,8 +89,6 @@ public enum OpsQuest implements IPacketOps {
         }
         // JMS186
         clear();
-        QuestRes_Act_Success.set(8);
-        /*
         QuestReq_LostItem.set(0);
         QuestReq_AcceptQuest.set(1);
         QuestReq_CompleteQuest.set(2);
@@ -99,17 +97,6 @@ public enum OpsQuest implements IPacketOps {
         QuestReq_CompleteScript.set(5);
         QuestRes_Start_QuestTimer.set(6);
         QuestRes_End_QuestTimer.set(7);
-        QuestRes_Start_TimeKeepQuestTimer.set(8);
-        QuestRes_End_TimeKeepQuestTimer.set(9);
-        QuestRes_Act_Success.set(10);
-        QuestRes_Act_Failed_Unknown.set(11);
-        QuestRes_Act_Failed_Inventory.set(12);
-        QuestRes_Act_Failed_Meso.set(13);
-        QuestRes_Act_Failed_Pet.set(14);
-        QuestRes_Act_Failed_Equipped.set(15);
-        QuestRes_Act_Failed_OnlyItem.set(16);
-        QuestRes_Act_Failed_TimeOver.set(17);
-        QuestRes_Act_Reset_QuestTimer.set(18);
-         */
+        QuestRes_Act_Success.set(8);
     }
 }

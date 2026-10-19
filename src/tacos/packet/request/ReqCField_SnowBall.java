@@ -18,11 +18,11 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_SnowBall;
-import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -32,13 +32,13 @@ import tacos.packet.ClientPacketHeader;
 public class ReqCField_SnowBall {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
         // 109060002
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }

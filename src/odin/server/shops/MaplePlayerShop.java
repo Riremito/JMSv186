@@ -21,20 +21,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.ArrayList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.List;
 import java.util.LinkedList;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import java.awt.Point;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleMap;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.ItemLoader;
@@ -63,7 +62,7 @@ public class MaplePlayerShop {
     protected int channel;
     protected int map;
     protected AtomicInteger meso = new AtomicInteger(0);
-    protected WeakReference<MapleCharacter> chrs[];
+    protected TacosCharacter chrs[];
     protected List<String> visitors = new LinkedList<>();
     protected List<BoughtItem> bought = new LinkedList<>();
     protected List<MaplePlayerShopItem> items = new LinkedList<>();
@@ -72,7 +71,7 @@ public class MaplePlayerShop {
     private List<String> bannedList = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
-    public MaplePlayerShop(MapleCharacter owner, int itemId, String desc) {
+    public MaplePlayerShop(TacosCharacter owner, int itemId, String desc) {
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
         this.ownerId = owner.getId();
@@ -82,9 +81,9 @@ public class MaplePlayerShop {
         this.pass = "";
         this.map = owner.getMapId();
         this.channel = owner.getClient().getChannelId();
-        chrs = new WeakReference[3];
+        chrs = new TacosCharacter[3];
         for (int i = 0; i < chrs.length; i++) {
-            chrs[i] = new WeakReference<>(null);
+            chrs[i] = null;
         }
     }
 
@@ -118,9 +117,9 @@ public class MaplePlayerShop {
     }
 
     public void broadcastToVisitors(ServerPacket packet, boolean owner) {
-        for (WeakReference<MapleCharacter> chr : chrs) {
-            if (chr != null && chr.get() != null) {
-                chr.get().SendPacket(packet);
+        for (TacosCharacter chr : chrs) {
+            if (chr != null) {
+                chr.SendPacket(packet);
             }
         }
         if (getShopType() != HIRED_MERCHANT && owner && getMCOwner() != null) {
@@ -129,9 +128,9 @@ public class MaplePlayerShop {
     }
 
     public void broadcastToVisitors(ServerPacket packet, int exception) {
-        for (WeakReference<MapleCharacter> chr : chrs) {
-            if (chr != null && chr.get() != null && getVisitorSlot(chr.get()) != exception) {
-                chr.get().SendPacket(packet);
+        for (TacosCharacter chr : chrs) {
+            if (chr != null && getVisitorSlot(chr) != exception) {
+                chr.SendPacket(packet);
             }
         }
         if (getShopType() != HIRED_MERCHANT && getMCOwner() != null && exception != ownerId) {
@@ -184,33 +183,33 @@ public class MaplePlayerShop {
         return false;
     }
 
-    public MapleCharacter getVisitor(int num) {
-        return chrs[num].get();
+    public TacosCharacter getVisitor(int num) {
+        return chrs[num];
     }
 
-    public void addVisitor(MapleCharacter visitor) {
+    public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
-            chrs[i - 1] = new WeakReference<>(visitor);
+            chrs[i - 1] = visitor;
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
             }
         }
     }
 
-    public void removeVisitor(MapleCharacter visitor) {
-        final byte slot = getVisitorSlot(visitor);
+    public void removeVisitor(TacosCharacter visitor) {
+        byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
-            chrs[slot - 1] = new WeakReference<>(null);
+            chrs[slot - 1] = null;
         }
     }
 
-    public byte getVisitorSlot(MapleCharacter visitor) {
+    public byte getVisitorSlot(TacosCharacter visitor) {
         for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] != null && chrs[i].get() != null && chrs[i].get().getId() == visitor.getId()) {
+            if (chrs[i] != null && chrs[i].getId() == visitor.getId()) {
                 return (byte) (i + 1);
             }
         }
@@ -222,14 +221,14 @@ public class MaplePlayerShop {
 
     public void removeAllVisitors(int error, int type) {
         for (int i = 0; i < chrs.length; i++) {
-            MapleCharacter visitor = getVisitor(i);
+            TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
                     visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
                 }
                 broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
-                chrs[i] = new WeakReference<>(null);
+                chrs[i] = null;
             }
         }
     }
@@ -253,11 +252,11 @@ public class MaplePlayerShop {
         return des;
     }
 
-    public List<SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors() {
-        List<SimpleImmutableEntry<Byte, MapleCharacter>> chrz = new LinkedList<>();
+    public List<SimpleImmutableEntry<Byte, TacosCharacter>> getVisitors() {
+        List<SimpleImmutableEntry<Byte, TacosCharacter>> chrz = new LinkedList<>();
         for (byte i = 0; i < chrs.length; i++) { //include owner or no
-            if (chrs[i] != null && chrs[i].get() != null) {
-                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i].get()));
+            if (chrs[i] != null) {
+                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i]));
             }
         }
         return chrz;
@@ -281,7 +280,7 @@ public class MaplePlayerShop {
 
     public byte getFreeSlot() {
         for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] == null || chrs[i].get() == null) {
+            if (chrs[i] == null) {
                 return (byte) (i + 1);
             }
         }
@@ -292,7 +291,7 @@ public class MaplePlayerShop {
         return itemId;
     }
 
-    public boolean isOwner(MapleCharacter chr) {
+    public boolean isOwner(TacosCharacter chr) {
         return chr.getId() == ownerId && chr.getName().equals(ownerName);
     }
 
@@ -303,11 +302,11 @@ public class MaplePlayerShop {
         return pass;
     }
 
-    public MapleCharacter getMCOwner() {
+    public TacosCharacter getMCOwner() {
         return getMap().getPlayerById(ownerId);
     }
 
-    public MapleMap getMap() {
+    public TacosMap getMap() {
         return TacosWorld.find(0).getChannelServer(channel).findMap(map);
     }
 
@@ -343,7 +342,7 @@ public class MaplePlayerShop {
         public int totalPrice;
         public String buyer;
 
-        public BoughtItem(final int id, final int quantity, final int totalPrice, final String buyer) {
+        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
             this.id = id;
             this.quantity = quantity;
             this.totalPrice = totalPrice;
@@ -352,6 +351,7 @@ public class MaplePlayerShop {
     }
 
     public void buy(TacosClient client, int item, short quantity) {
+        TacosCharacter chr = client.getPlayer();
         MaplePlayerShopItem pItem = items.get(item);
         if (pItem.bundles > 0) {
             Item newItem = pItem.item.copy();
@@ -363,12 +363,12 @@ public class MaplePlayerShop {
             } else if (ItemFlag.KARMA_USE.check(flag)) {
                 newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
             }
-            final int gainmeso = pItem.price * quantity;
-            if (client.getPlayer().getMeso() >= gainmeso) {
+            int gainmeso = pItem.price * quantity;
+            if (chr.getMeso() >= gainmeso) {
                 if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
                     pItem.bundles -= quantity;
-                    bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, client.getPlayer().getName()));
-                    client.getPlayer().gainMeso(-gainmeso, false);
+                    bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, chr.getName()));
+                    chr.gainMeso(-gainmeso, false);
                     getMCOwner().gainMeso(gainmeso, false);
                     if (pItem.bundles <= 0) {
                         boughtnumber++;
@@ -378,10 +378,10 @@ public class MaplePlayerShop {
                         }
                     }
                 } else {
-                    client.getPlayer().dropMessage(1, "Your inventory is full.");
+                    chr.dropMessage(1, "Your inventory is full.");
                 }
             } else {
-                client.getPlayer().dropMessage(1, "You do not have enough mesos.");
+                chr.dropMessage(1, "You do not have enough mesos.");
                 //}
             }
             getMCOwner().SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(this));
@@ -393,7 +393,7 @@ public class MaplePlayerShop {
     }
 
     public void closeShop(boolean saveItems, boolean remove, int reason) {
-        MapleCharacter owner = getMCOwner();
+        TacosCharacter owner = getMCOwner();
         removeAllVisitors(reason, 1);
         getMap().removePlayerShop(this.getObjectId());
 

@@ -87,7 +87,7 @@ public class ParseCMovePath {
                     // JMS187, JMS188
                     return (1 + 2 * 4 + 1 * 4 + 4); // 1 + 16
                 }
-                if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 180)) {
+                if (Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180)) {
                     // JMS180
                     return (1 + 2 * 4 + 1 * 4 + 4); // 1 + 16
                 }
@@ -110,15 +110,16 @@ public class ParseCMovePath {
         }
         data = cp.DecodeAll();
         // offset
-        final int offset_start_x = 0;
-        final int offset_start_y = 2;
+        int offset_start_x = 0;
+        int offset_start_y = 2;
         int offset_end_x = 0;
         int offset_end_y = 0;
         int offset_end_fh = 0;
         int offset_end_action = 0;
-        final int tail_data_size = getTailDataSize(cp); // for only mob.
+        int tail_data_size = getTailDataSize(cp); // for only mob.
 
-        if (Config.LessOrEqual(Region.KMS, 65) || Config.LessOrEqual(Region.JMS, 165) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 83) || Region.BMS.check()) {
+        // not work for KMS92.
+        if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.CMS, 73) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 83) || Region.BMS.check()) {
             // JMS131-165
             offset_end_x = data.length - 13 - tail_data_size;
             offset_end_fh = data.length - 5 - tail_data_size;

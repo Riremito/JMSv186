@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package tacos.wz;
 
+import java.awt.Point;
 import java.util.List;
 
 public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
@@ -34,4 +35,30 @@ public interface MapleData extends MapleDataEntity, Iterable<MapleData> {
     public MapleData getChildByPath(String path);
 
     public Object getData();
+
+    public int getIntExpression(String path, int common_level);
+
+    public int getIntExpression(String path, int common_level, int def);
+
+    public int getInt(String path);
+
+    public int getInt(String path, int def);
+
+    public String getString(String path);
+
+    public String getString(String path, String def);
+
+    public Float getFloat(String path);
+
+    public Float getFloat(String path, float def);
+
+    public Double getDouble(String path);
+
+    public Double getDouble(String path, double def);
+
+    public Point getPoint(String path);
+
+    public long getLong(String path);
+
+    public long getLong(String path, long def);
 }

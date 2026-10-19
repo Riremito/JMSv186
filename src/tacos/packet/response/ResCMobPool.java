@@ -18,12 +18,12 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosMonster;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.config.Region;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
-import odin.server.life.MapleMonster;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.client.TacosBuff;
 import tacos.config.Config;
@@ -39,7 +39,7 @@ import tacos.packet.ops.OpsMobLeaveField;
 public class ResCMobPool {
 
     // CMobPool::OnMobEnterField
-    public static ServerPacket MobEnterField(MapleMonster monster) {
+    public static ServerPacket MobEnterField(TacosMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEnterField);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -59,7 +59,7 @@ public class ResCMobPool {
     }
 
     // CMob::SetTemporaryStat
-    public static byte[] CMob_SetTemporaryStat(MapleMonster monster) {
+    public static byte[] CMob_SetTemporaryStat(TacosMonster monster) {
         ServerPacket data = new ServerPacket();
 
         int[] buff_mask = TacosBuff.getMobBuffBuffer();
@@ -73,7 +73,7 @@ public class ResCMobPool {
     }
 
     // CMob::Init
-    public static byte[] CMob_Init(MapleMonster monster) {
+    public static byte[] CMob_Init(TacosMonster monster) {
         ServerPacket data = new ServerPacket();
 
         data.Encode2(monster.getX()); // m_ptCurPos.x
@@ -124,7 +124,7 @@ public class ResCMobPool {
     }
 
     // CMobPool::OnMobLeaveField
-    public static ServerPacket MobLeaveField(MapleMonster monster, OpsMobLeaveField dead_type) {
+    public static ServerPacket MobLeaveField(TacosMonster monster, OpsMobLeaveField dead_type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobLeaveField);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -138,7 +138,7 @@ public class ResCMobPool {
     }
 
     // CMobPool::OnMobChangeController
-    public static ServerPacket MobChangeController(MapleMonster monster, int nLevel) {
+    public static ServerPacket MobChangeController(TacosMonster monster, int nLevel) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChangeController);
 
         sp.Encode1(nLevel); // nLevel, 2 = aggro, 1 = control, 0 = stop
@@ -180,16 +180,17 @@ public class ResCMobPool {
     }
 
     // CMob::OnMove
-    public static ServerPacket MobMove(MapleMonster monster, boolean bNextAttackPossible, int bLeft, int mob_skill, ParseCMovePath data) {
+    public static ServerPacket MobMove(TacosMonster monster, boolean bNextAttackPossible, int bLeft, int mob_skill, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobMove);
 
         sp.Encode4(monster.getObjectId()); // dwMobIDs
 
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             // none
-        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            sp.Encode1(0); // bNotForceLandingWhenDiscard
-            sp.Encode1(0); // bNotChangeAction
+        } else {
+            // not checked. which one is added.
+            sp.Encode1(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // bNotForceLandingWhenDiscard
+            sp.Encode1(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)); // bNotChangeAction
         }
 
         sp.Encode1(bNextAttackPossible ? 1 : 0); // bNextAttackPossible
@@ -199,7 +200,7 @@ public class ResCMobPool {
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             sp.Encode1(0);
             sp.Encode1(0);
-        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             sp.Encode4(0); //  if this is not 0, Encode4 x2 x loop count
             sp.Encode4(0); //  if this is not 0, Encode4 x loop count
         }
@@ -209,7 +210,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnCtrlAck
-    public static ServerPacket MobCtrlAck(MapleMonster monster, short moveid, int skillId, int skillLevel) {
+    public static ServerPacket MobCtrlAck(TacosMonster monster, short moveid, int skillId, int skillLevel) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobCtrlAck);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -223,7 +224,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnStatSet
-    public static ServerPacket MobStatSet(MapleMonster monster) {
+    public static ServerPacket MobStatSet(TacosMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatSet);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -232,7 +233,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnStatReset
-    public static ServerPacket MobStatReset(MapleMonster monster) {
+    public static ServerPacket MobStatReset(TacosMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobStatReset);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -241,7 +242,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnSuspendReset
-    public static ServerPacket MobSuspendReset(MapleMonster monster) {
+    public static ServerPacket MobSuspendReset(TacosMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSuspendReset);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -250,7 +251,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnAffected
-    public static ServerPacket MobAffected(MapleMonster monster, int nSkillID, int tStart) {
+    public static ServerPacket MobAffected(TacosMonster monster, int nSkillID, int tStart) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobAffected);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -260,7 +261,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnDamaged
-    public static ServerPacket MobDamaged(MapleMonster monster, int nDamage, int type) {
+    public static ServerPacket MobDamaged(TacosMonster monster, int nDamage, int type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobDamaged);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -276,7 +277,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnSpecialEffectBySkill
-    public static ServerPacket MobSpecialEffectBySkill(MapleMonster monster, MapleCharacter chr, int nSkillID, int tDelay) {
+    public static ServerPacket MobSpecialEffectBySkill(TacosMonster monster, TacosCharacter chr, int nSkillID, int tDelay) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSpecialEffectBySkill);
 
         sp.Encode4(monster.getObjectId());// dwMobID
@@ -287,7 +288,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnHPIndicator
-    public static ServerPacket MobHPIndicator(MapleMonster monster, int m_nHPpercentage) {
+    public static ServerPacket MobHPIndicator(TacosMonster monster, int m_nHPpercentage) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobHPIndicator);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -296,7 +297,7 @@ public class ResCMobPool {
     }
 
     // CMobPool::OnMobCrcKeyChanged
-    public static ServerPacket MobCrcKeyChanged(MapleMonster monster, int m_dwMobCrcKey) {
+    public static ServerPacket MobCrcKeyChanged(TacosMonster monster, int m_dwMobCrcKey) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobCrcKeyChanged);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -305,7 +306,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnCatchEffect
-    public static ServerPacket MobCatchEffect(MapleMonster monster, boolean bSuccess) {
+    public static ServerPacket MobCatchEffect(TacosMonster monster, boolean bSuccess) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobCatchEffect);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -315,7 +316,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnEffectByItem
-    public static ServerPacket MobEffectByItem(MapleMonster monster, int nItemID, boolean bSuccess) {
+    public static ServerPacket MobEffectByItem(TacosMonster monster, int nItemID, boolean bSuccess) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEffectByItem);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -325,7 +326,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnMobSpeaking
-    public static ServerPacket MobSpeaking(MapleMonster monster, int nSpeakInfo, int nSpeech) {
+    public static ServerPacket MobSpeaking(TacosMonster monster, int nSpeakInfo, int nSpeech) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSpeaking);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -335,7 +336,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnIncMobChargeCount
-    public static ServerPacket MobChargeCount(MapleMonster monster, int m_nMobChargeCount, int m_bAttackReady) {
+    public static ServerPacket MobChargeCount(TacosMonster monster, int m_nMobChargeCount, int m_bAttackReady) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobChargeCount);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -345,7 +346,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnMobSkillDelay
-    public static ServerPacket MobSkillDelay(MapleMonster monster) {
+    public static ServerPacket MobSkillDelay(TacosMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSkillDelay);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -357,7 +358,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnEscortFullPath
-    public static ServerPacket MobRequestResultEscortInfo(MapleMonster monster, MapleMap map) {
+    public static ServerPacket MobRequestResultEscortInfo(TacosMonster monster, TacosMap map) {
         //idk.
         if (monster.getNodePacket() != null) {
             return monster.getNodePacket();
@@ -386,7 +387,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnEscortStopEndPermmision
-    public static ServerPacket MobEscortStopEndPermmision(MapleMonster monster) {
+    public static ServerPacket MobEscortStopEndPermmision(TacosMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEscortStopEndPermmision);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -394,7 +395,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnEscortStopSay
-    public static ServerPacket MobEscortStopSay(MapleMonster monster, int nChatBalloon, String msg) {
+    public static ServerPacket MobEscortStopSay(TacosMonster monster, int nChatBalloon, String msg) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEscortStopSay);
 
         boolean is_msg = !msg.equals("");
@@ -414,7 +415,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnEscortReturnBefore
-    public static ServerPacket MobEscortReturnBefore(MapleMonster monster) {
+    public static ServerPacket MobEscortReturnBefore(TacosMonster monster) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobEscortReturnBefore);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -423,7 +424,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnNextAttack
-    public static ServerPacket MobNextAttack(MapleMonster monster, int nForceAttackIdx) {
+    public static ServerPacket MobNextAttack(TacosMonster monster, int nForceAttackIdx) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobNextAttack);
 
         sp.Encode4(monster.getObjectId()); // dwMobID
@@ -432,7 +433,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnMobAttackedByMob
-    public static ServerPacket MobAttackedByMob(MapleMonster monster, int nAttackIdx, int nDamage) {
+    public static ServerPacket MobAttackedByMob(TacosMonster monster, int nAttackIdx, int nDamage) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobAttackedByMob);
 
         sp.Encode4(monster.getObjectId()); // dwMobID

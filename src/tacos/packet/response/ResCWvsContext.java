@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -159,7 +158,7 @@ public class ResCWvsContext {
         sp.Encode1(0, Config.Between(Region.TWMS, 74, 93) || Config.Between(Region.EMS, 55, 76));
         sp.EncodeBuffer(RD_CharacterStat.EncodeChangeStat(chr, statmask));
         if (Config.PreBB()) {
-            if (Region.JMS.check() || Region.JMST.check()) {
+            if (Region.JMS.check() || Region.JMST.check() || Region.CMS.check()) {
                 // Pet
                 if ((statmask & OpsChangeStat.CS_PETSN.get()) != 0) {
                     int v5 = 0; // CVecCtrlUser::AddMovementInfo
@@ -400,9 +399,9 @@ public class ResCWvsContext {
                         break;
                     }
                     case PICKUP_MESO: {
-                        sp.Encode1(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 65) || Config.GreaterOrEqual(Region.JMS, 164) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
+                        sp.Encode1(0, Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 94) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 72) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 54));
                         sp.Encode4(pb.Inc_Meso);
-                        if (Config.LessOrEqual(Region.JMS, 131)) {
+                        if (Config.LessOrEqual(Region.JMS, 131) || Config.LessOrEqual(Region.CMS, 73)) {
                             sp.Encode2(0); // Internet cafe bonus
                         } else {
                             sp.Encode4(0);
@@ -600,7 +599,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMapTransferResult
-    public static ServerPacket MapTransferResult(MapleCharacter chr, OpsMapTransfer ops_res, boolean vip) {
+    public static ServerPacket MapTransferResult(TacosCharacter chr, OpsMapTransfer ops_res, boolean vip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapTransferResult);
 
         sp.Encode1(ops_res.get());
@@ -689,7 +688,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnSkillLearnItemResult
-    public static ServerPacket SkillLearnItemResult(MapleCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
+    public static ServerPacket SkillLearnItemResult(TacosCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillLearnItemResult);
 
         sp.Encode1(1, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)); // bOnExclRequest
@@ -722,7 +721,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnCharacterInfo
-    public static ServerPacket CharacterInfo(MapleCharacter player, boolean isSelf) {
+    public static ServerPacket CharacterInfo(TacosCharacter player, boolean isSelf) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CharacterInfo);
 
         sp.Encode4(player.getId()); // dwCharacterId
@@ -785,7 +784,7 @@ public class ResCWvsContext {
         // CUIUserInfo::SetTamingMobInfo
         Item inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
         boolean TamingMobEnabled = false;
-        final MapleMount tm = player.getMount();
+        MapleMount tm = player.getMount();
         if (tm != null && inv_mount != null) {
             TamingMobEnabled = MapleItemInformationProvider.getInstance().getReqLevel(inv_mount.getItemId()) <= player.getLevel();
         }
@@ -797,11 +796,11 @@ public class ResCWvsContext {
         }
 
         // CUIUserInfo::SetWishItemInfo
-        final int wishlistSize = player.getWishlistSize();
+        int wishlistSize = player.getWishlistSize();
         sp.Encode1(wishlistSize);
         if (wishlistSize > 0) {
             // CInPacket::DecodeBuffer(v4, iPacket, 4 * wishlistSize);
-            final int[] wishlist = player.getWishlist();
+            int[] wishlist = player.getWishlist();
             for (int x = 0; x < wishlistSize; x++) {
                 sp.Encode4(wishlist[x]);
             }
@@ -878,7 +877,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnPartyResult
-    public static ServerPacket PartyResult(OpsParty ops, MapleCharacter chr) {
+    public static ServerPacket PartyResult(OpsParty ops, TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         MapleParty party = chr.getParty();
@@ -1370,7 +1369,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMarriageResult
-    public static ServerPacket MarriageResult(OpsMarriage ops, int item_id, MapleCharacter male, MapleCharacter female) {
+    public static ServerPacket MarriageResult(OpsMarriage ops, int item_id, TacosCharacter male, TacosCharacter female) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageResult);
 
         sp.Encode1(ops.get()); // 1103 custom quest
@@ -1425,7 +1424,7 @@ public class ResCWvsContext {
     }
 
     // パチンコ情報の更新
-    public static ServerPacket PachinkoResult(MapleCharacter chr) {
+    public static ServerPacket PachinkoResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoResult);
         // 12 bytes
         {
@@ -1487,7 +1486,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMonsterBookSetCover
-    public static ServerPacket MonsterBookSetCover(MapleCharacter chr) {
+    public static ServerPacket MonsterBookSetCover(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCover);
 
         sp.Encode4(chr.getMonsterBook().getCover());
@@ -1509,7 +1508,7 @@ public class ResCWvsContext {
     // CWvsContext::OnSessionValue
     // CWvsContext::OnPartyValue
     // CWvsContext::OnFieldSetVariable
-    public static ServerPacket sendString(final int type, String object, final String amount) {
+    public static ServerPacket sendString(int type, String object, String amount) {
         ServerPacketHeader header = ServerPacketHeader.UNKNOWN;
 
         switch (type) {
@@ -1557,7 +1556,7 @@ public class ResCWvsContext {
     // CWvsContext::OnNotifyLevelUp
     // CWvsContext::OnNotifyWedding
     // CWvsContext::OnNotifyJobChange
-    public static ServerPacket AvatarMegaphoneUpdateMessage(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
+    public static ServerPacket AvatarMegaphoneUpdateMessage(TacosCharacter chr, int channel, int itemId, String message, boolean ear) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneUpdateMessage);
 
         sp.Encode4(itemId);
@@ -1608,7 +1607,7 @@ public class ResCWvsContext {
     // CWvsContext::OnAskWhetherUsePamsSong
     // CWvsContext::OnTransferChannel
     // CWvsContext::OnDisallowedDeliveryQuestList
-    public static ServerPacket CharacterCash(MapleCharacter chr) {
+    public static ServerPacket CharacterCash(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CMS_CharacterCash);
 
         sp.Encode4(chr.getId());
@@ -1659,13 +1658,13 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
-    public static ServerPacket changeAlliance(MapleGuildAlliance alliance, final boolean in) {
+    public static ServerPacket changeAlliance(MapleGuildAlliance alliance, boolean in) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(1);
         sp.Encode1(in ? 1 : 0);
         sp.Encode4(in ? alliance.getId() : 0);
-        final int noGuilds = alliance.getNoGuilds();
+        int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < noGuilds; i++) {
             g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
@@ -1710,7 +1709,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, final boolean add) {
+    public static ServerPacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, boolean add) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(4);
@@ -1767,7 +1766,7 @@ public class ResCWvsContext {
             sp.Encode4(0);
             return sp;
         }
-        final int noGuilds = alliance.getNoGuilds();
+        int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
@@ -1828,7 +1827,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket showGuildInfo(MapleCharacter player) {
+    public static ServerPacket showGuildInfo(TacosCharacter player) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(26); //signature for showing guild info
@@ -1934,7 +1933,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket sendAllianceInvite(String allianceName, MapleCharacter inviter) {
+    public static ServerPacket sendAllianceInvite(String allianceName, TacosCharacter inviter) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(3);
@@ -1977,7 +1976,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket BBSThreadList(final List<MapleBBSThread> bbs, int start) {
+    public static ServerPacket BBSThreadList(List<MapleBBSThread> bbs, int start) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(6);
@@ -1995,7 +1994,7 @@ public class ResCWvsContext {
                 break;
             }
         }
-        final int ret = notice == null ? 0 : 1;
+        int ret = notice == null ? 0 : 1;
         sp.Encode1(ret);
         if (notice != null) {
             //has a notice
@@ -2009,7 +2008,7 @@ public class ResCWvsContext {
         }
         //each page has 10 threads, start = page # in packet but not here
         sp.Encode4(threadCount);
-        final int pages = Math.min(10, threadCount - start);
+        int pages = Math.min(10, threadCount - start);
         sp.Encode4(pages);
         for (int i = 0; i < pages; i++) {
             sp.EncodeBuffer(addThread(bbs.get(start + i + ret))); //because 0 = notice
@@ -2022,7 +2021,7 @@ public class ResCWvsContext {
 
         sp.Encode1(15);
         sp.EncodeBuffer(addAllianceInfo(alliance));
-        final int noGuilds = alliance.getNoGuilds();
+        int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
@@ -2215,7 +2214,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket getFamilyPedigree(MapleCharacter chr) {
+    public static ServerPacket getFamilyPedigree(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
         sp.Encode4(chr.getId());
@@ -2318,7 +2317,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket getFamilyInfo(MapleCharacter chr) {
+    public static ServerPacket getFamilyInfo(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyInfoResult);
 
         sp.Encode4(chr.getCurrentRep()); //rep

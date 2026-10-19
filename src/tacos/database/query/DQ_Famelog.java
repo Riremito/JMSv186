@@ -19,6 +19,7 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,9 +30,9 @@ import tacos.debug.DebugLogger;
 
 /**
  * NOTE: {@code loadRecent} declares {@code throws SQLException} instead of
- * catching it internally, matching the original MapleCharacter.loadCharFromDB
+ * catching it internally, matching the original TacosCharacter.loadCharFromDB
  * behavior (see DQ_Questinfo for the same rationale). {@code insert} instead
- * catches internally (matching the original MapleCharacter.hasGivenFame,
+ * catches internally (matching the original TacosCharacter.hasGivenFame,
  * which also swallowed the exception).
  *
  * @author Riremito

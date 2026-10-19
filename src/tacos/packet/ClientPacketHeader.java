@@ -98,6 +98,7 @@ public enum ClientPacketHeader implements IPacketHeader {
     CP_UserMonsterBookSetCover,
     CP_UserSelectNpc,
     CP_UserRemoteShopOpenRequest,
+    CP_JMS_UserPremiumShopOpenRequest,
     CP_UserScriptMessageAnswer,
     CP_UserShopRequest,
     CP_UserTrunkRequest,

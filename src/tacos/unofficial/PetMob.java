@@ -18,14 +18,13 @@
  */
 package tacos.unofficial;
 
-import odin.server.life.MapleMonster;
 import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
-import tacos.wz.WzDataStorage;
 import tacos.wz.WzXML;
 
 /**
@@ -35,7 +34,7 @@ import tacos.wz.WzXML;
 public class PetMob implements IPetEx {
 
     private TacosCharacter character;
-    private MapleMonster monster = null;
+    private TacosMonster monster = null;
 
     public PetMob(TacosCharacter character) {
         this.character = character;
@@ -50,17 +49,15 @@ public class PetMob implements IPetEx {
     public boolean spawn(int id) {
         remove();
 
-        if (!WzDataStorage.MOB.check(id)) {
-            return false;
+        this.monster = WzXML.MOB.createMob(id);
+        if (this.monster != null) {
+            this.monster.setPosition(this.character.getPosition());
+            this.monster.setFootholdId(this.character.getFootholdId());
+            this.monster.setHomeFoothold(this.character.getFootholdId());
+            this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
+            SendPacket(ResCMobPool.MobEnterField(this.monster));
+            this.monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         }
-
-        this.monster = WzXML.MOB.findMonster(id);
-        this.monster.setPosition(this.character.getPosition());
-        this.monster.setFootholdId(this.character.getFootholdId());
-        this.monster.setHomeFoothold(this.character.getFootholdId());
-        this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
-        SendPacket(ResCMobPool.MobEnterField(this.monster));
-        this.monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
         return true;
     }
 

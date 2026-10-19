@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
@@ -40,7 +40,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCCashShop {
 
     // CCashShop::OnChargeParamResult
-    public static ServerPacket CashShopChargeParamResult(MapleCharacter chr) {
+    public static ServerPacket CashShopChargeParamResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopChargeParamResult);
 
         sp.EncodeStr(chr.getClient().getMapleId()); // nexon id
@@ -48,7 +48,7 @@ public class ResCCashShop {
     }
 
     // CCashShop::OnQueryCashResult
-    public static ServerPacket CashShopQueryCashResult(MapleCharacter chr) {
+    public static ServerPacket CashShopQueryCashResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopQueryCashResult);
 
         sp.Encode4(chr.getNexonPoint());
@@ -167,19 +167,20 @@ public class ResCCashShop {
 
     // CCashShop::OnCashItemResult
     public static ServerPacket CashItemResult(OpsCashItem ops, TacosClient client, CashItemStruct cis) {
+        TacosCharacter chr = client.getPlayer();
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
         sp.Encode1(ops.get());
         switch (ops) {
             // getCSInventory
             case CashItemRes_LoadLocker_Done: {
-                CashShop csi = client.getPlayer().getCashInventory();
+                CashShop csi = chr.getCashInventory();
 
                 sp.Encode2(csi.getItemsSize()); // cash item count
                 for (Item item : csi.getInventory()) {
                     sp.EncodeBuffer(RD_CCashShop.GW_CashItemInfo_Encode(item, client));
                 }
-                sp.Encode2(client.getPlayer().getStorage().getSlot()); // m_nTrunkCount
+                sp.Encode2(chr.getStorage().getSlot()); // m_nTrunkCount
                 sp.Encode2(client.getCharSlots()); // m_nCharacterSlotCount
                 sp.Encode2(0);// m_nBuyCharacterCount
                 sp.Encode2(client.getCharaterCount());// m_nCharacterCount
@@ -236,7 +237,7 @@ public class ResCCashShop {
             // CCashShop::OnCashItemResIncSlotCountDone
             case CashItemRes_IncSlotCount_Done: {
                 sp.Encode1(cis.inc_slot_type.getType());
-                sp.Encode2(client.getPlayer().getInventory(cis.inc_slot_type).getSlotLimit());
+                sp.Encode2(chr.getInventory(cis.inc_slot_type).getSlotLimit());
                 break;
             }
             // CCashShop::OnCashItemResIncSlotCountFailed
@@ -245,7 +246,7 @@ public class ResCCashShop {
             }
             // CCashShop::OnCashItemResIncTrunkCountDone
             case CashItemRes_IncTrunkCount_Done: {
-                sp.Encode2(client.getPlayer().getStorage().getSlot());
+                sp.Encode2(chr.getStorage().getSlot());
                 break;
             }
             // CCashShop::OnCashItemResIncTrunkCountFailed

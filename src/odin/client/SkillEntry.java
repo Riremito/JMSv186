@@ -26,7 +26,7 @@ public class SkillEntry {
     public final byte masterlevel;
     public final long expiration;
 
-    public SkillEntry(final byte skillevel, final byte masterlevel, final long expiration) {
+    public SkillEntry(byte skillevel, byte masterlevel, long expiration) {
         this.skillevel = skillevel;
         this.masterlevel = masterlevel;
         this.expiration = expiration;

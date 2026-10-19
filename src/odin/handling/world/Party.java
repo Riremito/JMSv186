@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.HashMap;
+import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import odin.client.MapleCharacter;
 import tacos.database.query.DQ_Characters;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
@@ -46,7 +46,7 @@ public class Party {
         }
 
         for (MaplePartyCharacter partychar : party.getMembers()) {
-            MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
+            TacosCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
             if (chr != null && !chr.getName().equalsIgnoreCase(namefrom)) { //Extra check just in case
                 chr.SendPacket(ResCField.GroupMessage(OpsChatGroup.CG_Party, namefrom, chattext));
             }
@@ -83,7 +83,7 @@ public class Party {
         }
 
         for (MaplePartyCharacter partychar : party.getMembers()) {
-            MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
+            TacosCharacter chr = TacosWorld.find(0).findOnlinePlayer(partychar.getName(), false);
             if (chr != null) {
                 if (operation == PartyOperation.DISBAND) {
                     chr.setParty(null);
@@ -96,7 +96,7 @@ public class Party {
         switch (operation) {
             case LEAVE:
             case EXPEL: {
-                MapleCharacter chr = TacosWorld.find(0).findOnlinePlayer(target.getName(), false);
+                TacosCharacter chr = TacosWorld.find(0).findOnlinePlayer(target.getName(), false);
                 if (chr != null) {
                     chr.SendPacket(ResCWvsContext.PartyResult(chr.getClient().getChannelId(), party, operation, target));
                     chr.setParty(null);

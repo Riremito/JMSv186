@@ -19,10 +19,10 @@
 package tacos.server.map.object;
 
 import java.util.AbstractMap;
+import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import odin.client.MapleCharacter;
 import odin.server.shops.HiredMerchant;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -35,12 +35,12 @@ import tacos.server.TacosRoom;
 public class TacosMerchant extends TacosMapObject {
 
     private boolean open = false;
-    private final MapleCharacter[] visitors = new MapleCharacter[4];
+    private final TacosCharacter[] visitors = new TacosCharacter[4];
     private final List<String> visitors_names = new LinkedList<>();
     private final List<String> blacklist = new LinkedList<>();
     private final int room_id;
 
-    public TacosMerchant(MapleCharacter owner) {
+    public TacosMerchant(TacosCharacter owner) {
         TacosRoom room = owner.getWorld().createRoom();
         room.setMerchant(this);
         this.room_id = room.getId();
@@ -50,7 +50,7 @@ public class TacosMerchant extends TacosMapObject {
         return this.room_id;
     }
 
-    public boolean enter(MapleCharacter visitor) {
+    public boolean enter(TacosCharacter visitor) {
         if (getOwnerId() == visitor.getId()) {
             setOpen(false);
             removeAllVisitors(0, 0);
@@ -76,7 +76,7 @@ public class TacosMerchant extends TacosMapObject {
         return true;
     }
 
-    public boolean leave(MapleCharacter visitor) {
+    public boolean leave(TacosCharacter visitor) {
         if (getOwnerId() == visitor.getId()) {
             setOpen(true);
             visitor.setPlayerShop(null);
@@ -95,9 +95,9 @@ public class TacosMerchant extends TacosMapObject {
         return this.open;
     }
 
-    private ArrayList<MapleCharacter> getAllVisitors() {
-        ArrayList<MapleCharacter> ret = new ArrayList<>();
-        for (MapleCharacter visitor : this.visitors) {
+    private ArrayList<TacosCharacter> getAllVisitors() {
+        ArrayList<TacosCharacter> ret = new ArrayList<>();
+        for (TacosCharacter visitor : this.visitors) {
             if (visitor != null) {
                 ret.add(visitor);
             }
@@ -106,7 +106,7 @@ public class TacosMerchant extends TacosMapObject {
     }
 
     public void SendPacket(ServerPacket packet) {
-        for (MapleCharacter visitor : getAllVisitors()) {
+        for (TacosCharacter visitor : getAllVisitors()) {
             visitor.SendPacket(packet);
         }
     }
@@ -124,11 +124,11 @@ public class TacosMerchant extends TacosMapObject {
         return getFreeSlot() == -1 ? getMaxSize() : getFreeSlot();
     }
 
-    public MapleCharacter getVisitor(int num) {
+    public TacosCharacter getVisitor(int num) {
         return this.visitors[num];
     }
 
-    public void addVisitor(MapleCharacter visitor) {
+    public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (0 < i) {
             SendPacket(ResCMiniRoomBaseDlg.shopVisitorAdd(visitor, i));
@@ -139,7 +139,7 @@ public class TacosMerchant extends TacosMapObject {
         }
     }
 
-    public void removeVisitor(MapleCharacter visitor) {
+    public void removeVisitor(TacosCharacter visitor) {
         byte slot = getVisitorSlot(visitor);
         if (0 < slot) {
             SendPacket(ResCMiniRoomBaseDlg.shopVisitorLeave(slot));
@@ -147,7 +147,7 @@ public class TacosMerchant extends TacosMapObject {
         }
     }
 
-    public byte getVisitorSlot(MapleCharacter visitor) {
+    public byte getVisitorSlot(TacosCharacter visitor) {
         for (byte i = 0; i < visitors.length; i++) {
             if (visitors[i] != null && visitors[i].getId() == visitor.getId()) {
                 return (byte) (i + 1);
@@ -161,7 +161,7 @@ public class TacosMerchant extends TacosMapObject {
 
     public void removeAllVisitors(int error, int type) {
         for (int i = 0; i < visitors.length; i++) {
-            MapleCharacter visitor = getVisitor(i);
+            TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
                     visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
@@ -173,8 +173,8 @@ public class TacosMerchant extends TacosMapObject {
         }
     }
 
-    public List<AbstractMap.SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors() {
-        List<AbstractMap.SimpleImmutableEntry<Byte, MapleCharacter>> chrz = new LinkedList<>();
+    public List<AbstractMap.SimpleImmutableEntry<Byte, TacosCharacter>> getVisitors() {
+        List<AbstractMap.SimpleImmutableEntry<Byte, TacosCharacter>> chrz = new LinkedList<>();
         for (byte i = 0; i < visitors.length; i++) { //include owner or no
             if (visitors[i] != null) {
                 chrz.add(new AbstractMap.SimpleImmutableEntry<>((byte) (i + 1), visitors[i]));
@@ -204,11 +204,11 @@ public class TacosMerchant extends TacosMapObject {
         blacklist.remove(bl);
     }
 
-    public void sendBlackList(MapleCharacter chr) {
+    public void sendBlackList(TacosCharacter chr) {
         chr.SendPacket(ResCMiniRoomBaseDlg.MerchantBlackListView(blacklist));
     }
 
-    public void sendVisitor(MapleCharacter chr) {
+    public void sendVisitor(TacosCharacter chr) {
         chr.SendPacket(ResCMiniRoomBaseDlg.MerchantVisitorView(visitors_names));
     }
 }

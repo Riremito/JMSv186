@@ -4,9 +4,8 @@
  */
 package odin.server;
 
-import java.lang.ref.WeakReference;
-import odin.client.MapleCharacter;
 import odin.handling.world.MaplePartyCharacter;
+import tacos.client.TacosCharacter;
 
 /**
  * TODO : Make this a function for NPC instead.. cleaner
@@ -15,14 +14,14 @@ import odin.handling.world.MaplePartyCharacter;
  */
 public class MapleCarnivalChallenge {
 
-    WeakReference<MapleCharacter> challenger;
+    TacosCharacter challenger;
     String challengeinfo = "";
 
-    public MapleCarnivalChallenge(MapleCharacter challenger) {
-        this.challenger = new WeakReference<>(challenger);
+    public MapleCarnivalChallenge(TacosCharacter challenger) {
+        this.challenger = challenger;
         challengeinfo += "#b";
         for (MaplePartyCharacter pc : challenger.getParty().getMembers()) {
-            MapleCharacter chr = challenger.getMap().getPlayerById(pc.getId());
+            TacosCharacter chr = challenger.getMap().getPlayerById(pc.getId());
             if (chr != null) {
                 challengeinfo += (chr.getName() + " / Level" + chr.getLevel() + " / " + getJobNameById(chr.getJob()));
             }
@@ -30,7 +29,7 @@ public class MapleCarnivalChallenge {
         challengeinfo += "#k";
     }
 
-    public static final String getJobNameById(int job) {
+    public static String getJobNameById(int job) {
         switch (job) {
             case 0:
                 return "Beginner";
@@ -211,7 +210,7 @@ public class MapleCarnivalChallenge {
         }
     }
 
-    public static final String getJobBasicNameById(int job) {
+    public static String getJobBasicNameById(int job) {
         switch (job) {
             case 0:
             case 1000:
@@ -328,8 +327,8 @@ public class MapleCarnivalChallenge {
     }
 
     // used by script
-    public MapleCharacter getChallenger() {
-        return challenger.get();
+    public TacosCharacter getChallenger() {
+        return challenger;
     }
 
     // used by script

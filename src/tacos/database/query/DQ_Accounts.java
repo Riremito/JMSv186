@@ -19,6 +19,7 @@
 package tacos.database.query;
 
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.constants.MapleClientState;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;
@@ -62,7 +63,7 @@ public class DQ_Accounts {
     /**
      * NOTE: unlike most methods in this class, this declares
      * {@code throws SQLException} instead of catching it internally,
-     * matching the original MapleCharacter.loadCharFromDB behavior, which
+     * matching the original TacosCharacter.loadCharFromDB behavior, which
      * relies on the exception propagating to its own outer catch block.
      */
     public static AccountLoginRow loadForCharacterLogin(int accountId) throws SQLException {
@@ -92,7 +93,7 @@ public class DQ_Accounts {
 
     /**
      * NOTE: this declares {@code throws SQLException} instead of catching
-     * it internally, since it is called from MapleCharacter.saveToDB, which
+     * it internally, since it is called from TacosCharacter.saveToDB, which
      * manages its own outer transaction and must see any failure in order
      * to roll back correctly.
      */
@@ -295,7 +296,7 @@ public class DQ_Accounts {
                 ps.setInt(1, client.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        final String sessionIP = rs.getString("SessionIP");
+                        String sessionIP = rs.getString("SessionIP");
 
                         if (sessionIP != null) {
                             ret = client.getIPAddress().equals(sessionIP.split(":")[0]);

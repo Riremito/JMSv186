@@ -19,11 +19,11 @@
 package tacos.client;
 
 import java.util.ArrayList;
+import tacos.server.map.TacosMap;
 import odin.client.Skill;
 import odin.client.SkillFactory;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
-import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -85,12 +85,12 @@ public class TacosBuff {
         if (Config.PostBB()) {
             return new int[5]; // 20
         }
-        // JMS180-186 (Pre-BB)
-        if (Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 180) || Config.Equal(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83)) {
+        // KMS84, JMS180-186 (Pre-BB)
+        if (Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.Equal(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83)) {
             return new int[4]; // 16
         }
         // KMS1 = none or 4.
-        // JMS131-164, KMS1-65, BMS24
+        // JMS131-165, KMS1-71, BMS24
         return new int[1]; // 4
     }
 
@@ -123,7 +123,7 @@ public class TacosBuff {
     }
 
     public boolean update(int buff_id) {
-        MapleMap map = this.chr.getMap();
+        TacosMap map = this.chr.getMap();
         MapleStatEffect effect = null;
         // skill or item.
         if (0 < buff_id) {

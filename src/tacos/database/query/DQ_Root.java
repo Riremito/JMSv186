@@ -19,10 +19,10 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import odin.client.MapleCharacter;
 import tacos.database.DatabaseConnection;
 import tacos.database.LazyData;
 import tacos.database.LazyDataNames;
@@ -37,7 +37,7 @@ public class DQ_Root {
 
     public static final String DB_TABLE_NAME = "__root";
 
-    public static boolean get(MapleCharacter chr, LazyData ld) {
+    public static boolean get(TacosCharacter chr, LazyData ld) {
         LazyDataNames ldn = ld.getDataName();
         try {
             Connection con = DatabaseConnection.getConnection();
@@ -67,7 +67,7 @@ public class DQ_Root {
         return false;
     }
 
-    public static boolean setInt(MapleCharacter chr, LazyData ld) {
+    public static boolean setInt(TacosCharacter chr, LazyData ld) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (maple_id, character_id, data_name, value_int) VALUES (?, ?, ?, ?);")) {
@@ -85,7 +85,7 @@ public class DQ_Root {
         return false;
     }
 
-    public static boolean setStr(MapleCharacter chr, LazyData ld) {
+    public static boolean setStr(TacosCharacter chr, LazyData ld) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (maple_id, character_id, data_name, value_str) VALUES (?, ?, ?, ?);")) {
@@ -103,7 +103,7 @@ public class DQ_Root {
         return false;
     }
 
-    public static boolean updateInt(MapleCharacter chr, LazyData ld) {
+    public static boolean updateInt(TacosCharacter chr, LazyData ld) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `value_int` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;")) {
@@ -121,7 +121,7 @@ public class DQ_Root {
         return false;
     }
 
-    public static boolean updateStr(MapleCharacter chr, LazyData ld) {
+    public static boolean updateStr(TacosCharacter chr, LazyData ld) {
         try {
             Connection con = DatabaseConnection.getConnection();
             try (PreparedStatement ps = con.prepareStatement("UPDATE " + DB_TABLE_NAME + " SET `value_str` = ? WHERE maple_id = ? AND character_id = ? AND data_name = ?;")) {

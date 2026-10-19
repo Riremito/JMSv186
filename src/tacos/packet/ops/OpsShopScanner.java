@@ -54,7 +54,7 @@ public enum OpsShopScanner implements IPacketOps {
     }
 
     public static OpsShopScanner find(int val) {
-        for (final OpsShopScanner ops : OpsShopScanner.values()) {
+        for (OpsShopScanner ops : OpsShopScanner.values()) {
             if (ops.get() == val) {
                 return ops;
             }

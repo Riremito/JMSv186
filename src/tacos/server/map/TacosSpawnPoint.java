@@ -19,14 +19,12 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMonster;
 import lombok.Data;
-import odin.server.life.MapleMonster;
-import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
-import tacos.wz.MapleData;
+import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 /**
@@ -50,45 +48,47 @@ public class TacosSpawnPoint {
     private int x;
     private int y;
 
-    public boolean loadData(MapleData life) {
-        this.node_id = Integer.parseInt(life.getName());
-        this.cy = WzDataTool.getInt(life.getChildByPath("cy"));
-        this.f = WzDataTool.getInt(life.getChildByPath("f"), 0);
-        this.fh = WzDataTool.getInt(life.getChildByPath("fh"), 0);
-        this.hide = WzDataTool.getInt(life.getChildByPath("hide"), 0);
-        this.id = WzDataTool.getInt(life.getChildByPath("id"), 0);
-        this.mobTime = WzDataTool.getInt(life.getChildByPath("mobTime"), 0) * 1000;
-        this.rx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
-        this.rx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
-        //this.type = WzDataTool.getString(life.getChildByPath("type"));
-        this.x = WzDataTool.getInt(life.getChildByPath("x"));
-        this.y = WzDataTool.getInt(life.getChildByPath("y"));
+    public boolean loadData(MapWz.LifeInfo life) {
+        this.node_id = life.getNodeId();
+        this.cy = life.getCy();
+        this.f = life.getF();
+        this.fh = life.getFh();
+        this.hide = life.getHide();
+        this.id = life.getId();
+        this.mobTime = life.getMobTime() * 1000;
+        this.rx0 = life.getRx0();
+        this.rx1 = life.getRx1();
+        //this.type = life.getType();
+        this.x = life.getX();
+        this.y = life.getY();
 
         if (!WzDataStorage.MOB.check(this.id)) {
             DebugLogger.ErrorLog("TacosSpawnPoint : invalid mob id, " + this.id);
             return false;
         }
 
-        //this.team = WzDataTool.getInt(life.getChildByPath("team"), -1);
+        //this.team = life.getInt("team", -1);
         return true;
     }
 
-    private MapleMonster monster = null;
+    private TacosMonster monster = null;
     private long lastRegenTime = 0;
 
-    public MapleMonster regen(MapleMap map) {
+    public TacosMonster regen(TacosMap map) {
         if (this.monster != null) {
             return null;
         }
 
-        this.monster = WzXML.MOB.findMonster(this.id);
-        this.monster.setObjectId();
-        this.monster.setMap(map); // TODO : remove from monster object.
-        this.monster.setPosition(new Point(this.x, this.y));
-        this.monster.setFootholdId(this.fh);
-        this.monster.setHomeFoothold(this.fh);
-        this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
-        this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
+        this.monster = WzXML.MOB.createMob(this.id);
+        if (this.monster != null) {
+            this.monster.setObjectId();
+            this.monster.setMap(map); // TODO : remove from monster object.
+            this.monster.setPosition(new Point(this.x, this.y));
+            this.monster.setFootholdId(this.fh);
+            this.monster.setHomeFoothold(this.fh);
+            this.monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
+            this.monster.setATEx(OpsMobAppear.MOBAPPEAR_REGEN.get());
+        }
         this.lastRegenTime = System.currentTimeMillis();
         return this.monster;
     }

@@ -19,7 +19,7 @@
 package tacos.debug;
 
 import odin.client.Skill;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class DebugJob {
     }
 
     // ステータス初期化
-    public static void ResetStat(MapleCharacter chr) {
+    public static void ResetStat(TacosCharacter chr) {
         //int ability_point = 25;
         DebugJob.AllSkill(chr, true);
         PlayerStats stat = chr.getStat();
@@ -78,7 +78,7 @@ public class DebugJob {
         return false;
     }
 
-    public static int GetSkillEffect(MapleCharacter chr, int skill_id) {
+    public static int GetSkillEffect(TacosCharacter chr, int skill_id) {
         Skill skill = SkillFactory.getSkill(skill_id);
         if (skill == null) {
             return 0;
@@ -86,7 +86,7 @@ public class DebugJob {
         return skill.getEffect(chr.getSkillLevel(skill)).getX();
     }
 
-    public static void LevelUpStat(MapleCharacter chr) {
+    public static void LevelUpStat(TacosCharacter chr) {
         int job_id = chr.getJob();
         int level = chr.getLevel() + 1;
         int ability_point = chr.getRemainingAp() + 5;
@@ -224,7 +224,7 @@ public class DebugJob {
         return 0;
     }
 
-    public static boolean addStat(MapleCharacter chr, PlayerStats player_stat, Stat stat_main) {
+    public static boolean addStat(TacosCharacter chr, PlayerStats player_stat, Stat stat_main) {
         int ability_point = chr.getRemainingAp();
         int def_stat_sub_point = 0;
         int level = chr.getLevel();
@@ -301,7 +301,7 @@ public class DebugJob {
         return false;
     }
 
-    public static boolean DefStat(MapleCharacter chr, int job_id, int level) {
+    public static boolean DefStat(TacosCharacter chr, int job_id, int level) {
         ResetStat(chr);
 
         if (!WzDataStorage.JOB.check(job_id)) {
@@ -381,11 +381,11 @@ public class DebugJob {
         return true;
     }
 
-    public static boolean AllSkill(MapleCharacter chr) {
+    public static boolean AllSkill(TacosCharacter chr) {
         return AllSkill(chr, false);
     }
 
-    public static boolean AllSkill(MapleCharacter chr, boolean reset) {
+    public static boolean AllSkill(TacosCharacter chr, boolean reset) {
         int job_id = chr.getJob();
 
         if (!WzDataStorage.JOB.check(job_id)) {
@@ -466,11 +466,11 @@ public class DebugJob {
         return true;
     }
 
-    public static void AllStat(MapleCharacter chr) {
+    public static void AllStat(TacosCharacter chr) {
         AllStat(chr, 180);
     }
 
-    public static void AllStat(MapleCharacter chr, int level) {
+    public static void AllStat(TacosCharacter chr, int level) {
         PlayerStats stat = chr.getStat();
         chr.setRemainingAp(150);
         chr.setRemainingSp(550);

@@ -69,7 +69,7 @@ public class RandomRewards {
         compiledEvent = returnArray;
     }
 
-    private final void processRewards(final List<Integer> returnArray, final int[] list) {
+    private void processRewards(List<Integer> returnArray, int[] list) {
         int lastitem = 0;
         for (int i = 0; i < list.length; i++) {
             if (i % 2 == 0) { // Even
@@ -83,15 +83,15 @@ public class RandomRewards {
         Collections.shuffle(returnArray);
     }
 
-    public final int getGoldBoxReward() {
+    public int getGoldBoxReward() {
         return compiledGold.get(Randomizer.nextInt(compiledGold.size()));
     }
 
-    public final int getSilverBoxReward() {
+    public int getSilverBoxReward() {
         return compiledSilver.get(Randomizer.nextInt(compiledSilver.size()));
     }
 
-    public final int getFishingReward() {
+    public int getFishingReward() {
         return compiledFishing.get(Randomizer.nextInt(compiledFishing.size()));
     }
 

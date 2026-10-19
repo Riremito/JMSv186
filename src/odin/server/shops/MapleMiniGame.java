@@ -22,20 +22,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.ArrayList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
 import odin.server.quest.MapleQuest;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import java.awt.Point;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleMap;
 import odin.constants.GameConstants;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -65,7 +64,7 @@ public class MapleMiniGame {
     protected int channel;
     protected int map;
     protected AtomicInteger meso = new AtomicInteger(0);
-    protected WeakReference<MapleCharacter> chrs[];
+    protected TacosCharacter chrs[];
     protected List<String> visitors = new LinkedList<>();
     protected List<BoughtItem> bought = new LinkedList<>();
     protected List<MaplePlayerShopItem> items = new LinkedList<>();
@@ -84,7 +83,7 @@ public class MapleMiniGame {
     int tie = -1;
 
     @SuppressWarnings("unchecked")
-    public MapleMiniGame(MapleCharacter owner, int itemId, String description, String pass, int GameType) {
+    public MapleMiniGame(TacosCharacter owner, int itemId, String description, String pass, int GameType) {
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
         this.ownerId = owner.getId();
@@ -94,9 +93,9 @@ public class MapleMiniGame {
         this.pass = pass;
         this.map = owner.getMapId();
         this.channel = owner.getClient().getChannelId();
-        chrs = new WeakReference[slots - 1];
+        chrs = new TacosCharacter[slots - 1];
         for (int i = 0; i < chrs.length; i++) {
-            chrs[i] = new WeakReference<>(null);
+            chrs[i] = null;
         }
         this.GameType = GameType;
         this.points = new int[slots];
@@ -135,9 +134,9 @@ public class MapleMiniGame {
     }
 
     public void broadcastToVisitors(ServerPacket packet, boolean owner) {
-        for (WeakReference<MapleCharacter> chr : chrs) {
-            if (chr != null && chr.get() != null) {
-                chr.get().SendPacket(packet);
+        for (TacosCharacter chr : chrs) {
+            if (chr != null) {
+                chr.SendPacket(packet);
             }
         }
         if (getShopType() != HIRED_MERCHANT && owner && getMCOwner() != null) {
@@ -146,9 +145,9 @@ public class MapleMiniGame {
     }
 
     public void broadcastToVisitors(ServerPacket packet, int exception) {
-        for (WeakReference<MapleCharacter> chr : chrs) {
-            if (chr != null && chr.get() != null && getVisitorSlot(chr.get()) != exception) {
-                chr.get().SendPacket(packet);
+        for (TacosCharacter chr : chrs) {
+            if (chr != null && getVisitorSlot(chr) != exception) {
+                chr.SendPacket(packet);
             }
         }
         if (getShopType() != HIRED_MERCHANT && getMCOwner() != null && exception != ownerId) {
@@ -201,33 +200,33 @@ public class MapleMiniGame {
         return false;
     }
 
-    public MapleCharacter getVisitor(int num) {
-        return chrs[num].get();
+    public TacosCharacter getVisitor(int num) {
+        return chrs[num];
     }
 
-    public void addVisitor(MapleCharacter visitor) {
+    public void addVisitor(TacosCharacter visitor) {
         int i = getFreeSlot();
         if (i > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameNewVisitor(visitor, i, this));
-            chrs[i - 1] = new WeakReference<>(visitor);
+            chrs[i - 1] = visitor;
             if (!isOwner(visitor)) {
                 visitors.add(visitor.getName());
             }
         }
     }
 
-    public void removeVisitor(MapleCharacter visitor) {
-        final byte slot = getVisitorSlot(visitor);
+    public void removeVisitor(TacosCharacter visitor) {
+        byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
-            chrs[slot - 1] = new WeakReference<>(null);
+            chrs[slot - 1] = null;
         }
     }
 
-    public byte getVisitorSlot(MapleCharacter visitor) {
+    public byte getVisitorSlot(TacosCharacter visitor) {
         for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] != null && chrs[i].get() != null && chrs[i].get().getId() == visitor.getId()) {
+            if (chrs[i] != null && chrs[i].getId() == visitor.getId()) {
                 return (byte) (i + 1);
             }
         }
@@ -239,14 +238,14 @@ public class MapleMiniGame {
 
     public void removeAllVisitors(int error, int type) {
         for (int i = 0; i < chrs.length; i++) {
-            MapleCharacter visitor = getVisitor(i);
+            TacosCharacter visitor = getVisitor(i);
             if (visitor != null) {
                 if (type != -1) {
                     visitor.SendPacket(ResCMiniRoomBaseDlg.shopErrorMessage(error, type));
                 }
                 broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(getVisitorSlot(visitor)), getVisitorSlot(visitor));
                 visitor.setPlayerShop(null);
-                chrs[i] = new WeakReference<>(null);
+                chrs[i] = null;
             }
         }
     }
@@ -270,11 +269,11 @@ public class MapleMiniGame {
         return des;
     }
 
-    public List<SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors() {
-        List<SimpleImmutableEntry<Byte, MapleCharacter>> chrz = new LinkedList<>();
+    public List<SimpleImmutableEntry<Byte, TacosCharacter>> getVisitors() {
+        List<SimpleImmutableEntry<Byte, TacosCharacter>> chrz = new LinkedList<>();
         for (byte i = 0; i < chrs.length; i++) { //include owner or no
-            if (chrs[i] != null && chrs[i].get() != null) {
-                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i].get()));
+            if (chrs[i] != null) {
+                chrz.add(new SimpleImmutableEntry<>((byte) (i + 1), chrs[i]));
             }
         }
         return chrz;
@@ -298,7 +297,7 @@ public class MapleMiniGame {
 
     public byte getFreeSlot() {
         for (byte i = 0; i < chrs.length; i++) {
-            if (chrs[i] == null || chrs[i].get() == null) {
+            if (chrs[i] == null) {
                 return (byte) (i + 1);
             }
         }
@@ -309,7 +308,7 @@ public class MapleMiniGame {
         return itemId;
     }
 
-    public boolean isOwner(MapleCharacter chr) {
+    public boolean isOwner(TacosCharacter chr) {
         return chr.getId() == ownerId && chr.getName().equals(ownerName);
     }
 
@@ -326,11 +325,11 @@ public class MapleMiniGame {
     public void sendSpawnData(TacosClient client) {
     }
 
-    public MapleCharacter getMCOwner() {
+    public TacosCharacter getMCOwner() {
         return getMap().getPlayerById(ownerId);
     }
 
-    public MapleMap getMap() {
+    public TacosMap getMap() {
         return TacosWorld.find(0).getChannelServer(channel).findMap(map);
     }
 
@@ -366,7 +365,7 @@ public class MapleMiniGame {
         public int totalPrice;
         public String buyer;
 
-        public BoughtItem(final int id, final int quantity, final int totalPrice, final String buyer) {
+        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
             this.id = id;
             this.quantity = quantity;
             this.totalPrice = totalPrice;
@@ -478,7 +477,7 @@ public class MapleMiniGame {
         return ready[slot];
     }
 
-    public void setPiece(int move1, int move2, int type, MapleCharacter chr) {
+    public void setPiece(int move1, int move2, int type, TacosCharacter chr) {
         if (piece[move1][move2] == 0 && isOpen()) {
             piece[move1][move2] = type;
             // なんか勝てないし、if文の中に入れるとゲームが進まないので謎
@@ -505,7 +504,7 @@ public class MapleMiniGame {
         }
     }
 
-    public void exit(MapleCharacter player) {
+    public void exit(TacosCharacter player) {
         player.setPlayerShop(null);
         if (isOwner(player)) {
             removeAllVisitors(3, 1);
@@ -514,14 +513,14 @@ public class MapleMiniGame {
         }
     }
 
-    public boolean isExitAfter(MapleCharacter player) {
+    public boolean isExitAfter(TacosCharacter player) {
         if (getVisitorSlot(player) > -1) {
             return this.exitAfter[getVisitorSlot(player)];
         }
         return false;
     }
 
-    public void setExitAfter(MapleCharacter player) {
+    public void setExitAfter(TacosCharacter player) {
         if (getVisitorSlot(player) > -1) {
             this.exitAfter[getVisitorSlot(player)] = !this.exitAfter[getVisitorSlot(player)];
         }
@@ -531,7 +530,7 @@ public class MapleMiniGame {
         for (int i = 0; i < slots; i++) {
             if (exitAfter[i]) {
                 exitAfter[i] = false;
-                exit(i == 0 ? getMCOwner() : chrs[i - 1].get());
+                exit(i == 0 ? getMCOwner() : chrs[i - 1]);
             }
         }
     }
@@ -577,7 +576,7 @@ public class MapleMiniGame {
         return ret;
     }
 
-    public int getScore(MapleCharacter chr) {
+    public int getScore(TacosCharacter chr) {
         //TODO: Fix formula
         int score = 2000;
         int wins = getWins(chr);
@@ -599,20 +598,20 @@ public class MapleMiniGame {
     //omok - win = 122200
     //matchcard - win = 122210
     //TODO: record points
-    public int getWins(MapleCharacter chr) {
+    public int getWins(TacosCharacter chr) {
         return Integer.parseInt(getData(chr).split(",")[2]);
     }
 
-    public int getTies(MapleCharacter chr) {
+    public int getTies(TacosCharacter chr) {
         return Integer.parseInt(getData(chr).split(",")[1]);
     }
 
-    public int getLosses(MapleCharacter chr) {
+    public int getLosses(TacosCharacter chr) {
         return Integer.parseInt(getData(chr).split(",")[0]);
     }
 
     public void setPoints(int i, int type) { //lose = 0, tie = 1, win = 2
-        MapleCharacter z;
+        TacosCharacter z;
         if (i == 0) {
             z = getMCOwner();
         } else {
@@ -631,7 +630,7 @@ public class MapleMiniGame {
         }
     }
 
-    public String getData(MapleCharacter chr) {
+    public String getData(TacosCharacter chr) {
         MapleQuest quest = MapleQuest.getInstance(GameType == 1 ? 122200 : 122210);
         MapleQuestStatus record;
         if (chr.getQuestNoAdd(quest) == null) {

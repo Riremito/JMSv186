@@ -1,15 +1,15 @@
 package odin.server.quest;
 
 import odin.constants.GameConstants;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import tacos.packet.ops.OpsUserEffect;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.wz.MapleData;
 import tacos.wz.QuestWz;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
@@ -35,7 +35,7 @@ public class MapleQuest {
     private int selectedSkillID = 0;
     protected Map<String, List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
 
-    protected MapleQuest(final int id) {
+    protected MapleQuest(int id) {
         relevantMobs = new LinkedHashMap<>();
         startReqs = new LinkedList<>();
         completeReqs = new LinkedList<>();
@@ -45,82 +45,33 @@ public class MapleQuest {
         this.id = id;
     }
 
-    private static boolean loadQuest(MapleQuest ret, int id) throws NullPointerException {
-        QuestWz.QuestDefinition def = WzXML.QUEST.getQuestDefinition(id);
-        if (def == null) {
+    private static boolean loadQuest(MapleQuest ret, int id) {
+        QuestWz.QuestInfo info = WzXML.QUEST.getQuestInfo(id);
+        if (info == null) {
             return false;
         }
 
-        MapleData basedata1 = def.basedata1;
-        MapleData basedata2 = def.basedata2;
-        //-------------------------------------------------
-        final MapleData startReqData = basedata1.getChildByPath("0");
-        if (startReqData != null) {
-            final List<MapleData> startC = startReqData.getChildren();
-            if (startC != null && !startC.isEmpty()) {
-                for (MapleData startReq : startC) {
-                    final MapleQuestRequirementType type = MapleQuestRequirementType.getByWZName(startReq.getName());
-                    if (type.equals(MapleQuestRequirementType.interval)) {
-                        ret.repeatable = true;
-                    }
-                    final MapleQuestRequirement req = new MapleQuestRequirement(ret, type, startReq);
-                    if (req.getType().equals(MapleQuestRequirementType.mob)) {
-                        for (MapleData mob : startReq.getChildren()) {
-                            SimpleImmutableEntry<Integer, Integer> mobEntry = WzXML.QUEST.parseMobRequirementEntry(mob);
-                            ret.relevantMobs.put(mobEntry.getKey(), mobEntry.getValue());
-                        }
-                    }
-                    ret.startReqs.add(req);
-                }
-            }
+        for (QuestWz.QuestRequirementInfo req : info.getStartReqs()) {
+            ret.startReqs.add(new MapleQuestRequirement(ret, req));
         }
-        //-------------------------------------------------
-        final MapleData completeReqData = basedata1.getChildByPath("1");
-        if (completeReqData != null) {
-            final List<MapleData> completeC = completeReqData.getChildren();
-            if (completeC != null && !completeC.isEmpty()) {
-                for (MapleData completeReq : completeC) {
-                    MapleQuestRequirement req = new MapleQuestRequirement(ret, MapleQuestRequirementType.getByWZName(completeReq.getName()), completeReq);
-                    if (req.getType().equals(MapleQuestRequirementType.mob)) {
-                        for (MapleData mob : completeReq.getChildren()) {
-                            SimpleImmutableEntry<Integer, Integer> mobEntry = WzXML.QUEST.parseMobRequirementEntry(mob);
-                            ret.relevantMobs.put(mobEntry.getKey(), mobEntry.getValue());
-                        }
-                    } else if (req.getType().equals(MapleQuestRequirementType.endscript)) {
-                        ret.customend = true;
-                    }
-                    ret.completeReqs.add(req);
-                }
-            }
+        for (QuestWz.QuestRequirementInfo req : info.getCompleteReqs()) {
+            ret.completeReqs.add(new MapleQuestRequirement(ret, req));
         }
-        // read acts
-        final MapleData startActData = basedata2.getChildByPath("0");
-        if (startActData != null) {
-            final List<MapleData> startC = startActData.getChildren();
-            for (MapleData startAct : startC) {
-                ret.startActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(startAct.getName()), startAct, ret));
-            }
+        for (QuestWz.QuestActionInfo act : info.getStartActs()) {
+            ret.startActs.add(new MapleQuestAction(act, ret));
         }
-        final MapleData completeActData = basedata2.getChildByPath("1");
-
-        if (completeActData != null) {
-            final List<MapleData> completeC = completeActData.getChildren();
-            for (MapleData completeAct : completeC) {
-                ret.completeActs.add(new MapleQuestAction(MapleQuestActionType.getByWZName(completeAct.getName()), completeAct, ret));
-            }
+        for (QuestWz.QuestActionInfo act : info.getCompleteActs()) {
+            ret.completeActs.add(new MapleQuestAction(act, ret));
         }
-
-        final MapleData questInfo = def.questInfo;
-        QuestWz.QuestInfoData questInfoData = WzXML.QUEST.parseQuestInfo(questInfo);
-        ret.name = questInfoData.name;
-        ret.autoStart = questInfoData.autoStart;
-        ret.autoPreComplete = questInfoData.autoPreComplete;
-        ret.viewMedalItem = questInfoData.viewMedalItem;
-        ret.selectedSkillID = questInfoData.selectedSkillID;
-
-        // not in KMS55
-        WzXML.QUEST.parsePartyQuestInfo(def.pquestInfo, ret.partyQuestInfo);
-
+        ret.relevantMobs.putAll(info.getRelevantMobs());
+        ret.repeatable = info.isRepeatable();
+        ret.customend = info.isCustomend();
+        ret.name = info.getName();
+        ret.autoStart = info.isAutoStart();
+        ret.autoPreComplete = info.isAutoPreComplete();
+        ret.viewMedalItem = info.getViewMedalItem();
+        ret.selectedSkillID = info.getSelectedSkillID();
+        ret.partyQuestInfo.putAll(info.getPartyQuestInfo());
         return true;
     }
 
@@ -143,7 +94,7 @@ public class MapleQuest {
         return ret;
     }
 
-    public boolean canStart(MapleCharacter chr, Integer npcid) {
+    public boolean canStart(TacosCharacter chr, Integer npcid) {
         if (chr.getQuest(this).getStatus() != 0 && !(chr.getQuest(this).getStatus() == 2 && repeatable)) {
             return false;
         }
@@ -155,7 +106,7 @@ public class MapleQuest {
         return true;
     }
 
-    public boolean canComplete(MapleCharacter chr, Integer npcid) {
+    public boolean canComplete(TacosCharacter chr, Integer npcid) {
         if (chr.getQuest(this).getStatus() != 1) {
             return false;
         }
@@ -167,7 +118,7 @@ public class MapleQuest {
         return true;
     }
 
-    public void RestoreLostItem(MapleCharacter chr, int item_id) {
+    public void RestoreLostItem(TacosCharacter chr, int item_id) {
         for (MapleQuestAction a : startActs) {
             if (a.RestoreLostItem(chr, item_id)) {
                 break;
@@ -175,7 +126,7 @@ public class MapleQuest {
         }
     }
 
-    public void start(MapleCharacter chr, int npc_id) {
+    public void start(TacosCharacter chr, int npc_id) {
         if ((autoStart || checkNPCOnMap(chr, npc_id)) && canStart(chr, npc_id)) {
             for (MapleQuestAction a : startActs) {
                 if (!a.checkEnd(chr, null)) { //just in case
@@ -193,11 +144,11 @@ public class MapleQuest {
         }
     }
 
-    public void complete(MapleCharacter chr, int npc_id) {
+    public void complete(TacosCharacter chr, int npc_id) {
         complete(chr, npc_id, null);
     }
 
-    public void complete(MapleCharacter chr, int npc_id, Integer selection) {
+    public void complete(TacosCharacter chr, int npc_id, Integer selection) {
         if ((autoPreComplete || checkNPCOnMap(chr, npc_id)) && canComplete(chr, npc_id)) {
             for (MapleQuestAction a : completeActs) {
                 if (!a.checkEnd(chr, selection)) {
@@ -217,18 +168,18 @@ public class MapleQuest {
         }
     }
 
-    public void forfeit(MapleCharacter chr) {
+    public void forfeit(TacosCharacter chr) {
         if (chr.getQuest(this).getStatus() != (byte) 1) {
             return;
         }
-        final MapleQuestStatus oldStatus = chr.getQuest(this);
-        final MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 0);
+        MapleQuestStatus oldStatus = chr.getQuest(this);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 0);
         newStatus.setForfeited(oldStatus.getForfeited() + 1);
         newStatus.setCompletionTime(oldStatus.getCompletionTime());
         chr.updateQuest(newStatus);
     }
 
-    public void forceStart(MapleCharacter chr, int npc, String customData) {
+    public void forceStart(TacosCharacter chr, int npc, String customData) {
         MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 1, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         newStatus.setCompletionTime(chr.getQuest(this).getCompletionTime());
@@ -236,7 +187,7 @@ public class MapleQuest {
         chr.updateQuest(newStatus);
     }
 
-    public void forceComplete(MapleCharacter chr, int npc) {
+    public void forceComplete(TacosCharacter chr, int npc) {
         MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 2, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         chr.updateQuest(newStatus);
@@ -250,9 +201,10 @@ public class MapleQuest {
         return relevantMobs;
     }
 
-    private boolean checkNPCOnMap(MapleCharacter player, int npcid) {
+    private boolean checkNPCOnMap(TacosCharacter player, int npcid) {
         //mir = 1013000
-        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (player.getMap() != null && player.getMap().containsNPC(npcid));
+        TacosMap map = player.getMap();
+        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (map != null && map.containsNPC(npcid));
     }
 
     public int getMedalItem() {

@@ -1,18 +1,16 @@
 package odin.server.quest;
 
 import odin.client.Skill;
+import tacos.client.TacosCharacter;
 import java.util.Calendar;
 import java.util.List;
 import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.wz.MapleData;
 import tacos.wz.QuestWz;
-import tacos.wz.WzXML;
 
 public class MapleQuestRequirement {
 
@@ -22,17 +20,15 @@ public class MapleQuestRequirement {
     private String stringStore;
     private List<SimpleImmutableEntry<Integer, Integer>> dataStore;
 
-    public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, MapleData data) {
-        this.type = type;
+    public MapleQuestRequirement(MapleQuest quest, QuestWz.QuestRequirementInfo info) {
+        this.type = info.getType();
         this.quest = quest;
-
-        QuestWz.QuestRequirementData parsed = WzXML.QUEST.parseQuestRequirement(type, data);
-        this.intStore = parsed.intStore;
-        this.stringStore = parsed.stringStore;
-        this.dataStore = parsed.dataStore;
+        this.intStore = info.getIntStore();
+        this.stringStore = info.getStringStore();
+        this.dataStore = info.getDataStore();
     }
 
-    public boolean check(MapleCharacter chr, Integer npc_id) {
+    public boolean check(TacosCharacter chr, Integer npc_id) {
         switch (type) {
             case job:
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
@@ -43,9 +39,9 @@ public class MapleQuestRequirement {
                 return false;
             case skill: {
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
-                    final boolean acquire = a.getValue() > 0;
-                    final int skill = a.getKey();
-                    final Skill skil = SkillFactory.getSkill(skill);
+                    boolean acquire = a.getValue() > 0;
+                    int skill = a.getKey();
+                    Skill skil = SkillFactory.getSkill(skill);
                     if (acquire) {
                         if (skil.isFourthJob()) {
                             if (chr.getMasterLevel(skil) == 0) {
@@ -66,8 +62,8 @@ public class MapleQuestRequirement {
             }
             case quest:
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
-                    final MapleQuestStatus q = chr.getQuest(MapleQuest.getInstance(a.getKey()));
-                    final int state = a.getValue();
+                    MapleQuestStatus q = chr.getQuest(MapleQuest.getInstance(a.getKey()));
+                    int state = a.getValue();
                     if (state != 0) {
                         if (q == null && state == 0) {
                             continue;
@@ -90,7 +86,7 @@ public class MapleQuestRequirement {
                     for (Item item : chr.getInventory(iType).listById(itemId)) {
                         quantity += item.getQuantity();
                     }
-                    final int count = a.getValue();
+                    int count = a.getValue();
                     if (quantity < count || count <= 0 && quantity > 0) {
                         return false;
                     }
@@ -101,14 +97,14 @@ public class MapleQuestRequirement {
             case lvmax:
                 return chr.getLevel() <= intStore;
             case end:
-                final String timeStr = stringStore;
-                final Calendar cal = Calendar.getInstance();
+                String timeStr = stringStore;
+                Calendar cal = Calendar.getInstance();
                 cal.set(Integer.parseInt(timeStr.substring(0, 4)), Integer.parseInt(timeStr.substring(4, 6)), Integer.parseInt(timeStr.substring(6, 8)), Integer.parseInt(timeStr.substring(8, 10)), 0);
                 return cal.getTimeInMillis() >= System.currentTimeMillis();
             case mob:
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
-                    final int mobId = a.getKey();
-                    final int killReq = a.getValue();
+                    int mobId = a.getKey();
+                    int killReq = a.getValue();
                     if (chr.getQuest(quest).getMobKills(mobId) < killReq) {
                         return false;
                     }
@@ -128,8 +124,8 @@ public class MapleQuestRequirement {
                 return false;
             case mbcard:
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
-                    final int cardId = a.getKey();
-                    final int killReq = a.getValue();
+                    int cardId = a.getKey();
+                    int killReq = a.getValue();
                     if (chr.getMonsterBook().getCardCount(cardId) < killReq) {
                         return false;
                     }

@@ -18,14 +18,15 @@
  */
 package tacos.packet.request.sub;
 
-import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosNpc;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
-import odin.server.life.MapleNPC;
-import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -33,7 +34,7 @@ import tacos.wz.WzDataStorage;
  */
 public class ReqSub_Admin {
 
-    public static boolean OnAdmin(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnAdmin(TacosCharacter chr, ClientPacket cp) {
         byte command = cp.Decode1();
 
         switch (command) {
@@ -212,7 +213,7 @@ public class ReqSub_Admin {
         return false;
     }
 
-    private static boolean ChangeJob(MapleCharacter chr, int jobid) {
+    private static boolean ChangeJob(TacosCharacter chr, int jobid) {
         if (!WzDataStorage.JOB.check(jobid)) {
             chr.DebugMsg("Invalid JobID");
             chr.DebugMsg("Vaild JobID: " + WzDataStorage.JOB.getIds());
@@ -224,15 +225,15 @@ public class ReqSub_Admin {
         return true;
     }
 
-    private static void GetAP(MapleCharacter chr, int point) {
+    private static void GetAP(TacosCharacter chr, int point) {
         chr.gainAp((short) point);
     }
 
-    private static void GetSP(MapleCharacter chr, int point) {
+    private static void GetSP(TacosCharacter chr, int point) {
         chr.gainSP((short) point);
     }
 
-    private static boolean setStat(MapleCharacter chr, OpsChangeStat ops, int point) {
+    private static boolean setStat(TacosCharacter chr, OpsChangeStat ops, int point) {
         if (point < 4 || 30000 < point) {
             return false;
         }
@@ -263,19 +264,22 @@ public class ReqSub_Admin {
         return true;
     }
 
-    private static boolean createNPC(MapleCharacter chr, int npc_id, int x, int y) {
+    private static boolean createNPC(TacosCharacter chr, int npc_id, int x, int y) {
         if (!WzDataStorage.NPC.check(npc_id)) {
             chr.DebugMsg("Invalid NPCID");
             return false;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
 
         if (map == null) {
             return false;
         }
 
-        MapleNPC npc = new MapleNPC(npc_id);
+        TacosNpc npc = WzXML.NPC.createNpc(npc_id);
+        if (npc == null) {
+            return false;
+        }
         Point npc_xy = new Point(x, y);
         npc.setPosition(npc_xy);
         npc.setCy(x);

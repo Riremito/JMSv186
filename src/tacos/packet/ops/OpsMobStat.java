@@ -94,7 +94,7 @@ public enum OpsMobStat implements IPacketOps {
     }
 
     public static OpsMobStat find(int val) {
-        for (final OpsMobStat ops : OpsMobStat.values()) {
+        for (OpsMobStat ops : OpsMobStat.values()) {
             if (ops.get() == val) {
                 return ops;
             }

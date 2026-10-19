@@ -18,7 +18,9 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosMonster;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -26,9 +28,7 @@ import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import odin.server.life.MobSkill;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.config.Config;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -46,19 +46,19 @@ import tacos.wz.WzXML;
 public class ReqCMobPool {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
 
         int m_dwMobID = cp.Decode4();
 
-        MapleMonster monster = map.getMonsterByOid(m_dwMobID);
+        TacosMonster monster = map.getMonsterByOid(m_dwMobID);
         if (monster == null) {
             return true;
         }
@@ -120,7 +120,7 @@ public class ReqCMobPool {
         return false;
     }
 
-    public static boolean OnMove(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMove(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         byte unk1 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
         short moveid = cp.Decode2();
         boolean bNextAttackPossible = cp.Decode1() > 0;
@@ -133,23 +133,22 @@ public class ReqCMobPool {
             // none
             byte unk5 = cp.Decode1();
             byte unk6 = cp.Decode1();
-        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
+        } else if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             int unk7 = cp.Decode4(); // 0
             int unk8 = cp.Decode4(); // 0
         }
 
         byte unk2 = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1(); // 0
-        int unk3 = (Config.LessOrEqual(Region.KMS, 43) || Region.HKMS.check()) ? 1 : cp.Decode4(); // 1
+        int unk3 = (Config.LessOrEqual(Region.KMS, 43) || Config.LessOrEqual(Region.JMS, 131) || Region.HKMS.check()) ? 1 : cp.Decode4(); // 1
 
-        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
+        if (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int ffddcc_1 = cp.Decode4(); // 0x00FFDDCC
             int ffddcc_2 = cp.Decode4(); // 0x00FFDDCC
             if (ffddcc_1 != 0x00FFDDCC || ffddcc_2 != 0x00FFDDCC) {
                 DebugLogger.DebugLog("0x00FFDDCC... " + String.format("%08X", ffddcc_1) + " | " + String.format("%08X", ffddcc_2));
             }
         }
-        int unk9 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
-
+        int unk9 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
         byte unk4 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
 
         ParseCMovePath move_path = new ParseCMovePath();
@@ -161,7 +160,7 @@ public class ReqCMobPool {
         return true;
     }
 
-    public static void MobUsesSkill(MapleCharacter chr, MapleMonster monster, short moveid, boolean useSkill) {
+    public static void MobUsesSkill(TacosCharacter chr, TacosMonster monster, short moveid, boolean useSkill) {
         int realskill = 0;
         int level = 0;
 
@@ -177,8 +176,8 @@ public class ReqCMobPool {
                 MobSkill mobSkill = WzXML.SKILL.getMobSkillData(realskill, level);
 
                 if (mobSkill != null) {
-                    final long now = System.currentTimeMillis();
-                    final long ls = monster.getLastSkillUsed(realskill);
+                    long now = System.currentTimeMillis();
+                    long ls = monster.getLastSkillUsed(realskill);
 
                     if (ls == 0 || ((now - ls) > mobSkill.getCoolTime())) {
                         monster.setLastSkillUsed(realskill, now, mobSkill.getCoolTime());
@@ -200,19 +199,19 @@ public class ReqCMobPool {
         chr.SendPacket(ResCMobPool.MobCtrlAck(monster, moveid, realskill, level));
     }
 
-    public static boolean OnMobApplyCtrl(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobApplyCtrl(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         if (monster.getOwnerId() == chr.getId()) {
             monster.setNextAttackPossible(true);
         }
         return true;
     }
 
-    public static boolean OnMobDropPickUpRequest(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobDropPickUpRequest(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobDropPickUpRequest : not coded.");
         return true;
     }
 
-    public static boolean OnMobHitByObstacle(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobHitByObstacle(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int nDamage = cp.Decode4();
 
         DebugLogger.ErrorLog("OnMobHitByObstacle : not coded.");
@@ -223,11 +222,11 @@ public class ReqCMobPool {
         タイラス護衛
         mod id : 9300093
      */
-    public static boolean OnMobHitByMob(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobHitByMob(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_dwCharacterId = cp.Decode4();
         int m_dwMobID = cp.Decode4();
 
-        MapleMonster monster_to = map.getMonsterByOid(m_dwMobID);
+        TacosMonster monster_to = map.getMonsterByOid(m_dwMobID);
         if (monster_to == null || !monster_to.getStats().isFriendly()) {
             DebugLogger.ErrorLog("OnMobHitByMob : err.");
             return false;
@@ -250,7 +249,7 @@ public class ReqCMobPool {
         ダークスター等
         mob id : 8500004
      */
-    public static boolean OnMobSelfDestruct(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobSelfDestruct(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int nActionType = monster.getStats().getSelfD();
         if (nActionType == -1) {
             return false;
@@ -271,11 +270,11 @@ public class ReqCMobPool {
         map id : 921120100
         mob id : 9300275
      */
-    public static boolean OnMobAttackMob(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobAttackMob(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_dwCharacterId = cp.Decode4();
         int m_dwMobID = cp.Decode4();
 
-        MapleMonster monster_to = map.getMonsterByOid(m_dwMobID);
+        TacosMonster monster_to = map.getMonsterByOid(m_dwMobID);
         if (monster_to == null || !monster_to.getStats().isFriendly()) {
             return true;
         }
@@ -291,24 +290,24 @@ public class ReqCMobPool {
         return true;
     }
 
-    public static boolean OnMobSkillDelayEnd(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobSkillDelayEnd(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobSkillDelayEnd : not coded");
         return true;
     }
 
-    public static boolean OnMobTimeBombEnd(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobTimeBombEnd(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobTimeBombEnd : not coded");
         return true;
     }
 
-    public static boolean OnMobEscortCollision(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobEscortCollision(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_nCurrentDestIndex = cp.Decode4();
 
         DebugLogger.DebugLog("OnMobEscortCollision : ...");
 
         int nodeSize = map.getNodeInfo().getNodes().size();
         if (monster != null && nodeSize > 0 && nodeSize >= m_nCurrentDestIndex) {
-            final MapleNodes.MapleNodeInfo mni = map.getNodeInfo().getNode(m_nCurrentDestIndex);
+            MapleNodes.MapleNodeInfo mni = map.getNodeInfo().getNode(m_nCurrentDestIndex);
             if (mni == null) {
                 return false;
             }
@@ -349,13 +348,13 @@ public class ReqCMobPool {
         return true;
     }
 
-    public static boolean OnMobRequestEscortInfo(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobRequestEscortInfo(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.DebugLog("OnMobRequestEscortInfo : ...");
         chr.SendPacket(ResCMobPool.MobRequestResultEscortInfo(monster, map));
         return true;
     }
 
-    public static boolean OnMobEscortStopEndRequest(MapleCharacter chr, ClientPacket cp, MapleMonster monster, MapleMap map) {
+    public static boolean OnMobEscortStopEndRequest(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobEscortStopEndRequest : not coded");
         return true;
     }

@@ -1000,7 +1000,7 @@ public enum OpsSkill {
     }
 
     public static OpsSkill find(int skill_id) {
-        for (final OpsSkill o : OpsSkill.values()) {
+        for (OpsSkill o : OpsSkill.values()) {
             if (o.get() == skill_id) {
                 return o;
             }

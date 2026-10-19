@@ -18,14 +18,14 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import odin.handling.channel.handler.BeanGame;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsContiMove;
 import tacos.packet.response.ResCField_ContiMove;
-import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -35,12 +35,12 @@ import tacos.packet.ClientPacketHeader;
 public class ReqCField {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -80,7 +80,7 @@ public class ReqCField {
         return false;
     }
 
-    private static boolean OnContiState(MapleCharacter chr, int map_id) {
+    private static boolean OnContiState(TacosCharacter chr, int map_id) {
 
         switch (map_id) {
             // Ellinia Station post-BB

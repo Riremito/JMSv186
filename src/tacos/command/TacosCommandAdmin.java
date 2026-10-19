@@ -19,7 +19,11 @@
 package tacos.command;
 
 import odin.client.Skill;
-import odin.client.MapleCharacter;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
+import tacos.server.map.object.TacosReactor;
+import tacos.server.map.object.TacosNpc;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
@@ -31,17 +35,14 @@ import java.awt.Point;
 import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import odin.server.MapleItemInformationProvider;
-import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
-import odin.server.maps.MapleMap;
 import tacos.database.query.DQ_Accounts;
-import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.debug.DebugJob;
 import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobLeaveField;
+import tacos.packet.request.ReqCUser;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
 import tacos.script.TacosScriptNPC;
@@ -61,9 +62,9 @@ import tacos.wz.WzDataStorage;
  */
 public class TacosCommandAdmin {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
         TacosClient client = chr.getClient();
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
             case "/shutdown" -> {
@@ -93,6 +94,16 @@ public class TacosCommandAdmin {
                 chr.DebugMsg("ResetPassword : " + dcmd.get(1));
                 return true;
             }
+            case "/droprate" -> {
+                int drop_rate = 1;
+                if (dcmd.check(1)) {
+                    drop_rate = dcmd.getInt(1);
+                }
+
+                chr.getChannelServer().setDropRate(drop_rate);
+                chr.DebugMsg("droprate : " + chr.getChannelServer().getDropRate());
+                return true;
+            }
             case "/players" -> {
                 TacosWorld world = chr.getWorld();
                 {
@@ -105,7 +116,7 @@ public class TacosCommandAdmin {
                 for (TacosChannel srv_channel : world.getChannels()) {
                     String msg = srv_channel.getName() + " : ";
                     String player_names = "";
-                    for (MapleCharacter player : srv_channel.getOnlinePlayers().get()) {
+                    for (TacosCharacter player : srv_channel.getOnlinePlayers().get()) {
                         if (player_names.length() != 0) {
                             player_names += ", ";
                         }
@@ -117,7 +128,7 @@ public class TacosCommandAdmin {
                 {
                     String msg = world.getITC().getName() + " : ";
                     String player_names = "";
-                    for (MapleCharacter player : world.getITC().getOnlinePlayers().get()) {
+                    for (TacosCharacter player : world.getITC().getOnlinePlayers().get()) {
                         if (player_names.length() != 0) {
                             player_names += ", ";
                         }
@@ -129,7 +140,7 @@ public class TacosCommandAdmin {
                 {
                     String msg = world.getCashShop().getName() + " : ";
                     String player_names = "";
-                    for (MapleCharacter player : world.getCashShop().getOnlinePlayers().get()) {
+                    for (TacosCharacter player : world.getCashShop().getOnlinePlayers().get()) {
                         if (player_names.length() != 0) {
                             player_names += ", ";
                         }
@@ -159,7 +170,7 @@ public class TacosCommandAdmin {
                 }
                 int npc_id = dcmd.getInt(1);
 
-                if (!WzDataStorage.NPC.check(npc_id) || !remoteNPCTalk(client, npc_id)) {
+                if (!WzDataStorage.NPC.check(npc_id) || !ReqCUser.OnUserSelectNpcInternal(chr, npc_id, npc_id)) {
                     chr.DebugMsg("npctalk : invalid id.");
                     return true;
                 }
@@ -173,7 +184,7 @@ public class TacosCommandAdmin {
                 }
                 int npc_id = dcmd.getInt(1);
                 // set Chief Stan
-                if (!WzDataStorage.NPC.check(npc_id) || !remoteNPCTalk(client, npc_id, 1012003)) {
+                if (!WzDataStorage.NPC.check(npc_id) || !ReqCUser.OnUserSelectNpcInternal(chr, npc_id, 1012003)) {
                     chr.DebugMsg("npctalk2 : invalid id.");
                     return true;
                 }
@@ -185,20 +196,18 @@ public class TacosCommandAdmin {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
-                if (!WzDataStorage.NPC.check(npc_id)) {
-                    chr.DebugMsg("npc : invalid id.");
-                    return true;
-                }
-                MapleNPC npc = new MapleNPC(npc_id);
-                npc.setPosition(chr.getPosition());
-                npc.setCy(chr.getPosition().y);
-                npc.setRx0(chr.getPosition().x - 50);
-                npc.setRx1(chr.getPosition().x + 50);
-                npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
-                npc.setFootholdId(chr.getFootholdId());
+                TacosNpc npc = WzXML.NPC.createNpc(npc_id);
+                if (npc != null) {
+                    npc.setPosition(chr.getPosition());
+                    npc.setCy(chr.getPosition().y);
+                    npc.setRx0(chr.getPosition().x - 50);
+                    npc.setRx1(chr.getPosition().x + 50);
+                    npc.setF(dcmd.check(2) ? dcmd.getInt(2) : chr.getMoveAction());
+                    npc.setFootholdId(chr.getFootholdId());
 
-                map.addNPC(npc);
-                chr.DebugMsg("npc : " + npc_id);
+                    map.addNPC(npc);
+                    chr.DebugMsg("npc : " + npc_id);
+                }
                 return true;
             }
             case "/pnpc" -> {
@@ -226,7 +235,7 @@ public class TacosCommandAdmin {
                     return true;
                 }
 
-                MapleReactor reactor = new MapleReactor(reactor_id);
+                TacosReactor reactor = new TacosReactor(reactor_id);
                 Point pos = new Point(chr.getPosition());
                 int foothold_id = chr.getFootholdId();
                 if (foothold_id == 0) {
@@ -251,7 +260,7 @@ public class TacosCommandAdmin {
                 return true;
             }
             case "/dc", "/disconnect" -> {
-                MapleCharacter target = chr;
+                TacosCharacter target = chr;
                 if (!dcmd.check(1)) {
                     target = chr.getWorld().findOnlinePlayer(dcmd.get(1));
                     if (target == null) {
@@ -297,7 +306,7 @@ public class TacosCommandAdmin {
                 }
 
                 String boss_name = dcmd.get(1);
-                if (!bossTest(client, boss_name)) {
+                if (!bossTest(chr, boss_name)) {
                     chr.DebugMsg("bosstest : invalid Boss name.");
                     return true;
                 }
@@ -328,8 +337,10 @@ public class TacosCommandAdmin {
                 }
 
                 for (int i = 0; i < count; i++) {
-                    MapleMonster monster = WzXML.MOB.findMonster(mob_id);
-                    map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
+                    TacosMonster monster = WzXML.MOB.createMob(mob_id);
+                    if (monster != null) {
+                        map.spawnMonsterOnGroundBelow(monster, chr.getPosition());
+                    }
                 }
 
                 chr.DebugMsg("mob : " + mob_id);
@@ -340,7 +351,7 @@ public class TacosCommandAdmin {
                 if (dcmd.check(1)) {
                     count = dcmd.getInt(1);
                 }
-                for (MapleMonster mob : map.getAllMonsters()) {
+                for (TacosMonster mob : map.getAllMonsters()) {
                     if (count <= 0) {
                         break;
                     }
@@ -480,7 +491,7 @@ public class TacosCommandAdmin {
                 return true;
             }
             case "/jc", "/転職" -> {
-                remoteNPCTalk(client, 9330104, 1012003);
+                ReqCUser.OnUserSelectNpcInternal(chr, 9330104, 1012003);
                 return true;
             }
             default -> {
@@ -490,17 +501,7 @@ public class TacosCommandAdmin {
         return false;
     }
 
-    // bypass npc data checks
-    public static boolean remoteNPCTalk(TacosClient client, int npc_id) {
-        return remoteNPCTalk(client, npc_id, npc_id);
-    }
-
-    public static boolean remoteNPCTalk(TacosClient client, int npc_script_id, int npc_id) {
-        TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
-        return true;
-    }
-
-    public static boolean bossTest(TacosClient client, String boss_name) {
+    public static boolean bossTest(TacosCharacter chr, String boss_name) {
         int def_npc_id = 1012003; // Chief Stan
         int npc_id = 1012003;
 
@@ -598,9 +599,9 @@ public class TacosCommandAdmin {
         }
 
         if (WzDataStorage.NPC.check(npc_id)) {
-            remoteNPCTalk(client, npc_id);
+            ReqCUser.OnUserSelectNpcInternal(chr, npc_id, npc_id);
         } else {
-            remoteNPCTalk(client, npc_id, def_npc_id);
+            ReqCUser.OnUserSelectNpcInternal(chr, npc_id, def_npc_id);
         }
 
         return true;
@@ -624,7 +625,7 @@ public class TacosCommandAdmin {
         return false;
     }
 
-    private static boolean getBasicSkill(MapleCharacter chr) {
+    private static boolean getBasicSkill(TacosCharacter chr) {
         for (int skill_id : WzXML.SKILL.getBasicSkill(chr, debug_basic_job)) {
             if (!checkDebugBasicSkill(skill_id)) {
                 continue;
@@ -636,7 +637,7 @@ public class TacosCommandAdmin {
         return true;
     }
 
-    private static boolean resetBasicSkill(MapleCharacter chr) {
+    private static boolean resetBasicSkill(TacosCharacter chr) {
         for (int skill_id : WzXML.SKILL.getBasicSkill(chr, debug_basic_job)) {
             chr.DebugMsg("RemoveSkill : " + skill_id);
             Skill skill = SkillFactory.getSkill(skill_id);

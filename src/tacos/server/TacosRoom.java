@@ -19,7 +19,7 @@
 package tacos.server;
 
 import java.util.LinkedHashMap;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMerchant;
 
 /**
@@ -30,7 +30,7 @@ public class TacosRoom {
 
     private static int ROOM_ID = 1000;
     private int id;
-    private LinkedHashMap<Integer, MapleCharacter> players = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosCharacter> players = new LinkedHashMap<>();
     private TacosMerchant merchant = null;
 
     public TacosRoom() {
@@ -41,15 +41,15 @@ public class TacosRoom {
         return this.id;
     }
 
-    public void addPlayer(MapleCharacter player) {
+    public void addPlayer(TacosCharacter player) {
         this.players.put(player.getId(), player);
     }
 
-    public void removePlayer(MapleCharacter player) {
+    public void removePlayer(TacosCharacter player) {
         this.players.remove(player.getId());
     }
 
-    public boolean findPlayer(MapleCharacter player) {
+    public boolean findPlayer(TacosCharacter player) {
         return this.players.get(player.getId()) != null;
     }
 

@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.config.Region;
+import tacos.client.TacosCharacter;
 import odin.constants.GameConstants;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
@@ -36,7 +36,7 @@ import tacos.shared.TacosSharedDate;
 public class ResCStage {
 
     // CStage::OnSetField
-    public static ServerPacket SetField(MapleCharacter chr, boolean bCharacterData) {
+    public static ServerPacket SetField(TacosCharacter chr, boolean bCharacterData) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
 
         sp.EncodeBuffer(RD_CStage.ClientOptMan_EncodeOpt(), Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.EMS, 89)); // 2 bytes
@@ -100,7 +100,7 @@ public class ResCStage {
     }
 
     // 分割版
-    public static ServerPacket SetField_JMS_302(MapleCharacter chr, int part, boolean bCharacterData, long datamask_2) {
+    public static ServerPacket SetField_JMS302(TacosCharacter chr, int part, boolean bCharacterData, long datamask_2) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetField);
         // 分割, 1 -> 2の順で送信
         sp.Encode4(part);
@@ -157,7 +157,7 @@ public class ResCStage {
     }
 
     // CStage::OnSetITC
-    public static ServerPacket SetITC(final MapleCharacter chr) {
+    public static ServerPacket SetITC(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetITC);
 
         sp.EncodeBuffer(RD_CharacterData.Encode(chr));
@@ -166,7 +166,7 @@ public class ResCStage {
     }
 
     // CStage::OnSetCashShop
-    public static ServerPacket SetCashShop(MapleCharacter chr) {
+    public static ServerPacket SetCashShop(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetCashShop);
 
         sp.EncodeBuffer(RD_CharacterData.Encode(chr));

@@ -64,7 +64,7 @@ public class DQ_Mountdata {
     /**
      * NOTE: this declares {@code throws SQLException} instead of catching
      * it internally (unlike {@code add}/{@code update} above), matching the
-     * original MapleCharacter.loadCharFromDB behavior, which relies on the
+     * original TacosCharacter.loadCharFromDB behavior, which relies on the
      * exception (and the not-found RuntimeException below) propagating to
      * its own outer catch block.
      */

@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.config.Region;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
@@ -157,11 +157,11 @@ public class ResCLogin {
                             sp.Encode4(0);
                             sp.Encode1(0);
                             sp.Encode1(0);
-                            sp.Encode1(0, Config.Between(Region.CMS, 85, 88));
+                            sp.Encode1(0, Config.Between(Region.CMS, 73, 88));
                             sp.Encode8(TacosSharedDate.getTimestamp());
                             sp.Encode1(0);
                             sp.Encode8(TacosSharedDate.getTimestamp());
-                            sp.Encode8(0);
+                            sp.Encode8(0, Config.GreaterOrEqual(Region.CMS, 85));
                             sp.EncodeStr("");
                             sp.Encode1(1); // 0 = open blue message box.
                             sp.EncodeStr(String.valueOf(client.getId()));
@@ -457,7 +457,7 @@ public class ResCLogin {
             case VAC_ResCode_Success: {
                 sp.Encode1(0); // m_anWorldID
                 sp.Encode1(client.getCharacters().size()); // m_nCountRelatedSvrs
-                for (MapleCharacter chr : client.getCharacters()) {
+                for (TacosCharacter chr : client.getCharacters()) {
                     sp.EncodeBuffer(RD_CharacterStat.Encode(chr));
                     sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
                     sp.Encode1(1); // ranking
@@ -564,9 +564,9 @@ public class ResCLogin {
         }
 
         sp.EncodeStr("", Region.JMS.check() || Region.JMST.check());
-        sp.Encode4(1000000, Region.KMSB.check() || Config.Between(Region.KMS, 1, 149) || Config.Between(Region.KMST, 330, 391) || Config.Between(Region.CMS, 85, 88) || Config.Between(Region.TWMS, 74, 125) || Region.HKMS.check() || Region.IMS.check());
+        sp.Encode4(1000000, Region.KMSB.check() || Config.Between(Region.KMS, 1, 149) || Config.Between(Region.KMST, 330, 391) || Config.Between(Region.CMS, 73, 88) || Config.Between(Region.TWMS, 74, 125) || Region.HKMS.check() || Region.IMS.check());
         sp.Encode1(client.getCharacters().size());
-        for (MapleCharacter chr : client.getCharacters()) {
+        for (TacosCharacter chr : client.getCharacters()) {
             if (Region.KMSB.check()) {
                 sp.EncodeBuffer(RD_CharacterData.Encode(chr, 1));
                 continue;
@@ -672,7 +672,7 @@ public class ResCLogin {
     }
 
     // CLogin::OnCreateNewCharacterResult
-    public static ServerPacket CreateNewCharacterResult(MapleCharacter chr, OpsLogin ops) {
+    public static ServerPacket CreateNewCharacterResult(TacosCharacter chr, OpsLogin ops) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CreateNewCharacterResult);
 
         sp.Encode1(ops.get());

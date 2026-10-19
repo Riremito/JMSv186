@@ -19,17 +19,17 @@
 package tacos.server;
 
 import java.util.HashMap;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
+import tacos.server.map.object.TacosReactor;
+import tacos.server.map.object.TacosNpc;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.server.MapleSquad;
-import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleReactor;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
 import tacos.packet.response.ResCWvsContext;
@@ -78,13 +78,13 @@ public class TacosChannel extends TacosServer {
     }
 
     public void broadcastPacket(ServerPacket packet) {
-        for (MapleCharacter player : getOnlinePlayers().get()) {
+        for (TacosCharacter player : getOnlinePlayers().get()) {
             player.SendPacket(packet);
         }
     }
 
     public void broadcastMegaphonePacket(ServerPacket packet) {
-        for (MapleCharacter player : getOnlinePlayers().get()) {
+        for (TacosCharacter player : getOnlinePlayers().get()) {
             if (!player.getSmega()) {
                 continue;
             }
@@ -109,20 +109,20 @@ public class TacosChannel extends TacosServer {
     }
 
     // map.
-    private Map<Integer, MapleMap> maps = new HashMap<>();
+    private Map<Integer, TacosMap> maps = new HashMap<>();
 
-    public MapleMap findMap(int map_id) {
-        MapleMap map = this.maps.get(map_id);
+    public TacosMap findMap(int map_id) {
+        TacosMap map = this.maps.get(map_id);
         if (map != null) {
             return map;
         }
-        map = new MapleMap(map_id, this.channel);
+        map = new TacosMap(map_id, this.channel);
         if (!map.loadData()) {
             return null;
         }
         // mob spawn just after generating map for test.
         for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
-            MapleMonster monster = sp.regen(map);
+            TacosMonster monster = sp.regen(map);
             if (monster != null) {
                 map.addMonster(monster);
                 monster.setAT(OpsMobAppear.MOBAPPEAR_NORMAL);
@@ -131,14 +131,14 @@ public class TacosChannel extends TacosServer {
         }
         // npc is always spawned.
         for (TacosNPCSpawnPoint sp : map.getNPCSpawnPoint()) {
-            MapleNPC npc = sp.regen(map);
+            TacosNpc npc = sp.regen(map);
             if (npc != null) {
                 map.addNPC(npc);
             }
         }
         // reactor.
         for (TacosReactorSpawnPoint sp : map.getReactorSpawnPoint()) {
-            MapleReactor reactor = sp.regen(map);
+            TacosReactor reactor = sp.regen(map);
             if (reactor != null) {
                 map.addReactor(reactor);
             }
@@ -167,16 +167,20 @@ public class TacosChannel extends TacosServer {
         this.serverMessage = newMessage;
     }
 
-    public final int getExpRate() {
+    public int getExpRate() {
         return this.expRate;
     }
 
-    public final int getMesoRate() {
+    public int getMesoRate() {
         return this.mesoRate;
     }
 
-    public final int getDropRate() {
+    public int getDropRate() {
         return this.dropRate;
+    }
+
+    public void setDropRate(int dropRate) {
+        this.dropRate = dropRate;
     }
 
     // merch
@@ -288,7 +292,7 @@ public class TacosChannel extends TacosServer {
     // update task.
     private final TacosTask task_channel = new TacosTask();
 
-    public boolean update(MapleCharacter player, long time_current) {
+    public boolean update(TacosCharacter player, long time_current) {
         if (!this.task_channel.check(time_current, 60000)) {
             return false;
         }

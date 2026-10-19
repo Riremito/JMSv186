@@ -28,7 +28,7 @@ import tacos.database.DatabaseConnection;
 
 /**
  * NOTE: load/save here declare {@code throws SQLException} instead of catching
- * it internally, matching the original MapleCharacter behavior (see
+ * it internally, matching the original TacosCharacter behavior (see
  * DQ_Questinfo for the same rationale).
  *
  * @author Riremito

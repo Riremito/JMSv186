@@ -42,7 +42,7 @@ public class StringWz extends WzXML {
         return md;
     }
 
-    public MapleData getItemStringData(final int itemId) {
+    public MapleData getItemStringData(int itemId) {
         String cat = null;
         MapleData data;
 
@@ -117,24 +117,28 @@ public class StringWz extends WzXML {
         }
     }
 
-    public String loadItemName(final int itemId) {
-        final MapleData strings = getItemStringData(itemId);
+    public String loadItemName(int itemId) {
+        MapleData strings = getItemStringData(itemId);
         if (strings == null) {
             return null;
         }
-        return WzDataTool.getStringPath("name", strings, null);
+        return strings.getString("name", null);
     }
 
-    public String loadItemMsg(final int itemId) {
-        final MapleData strings = getItemStringData(itemId);
+    public String loadItemMsg(int itemId) {
+        MapleData strings = getItemStringData(itemId);
         if (strings == null) {
             return null;
         }
-        return WzDataTool.getStringPath("msg", strings, null);
+        return strings.getString("msg", null);
     }
 
     public MapleData getMob() {
         return getData("Mob.img");
+    }
+
+    public String getMobName(int mob_id, String def) {
+        return getMob().getString(mob_id + "/name", def);
     }
 
     public MapleData getNpc() {
@@ -142,7 +146,7 @@ public class StringWz extends WzXML {
     }
 
     public String getNpcName(int npc_id) {
-        return WzDataTool.getStringPath(npc_id + "/name", getNpc(), "MISSINGNO");
+        return getNpc().getString(npc_id + "/name", "MISSINGNO");
     }
 
     public MapleData getMap() {
@@ -156,7 +160,7 @@ public class StringWz extends WzXML {
     public String getSkillName(int skill_id) {
         MapleData skillroot = getSkill().getChildByPath(String.format("%07d", skill_id));
         if (skillroot != null) {
-            return WzDataTool.getString(skillroot.getChildByPath("name"), "");
+            return skillroot.getString("name");
         }
         return null;
     }
@@ -178,8 +182,8 @@ public class StringWz extends WzXML {
 
     public MapleData getCash() {
         if (img_Cash == null) {
-            if (getItem() == null) {
-                img_Cash = getData("Cash.img");
+            img_Cash = getData("Cash.img");
+            if (img_Cash != null) {
                 img_Cash = checkSubDirectory(img_Cash, "Cash");
                 return img_Cash;
             }
@@ -190,8 +194,8 @@ public class StringWz extends WzXML {
 
     public MapleData getConsume() {
         if (img_Consume == null) {
-            if (getItem() == null) {
-                img_Consume = getData("Consume.img");
+            img_Consume = getData("Consume.img");
+            if (img_Consume != null) {
                 img_Consume = checkSubDirectory(img_Consume, "Con");
                 return img_Consume;
             }
@@ -202,8 +206,8 @@ public class StringWz extends WzXML {
 
     public MapleData getEqp() {
         if (img_Eqp == null) {
-            if (getItem() == null) {
-                img_Eqp = getData("Eqp.img");
+            img_Eqp = getData("Eqp.img");
+            if (img_Eqp != null) {
                 img_Eqp = checkSubDirectory(img_Eqp, "Eqp");
                 return img_Eqp;
             }
@@ -214,8 +218,8 @@ public class StringWz extends WzXML {
 
     public MapleData getEtc() {
         if (img_Etc == null) {
-            if (getItem() == null) {
-                img_Etc = getData("Etc.img");
+            img_Etc = getData("Etc.img");
+            if (img_Etc != null) {
                 img_Etc = checkSubDirectory(img_Etc, "Etc");
                 return img_Etc;
             }
@@ -226,8 +230,8 @@ public class StringWz extends WzXML {
 
     public MapleData getIns() {
         if (img_Ins == null) {
-            if (getItem() == null) {
-                img_Ins = getData("Ins.img");
+            img_Ins = getData("Ins.img");
+            if (img_Ins != null) {
                 img_Ins = checkSubDirectory(img_Ins, "Ins");
                 return img_Ins;
             }
@@ -238,8 +242,9 @@ public class StringWz extends WzXML {
 
     public MapleData getPet() {
         if (img_Pet == null) {
+            boolean is_newer = getData("PetDialog.img") != null;
             // please do not use old PetDialog.img (Pet.img)
-            if (getItem() == null) {
+            if (is_newer) {
                 img_Pet = getData("Pet.img");
                 img_Pet = checkSubDirectory(img_Pet, "Pet");
                 return img_Pet;
@@ -274,6 +279,18 @@ public class StringWz extends WzXML {
         return img_MonsterBook;
     }
 
+    public List<Integer> getMonsterBookMobIds() {
+        MapleData md_book = getMonsterBook();
+        if (md_book == null) {
+            return null;
+        }
+        List<Integer> ret = new ArrayList<>();
+        for (MapleData md_mob : md_book.getChildren()) {
+            ret.add(Integer.parseInt(md_mob.getName()));
+        }
+        return ret;
+    }
+
     public DropMonsterBook getMonseterBookDrop(int mob_id) {
         if (list_drop_monsterbook == null) {
             list_drop_monsterbook = new ArrayList<>();
@@ -298,7 +315,7 @@ public class StringWz extends WzXML {
                         break;
                     }
                     for (MapleData md_drop_item : md_reward.getChildren()) {
-                        int item_id = WzDataTool.getInt(md_drop_item);
+                        int item_id = md_reward.getInt(md_drop_item.getName());
                         if (!WzDataStorage.ITEM.check(item_id)) {
                             DebugLogger.ErrorLog("invalid monsterbook drop : " + item_id);
                             continue;

@@ -30,6 +30,8 @@ import tacos.database.query.DQ_Inventoryitems;
 import tacos.database.query.DQ_Storages;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import lombok.Getter;
+import lombok.Setter;
 import tacos.packet.ops.OpsDBCHAR;
 import tacos.wz.WzDataStorage;
 
@@ -44,6 +46,10 @@ public class TacosStorage {
     private int slot = DeveloperMode.DM_INV_SLOT_STORAGE.getInt();
     private ArrayList<Item> items = new ArrayList<>();
     private boolean changed = false;
+    @Getter @Setter
+    private int feePut = 0;
+    @Getter @Setter
+    private int feeGet = 0;
 
     public TacosStorage(TacosCharacter chr) {
         this.account_id = chr.getAccountId();
@@ -211,5 +217,4 @@ public class TacosStorage {
     public boolean sortItem() {
         return true;
     }
-
 }

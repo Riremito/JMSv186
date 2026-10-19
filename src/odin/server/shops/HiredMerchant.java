@@ -21,14 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import odin.client.inventory.Item;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
-import odin.client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
-import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
 import tacos.server.TacosWorld;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,7 +63,7 @@ public class HiredMerchant extends TacosMerchant {
     private long start;
 
     @SuppressWarnings("unchecked")
-    public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
+    public HiredMerchant(TacosCharacter owner, int itemId, String desc) {
         super(owner);
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
@@ -151,7 +151,7 @@ public class HiredMerchant extends TacosMerchant {
         return itemId;
     }
 
-    public boolean isOwner(MapleCharacter chr) {
+    public boolean isOwner(TacosCharacter chr) {
         return chr.getId() == getOwnerId() && chr.getName().equals(ownerName);
     }
 
@@ -162,11 +162,11 @@ public class HiredMerchant extends TacosMerchant {
         return pass;
     }
 
-    public MapleCharacter getMCOwner() {
+    public TacosCharacter getMCOwner() {
         return getMap().getPlayerById(getOwnerId());
     }
 
-    public MapleMap getMap() {
+    public TacosMap getMap() {
         return TacosWorld.find(0).getChannelServer(channel).findMap(map);
     }
 
@@ -202,7 +202,7 @@ public class HiredMerchant extends TacosMerchant {
         public int totalPrice;
         public String buyer;
 
-        public BoughtItem(final int id, final int quantity, final int totalPrice, final String buyer) {
+        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
             this.id = id;
             this.quantity = quantity;
             this.totalPrice = totalPrice;
@@ -229,12 +229,12 @@ public class HiredMerchant extends TacosMerchant {
         return HIRED_MERCHANT;
     }
 
-    public final void setStoreid(final int storeid) {
+    public void setStoreid(int storeid) {
         this.storeid = storeid;
     }
 
-    public List<MaplePlayerShopItem> searchItem(final int itemSearch) {
-        final List<MaplePlayerShopItem> itemz = new LinkedList<>();
+    public List<MaplePlayerShopItem> searchItem(int itemSearch) {
+        List<MaplePlayerShopItem> itemz = new LinkedList<>();
         for (MaplePlayerShopItem item : items) {
             if (item.item.getItemId() == itemSearch && item.bundles > 0) {
                 itemz.add(item);
@@ -244,11 +244,11 @@ public class HiredMerchant extends TacosMerchant {
     }
 
     public void buy(TacosClient client, int item, short quantity) {
-        MapleCharacter chr = client.getPlayer();
-        final MaplePlayerShopItem pItem = items.get(item);
-        final Item shopItem = pItem.item;
-        final Item newItem = shopItem.copy();
-        final short perbundle = newItem.getQuantity();
+        TacosCharacter chr = client.getPlayer();
+        MaplePlayerShopItem pItem = items.get(item);
+        Item shopItem = pItem.item;
+        Item newItem = shopItem.copy();
+        short perbundle = newItem.getQuantity();
         newItem.setQuantity((short) (quantity * perbundle));
 
         byte flag = newItem.getFlag();
@@ -261,14 +261,14 @@ public class HiredMerchant extends TacosMerchant {
 
         if (MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
             pItem.bundles -= quantity; // Number remaining in the store
-            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), client.getPlayer().getName()));
+            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), chr.getName()));
 
-            final int gainmeso = getMeso() + (pItem.price * quantity);
+            int gainmeso = getMeso() + (pItem.price * quantity);
             setMeso(gainmeso - GameConstants.EntrustedStoreTax(gainmeso));
-            client.getPlayer().gainMeso(-pItem.price * quantity, false);
+            chr.gainMeso(-pItem.price * quantity, false);
             saveItems();
         } else {
-            client.getPlayer().dropMessage(1, "Your inventory is full.");
+            chr.dropMessage(1, "Your inventory is full.");
             chr.updateInv();
         }
     }
@@ -287,7 +287,7 @@ public class HiredMerchant extends TacosMerchant {
         return (int) ((System.currentTimeMillis() - start) / 1000);
     }
 
-    public final int getStoreId() {
+    public int getStoreId() {
         return storeid;
     }
 }

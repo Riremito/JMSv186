@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.util.List;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
@@ -38,7 +39,6 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleInventoryManipulator;
 import odin.server.StructRewardItem;
 import odin.server.maps.SavedLocationType;
-import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -46,11 +46,12 @@ import tacos.script.TacosScriptNPC;
 
 public class InventoryHandler {
 
-    public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
+    public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, TacosCharacter chr) {
+        TacosCharacter player = client.getPlayer();
         int unk1 = cp.Decode4();
-        final byte slot = (byte) cp.Decode2();
-        final int itemId = cp.Decode4();
-        final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
+        byte slot = (byte) cp.Decode2();
+        int itemId = cp.Decode4();
+        Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         long expiration_days = 0;
         int mountid = 0;
 
@@ -58,7 +59,7 @@ public class InventoryHandler {
             switch (toUse.getItemId()) {
                 case 2430007: // Blank Compass
                 {
-                    final MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
+                    MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
                     MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
 
                     if (inventory.countById(3994102) >= 20 // Compass Letter "North"
@@ -79,7 +80,7 @@ public class InventoryHandler {
                 case 2430008: // Gold Compass
                 {
                     chr.saveLocation(SavedLocationType.RICHIE);
-                    MapleMap map;
+                    TacosMap map;
                     boolean warped = false;
 
                     for (int i = 390001000; i <= 390001004; i++) {
@@ -94,29 +95,29 @@ public class InventoryHandler {
                     if (warped) { // Removal of gold compass
                         MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430008, 1, false, false);
                     } else { // Or mabe some other message.
-                        client.getPlayer().dropMessage(5, "All maps are currently in use, please try again later.");
+                        player.dropMessage(5, "All maps are currently in use, please try again later.");
                     }
                     break;
                 }
                 case 2430112: //miracle cube
-                    if (client.getPlayer().getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
-                        if (client.getPlayer().getInventory(MapleInventoryType.USE).countById(2430112) >= 25) {
+                    if (player.getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
+                        if (player.getInventory(MapleInventoryType.USE).countById(2430112) >= 25) {
                             if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, 25, true, false)) {
                                 MapleInventoryManipulator.addById(client, 2049400, (short) 1);
                             } else {
-                                client.getPlayer().dropMessage(5, "Please make some space.");
+                                player.dropMessage(5, "Please make some space.");
                             }
-                        } else if (client.getPlayer().getInventory(MapleInventoryType.USE).countById(2430112) >= 10) {
+                        } else if (player.getInventory(MapleInventoryType.USE).countById(2430112) >= 10) {
                             if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, 10, true, false)) {
                                 MapleInventoryManipulator.addById(client, 2049401, (short) 1);
                             } else {
-                                client.getPlayer().dropMessage(5, "Please make some space.");
+                                player.dropMessage(5, "Please make some space.");
                             }
                         } else {
-                            client.getPlayer().dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
+                            player.dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
                         }
                     } else {
-                        client.getPlayer().dropMessage(5, "Please make some space.");
+                        player.dropMessage(5, "Please make some space.");
                     }
                     break;
                 case 2430036: //croco 1 day
@@ -251,20 +252,20 @@ public class InventoryHandler {
             }
         }
         if (mountid > 0) {
-            mountid += (GameConstants.isAran(client.getPlayer().getJob()) ? 20000000 : (GameConstants.isEvan(client.getPlayer().getJob()) ? 20010000 : (GameConstants.isKOC(client.getPlayer().getJob()) ? 10000000 : (GameConstants.isResist(client.getPlayer().getJob()) ? 30000000 : 0))));
-            if (client.getPlayer().getSkillLevel(mountid) > 0) {
-                client.getPlayer().dropMessage(5, "You already have this skill.");
+            mountid += (GameConstants.isAran(player.getJob()) ? 20000000 : (GameConstants.isEvan(player.getJob()) ? 20010000 : (GameConstants.isKOC(player.getJob()) ? 10000000 : (GameConstants.isResist(player.getJob()) ? 30000000 : 0))));
+            if (player.getSkillLevel(mountid) > 0) {
+                player.dropMessage(5, "You already have this skill.");
             } else if (expiration_days > 0) {
                 MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
-                client.getPlayer().dropMessage(5, "The skill has been attained.");
+                player.changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
+                player.dropMessage(5, "The skill has been attained.");
             }
         }
         chr.updateInv();
     }
 
-    public static final int UseTreasureChest(MapleCharacter chr, short slot, int item_id) {
-        final Item toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
+    public static int UseTreasureChest(TacosCharacter chr, short slot, int item_id) {
+        Item toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
         if (toUse == null || toUse.getQuantity() <= 0 || toUse.getItemId() != item_id) {
             return 0;
         }
@@ -301,7 +302,7 @@ public class InventoryHandler {
             return 0;
         }
 
-        final Item item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
+        Item item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
 
         if (item == null) {
             return 0;
@@ -316,12 +317,12 @@ public class InventoryHandler {
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
     public static void OwlWarp(TacosClient client, int id, int map) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         chr.updateInv();
-        if (client.getPlayer().getMapId() >= 910000000 && client.getPlayer().getMapId() <= 910000022 && client.getPlayer().getPlayerShop() == null) {
+        if (chr.getMapId() >= 910000000 && chr.getMapId() <= 910000022 && chr.getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
-                final MapleMap mapp = chr.findMap(map);
-                client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
+                TacosMap mapp = chr.findMap(map);
+                chr.changeMapPortal(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
                 List<HiredMerchant> objects;
                 switch (OWL_ID) {
@@ -348,28 +349,28 @@ public class InventoryHandler {
                         break;
                 }
                 if (merchant != null) {
-                    if (merchant.isOwner(client.getPlayer())) {
+                    if (merchant.isOwner(chr)) {
                         merchant.setOpen(false);
                         merchant.removeAllVisitors((byte) 16, (byte) 0);
-                        client.getPlayer().setPlayerShop(merchant);
-                        client.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(client.getPlayer(), merchant, false));
+                        chr.setPlayerShop(merchant);
+                        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
                     } else {
                         if (!merchant.isOpen() || !merchant.isAvailable()) {
-                            client.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
+                            chr.dropMessage(1, "This shop is in maintenance, please come by later.");
                         } else {
                             if (merchant.getFreeSlot() == -1) {
-                                client.getPlayer().dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
-                            } else if (merchant.isInBlackList(client.getPlayer().getName())) {
-                                client.getPlayer().dropMessage(1, "You have been banned from this store.");
+                                chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
+                            } else if (merchant.isInBlackList(chr.getName())) {
+                                chr.dropMessage(1, "You have been banned from this store.");
                             } else {
-                                client.getPlayer().setPlayerShop(merchant);
-                                merchant.addVisitor(client.getPlayer());
-                                client.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(client.getPlayer(), merchant, false));
+                                chr.setPlayerShop(merchant);
+                                merchant.addVisitor(chr);
+                                chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
                             }
                         }
                     }
                 } else {
-                    client.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
+                    chr.dropMessage(1, "This shop is in maintenance, please come by later.");
                 }
             }
         }

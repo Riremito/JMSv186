@@ -59,33 +59,33 @@ public class WzNameStorage {
                 for (MapleData wz_root : WzXML.STRING.getEqp().getChildren()) {
                     for (MapleData wz_data : wz_root.getChildren()) {
                         int item_id = Integer.parseInt(wz_data.getName());
-                        String item_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                        String item_name = wz_data.getString("name", NO_NAME);
                         updateName(item_id, item_name);
                     }
                 }
                 for (MapleData wz_data : WzXML.STRING.getConsume().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
-                    String item_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String item_name = wz_data.getString("name", NO_NAME);
                     updateName(item_id, item_name);
                 }
                 for (MapleData wz_data : WzXML.STRING.getIns().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
-                    String item_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String item_name = wz_data.getString("name", NO_NAME);
                     updateName(item_id, item_name);
                 }
                 for (MapleData wz_data : WzXML.STRING.getEtc().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
-                    String item_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String item_name = wz_data.getString("name", NO_NAME);
                     updateName(item_id, item_name);
                 }
                 for (MapleData wz_data : WzXML.STRING.getPet().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
-                    String item_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String item_name = wz_data.getString("name", NO_NAME);
                     updateName(item_id, item_name);
                 }
                 for (MapleData wz_data : WzXML.STRING.getCash().getChildren()) {
                     int item_id = Integer.parseInt(wz_data.getName());
-                    String item_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String item_name = wz_data.getString("name", NO_NAME);
                     updateName(item_id, item_name);
                 }
                 return true;
@@ -97,8 +97,8 @@ public class WzNameStorage {
                 for (MapleData wz_root : WzXML.STRING.getMap().getChildren()) {
                     for (MapleData wz_data : wz_root.getChildren()) {
                         int map_id = Integer.parseInt(wz_data.getName());
-                        String mapName = WzDataTool.getString(wz_data.getChildByPath("mapName"), NO_NAME);
-                        String streetName = WzDataTool.getString(wz_data.getChildByPath("streetName"), NO_NAME);
+                        String mapName = wz_data.getString("mapName", NO_NAME);
+                        String streetName = wz_data.getString("streetName", NO_NAME);
                         updateMapName(map_id, mapName, streetName);
                     }
                 }
@@ -110,7 +110,7 @@ public class WzNameStorage {
                 }
                 for (MapleData wz_data : WzXML.STRING.getMob().getChildren()) {
                     int mob_id = Integer.parseInt(wz_data.getName());
-                    String mob_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String mob_name = wz_data.getString("name", NO_NAME);
                     updateName(mob_id, mob_name);
                 }
                 return true;
@@ -121,7 +121,7 @@ public class WzNameStorage {
                 }
                 for (MapleData wz_data : WzXML.STRING.getNpc().getChildren()) {
                     int npc_id = Integer.parseInt(wz_data.getName());
-                    String npc_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String npc_name = wz_data.getString("name", NO_NAME);
                     updateName(npc_id, npc_name);
                 }
                 return true;
@@ -142,7 +142,7 @@ public class WzNameStorage {
                         continue;
                     }
                     int skill_id = Integer.parseInt(wz_data.getName());
-                    String skill_name = WzDataTool.getString(wz_data.getChildByPath("name"), NO_NAME);
+                    String skill_name = wz_data.getString("name", NO_NAME);
                     updateName(skill_id, skill_name);
                 }
                 return true;
@@ -170,6 +170,11 @@ public class WzNameStorage {
             nd = new WzName();
             nd.setId(id);
             nd.setAvailable(false);
+        } else {
+            // some item ids in String.wz is duplicated.
+            if (!nd.getName().equals(NO_STRING_DATA)) {
+                DebugLogger.ErrorLog("updateName : " + id + ", " + nd.getName() + " -> " + name);
+            }
         }
 
         nd.setName(name);

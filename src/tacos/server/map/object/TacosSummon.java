@@ -18,6 +18,9 @@
  */
 package tacos.server.map.object;
 
+import java.util.ArrayList;
+import lombok.Data;
+import lombok.Getter;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosSummonSkill;
 import tacos.debug.DebugLogger;
@@ -258,6 +261,30 @@ public class TacosSummon extends TacosMapObject {
                 setAssist(OpsAssist.UNKNOWN);
                 DebugLogger.ErrorLog("setSummonData : " + nSkillID + " ( " + this.skill + " ), not coded.");
             }
+        }
+    }
+
+    @Data
+    public static class TacosSummonAttackInfo {
+
+        @Getter
+        public static class SummonDamage {
+
+            private int mobObjectId;
+            private int hitAction;
+            private int damage;
+        }
+
+        private int charLevel;
+        private int action;
+        private final ArrayList<SummonDamage> damages = new ArrayList<>();
+
+        public void addDamage(int mobObjectId, int hitAction, int damage) {
+            SummonDamage damage_info = new SummonDamage();
+            damage_info.mobObjectId = mobObjectId;
+            damage_info.hitAction = hitAction;
+            damage_info.damage = damage;
+            this.damages.add(damage_info);
         }
     }
 }

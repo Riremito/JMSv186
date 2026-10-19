@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,14 +33,13 @@ import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.ReactorDropEntry;
-import odin.server.maps.MapleReactor;
 import tacos.script.TacosScriptReactor;
 
 public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
-    private MapleReactor reactor;
+    private TacosReactor reactor;
 
-    public OdinReactorActionManager(TacosClient client, MapleReactor reactor) {
+    public OdinReactorActionManager(TacosClient client, TacosReactor reactor) {
         super(client);
         this.reactor = reactor;
     }
@@ -69,7 +69,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
         int numItems = 0;
         // narrow list down by chances
-        final Iterator<ReactorDropEntry> iter = chances.iterator();
+        Iterator<ReactorDropEntry> iter = chances.iterator();
         // for (DropEntry d : chances){
         while (iter.hasNext()) {
             ReactorDropEntry d = (ReactorDropEntry) iter.next();
@@ -84,13 +84,13 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
             items.add(new ReactorDropEntry(0, mesoChance, -1));
             numItems++;
         }
-        final Point dropPos = reactor.getPosition();
+        Point dropPos = reactor.getPosition();
 
         dropPos.x -= (12 * numItems);
 
         int range, mesoDrop;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        for (final ReactorDropEntry d : items) {
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        for (ReactorDropEntry d : items) {
             if (d.itemId == 0) {
                 range = maxMeso - minMeso;
                 mesoDrop = Randomizer.nextInt(range) + minMeso * getClient().getPlayer().getChannelServer().getMesoRate();
@@ -120,7 +120,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
         return pos;
     }
 
-    public MapleReactor getReactor() {
+    public TacosReactor getReactor() {
         return this.reactor;
     }
 

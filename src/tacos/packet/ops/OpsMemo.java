@@ -55,7 +55,7 @@ public enum OpsMemo implements IPacketOps {
     }
 
     public static OpsMemo find(int val) {
-        for (final OpsMemo ops : values()) {
+        for (OpsMemo ops : values()) {
             if (ops.get() == val) {
                 return ops;
             }

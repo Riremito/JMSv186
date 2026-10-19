@@ -21,7 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
-import odin.client.MapleCharacter;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMonster;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;
@@ -33,7 +35,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.Randomizer;
-import odin.server.life.MapleMonster;
 import tacos.debug.DebugLogger;
 import tacos.script.TacosScriptNPC;
 import tacos.script.TacosScriptQuest;
@@ -173,12 +174,14 @@ public class MapScriptMethods {
     };
 
     public static void startScript_FirstUser(TacosClient client, String scriptName) {
-        if (client.getPlayer() == null) {
+        TacosCharacter chr = client.getPlayer();
+        if (chr == null) {
             return;
         } //o_O
+        TacosMap map = chr.getMap();
         switch (onFirstUserEnter.fromString(scriptName)) {
             case dojang_Eff: {
-                int temp = (client.getPlayer().getMapId() - 925000000) / 100;
+                int temp = (chr.getMapId() - 925000000) / 100;
                 int stage = (int) (temp - ((temp / 100) * 100));
 
                 sendDojoClock(client, getTiming(stage) * 60);
@@ -195,138 +198,138 @@ public class MapScriptMethods {
             }
             //5120018 = ludi(none), 5120019 = orbis(start_itemTake - onUser)
             case moonrabbit_mapEnter: {
-                client.getPlayer().getMap().startMapEffect("Gather the Primrose Seeds around the moon and protect the Moon Bunny!", 5120016);
+                map.startMapEffect("Gather the Primrose Seeds around the moon and protect the Moon Bunny!", 5120016);
                 break;
             }
             case StageMsg_together: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 103000800:
-                        client.getPlayer().getMap().startMapEffect("Solve the question and gather the amount of passes!", 5120017);
+                        map.startMapEffect("Solve the question and gather the amount of passes!", 5120017);
                         break;
                     case 103000801:
-                        client.getPlayer().getMap().startMapEffect("Get on the ropes and unveil the correct combination!", 5120017);
+                        map.startMapEffect("Get on the ropes and unveil the correct combination!", 5120017);
                         break;
                     case 103000802:
-                        client.getPlayer().getMap().startMapEffect("Get on the platforms and unveil the correct combination!", 5120017);
+                        map.startMapEffect("Get on the platforms and unveil the correct combination!", 5120017);
                         break;
                     case 103000803:
-                        client.getPlayer().getMap().startMapEffect("Get on the barrels and unveil the correct combination!", 5120017);
+                        map.startMapEffect("Get on the barrels and unveil the correct combination!", 5120017);
                         break;
                     case 103000804:
-                        client.getPlayer().getMap().startMapEffect("Defeat King Slime and his minions!", 5120017);
+                        map.startMapEffect("Defeat King Slime and his minions!", 5120017);
                         break;
                 }
                 break;
             }
             case StageMsg_romio: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 926100000:
-                        client.getPlayer().getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120021);
+                        map.startMapEffect("Please find the hidden door by investigating the Lab!", 5120021);
                         break;
                     case 926100001:
-                        client.getPlayer().getMap().startMapEffect("Find  your way through this darkness!", 5120021);
+                        map.startMapEffect("Find  your way through this darkness!", 5120021);
                         break;
                     case 926100100:
-                        client.getPlayer().getMap().startMapEffect("Fill the beakers to power the energy!", 5120021);
+                        map.startMapEffect("Fill the beakers to power the energy!", 5120021);
                         break;
                     case 926100200:
-                        client.getPlayer().getMap().startMapEffect("Get the files for the experiment through each door!", 5120021);
+                        map.startMapEffect("Get the files for the experiment through each door!", 5120021);
                         break;
                     case 926100203:
-                        client.getPlayer().getMap().startMapEffect("Please defeat all the monsters!", 5120021);
+                        map.startMapEffect("Please defeat all the monsters!", 5120021);
                         break;
                     case 926100300:
-                        client.getPlayer().getMap().startMapEffect("Find your way through the Lab!", 5120021);
+                        map.startMapEffect("Find your way through the Lab!", 5120021);
                         break;
                     case 926100401:
-                        client.getPlayer().getMap().startMapEffect("Please, protect my love!", 5120021);
+                        map.startMapEffect("Please, protect my love!", 5120021);
 
                         break;
                 }
                 break;
             }
             case StageMsg_juliet: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 926110000:
-                        client.getPlayer().getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120022);
+                        map.startMapEffect("Please find the hidden door by investigating the Lab!", 5120022);
                         break;
                     case 926110001:
-                        client.getPlayer().getMap().startMapEffect("Find  your way through this darkness!", 5120022);
+                        map.startMapEffect("Find  your way through this darkness!", 5120022);
                         break;
                     case 926110100:
-                        client.getPlayer().getMap().startMapEffect("Fill the beakers to power the energy!", 5120022);
+                        map.startMapEffect("Fill the beakers to power the energy!", 5120022);
                         break;
                     case 926110200:
-                        client.getPlayer().getMap().startMapEffect("Get the files for the experiment through each door!", 5120022);
+                        map.startMapEffect("Get the files for the experiment through each door!", 5120022);
                         break;
                     case 926110203:
-                        client.getPlayer().getMap().startMapEffect("Please defeat all the monsters!", 5120022);
+                        map.startMapEffect("Please defeat all the monsters!", 5120022);
                         break;
                     case 926110300:
-                        client.getPlayer().getMap().startMapEffect("Find your way through the Lab!", 5120022);
+                        map.startMapEffect("Find your way through the Lab!", 5120022);
                         break;
                     case 926110401:
-                        client.getPlayer().getMap().startMapEffect("Please, protect my love!", 5120022);
+                        map.startMapEffect("Please, protect my love!", 5120022);
                         break;
                 }
                 break;
             }
             case party6weatherMsg: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 930000000:
-                        client.getPlayer().getMap().startMapEffect("Step in the portal to be transformed.", 5120023);
+                        map.startMapEffect("Step in the portal to be transformed.", 5120023);
                         break;
                     case 930000100:
-                        client.getPlayer().getMap().startMapEffect("Defeat the poisoned monsters!", 5120023);
+                        map.startMapEffect("Defeat the poisoned monsters!", 5120023);
                         break;
                     case 930000200:
-                        client.getPlayer().getMap().startMapEffect("Eliminate the spore that blocks the way by purifying the poison!", 5120023);
+                        map.startMapEffect("Eliminate the spore that blocks the way by purifying the poison!", 5120023);
                         break;
                     case 930000300:
-                        client.getPlayer().getMap().startMapEffect("Uh oh! The forest is too confusing! Find me, quick!", 5120023);
+                        map.startMapEffect("Uh oh! The forest is too confusing! Find me, quick!", 5120023);
                         break;
                     case 930000400:
-                        client.getPlayer().getMap().startMapEffect("Purify the monsters by getting Purification Marbles from me!", 5120023);
+                        map.startMapEffect("Purify the monsters by getting Purification Marbles from me!", 5120023);
                         break;
                     case 930000500:
-                        client.getPlayer().getMap().startMapEffect("Find the Purple Magic Stone!", 5120023);
+                        map.startMapEffect("Find the Purple Magic Stone!", 5120023);
                         break;
                     case 930000600:
-                        client.getPlayer().getMap().startMapEffect("Place the Magic Stone on the altar!", 5120023);
+                        map.startMapEffect("Place the Magic Stone on the altar!", 5120023);
                         break;
                 }
                 break;
             }
             case StageMsg_davy: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 925100000:
-                        client.getPlayer().getMap().startMapEffect("Defeat the monsters outside of the ship to advance!", 5120020);
+                        map.startMapEffect("Defeat the monsters outside of the ship to advance!", 5120020);
                         break;
                     case 925100100:
-                        client.getPlayer().getMap().startMapEffect("We must prove ourselves! Get me Pirate Medals!", 5120020);
+                        map.startMapEffect("We must prove ourselves! Get me Pirate Medals!", 5120020);
                         break;
                     case 925100200:
-                        client.getPlayer().getMap().startMapEffect("Defeat the guards here to pass!", 5120020);
+                        map.startMapEffect("Defeat the guards here to pass!", 5120020);
                         break;
                     case 925100300:
-                        client.getPlayer().getMap().startMapEffect("Eliminate the guards here to pass!", 5120020);
+                        map.startMapEffect("Eliminate the guards here to pass!", 5120020);
                         break;
                     case 925100400:
-                        client.getPlayer().getMap().startMapEffect("Lock the doors! Seal the root of the Ship's power!", 5120020);
+                        map.startMapEffect("Lock the doors! Seal the root of the Ship's power!", 5120020);
                         break;
                     case 925100500:
-                        client.getPlayer().getMap().startMapEffect("Destroy the Lord Pirate!", 5120020);
+                        map.startMapEffect("Destroy the Lord Pirate!", 5120020);
                         break;
                 }
                 break;
             }
             case astaroth_summon: {
-                client.getPlayer().getMap().resetFully();
-                client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(9400633), new Point(600, -26)); //rough estimate
+                map.resetFully();
+                map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(9400633), new Point(600, -26)); //rough estimate
                 break;
             }
             case boss_Ravana: { //event handles this so nothing for now until i find out something to do with it
-                client.getPlayer().getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
+                map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
                 break;
             }
             case killing_BonusSetting: { //spawns monsters according to mapid
@@ -336,7 +339,7 @@ public class MapScriptMethods {
                 //926010050-926010069 = 40 Yetis
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
-                client.getPlayer().getMap().resetFully();
+                map.resetFully();
                 client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/bonus").build()));
                 client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/stage").build()));
                 Point pos1 = null, pos2 = null, pos3 = null;
@@ -344,31 +347,31 @@ public class MapScriptMethods {
                 int mobId = 0;
                 //9700019, 9700029
                 //9700021 = one thats invincible
-                if (client.getPlayer().getMapId() >= 910320010 && client.getPlayer().getMapId() <= 910320029) {
+                if (chr.getMapId() >= 910320010 && chr.getMapId() <= 910320029) {
                     pos1 = new Point(121, 218);
                     pos2 = new Point(396, 43);
                     pos3 = new Point(-63, 43);
                     mobId = 9700020;
                     spawnPer = 10;
-                } else if (client.getPlayer().getMapId() >= 926010010 && client.getPlayer().getMapId() <= 926010029) {
+                } else if (chr.getMapId() >= 926010010 && chr.getMapId() <= 926010029) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
                     mobId = 9700019;
                     spawnPer = 10;
-                } else if (client.getPlayer().getMapId() >= 926010030 && client.getPlayer().getMapId() <= 926010049) {
+                } else if (chr.getMapId() >= 926010030 && chr.getMapId() <= 926010049) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
                     mobId = 9700019;
                     spawnPer = 15;
-                } else if (client.getPlayer().getMapId() >= 926010050 && client.getPlayer().getMapId() <= 926010069) {
+                } else if (chr.getMapId() >= 926010050 && chr.getMapId() <= 926010069) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
                     mobId = 9700019;
                     spawnPer = 20;
-                } else if (client.getPlayer().getMapId() >= 926010070 && client.getPlayer().getMapId() <= 926010089) {
+                } else if (chr.getMapId() >= 926010070 && chr.getMapId() <= 926010089) {
                     pos1 = new Point(0, 88);
                     pos2 = new Point(-326, -115);
                     pos3 = new Point(361, -115);
@@ -378,44 +381,44 @@ public class MapScriptMethods {
                     break;
                 }
                 for (int i = 0; i < spawnPer; i++) {
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mobId), new Point(pos1));
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mobId), new Point(pos2));
-                    client.getPlayer().getMap().spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mobId), new Point(pos3));
+                    map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos1));
+                    map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos2));
+                    map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos3));
                 }
                 break;
             }
             case shammos_Fenter: {
-                if (client.getPlayer().getMapId() >= 921120100 && client.getPlayer().getMapId() < 921120500) {
-                    MapleMonster shammos = WzXML.MOB.findMonster(9300275);
-                    client.getPlayer().getMap().spawnMonsterWithEffectBelow(shammos, new Point(client.getPlayer().getMap().getPortal(0).getPosition()), 12);
-                    shammos.switchShammosController(client.getPlayer(), false);
-                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, client.getPlayer().getMap()));
+                if (chr.getMapId() >= 921120100 && chr.getMapId() < 921120500) {
+                    TacosMonster shammos = WzXML.MOB.createMob(9300275);
+                    map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortal(0).getPosition()), 12);
+                    shammos.switchShammosController(chr, false);
+                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, map));
 
                 }
                 break;
             }
             case PRaid_D_Fenter: {
-                switch (client.getPlayer().getMapId() % 10) {
+                switch (chr.getMapId() % 10) {
                     case 0:
-                        client.getPlayer().getMap().startMapEffect("Eliminate all the monsters!", 5120033);
+                        map.startMapEffect("Eliminate all the monsters!", 5120033);
                         break;
                     case 1:
-                        client.getPlayer().getMap().startMapEffect("Break the boxes and eliminate the monsters!", 5120033);
+                        map.startMapEffect("Break the boxes and eliminate the monsters!", 5120033);
                         break;
                     case 2:
-                        client.getPlayer().getMap().startMapEffect("Eliminate the Officer!", 5120033);
+                        map.startMapEffect("Eliminate the Officer!", 5120033);
                         break;
                     case 3:
-                        client.getPlayer().getMap().startMapEffect("Eliminate all the monsters!", 5120033);
+                        map.startMapEffect("Eliminate all the monsters!", 5120033);
                         break;
                     case 4:
-                        client.getPlayer().getMap().startMapEffect("Find the way to the other side!", 5120033);
+                        map.startMapEffect("Find the way to the other side!", 5120033);
                         break;
                 }
                 break;
             }
             case PRaid_B_Fenter: {
-                client.getPlayer().getMap().startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
+                map.startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
                 break;
             }
             case balog_summon:
@@ -426,7 +429,7 @@ public class MapScriptMethods {
             case killing_MapSetting:
             case Sky_TrapFEnter:
             case balog_bonusSetting: { //not needed
-                client.getPlayer().getMap().resetFully();
+                map.resetFully();
                 break;
             }
             default: {
@@ -437,7 +440,7 @@ public class MapScriptMethods {
     }
 
     public static void startScript_User(TacosClient client, String scriptName) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
         } //o_O
@@ -445,12 +448,12 @@ public class MapScriptMethods {
         switch (onUserEnter.fromString(scriptName)) {
             case cygnusTest:
             case cygnusJobTutorial: {
-                showIntro(client, "Effect/Direction.img/cygnusJobTutorial/Scene" + (client.getPlayer().getMapId() - 913040100));
+                showIntro(client, "Effect/Direction.img/cygnusJobTutorial/Scene" + (chr.getMapId() - 913040100));
                 break;
             }
             case shammos_Enter: { //nothing to go on inside the map
-                client.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((client.getPlayer().getMapId() % 1000) / 100)));
-                if (client.getPlayer().getMapId() == 921120500) {
+                chr.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((chr.getMapId() % 1000) / 100)));
+                if (chr.getMapId() == 921120500) {
                     TacosScriptNPC.getInstance().dispose(client);
                     TacosScriptQuest.getInstance().dispose(client);
                     TacosScriptNPC.getInstance().start(client, 2022006);
@@ -461,18 +464,18 @@ public class MapScriptMethods {
                 break;
             }
             case PRaid_W_Enter: {
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_expPenalty", "0"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_ElapssedTimeAtField", "0"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Point", "-1"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Bonus", "-1"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Total", "-1"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Team", ""));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_IsRevive", "0"));
-                client.getPlayer().writePoint("PRaid_Point", "-1");
-                client.getPlayer().writeStatus("Red_Stage", "1");
-                client.getPlayer().writeStatus("Blue_Stage", "1");
-                client.getPlayer().writeStatus("redTeamDamage", "0");
-                client.getPlayer().writeStatus("blueTeamDamage", "0");
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_expPenalty", "0"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_ElapssedTimeAtField", "0"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Point", "-1"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Bonus", "-1"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Total", "-1"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Team", ""));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_IsRevive", "0"));
+                chr.writePoint("PRaid_Point", "-1");
+                chr.writeStatus("Red_Stage", "1");
+                chr.writeStatus("Blue_Stage", "1");
+                chr.writeStatus("redTeamDamage", "0");
+                chr.writeStatus("blueTeamDamage", "0");
                 break;
             }
             case PRaid_D_Enter:
@@ -507,17 +510,17 @@ public class MapScriptMethods {
             case mirrorCave:
             case babyPigMap:
             case evanleaveD: {
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
             case dojang_Msg: {
-                client.getPlayer().getMap().startMapEffect(mulungEffects[Randomizer.nextInt(mulungEffects.length)], 5120024);
+                chr.getMap().startMapEffect(mulungEffects[Randomizer.nextInt(mulungEffects.length)], 5120024);
                 break;
             }
             case dojang_1st: {
-                client.getPlayer().writeMulungEnergy();
+                chr.writeMulungEnergy();
                 break;
             }
             case undomorphdarco:
@@ -526,50 +529,50 @@ public class MapScriptMethods {
             }
             case goAdventure: {
                 // BUG in MSEA v.91, so let's skip this part.
-                showIntro(client, "Effect/Direction3.img/goAdventure/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/goAdventure/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case crash_Dragon:
-                showIntro(client, "Effect/Direction4.img/crash/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/crash/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case getDragonEgg:
-                showIntro(client, "Effect/Direction4.img/getDragonEgg/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/getDragonEgg/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case meetWithDragon:
-                showIntro(client, "Effect/Direction4.img/meetWithDragon/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/meetWithDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case PromiseDragon:
-                showIntro(client, "Effect/Direction4.img/PromiseDragon/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/PromiseDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case evanPromotion:
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 900090000:
-                        data = "Effect/Direction4.img/promotion/Scene0" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction4.img/promotion/Scene0" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 900090001:
                         data = "Effect/Direction4.img/promotion/Scene1";
                         break;
                     case 900090002:
-                        data = "Effect/Direction4.img/promotion/Scene2" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction4.img/promotion/Scene2" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 900090003:
                         data = "Effect/Direction4.img/promotion/Scene3";
                         break;
                     case 900090004:
-                        client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                        client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                        chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                        chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
-                        final MapleMap mapto = chr.findMap(900010000);
-                        client.getPlayer().changeMapPortal(mapto, mapto.getPortal(0));
+                        TacosMap mapto = chr.findMap(900010000);
+                        chr.changeMapPortal(mapto, mapto.getPortal(0));
                         return;
                 }
                 showIntro(client, data);
                 break;
             case TD_MC_title: {
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("temaD/enter/mushCatle").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("temaD/enter/mushCatle").build()));
                 break;
             }
             case explorationPoint: {
@@ -577,8 +580,8 @@ public class MapScriptMethods {
             }
             case go10000:
             case go1020000:
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
             case go20000:
             case go30000:
@@ -591,31 +594,31 @@ public class MapScriptMethods {
             case go1010200:
             case go1010300:
             case go1010400: {
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("maplemap/enter/" + client.getPlayer().getMapId()).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("maplemap/enter/" + chr.getMapId()).build()));
                 break;
             }
             case goArcher: {
-                showIntro(client, "Effect/Direction3.img/archer/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/archer/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goPirate: {
-                showIntro(client, "Effect/Direction3.img/pirate/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/pirate/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goRogue: {
-                showIntro(client, "Effect/Direction3.img/rogue/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/rogue/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goMagician: {
-                showIntro(client, "Effect/Direction3.img/magician/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/magician/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goSwordman: {
-                showIntro(client, "Effect/Direction3.img/swordman/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/swordman/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goLith: {
-                showIntro(client, "Effect/Direction3.img/goLith/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/goLith/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case TD_MC_Openning: {
@@ -627,21 +630,21 @@ public class MapScriptMethods {
                 break;
             }
             case aranDirection: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 914090010:
                         data = "Effect/Direction1.img/aranTutorial/Scene0";
                         break;
                     case 914090011:
-                        data = "Effect/Direction1.img/aranTutorial/Scene1" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction1.img/aranTutorial/Scene1" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 914090012:
-                        data = "Effect/Direction1.img/aranTutorial/Scene2" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction1.img/aranTutorial/Scene2" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 914090013:
                         data = "Effect/Direction1.img/aranTutorial/Scene3";
                         break;
                     case 914090100:
-                        data = "Effect/Direction1.img/aranTutorial/HandedPoleArm" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction1.img/aranTutorial/HandedPoleArm" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 914090200:
                         data = "Effect/Direction1.img/aranTutorial/Maha";
@@ -651,47 +654,47 @@ public class MapScriptMethods {
                 break;
             }
             case iceCave: {
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000014), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000015), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
-                client.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.changeSkillLevel(SkillFactory.getSkill(20000014), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000015), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
+                chr.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
             case rienArrow: {
-                if (client.getPlayer().getInfoQuest(21019).equals("miss=o;helper=clear")) {
-                    client.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
-                    client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
+                if (chr.getInfoQuest(21019).equals("miss=o;helper=clear")) {
+                    chr.updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
+                    chr.SendPacket(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
                 }
                 break;
             }
             case rien: {
-                if (client.getPlayer().getQuestStatus(21101) == 2 && client.getPlayer().getInfoQuest(21019).equals("miss=o;arr=o;helper=clear")) {
-                    client.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;ck=1;helper=clear");
+                if (chr.getQuestStatus(21101) == 2 && chr.getInfoQuest(21019).equals("miss=o;arr=o;helper=clear")) {
+                    chr.updateInfoQuest(21019, "miss=o;arr=o;ck=1;helper=clear");
                 }
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 break;
             }
             case check_count: {
-                if (client.getPlayer().getMapId() == 950101010 && (!client.getPlayer().haveItem(4001433, 20) || client.getPlayer().getLevel() < 50)) { //ravana Map
-                    final MapleMap mapp = chr.findMap(950101100); //exit Map
-                    client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
+                if (chr.getMapId() == 950101010 && (!chr.haveItem(4001433, 20) || chr.getLevel() < 50)) { //ravana Map
+                    TacosMap mapp = chr.findMap(950101100); //exit Map
+                    chr.changeMapPortal(mapp, mapp.getPortal(0));
                 }
                 break;
             }
             case Massacre_first: { //sends a whole bunch of shit.
-                if (client.getPlayer().getPyramidSubway() == null) {
-                    client.getPlayer().setPyramidSubway(new Event_PyramidSubway(client.getPlayer()));
+                if (chr.getPyramidSubway() == null) {
+                    chr.setPyramidSubway(new Event_PyramidSubway(chr));
                 }
                 break;
             }
             case Massacre_result: { //clear, give exp, etc.
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
                 break;
             }
             default: {
@@ -701,7 +704,7 @@ public class MapScriptMethods {
         }
     }
 
-    private static final int getTiming(int ids) {
+    private static int getTiming(int ids) {
         if (ids <= 5) {
             return 5;
         } else if (ids >= 7 && ids <= 11) {
@@ -720,7 +723,7 @@ public class MapScriptMethods {
         return 0;
     }
 
-    private static final int getDojoStageDec(int ids) {
+    private static int getDojoStageDec(int ids) {
         if (ids <= 5) {
             return 0;
         } else if (ids >= 7 && ids <= 11) {
@@ -739,7 +742,7 @@ public class MapScriptMethods {
         return 0;
     }
 
-    private static void showIntro(final TacosClient client, final String data) {
+    private static void showIntro(TacosClient client, String data) {
         client.SendPacket(ResCUserLocal.SetStandAloneMode(true));
         client.SendPacket(ResCUserLocal.SetDirectionMode(true));
         client.SendPacket(ResCUserLocal.ShowWZEffect(data));
@@ -757,7 +760,7 @@ public class MapScriptMethods {
     }
 
     private static void handlePinkBeanStart(TacosClient client) {
-        final MapleMap map = client.getPlayer().getMap();
+        TacosMap map = client.getPlayer().getMap();
         map.resetFully();
 
         if (!map.containsNPC(2141000)) {
@@ -766,10 +769,11 @@ public class MapScriptMethods {
     }
 
     private static void reloadWitchTower(TacosClient client) {
-        final MapleMap map = client.getPlayer().getMap();
+        TacosCharacter chr = client.getPlayer();
+        TacosMap map = chr.getMap();
         map.killAllMonsters(false);
 
-        final int level = client.getPlayer().getLevel();
+        int level = chr.getLevel();
         int mob;
         if (level <= 10) {
             mob = 9300367;
@@ -794,6 +798,6 @@ public class MapScriptMethods {
         } else {
             mob = 9300377;
         }
-        map.spawnMonsterOnGroundBelow(WzXML.MOB.findMonster(mob), witchTowerPos);
+        map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mob), witchTowerPos);
     }
 }

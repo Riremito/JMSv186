@@ -18,8 +18,8 @@
  */
 package tacos.debug;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -34,11 +34,11 @@ import tacos.wz.WzDataStorage;
 public class DebugUser {
 
     // 初期アイテムをキャラクターデータに追加
-    public static boolean AddItem(MapleCharacter chr, int itemid) {
+    public static boolean AddItem(TacosCharacter chr, int itemid) {
         return AddItem(chr, itemid, 1);
     }
 
-    public static boolean AddItem(MapleCharacter chr, int itemid, int count) {
+    public static boolean AddItem(TacosCharacter chr, int itemid, int count) {
         if (!WzDataStorage.ITEM.check(itemid)) {
             return false;
         }
@@ -88,7 +88,7 @@ public class DebugUser {
         return true;
     }
 
-    public static boolean AddStarterSet(MapleCharacter chr) {
+    public static boolean AddStarterSet(TacosCharacter chr) {
         if (!DeveloperMode.DM_FULL_ITEM_SET.get()) {
             return false;
         }

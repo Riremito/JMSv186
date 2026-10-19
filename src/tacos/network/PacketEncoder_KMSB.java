@@ -43,10 +43,10 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
         }
 
         // packet encryption
-        final byte[] raw_server_packet = ((ServerPacket) o).getBytes();
-        final byte[] header_version = new byte[2];
-        final byte[] header_size = new byte[2];
-        final byte[] packet = raw_server_packet.clone();
+        byte[] raw_server_packet = ((ServerPacket) o).getBytes();
+        byte[] header_version = new byte[2];
+        byte[] header_size = new byte[2];
+        byte[] packet = raw_server_packet.clone();
         byte key[] = client.getSeqRcv().clone();
         short version = (short) (0xFFFF - Config.VERSION);
 
@@ -63,7 +63,7 @@ public class PacketEncoder_KMSB implements ProtocolEncoder {
             packet[i] = (byte) (packet[i] ^ key[0]);
         }
 
-        final byte[] encrypted_server_packet = new byte[header_version.length + header_size.length + packet.length];
+        byte[] encrypted_server_packet = new byte[header_version.length + header_size.length + packet.length];
         System.arraycopy(header_version, 0, encrypted_server_packet, 0, header_version.length);
         System.arraycopy(header_size, 0, encrypted_server_packet, header_version.length, header_size.length);
         System.arraycopy(packet, 0, encrypted_server_packet, header_version.length + header_size.length, packet.length);

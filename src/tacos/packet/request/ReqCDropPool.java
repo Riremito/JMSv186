@@ -19,8 +19,10 @@
 package tacos.packet.request;
 
 import java.util.LinkedList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosDrop;
 import java.util.List;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.constants.GameConstants;
 import tacos.config.Region;
@@ -28,8 +30,6 @@ import odin.handling.world.MaplePartyCharacter;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacket;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapItem;
 import tacos.config.Config;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
@@ -52,12 +52,12 @@ import tacos.server.map.object.TacosDrop.DropLeaveType;
 public class ReqCDropPool {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return false;
         }
@@ -84,13 +84,14 @@ public class ReqCDropPool {
         return false;
     }
 
-    public static boolean OnDropPickUpRequest(MapleCharacter chr, int object_id) {
-        MapleMapItem mapitem = chr.getMap().getDropByOid(object_id);
+    public static boolean OnDropPickUpRequest(TacosCharacter chr, int object_id) {
+        TacosMap map = chr.getMap();
+        TacosDrop mapitem = map.getDropByOid(object_id);
         if (mapitem == null) {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;
         }
-        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && map.getEverlast()))) {
             DebugLogger.ErrorLog("PickUp : getOwner");
             return false;
         }
@@ -102,14 +103,14 @@ public class ReqCDropPool {
         if (mapitem.getMeso() > 0) {
             // ?_?
             if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
-                final List<MapleCharacter> toGive = new LinkedList<>();
+                List<TacosCharacter> toGive = new LinkedList<>();
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter player = chr.getMap().getPlayerById(z.getId());
+                    TacosCharacter player = map.getPlayerById(z.getId());
                     if (player != null) {
                         toGive.add(player);
                     }
                 }
-                for (final MapleCharacter player : toGive) {
+                for (TacosCharacter player : toGive) {
                     player.gainMeso(mapitem.getMeso() / toGive.size() + (player.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true, true);
                 }
             } else {
@@ -138,7 +139,7 @@ public class ReqCDropPool {
                             .player(chr)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), chr.getId());
 
                     chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MONSTER_CARD).ItemID(nCardID).build()));
                 } else {
@@ -168,16 +169,17 @@ public class ReqCDropPool {
         return true;
     }
 
-    public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem) {
+    public static void removeDropItem(TacosCharacter chr, TacosDrop mapitem) {
         removeDropItem(chr, mapitem, false, 0);
     }
 
-    public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem, boolean is_pet, int pet_index) {
-        chr.getMap().removeDrop(mapitem.getObjectId());
-        chr.getMap().broadcastPacket(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index));
+    public static void removeDropItem(TacosCharacter chr, TacosDrop mapitem, boolean is_pet, int pet_index) {
+        TacosMap map = chr.getMap();
+        map.removeDrop(mapitem.getObjectId());
+        map.broadcastPacket(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index));
     }
 
-    public static boolean useDropItem(MapleCharacter chr, int id) {
+    public static boolean useDropItem(TacosCharacter chr, int id) {
         if (GameConstants.isUse(id)) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             byte consumeval = ii.isConsumeOnPickup(id);
@@ -185,7 +187,7 @@ public class ReqCDropPool {
                 if (consumeval == 2) {
                     if (chr.getParty() != null) {
                         for (MaplePartyCharacter pc : chr.getParty().getMembers()) {
-                            MapleCharacter chr_to = chr.getMap().getPlayerById(pc.getId());
+                            TacosCharacter chr_to = chr.getMap().getPlayerById(pc.getId());
                             if (chr_to != null) {
                                 ii.getItemEffect(id).applyTo(chr_to);
                             }

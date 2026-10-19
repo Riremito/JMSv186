@@ -18,11 +18,13 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosPet;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosDrop;
 import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.inventory.MaplePet;
 import odin.client.inventory.PetCommand;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -39,8 +41,6 @@ import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapItem;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
@@ -55,17 +55,17 @@ public class ReqCUser_Pet {
 
     // CUserPool::OnUserCommonPacket
     public static boolean OnPetPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
 
-        MaplePet pet = null;
+        TacosPet pet = null;
         // outside CUser
         if (Config.LessOrEqual(Region.JMS, 147)) {
             long pet_uid = Config.LessOrEqual(Region.JMS, 147) ? cp.Decode8() : 0; // outside CUser
@@ -115,9 +115,9 @@ public class ReqCUser_Pet {
         return false;
     }
 
-    public static boolean OnPetFood(MapleCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
-        MaplePet pet = chr.getPetByIndex(0);
-        MapleMap map = chr.getMap();
+    public static boolean OnPetFood(TacosCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
+        TacosPet pet = chr.getPetByIndex(0);
+        TacosMap map = chr.getMap();
 
         if (pet == null || map == null) {
             return false;
@@ -145,7 +145,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetMove(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetMove(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 302));
 
         ParseCMovePath move_path = new ParseCMovePath();
@@ -157,7 +157,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetAction(MapleCharacter chr, MapleMap map, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetAction(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
@@ -166,13 +166,13 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static void OnPetInteractionRequest(MapleCharacter chr, ClientPacket cp) {
+    public static void OnPetInteractionRequest(TacosCharacter chr, ClientPacket cp) {
         int petIndex = cp.Decode4();
 
         if (petIndex == -1) {
             return;
         }
-        MaplePet pet = chr.getPetByIndex(petIndex);
+        TacosPet pet = chr.getPetByIndex(petIndex);
         if (pet == null) {
             return;
         }
@@ -181,6 +181,7 @@ public class ReqCUser_Pet {
         byte command = cp.Decode1();
         PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
+        TacosMap map = chr.getMap();
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
             if (pet.getCloseness() < 30000) {
@@ -189,19 +190,19 @@ public class ReqCUser_Pet {
                     newCloseness = 30000;
                 }
                 pet.setCloseness(newCloseness);
-                if (newCloseness >= MaplePet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
+                if (newCloseness >= TacosPet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
 
-        chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
+        map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
     }
 
-    public static boolean OnPetDropPickUpRequest(MapleCharacter chr, MaplePet pet, ClientPacket cp) {
+    public static boolean OnPetDropPickUpRequest(TacosCharacter chr, TacosPet pet, ClientPacket cp) {
         byte unk1 = cp.Decode1(); // unk
         int timestamp = cp.Decode4();
         short drop_x = cp.Decode2();
@@ -217,7 +218,7 @@ public class ReqCUser_Pet {
             int drop_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
-        MapleMapItem mapitem = chr.getMap().getDropByOid(drop_id);
+        TacosDrop mapitem = chr.getMap().getDropByOid(drop_id);
         if (mapitem == null) {
             return false;
         }
@@ -226,7 +227,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnStatChangeItemUse(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnStatChangeItemUse(TacosCharacter chr, ClientPacket cp) {
         byte unk1 = cp.Decode1();
         int timestamp = cp.Decode4();
         short item_slot = cp.Decode2();
@@ -236,12 +237,13 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {
+    public static void Pickup_Pet(TacosCharacter chr, TacosDrop mapitem, int pet_index) {
         TacosClient client = chr.getClient();
         if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
-        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+        TacosMap map = chr.getMap();
+        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && map.getEverlast()))) {
             chr.updateInv();
             return;
         }
@@ -252,15 +254,15 @@ public class ReqCUser_Pet {
 
         if (mapitem.getMeso() > 0) {
             if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
-                final List<MapleCharacter> toGive = new LinkedList<>();
-                final int splitMeso = mapitem.getMeso() * 40 / 100;
+                List<TacosCharacter> toGive = new LinkedList<>();
+                int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter player = chr.getMap().getPlayerById(z.getId());
+                    TacosCharacter player = map.getPlayerById(z.getId());
                     if (player != null && player.getId() != chr.getId()) {
                         toGive.add(player);
                     }
                 }
-                for (final MapleCharacter player : toGive) {
+                for (TacosCharacter player : toGive) {
                     player.gainMeso(splitMeso / toGive.size() + (player.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true);
                 }
                 chr.gainMeso(mapitem.getMeso() - splitMeso, true);

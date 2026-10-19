@@ -1,21 +1,20 @@
 package odin.server;
 
 import java.util.LinkedList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.client.MapleCharacter;
-import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import tacos.packet.response.ResCField;
 import odin.server.Timer.CloneTimer;
-import odin.server.maps.MapleMap;
 import tacos.server.TacosWorld;
 
 public class MapleSquad {
 
-    private WeakReference<MapleCharacter> leader;
+    private TacosCharacter leader;
     private final String leaderName;
     private Map<String, String> members = new LinkedHashMap<>();
     private Map<String, String> bannedMembers = new LinkedHashMap<>();
@@ -27,8 +26,8 @@ public class MapleSquad {
     private byte status = 0;
     private ScheduledFuture<?> removal;
 
-    public MapleSquad(final int ch, final String type, final MapleCharacter leader, final int expiration) {
-        this.leader = new WeakReference<>(leader);
+    public MapleSquad(int ch, String type, TacosCharacter leader, int expiration) {
+        this.leader = leader;
         this.members.put(leader.getName(), MapleCarnivalChallenge.getJobBasicNameById(leader.getJob()));
         this.leaderName = leader.getName();
         this.ch = ch;
@@ -41,15 +40,15 @@ public class MapleSquad {
         scheduleRemoval(expiration);
     }
 
-    public MapleMap getBeginMap() {
-        return this.leader.get().findMap(beginMapId);
+    public TacosMap getBeginMap() {
+        return this.leader.findMap(beginMapId);
     }
 
-    public MapleCharacter getChar(String name) {
-        return this.leader.get().getChannelServer().getOnlinePlayers().findByName(name);
+    public TacosCharacter getChar(String name) {
+        return this.leader.getChannelServer().getOnlinePlayers().findByName(name);
     }
 
-    private void scheduleRemoval(final int time) {
+    private void scheduleRemoval(int time) {
         removal = CloneTimer.getInstance().schedule(new Runnable() {
 
             @Override
@@ -69,7 +68,7 @@ public class MapleSquad {
         return new LinkedList<>(bannedMembers.keySet());
     }
 
-    public boolean isBanned(MapleCharacter member) {
+    public boolean isBanned(TacosCharacter member) {
         return bannedMembers.containsKey(member.getName());
     }
 
@@ -77,8 +76,8 @@ public class MapleSquad {
         if (pos < 0 || pos >= bannedMembers.size()) {
             return;
         }
-        final List<String> membersAsList = getBannedMembers();
-        final String toadd = membersAsList.get(pos);
+        List<String> membersAsList = getBannedMembers();
+        String toadd = membersAsList.get(pos);
         if (toadd != null && getChar(toadd) != null) {
             members.put(toadd, bannedMembers.get(toadd));
             bannedMembers.remove(toadd);
@@ -91,8 +90,8 @@ public class MapleSquad {
         if (pos <= 0 || pos >= members.size()) { //may not ban leader
             return;
         }
-        final List<String> membersAsList = getMembers();
-        final String toban = membersAsList.get(pos);
+        List<String> membersAsList = getMembers();
+        String toban = membersAsList.get(pos);
         if (toban != null && getChar(toban) != null) {
             bannedMembers.put(toban, members.get(toban));
             members.remove(toban);
@@ -179,7 +178,7 @@ public class MapleSquad {
             }
             case 3: { //CWKPQ
                 StringBuilder sb = new StringBuilder("Jobs : ");
-                final Map<String, Integer> jobs = getJobs();
+                Map<String, Integer> jobs = getJobs();
                 for (Entry<String, Integer> chr : jobs.entrySet()) {
                     sb.append("\r\n").append(chr.getKey()).append(" : ").append(chr.getValue());
                 }
@@ -189,12 +188,12 @@ public class MapleSquad {
         return null;
     }
 
-    public final String getType() {
+    public String getType() {
         return type;
     }
 
-    public final Map<String, Integer> getJobs() {
-        final Map<String, Integer> jobs = new LinkedHashMap<>();
+    public Map<String, Integer> getJobs() {
+        Map<String, Integer> jobs = new LinkedHashMap<>();
         for (Entry<String, String> chr : members.entrySet()) {
             if (jobs.containsKey(chr.getValue())) {
                 jobs.put(chr.getValue(), jobs.get(chr.getValue()) + 1);
@@ -226,10 +225,10 @@ public class MapleSquad {
     }
 
     // used by script
-    public MapleCharacter getLeader() {
-        if (leader == null || leader.get() == null) {
+    public TacosCharacter getLeader() {
+        if (leader == null) {
             if (members.size() > 0 && getChar(leaderName) != null) {
-                leader = new WeakReference<>(getChar(leaderName));
+                leader = getChar(leaderName);
             } else {
                 if (status != 0) {
                     clear();
@@ -237,7 +236,7 @@ public class MapleSquad {
                 return null;
             }
         }
-        return leader.get();
+        return leader;
     }
 
     // used by script
@@ -246,8 +245,8 @@ public class MapleSquad {
     }
 
     // used by script
-    public int addMember(MapleCharacter member, boolean join) {
-        final String job = MapleCarnivalChallenge.getJobBasicNameById(member.getJob());
+    public int addMember(TacosCharacter member, boolean join) {
+        String job = MapleCarnivalChallenge.getJobBasicNameById(member.getJob());
         if (join) {
             if (!members.containsKey(member.getName())) {
                 if (members.size() <= 30) {
@@ -269,7 +268,7 @@ public class MapleSquad {
     }
 
     // used by script
-    public void removeMember(MapleCharacter chr) {
+    public void removeMember(TacosCharacter chr) {
         if (members.containsKey(chr.getName())) {
             members.remove(chr.getName());
         }

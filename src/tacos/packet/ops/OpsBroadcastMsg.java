@@ -68,7 +68,7 @@ public enum OpsBroadcastMsg {
     }
 
     public static OpsBroadcastMsg find(byte b) {
-        for (final OpsBroadcastMsg o : OpsBroadcastMsg.values()) {
+        for (OpsBroadcastMsg o : OpsBroadcastMsg.values()) {
             if (o.get() == b) {
                 return o;
             }

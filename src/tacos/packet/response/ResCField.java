@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
 import java.util.Map;
 import tacos.packet.ServerPacket;
@@ -89,7 +88,7 @@ public class ResCField {
         return sp;
     }
 
-    public static ServerPacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, MapleCharacter chr_from, String name_to, String message, MapleCharacter chr_to) {
+    public static ServerPacket Whisper(Ops_Whisper req_res, Ops_Whisper loc_whis, TacosCharacter chr_from, String name_to, String message, TacosCharacter chr_to) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_Whisper);
 
         sp.Encode1(req_res.get() | loc_whis.get());

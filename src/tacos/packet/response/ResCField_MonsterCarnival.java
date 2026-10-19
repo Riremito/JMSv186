@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.packet.ServerPacket;
+import tacos.client.TacosCharacter;
 import odin.server.MapleCarnivalParty;
 import tacos.packet.ServerPacketHeader;
 
@@ -51,7 +51,7 @@ public class ResCField_MonsterCarnival {
         return sp;
     }
 
-    public static ServerPacket MCarnivalEnter(MapleCharacter chr, int enemyavailable, int enemytotal) {
+    public static ServerPacket MCarnivalEnter(TacosCharacter chr, int enemyavailable, int enemytotal) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MCarnivalEnter);
 
         MapleCarnivalParty friendly = chr.getCarnivalParty();

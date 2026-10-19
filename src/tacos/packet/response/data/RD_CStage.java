@@ -20,7 +20,6 @@ package tacos.packet.response.data;
 
 import java.util.ArrayList;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.config.Config;
@@ -133,12 +132,12 @@ public class RD_CStage {
     }
 
     // CITC::CITC
-    public static byte[] CITC_CITC(MapleCharacter chr) {
+    public static byte[] CITC_CITC(TacosCharacter chr) {
         return CITC_LoadData(chr);
     }
 
     // CITC::LoadData
-    public static byte[] CITC_LoadData(MapleCharacter chr) {
+    public static byte[] CITC_LoadData(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeStr(chr.getClient().getMapleId()); // m_sNexonClubID
@@ -147,12 +146,12 @@ public class RD_CStage {
         data.Encode4(TacosITC.m_nCommissionBase); // m_nCommissionBase
         data.Encode4(TacosITC.m_nAuctionDurationMin); // m_nAuctionDurationMin
         data.Encode4(TacosITC.m_nAuctionDurationMax); // m_nAuctionDurationMax
-        data.Encode8(TacosSharedDate.getTimestamp(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // ftServer
+        data.Encode8(TacosSharedDate.getTimestamp(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 55) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // ftServer
         return data.getBytes();
     }
 
     // CCashShop::CCashShop
-    public static byte[] CCashShop_CCashShop(MapleCharacter chr) {
+    public static byte[] CCashShop_CCashShop(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeBuffer(RD_CStage.CCashShop_LoadData(chr));
@@ -163,7 +162,7 @@ public class RD_CStage {
     }
 
     // CCashShop::LoadData
-    public static byte[] CCashShop_LoadData(MapleCharacter chr) {
+    public static byte[] CCashShop_LoadData(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(1, Region.GMS.check() || Region.GMST.check() || Region.EMS.check() || Region.BMS.check()); // m_bCashShopAuthorized
@@ -181,7 +180,7 @@ public class RD_CStage {
     public static byte[] CWvsContext_SetSaleInfo() {
         ServerPacket data = new ServerPacket();
 
-        data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 55, 70) || Config.GreaterOrEqual(Region.BMS, 24)); // NotSaleCount
+        data.Encode4(0, Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.CMS, 73) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.GMS, 61) || Config.Between(Region.EMS, 55, 70) || Config.GreaterOrEqual(Region.BMS, 24)); // NotSaleCount
         data.EncodeBuffer(getCommodities(EtcWz.getOnSale())); // 2 bytes.
         data.Encode2(0, Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.KMST, 330) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Config.GreaterOrEqual(Region.IMS, 1)); // non 0, Decode4, DecodeStr
         data.EncodeBuffer(getDiscountRates(0, 0, 99)); // 1 byte.

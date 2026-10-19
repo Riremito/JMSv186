@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.handling.world.guild.MapleGuild;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ClientPacket;
@@ -30,20 +30,20 @@ import tacos.packet.ServerPacket;
 
 public class AllianceHandler {
 
-    public static final void HandleAlliance(ClientPacket cp, final TacosClient client, boolean denied) {
-        MapleCharacter chr = client.getPlayer();
-        if (client.getPlayer().getGuildId() <= 0) {
+    public static void HandleAlliance(ClientPacket cp, TacosClient client, boolean denied) {
+        TacosCharacter chr = client.getPlayer();
+        if (chr.getGuildId() <= 0) {
             chr.updateStat();
             return;
         }
-        final MapleGuild gs = client.getWorld().getGuild().getGuild(client.getPlayer().getGuildId());
+        MapleGuild gs = client.getWorld().getGuild().getGuild(chr.getGuildId());
         if (gs == null) {
             chr.updateStat();
             return;
         }
         //System.out.println("Unhandled GuildAlliance \n" + slea.toString());
         byte op = cp.Decode1();
-        if (client.getPlayer().getGuildRank() != 1 && op != 1) { //only updating doesn't need guild leader
+        if (chr.getGuildRank() != 1 && op != 1) { //only updating doesn't need guild leader
             return;
         }
         if (op == 22) {
@@ -76,8 +76,8 @@ public class AllianceHandler {
                 }
                 break;
             case 3: //invite
-                final int newGuild = client.getWorld().getGuild().getGuildLeader(cp.DecodeStr());
-                if (newGuild > 0 && client.getPlayer().getAllianceRank() == 1 && leaderid == client.getPlayer().getId()) {
+                int newGuild = client.getWorld().getGuild().getGuildLeader(cp.DecodeStr());
+                if (newGuild > 0 && chr.getAllianceRank() == 1 && leaderid == chr.getId()) {
                     chr = client.getChannelServer().getOnlinePlayers().findById(newGuild);
                     if (chr != null && chr.getGuildId() > 0 && client.getWorld().getAlliance().canInvite(gs.getAllianceId())) {
                         chr.SendPacket(ResCWvsContext.sendAllianceInvite(client.getWorld().getAlliance().getAlliance(gs.getAllianceId()).getName(), client.getPlayer()));
@@ -96,7 +96,7 @@ public class AllianceHandler {
                 break;
             case 2: //leave; nothing
             case 6: //expel, guildid(int) -> allianceid(don't care, a/b check)
-                final int gid;
+                int gid;
                 if (op == 6/* && slea.available() >= 4*/) {
                     gid = cp.Decode4();
                     if (/*slea.available() >= 4 &&*/gs.getAllianceId() != cp.Decode4()) {
@@ -136,7 +136,7 @@ public class AllianceHandler {
                 break;
             case 10: //notice update
                 if (client.getPlayer().getAllianceRank() <= 2) {
-                    final String notice = cp.DecodeStr();
+                    String notice = cp.DecodeStr();
                     if (notice.length() > 100) {
                         break;
                     }
@@ -149,16 +149,17 @@ public class AllianceHandler {
         }
     }
 
-    public static final void DenyInvite(TacosClient client, final MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
-        final int inviteid = client.getWorld().getGuild().getInvitedId(client.getPlayer().getGuildId());
+    public static void DenyInvite(TacosClient client, MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
+        TacosCharacter player = client.getPlayer();
+        int inviteid = client.getWorld().getGuild().getInvitedId(player.getGuildId());
         if (inviteid > 0) {
-            final int newAlliance = client.getWorld().getAlliance().getAllianceLeader(inviteid);
+            int newAlliance = client.getWorld().getAlliance().getAllianceLeader(inviteid);
             if (newAlliance > 0) {
-                final MapleCharacter chr = client.getChannelServer().getOnlinePlayers().findById(newAlliance);
+                TacosCharacter chr = client.getChannelServer().getOnlinePlayers().findById(newAlliance);
                 if (chr != null) {
                     chr.dropMessage(5, gs.getName() + " Guild has rejected the Guild Union invitation.");
                 }
-                client.getWorld().getGuild().setInvitedId(client.getPlayer().getGuildId(), 0);
+                client.getWorld().getGuild().setInvitedId(player.getGuildId(), 0);
             }
         }
     }

@@ -19,18 +19,19 @@
 package tacos.unofficial;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.server.map.object.TacosNpc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import odin.server.life.MapleNPC;
-import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.property.Property_Java;
 import tacos.wz.WzDataStorage;
+import tacos.wz.WzXML;
 
 /**
  *
@@ -38,7 +39,7 @@ import tacos.wz.WzDataStorage;
  */
 public class CustomMap {
 
-    public static boolean addNPCtoMap(MapleMap map) {
+    public static boolean addNPCtoMap(TacosMap map) {
         if (!Config.GreaterOrEqual(Region.JMS, 186)) {
             return false;
         }
@@ -74,13 +75,15 @@ public class CustomMap {
                 continue;
             }
 
-            MapleNPC npc = new MapleNPC(npc_id);
-            npc.setPosition(new Point(npc_x, npc_y));
-            npc.setCy(npc_y);
-            npc.setRx0(npc_x + 50);
-            npc.setRx1(npc_x - 50);
-            npc.setFootholdId(npc_fh);
-            map.addNPC(npc);
+            TacosNpc npc = WzXML.NPC.createNpc(npc_id);
+            if (npc != null) {
+                npc.setPosition(new Point(npc_x, npc_y));
+                npc.setCy(npc_y);
+                npc.setRx0(npc_x + 50);
+                npc.setRx1(npc_x - 50);
+                npc.setFootholdId(npc_fh);
+                map.addNPC(npc);
+            }
         }
 
         return true;

@@ -18,7 +18,11 @@
  */
 package tacos.wz;
 
+import java.util.HashMap;
+import tacos.server.map.object.TacosNpc;
+import lombok.Getter;
 import tacos.config.Content;
+import tacos.debug.DebugLogger;
 
 /**
  *
@@ -28,5 +32,54 @@ public class NpcWz extends WzXML {
 
     public NpcWz() {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Npc" : "Npc.wz");
+    }
+
+    public TacosNpc createNpc(int npc_id) {
+        if (!WzDataStorage.NPC.check(npc_id)) {
+            DebugLogger.ErrorLog("createNpc : invalid id, " + npc_id);
+            return null;
+        }
+        return new TacosNpc(npc_id);
+    }
+
+    private MapleData getImg(int npc_id) {
+        String target_img_path = String.format("%07d.img", npc_id);
+        return getData(target_img_path);
+    }
+
+    @Getter
+    public class NpcInfo {
+
+        private int guildRank;
+        private int parcel;
+        private int rpsGame;
+        private String script;
+        private int storebank;
+        private int trunkGet;
+        private int trunkPut;
+    }
+
+    private final HashMap<Integer, NpcInfo> npc_info_list = new HashMap<>();
+
+    public NpcInfo getNpcInfo(int npc_id) {
+        NpcInfo ret = this.npc_info_list.get(npc_id);
+        if (ret != null) {
+            return ret;
+        }
+        ret = new NpcInfo();
+
+        MapleData md_npc_img = getImg(npc_id);
+        if (md_npc_img != null) {
+            ret.guildRank = md_npc_img.getInt("info/guildRank");
+            ret.parcel = md_npc_img.getInt("info/parcel");
+            ret.rpsGame = md_npc_img.getInt("info/rpsGame");
+            ret.script = md_npc_img.getString("info/script/0/script");
+            ret.storebank = md_npc_img.getInt("info/storebank");
+            ret.trunkGet = md_npc_img.getInt("info/trunkGet");
+            ret.trunkPut = md_npc_img.getInt("info/trunkPut");
+        }
+
+        this.npc_info_list.put(npc_id, ret);
+        return ret;
     }
 }

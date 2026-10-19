@@ -18,8 +18,8 @@
  */
 package tacos.server;
 
-import odin.client.MapleCharacter;
 import tacos.database.query.DQ_Characters;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -35,7 +35,7 @@ public class TacosFriend {
     private int channel;
     private String tag;
     private boolean online;
-    private MapleCharacter chr;
+    private TacosCharacter chr;
 
     public TacosFriend() {
     }
@@ -96,13 +96,13 @@ public class TacosFriend {
         return this.online;
     }
 
-    public MapleCharacter getCharacter() {
+    public TacosCharacter getCharacter() {
         return this.chr;
     }
 
-    public static TacosFriend findByName(MapleCharacter chr, String friend_name) {
+    public static TacosFriend findByName(TacosCharacter chr, String friend_name) {
         // online
-        MapleCharacter online_player = chr.getWorld().findOnlinePlayer(friend_name);
+        TacosCharacter online_player = chr.getWorld().findOnlinePlayer(friend_name);
         if (online_player != null) {
             TacosFriend online_friend = new TacosFriend();
             online_friend.id = online_player.getId();
