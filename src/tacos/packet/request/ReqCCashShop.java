@@ -139,7 +139,7 @@ public class ReqCCashShop {
                 // 4 slot
                 byte inv_type = cp.Decode1();
                 if (IncSlotCount4(chr, use_maple_point, inv_type)) {
-                    client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncSlotCount_Done, client, new ResCCashShop.CashItemStruct(MapleInventoryType.getByType(inv_type))));
+                    chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncSlotCount_Done, client, new ResCCashShop.CashItemStruct(MapleInventoryType.getByType(inv_type))));
                 } else {
                     // faield   
                 }
@@ -150,7 +150,7 @@ public class ReqCCashShop {
                 byte use_maple_point = cp.Decode1();
                 byte unk2 = cp.Decode1();
                 if (IncTrunkCount4(chr, use_maple_point)) {
-                    client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncTrunkCount_Done, client));
+                    chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncTrunkCount_Done, client));
                 } else {
                     // failed
                 }
@@ -180,7 +180,7 @@ public class ReqCCashShop {
             // 0x1F
             case CashItemReq_BuyPackage: {
                 // not coded
-                client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_SetWish_Failed, client));
+                chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_SetWish_Failed, client));
                 return true;
             }
             // 0x21
@@ -253,7 +253,7 @@ public class ReqCCashShop {
         Item item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
-            client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, client, new ResCCashShop.CashItemStruct(item)));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, client, new ResCCashShop.CashItemStruct(item)));
             usePoint(chr, use_maple_point, cashitem.getPrice());
             checkBuyDestroy(chr, item.getItemId());
         } else {
@@ -290,7 +290,7 @@ public class ReqCCashShop {
         Item item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
-            client.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_FreeCashItem_Done, client, new ResCCashShop.CashItemStruct(item)));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_FreeCashItem_Done, client, new ResCCashShop.CashItemStruct(item)));
         } else {
             DebugLogger.ErrorLog("BuyFreeItem : ERR");
         }
@@ -494,7 +494,7 @@ public class ReqCCashShop {
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && WzDataStorage.ITEM.check(item.getItemId())) {
             chr.getCashInventory().removeFromInventory(box_item);
             chr.getCashInventory().addToInventory(item);
-            client.SendPacket(ResCCashShop.OnCashItemGachaponResult(box_item, item, client));
+            chr.SendPacket(ResCCashShop.OnCashItemGachaponResult(box_item, item, client));
         }
 
         return true;

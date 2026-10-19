@@ -318,10 +318,10 @@ public class InventoryHandler {
     public static void OwlWarp(TacosClient client, int id, int map) {
         MapleCharacter chr = client.getPlayer();
         chr.updateInv();
-        if (client.getPlayer().getMapId() >= 910000000 && client.getPlayer().getMapId() <= 910000022 && client.getPlayer().getPlayerShop() == null) {
+        if (chr.getMapId() >= 910000000 && chr.getMapId() <= 910000022 && chr.getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
                 final MapleMap mapp = chr.findMap(map);
-                client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
+                chr.changeMapPortal(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
                 List<HiredMerchant> objects;
                 switch (OWL_ID) {
@@ -348,28 +348,28 @@ public class InventoryHandler {
                         break;
                 }
                 if (merchant != null) {
-                    if (merchant.isOwner(client.getPlayer())) {
+                    if (merchant.isOwner(chr)) {
                         merchant.setOpen(false);
                         merchant.removeAllVisitors((byte) 16, (byte) 0);
-                        client.getPlayer().setPlayerShop(merchant);
-                        client.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(client.getPlayer(), merchant, false));
+                        chr.setPlayerShop(merchant);
+                        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
                     } else {
                         if (!merchant.isOpen() || !merchant.isAvailable()) {
-                            client.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
+                            chr.dropMessage(1, "This shop is in maintenance, please come by later.");
                         } else {
                             if (merchant.getFreeSlot() == -1) {
-                                client.getPlayer().dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
-                            } else if (merchant.isInBlackList(client.getPlayer().getName())) {
-                                client.getPlayer().dropMessage(1, "You have been banned from this store.");
+                                chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
+                            } else if (merchant.isInBlackList(chr.getName())) {
+                                chr.dropMessage(1, "You have been banned from this store.");
                             } else {
-                                client.getPlayer().setPlayerShop(merchant);
-                                merchant.addVisitor(client.getPlayer());
-                                client.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(client.getPlayer(), merchant, false));
+                                chr.setPlayerShop(merchant);
+                                merchant.addVisitor(chr);
+                                chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
                             }
                         }
                     }
                 } else {
-                    client.getPlayer().dropMessage(1, "This shop is in maintenance, please come by later.");
+                    chr.dropMessage(1, "This shop is in maintenance, please come by later.");
                 }
             }
         }

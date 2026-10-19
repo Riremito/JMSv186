@@ -1369,7 +1369,7 @@ public class ReqCUser {
         // npc from wz.
         NpcInfo npc_info = WzXML.NPC.getNpcInfo(npc_script_id);
         if (npc_info.getTrunkGet() != 0 || npc_info.getTrunkPut() != 0) {
-            TacosStorage storage = client.getPlayer().getStorage();
+            TacosStorage storage = chr.getStorage();
             storage.setNpcId(npc_script_id);
             storage.setFeeGet(npc_info.getTrunkGet());
             storage.setFeePut(npc_info.getTrunkPut());

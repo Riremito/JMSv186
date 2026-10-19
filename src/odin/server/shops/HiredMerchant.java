@@ -261,14 +261,14 @@ public class HiredMerchant extends TacosMerchant {
 
         if (MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
             pItem.bundles -= quantity; // Number remaining in the store
-            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), client.getPlayer().getName()));
+            bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), chr.getName()));
 
             final int gainmeso = getMeso() + (pItem.price * quantity);
             setMeso(gainmeso - GameConstants.EntrustedStoreTax(gainmeso));
-            client.getPlayer().gainMeso(-pItem.price * quantity, false);
+            chr.gainMeso(-pItem.price * quantity, false);
             saveItems();
         } else {
-            client.getPlayer().dropMessage(1, "Your inventory is full.");
+            chr.dropMessage(1, "Your inventory is full.");
             chr.updateInv();
         }
     }

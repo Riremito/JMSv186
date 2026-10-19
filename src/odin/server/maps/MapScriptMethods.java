@@ -445,12 +445,12 @@ public class MapScriptMethods {
         switch (onUserEnter.fromString(scriptName)) {
             case cygnusTest:
             case cygnusJobTutorial: {
-                showIntro(client, "Effect/Direction.img/cygnusJobTutorial/Scene" + (client.getPlayer().getMapId() - 913040100));
+                showIntro(client, "Effect/Direction.img/cygnusJobTutorial/Scene" + (chr.getMapId() - 913040100));
                 break;
             }
             case shammos_Enter: { //nothing to go on inside the map
-                client.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((client.getPlayer().getMapId() % 1000) / 100)));
-                if (client.getPlayer().getMapId() == 921120500) {
+                chr.SendPacket(ResCWvsContext.sendString(1, "shammos_LastStage", String.valueOf((chr.getMapId() % 1000) / 100)));
+                if (chr.getMapId() == 921120500) {
                     TacosScriptNPC.getInstance().dispose(client);
                     TacosScriptQuest.getInstance().dispose(client);
                     TacosScriptNPC.getInstance().start(client, 2022006);
@@ -461,18 +461,18 @@ public class MapScriptMethods {
                 break;
             }
             case PRaid_W_Enter: {
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_expPenalty", "0"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_ElapssedTimeAtField", "0"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Point", "-1"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Bonus", "-1"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Total", "-1"));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_Team", ""));
-                client.SendPacket(ResCWvsContext.sendString(1, "PRaid_IsRevive", "0"));
-                client.getPlayer().writePoint("PRaid_Point", "-1");
-                client.getPlayer().writeStatus("Red_Stage", "1");
-                client.getPlayer().writeStatus("Blue_Stage", "1");
-                client.getPlayer().writeStatus("redTeamDamage", "0");
-                client.getPlayer().writeStatus("blueTeamDamage", "0");
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_expPenalty", "0"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_ElapssedTimeAtField", "0"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Point", "-1"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Bonus", "-1"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Total", "-1"));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_Team", ""));
+                chr.SendPacket(ResCWvsContext.sendString(1, "PRaid_IsRevive", "0"));
+                chr.writePoint("PRaid_Point", "-1");
+                chr.writeStatus("Red_Stage", "1");
+                chr.writeStatus("Blue_Stage", "1");
+                chr.writeStatus("redTeamDamage", "0");
+                chr.writeStatus("blueTeamDamage", "0");
                 break;
             }
             case PRaid_D_Enter:
@@ -507,17 +507,17 @@ public class MapScriptMethods {
             case mirrorCave:
             case babyPigMap:
             case evanleaveD: {
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
             case dojang_Msg: {
-                client.getPlayer().getMap().startMapEffect(mulungEffects[Randomizer.nextInt(mulungEffects.length)], 5120024);
+                chr.getMap().startMapEffect(mulungEffects[Randomizer.nextInt(mulungEffects.length)], 5120024);
                 break;
             }
             case dojang_1st: {
-                client.getPlayer().writeMulungEnergy();
+                chr.writeMulungEnergy();
                 break;
             }
             case undomorphdarco:
@@ -526,50 +526,50 @@ public class MapScriptMethods {
             }
             case goAdventure: {
                 // BUG in MSEA v.91, so let's skip this part.
-                showIntro(client, "Effect/Direction3.img/goAdventure/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/goAdventure/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case crash_Dragon:
-                showIntro(client, "Effect/Direction4.img/crash/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/crash/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case getDragonEgg:
-                showIntro(client, "Effect/Direction4.img/getDragonEgg/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/getDragonEgg/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case meetWithDragon:
-                showIntro(client, "Effect/Direction4.img/meetWithDragon/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/meetWithDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case PromiseDragon:
-                showIntro(client, "Effect/Direction4.img/PromiseDragon/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction4.img/PromiseDragon/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             case evanPromotion:
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 900090000:
-                        data = "Effect/Direction4.img/promotion/Scene0" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction4.img/promotion/Scene0" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 900090001:
                         data = "Effect/Direction4.img/promotion/Scene1";
                         break;
                     case 900090002:
-                        data = "Effect/Direction4.img/promotion/Scene2" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction4.img/promotion/Scene2" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 900090003:
                         data = "Effect/Direction4.img/promotion/Scene3";
                         break;
                     case 900090004:
-                        client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                        client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                        chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                        chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
                         final MapleMap mapto = chr.findMap(900010000);
-                        client.getPlayer().changeMapPortal(mapto, mapto.getPortal(0));
+                        chr.changeMapPortal(mapto, mapto.getPortal(0));
                         return;
                 }
                 showIntro(client, data);
                 break;
             case TD_MC_title: {
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("temaD/enter/mushCatle").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("temaD/enter/mushCatle").build()));
                 break;
             }
             case explorationPoint: {
@@ -577,8 +577,8 @@ public class MapScriptMethods {
             }
             case go10000:
             case go1020000:
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
             case go20000:
             case go30000:
@@ -591,31 +591,31 @@ public class MapScriptMethods {
             case go1010200:
             case go1010300:
             case go1010400: {
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("maplemap/enter/" + client.getPlayer().getMapId()).build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("maplemap/enter/" + chr.getMapId()).build()));
                 break;
             }
             case goArcher: {
-                showIntro(client, "Effect/Direction3.img/archer/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/archer/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goPirate: {
-                showIntro(client, "Effect/Direction3.img/pirate/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/pirate/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goRogue: {
-                showIntro(client, "Effect/Direction3.img/rogue/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/rogue/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goMagician: {
-                showIntro(client, "Effect/Direction3.img/magician/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/magician/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goSwordman: {
-                showIntro(client, "Effect/Direction3.img/swordman/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/swordman/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case goLith: {
-                showIntro(client, "Effect/Direction3.img/goLith/Scene" + (client.getPlayer().getGender() == 0 ? "0" : "1"));
+                showIntro(client, "Effect/Direction3.img/goLith/Scene" + (chr.getGender() == 0 ? "0" : "1"));
                 break;
             }
             case TD_MC_Openning: {
@@ -627,21 +627,21 @@ public class MapScriptMethods {
                 break;
             }
             case aranDirection: {
-                switch (client.getPlayer().getMapId()) {
+                switch (chr.getMapId()) {
                     case 914090010:
                         data = "Effect/Direction1.img/aranTutorial/Scene0";
                         break;
                     case 914090011:
-                        data = "Effect/Direction1.img/aranTutorial/Scene1" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction1.img/aranTutorial/Scene1" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 914090012:
-                        data = "Effect/Direction1.img/aranTutorial/Scene2" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction1.img/aranTutorial/Scene2" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 914090013:
                         data = "Effect/Direction1.img/aranTutorial/Scene3";
                         break;
                     case 914090100:
-                        data = "Effect/Direction1.img/aranTutorial/HandedPoleArm" + (client.getPlayer().getGender() == 0 ? "0" : "1");
+                        data = "Effect/Direction1.img/aranTutorial/HandedPoleArm" + (chr.getGender() == 0 ? "0" : "1");
                         break;
                     case 914090200:
                         data = "Effect/Direction1.img/aranTutorial/Maha";
@@ -651,47 +651,47 @@ public class MapScriptMethods {
                 break;
             }
             case iceCave: {
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000014), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000015), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
-                client.getPlayer().changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
-                client.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.changeSkillLevel(SkillFactory.getSkill(20000014), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000015), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
+                chr.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 chr.updateStat();
                 break;
             }
             case rienArrow: {
-                if (client.getPlayer().getInfoQuest(21019).equals("miss=o;helper=clear")) {
-                    client.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
-                    client.SendPacket(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
+                if (chr.getInfoQuest(21019).equals("miss=o;helper=clear")) {
+                    chr.updateInfoQuest(21019, "miss=o;arr=o;helper=clear");
+                    chr.SendPacket(ResCUserLocal.AranTutInstructionalBalloon("Effect/OnUserEff.img/guideEffect/aranTutorial/tutorialArrow3"));
                 }
                 break;
             }
             case rien: {
-                if (client.getPlayer().getQuestStatus(21101) == 2 && client.getPlayer().getInfoQuest(21019).equals("miss=o;arr=o;helper=clear")) {
-                    client.getPlayer().updateInfoQuest(21019, "miss=o;arr=o;ck=1;helper=clear");
+                if (chr.getQuestStatus(21101) == 2 && chr.getInfoQuest(21019).equals("miss=o;arr=o;helper=clear")) {
+                    chr.updateInfoQuest(21019, "miss=o;arr=o;ck=1;helper=clear");
                 }
-                client.SendPacket(ResCUserLocal.SetStandAloneMode(false));
-                client.SendPacket(ResCUserLocal.SetDirectionMode(false));
+                chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
+                chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                 break;
             }
             case check_count: {
-                if (client.getPlayer().getMapId() == 950101010 && (!client.getPlayer().haveItem(4001433, 20) || client.getPlayer().getLevel() < 50)) { //ravana Map
+                if (chr.getMapId() == 950101010 && (!chr.haveItem(4001433, 20) || chr.getLevel() < 50)) { //ravana Map
                     final MapleMap mapp = chr.findMap(950101100); //exit Map
-                    client.getPlayer().changeMapPortal(mapp, mapp.getPortal(0));
+                    chr.changeMapPortal(mapp, mapp.getPortal(0));
                 }
                 break;
             }
             case Massacre_first: { //sends a whole bunch of shit.
-                if (client.getPlayer().getPyramidSubway() == null) {
-                    client.getPlayer().setPyramidSubway(new Event_PyramidSubway(client.getPlayer()));
+                if (chr.getPyramidSubway() == null) {
+                    chr.setPyramidSubway(new Event_PyramidSubway(chr));
                 }
                 break;
             }
             case Massacre_result: { //clear, give exp, etc.
-                client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
+                chr.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/fail").build()));
                 break;
             }
             default: {

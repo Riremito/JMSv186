@@ -146,7 +146,7 @@ public class ItemMakerHandler {
                     }
                     final int randGemGiven = getRandomGem(gem.getRandomReward());
 
-                    if (client.getPlayer().getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
+                    if (chr.getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
                         DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 4");
                         return false;
                     }
@@ -239,13 +239,13 @@ public class ItemMakerHandler {
                     final Equip toGive = (Equip) ii.getEquipById(toCreate);
 
                     if (stimulator || numEnchanter > 0) {
-                        if (client.getPlayer().haveItem(create.getStimulator(), 1, false, true)) {
+                        if (chr.haveItem(create.getStimulator(), 1, false, true)) {
                             ii.randomizeStats(toGive);
                             MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
                         }
                         for (int i = 0; i < numEnchanter; i++) {
                             int enchant = cp.Decode4();
-                            if (client.getPlayer().haveItem(enchant, 1, false, true)) {
+                            if (chr.haveItem(enchant, 1, false, true)) {
                                 final Map<String, Byte> stats = ii.getItemMakeStats(enchant);
                                 if (stats != null) {
                                     addEnchantStats(stats, toGive);
