@@ -18,9 +18,9 @@
  */
 package tacos.script.portal;
 
-import odin.client.MapleCharacter;
-import odin.server.maps.MapleMap;
 import tacos.constants.TacosConstants;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.TacosPortal;
 
 /**
@@ -41,8 +41,8 @@ public class TacosSharedPortal {
         this.target_portal_name = target_portal_name;
     }
 
-    private boolean usePortal(MapleCharacter chr, int map_id, String portal_name) {
-        MapleMap map_to = chr.findMap(map_id);
+    private boolean usePortal(TacosCharacter chr, int map_id, String portal_name) {
+        TacosMap map_to = chr.findMap(map_id);
         if (map_to == null) {
             return false;
         }
@@ -54,11 +54,11 @@ public class TacosSharedPortal {
         return true;
     }
 
-    public boolean enter(MapleCharacter chr, TacosPortal portal_from) {
+    public boolean enter(TacosCharacter chr, TacosPortal portal_from) {
         if (chr == null) {
             return false;
         }
-        MapleMap map_from = chr.getMap();
+        TacosMap map_from = chr.getMap();
         if (map_from == null) {
             return false;
         }
@@ -71,7 +71,7 @@ public class TacosSharedPortal {
         return usePortal(chr, this.target_map_id, this.target_portal_name);
     }
 
-    public boolean leave(MapleCharacter chr) {
+    public boolean leave(TacosCharacter chr) {
         if (chr == null) {
             return false;
         }

@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosCharacter;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -49,7 +48,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserEmotionLocal(MapleCharacter chr, int expression) {
+    public static ServerPacket UserEmotionLocal(TacosCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotionLocal);
 
         sp.EncodeBuffer(RD_CUser.Emotion(expression));
@@ -223,7 +222,7 @@ public class ResCUserLocal {
         return sp;
     }
 
-    public static ServerPacket UserQuestResult(MapleCharacter player, int quest, int npc, OpsQuest oq) {
+    public static ServerPacket UserQuestResult(TacosCharacter player, int quest, int npc, OpsQuest oq) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserQuestResult);
 
         sp.Encode1(oq.get());

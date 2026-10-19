@@ -19,9 +19,9 @@
 package tacos.server.map.object;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
 import java.awt.Rectangle;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleReactorStats;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCReactorPool;
@@ -40,7 +40,7 @@ public class TacosReactor extends TacosMapObject {
     private MapleReactorStats stats;
     private boolean alive = true;
     private byte state;
-    private MapleMap map;
+    private TacosMap map;
     private boolean timerActive;
 
     public TacosReactor(int id) {
@@ -161,12 +161,12 @@ public class TacosReactor extends TacosMapObject {
     }
 
     // used by script
-    public void setMap(MapleMap map) {
+    public void setMap(TacosMap map) {
         this.map = map;
     }
 
     // used by script
-    public MapleMap getMap() {
+    public TacosMap getMap() {
         return this.map;
     }
 

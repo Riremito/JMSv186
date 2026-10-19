@@ -18,8 +18,8 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
+import tacos.client.TacosCharacter;
 import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.ShopDispatch;
@@ -65,7 +65,7 @@ public class RD_CUser {
     }
 
     // CUserRemote::Init
-    public static byte[] CUserRemote_Init(MapleCharacter chr) {
+    public static byte[] CUserRemote_Init(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         Object shop = chr.getPlayerShop();
@@ -185,7 +185,7 @@ public class RD_CUser {
         return data.getBytes();
     }
 
-    public static byte[] CUserRemote_Init_JMS302(MapleCharacter chr) {
+    public static byte[] CUserRemote_Init_JMS302(TacosCharacter chr) {
         MapleGuild guild = null;
         Object shop = chr.getPlayerShop();
         if (0 < chr.getGuildId()) {
@@ -309,7 +309,7 @@ public class RD_CUser {
     }
 
     // SecondaryStat::DecodeForRemote
-    public static byte[] SecondaryStat_EncodeForRemote_JMS147(MapleCharacter chr) {
+    public static byte[] SecondaryStat_EncodeForRemote_JMS147(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         for (int empty_mask : TacosBuff.getBuffBuffer()) {
@@ -326,7 +326,7 @@ public class RD_CUser {
         return data.getBytes();
     }
 
-    public static byte[] SecondaryStat_EncodeForRemote_JMS302(MapleCharacter chr) {
+    public static byte[] SecondaryStat_EncodeForRemote_JMS302(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.EncodeZeroBytes(32);

@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosReactor;
-import odin.client.MapleCharacter;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
@@ -60,7 +61,7 @@ public class AramiaFireWorks {
         return instance;
     }
 
-    public void giveKegs(MapleCharacter player, int kegs) {
+    public void giveKegs(TacosCharacter player, int kegs) {
         this.kegs += kegs;
         if (this.kegs >= MAX_KEGS) {
             this.kegs = 0;
@@ -68,7 +69,7 @@ public class AramiaFireWorks {
         }
     }
 
-    private void broadcastServer(MapleCharacter player, int itemid) {
+    private void broadcastServer(TacosCharacter player, int itemid) {
         player.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("<Channel " + player.getClient().getChannelId() + "> " + "MAP_NAME" + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!").item_id(itemid).build()));
     }
 
@@ -76,17 +77,17 @@ public class AramiaFireWorks {
         return (short) ((kegs / MAX_KEGS) * 10000);
     }
 
-    private void broadcastEvent(MapleCharacter player) {
+    private void broadcastEvent(TacosCharacter player) {
         broadcastServer(player, KEG_ID);
         startEvent(player.findMap(100000200));
     }
 
-    private void startEvent(MapleMap map) {
+    private void startEvent(TacosMap map) {
         map.startMapEffect("Who's going crazy with the fireworks?", 5121010);
         spawnMonster(map);
     }
 
-    private void spawnMonster(MapleMap map) {
+    private void spawnMonster(TacosMap map) {
         Point pos;
 
         for (int i = 0; i < arrayMob.length; i++) {
@@ -95,10 +96,10 @@ public class AramiaFireWorks {
         }
     }
 
-    public void giveSuns(MapleCharacter player, int kegs) {
+    public void giveSuns(TacosCharacter player, int kegs) {
         this.sunshines += kegs;
         //have to broadcast a Reactor?
-        MapleMap map = player.findMap(555000000);
+        TacosMap map = player.findMap(555000000);
         TacosReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_SUN / 6); gogo > 0; gogo -= (MAX_SUN / 6)) {
             switch (reactor.getState()) {
@@ -130,19 +131,19 @@ public class AramiaFireWorks {
         return (short) ((sunshines / MAX_SUN) * 10000);
     }
 
-    private void broadcastSun(MapleCharacter player) {
+    private void broadcastSun(TacosCharacter player) {
         broadcastServer(player, SUN_ID);
         startSun(player.findMap(970010000));
     }
 
-    private void startSun(MapleMap map) {
+    private void startSun(TacosMap map) {
         map.startMapEffect("The tree is bursting with sunshine!", 5121010);
         for (int i = 0; i < 3; i++) {
             spawnItem(map);
         }
     }
 
-    private void spawnItem(MapleMap map) {
+    private void spawnItem(TacosMap map) {
         Point pos;
 
         for (int i = 0; i < Randomizer.nextInt(5) + 10; i++) {
@@ -151,10 +152,10 @@ public class AramiaFireWorks {
         }
     }
 
-    public void giveDecs(MapleCharacter player, int kegs) {
+    public void giveDecs(TacosCharacter player, int kegs) {
         this.decorations += kegs;
         //have to broadcast a Reactor?
-        MapleMap map = player.findMap(555000000);
+        TacosMap map = player.findMap(555000000);
         TacosReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_DEC / 6); gogo > 0; gogo -= (MAX_DEC / 6)) {
             switch (reactor.getState()) {
@@ -186,19 +187,19 @@ public class AramiaFireWorks {
         return (short) ((decorations / MAX_DEC) * 10000);
     }
 
-    private void broadcastDec(MapleCharacter player) {
+    private void broadcastDec(TacosCharacter player) {
         broadcastServer(player, DEC_ID);
         startDec(player.findMap(555000000));
     }
 
-    private void startDec(MapleMap map) {
+    private void startDec(TacosMap map) {
         map.startMapEffect("The tree is bursting with snow!", 5120000);
         for (int i = 0; i < 3; i++) {
             spawnDec(map);
         }
     }
 
-    private void spawnDec(MapleMap map) {
+    private void spawnDec(TacosMap map) {
         Point pos;
 
         for (int i = 0; i < Randomizer.nextInt(10) + 40; i++) {

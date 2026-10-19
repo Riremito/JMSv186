@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import odin.handling.world.guild.MapleGuildResponse;
+import tacos.client.TacosCharacter;
 import odin.handling.world.guild.MapleGuild;
 import java.util.Iterator;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ClientPacket;
@@ -35,7 +35,7 @@ public class GuildHandler {
         byte unk1 = cp.Decode1();
         String from = cp.DecodeStr();
 
-        MapleCharacter cfrom = client.getChannelServer().getOnlinePlayers().findByName(from);
+        TacosCharacter cfrom = client.getChannelServer().getOnlinePlayers().findByName(from);
         if (cfrom != null) {
             cfrom.SendPacket(ResCWvsContext.denyGuildInvitation(client.getPlayer().getName()));
         }
@@ -78,7 +78,7 @@ public class GuildHandler {
     private static long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
     public static void Guild(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (System.currentTimeMillis() >= nextPruneTime) {
             Iterator<Invited> itr = invited.iterator();
             Invited inv;

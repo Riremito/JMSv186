@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosDrop;
+import tacos.client.TacosCharacter;
 import tacos.config.Region;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
@@ -78,7 +78,7 @@ public class ResCDropPool {
     }
 
     // CDropPool::OnDropLeaveField
-    public static ServerPacket DropLeaveField(TacosDrop drop, DropLeaveType lt, MapleCharacter chr, int pet_slot) {
+    public static ServerPacket DropLeaveField(TacosDrop drop, DropLeaveType lt, TacosCharacter chr, int pet_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropLeaveField);
 
         sp.Encode1(lt.get()); // leave type

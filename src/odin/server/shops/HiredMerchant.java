@@ -21,14 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import odin.client.inventory.Item;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
-import odin.client.MapleCharacter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
-import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
 import tacos.server.TacosWorld;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -63,7 +63,7 @@ public class HiredMerchant extends TacosMerchant {
     private long start;
 
     @SuppressWarnings("unchecked")
-    public HiredMerchant(MapleCharacter owner, int itemId, String desc) {
+    public HiredMerchant(TacosCharacter owner, int itemId, String desc) {
         super(owner);
         this.setPosition(owner.getPosition());
         this.ownerName = owner.getName();
@@ -151,7 +151,7 @@ public class HiredMerchant extends TacosMerchant {
         return itemId;
     }
 
-    public boolean isOwner(MapleCharacter chr) {
+    public boolean isOwner(TacosCharacter chr) {
         return chr.getId() == getOwnerId() && chr.getName().equals(ownerName);
     }
 
@@ -162,11 +162,11 @@ public class HiredMerchant extends TacosMerchant {
         return pass;
     }
 
-    public MapleCharacter getMCOwner() {
+    public TacosCharacter getMCOwner() {
         return getMap().getPlayerById(getOwnerId());
     }
 
-    public MapleMap getMap() {
+    public TacosMap getMap() {
         return TacosWorld.find(0).getChannelServer(channel).findMap(map);
     }
 
@@ -244,7 +244,7 @@ public class HiredMerchant extends TacosMerchant {
     }
 
     public void buy(TacosClient client, int item, short quantity) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MaplePlayerShopItem pItem = items.get(item);
         Item shopItem = pItem.item;
         Item newItem = shopItem.copy();

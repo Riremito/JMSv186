@@ -18,13 +18,13 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosNpc;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
-import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ClientPacketHeader;
@@ -36,11 +36,11 @@ import tacos.packet.ClientPacketHeader;
 public class ReqCNpcPool {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return false;
         }

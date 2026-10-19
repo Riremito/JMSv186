@@ -18,8 +18,9 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosMonster;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -28,7 +29,6 @@ import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCMobPool;
 import odin.server.Randomizer;
 import odin.server.life.MobSkill;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.config.Config;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -46,12 +46,12 @@ import tacos.wz.WzXML;
 public class ReqCMobPool {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -120,7 +120,7 @@ public class ReqCMobPool {
         return false;
     }
 
-    public static boolean OnMove(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMove(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         byte unk1 = Config.GreaterOrEqual(Region.JMS, 302) ? cp.Decode1() : 0;
         short moveid = cp.Decode2();
         boolean bNextAttackPossible = cp.Decode1() > 0;
@@ -160,7 +160,7 @@ public class ReqCMobPool {
         return true;
     }
 
-    public static void MobUsesSkill(MapleCharacter chr, TacosMonster monster, short moveid, boolean useSkill) {
+    public static void MobUsesSkill(TacosCharacter chr, TacosMonster monster, short moveid, boolean useSkill) {
         int realskill = 0;
         int level = 0;
 
@@ -199,19 +199,19 @@ public class ReqCMobPool {
         chr.SendPacket(ResCMobPool.MobCtrlAck(monster, moveid, realskill, level));
     }
 
-    public static boolean OnMobApplyCtrl(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobApplyCtrl(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         if (monster.getOwnerId() == chr.getId()) {
             monster.setNextAttackPossible(true);
         }
         return true;
     }
 
-    public static boolean OnMobDropPickUpRequest(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobDropPickUpRequest(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobDropPickUpRequest : not coded.");
         return true;
     }
 
-    public static boolean OnMobHitByObstacle(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobHitByObstacle(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int nDamage = cp.Decode4();
 
         DebugLogger.ErrorLog("OnMobHitByObstacle : not coded.");
@@ -222,7 +222,7 @@ public class ReqCMobPool {
         タイラス護衛
         mod id : 9300093
      */
-    public static boolean OnMobHitByMob(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobHitByMob(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_dwCharacterId = cp.Decode4();
         int m_dwMobID = cp.Decode4();
 
@@ -249,7 +249,7 @@ public class ReqCMobPool {
         ダークスター等
         mob id : 8500004
      */
-    public static boolean OnMobSelfDestruct(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobSelfDestruct(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int nActionType = monster.getStats().getSelfD();
         if (nActionType == -1) {
             return false;
@@ -270,7 +270,7 @@ public class ReqCMobPool {
         map id : 921120100
         mob id : 9300275
      */
-    public static boolean OnMobAttackMob(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobAttackMob(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_dwCharacterId = cp.Decode4();
         int m_dwMobID = cp.Decode4();
 
@@ -290,17 +290,17 @@ public class ReqCMobPool {
         return true;
     }
 
-    public static boolean OnMobSkillDelayEnd(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobSkillDelayEnd(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobSkillDelayEnd : not coded");
         return true;
     }
 
-    public static boolean OnMobTimeBombEnd(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobTimeBombEnd(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobTimeBombEnd : not coded");
         return true;
     }
 
-    public static boolean OnMobEscortCollision(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobEscortCollision(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         int m_nCurrentDestIndex = cp.Decode4();
 
         DebugLogger.DebugLog("OnMobEscortCollision : ...");
@@ -348,13 +348,13 @@ public class ReqCMobPool {
         return true;
     }
 
-    public static boolean OnMobRequestEscortInfo(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobRequestEscortInfo(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.DebugLog("OnMobRequestEscortInfo : ...");
         chr.SendPacket(ResCMobPool.MobRequestResultEscortInfo(monster, map));
         return true;
     }
 
-    public static boolean OnMobEscortStopEndRequest(MapleCharacter chr, ClientPacket cp, TacosMonster monster, MapleMap map) {
+    public static boolean OnMobEscortStopEndRequest(TacosCharacter chr, ClientPacket cp, TacosMonster monster, TacosMap map) {
         DebugLogger.ErrorLog("OnMobEscortStopEndRequest : not coded");
         return true;
     }

@@ -19,9 +19,9 @@
 package tacos.script;
 
 import java.util.regex.Pattern;
+import tacos.client.TacosCharacter;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import tacos.odin.OdinPortalPlayerInteraction;
@@ -69,7 +69,7 @@ public class TacosScriptPortal extends TacosScript {
         return script.enter(ppi);
     }
 
-    public boolean enterHook(MapleCharacter chr, TacosPortal portal) {
+    public boolean enterHook(TacosCharacter chr, TacosPortal portal) {
         // Meister ville out
         if (portal.getScriptName().equals("out_profession")) {
             chr.getArdentmillPortal().leave(chr);

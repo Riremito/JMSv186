@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.guild;
 
 import java.util.List;
+import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.server.TacosWorld;
 import tacos.config.Region;
@@ -174,7 +174,7 @@ public class MapleGuild {
         return leader;
     }
 
-    public MapleCharacter getLeader(TacosClient client) {
+    public TacosCharacter getLeader(TacosClient client) {
         return client.getChannelServer().getOnlinePlayers().findById(leader);
     }
 
@@ -565,8 +565,8 @@ public class MapleGuild {
     // so this will be running mostly on a channel server, unlike the rest
     // of the class
     public static MapleGuildResponse sendInvite(TacosClient client, String targetName) {
-        MapleCharacter chr = client.getPlayer();
-        MapleCharacter mc = client.getChannelServer().getOnlinePlayers().findByName(targetName);
+        TacosCharacter chr = client.getPlayer();
+        TacosCharacter mc = client.getChannelServer().getOnlinePlayers().findByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }

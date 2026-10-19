@@ -20,7 +20,6 @@ package tacos.packet.response.data;
 
 import odin.client.BuddylistEntry;
 import tacos.server.map.object.TacosPet;
-import odin.client.MapleCharacter;
 import java.util.Collection;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosForcedStat;
@@ -87,7 +86,7 @@ public class RD_CWvsContext {
     }
 
     // CWvsContext::CFriend::Reset
-    public static byte[] CFriend_Reset(MapleCharacter chr) {
+    public static byte[] CFriend_Reset(TacosCharacter chr) {
         Collection<BuddylistEntry> friend_list = chr.getBuddylist().getBuddies();
 
         ServerPacket data_friend = new ServerPacket();
@@ -117,7 +116,7 @@ public class RD_CWvsContext {
     }
     
         // CUIUserInfo::SetMultiPetInfo
-    public static byte[] CUIUserInfo_SetMultiPetInfo_GMS95(MapleCharacter chr) {
+    public static byte[] CUIUserInfo_SetMultiPetInfo_GMS95(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         // GMS does not have first pet checks inside this function.
@@ -134,7 +133,7 @@ public class RD_CWvsContext {
     }
 
     // CUIUserInfo::SetPetInfo (KMS)
-    public static byte[] CUIUserInfo_SetPetInfo(MapleCharacter chr) {
+    public static byte[] CUIUserInfo_SetPetInfo(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         for (int i = 0; i < 4; i++) {
@@ -157,7 +156,7 @@ public class RD_CWvsContext {
         return data.getBytes();
     }
 
-    public static byte[] CUIUserInfo_SetPetInfo_JMS131(MapleCharacter chr, TacosPet pet) {
+    public static byte[] CUIUserInfo_SetPetInfo_JMS131(TacosCharacter chr, TacosPet pet) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(pet.getPetItemId()); // dwTemplateID

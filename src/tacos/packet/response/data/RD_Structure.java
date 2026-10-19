@@ -18,8 +18,8 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import odin.server.shops.ShopDispatch;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacket;
 
 /**
@@ -29,7 +29,7 @@ import tacos.packet.ServerPacket;
 public class RD_Structure {
 
     // addAnnounceBox
-    public static byte[] AnnounceBox(MapleCharacter chr) {
+    public static byte[] AnnounceBox(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         if (chr.getPlayerShop() != null && ShopDispatch.isOwner(chr.getPlayerShop(), chr) && ShopDispatch.getShopType(chr.getPlayerShop()) != 1 && ShopDispatch.isAvailable(chr.getPlayerShop())) {

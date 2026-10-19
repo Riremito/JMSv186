@@ -19,8 +19,8 @@
 package tacos.packet.request;
 
 import java.util.ArrayList;
+import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -45,7 +45,7 @@ import tacos.server.TacosITC;
 public class ReqCITC {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online (ITC).");
             return false;
@@ -73,7 +73,7 @@ public class ReqCITC {
         return false;
     }
 
-    public static boolean OnITCItemRequest(TacosClient client, MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnITCItemRequest(TacosClient client, TacosCharacter chr, ClientPacket cp) {
         MTSCart cart = MTSStorage.getInstance().getCart(chr.getId());
         byte req = cp.Decode1();
         OpsITC ops_req = OpsITC.find(req);
@@ -347,7 +347,7 @@ public class ReqCITC {
     }
 
     public static void MTSUpdate(TacosClient client, MTSCart cart) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         chr.modifyCSPoints(1, MTSStorage.getInstance().getCart(chr.getId()).getSetOwedNX(), false);
         client.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_GetNotifyCancelWishResult));
         doMTSPackets(client, cart);

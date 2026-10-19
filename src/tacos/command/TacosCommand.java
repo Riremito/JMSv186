@@ -18,7 +18,7 @@
  */
 package tacos.command;
 
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -26,7 +26,7 @@ import odin.client.MapleCharacter;
  */
 public class TacosCommand {
 
-    public static boolean executeCommand(MapleCharacter chr, String message) {
+    public static boolean executeCommand(TacosCharacter chr, String message) {
         TacosCommander dcmd = new TacosCommander(message);
 
         if (!dcmd.checkPrefix()) {

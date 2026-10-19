@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.constants.GameConstants;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosMist;
 import java.awt.Point;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
-import odin.client.MapleCharacter;
 import odin.client.status.MonsterStatus;
 import java.util.EnumMap;
 import tacos.wz.MobWz.MobBanInfo;
@@ -107,7 +107,7 @@ public class MobSkill {
         this.limit = limit;
     }
 
-    public void applyEffect(MapleCharacter player, TacosMonster monster, boolean skill) {
+    public void applyEffect(TacosCharacter player, TacosMonster monster, boolean skill) {
         Map<MonsterStatus, Integer> stats = new EnumMap<>(MonsterStatus.class);
         List<Integer> reflection = new LinkedList<>();
 
@@ -163,7 +163,7 @@ public class MobSkill {
                     MobBanInfo info = monster.getStats().getBanishInfo();
                     if (info != null) {
                         if (lt != null && rb != null && skill && player != null) {
-                            for (MapleCharacter chr : getPlayersInRange(monster, player)) {
+                            for (TacosCharacter chr : getPlayersInRange(monster, player)) {
                                 chr.changeMapBanish(info.getField(), info.getPortal(), info.getBanMsg());
                             }
                         } else if (player != null) {
@@ -330,9 +330,9 @@ public class MobSkill {
         return bounds;
     }
 
-    private List<MapleCharacter> getPlayersInRange(TacosMonster monster, MapleCharacter player) {
+    private List<TacosCharacter> getPlayersInRange(TacosMonster monster, TacosCharacter player) {
         Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-        List<MapleCharacter> players = new ArrayList<>();
+        List<TacosCharacter> players = new ArrayList<>();
         players.add(player);
         return monster.getMap().getPlayersInRectAndInList(bounds, players);
     }

@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world.family;
 
 import java.util.List;
+import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.Iterator;
-import odin.client.MapleCharacter;
 import tacos.database.query.DQ_Characters;
 import tacos.database.query.DQ_Families;
 import java.util.ArrayList;
@@ -229,7 +229,7 @@ public class MapleFamily {
         return 0;
     }
 
-    public MapleFamilyCharacter addFamilyMemberInfo(MapleCharacter mc, int seniorid, int junior1, int junior2) {
+    public MapleFamilyCharacter addFamilyMemberInfo(TacosCharacter mc, int seniorid, int junior1, int junior2) {
         MapleFamilyCharacter ret = new MapleFamilyCharacter(mc, id, seniorid, junior1, junior2);
         members.put(mc.getId(), ret);
         ret.resetPedigree(this);
@@ -280,7 +280,7 @@ public class MapleFamily {
         this.notice = notice;
     }
 
-    public void memberLevelJobUpdate(MapleCharacter mgc) {
+    public void memberLevelJobUpdate(TacosCharacter mgc) {
         MapleFamilyCharacter member = getMFC(mgc.getId());
         if (member != null) {
             int old_level = member.getLevel();

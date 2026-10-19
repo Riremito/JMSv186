@@ -19,8 +19,8 @@
 package odin.server.shops;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.ServerPacket;
 
@@ -127,7 +127,7 @@ public final class ShopDispatch {
         throw new IllegalArgumentException("isOpen: unknown shop type: " + o);
     }
 
-    public static void addVisitor(Object o, MapleCharacter visitor) {
+    public static void addVisitor(Object o, TacosCharacter visitor) {
         if (o instanceof HiredMerchant) {
             ((HiredMerchant) o).addVisitor(visitor);
         } else if (o instanceof MaplePlayerShop) {
@@ -139,7 +139,7 @@ public final class ShopDispatch {
         }
     }
 
-    public static void removeVisitor(Object o, MapleCharacter visitor) {
+    public static void removeVisitor(Object o, TacosCharacter visitor) {
         if (o instanceof HiredMerchant) {
             ((HiredMerchant) o).removeVisitor(visitor);
         } else if (o instanceof MaplePlayerShop) {
@@ -151,7 +151,7 @@ public final class ShopDispatch {
         }
     }
 
-    public static byte getVisitorSlot(Object o, MapleCharacter visitor) {
+    public static byte getVisitorSlot(Object o, TacosCharacter visitor) {
         if (o instanceof HiredMerchant) {
             return ((HiredMerchant) o).getVisitorSlot(visitor);
         } else if (o instanceof MaplePlayerShop) {
@@ -196,7 +196,7 @@ public final class ShopDispatch {
         throw new IllegalArgumentException("getDescription: unknown shop type: " + o);
     }
 
-    public static List<SimpleImmutableEntry<Byte, MapleCharacter>> getVisitors(Object o) {
+    public static List<SimpleImmutableEntry<Byte, TacosCharacter>> getVisitors(Object o) {
         if (o instanceof HiredMerchant) {
             return ((HiredMerchant) o).getVisitors();
         } else if (o instanceof MaplePlayerShop) {
@@ -264,7 +264,7 @@ public final class ShopDispatch {
         throw new IllegalArgumentException("getItemId: unknown shop type: " + o);
     }
 
-    public static boolean isOwner(Object o, MapleCharacter chr) {
+    public static boolean isOwner(Object o, TacosCharacter chr) {
         if (o instanceof HiredMerchant) {
             return ((HiredMerchant) o).isOwner(chr);
         } else if (o instanceof MaplePlayerShop) {
@@ -286,7 +286,7 @@ public final class ShopDispatch {
         throw new IllegalArgumentException("getPassword: unknown shop type: " + o);
     }
 
-    public static MapleCharacter getMCOwner(Object o) {
+    public static TacosCharacter getMCOwner(Object o) {
         if (o instanceof HiredMerchant) {
             return ((HiredMerchant) o).getMCOwner();
         } else if (o instanceof MaplePlayerShop) {

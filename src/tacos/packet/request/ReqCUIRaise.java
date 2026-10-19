@@ -19,14 +19,14 @@
 package tacos.packet.request;
 
 import java.util.List;
-import odin.client.MapleCharacter;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
-import odin.server.maps.MapleMap;
 import odin.server.quest.MapleQuest;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -44,13 +44,13 @@ import tacos.packet.response.builder.PB_Message;
 public class ReqCUIRaise {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -81,7 +81,7 @@ public class ReqCUIRaise {
     }
 
     // CUIRaiseWndBase::OnCreate
-    public static boolean OnRaiseRefesh(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnRaiseRefesh(TacosCharacter chr, ClientPacket cp) {
         short nQuestID = cp.Decode2();
         int uQuestID = Short.toUnsignedInt(nQuestID);
 
@@ -103,7 +103,7 @@ public class ReqCUIRaise {
 
     // CUIRaiseWndBase::CUIRaiseWndBase
     // CUIRaiseWndBase::~CUIRaiseWndBase
-    public static boolean OnRaiseUIState(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnRaiseUIState(TacosCharacter chr, ClientPacket cp) {
         int nQuestID = cp.Decode4();
         byte state = cp.Decode1(); // open or close.
 
@@ -125,7 +125,7 @@ public class ReqCUIRaise {
     }
 
     // CUIRaiseWnd::SendPutItem
-    public static boolean OnRaiseIncExp(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnRaiseIncExp(TacosCharacter chr, ClientPacket cp) {
         // KMST330 & JMS187
         short nSlotPosition = cp.Decode2();
         int nItemID = cp.Decode4();
@@ -178,7 +178,7 @@ public class ReqCUIRaise {
     }
 
     // CUIRaisePieceWnd::SendPutItem
-    public static boolean OnRaiseAddPiece(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnRaiseAddPiece(TacosCharacter chr, ClientPacket cp) {
         // KMST330 & JMS187
         short nSlotPosition = cp.Decode2();
         int nItemID = cp.Decode4();

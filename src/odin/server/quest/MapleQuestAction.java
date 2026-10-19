@@ -21,10 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.quest;
 
 import java.util.HashMap;
+import tacos.client.TacosCharacter;
 import java.util.Map;
 import odin.client.Skill;
 import odin.constants.GameConstants;
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import odin.client.SkillFactory;
@@ -54,7 +54,7 @@ public class MapleQuestAction {
         this.quest = quest;
     }
 
-    private static boolean canGetItem(QuestWz.QuestActionItemInfo item, MapleCharacter client) {
+    private static boolean canGetItem(QuestWz.QuestActionItemInfo item, TacosCharacter client) {
         int gender = item.getGender();
         if (gender != 2 && gender != client.getGender()) {
             return false;
@@ -83,7 +83,7 @@ public class MapleQuestAction {
     }
 
     // first check for randomness in item selection
-    private static int selectRandomItem(List<QuestWz.QuestActionItemInfo> items, MapleCharacter chr) {
+    private static int selectRandomItem(List<QuestWz.QuestActionItemInfo> items, TacosCharacter chr) {
         Map<Integer, Integer> props = new HashMap<>();
         for (QuestWz.QuestActionItemInfo item : items) {
             if (item.isHasProp() && item.getProp() != -1 && canGetItem(item, chr)) {
@@ -99,7 +99,7 @@ public class MapleQuestAction {
         return selection;
     }
 
-    public boolean RestoreLostItem(MapleCharacter client, int item_id) {
+    public boolean RestoreLostItem(TacosCharacter client, int item_id) {
         if (type == MapleQuestActionType.item) {
             for (QuestWz.QuestActionItemInfo item : info.getItems()) {
                 int retitem = item.getId();
@@ -114,7 +114,7 @@ public class MapleQuestAction {
         return false;
     }
 
-    private void giveItems(MapleCharacter chr, Integer extSelection) {
+    private void giveItems(TacosCharacter chr, Integer extSelection) {
         int selection = selectRandomItem(info.getItems(), chr);
         int extNum = 0;
         for (QuestWz.QuestActionItemInfo item : info.getItems()) {
@@ -159,13 +159,13 @@ public class MapleQuestAction {
         }
     }
 
-    private void updateQuests(MapleCharacter chr) {
+    private void updateQuests(TacosCharacter chr) {
         for (SimpleImmutableEntry<Integer, Integer> q : info.getQuests()) {
             chr.updateQuest(new MapleQuestStatus(MapleQuest.getInstance(q.getKey()), (byte) (int) q.getValue()));
         }
     }
 
-    private void changeSkills(MapleCharacter chr) {
+    private void changeSkills(TacosCharacter chr) {
         for (QuestWz.QuestActionSkillInfo s : info.getSkills()) {
             Skill skillObject = SkillFactory.getSkill(s.getId());
 
@@ -180,14 +180,14 @@ public class MapleQuestAction {
         }
     }
 
-    private void gainFame(MapleCharacter chr) {
+    private void gainFame(TacosCharacter chr) {
         int fameGain = info.getValue();
         chr.addFame(fameGain);
         chr.sendStatChanged();
         chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fameGain).build()));
     }
 
-    private void applyBuffItem(MapleCharacter chr) {
+    private void applyBuffItem(TacosCharacter chr) {
         int tobuff = info.getValue();
         if (tobuff == -1) {
             return;
@@ -195,7 +195,7 @@ public class MapleQuestAction {
         MapleItemInformationProvider.getInstance().getItemEffect(tobuff).applyTo(chr);
     }
 
-    private static int getFinalJob(MapleCharacter chr, List<Integer> jobs) {
+    private static int getFinalJob(TacosCharacter chr, List<Integer> jobs) {
         int finalJob = 0;
         for (int job_val : jobs) {
             if (chr.getJob() >= job_val && job_val > finalJob) {
@@ -205,7 +205,7 @@ public class MapleQuestAction {
         return finalJob;
     }
 
-    public void runStart(MapleCharacter chr, Integer extSelection) {
+    public void runStart(TacosCharacter chr, Integer extSelection) {
         MapleQuestStatus status;
         switch (type) {
             case exp:
@@ -283,7 +283,7 @@ public class MapleQuestAction {
         }
     }
 
-    public boolean checkEnd(MapleCharacter chr, Integer extSelection) {
+    public boolean checkEnd(TacosCharacter chr, Integer extSelection) {
         switch (type) {
             case item: {
                 int selection = selectRandomItem(info.getItems(), chr);
@@ -367,7 +367,7 @@ public class MapleQuestAction {
         return true;
     }
 
-    public void runEnd(MapleCharacter chr, Integer extSelection) {
+    public void runEnd(TacosCharacter chr, Integer extSelection) {
         switch (type) {
             case exp: {
                 chr.gainExp(info.getValue() * GameConstants.getExpRate_Quest(chr.getLevel()), true, true, true);

@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -33,7 +33,7 @@ public class ReqCUser_FoxMan {
 
     // CUser::OnFoxManPacket
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
@@ -55,7 +55,7 @@ public class ReqCUser_FoxMan {
         return false;
     }
 
-    public static boolean OnFoxManMove(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnFoxManMove(TacosCharacter chr, ClientPacket cp) {
         ParseCMovePath move_path = new ParseCMovePath();
         if (move_path.Decode(cp)) {
             // TODO : fox man update.

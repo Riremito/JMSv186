@@ -1,6 +1,8 @@
 package odin.server;
 
 import odin.client.Skill;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosMist;
 import java.awt.Point;
@@ -8,7 +10,6 @@ import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
 import odin.client.inventory.Item;
@@ -21,7 +22,6 @@ import odin.constants.GameConstants;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
-import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.StatEffectData;
 import tacos.packet.response.ResCUserLocal;
@@ -354,7 +354,7 @@ public class MapleStatEffect {
         return ret;
     }
 
-    public void applyPassive(MapleCharacter applyto, Object obj) {
+    public void applyPassive(TacosCharacter applyto, Object obj) {
         if (makeChanceResult()) {
             switch (sourceid) { // MP eater
                 case 2100000:
@@ -378,20 +378,20 @@ public class MapleStatEffect {
         }
     }
 
-    public boolean applyTo(MapleCharacter chr) {
+    public boolean applyTo(TacosCharacter chr) {
         return applyTo(chr, chr, true, null, duration);
     }
 
-    public boolean applyTo(MapleCharacter chr, Point pos) {
+    public boolean applyTo(TacosCharacter chr, Point pos) {
         return applyTo(chr, chr, true, pos, duration);
     }
 
-    private boolean applyTo(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary, Point pos) {
+    private boolean applyTo(TacosCharacter applyfrom, TacosCharacter applyto, boolean primary, Point pos) {
         return applyTo(applyfrom, applyto, primary, pos, duration);
     }
 
-    public boolean applyTo(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary, Point pos, int newDuration) {
-        MapleMap map = applyfrom.getMap();
+    public boolean applyTo(TacosCharacter applyfrom, TacosCharacter applyto, boolean primary, Point pos, int newDuration) {
+        TacosMap map = applyfrom.getMap();
         if (isHeal() && (applyfrom.getMapId() == 749040100 || applyto.getMapId() == 749040100)) {
             return false;
         } else if (sourceid == 33101004 && map.isTown()) {
@@ -462,7 +462,7 @@ public class MapleStatEffect {
         } else if (cp != 0 && applyto.getCarnivalParty() != null) {
             applyto.getCarnivalParty().addCP(applyto, cp);
             applyto.CPUpdate(false, applyto.getAvailableCP(), applyto.getTotalCP(), 0);
-            for (MapleCharacter chr : applyto.getMap().getAllPlayers()) {
+            for (TacosCharacter chr : applyto.getMap().getAllPlayers()) {
                 chr.CPUpdate(true, applyto.getCarnivalParty().getAvailableCP(), applyto.getCarnivalParty().getTotalCP(), applyto.getCarnivalParty().getTeam());
             }
         }
@@ -486,9 +486,9 @@ public class MapleStatEffect {
         return true;
     }
 
-    public boolean applyReturnScroll(MapleCharacter applyto) {
+    public boolean applyReturnScroll(TacosCharacter applyto) {
         if (moveTo != -1) {
-            MapleMap target;
+            TacosMap target;
             if (moveTo == 999999999) {
                 target = applyto.getMap().getReturnMap();
             } else {
@@ -504,25 +504,25 @@ public class MapleStatEffect {
         return skill && sourceid == 22181003;
     }
 
-    private void applyBuff(MapleCharacter applyfrom, int newDuration) {
-        MapleMap map = applyfrom.getMap();
+    private void applyBuff(TacosCharacter applyfrom, int newDuration) {
+        TacosMap map = applyfrom.getMap();
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
-                for (MapleCharacter chr : map.getAllPlayers()) {
+                for (TacosCharacter chr : map.getAllPlayers()) {
                     if (chr.getParty() != null && chr.getParty().equals(applyfrom.getParty()) && chr.isAlive()) {
                         membrs++;
                     }
                 }
-                List<MapleCharacter> awarded = new ArrayList<>();
+                List<TacosCharacter> awarded = new ArrayList<>();
                 while (awarded.size() < Math.min(membrs, y)) {
-                    for (MapleCharacter chr : map.getAllPlayers()) {
+                    for (TacosCharacter chr : map.getAllPlayers()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {
                             awarded.add(chr);
                         }
                     }
                 }
-                for (MapleCharacter chr : awarded) {
+                for (TacosCharacter chr : awarded) {
                     applyTo(applyfrom, chr, false, null, newDuration);
                     PB_UserEffect pb = PB_UserEffect.builder()
                             .player(chr)
@@ -534,9 +534,9 @@ public class MapleStatEffect {
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            List<MapleCharacter> affecteds = map.getPlayersInRect(bounds);
+            List<TacosCharacter> affecteds = map.getPlayersInRect(bounds);
 
-            for (MapleCharacter affected : affecteds) {
+            for (TacosCharacter affected : affecteds) {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);
@@ -556,7 +556,7 @@ public class MapleStatEffect {
         }
     }
 
-    private void applyMonsterBuff(MapleCharacter applyfrom) {
+    private void applyMonsterBuff(TacosCharacter applyfrom) {
         Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
         int i = 0;
 
@@ -593,7 +593,7 @@ public class MapleStatEffect {
         this.duration = d;
     }
 
-    private int calcHPChange(MapleCharacter applyfrom, boolean primary) {
+    private int calcHPChange(TacosCharacter applyfrom, boolean primary) {
         int hpchange = 0;
         if (hp != 0) {
             if (!skill) {
@@ -651,7 +651,7 @@ public class MapleStatEffect {
         return -1;
     }
 
-    private int calcMPChange(MapleCharacter applyfrom, boolean primary) {
+    private int calcMPChange(TacosCharacter applyfrom, boolean primary) {
         int mpchange = 0;
         if (mp != 0) {
             if (primary) {
@@ -682,7 +682,7 @@ public class MapleStatEffect {
         return mpchange;
     }
 
-    private int alchemistModifyVal(MapleCharacter chr, int val, boolean withX) {
+    private int alchemistModifyVal(TacosCharacter chr, int val, boolean withX) {
         if (!skill) {
             int offset = chr.getStat().RecoveryUP;
             MapleStatEffect alchemistEffect = getAlchemistEffect(chr);
@@ -696,7 +696,7 @@ public class MapleStatEffect {
         return val;
     }
 
-    private MapleStatEffect getAlchemistEffect(MapleCharacter chr) {
+    private MapleStatEffect getAlchemistEffect(TacosCharacter chr) {
         Skill al;
         switch (chr.getJob()) {
             case 411:
@@ -948,7 +948,7 @@ public class MapleStatEffect {
         return morphId;
     }
 
-    public int getMorph(MapleCharacter chr) {
+    public int getMorph(TacosCharacter chr) {
         int morph = getMorph();
         switch (morph) {
             case 1000:

@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 import tacos.debug.DebugMan;
 import tacos.odin.OdinNPCConversationManager;
@@ -34,7 +34,7 @@ import tacos.script.TacosScriptQuest;
  */
 public class ReqCScriptMan {
 
-    public static boolean OnScriptMessageAnswer(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnScriptMessageAnswer(TacosCharacter chr, ClientPacket cp) {
         int nMsgType = cp.Decode1();
         int action = cp.Decode1();
 
@@ -75,7 +75,7 @@ public class ReqCScriptMan {
         return OnOdinScript(chr, nMsgType, action, m_nSelect, m_sInputStr_Result);
     }
 
-    public static boolean OnOdinScript(MapleCharacter chr, int nMsgType, int action, int m_nSelect, String m_sInputStr_Result) {
+    public static boolean OnOdinScript(TacosCharacter chr, int nMsgType, int action, int m_nSelect, String m_sInputStr_Result) {
         TacosClient client = chr.getClient();
         boolean is_npc_talk = false;
         boolean is_quest_start = false;

@@ -1,7 +1,7 @@
 package odin.server;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosPet;
+import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -76,12 +76,12 @@ public class MapleShop {
         return true;
     }
 
-    public void sendShop(MapleCharacter chr) {
+    public void sendShop(TacosCharacter chr) {
         chr.setShop(this);
         chr.SendPacket(ResCShopDlg.OpenShopDlg(chr.getClient(), getNpcId(), items));
     }
 
-    public boolean buy(TacosClient client, MapleCharacter chr, int itemId, short quantity) {
+    public boolean buy(TacosClient client, TacosCharacter chr, int itemId, short quantity) {
         MapleShopItem item = findById(itemId);
 
         if (quantity <= 0 || item == null) {
@@ -129,7 +129,7 @@ public class MapleShop {
     }
 
     public void sell(TacosClient client, MapleInventoryType type, byte slot, short quantity) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
@@ -169,7 +169,7 @@ public class MapleShop {
     }
 
     public boolean recharge(TacosClient client, byte slot) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         Item item = chr.getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {

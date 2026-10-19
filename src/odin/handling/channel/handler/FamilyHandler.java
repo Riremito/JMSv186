@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.handling.world.family.MapleFamily;
 import odin.handling.world.family.MapleFamilyBuff;
 import odin.handling.world.family.MapleFamilyBuff.MapleFamilyBuffEntry;
@@ -34,7 +34,7 @@ import tacos.wz.opt.FieldOpt;
 public class FamilyHandler {
 
     public static void RequestFamily(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+        TacosCharacter chr = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (chr != null) {
             client.SendPacket(ResCWvsContext.getFamilyPedigree(chr));
         }
@@ -45,7 +45,7 @@ public class FamilyHandler {
     }
 
     public static void UseFamily(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         int type = cp.Decode4();
         MapleFamilyBuffEntry entry = MapleFamilyBuff.getBuffEntry(type);
         if (entry == null) {
@@ -55,7 +55,7 @@ public class FamilyHandler {
         if (!success) {
             return;
         }
-        MapleCharacter victim = null;
+        TacosCharacter victim = null;
         switch (type) {
             case 0: //teleport: need add check for if not a safe place
                 victim = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
@@ -111,11 +111,11 @@ public class FamilyHandler {
     }
 
     public static void FamilyOperation(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
         }
-        MapleCharacter addChr = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+        TacosCharacter addChr = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (addChr == null) {
             chr.dropMessage(1, "The name you requested is incorrect or he/she is currently not logged in.");
         } else if (addChr.getFamilyId() == chr.getFamilyId() && addChr.getFamilyId() > 0) {
@@ -141,7 +141,7 @@ public class FamilyHandler {
     }
 
     public static void FamilyPrecept(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId());
         if (fam == null || fam.getLeaderId() != chr.getId()) {
             return;
@@ -150,10 +150,10 @@ public class FamilyHandler {
     }
 
     public static void FamilySummon(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
-        MapleCharacter tt = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+        TacosCharacter tt = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (chr.getFamilyId() > 0 && tt != null && tt.getFamilyId() == chr.getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(tt.getMap().getFieldLimit())
                 && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) && chr.isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
                 && chr.getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep) {
@@ -174,7 +174,7 @@ public class FamilyHandler {
     }
 
     public static void DeleteJunior(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         int juniorid = cp.Decode4();
         if (chr.getFamilyId() <= 0 || juniorid <= 0 || (chr.getJunior1() != juniorid && chr.getJunior2() != juniorid)) {
             return;
@@ -207,7 +207,7 @@ public class FamilyHandler {
     }
 
     public static void DeleteSenior(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getFamilyId() <= 0 || chr.getSeniorId() <= 0) {
             return;
         }
@@ -239,8 +239,8 @@ public class FamilyHandler {
     }
 
     public static void AcceptFamily(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
-        MapleCharacter inviter = chr.getMap().getPlayerById(cp.Decode4());
+        TacosCharacter chr = client.getPlayer();
+        TacosCharacter inviter = chr.getMap().getPlayerById(cp.Decode4());
         if (inviter != null && chr.getSeniorId() == 0
                 && inviter.getLevel() - 20 < chr.getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2
                 /*&& inviter.getFamily().getGens() < 1000*/ && chr.getLevel() >= 10) {

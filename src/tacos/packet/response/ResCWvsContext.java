@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -600,7 +599,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMapTransferResult
-    public static ServerPacket MapTransferResult(MapleCharacter chr, OpsMapTransfer ops_res, boolean vip) {
+    public static ServerPacket MapTransferResult(TacosCharacter chr, OpsMapTransfer ops_res, boolean vip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MapTransferResult);
 
         sp.Encode1(ops_res.get());
@@ -689,7 +688,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnSkillLearnItemResult
-    public static ServerPacket SkillLearnItemResult(MapleCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
+    public static ServerPacket SkillLearnItemResult(TacosCharacter chr, boolean bIsMaterbook, boolean bUsed, boolean bSucceed) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SkillLearnItemResult);
 
         sp.Encode1(1, Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186)); // bOnExclRequest
@@ -722,7 +721,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnCharacterInfo
-    public static ServerPacket CharacterInfo(MapleCharacter player, boolean isSelf) {
+    public static ServerPacket CharacterInfo(TacosCharacter player, boolean isSelf) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CharacterInfo);
 
         sp.Encode4(player.getId()); // dwCharacterId
@@ -878,7 +877,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnPartyResult
-    public static ServerPacket PartyResult(OpsParty ops, MapleCharacter chr) {
+    public static ServerPacket PartyResult(OpsParty ops, TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_PartyResult);
 
         MapleParty party = chr.getParty();
@@ -1370,7 +1369,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMarriageResult
-    public static ServerPacket MarriageResult(OpsMarriage ops, int item_id, MapleCharacter male, MapleCharacter female) {
+    public static ServerPacket MarriageResult(OpsMarriage ops, int item_id, TacosCharacter male, TacosCharacter female) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MarriageResult);
 
         sp.Encode1(ops.get()); // 1103 custom quest
@@ -1425,7 +1424,7 @@ public class ResCWvsContext {
     }
 
     // パチンコ情報の更新
-    public static ServerPacket PachinkoResult(MapleCharacter chr) {
+    public static ServerPacket PachinkoResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoResult);
         // 12 bytes
         {
@@ -1487,7 +1486,7 @@ public class ResCWvsContext {
     }
 
     // CWvsContext::OnMonsterBookSetCover
-    public static ServerPacket MonsterBookSetCover(MapleCharacter chr) {
+    public static ServerPacket MonsterBookSetCover(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MonsterBookSetCover);
 
         sp.Encode4(chr.getMonsterBook().getCover());
@@ -1557,7 +1556,7 @@ public class ResCWvsContext {
     // CWvsContext::OnNotifyLevelUp
     // CWvsContext::OnNotifyWedding
     // CWvsContext::OnNotifyJobChange
-    public static ServerPacket AvatarMegaphoneUpdateMessage(MapleCharacter chr, int channel, int itemId, String message, boolean ear) {
+    public static ServerPacket AvatarMegaphoneUpdateMessage(TacosCharacter chr, int channel, int itemId, String message, boolean ear) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AvatarMegaphoneUpdateMessage);
 
         sp.Encode4(itemId);
@@ -1608,7 +1607,7 @@ public class ResCWvsContext {
     // CWvsContext::OnAskWhetherUsePamsSong
     // CWvsContext::OnTransferChannel
     // CWvsContext::OnDisallowedDeliveryQuestList
-    public static ServerPacket CharacterCash(MapleCharacter chr) {
+    public static ServerPacket CharacterCash(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CMS_CharacterCash);
 
         sp.Encode4(chr.getId());
@@ -1828,7 +1827,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket showGuildInfo(MapleCharacter player) {
+    public static ServerPacket showGuildInfo(TacosCharacter player) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
         sp.Encode1(26); //signature for showing guild info
@@ -1934,7 +1933,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket sendAllianceInvite(String allianceName, MapleCharacter inviter) {
+    public static ServerPacket sendAllianceInvite(String allianceName, TacosCharacter inviter) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(3);
@@ -2215,7 +2214,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket getFamilyPedigree(MapleCharacter chr) {
+    public static ServerPacket getFamilyPedigree(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
         sp.Encode4(chr.getId());
@@ -2318,7 +2317,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket getFamilyInfo(MapleCharacter chr) {
+    public static ServerPacket getFamilyInfo(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyInfoResult);
 
         sp.Encode4(chr.getCurrentRep()); //rep

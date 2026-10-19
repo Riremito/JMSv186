@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -42,7 +42,7 @@ import tacos.wz.WzDataStorage;
 public class ReqCCashShop {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online (CS).");
             return false;
@@ -90,7 +90,7 @@ public class ReqCCashShop {
 
     private static int FREE_COUPON_ITEM_ID = 5221000;
 
-    public static void updateFreeCouponDate(MapleCharacter chr) {
+    public static void updateFreeCouponDate(TacosCharacter chr) {
         Item item = chr.getCashInventory().findItem(FREE_COUPON_ITEM_ID);
         if (item != null) {
             chr.SendPacket(ResCCashShop.FreeCouponDialog(true, TacosSharedDate.getMagicalExpirationDate()));
@@ -99,7 +99,7 @@ public class ReqCCashShop {
         }
     }
 
-    private static boolean checkBuyDestroy(MapleCharacter chr, int item_id) {
+    private static boolean checkBuyDestroy(TacosCharacter chr, int item_id) {
         if (item_id == FREE_COUPON_ITEM_ID) {
             updateFreeCouponDate(chr);
             return true;
@@ -110,7 +110,7 @@ public class ReqCCashShop {
 
     // BuyCashItem
     public static boolean OnCashItem(TacosClient client, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (chr == null) {
             return false;
@@ -202,7 +202,7 @@ public class ReqCCashShop {
         return false;
     }
 
-    private static boolean checkPoint(MapleCharacter chr, byte use_maple_point, int price) {
+    private static boolean checkPoint(TacosCharacter chr, byte use_maple_point, int price) {
         boolean is_maple_point = 0 < use_maple_point;
 
         if (is_maple_point) {
@@ -221,7 +221,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean usePoint(MapleCharacter chr, byte use_maple_point, int price) {
+    private static boolean usePoint(TacosCharacter chr, byte use_maple_point, int price) {
         boolean is_maple_point = 0 < use_maple_point;
 
         if (is_maple_point) {
@@ -233,7 +233,7 @@ public class ReqCCashShop {
     }
 
     private static boolean BuyCashItem(TacosClient client, byte use_maple_point, int item_SN) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
         if (chr == null) {
@@ -269,7 +269,7 @@ public class ReqCCashShop {
     }
 
     private static boolean BuyFreeItem(TacosClient client, int item_SN) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
         if (chr == null) {
@@ -302,16 +302,16 @@ public class ReqCCashShop {
     private static final int SLOT_LIMIT = 96;
     private static final int TRUNK_SLOT_LIMIT = 60;
 
-    private static boolean IncSlotCount4(MapleCharacter chr, byte use_maple_point, byte inv_type) {
+    private static boolean IncSlotCount4(TacosCharacter chr, byte use_maple_point, byte inv_type) {
         return IncSlotCount(chr, use_maple_point, inv_type, 4);
     }
 
-    private static boolean IncSlotCount8(MapleCharacter chr, byte use_maple_point, int item_SN) {
+    private static boolean IncSlotCount8(TacosCharacter chr, byte use_maple_point, int item_SN) {
         // not coded
         return IncSlotCount(chr, use_maple_point, (byte) 0, 8);
     }
 
-    private static boolean IncSlotCount(MapleCharacter chr, byte use_maple_point, byte inv_type, int inc_slot) {
+    private static boolean IncSlotCount(TacosCharacter chr, byte use_maple_point, byte inv_type, int inc_slot) {
         if (!checkPoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE)) {
             // 残高不足
             return false;
@@ -328,7 +328,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean IncTrunkCount4(MapleCharacter chr, byte use_maple_point) {
+    private static boolean IncTrunkCount4(TacosCharacter chr, byte use_maple_point) {
         if (!checkPoint(chr, use_maple_point, INC_INVENTORY_SLOT_PRICE)) {
             // 残高不足
             return false;
@@ -346,7 +346,7 @@ public class ReqCCashShop {
 
     // ポイントショップからアイテム欄へ移動
     private static boolean MoveLtoS(TacosClient client, long cash_item_SN, byte inv_type, short inv_slot) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         Item item_src = chr.getCashInventory().findByCashId(cash_item_SN);
         if (item_src == null || item_src.getQuantity() < 1) {
             chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Failed, client));
@@ -364,7 +364,7 @@ public class ReqCCashShop {
 
     // アイテム欄からポイントショップへ移動
     private static boolean MoveStoL(TacosClient client, long inv_item_SN, byte inv_type) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleInventoryType inv_item_type = MapleInventoryType.getByType(inv_type);
 
         if (inv_item_type == null) {
@@ -389,7 +389,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean DestoryItem(MapleCharacter chr, String nexon_id, long item_unique_id) {
+    private static boolean DestoryItem(TacosCharacter chr, String nexon_id, long item_unique_id) {
         Item item = chr.getCashInventory().findByCashId(item_unique_id);
 
         if (item == null || item.getQuantity() < 1 || !chr.getClient().getMapleId().equals(nexon_id)) {
@@ -412,7 +412,7 @@ public class ReqCCashShop {
     static final String COUPON_CODE_15_TEST_CODE = "XXXXXXXXXXXXXXX";
 
     private static boolean OnCheckCoupon(TacosClient client, String character_name, String coupon_code, boolean is_coupon_15, String message) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (is_coupon_15) {
             if (coupon_code.length() != COUPON_CODE_LENGTH_2) {
@@ -475,7 +475,7 @@ public class ReqCCashShop {
     }
 
     public static boolean OnGachaponOpen(TacosClient client, long box_SN) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (chr == null) {
             return false;
@@ -501,7 +501,7 @@ public class ReqCCashShop {
     }
 
     private static void doCSPackets(TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         client.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
         chr.getCashInventory().checkExpire(client);
     }

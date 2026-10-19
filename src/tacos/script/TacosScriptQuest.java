@@ -19,7 +19,7 @@
 package tacos.script;
 
 import javax.script.Invocable;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import javax.script.ScriptEngine;
 import tacos.client.TacosClient;
 import tacos.odin.OdinNPCConversationManager;
@@ -87,7 +87,7 @@ public class TacosScriptQuest extends TacosScript {
     }
 
     public boolean endQuest(TacosClient client, int npc_id, int quest_script_id, boolean customEnd) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (!customEnd && !MapleQuest.getInstance(quest_script_id).canComplete(chr, null)) {
             return false;
         }

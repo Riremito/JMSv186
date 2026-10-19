@@ -18,9 +18,9 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosReactor;
-import odin.server.maps.MapleMap;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.config.Config;
@@ -34,11 +34,11 @@ import tacos.script.TacosScriptReactor;
 public class ReqCReactorPool {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return false;
         }

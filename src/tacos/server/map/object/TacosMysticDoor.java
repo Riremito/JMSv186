@@ -19,9 +19,9 @@
 package tacos.server.map.object;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
 import java.util.ArrayList;
 import java.util.List;
-import odin.server.maps.MapleMap;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosDoorSkill;
 import tacos.debug.DebugLogger;
@@ -39,12 +39,12 @@ public class TacosMysticDoor extends TacosMapObject {
     private final int skill_id;
     private Point field_pos = new Point();
     private TacosPortal townPortal = null;
-    private MapleMap map;
+    private TacosMap map;
     private int time;
 
-    public TacosMysticDoor(MapleMap map, TacosCharacter owner, TacosDoorSkill tds) {
+    public TacosMysticDoor(TacosMap map, TacosCharacter owner, TacosDoorSkill tds) {
         this.skill_id = tds.getId();
-        MapleMap owner_map = owner.getMap();
+        TacosMap owner_map = owner.getMap();
         this.town_map_id = owner_map.getReturnMapId();
         this.field_map_id = owner_map.getId();
         setPosition(owner.getPosition());
@@ -54,7 +54,7 @@ public class TacosMysticDoor extends TacosMapObject {
         this.time = tds.getTime() * 1000;
     }
 
-    public MapleMap getMap() {
+    public TacosMap getMap() {
         return this.map;
     }
 
@@ -110,7 +110,7 @@ public class TacosMysticDoor extends TacosMapObject {
         this.townPortal = portal;
     }
 
-    public TacosPortal getFreePortal(MapleMap map_town) {
+    public TacosPortal getFreePortal(TacosMap map_town) {
         List<TacosPortal> freePortals = new ArrayList<>();
 
         for (TacosPortal portal : map_town.getPortals()) {

@@ -1,7 +1,7 @@
 package tacos.packet.response;
 
 import odin.client.MapleBeans;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import odin.handling.channel.handler.BeanGame;
 import java.util.List;
 import tacos.packet.ServerPacket;
@@ -21,7 +21,7 @@ public class Res_JMS_CField_Pachinko {
         return sp;
     }
 
-    public static ServerPacket openBeans(MapleCharacter player, int type) {
+    public static ServerPacket openBeans(TacosCharacter player, int type) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_JMS_PachinkoOpen);
 
         sp.Encode4(player.getTama());

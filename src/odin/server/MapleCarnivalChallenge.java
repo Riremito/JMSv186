@@ -4,8 +4,8 @@
  */
 package odin.server;
 
-import odin.client.MapleCharacter;
 import odin.handling.world.MaplePartyCharacter;
+import tacos.client.TacosCharacter;
 
 /**
  * TODO : Make this a function for NPC instead.. cleaner
@@ -14,14 +14,14 @@ import odin.handling.world.MaplePartyCharacter;
  */
 public class MapleCarnivalChallenge {
 
-    MapleCharacter challenger;
+    TacosCharacter challenger;
     String challengeinfo = "";
 
-    public MapleCarnivalChallenge(MapleCharacter challenger) {
+    public MapleCarnivalChallenge(TacosCharacter challenger) {
         this.challenger = challenger;
         challengeinfo += "#b";
         for (MaplePartyCharacter pc : challenger.getParty().getMembers()) {
-            MapleCharacter chr = challenger.getMap().getPlayerById(pc.getId());
+            TacosCharacter chr = challenger.getMap().getPlayerById(pc.getId());
             if (chr != null) {
                 challengeinfo += (chr.getName() + " / Level" + chr.getLevel() + " / " + getJobNameById(chr.getJob()));
             }
@@ -327,7 +327,7 @@ public class MapleCarnivalChallenge {
     }
 
     // used by script
-    public MapleCharacter getChallenger() {
+    public TacosCharacter getChallenger() {
         return challenger;
     }
 

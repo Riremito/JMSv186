@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
@@ -40,7 +40,7 @@ import tacos.packet.ServerPacketHeader;
 public class ResCCashShop {
 
     // CCashShop::OnChargeParamResult
-    public static ServerPacket CashShopChargeParamResult(MapleCharacter chr) {
+    public static ServerPacket CashShopChargeParamResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopChargeParamResult);
 
         sp.EncodeStr(chr.getClient().getMapleId()); // nexon id
@@ -48,7 +48,7 @@ public class ResCCashShop {
     }
 
     // CCashShop::OnQueryCashResult
-    public static ServerPacket CashShopQueryCashResult(MapleCharacter chr) {
+    public static ServerPacket CashShopQueryCashResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopQueryCashResult);
 
         sp.Encode4(chr.getNexonPoint());
@@ -167,7 +167,7 @@ public class ResCCashShop {
 
     // CCashShop::OnCashItemResult
     public static ServerPacket CashItemResult(OpsCashItem ops, TacosClient client, CashItemStruct cis) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
         sp.Encode1(ops.get());

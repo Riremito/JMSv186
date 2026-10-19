@@ -1,12 +1,12 @@
 package odin.server.quest;
 
 import odin.client.Skill;
+import tacos.client.TacosCharacter;
 import java.util.Calendar;
 import java.util.List;
 import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -28,7 +28,7 @@ public class MapleQuestRequirement {
         this.dataStore = info.getDataStore();
     }
 
-    public boolean check(MapleCharacter chr, Integer npc_id) {
+    public boolean check(TacosCharacter chr, Integer npc_id) {
         switch (type) {
             case job:
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {

@@ -19,11 +19,11 @@
 package tacos.command;
 
 import java.util.List;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
-import odin.client.MapleCharacter;
 import odin.server.Randomizer;
 import odin.server.life.MobSkill;
-import odin.server.maps.MapleMap;
 import tacos.client.TacosForcedStat;
 import tacos.client.TacosMapleGift;
 import tacos.packet.ops.OpsFieldEffect;
@@ -44,8 +44,8 @@ import tacos.wz.WzXML;
  */
 public class TacosCommandTest {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
-        MapleMap map = chr.getMap();
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+        TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
             // unused packet test.
@@ -220,7 +220,7 @@ public class TacosCommandTest {
         return false;
     }
 
-    public static void mobTest(MapleCharacter chr, TacosMonster monster, int index) {
+    public static void mobTest(TacosCharacter chr, TacosMonster monster, int index) {
         switch (index) {
             case 1 -> {
                 chr.SendPacket(ResCMobPool.MobAttackedByMob(monster, 1, 7777));

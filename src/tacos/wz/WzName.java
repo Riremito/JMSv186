@@ -19,8 +19,8 @@
 package tacos.wz;
 
 import lombok.Getter;
+import tacos.client.TacosCharacter;
 import lombok.Setter;
-import odin.client.MapleCharacter;
 
 /**
  *
@@ -36,7 +36,7 @@ public class WzName {
     private String streetName = null;
     private boolean available = false;
 
-    public void sendDebugMsg(MapleCharacter chr) {
+    public void sendDebugMsg(TacosCharacter chr) {
         String text = this.id + " : \"" + this.name + "\"";
         if (this.available) {
             chr.DebugMsg(text);
@@ -45,7 +45,7 @@ public class WzName {
         }
     }
 
-    public void sendDebugMsgItem(MapleCharacter chr) {
+    public void sendDebugMsgItem(TacosCharacter chr) {
         String text = this.id + " : \"" + this.name + "\"";
         if (this.available) {
             chr.DebugMsgItem(text, this.id);
@@ -54,7 +54,7 @@ public class WzName {
         }
     }
 
-    public void sendMapDebugMsg(MapleCharacter chr) {
+    public void sendMapDebugMsg(TacosCharacter chr) {
         String text = this.id + " : \"" + this.mapName + "\" - \"" + this.streetName + "\"";
         if (this.available) {
             chr.DebugMsg(text);

@@ -18,15 +18,15 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosMonster;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCSummonedPool;
-import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMoveAbility;
@@ -46,12 +46,12 @@ public class ReqCSummonedPool {
         CSummonedPool::OnPacket (JMS188)
      */
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return false;
         }
@@ -106,7 +106,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnMove
-    public static boolean OnMove(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
+    public static boolean OnMove(TacosCharacter chr, ClientPacket cp, TacosSummon summon) {
         if (summon.getMoveAbility() == OpsMoveAbility.MOVEABILITY_STOP) {
             return false;
         }
@@ -121,8 +121,8 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnAttack
-    public static void OnAttack(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
-        MapleMap map = chr.getMap();
+    public static void OnAttack(TacosCharacter chr, ClientPacket cp, TacosSummon summon) {
+        TacosMap map = chr.getMap();
 
         boolean is_dr_check = Config.Equal(Region.KMST, 330);
         if (!is_dr_check) {
@@ -184,7 +184,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnSkill
-    public static boolean OnSkill(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
+    public static boolean OnSkill(TacosCharacter chr, ClientPacket cp, TacosSummon summon) {
         int nSkillID = cp.Decode4();
         byte unk1 = cp.Decode1();
 
@@ -211,7 +211,7 @@ public class ReqCSummonedPool {
     }
 
     // CSummoned::OnHit
-    public static void OnHit(MapleCharacter chr, ClientPacket cp, TacosSummon summon) {
+    public static void OnHit(TacosCharacter chr, ClientPacket cp, TacosSummon summon) {
         int unkByte = cp.Decode1();
         int damage = cp.Decode4();
         int monsterIdFrom = cp.Decode4();

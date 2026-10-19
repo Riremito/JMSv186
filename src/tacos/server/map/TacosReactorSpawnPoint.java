@@ -20,7 +20,6 @@ package tacos.server.map;
 
 import java.awt.Point;
 import tacos.server.map.object.TacosReactor;
-import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
@@ -66,7 +65,7 @@ public class TacosReactorSpawnPoint {
     private TacosReactor reactor = null;
     private long last_regen_time = 0;
 
-    public TacosReactor regen(MapleMap map) {
+    public TacosReactor regen(TacosMap map) {
         if (this.reactor != null) {
             return null;
         }

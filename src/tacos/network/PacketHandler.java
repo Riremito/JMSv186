@@ -19,7 +19,7 @@
 package tacos.network;
 
 import java.util.concurrent.ThreadPoolExecutor;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.debug.DebugLogger;
 import org.apache.mina.common.IdleStatus;
@@ -133,7 +133,7 @@ public class PacketHandler extends IoHandlerAdapter {
         if (client != null) {
             try {
                 client.disconnect(true, false);
-                MapleCharacter chr = client.getPlayer();
+                TacosCharacter chr = client.getPlayer();
                 if (chr != null) {
                     client.setPlayer(null);
                     chr.notityOnlineToFriends(false);

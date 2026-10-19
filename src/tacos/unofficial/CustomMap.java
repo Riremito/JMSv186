@@ -19,13 +19,13 @@
 package tacos.unofficial;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
 import tacos.server.map.object.TacosNpc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
@@ -39,7 +39,7 @@ import tacos.wz.WzXML;
  */
 public class CustomMap {
 
-    public static boolean addNPCtoMap(MapleMap map) {
+    public static boolean addNPCtoMap(TacosMap map) {
         if (!Config.GreaterOrEqual(Region.JMS, 186)) {
             return false;
         }

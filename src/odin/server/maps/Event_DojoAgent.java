@@ -21,7 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
-import odin.client.MapleCharacter;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import odin.handling.world.MaplePartyCharacter;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsMessage;
@@ -38,11 +39,11 @@ public class Event_DojoAgent {
     private final static Point point2 = new Point(-193, 0);
     private final static Point point3 = new Point(355, 0);
 
-    public static boolean warpStartAgent(MapleCharacter player, boolean party) {
+    public static boolean warpStartAgent(TacosCharacter player, boolean party) {
         int stage = 1;
         int mapid = baseAgentMapId + (stage * 100);
         for (int i = mapid; i < mapid + 15; i++) {
-            MapleMap map = player.findMap(i);
+            TacosMap map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMapPortal(map, map.getPortal(0));
@@ -52,11 +53,11 @@ public class Event_DojoAgent {
         return false;
     }
 
-    public static boolean warpNextMap_Agent(MapleCharacter player, boolean fromResting) {
+    public static boolean warpNextMap_Agent(TacosCharacter player, boolean fromResting) {
         int currentmap = player.getMapId();
         int thisStage = (currentmap - baseAgentMapId) / 100;
 
-        MapleMap map = player.getMap();
+        TacosMap map = player.getMap();
         if (map.getNumMonsters() > 0) {
             return false;
         }
@@ -81,7 +82,7 @@ public class Event_DojoAgent {
         return false;
     }
 
-    public static boolean warpStartDojo(MapleCharacter player, boolean party) {
+    public static boolean warpStartDojo(TacosCharacter player, boolean party) {
         int stage = 1;
         if (party || stage <= -1 || stage > 38) {
             stage = 1;
@@ -91,7 +92,7 @@ public class Event_DojoAgent {
         for (int x = 0; x < 15; x++) { //15 maps each stage
             boolean canenterr = true;
             for (int i = 1; i < 39; i++) { //only 32 stages, but 38 maps
-                MapleMap map = player.findMap(925020000 + 100 * i + x);
+                TacosMap map = player.findMap(925020000 + 100 * i + x);
                 if (map.getCharactersSize() > 0) {
                     canenterr = false;
                     break;
@@ -105,12 +106,12 @@ public class Event_DojoAgent {
                 break;
             }
         }
-        MapleMap map = player.findMap(mapid);
-        MapleMap mapidd = player.getMap();
+        TacosMap map = player.findMap(mapid);
+        TacosMap mapidd = player.getMap();
         if (canenter) {
             if (party && player.getParty() != null) {
                 for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                    MapleCharacter chr = mapidd.getPlayerById(mem.getId());
+                    TacosCharacter chr = mapidd.getPlayerById(mem.getId());
                     if (chr != null) {
                         chr.changeMapPortal(map, map.getPortal(0));
                     }
@@ -135,9 +136,9 @@ public class Event_DojoAgent {
     // 925022400 ~ 925022409
     // 925023000 ~ 925023009
     // 925023600 ~ 925023609
-    public static boolean warpNextMap(MapleCharacter player, boolean fromResting) {
+    public static boolean warpNextMap(TacosCharacter player, boolean fromResting) {
         try {
-            MapleMap currentmap = player.getMap();
+            TacosMap currentmap = player.getMap();
             int temp = (currentmap.getId() - 925000000) / 100;
             int thisStage = (int) (temp - ((temp / 100) * 100));
             int points = getDojoPoints(thisStage);
@@ -145,7 +146,7 @@ public class Event_DojoAgent {
                 clearMap(currentmap, true);
                 if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        MapleCharacter chr = currentmap.getPlayerById(mem.getId());
+                        TacosCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
                             int point = (points * 3);
                             chr.modifyCSPoints(1, point * 4, true);
@@ -162,11 +163,11 @@ public class Event_DojoAgent {
 
             }
             if (currentmap.getId() >= 925023800 && currentmap.getId() <= 925023814) {
-                MapleMap map = player.findMap(925020003);
+                TacosMap map = player.findMap(925020003);
 
                 if (player.getParty() != null) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        MapleCharacter chr = currentmap.getPlayerById(mem.getId());
+                        TacosCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
                             chr.changeMapPortal(map, map.getPortal(1));
                             chr.modifyCSPoints(1, 5000, true);
@@ -180,12 +181,12 @@ public class Event_DojoAgent {
             }
 
             //final int nextmapid = 925020000 + ((thisStage + 1) * 100);
-            MapleMap map = player.findMap(currentmap.getId() + 100);
+            TacosMap map = player.findMap(currentmap.getId() + 100);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 if (player.getParty() != null) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        MapleCharacter chr = currentmap.getPlayerById(mem.getId());
+                        TacosCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
                             chr.changeMapPortal(map, map.getPortal(0));
                         }
@@ -198,12 +199,12 @@ public class Event_DojoAgent {
             } else { //wtf, find a new map
                 int basemap = currentmap.getId() / 100 * 100 + 100;
                 for (int x = 0; x < 15; x++) {
-                    MapleMap mapz = player.findMap(basemap + x);
+                    TacosMap mapz = player.findMap(basemap + x);
                     if (mapz.getCharactersSize() == 0) {
                         clearMap(mapz, false);
                         if (player.getParty() != null) {
                             for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                                MapleCharacter chr = currentmap.getPlayerById(mem.getId());
+                                TacosCharacter chr = currentmap.getPlayerById(mem.getId());
                                 if (chr != null) {
                                     chr.changeMapPortal(mapz, mapz.getPortal(0));
                                 }
@@ -222,7 +223,7 @@ public class Event_DojoAgent {
         return false;
     }
 
-    private static void clearMap(MapleMap map, boolean check) {
+    private static void clearMap(TacosMap map, boolean check) {
         if (check) {
             if (map.getCharactersSize() != 0) {
                 return;
@@ -278,7 +279,7 @@ public class Event_DojoAgent {
         }
     }
 
-    private static void spawnMonster(MapleMap map, int stage) {
+    private static void spawnMonster(TacosMap map, int stage) {
         int mobid;
 
         switch (stage) {

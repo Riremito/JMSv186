@@ -18,12 +18,12 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosMonster;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.config.Region;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleNodes;
 import tacos.client.TacosBuff;
 import tacos.config.Config;
@@ -277,7 +277,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnSpecialEffectBySkill
-    public static ServerPacket MobSpecialEffectBySkill(TacosMonster monster, MapleCharacter chr, int nSkillID, int tDelay) {
+    public static ServerPacket MobSpecialEffectBySkill(TacosMonster monster, TacosCharacter chr, int nSkillID, int tDelay) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MobSpecialEffectBySkill);
 
         sp.Encode4(monster.getObjectId());// dwMobID
@@ -358,7 +358,7 @@ public class ResCMobPool {
     }
 
     // CMob::OnEscortFullPath
-    public static ServerPacket MobRequestResultEscortInfo(TacosMonster monster, MapleMap map) {
+    public static ServerPacket MobRequestResultEscortInfo(TacosMonster monster, TacosMap map) {
         //idk.
         if (monster.getNodePacket() != null) {
             return monster.getNodePacket();

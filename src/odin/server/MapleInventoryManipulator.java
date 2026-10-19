@@ -1,8 +1,9 @@
 package odin.server;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosPet;
-import odin.server.maps.MapleMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -11,7 +12,6 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.PlayerStats;
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import tacos.packet.ops.OpsCashItem;
@@ -28,7 +28,7 @@ import tacos.server.TacosWorld;
 
 public class MapleInventoryManipulator {
 
-    public static void addRing(MapleCharacter chr, int itemId, int ringId, int sn) {
+    public static void addRing(TacosCharacter chr, int itemId, int ringId, int sn) {
         CashItemInfo csi = CashItemFactory.getInstance().getItem(sn);
         if (csi == null) {
             return;
@@ -46,7 +46,7 @@ public class MapleInventoryManipulator {
     }
 
     public static short addbyItem(TacosClient client, Item item, boolean fromcs) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleInventoryType type = GameConstants.getInventoryType(item.getItemId());
         short newSlot = chr.getInventory(type).addItem(item);
         if (newSlot == -1) {
@@ -98,7 +98,7 @@ public class MapleInventoryManipulator {
     }
 
     public static byte addId(TacosClient client, int itemId, short quantity, String owner, TacosPet pet, long period) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && chr.haveItem(itemId, 1, true, false)) {
             chr.updateInv();
@@ -206,7 +206,7 @@ public class MapleInventoryManipulator {
     }
 
     public static Item addbyId_Gachapon(TacosClient client, int itemId, short quantity) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() == -1 || chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() == -1 || chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() == -1 || chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() == -1) {
             return null;
         }
@@ -306,7 +306,7 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean addFromDrop(TacosClient client, Item item, boolean show, boolean enhance) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
         if (ii.isPickupRestricted(item.getItemId()) && chr.haveItem(item.getItemId(), 1, true, false)) {
@@ -412,7 +412,7 @@ public class MapleInventoryManipulator {
         return true;
     }
 
-    private static Item checkEnhanced(Item before, MapleCharacter chr) {
+    private static Item checkEnhanced(Item before, TacosCharacter chr) {
         if (Config.LessOrEqual(Region.KMS, 95) || Config.LessOrEqual(Region.JMS, 185) || Region.BMS.check()) {
             return before;
         }
@@ -431,7 +431,7 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean checkSpace(TacosClient client, int itemid, int quantity, String owner) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemid) && chr.haveItem(itemid, 1, true, false)) {
             chr.updateInv();
@@ -479,7 +479,7 @@ public class MapleInventoryManipulator {
     }
 
     public static void removeFromSlot(TacosClient client, MapleInventoryType type, short slot, short quantity, boolean unlock, boolean consume) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null || chr.getInventory(type) == null) {
             return;
         }
@@ -512,7 +512,7 @@ public class MapleInventoryManipulator {
     }
 
     public static void move(TacosClient client, MapleInventoryType type, short src, short dst) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (src < 0 || dst < 0 || dst > chr.getInventory(type).getSlotLimit() || src == dst) {
             return;
         }
@@ -550,7 +550,7 @@ public class MapleInventoryManipulator {
 
     public static void equip(TacosClient client, short src, short dst) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
         }
@@ -688,7 +688,7 @@ public class MapleInventoryManipulator {
     }
 
     public static void unequip(TacosClient client, short src, short dst) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         Equip source = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(src);
         Equip target = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(dst);
 
@@ -718,7 +718,7 @@ public class MapleInventoryManipulator {
     }
 
     public static boolean drop(TacosClient client, MapleInventoryType type, short src, short quantity, boolean npcInduced) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (src < 0) {
             type = MapleInventoryType.EQUIPPED;
@@ -742,7 +742,7 @@ public class MapleInventoryManipulator {
             return false;
         }
         Point dropPos = new Point(chr.getPosition());
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (quantity < source.getQuantity() && !GameConstants.isRechargable(source.getItemId())) {
             Item target = source.copy();
             target.setQuantity(quantity);

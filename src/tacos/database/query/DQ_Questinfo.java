@@ -19,6 +19,7 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,7 +30,7 @@ import tacos.database.DatabaseConnection;
 /**
  * NOTE: load/save here declare {@code throws SQLException} instead of
  * catching it internally, since these are called from
- * MapleCharacter.loadCharFromDB/saveToDB, which manage their own outer
+ * TacosCharacter.loadCharFromDB/saveToDB, which manage their own outer
  * try/catch and (for saveToDB) an explicit transaction that must see any
  * failure in order to roll back correctly.
  *

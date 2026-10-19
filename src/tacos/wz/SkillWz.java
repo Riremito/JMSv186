@@ -19,7 +19,7 @@
 package tacos.wz;
 
 import odin.client.Skill;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
@@ -503,7 +503,7 @@ public class SkillWz extends WzXML {
     }
 
     // test
-    public ArrayList<Integer> getBasicSkill(MapleCharacter chr, String job_img_name) {
+    public ArrayList<Integer> getBasicSkill(TacosCharacter chr, String job_img_name) {
         ArrayList<Integer> list = new ArrayList<>();
 
         MapleData md_job = getData(job_img_name);

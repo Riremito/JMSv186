@@ -19,19 +19,19 @@
 package tacos.command;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import tacos.wz.MapleData;
-import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMonsterBook;
 import tacos.constants.TacosConstants;
@@ -62,8 +62,8 @@ import tacos.wz.ids.DWI_Random;
  */
 public class TacosCommandDebug {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
-        MapleMap map = chr.getMap();
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
+        TacosMap map = chr.getMap();
 
         switch (dcmd.get(0)) {
             case "/search" -> {
@@ -296,7 +296,7 @@ public class TacosCommandDebug {
             }
             case "/randommap" -> {
                 int mapid = WzDataStorage.MAP.getRandom();
-                MapleMap map_to = chr.findMap(mapid);
+                TacosMap map_to = chr.findMap(mapid);
                 chr.changeMapPortal(map_to, map_to.getPortal(0));
 
                 chr.DebugMsg("randommap : " + map_to.getId());

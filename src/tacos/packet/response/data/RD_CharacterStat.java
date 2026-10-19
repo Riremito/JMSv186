@@ -18,7 +18,6 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosPet;
 import odin.client.PlayerStats;
 import tacos.config.Content;
@@ -36,7 +35,7 @@ import tacos.packet.ops.OpsChangeStat;
 public class RD_CharacterStat {
 
     // GW_CharacterStat::Decode
-    public static byte[] Encode(MapleCharacter chr) {
+    public static byte[] Encode(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(chr.getId()); // dwCharacterID
@@ -385,7 +384,7 @@ public class RD_CharacterStat {
     }
 
     // GW_CharacterStat::DecodeMoney
-    public static byte[] EncodeMoney(MapleCharacter chr) {
+    public static byte[] EncodeMoney(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
         if (Config.GreaterOrEqual(Region.KMS, 197)) {
             data.Encode8(chr.getMeso());
@@ -396,7 +395,7 @@ public class RD_CharacterStat {
     }
 
     // DecodeBuffer size 0x0C
-    public static byte[] EncodePachinko(MapleCharacter chr) {
+    public static byte[] EncodePachinko(TacosCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(chr.getId());

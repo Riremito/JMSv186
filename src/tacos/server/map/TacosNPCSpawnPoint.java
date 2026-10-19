@@ -20,7 +20,6 @@ package tacos.server.map;
 
 import java.awt.Point;
 import tacos.server.map.object.TacosNpc;
-import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
@@ -73,7 +72,7 @@ public class TacosNPCSpawnPoint {
 
     private TacosNpc npc = null;
 
-    public TacosNpc regen(MapleMap map) {
+    public TacosNpc regen(TacosMap map) {
         if (this.npc != null) {
             return null;
         }

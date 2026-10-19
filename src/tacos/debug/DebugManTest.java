@@ -18,8 +18,8 @@
  */
 package tacos.debug;
 
-import odin.client.MapleCharacter;
-import odin.server.maps.MapleMap;
+import tacos.client.TacosCharacter;
+import tacos.server.map.TacosMap;
 
 /**
  *
@@ -28,13 +28,13 @@ import odin.server.maps.MapleMap;
 public class DebugManTest extends DebugMan implements IDebugMan {
 
     @Override
-    public boolean start(MapleCharacter chr) {
+    public boolean start(TacosCharacter chr) {
         super.start(this, chr);
         return true;
     }
 
     @Override
-    public boolean end(MapleCharacter chr) {
+    public boolean end(TacosCharacter chr) {
         super.end(chr);
         return true;
     }
@@ -42,7 +42,7 @@ public class DebugManTest extends DebugMan implements IDebugMan {
     private int target_map_id = 910000000;
 
     @Override
-    public boolean action(MapleCharacter chr, int status, int answer) {
+    public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0: {
                 NpcTag nt = new NpcTag();
@@ -69,7 +69,7 @@ public class DebugManTest extends DebugMan implements IDebugMan {
                 return false;
             }
             case 2: {
-                MapleMap map = chr.findMap(target_map_id);
+                TacosMap map = chr.findMap(target_map_id);
                 chr.changeMapPortal(map, map.getPortal(0));
                 return false;
             }

@@ -19,7 +19,7 @@
 package tacos.debug;
 
 import java.util.ArrayList;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.wz.WzDataStorage;
 
 /**
@@ -51,7 +51,7 @@ public class DebugMan_WarpBoss extends DebugMan implements IDebugMan {
     }
 
     @Override
-    public boolean start(MapleCharacter chr) {
+    public boolean start(TacosCharacter chr) {
         if (this.warp_boss_data.isEmpty()) {
             return false;
         }
@@ -60,13 +60,13 @@ public class DebugMan_WarpBoss extends DebugMan implements IDebugMan {
     }
 
     @Override
-    public boolean end(MapleCharacter chr) {
+    public boolean end(TacosCharacter chr) {
         super.end(chr);
         return true;
     }
 
     @Override
-    public boolean action(MapleCharacter chr, int status, int answer) {
+    public boolean action(TacosCharacter chr, int status, int answer) {
         switch (status) {
             case 0: {
                 NpcTag nt = new NpcTag();

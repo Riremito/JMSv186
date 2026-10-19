@@ -21,21 +21,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.life;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosNpc;
+import tacos.client.TacosCharacter;
 
 public class PlayerNPC extends TacosNpc {
 
-    private MapleCharacter player = null;
+    private TacosCharacter player = null;
     private String player_name = "";
 
-    public PlayerNPC(int npc_id, MapleCharacter player) {
+    public PlayerNPC(int npc_id, TacosCharacter player) {
         super(npc_id);
         this.player = player;
         this.player_name = player.getName();
     }
 
-    public MapleCharacter getPlayer() {
+    public TacosCharacter getPlayer() {
         return this.player;
     }
 

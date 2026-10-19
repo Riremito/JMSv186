@@ -18,8 +18,9 @@
  */
 package tacos.packet.request.sub;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosPet;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
@@ -46,7 +47,6 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleItemInformationProvider;
-import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
@@ -58,7 +58,7 @@ import tacos.wz.opt.FieldOpt;
  */
 public class ReqSub_UserConsumeCashItemUseRequest {
 
-    public static boolean OnUserConsumeCashItemUseRequestInternal(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+    public static boolean OnUserConsumeCashItemUseRequestInternal(TacosCharacter chr, TacosMap map, ClientPacket cp) {
         int timestamp = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
         short cash_item_slot = cp.Decode2();
         int cash_item_id = cp.Decode4();
@@ -76,7 +76,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             {
                 byte action = cp.Decode1();
                 int map_id = 999999999;
-                MapleCharacter target_chr = null;
+                TacosCharacter target_chr = null;
                 if (action == 0) {
                     map_id = cp.Decode4();
                 } else {
@@ -127,7 +127,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
 
                 int buff = miip.getStateChangeItem(cash_item_id);
                 if (buff != 0) {
-                    for (MapleCharacter mChar : map.getAllPlayers()) {
+                    for (TacosCharacter mChar : map.getAllPlayers()) {
                         miip.getItemEffect(buff).applyTo(mChar);
                     }
                 }
@@ -238,7 +238,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
-    public static boolean cashItem506(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
+    public static boolean cashItem506(TacosCharacter chr, int cash_item_id, ClientPacket cp) {
         switch (cash_item_id) {
             case 5060000: // ネームメーカー
             {
@@ -317,7 +317,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
-    public static boolean cashItem507_Megaphone(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
+    public static boolean cashItem507_Megaphone(TacosCharacter chr, int cash_item_id, ClientPacket cp) {
         byte channel = (byte) chr.getClient().getChannelId();
         switch (cash_item_id) {
             // メガホン
@@ -365,7 +365,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
+                TacosCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
                 return true;
             }
@@ -389,7 +389,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
+                TacosCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
                 return true;
             }
@@ -403,7 +403,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
+                TacosCharacter chr_to = name_to.equals("") ? null : chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage(nFlag, 0, chr, messages, chr_to));
                 return true;
             }
@@ -428,7 +428,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                     messages.add(cp.DecodeStr());
                 }
 
-                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
+                TacosCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to, false);
                 chr.SendPacket(ResCMapleTVMan.MapleTVUpdateMessage((byte) 3, 2, chr, messages, chr_to));
                 return true;
             }
@@ -479,7 +479,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
-    public static boolean cashItem517_PetNameChange(MapleCharacter chr, int cash_item_id, ClientPacket cp) {
+    public static boolean cashItem517_PetNameChange(TacosCharacter chr, int cash_item_id, ClientPacket cp) {
         switch (cash_item_id) {
             case 5170000: {
                 TacosPet pet = null;
@@ -511,7 +511,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
         return false;
     }
 
-    public static boolean cashItem520_Money(MapleCharacter chr, int cash_item_id) {
+    public static boolean cashItem520_Money(TacosCharacter chr, int cash_item_id) {
         switch (cash_item_id) {
             case 5200000:
             case 5200001:

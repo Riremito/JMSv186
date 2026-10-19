@@ -18,8 +18,9 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosMonster;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import java.util.List;
 import tacos.packet.ClientPacket;
@@ -28,7 +29,6 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleCarnivalFactory;
-import odin.server.maps.MapleMap;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
@@ -40,12 +40,12 @@ import tacos.wz.WzXML;
 public class ReqCField_MonsterCarnival {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -63,7 +63,7 @@ public class ReqCField_MonsterCarnival {
         return false;
     }
 
-    public static void OnMCarnivalRequest(MapleCharacter chr, ClientPacket cp) {
+    public static void OnMCarnivalRequest(TacosCharacter chr, ClientPacket cp) {
         if (chr.getCarnivalParty() == null) {
             chr.sendStatChanged(true);
             return;
@@ -71,7 +71,7 @@ public class ReqCField_MonsterCarnival {
         int tab = cp.Decode1();
         int num = cp.Decode4();
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (tab == 0) {
             List<SimpleImmutableEntry<Integer, Integer>> mobs = map.getNodeInfo().getMobsToSpawn();
             if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getValue()) {
@@ -83,7 +83,7 @@ public class ReqCField_MonsterCarnival {
             if (mons != null && map.makeCarnivalSpawn(chr.getCarnivalParty().getTeam(), mons, num)) {
                 chr.getCarnivalParty().useCP(chr, mobs.get(num).getValue());
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : map.getAllPlayers()) {
+                for (TacosCharacter player : map.getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
                 map.broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
@@ -110,7 +110,7 @@ public class ReqCField_MonsterCarnival {
             if (found) {
                 chr.getCarnivalParty().useCP(chr, skil.cpLoss);
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : map.getAllPlayers()) {
+                for (TacosCharacter player : map.getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                     //chr.dropMessage(5, "[" + (chr.getCarnivalParty().getTeam() == 0 ? "Red" : "Blue") + "] " + chr.getName() + " has used a skill. [" + dis.name() + "].");
                 }
@@ -130,7 +130,7 @@ public class ReqCField_MonsterCarnival {
             if (map.makeCarnivalReactor(chr.getCarnivalParty().getTeam(), num)) {
                 chr.getCarnivalParty().useCP(chr, skil.cpLoss);
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
-                for (MapleCharacter player : map.getAllPlayers()) {
+                for (TacosCharacter player : map.getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
                 }
                 map.broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));

@@ -19,8 +19,7 @@
 package tacos.server.map;
 
 import java.awt.Point;
-import odin.client.MapleCharacter;
-import odin.server.maps.MapleMap;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import tacos.constants.TacosConstants;
 import tacos.script.TacosScriptPortal;
@@ -112,7 +111,7 @@ public class TacosPortal {
     }
 
     public boolean enterPortal(TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (!this.portalState) {
             return false;
@@ -128,7 +127,7 @@ public class TacosPortal {
             if (this.targetmap == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
                 return false;
             }
-            MapleMap map_to = chr.findMap(this.targetmap);
+            TacosMap map_to = chr.findMap(this.targetmap);
             TacosPortal portal_to = map_to.getPortal(this.target);
             // find portal failed.
             if (portal_to == null) {

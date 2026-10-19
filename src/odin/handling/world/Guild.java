@@ -21,10 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.Collection;
+import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.handling.world.guild.MapleBBSThread;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
@@ -72,7 +72,7 @@ public class Guild {
         return null;
     }
 
-    public MapleGuild getGuild(MapleCharacter mc) {
+    public MapleGuild getGuild(TacosCharacter mc) {
         return getGuild(mc.getGuildId());
     }
 
@@ -283,7 +283,7 @@ public class Guild {
     }
 
     public void setGuildAndRank(int cid, int guildid, int rank, int alliancerank) {
-        MapleCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
+        TacosCharacter mc = TacosWorld.find(0).findOnlinePlayerById(cid, false);
         if (mc == null) {
             return;
         }
@@ -303,7 +303,7 @@ public class Guild {
         if (targetIds == exception) {
             return;
         }
-        MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+        TacosCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
         if (player != null && player.getGuildId() == guildid) {
             player.SendPacket(packet);
         }

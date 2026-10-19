@@ -18,8 +18,9 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.List;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
@@ -31,7 +32,6 @@ import odin.server.MapleTrade;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMiniRoomProtocol;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.ShopDispatch;
 import odin.server.shops.MapleMiniGame;
@@ -52,7 +52,7 @@ import tacos.server.map.object.TacosMerchant;
 public class ReqCMiniRoomBaseDlg {
 
     // CMiniRoomBaseDlg::OnPacketBase
-    public static boolean OnMiniRoom(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+    public static boolean OnMiniRoom(TacosCharacter chr, TacosMap map, ClientPacket cp) {
         byte protocol_req = cp.Decode1();
 
         TacosWorld world = chr.getWorld();
@@ -484,7 +484,7 @@ public class ReqCMiniRoomBaseDlg {
                 String visitor_name = cp.DecodeStr();
                 Object ips = chr.getPlayerShop();
                 if (ips != null) {
-                    for (SimpleImmutableEntry<Byte, MapleCharacter> visitors : ShopDispatch.getVisitors(ips)) {
+                    for (SimpleImmutableEntry<Byte, TacosCharacter> visitors : ShopDispatch.getVisitors(ips)) {
                         if (visitors.getValue().getName().equals(visitor_name)) {
                             visitors.getValue().SendPacket(ResCMiniRoomBaseDlg.shopBlockPlayer(visitor_slot));
                             visitors.getValue().setPlayerShop(null);
@@ -793,7 +793,7 @@ public class ReqCMiniRoomBaseDlg {
     }
 
     // 雇用商店遠隔管理機
-    public static boolean remoteStore(MapleCharacter chr, short item_slot) {
+    public static boolean remoteStore(TacosCharacter chr, short item_slot) {
         Runnable item_use = chr.checkItemSlot(item_slot, 5470000);
 
         if (item_use == null) {
@@ -814,7 +814,7 @@ public class ReqCMiniRoomBaseDlg {
         merchant.setOpen(false);
 
         // "商店の主人が物品整理中でございます。もうしばらく後でご利用ください。"
-        List<SimpleImmutableEntry<Byte, MapleCharacter>> visitors = merchant.getVisitors();
+        List<SimpleImmutableEntry<Byte, TacosCharacter>> visitors = merchant.getVisitors();
         for (int i = 0; i < visitors.size(); i++) {
             visitors.get(i).getValue().SendPacket(ResCMiniRoomBaseDlg.MaintenanceHiredMerchant((byte) i + 1));
             visitors.get(i).getValue().setPlayerShop(null);

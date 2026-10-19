@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import tacos.client.TacosClient;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import odin.handling.world.guild.MapleBBSThread;
 import java.util.List;
 import tacos.packet.response.ResCWvsContext;
@@ -37,7 +37,7 @@ public class BBSHandler {
     }
 
     public static void BBSOperation(ClientPacket cp, TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return; // expelled while viewing bbs or hax
         }
@@ -92,7 +92,7 @@ public class BBSHandler {
     }
 
     private static void listBBSThreads(TacosClient client, int start) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return;
         }
@@ -100,7 +100,7 @@ public class BBSHandler {
     }
 
     private static void newBBSReply(TacosClient client, int localthreadid, String text) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return;
         }
@@ -109,7 +109,7 @@ public class BBSHandler {
     }
 
     private static void editBBSThread(TacosClient client, String title, String text, int icon, int localthreadid) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return; // expelled while viewing?
         }
@@ -118,7 +118,7 @@ public class BBSHandler {
     }
 
     private static void newBBSThread(TacosClient client, String title, String text, int icon, boolean bNotice) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return; // expelled while viewing?
         }
@@ -126,7 +126,7 @@ public class BBSHandler {
     }
 
     private static void deleteBBSThread(TacosClient client, int localthreadid) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return;
         }
@@ -134,7 +134,7 @@ public class BBSHandler {
     }
 
     private static void deleteBBSReply(TacosClient client, int localthreadid, int replyid) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return;
         }
@@ -144,7 +144,7 @@ public class BBSHandler {
     }
 
     private static void displayThread(TacosClient client, int localthreadid) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             return;
         }

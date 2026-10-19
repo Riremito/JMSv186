@@ -1,20 +1,20 @@
 package odin.server;
 
 import java.util.LinkedList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.client.MapleCharacter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ScheduledFuture;
 import tacos.packet.response.ResCField;
 import odin.server.Timer.CloneTimer;
-import odin.server.maps.MapleMap;
 import tacos.server.TacosWorld;
 
 public class MapleSquad {
 
-    private MapleCharacter leader;
+    private TacosCharacter leader;
     private final String leaderName;
     private Map<String, String> members = new LinkedHashMap<>();
     private Map<String, String> bannedMembers = new LinkedHashMap<>();
@@ -26,7 +26,7 @@ public class MapleSquad {
     private byte status = 0;
     private ScheduledFuture<?> removal;
 
-    public MapleSquad(int ch, String type, MapleCharacter leader, int expiration) {
+    public MapleSquad(int ch, String type, TacosCharacter leader, int expiration) {
         this.leader = leader;
         this.members.put(leader.getName(), MapleCarnivalChallenge.getJobBasicNameById(leader.getJob()));
         this.leaderName = leader.getName();
@@ -40,11 +40,11 @@ public class MapleSquad {
         scheduleRemoval(expiration);
     }
 
-    public MapleMap getBeginMap() {
+    public TacosMap getBeginMap() {
         return this.leader.findMap(beginMapId);
     }
 
-    public MapleCharacter getChar(String name) {
+    public TacosCharacter getChar(String name) {
         return this.leader.getChannelServer().getOnlinePlayers().findByName(name);
     }
 
@@ -68,7 +68,7 @@ public class MapleSquad {
         return new LinkedList<>(bannedMembers.keySet());
     }
 
-    public boolean isBanned(MapleCharacter member) {
+    public boolean isBanned(TacosCharacter member) {
         return bannedMembers.containsKey(member.getName());
     }
 
@@ -225,7 +225,7 @@ public class MapleSquad {
     }
 
     // used by script
-    public MapleCharacter getLeader() {
+    public TacosCharacter getLeader() {
         if (leader == null) {
             if (members.size() > 0 && getChar(leaderName) != null) {
                 leader = getChar(leaderName);
@@ -245,7 +245,7 @@ public class MapleSquad {
     }
 
     // used by script
-    public int addMember(MapleCharacter member, boolean join) {
+    public int addMember(TacosCharacter member, boolean join) {
         String job = MapleCarnivalChallenge.getJobBasicNameById(member.getJob());
         if (join) {
             if (!members.containsKey(member.getName())) {
@@ -268,7 +268,7 @@ public class MapleSquad {
     }
 
     // used by script
-    public void removeMember(MapleCharacter chr) {
+    public void removeMember(TacosCharacter chr) {
         if (members.containsKey(chr.getName())) {
             members.remove(chr.getName());
         }

@@ -19,7 +19,7 @@
 package tacos.packet.response.builder;
 
 import lombok.Builder;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -29,7 +29,7 @@ import odin.client.MapleCharacter;
 public class PB_Friend {
 
     public int nFriendMax;
-    public MapleCharacter chr;
+    public TacosCharacter chr;
     public int friend_id;
     public int friend_channel;
     public int friend_level;

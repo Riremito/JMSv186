@@ -19,7 +19,7 @@
 package tacos.server;
 
 import java.util.ArrayList;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.debug.DebugLogger;
 
 /**
@@ -28,13 +28,13 @@ import tacos.debug.DebugLogger;
  */
 public class TacosOnlinePlayers {
 
-    private ArrayList<MapleCharacter> players = new ArrayList<>();
+    private ArrayList<TacosCharacter> players = new ArrayList<>();
 
-    public ArrayList<MapleCharacter> get() {
+    public ArrayList<TacosCharacter> get() {
         return this.players;
     }
 
-    public boolean add(MapleCharacter player) {
+    public boolean add(TacosCharacter player) {
         if (this.players.contains(player)) {
             DebugLogger.ErrorLog("OnlinePlayers : add");
             return false;
@@ -44,7 +44,7 @@ public class TacosOnlinePlayers {
         return true;
     }
 
-    public boolean remove(MapleCharacter player) {
+    public boolean remove(TacosCharacter player) {
         if (!this.players.contains(player)) {
             DebugLogger.ErrorLog("OnlinePlayers : remove");
             return false;
@@ -54,8 +54,8 @@ public class TacosOnlinePlayers {
         return true;
     }
 
-    public MapleCharacter findByName(String character_name) {
-        for (MapleCharacter player : this.players) {
+    public TacosCharacter findByName(String character_name) {
+        for (TacosCharacter player : this.players) {
             if (player.getName().equals(character_name)) {
                 return player;
             }
@@ -64,8 +64,8 @@ public class TacosOnlinePlayers {
         return null;
     }
 
-    public MapleCharacter findById(int character_id) {
-        for (MapleCharacter player : this.players) {
+    public TacosCharacter findById(int character_id) {
+        for (TacosCharacter player : this.players) {
             if (player.getId() == character_id) {
                 return player;
             }
@@ -77,7 +77,7 @@ public class TacosOnlinePlayers {
     public void disconnectAll() {
         DebugLogger.InfoLog("disconnectAll dc.");
 
-        for (MapleCharacter player : this.players) {
+        for (TacosCharacter player : this.players) {
             player.getClient().disconnect(false, true);
             player.getClient().getSession().close();
         }

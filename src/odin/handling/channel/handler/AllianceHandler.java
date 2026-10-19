@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.handling.world.guild.MapleGuild;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ClientPacket;
@@ -31,7 +31,7 @@ import tacos.packet.ServerPacket;
 public class AllianceHandler {
 
     public static void HandleAlliance(ClientPacket cp, TacosClient client, boolean denied) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getGuildId() <= 0) {
             chr.updateStat();
             return;
@@ -150,12 +150,12 @@ public class AllianceHandler {
     }
 
     public static void DenyInvite(TacosClient client, MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
-        MapleCharacter player = client.getPlayer();
+        TacosCharacter player = client.getPlayer();
         int inviteid = client.getWorld().getGuild().getInvitedId(player.getGuildId());
         if (inviteid > 0) {
             int newAlliance = client.getWorld().getAlliance().getAllianceLeader(inviteid);
             if (newAlliance > 0) {
-                MapleCharacter chr = client.getChannelServer().getOnlinePlayers().findById(newAlliance);
+                TacosCharacter chr = client.getChannelServer().getOnlinePlayers().findById(newAlliance);
                 if (chr != null) {
                     chr.dropMessage(5, gs.getName() + " Guild has rejected the Guild Union invitation.");
                 }

@@ -18,7 +18,6 @@
  */
 package tacos.unofficial;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.Randomizer;
@@ -35,7 +34,7 @@ import tacos.packet.response.ResCUserRemote;
 public class PetCharacter implements IPetEx {
 
     private TacosCharacter character;
-    private MapleCharacter clone = null;
+    private TacosCharacter clone = null;
 
     public PetCharacter(TacosCharacter character) {
         this.character = character;
@@ -50,7 +49,7 @@ public class PetCharacter implements IPetEx {
     public boolean spawn(int id) {
         remove();
 
-        MapleCharacter target = this.character.getWorld().findOnlinePlayerById(id);
+        TacosCharacter target = this.character.getWorld().findOnlinePlayerById(id);
 
         if (target == null) {
             return false;

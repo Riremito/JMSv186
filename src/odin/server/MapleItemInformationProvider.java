@@ -1,6 +1,7 @@
 package odin.server;
 
 import java.util.ArrayList;
+import tacos.client.TacosCharacter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +10,6 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.constants.GameConstants;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
@@ -239,7 +239,7 @@ public class MapleItemInformationProvider {
         return ret;
     }
 
-    public Item scrollEquipWithId(Item equip, Item scrollId, boolean ws, MapleCharacter chr, int vegas) {
+    public Item scrollEquipWithId(Item equip, Item scrollId, boolean ws, TacosCharacter chr, int vegas) {
         if (equip.getType() == 1) { // See Item.java
             Equip nEquip = (Equip) equip;
             Map<String, Integer> stats = getEquipStats(scrollId.getItemId());

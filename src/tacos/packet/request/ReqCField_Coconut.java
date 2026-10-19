@@ -18,14 +18,14 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_Coconut;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.response.builder.PB_BroadcastMsg;
-import odin.server.maps.MapleMap;
 import tacos.packet.ClientPacketHeader;
 
 /**
@@ -35,13 +35,13 @@ import tacos.packet.ClientPacketHeader;
 public class ReqCField_Coconut {
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
         // 109080000
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -141,7 +141,7 @@ public class ReqCField_Coconut {
 
     }
 
-    private static void OnCoconutHit(MapleCharacter chr, short nTarget, short nDelay) {
+    private static void OnCoconutHit(TacosCharacter chr, short nTarget, short nDelay) {
         MapleCoconut coconut_map = null;
         if (coconut_map == null) {
             return;
@@ -153,7 +153,7 @@ public class ReqCField_Coconut {
         if (System.currentTimeMillis() < nut.getHitTime()) {
             return;
         }
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (nut.getHits() > 2 && Math.random() < 0.4 && !nut.isStopped()) {
             nut.setHittable(false);
             if (Math.random() < 0.01 && coconut_map.getStopped() > 0) {

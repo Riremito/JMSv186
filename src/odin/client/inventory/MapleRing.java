@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.inventory;
 
-import odin.client.MapleCharacter;
 import java.sql.SQLException;
+import tacos.client.TacosCharacter;
 import java.util.Comparator;
 import odin.server.MapleInventoryManipulator;
 import tacos.database.query.DQ_Rings;
@@ -51,7 +51,7 @@ public class MapleRing {
         return DQ_Rings.load(ringId, equipped);
     }
 
-    public static void addToDB(int itemid, MapleCharacter chr, String player, int id, int[] ringId) throws SQLException {
+    public static void addToDB(int itemid, TacosCharacter chr, String player, int id, int[] ringId) throws SQLException {
         if (!DQ_Rings.add(itemid, chr, player, id, ringId)) {
             throw new SQLException("Failed to insert into rings");
         }
@@ -96,7 +96,7 @@ public class MapleRing {
         return hash;
     }
 
-    public static void removeRingFromDb(MapleCharacter player) {
+    public static void removeRingFromDb(TacosCharacter player) {
         DQ_Rings.remove(player);
     }
 

@@ -19,12 +19,13 @@
 package tacos.packet.request;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosNpc;
 import tacos.server.map.object.TacosDrop;
 import odin.client.Skill;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.PlayerStats;
 import odin.client.SkillFactory;
@@ -74,7 +75,6 @@ import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
 import odin.server.life.MobSkill;
 import tacos.server.map.object.TacosDynamicPortal;
-import odin.server.maps.MapleMap;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift.MapleGiftData;
@@ -144,11 +144,11 @@ public class ReqCUser {
     }
 
     public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -717,7 +717,7 @@ public class ReqCUser {
                 break;
             }
         }
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online.");
@@ -746,7 +746,7 @@ public class ReqCUser {
                 break;
             }
         }
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
 
         if (chr == null) {
             DebugLogger.ErrorLog("character is not online.");
@@ -773,12 +773,12 @@ public class ReqCUser {
     }
 
     public static boolean OnFamilyPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -828,7 +828,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserTransferFieldRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserTransferFieldRequest(TacosCharacter chr, ClientPacket cp) {
         boolean isKMS95orLater = Config.GreaterOrEqual(Region.KMS, 95) || Config.GreaterOrEqual(Region.KMST, 330) || Region.IMS.check() || Region.MSEA.check(); // not in KMST391
         short unk1 = isKMS95orLater ? cp.Decode2() : 0; // ?_?
         int unk2 = isKMS95orLater ? cp.Decode4() : 0; // 0
@@ -846,7 +846,7 @@ public class ReqCUser {
         return chr.usePortal(isPortal, map_id_to, portal_name, revive_type);
     }
 
-    public static void OnUserTransferFieldRequest_ITC(MapleCharacter chr) {
+    public static void OnUserTransferFieldRequest_ITC(TacosCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getWorld().getITC().getOnlinePlayers().remove(chr);
         try {
@@ -856,7 +856,7 @@ public class ReqCUser {
         }
     }
 
-    public static void OnUserTransferFieldRequest_CS(MapleCharacter chr) {
+    public static void OnUserTransferFieldRequest_CS(TacosCharacter chr) {
         chr.getWorld().addMigratingPlayer(chr);
         chr.getWorld().getCashShop().getOnlinePlayers().remove(chr);
         try {
@@ -866,7 +866,7 @@ public class ReqCUser {
         }
     }
 
-    public static boolean OnUserTransferChannelRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserTransferChannelRequest(TacosCharacter chr, ClientPacket cp) {
         int channel = cp.Decode1(); // from 0.
 
         if (!chr.isAlive() || FieldOpt.FIELDOPT_MIGRATELIMIT.check(chr.getMap().getFieldLimit())) {
@@ -877,7 +877,7 @@ public class ReqCUser {
         return chr.changeChannel(channel + 1);
     }
 
-    public static boolean OnUserMigrateToCashShopRequest(TacosClient client, MapleCharacter chr) {
+    public static boolean OnUserMigrateToCashShopRequest(TacosClient client, TacosCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;
@@ -898,7 +898,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserMove(MapleCharacter chr, ClientPacket cp, MapleMap map) {
+    public static boolean OnUserMove(TacosCharacter chr, ClientPacket cp, TacosMap map) {
         // not in TWMS148, CMS104, but in TWMS125
         if (Config.GreaterOrEqual(Region.JMS, 180) || Config.Between(Region.TWMS, 121, 125) || Config.Between(Region.CMS, 85, 88) || Config.GreaterOrEqual(Region.GMS, 95) || Config.GreaterOrEqual(Region.BMS, 24)) {
             int unk1 = cp.Decode4(); // -1
@@ -933,7 +933,7 @@ public class ReqCUser {
 
         // follow.
         if (chr.getPassenger() != 0) {
-            MapleCharacter passenger = map.getPlayerById(chr.getPassenger());
+            TacosCharacter passenger = map.getPlayerById(chr.getPassenger());
             if (passenger != null) {
                 map.userMove(passenger, move_path); // test
                 passenger.update(move_path); // for when passenger cancels follow.
@@ -950,7 +950,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSitRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserSitRequest(TacosCharacter chr, ClientPacket cp) {
         short map_chair_id = cp.Decode2();
 
         boolean is_cancel = (map_chair_id == -1);
@@ -967,7 +967,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserPortableChairSitRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserPortableChairSitRequest(TacosCharacter chr, ClientPacket cp) {
         int item_id = cp.Decode4();
 
         Item toUse = chr.getInventory(MapleInventoryType.SETUP).findById(item_id);
@@ -986,12 +986,12 @@ public class ReqCUser {
     }
 
     // BMS, CUser::OnAttack
-    public static boolean OnUserAttack(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnUserAttack(TacosCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         ParseCUser_Attack attack = ParseCUser_Attack.parse(chr, header, cp);
         attack.setCritical(chr);
         attack.setBullet(chr);
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;
         if (is_skill_attack) {
             Skill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
@@ -1073,8 +1073,8 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserHit(MapleCharacter chr, ClientPacket cp) {
-        MapleMap map = chr.getMap();
+    public static boolean OnUserHit(TacosCharacter chr, ClientPacket cp) {
+        TacosMap map = chr.getMap();
         ResCUserRemote.UserHitData uhd = new ResCUserRemote.UserHitData();
 
         uhd.dwCharacterID = chr.getId();
@@ -1267,7 +1267,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserChat(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+    public static boolean OnUserChat(TacosCharacter chr, TacosMap map, ClientPacket cp) {
         int timestamp = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70) || Region.BMS.check()) ? cp.Decode4() : 0;
         String message = cp.DecodeStr();
         boolean bOnlyBalloon = (Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 48) || Config.GreaterOrEqual(Region.JMS, 147) || Config.GreaterOrEqual(Region.CMS, 63) || Config.GreaterOrEqual(Region.TWMS, 74) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 62) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Region.BMS.check()) ? (cp.Decode1() != 0) : false; // skill macro
@@ -1282,7 +1282,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserEmotion(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserEmotion(TacosCharacter chr, ClientPacket cp) {
         int emotion_id = cp.Decode4();
         if (7 < emotion_id) {
             int item_id = 5160000 + emotion_id - 8;
@@ -1294,13 +1294,13 @@ public class ReqCUser {
         if (emotion_id <= 0) {
             return false;
         }
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         map.splitSendPacket(chr, ResCUserRemote.UserEmotion(chr, emotion_id), chr.getId());
         return true;
     }
 
     // CWvsContext::SendActiveEffectItemChange
-    public static boolean OnUserActivateEffectItem(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserActivateEffectItem(TacosCharacter chr, ClientPacket cp) {
         int nEffectItemID = cp.Decode4();
         int type = nEffectItemID / 10000;
 
@@ -1330,7 +1330,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserMonsterBookSetCover(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserMonsterBookSetCover(TacosCharacter chr, ClientPacket cp) {
         int nMonsterBookCoverID = cp.Decode4();
 
         chr.getMonsterBook().setCover(nMonsterBookCoverID);
@@ -1338,13 +1338,13 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSelectNpc(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserSelectNpc(TacosCharacter chr, ClientPacket cp) {
         int m_dwNpcId = cp.Decode4();
         short x = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
         short y = Config.LessOrEqual(Region.KMS, 3) ? 0 : cp.Decode2();
 
         TacosClient client = chr.getClient();
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         TacosNpc npc = map.getNPCByOid(m_dwNpcId);
         if (npc == null) {
             DebugLogger.ErrorLog("OnUserSelectNpc : npc");
@@ -1359,7 +1359,7 @@ public class ReqCUser {
         return OnUserSelectNpcInternal(chr, npc_id, npc_id);
     }
 
-    public static boolean OnUserSelectNpcInternal(MapleCharacter chr, int npc_script_id, int npc_id) {
+    public static boolean OnUserSelectNpcInternal(TacosCharacter chr, int npc_script_id, int npc_id) {
         TacosClient client = chr.getClient();
         // npc shop from server img.
         if (TacosNpcShop.startNpcShop(chr, npc_script_id, npc_id)) {
@@ -1407,7 +1407,7 @@ public class ReqCUser {
         return TacosScriptNPC.getInstance().start(client, npc_script_id, npc_id);
     }
 
-    public static boolean OnUserRemoteShopOpenRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserRemoteShopOpenRequest(TacosCharacter chr, ClientPacket cp) {
         short item_slot = cp.Decode2();
 
         ReqCMiniRoomBaseDlg.remoteStore(chr, item_slot);
@@ -1415,7 +1415,7 @@ public class ReqCUser {
     }
 
     // JMS, プレミアムさすらいの商人ミョミョ
-    public static boolean OnUserPremiumShopOpenRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserPremiumShopOpenRequest(TacosCharacter chr, ClientPacket cp) {
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
 
@@ -1425,7 +1425,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserGivePopularityRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserGivePopularityRequest(TacosCharacter chr, ClientPacket cp) {
         int target_id = cp.Decode4();
         byte mode = cp.Decode1();
         boolean is_up = mode != 0;
@@ -1440,7 +1440,7 @@ public class ReqCUser {
         }
 
         int famechange = mode == 0 ? -1 : 1;
-        MapleCharacter target = chr.getMap().getPlayerByOid(target_id);
+        TacosCharacter target = chr.getMap().getPlayerByOid(target_id);
         switch (chr.canGiveFame(target)) {
             case OK:
                 if (Math.abs(target.getFame() + famechange) <= 30000) {
@@ -1467,11 +1467,11 @@ public class ReqCUser {
     }
 
     // CUser::OnCharacterInfoRequest
-    public static boolean OnCharacterInfoRequest(MapleCharacter chr, ClientPacket cp, MapleMap map) {
+    public static boolean OnCharacterInfoRequest(TacosCharacter chr, ClientPacket cp, TacosMap map) {
         // CCheatInspector::InspectExclRequestTime
         int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int m_dwCharacterId = cp.Decode4();
-        MapleCharacter player = map.getPlayerById(m_dwCharacterId); // CUser::FindUser
+        TacosCharacter player = map.getPlayerById(m_dwCharacterId); // CUser::FindUser
 
         if (player == null) {
             chr.updateStat();
@@ -1482,7 +1482,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserActivatePetRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserActivatePetRequest(TacosCharacter chr, ClientPacket cp) {
         int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
         byte flag = (Config.LessOrEqual(Region.KMS, 31) || Config.LessOrEqual(Region.JMS, 131) || Config.PostBB()) ? 1 : cp.Decode1();
@@ -1506,7 +1506,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserEntrustedShopRequest(MapleCharacter chr, MapleMap map, byte es_req, long cash_item_uid) {
+    public static boolean OnUserEntrustedShopRequest(TacosCharacter chr, TacosMap map, byte es_req, long cash_item_uid) {
         chr.DebugMsg("OnUserEntrustedShopRequest : " + es_req + "," + cash_item_uid);
         // HiredMerchantHandler.UseHiredMerchant(c);
         if (OpsEntrustedShop.find(es_req) != OpsEntrustedShop.EntrustedShopReq_CheckOpenPossible) {
@@ -1517,7 +1517,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnShopScannerRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnShopScannerRequest(TacosCharacter chr, ClientPacket cp) {
         byte req = cp.Decode1();
 
         switch (OpsShopScanner.find(req)) {
@@ -1534,7 +1534,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserShopScannerItemUseRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserShopScannerItemUseRequest(TacosCharacter chr, ClientPacket cp) {
         short owl_slot = cp.Decode2(); // inlined
         int owl_item_id = cp.Decode4(); // inlined
         int target_item_id = cp.Decode4();
@@ -1552,12 +1552,12 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserMapTransferItemUseRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserMapTransferItemUseRequest(TacosCharacter chr, ClientPacket cp) {
         short slot = cp.Decode2();
         int item_id = cp.Decode4();
         byte cmd = cp.Decode1();
 
-        MapleMap target_map = null;
+        TacosMap target_map = null;
         OpsMapTransfer ops_res = OpsMapTransfer.MapTransferRes_Unknown;
         // shared with cash item teleport rock, CWvsContext::RunMapTransferItem
         switch (cmd) {
@@ -1596,7 +1596,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserPortalScrollUseRequest(MapleCharacter chr, short item_slot, int item_id) {
+    public static boolean OnUserPortalScrollUseRequest(TacosCharacter chr, short item_slot, int item_id) {
         Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null || item_used.getQuantity() < 1 || item_used.getItemId() != item_id) {
             return false;
@@ -1610,7 +1610,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserUpgradeItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot, int vegas) {
+    public static boolean OnUserUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot, int vegas) {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
@@ -1810,17 +1810,17 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserHyperUpgradeItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
+    public static boolean OnUserHyperUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
 
         return true;
     }
 
-    public static boolean OnUserItemOptionUpgradeItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
+    public static boolean OnUserItemOptionUpgradeItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
 
         return true;
     }
 
-    public static boolean OnUserItemReleaseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
+    public static boolean OnUserItemReleaseRequest(TacosCharacter chr, TacosMap map, short item_slot, short equip_slot) {
         Item magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         Item toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
 
@@ -1860,7 +1860,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserAbilityUpRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserAbilityUpRequest(TacosCharacter chr, ClientPacket cp) {
 
         int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         long flag = 0;
@@ -1874,7 +1874,7 @@ public class ReqCUser {
         return OnAbilityUpRequestInternal(chr, flag);
     }
 
-    public static boolean OnAbilityUpRequestInternal(MapleCharacter chr, long flag) {
+    public static boolean OnAbilityUpRequestInternal(TacosCharacter chr, long flag) {
         PlayerStats stat = chr.getStat();
         int job = chr.getJob();
         if (chr.getRemainingAp() > 0) {
@@ -2025,7 +2025,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserAbilityMassUpRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserAbilityMassUpRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp = cp.Decode4();
         int count = cp.Decode4(); // ループ数
 
@@ -2093,7 +2093,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserChangeStatRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserChangeStatRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp_1 = 0;
 
         time_stamp_1 = cp.Decode4(Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 92) || Config.GreaterOrEqual(Region.JMS, 180) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70));
@@ -2134,14 +2134,14 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSkillUpRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserSkillUpRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int skill_id = cp.Decode4();
 
         return OnSkillUpRequestInternal(chr, skill_id);
     }
 
-    public static boolean OnSkillUpRequestInternal(MapleCharacter chr, int skill_id) {
+    public static boolean OnSkillUpRequestInternal(TacosCharacter chr, int skill_id) {
         boolean isBeginnerSkill = false;
         int remainingSp;
         chr.getSpUsed().set(skill_id);
@@ -2236,8 +2236,8 @@ public class ReqCUser {
     }
 
     // CUserLocal::SendSkillUseRequest
-    public static boolean OnUserSkillUseRequest(MapleCharacter chr, ClientPacket cp) {
-        MapleMap map = chr.getMap();
+    public static boolean OnUserSkillUseRequest(TacosCharacter chr, ClientPacket cp) {
+        TacosMap map = chr.getMap();
         int update_time = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int nSkillID = cp.Decode4();
         byte nSLV = cp.Decode1(); // unused.
@@ -2337,8 +2337,8 @@ public class ReqCUser {
     }
 
     // CancelBuffHandler
-    public static boolean OnUserSkillCancelRequest(MapleCharacter chr, ClientPacket cp) {
-        MapleMap map = chr.getMap();
+    public static boolean OnUserSkillCancelRequest(TacosCharacter chr, ClientPacket cp) {
+        TacosMap map = chr.getMap();
         int buff_id = cp.Decode4();
 
         chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
@@ -2351,7 +2351,7 @@ public class ReqCUser {
     }
 
     // CUserLocal::DoActiveSkill_Prepare
-    public static boolean OnUserSkillPrepareRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserSkillPrepareRequest(TacosCharacter chr, ClientPacket cp) {
         int nSkillID = cp.Decode4();
         byte nSLV = cp.Decode1();
         short action = 0; // m_nOneTimeAction & 0x7FFF | (m_nMoveAction << 15)
@@ -2375,7 +2375,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserDropMoneyRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserDropMoneyRequest(TacosCharacter chr, ClientPacket cp) {
         int time_stamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         int mesos = cp.Decode4();
 
@@ -2389,7 +2389,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserPortalScriptRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserPortalScriptRequest(TacosCharacter chr, ClientPacket cp) {
         byte portal_count = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         String portal_name = cp.DecodeStr();
         short chr_x = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode2();
@@ -2398,7 +2398,7 @@ public class ReqCUser {
         return chr.usePortalScript(portal_name);
     }
 
-    public static boolean OnUserPortalTeleportRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserPortalTeleportRequest(TacosCharacter chr, ClientPacket cp) {
         byte portal_count = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode1();
         String portal_name = cp.DecodeStr();
         short chr_x = cp.Decode2();
@@ -2409,7 +2409,7 @@ public class ReqCUser {
         return chr.usePortalTeleport(portal_name);
     }
 
-    public static boolean OnUserMapTransferRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserMapTransferRequest(TacosCharacter chr, ClientPacket cp) {
         byte cmd = cp.Decode1();
         byte rock_type = cp.Decode1();
         boolean is_vip = rock_type == 1;
@@ -2458,9 +2458,9 @@ public class ReqCUser {
     }
 
     // CQuest::StartQuest
-    public static boolean OnUserQuestRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserQuestRequest(TacosCharacter chr, ClientPacket cp) {
         TacosClient client = chr.getClient();
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
 
         byte action = cp.Decode1();
         short m_usQuestID = cp.Decode2();
@@ -2527,7 +2527,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserGatherItemRequest(MapleCharacter chr, byte slot_type) {
+    public static boolean OnUserGatherItemRequest(TacosCharacter chr, byte slot_type) {
         MapleInventoryType mit = MapleInventoryType.getByType(slot_type);
 
         if (mit == MapleInventoryType.UNDEFINED || mit == MapleInventoryType.EQUIPPED) {
@@ -2553,7 +2553,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSortItemRequest(MapleCharacter chr, byte slot_type) {
+    public static boolean OnUserSortItemRequest(TacosCharacter chr, byte slot_type) {
         MapleInventoryType mit = MapleInventoryType.getByType(slot_type);
 
         if (mit == MapleInventoryType.UNDEFINED || mit == MapleInventoryType.EQUIPPED) {
@@ -2592,7 +2592,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserChangeSlotPositionRequest(MapleCharacter chr, byte slot_type, short slot_from, short slot_to, short quantity) {
+    public static boolean OnUserChangeSlotPositionRequest(TacosCharacter chr, byte slot_type, short slot_from, short slot_to, short quantity) {
         if (chr.getPlayerShop() != null || chr.getTrade() != null) {
             return false;
         }
@@ -2640,7 +2640,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserStatChangeItemUseRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserStatChangeItemUseRequest(TacosCharacter chr, ClientPacket cp) {
         int timestamp = Config.LessOrEqual(Region.KMS, 31) ? 0 : cp.Decode4();
         short item_slot = cp.Decode2();
         int item_id = cp.Decode4();
@@ -2654,7 +2654,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserStatChangeItemCancelRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserStatChangeItemCancelRequest(TacosCharacter chr, ClientPacket cp) {
         int buff_id = cp.Decode4(); // negative item id.
 
         chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
@@ -2665,7 +2665,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserMobSummonItemUseRequest(MapleCharacter chr, short item_slot, int item_id) {
+    public static boolean OnUserMobSummonItemUseRequest(TacosCharacter chr, short item_slot, int item_id) {
         Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null) {
             return false;
@@ -2676,7 +2676,7 @@ public class ReqCUser {
         if (item_used.getQuantity() < 1) {
             return false;
         }
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (FieldOpt.FIELDOPT_SUMMONLIMIT.check(map.getFieldLimit())) {
             return false;
         }
@@ -2698,11 +2698,11 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserPetFoodItemUseRequest(MapleCharacter chr, short item_slot, int item_id) {
+    public static boolean OnUserPetFoodItemUseRequest(TacosCharacter chr, short item_slot, int item_id) {
         return ReqCUser_Pet.OnPetFood(chr, MapleInventoryType.USE, item_slot, item_id);
     }
 
-    public static boolean OnUserTamingMobFoodItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id) {
+    public static boolean OnUserTamingMobFoodItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, int item_id) {
         Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         MapleMount mount = chr.getMount();
 
@@ -2725,11 +2725,11 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserConsumeCashItemUseRequest(MapleCharacter chr, MapleMap map, ClientPacket cp) {
+    public static boolean OnUserConsumeCashItemUseRequest(TacosCharacter chr, TacosMap map, ClientPacket cp) {
         return ReqSub_UserConsumeCashItemUseRequest.OnUserConsumeCashItemUseRequestInternal(chr, map, cp);
     }
 
-    public static boolean OnUserBridleItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id, int mob_oid) {
+    public static boolean OnUserBridleItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, int item_id, int mob_oid) {
         TacosMonster mob = map.getMonsterByOid(mob_oid);
 
         if (mob == null) {
@@ -2795,7 +2795,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSkillLearnItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id) {
+    public static boolean OnUserSkillLearnItemUseRequest(TacosCharacter chr, TacosMap map, short item_slot, int item_id) {
         int item_type = item_id / 10000;
         boolean bIsMaterbook = (item_type == 229 || item_type == 562);
         boolean bUsed = false;
@@ -2844,7 +2844,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserRepairDurabilityAll(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserRepairDurabilityAll(TacosCharacter chr, ClientPacket cp) {
         int npc_id = Region.JMS.check() || Region.JMST.check() ? cp.Decode4() : 0;
 
         List<Equip> equips = new ArrayList<>();
@@ -2892,7 +2892,7 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserRepairDurability(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserRepairDurability(TacosCharacter chr, ClientPacket cp) {
         int nPOS = cp.Decode4();
         int npc_id = Region.JMS.check() || Region.JMST.check() ? cp.Decode4() : 0;
 
@@ -2918,15 +2918,15 @@ public class ReqCUser {
     }
 
     // CWvsContext::SendFollowCharacterRequest
-    public static boolean OnUserFollowCharacterRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnUserFollowCharacterRequest(TacosCharacter chr, ClientPacket cp) {
         int dwDriverID = cp.Decode4();
         byte bAutoReq = cp.Decode1();
         byte bKeyInput = cp.Decode1();
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
 
         if (bKeyInput != 0) {
-            MapleCharacter driver = map.getPlayerById(chr.getDriver());
+            TacosCharacter driver = map.getPlayerById(chr.getDriver());
             if (driver != null) {
                 driver.setPassenger(0);
             }
@@ -2935,7 +2935,7 @@ public class ReqCUser {
             return true;
         }
 
-        MapleCharacter driver = map.getPlayerById(dwDriverID);
+        TacosCharacter driver = map.getPlayerById(dwDriverID);
         if (driver == null) {
             return false;
         }
@@ -2949,8 +2949,8 @@ public class ReqCUser {
     }
 
     // CWvsContext::SendFollowRequestApply
-    public static boolean OnSetPassenserResult(MapleCharacter chr, ClientPacket cp) {
-        MapleMap map = chr.getMap();
+    public static boolean OnSetPassenserResult(TacosCharacter chr, ClientPacket cp) {
+        TacosMap map = chr.getMap();
         int error = 0;
 
         int m_dwFollowRequesterID = cp.Decode4();
@@ -2960,7 +2960,7 @@ public class ReqCUser {
             error = cp.Decode4(); // always 5.
         }
 
-        MapleCharacter passenger = map.getPlayerById(m_dwFollowRequesterID);
+        TacosCharacter passenger = map.getPlayerById(m_dwFollowRequesterID);
         if (passenger == null) {
             return false;
         }
@@ -2976,9 +2976,9 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnGroupMessage(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnGroupMessage(TacosCharacter chr, ClientPacket cp) {
         TacosWorld world = chr.getWorld();
-        ArrayList<MapleCharacter> players = new ArrayList<>();
+        ArrayList<TacosCharacter> players = new ArrayList<>();
         // update_time
         int nChatTarget = cp.Decode1(); // nChatTarget
         byte nMemberCnt = cp.Decode1(); // nMemberCnt
@@ -2989,7 +2989,7 @@ public class ReqCUser {
         String sText = cp.DecodeStr(); // sText
 
         for (int player_id : adwGroupMemberID) {
-            MapleCharacter player = world.findOnlinePlayerById(player_id);
+            TacosCharacter player = world.findOnlinePlayerById(player_id);
             if (player == null) {
                 continue;
             }
@@ -2998,7 +2998,7 @@ public class ReqCUser {
 
         switch (OpsChatGroup.find(nChatTarget)) {
             case CG_Friend: {
-                for (MapleCharacter friend : players) {
+                for (TacosCharacter friend : players) {
                     if (!friend.getBuddylist().containsVisible(chr.getId())) {
                         DebugLogger.ErrorLog("OnGroupMessage : CG_Friend");
                         continue;
@@ -3049,21 +3049,21 @@ public class ReqCUser {
         return false;
     }
 
-    private static boolean OnWhisper(MapleCharacter chr, ClientPacket cp) {
+    private static boolean OnWhisper(TacosCharacter chr, ClientPacket cp) {
         int operation = cp.Decode1();
         Ops_Whisper loc_whis = Ops_Whisper.find(operation & ~Ops_Whisper.WP_Request.get());
 
         switch (loc_whis) {
             case WP_Location: {
                 String player_name = cp.DecodeStr();
-                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(player_name);
+                TacosCharacter chr_to = chr.getWorld().findOnlinePlayer(player_name);
                 chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Location, chr, player_name, null, chr_to));
                 return true;
             }
             case WP_Whisper: {
                 String name_to = cp.DecodeStr();
                 String message = cp.DecodeStr();
-                MapleCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to);;
+                TacosCharacter chr_to = chr.getWorld().findOnlinePlayer(name_to);;
                 if (chr_to == null) {
                     chr.SendPacket(ResCField.Whisper(Ops_Whisper.WP_Result, Ops_Whisper.WP_Whisper, chr, name_to, message, null));
                     return false;
@@ -3081,7 +3081,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPartyRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnPartyRequest(TacosCharacter chr, ClientPacket cp) {
         int type = cp.Decode1();
         MapleParty party = chr.getParty();
         MaplePartyCharacter partyplayer = new MaplePartyCharacter(chr);
@@ -3154,7 +3154,7 @@ public class ReqCUser {
                     return false;
                 }
 
-                MapleCharacter invited = chr.getWorld().findOnlinePlayer(character_name, false);
+                TacosCharacter invited = chr.getWorld().findOnlinePlayer(character_name, false);
                 if (invited == null) {
                     chr.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_JoinParty_UnknownUser));
                     return false;
@@ -3205,7 +3205,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnPartyResult(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnPartyResult(TacosCharacter chr, ClientPacket cp) {
         int type = cp.Decode1();
         int party_id = cp.Decode4();
 
@@ -3225,7 +3225,7 @@ public class ReqCUser {
                 return true;
             }
             case PartyRes_InviteParty_BlockedUser: {
-                MapleCharacter leader = chr.getWorld().findOnlinePlayerById(party.getLeader().getId());
+                TacosCharacter leader = chr.getWorld().findOnlinePlayerById(party.getLeader().getId());
                 if (leader != null) {
                     leader.SendPacket(ResCWvsContext.PartyResult(OpsParty.PartyRes_InviteParty_BlockedUser, chr));
                 }
@@ -3260,7 +3260,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnMemoRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnMemoRequest(TacosCharacter chr, ClientPacket cp) {
         byte type = cp.Decode1();
 
         switch (OpsMemo.find(type)) {
@@ -3301,13 +3301,13 @@ public class ReqCUser {
     }
 
     // CField::TryEnterTownPortal
-    public static boolean OnEnterTownPortalRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnEnterTownPortalRequest(TacosCharacter chr, ClientPacket cp) {
         int door_character_id = cp.Decode4();
         boolean is_town_to_field = cp.Decode1() != 0;
 
         for (TacosMysticDoor door : chr.getMap().getAllDoors()) {
             if (door.getOwnerId() == door_character_id) {
-                MapleMap map_to = chr.getChannelServer().findMap(is_town_to_field ? door.getFieldMapId() : door.getTownMapId());
+                TacosMap map_to = chr.getChannelServer().findMap(is_town_to_field ? door.getFieldMapId() : door.getTownMapId());
                 chr.changeMapPortal(map_to, door.getTownPortal());
                 return true;
             }
@@ -3319,7 +3319,7 @@ public class ReqCUser {
 
     // CWvsContext::SendSendInvitaionRequest
     // CWvsContext::SendInvitationQuery
-    public static boolean OnMarriageRequest(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnMarriageRequest(TacosCharacter chr, ClientPacket cp) {
         TacosClient client = chr.getClient();
         byte mode = cp.Decode1();
 
@@ -3329,7 +3329,7 @@ public class ReqCUser {
                 String name = cp.DecodeStr();
                 int item_id = cp.Decode4();
                 int ring_id = 1112300 + (item_id - 2240004);
-                MapleCharacter player = chr.getChannelServer().getOnlinePlayers().findByName(name);
+                TacosCharacter player = chr.getChannelServer().getOnlinePlayers().findByName(name);
 
                 if (0 < chr.getMarriageId()) {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_RequesterAlreadyEngaged, 0, null, null));
@@ -3373,7 +3373,7 @@ public class ReqCUser {
                 boolean accepted = cp.Decode1() != 0;
                 String name = cp.DecodeStr();
                 int character_id = cp.Decode4();
-                MapleCharacter player = chr.getChannelServer().getOnlinePlayers().findByName(name);
+                TacosCharacter player = chr.getChannelServer().getOnlinePlayers().findByName(name);
                 if (chr.getMarriageId() > 0 || player == null || player.getId() != character_id || player.getMarriageItemId() <= 0 || !player.haveItem(player.getMarriageItemId(), 1) || player.getMarriageId() > 0) {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_RequesterCanceled, 0, null, null));
                     return true;
@@ -3414,7 +3414,7 @@ public class ReqCUser {
         return false;
     }
 
-    public static boolean OnUserMigrateToITCRequest(TacosClient client, MapleCharacter chr) {
+    public static boolean OnUserMigrateToITCRequest(TacosClient client, TacosCharacter chr) {
         // temporary off
         if (Config.GreaterOrEqual(Region.JMS, 302)) {
             return false;
@@ -3435,7 +3435,7 @@ public class ReqCUser {
         return true;
     }
 
-    private static boolean OnUserExpUpItemUseRequest(MapleCharacter chr, short nPOS, int nItemID) {
+    private static boolean OnUserExpUpItemUseRequest(TacosCharacter chr, short nPOS, int nItemID) {
         Item item = chr.getInventory(MapleInventoryType.USE).getItem(nPOS);
         if (item == null || chr.getGashaEXP() > 0 || item.getItemId() != nItemID || (nItemID / 10000) != 237) {
             chr.sendStatChanged(true);
@@ -3459,7 +3459,7 @@ public class ReqCUser {
         return true;
     }
 
-    private static boolean OnUserTempExpUseRequest(MapleCharacter chr) {
+    private static boolean OnUserTempExpUseRequest(TacosCharacter chr) {
         int exp_table = TacosSharedExpTable.getExpNeededForLevel(chr.getLevel());
         int exp_current = chr.getExp();
         int exp_temp = chr.getGashaEXP();
@@ -3481,7 +3481,7 @@ public class ReqCUser {
         return true;
     }
 
-    private static boolean OnTalkToTutor(MapleCharacter chr) {
+    private static boolean OnTalkToTutor(TacosCharacter chr) {
 
         int job_id = chr.getJob();
 

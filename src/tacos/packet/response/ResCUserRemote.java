@@ -19,7 +19,6 @@
 package tacos.packet.response;
 
 import java.util.ArrayList;
-import odin.client.MapleCharacter;
 import odin.client.inventory.MapleRing;
 import tacos.config.Region;
 import java.util.List;
@@ -45,7 +44,7 @@ import tacos.packet.response.builder.PB_UserEffect;
 public class ResCUserRemote {
 
     // CUserRemote::OnMove
-    public static ServerPacket UserMove(MapleCharacter chr, ParseCMovePath data) {
+    public static ServerPacket UserMove(TacosCharacter chr, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserMove);
 
         sp.Encode4(chr.getId());
@@ -54,7 +53,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnAttack
-    public static ServerPacket UserAttack(MapleCharacter chr, ParseCUser_Attack attack) {
+    public static ServerPacket UserAttack(TacosCharacter chr, ParseCUser_Attack attack) {
         ServerPacket sp = new ServerPacket(attack.getHeader());
         boolean is_hide_damage = ContentCustom.CC_HIDE_DAMAGE.get();
 
@@ -125,7 +124,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillPrepare
-    public static ServerPacket UserSkillPrepare(MapleCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
+    public static ServerPacket UserSkillPrepare(TacosCharacter chr, int skill_id, byte skill_level, short action, byte m_nPrepareSkillActionSpeed) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillPrepare);
 
         sp.Encode4(chr.getId());
@@ -143,7 +142,7 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSkillCancel
-    public static ServerPacket UserSkillCancel(MapleCharacter chr, int nSkillID) {
+    public static ServerPacket UserSkillCancel(TacosCharacter chr, int nSkillID) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSkillCancel);
 
         sp.Encode4(chr.getId());
@@ -208,7 +207,7 @@ public class ResCUserRemote {
     }
 
     // CUser::OnEmotion
-    public static ServerPacket UserEmotion(MapleCharacter chr, int expression) {
+    public static ServerPacket UserEmotion(TacosCharacter chr, int expression) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEmotion);
 
         sp.Encode4(chr.getId()); // remote
@@ -217,7 +216,7 @@ public class ResCUserRemote {
     }
 
     // CUser::SetActiveEffectItem
-    public static ServerPacket UserSetActiveEffectItem(MapleCharacter chr) {
+    public static ServerPacket UserSetActiveEffectItem(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserSetActiveEffectItem);
 
         sp.Encode4(chr.getId());
@@ -278,7 +277,7 @@ public class ResCUserRemote {
         return sp;
     }
 
-    public static ServerPacket showPetLevelUp(MapleCharacter chr, int index) {
+    public static ServerPacket showPetLevelUp(TacosCharacter chr, int index) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());
@@ -311,7 +310,7 @@ public class ResCUserRemote {
         return sp;
     }
 
-    public static ServerPacket ItemMakerResultTo(MapleCharacter chr, boolean is_success) {
+    public static ServerPacket ItemMakerResultTo(TacosCharacter chr, boolean is_success) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());

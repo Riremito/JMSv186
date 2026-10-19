@@ -18,8 +18,9 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.server.map.object.TacosPet;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosDrop;
 import tacos.client.TacosClient;
 import odin.client.inventory.Item;
@@ -40,7 +41,6 @@ import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
@@ -55,12 +55,12 @@ public class ReqCUser_Pet {
 
     // CUserPool::OnUserCommonPacket
     public static boolean OnPetPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return true;
         }
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (map == null) {
             return true;
         }
@@ -115,9 +115,9 @@ public class ReqCUser_Pet {
         return false;
     }
 
-    public static boolean OnPetFood(MapleCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
+    public static boolean OnPetFood(TacosCharacter chr, MapleInventoryType item_type, short item_slot, int item_id) {
         TacosPet pet = chr.getPetByIndex(0);
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
 
         if (pet == null || map == null) {
             return false;
@@ -145,7 +145,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetMove(MapleCharacter chr, MapleMap map, TacosPet pet, ClientPacket cp) {
+    public static boolean OnPetMove(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte unk = cp.Decode1(Config.GreaterOrEqual(Region.JMS, 302));
 
         ParseCMovePath move_path = new ParseCMovePath();
@@ -157,7 +157,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnPetAction(MapleCharacter chr, MapleMap map, TacosPet pet, ClientPacket cp) {
+    public static boolean OnPetAction(TacosCharacter chr, TacosMap map, TacosPet pet, ClientPacket cp) {
         byte nType = cp.Decode1();
         byte nAction = cp.Decode1();
         String pet_message = cp.DecodeStr();
@@ -166,7 +166,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static void OnPetInteractionRequest(MapleCharacter chr, ClientPacket cp) {
+    public static void OnPetInteractionRequest(TacosCharacter chr, ClientPacket cp) {
         int petIndex = cp.Decode4();
 
         if (petIndex == -1) {
@@ -181,7 +181,7 @@ public class ReqCUser_Pet {
         byte command = cp.Decode1();
         PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
             if (pet.getCloseness() < 30000) {
@@ -202,7 +202,7 @@ public class ReqCUser_Pet {
         map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
     }
 
-    public static boolean OnPetDropPickUpRequest(MapleCharacter chr, TacosPet pet, ClientPacket cp) {
+    public static boolean OnPetDropPickUpRequest(TacosCharacter chr, TacosPet pet, ClientPacket cp) {
         byte unk1 = cp.Decode1(); // unk
         int timestamp = cp.Decode4();
         short drop_x = cp.Decode2();
@@ -227,7 +227,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static boolean OnStatChangeItemUse(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnStatChangeItemUse(TacosCharacter chr, ClientPacket cp) {
         byte unk1 = cp.Decode1();
         int timestamp = cp.Decode4();
         short item_slot = cp.Decode2();
@@ -237,12 +237,12 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static void Pickup_Pet(MapleCharacter chr, TacosDrop mapitem, int pet_index) {
+    public static void Pickup_Pet(TacosCharacter chr, TacosDrop mapitem, int pet_index) {
         TacosClient client = chr.getClient();
         if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && map.getEverlast()))) {
             chr.updateInv();
             return;
@@ -254,15 +254,15 @@ public class ReqCUser_Pet {
 
         if (mapitem.getMeso() > 0) {
             if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
-                List<MapleCharacter> toGive = new LinkedList<>();
+                List<TacosCharacter> toGive = new LinkedList<>();
                 int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter player = map.getPlayerById(z.getId());
+                    TacosCharacter player = map.getPlayerById(z.getId());
                     if (player != null && player.getId() != chr.getId()) {
                         toGive.add(player);
                     }
                 }
-                for (MapleCharacter player : toGive) {
+                for (TacosCharacter player : toGive) {
                     player.gainMeso(splitMeso / toGive.size() + (player.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true);
                 }
                 chr.gainMeso(mapitem.getMeso() - splitMeso, true);

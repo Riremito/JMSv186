@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client;
 
 import odin.constants.GameConstants;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.Item;
 import odin.client.inventory.Equip;
@@ -95,7 +96,7 @@ public class PlayerStats {
     //same with incMesoProp/incRewardProp for now
     public double dam_r;
     public double bossdam_r;
-    private MapleCharacter chr;
+    private TacosCharacter chr;
     private float shouldHealHP;
     private float shouldHealMP;
     private float speedMod;
@@ -113,7 +114,7 @@ public class PlayerStats {
     private int accuracy;
     public ReentrantLock lock = new ReentrantLock(); //we're getting concurrentmodificationexceptions, but would this slow things down?
 
-    public PlayerStats(MapleCharacter chr) {
+    public PlayerStats(TacosCharacter chr) {
         // TODO, move str/dex/int etc here -_-
         this.chr = chr;
     }
@@ -176,7 +177,7 @@ public class PlayerStats {
         }
         this.hp = (short) thp;
 
-        MapleCharacter chra = chr;
+        TacosCharacter chra = chr;
         if (chra != null) {
             if (!silent) {
                 chra.updatePartyMemberHP();
@@ -268,7 +269,7 @@ public class PlayerStats {
     }
 
     public void recalcLocalStats(boolean first_login) {
-        MapleCharacter chra = chr;
+        TacosCharacter chra = chr;
         if (chra == null) {
             return;
         }
@@ -594,7 +595,7 @@ public class PlayerStats {
         }
     }
 
-    public boolean checkEquipLevels(MapleCharacter chr, int gain) {
+    public boolean checkEquipLevels(TacosCharacter chr, int gain) {
         boolean changed = false;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         List<Equip> all = new ArrayList<>(equipLevelHandling);
@@ -640,7 +641,7 @@ public class PlayerStats {
         return changed;
     }
 
-    public boolean checkEquipDurabilitys(MapleCharacter chr, int gain) {
+    public boolean checkEquipDurabilitys(TacosCharacter chr, int gain) {
         for (Equip item : durabilityHandling) {
             item.setDurability(item.getDurability() + gain);
             if (item.getDurability() < 0) { //shouldnt be less than 0
@@ -671,7 +672,7 @@ public class PlayerStats {
     }
 
     public void relocHeal() {
-        MapleCharacter chra = chr;
+        TacosCharacter chra = chr;
         if (chra == null) {
             return;
         }

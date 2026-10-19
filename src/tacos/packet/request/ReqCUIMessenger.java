@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.debug.DebugLogger;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ops.OpsMessenger;
@@ -32,7 +32,7 @@ import tacos.server.TacosWorld;
  */
 public class ReqCUIMessenger {
 
-    public static boolean OnPacket(MapleCharacter chr, ClientPacketHeader header, ClientPacket cp) {
+    public static boolean OnPacket(TacosCharacter chr, ClientPacketHeader header, ClientPacket cp) {
 
         switch (header) {
             case CP_Messenger: {
@@ -47,7 +47,7 @@ public class ReqCUIMessenger {
         return false;
     }
 
-    public static boolean OnMessenger(MapleCharacter chr, ClientPacket cp) {
+    public static boolean OnMessenger(TacosCharacter chr, ClientPacket cp) {
         TacosWorld world = chr.getWorld();
         TacosMessenger messenger = world.getMessenger(chr);
 
@@ -95,7 +95,7 @@ public class ReqCUIMessenger {
                 String own_name = cp.DecodeStr(); // may be not required.
                 boolean blocked = (cp.Decode1() != 0); // auto block or not.
 
-                MapleCharacter player = world.findOnlinePlayer(player_name, false);
+                TacosCharacter player = world.findOnlinePlayer(player_name, false);
                 if (player == null) {
                     return false;
                 }

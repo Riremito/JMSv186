@@ -3,7 +3,7 @@
 package odin.handling.channel.handler;
 
 import odin.client.MapleBeans;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import odin.constants.BeansConstants;
 import tacos.shared.TacosSharedExpTable;
@@ -54,7 +54,7 @@ public class BeanGame {
         String 五职业奖励[] = Beans.get五职业奖励();
         String 女皇奖励[] = Beans.get女皇奖励();
         //System.out.println("豆豆出现包" +slea.toString());
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         List<MapleBeans> beansInfo = new ArrayList<>();
         int type = cp.Decode1();
         int 力度 = 0;

@@ -19,12 +19,12 @@
 package tacos.database.query;
 
 import java.sql.Connection;
+import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import odin.server.quest.MapleQuest;
 import tacos.database.DatabaseConnection;
@@ -41,7 +41,7 @@ public class DQ_Queststatus {
     /**
      * NOTE: unlike {@code add}, load/save here declare
      * {@code throws SQLException} instead of catching it internally, since
-     * these are called from MapleCharacter.loadCharFromDB/saveToDB, which
+     * these are called from TacosCharacter.loadCharFromDB/saveToDB, which
      * manage their own outer try/catch and (for saveToDB) an explicit
      * transaction that must see any failure in order to roll back
      * correctly.
@@ -102,7 +102,7 @@ public class DQ_Queststatus {
         }
     }
 
-    public static boolean add(MapleCharacter chr) {
+    public static boolean add(TacosCharacter chr) {
         if (!DatabaseConnection.setManual()) {
             return false;
         }

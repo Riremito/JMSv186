@@ -35,7 +35,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import odin.client.MapleCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -47,7 +46,6 @@ import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
-import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
@@ -89,6 +87,18 @@ import tacos.server.map.object.TacosMysticDoor;
 import tacos.server.map.object.TacosPet;
 import tacos.server.map.object.TacosSummon;
 import tacos.wz.WzXML;
+import java.util.Collection;
+import tacos.client.TacosClient;
+import tacos.packet.ops.OpsUserEffect;
+import odin.server.MapleStatEffect;
+import odin.server.MapleCarnivalFactory;
+import odin.server.MapleCarnivalFactory.MCSkill;
+import odin.server.maps.MapleNodes.MonsterPoint;
+import tacos.debug.DebugLogger;
+import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.packet.response.ResCUserLocal;
+import tacos.packet.response.builder.PB_UserEffect;
+import odin.server.maps.MapleNodes;
 
 /**
  *
@@ -154,9 +164,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // player.
-    private LinkedHashMap<Integer, MapleCharacter> players = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosCharacter> players = new LinkedHashMap<>();
 
-    public void addPlayer(MapleCharacter chr) {
+    public void addPlayer(TacosCharacter chr) {
         this.players.put(chr.getObjectId(), chr);
     }
 
@@ -164,20 +174,20 @@ public class TacosMap extends TacosMapData {
         return this.players.remove(object_id) != null;
     }
 
-    public List<MapleCharacter> getAllPlayers() {
-        ArrayList<MapleCharacter> ret = new ArrayList<>();
-        for (MapleCharacter chr : this.players.values()) {
+    public List<TacosCharacter> getAllPlayers() {
+        ArrayList<TacosCharacter> ret = new ArrayList<>();
+        for (TacosCharacter chr : this.players.values()) {
             ret.add(chr);
         }
         return ret;
     }
 
-    public MapleCharacter getPlayerByOid(int object_id) {
+    public TacosCharacter getPlayerByOid(int object_id) {
         return this.players.get(object_id);
     }
 
-    public MapleCharacter getPlayerById(int id) {
-        for (MapleCharacter player : this.players.values()) {
+    public TacosCharacter getPlayerById(int id) {
+        for (TacosCharacter player : this.players.values()) {
             if (player.getId() == id) {
                 return player;
             }
@@ -185,9 +195,9 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public List<MapleCharacter> getPlayersInRect(Rectangle box) {
-        ArrayList<MapleCharacter> ret = new ArrayList<>();
-        for (MapleCharacter chr : this.players.values()) {
+    public List<TacosCharacter> getPlayersInRect(Rectangle box) {
+        ArrayList<TacosCharacter> ret = new ArrayList<>();
+        for (TacosCharacter chr : this.players.values()) {
             if (box.contains(chr.getPosition())) {
                 ret.add(chr);
             }
@@ -195,10 +205,10 @@ public class TacosMap extends TacosMapData {
         return ret;
     }
 
-    public List<MapleCharacter> getPlayersInRectAndInList(Rectangle box, List<MapleCharacter> chrList) {
-        List<MapleCharacter> character = new LinkedList<>();
-        Iterator<MapleCharacter> ltr = this.players.values().iterator();
-        MapleCharacter a;
+    public List<TacosCharacter> getPlayersInRectAndInList(Rectangle box, List<TacosCharacter> chrList) {
+        List<TacosCharacter> character = new LinkedList<>();
+        Iterator<TacosCharacter> ltr = this.players.values().iterator();
+        TacosCharacter a;
         while (ltr.hasNext()) {
             a = ltr.next();
             if (chrList.contains(a) && box.contains(a.getPosition())) {
@@ -231,7 +241,7 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public boolean sendInitialization(MapleCharacter chr) {
+    public boolean sendInitialization(TacosCharacter chr) {
         // user enter script.
         if (!getFirstUserEnter().equals("")) {
             if (getCharactersSize() == 1) {
@@ -262,7 +272,7 @@ public class TacosMap extends TacosMapData {
         return false;
     }
 
-    public boolean updateParty(MapleCharacter chr) {
+    public boolean updateParty(TacosCharacter chr) {
         if (chr.getParty() == null) {
             return false;
         }
@@ -273,7 +283,7 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public boolean sendExpedition(MapleCharacter chr, TacosMonster monster) {
+    public boolean sendExpedition(TacosCharacter chr, TacosMonster monster) {
         int boss_id = 0;
         if (monster != null) {
             boss_id = monster.getId();
@@ -338,7 +348,7 @@ public class TacosMap extends TacosMapData {
         return false;
     }
 
-    public boolean sendMapEffect(MapleCharacter chr) {
+    public boolean sendMapEffect(TacosCharacter chr) {
         if (mapEffect == null) {
             return false;
         }
@@ -346,7 +356,7 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public void userEnterField(MapleCharacter chr) {
+    public void userEnterField(TacosCharacter chr) {
         ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition(), MapSplitState.ACTIVE);
 
         addPlayer(chr); // object id.
@@ -392,7 +402,7 @@ public class TacosMap extends TacosMapData {
         }
 
         // to local player.
-        for (MapleCharacter player : this.players.values()) {
+        for (TacosCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
@@ -499,12 +509,12 @@ public class TacosMap extends TacosMapData {
         }
     }
 
-    public void userLeaveField(MapleCharacter chr) {
+    public void userLeaveField(TacosCharacter chr) {
         ArrayList<MapSplitState> area_states = split.getArea(chr.getPosition(), MapSplitState.ACTIVE);
         removePlayer(chr.getObjectId());
         updateAreaOnLeave(chr.getId(), chr.getPosition().x, chr.getPosition().y);
 
-        for (MapleCharacter player : this.players.values()) {
+        for (TacosCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
@@ -522,7 +532,7 @@ public class TacosMap extends TacosMapData {
             if (monster.getOwnerId() == chr.getId()) {
                 int next_owner_id = getAreaOwnerIds().get(split.find(monster.getPosition()));
                 monster.setOwnerId(next_owner_id);
-                MapleCharacter area_owner = getPlayerByOid(next_owner_id);
+                TacosCharacter area_owner = getPlayerByOid(next_owner_id);
                 if (area_owner != null) {
                     area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
                 }
@@ -532,11 +542,11 @@ public class TacosMap extends TacosMapData {
         linkedObjectLeaveField(chr);
     }
 
-    public void userMove(MapleCharacter chr, ParseCMovePath move_path) {
+    public void userMove(TacosCharacter chr, ParseCMovePath move_path) {
         ArrayList<MapSplitState> area_states = split.getMoveArea(chr.getPosition().x, chr.getPosition().y, move_path.getX(), move_path.getY());
         updateAreaOnMove(chr.getId(), chr.getPosition().x, chr.getPosition().y, move_path.getX(), move_path.getY());
 
-        for (MapleCharacter player : this.players.values()) {
+        for (TacosCharacter player : this.players.values()) {
             // self
             if (player.getId() == chr.getId()) {
                 continue;
@@ -585,7 +595,7 @@ public class TacosMap extends TacosMapData {
                 if (monster.getOwnerId() == chr.getId()) {
                     monster.setOwnerId(0);
                     chr.SendPacket(ResCMobPool.MobChangeController(monster, 0));
-                    MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+                    TacosCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
                     if (area_owner != null) {
                         monster.setOwnerId(area_owner.getId());
                         area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
@@ -681,14 +691,14 @@ public class TacosMap extends TacosMapData {
 
     // to all.
     public void broadcastPacket(ServerPacket packet) {
-        for (MapleCharacter player : getAllPlayers()) {
+        for (TacosCharacter player : getAllPlayers()) {
             player.SendPacket(packet);
         }
     }
 
     // to remote users.
     public void broadcastPacket(ServerPacket packet, int sender_id) {
-        for (MapleCharacter player : getAllPlayers()) {
+        for (TacosCharacter player : getAllPlayers()) {
             if (player.getId() != sender_id) {
                 player.SendPacket(packet);
             }
@@ -702,7 +712,7 @@ public class TacosMap extends TacosMapData {
     public void splitSendPacket(TacosMapObject object, ServerPacket packet, int sender_id) {
         ArrayList<MapSplitState> area_states = split.getArea(object.getPosition(), MapSplitState.ACTIVE);
 
-        for (MapleCharacter player : this.players.values()) {
+        for (TacosCharacter player : this.players.values()) {
             int player_number = split.find(player.getPosition());
             if (split.getTotal() <= player_number) {
                 continue;
@@ -794,7 +804,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public int getNextAreaOwnerId(int owner_id, int index) {
-        for (MapleCharacter player : getAllPlayers()) {
+        for (TacosCharacter player : getAllPlayers()) {
             if (player.getId() == owner_id) {
                 continue;
             }
@@ -996,7 +1006,7 @@ public class TacosMap extends TacosMapData {
         if (monster.getOwnerId() != 0) {
             return false;
         }
-        MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(split.find(monster.getPosition().x, monster.getPosition().y)));
+        TacosCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(split.find(monster.getPosition().x, monster.getPosition().y)));
         if (area_owner != null) {
             monster.setOwnerId(area_owner.getId());
             area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
@@ -1006,6 +1016,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void spawnRevives(TacosMonster monster, int oid) {
+        monster.setMap(this);
         checkRemoveAfter(monster);
         monster.setSummonOption(oid);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REVIVED);
@@ -1016,6 +1027,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void spawnMonster(TacosMonster monster, int spawnType) {
+        monster.setMap(this);
         OpsMobAppear ops_at = OpsMobAppear.find(spawnType);
 
         checkRemoveAfter(monster);
@@ -1028,6 +1040,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public int spawnMonsterWithEffect(TacosMonster monster, int effect, Point pos) {
+        monster.setMap(this);
         monster.setPosition(pos);
         monster.setAT(OpsMobAppear.MOBAPPEAR_REGEN);
         addMonster(monster);
@@ -1038,6 +1051,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void spawnFakeMonster(TacosMonster monster) {
+        monster.setMap(this);
         monster.setFake(true);
         monster.setAT(OpsMobAppear.MOBAPPEAR_SUSPENDED);
         addMonster(monster);
@@ -1053,7 +1067,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void addMasterMonster() {
-        TacosBossSpawnPoint bsp = TacosBossSpawnPoint.getMasterMonster((MapleMap) this);
+        TacosBossSpawnPoint bsp = TacosBossSpawnPoint.getMasterMonster((TacosMap) this);
         if (bsp != null) {
             getBossSpawnPoint().add(bsp);
         }
@@ -1301,14 +1315,14 @@ public class TacosMap extends TacosMapData {
         return this.drops.size();
     }
 
-    public void spawnMesoDrop(int meso, Point position, Point dropperPosition, MapleCharacter owner, boolean playerDrop, byte droptype) {
+    public void spawnMesoDrop(int meso, Point position, Point dropperPosition, TacosCharacter owner, boolean playerDrop, byte droptype) {
         Point droppos = calcDropPos(position, position);
         TacosDrop mdrop = new TacosDrop(null, meso, 0, droppos, owner.getId(), droptype, playerDrop);
         addDrop(mdrop);
         broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, droppos, dropperPosition));
     }
 
-    public void spawnMobMesoDrop(int meso, Point position, TacosMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype, int delay) {
+    public void spawnMobMesoDrop(int meso, Point position, TacosMonster dropper, TacosCharacter owner, boolean playerDrop, byte droptype, int delay) {
         TacosDrop mdrop = new TacosDrop(null, meso, 0, position, owner.getId(), droptype, playerDrop);
         addDrop(mdrop);
         mdrop.setDelay(delay);
@@ -1316,7 +1330,7 @@ public class TacosMap extends TacosMapData {
         mdrop.setDelay(0);
     }
 
-    public void spawnMobDrop(Item idrop, Point dropPos, TacosMonster mob, MapleCharacter chr, byte droptype, short quest_id, int delay) {
+    public void spawnMobDrop(Item idrop, Point dropPos, TacosMonster mob, TacosCharacter chr, byte droptype, short quest_id, int delay) {
         TacosDrop mdrop = new TacosDrop(idrop, 0, quest_id, dropPos, chr.getId(), droptype, false);
         addDrop(mdrop);
         mdrop.setDelay(delay);
@@ -1626,11 +1640,11 @@ public class TacosMap extends TacosMapData {
     }
 
     // compatbility
-    public MapleMap getReturnMap() {
+    public TacosMap getReturnMap() {
         return TacosWorld.find(0).getChannelServer(channel).findMap(getReturnMapId());
     }
 
-    public MapleMap getForcedReturnMap() {
+    public TacosMap getForcedReturnMap() {
         return TacosWorld.find(0).getChannelServer(channel).findMap(getForcedReturnId());
     }
 
@@ -1642,7 +1656,7 @@ public class TacosMap extends TacosMapData {
     private final TacosTask task_reactor_regen = new TacosTask();
     private final TacosTask task_mist = new TacosTask();
 
-    public boolean update(MapleCharacter player, long time_current) {
+    public boolean update(TacosCharacter player, long time_current) {
         // map update.
         if (!this.task_map.check(time_current, 1000)) {
             return false;
@@ -1650,7 +1664,7 @@ public class TacosMap extends TacosMapData {
         // clock.
         if (0 < getTimeLimit()) {
             if (getTimer(time_current) <= 0) {
-                MapleMap map_to = player.getChannelServer().findMap(getForcedReturnId());
+                TacosMap map_to = player.getChannelServer().findMap(getForcedReturnId());
                 if (map_to == null) {
                     map_to = player.getChannelServer().findMap(TacosConstants.DEFAULT_RETURN_MAP_ID);
                 }
@@ -1673,7 +1687,7 @@ public class TacosMap extends TacosMapData {
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
                 if (sp.getLastRegenTime() + sp.getMobTime() <= time_current) {
-                    TacosMonster monster = sp.regen((MapleMap) this);
+                    TacosMonster monster = sp.regen((TacosMap) this);
                     if (monster != null) {
                         addMonster(monster);
                         broadcastPacket(ResCMobPool.MobEnterField(monster));
@@ -1681,7 +1695,7 @@ public class TacosMap extends TacosMapData {
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
 
                         int number = getSplit().find(monster.getPosition());
-                        MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+                        TacosCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
                         if (area_owner != null) {
                             monster.setOwnerId(area_owner.getId());
                             area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
@@ -1694,7 +1708,7 @@ public class TacosMap extends TacosMapData {
         if (this.task_boss_regen.check(time_current, 7000)) {
             for (TacosBossSpawnPoint bsp : getBossSpawnPoint()) {
                 if (bsp.getLastRegenTime() + bsp.getMobTime() <= time_current) {
-                    TacosMonster monster = bsp.regen((MapleMap) this);
+                    TacosMonster monster = bsp.regen((TacosMap) this);
                     if (monster != null) {
                         addMonster(monster);
                         if (!bsp.getMessage().isEmpty()) {
@@ -1705,7 +1719,7 @@ public class TacosMap extends TacosMapData {
                         monster.setATEx(OpsMobAppear.MOBAPPEAR_NORMAL.get());
 
                         int number = getSplit().find(monster.getPosition());
-                        MapleCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
+                        TacosCharacter area_owner = getPlayerByOid(getAreaOwnerIds().get(number));
                         if (area_owner != null) {
                             monster.setOwnerId(area_owner.getId());
                             area_owner.SendPacket(ResCMobPool.MobChangeController(monster, (monster.isFirstAttack() ? 1 : 0) + 1));
@@ -1719,7 +1733,7 @@ public class TacosMap extends TacosMapData {
             for (TacosReactorSpawnPoint sp : getReactorSpawnPoint()) {
                 if (1 <= sp.getReactorTime()) {
                     if (sp.getLastRegenTime() + sp.getReactorTime() <= time_current) {
-                        TacosReactor reactor = sp.regen((MapleMap) this);
+                        TacosReactor reactor = sp.regen((TacosMap) this);
                         if (reactor != null) {
                             addReactor(reactor);
                         }
@@ -1753,7 +1767,7 @@ public class TacosMap extends TacosMapData {
                         /*
                     for (Object player : map.getMapObjectsInRect(mist.getBox(), Collections.singletonList(MapleMapObjectType.PLAYER))) {
                         if (mist.makeChanceResult()) {
-                            ((MapleCharacter) player).addMP((int) (mist.getSource().getX() * (((MapleCharacter) player).getStat().getMaxMp() / 100.0)));
+                            ((TacosCharacter) player).addMP((int) (mist.getSource().getX() * (((TacosCharacter) player).getStat().getMaxMp() / 100.0)));
                         }
                     }
                          */
@@ -1772,5 +1786,385 @@ public class TacosMap extends TacosMapData {
         }
 
         return true;
+    }
+
+    public void killMonster(TacosMonster monster, TacosCharacter chr, boolean withDrops, boolean second, OpsMobLeaveField animation) {
+        killMonster(monster, chr, withDrops, second, animation, 0);
+    }
+
+    public void killMonster(TacosMonster monster, TacosCharacter chr, boolean withDrops, boolean second, OpsMobLeaveField animation, int lastSkill) {
+        if ((monster.getId() == 8810122 || monster.getId() == 8810018) && !second) {
+            MapTimer.getInstance().schedule(new Runnable() {
+
+                @Override
+                public void run() {
+                    killMonster(monster, chr, true, true, OpsMobLeaveField.MOBLEAVEFIELD_ETC);
+                    killAllMonsters(true);
+                }
+            }, 3000);
+            return;
+        }
+        if (monster.getId() == 8820014) { //pb sponge, kills pb(w) first before dying
+            killMonster(8820000);
+        } else if (monster.getId() == 9300166) { //ariant pq bomb
+            animation = OpsMobLeaveField.MOBLEAVEFIELD_SWALLOW; //or is it 3?
+        }
+        monster.setLastHitSkillId(lastSkill);
+        removeMonster(monster.getObjectId());
+        int dropOwner = monster.killBy(chr, lastSkill);
+        // stop dead monster for hitAfter skills.
+        if (monster.getOwnerId() == chr.getId()) {
+            monster.setOwnerId(0);
+            chr.SendPacket(ResCMobPool.MobChangeController(monster, 0));
+        }
+        broadcastPacket(ResCMobPool.MobLeaveField(monster, animation));
+
+        if (monster.getBuffToGive() > -1) {
+            int buffid = monster.getBuffToGive();
+            MapleStatEffect buff = MapleItemInformationProvider.getInstance().getItemEffect(buffid);
+
+            for (TacosCharacter mc : getAllPlayers()) {
+                if (mc.isAlive()) {
+                    buff.applyTo(mc);
+
+                    switch (monster.getId()) {
+                        case 8810018:
+                        case 8810122:
+                        case 8820001: {
+                            PB_UserEffect pb = PB_UserEffect.builder()
+                                    .player(mc)
+                                    .skill_id(buffid)
+                                    .build();
+                            mc.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_BuffItemEffect, pb));
+                            splitSendPacket(mc, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_BuffItemEffect, pb), mc.getId());
+                            break;
+                        }
+                        default: {
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        sendExpedition(chr, monster);
+
+        int mobid = monster.getId();
+        if (mobid >= 8800003 && mobid <= 8800010) {
+            boolean makeZakReal = true;
+            Collection<TacosMonster> monsters = getAllMonsters();
+
+            for (TacosMonster mons : monsters) {
+                if (mons.getId() >= 8800003 && mons.getId() <= 8800010) {
+                    makeZakReal = false;
+                    break;
+                }
+            }
+            if (makeZakReal) {
+                for (TacosMonster mons : monsters) {
+                    if (mons.getId() == 8800000) {
+                        Point pos = mons.getPosition();
+                        this.killAllMonsters(true);
+                        spawnMonsterOnGroundBelow(WzXML.MOB.createMob(8800000), pos);
+                        break;
+                    }
+                }
+            }
+        } else if (mobid >= 8800103 && mobid <= 8800110) {
+            boolean makeZakReal = true;
+            Collection<TacosMonster> monsters = getAllMonsters();
+
+            for (TacosMonster mons : monsters) {
+                if (mons.getId() >= 8800103 && mons.getId() <= 8800110) {
+                    makeZakReal = false;
+                    break;
+                }
+            }
+            if (makeZakReal) {
+                for (TacosMonster mons : monsters) {
+                    if (mons.getId() == 8800100) {
+                        Point pos = mons.getPosition();
+                        this.killAllMonsters(true);
+                        spawnMonsterOnGroundBelow(WzXML.MOB.createMob(8800100), pos);
+                        break;
+                    }
+                }
+            }
+        }
+        if (mobid == 8820008) { //wipe out statues and respawn
+            for (Object mmo : getAllMonsters()) {
+                TacosMonster mons = (TacosMonster) mmo;
+                if (mons.getSummonOption() != monster.getObjectId()) {
+                    killMonster(mons, chr, false, false, animation);
+                }
+            }
+        } else if (mobid >= 8820010 && mobid <= 8820014) {
+            for (Object mmo : getAllMonsters()) {
+                TacosMonster mons = (TacosMonster) mmo;
+                if (mons.getId() != 8820000 && mons.getObjectId() != monster.getObjectId() && mons.getSummonOption() != monster.getObjectId()) {
+                    killMonster(mons, chr, false, false, animation);
+                }
+            }
+        }
+        if (!withDrops) {
+            return;
+        }
+        TacosCharacter killer = getPlayerById(dropOwner); // highest damage player
+        if (killer == null) {
+            killer = chr;
+        }
+        TacosReward.getReward(killer, monster);
+    }
+
+    public void spawnMonster_sSack(TacosMonster mob, Point pos, int spawnType) {
+        Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+        mob.setPosition(spos);
+        spawnMonster(mob, spawnType);
+    }
+
+    public void spawnMonsterOnGroundBelow(TacosMonster mob, Point pos, int type) {
+        spawnMonster_sSack(mob, pos, type);
+    }
+
+    // 多分Reactorの中心座標とサイズが必要, Map上の座標を利用すると足場より下に設置されているように見えるので落下する
+    public void spawnZakum(TacosReactor zakum_reactor) {
+        TacosMonster mainb = WzXML.MOB.createMob(8800000);
+        int reactor_fh_id = findBelow(zakum_reactor.getMobSpawnPoint()).getId();
+        Point zakum_pos = new Point(zakum_reactor.getMobSpawnPoint());
+        zakum_pos.y = getFootholds().get(reactor_fh_id).getY1() - 1;
+
+        DebugLogger.DebugLog("spawnZakum : fh = " + reactor_fh_id + ", " + zakum_pos);
+
+        mainb.setPosition(zakum_pos);
+        mainb.setFootholdId(reactor_fh_id);
+        mainb.setHomeFoothold(reactor_fh_id);
+        mainb.setFake(true);
+
+        spawnFakeMonster(mainb);
+        int[] zakpart = {8800003, 8800004, 8800005, 8800006, 8800007, 8800008, 8800009, 8800010};
+        for (int i : zakpart) {
+            TacosMonster part = WzXML.MOB.createMob(i);
+            part.setPosition(zakum_pos);
+            part.setFootholdId(reactor_fh_id);
+            mainb.setHomeFoothold(reactor_fh_id);
+            spawnMonster(part, -2);
+        }
+        if (squadSchedule != null) {
+            cancelSquadSchedule();
+            broadcastPacket(ResCField.DestroyClock());
+        }
+    }
+
+    public void talkMonster(String msg, int itemId, TacosMonster monster) {
+        if (itemId > 0) {
+            startMapEffect(msg, itemId, false);
+        }
+        broadcastPacket(ResCMobPool.MobEscortStopSay(monster, itemId, msg)); // 5120035
+        broadcastPacket(ResCMobPool.MobEscortReturnBefore(monster));
+    }
+
+    public void startMapEffect(String msg, int itemId) {
+        startMapEffect(msg, itemId, false);
+    }
+
+    public void startMapEffect(String msg, int itemId, boolean jukebox) {
+        if (mapEffect != null) {
+            return;
+        }
+        mapEffect = new MapleMapEffect(msg, itemId);
+        mapEffect.setJukebox(jukebox);
+        broadcastPacket(mapEffect.makeStartData());
+        MapTimer.getInstance().schedule(new Runnable() {
+
+            @Override
+            public void run() {
+                broadcastPacket(mapEffect.makeDestroyData());
+                mapEffect = null;
+            }
+        }, jukebox ? 300000 : 30000);
+    }
+
+    public void startExtendedMapEffect(String msg, int itemId) {
+        broadcastPacket(ResCField.BlowWeather(msg, itemId, true));
+        MapTimer.getInstance().schedule(new Runnable() {
+
+            @Override
+            public void run() {
+                broadcastPacket(ResCField.BlowWeather(null, 0, false));
+                broadcastPacket(ResCField.BlowWeather(msg, itemId, false));
+                //dont remove mapeffect.
+            }
+        }, 60000);
+    }
+
+    public void startJukebox(String msg, int itemId) {
+        startMapEffect(msg, itemId, true);
+    }
+
+    private void activateItemReactors(TacosDrop drop, TacosClient client) {
+        Item item = drop.getItem();
+        for (TacosReactor reactor : getAllReactors()) {
+            if (reactor.getReactorType() == 100) {
+                if (GameConstants.isCustomReactItem(reactor.getId(), item.getItemId(), reactor.getReactItem().getKey()) && reactor.getReactItem().getValue() == item.getQuantity()) {
+                    if (reactor.getArea().contains(drop.getPosition())) {
+                        if (!reactor.isTimerActive()) {
+                            // 5000 ms
+                            removeDrop(drop.getObjectId());
+                            broadcastPacket(ResCDropPool.DropLeaveField(drop, DropLeaveType.EXPIRED));
+                            reactor.hitReactor(client);
+                            reactor.setTimerActive(false);
+                            reactor.forceHitReactor((byte) 0);
+                            reactor.setTimerActive(true);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public String getSnowballPortal() {
+        int[] teamss = new int[2];
+        for (TacosCharacter chr : getAllPlayers()) {
+            if (chr.getPosition().y > -80) {
+                teamss[0]++;
+            } else {
+                teamss[1]++;
+            }
+        }
+        if (teamss[0] > teamss[1]) {
+            return "st01";
+        } else {
+            return "st00";
+        }
+    }
+
+    public boolean makeCarnivalSpawn(int team, TacosMonster newMons, int num) {
+        MonsterPoint ret = null;
+        for (MonsterPoint mp : getNodeInfo().getMonsterPoints()) {
+            if (mp.team == team || mp.team == -1) {
+                Point newpos = calcPointBelow(new Point(mp.x, mp.y));
+                newpos.y -= 1;
+                boolean found = false;
+                /*
+                for (Object s : monsterSpawn) {
+                    if (SpawnDispatch.getCarnivalId(s) > -1 && (mp.team == -1 || SpawnDispatch.getCarnivalTeam(s) == mp.team) && SpawnDispatch.getPosition(s).x == newpos.x && SpawnDispatch.getPosition(s).y == newpos.y) {
+                        found = true;
+                        break; //this point has already been used.
+                    }
+                }
+                 */
+                if (!found) {
+                    ret = mp; //this point is safe for use.
+                    break;
+                }
+            }
+        }
+        if (ret != null) {
+            newMons.setCy(ret.cy);
+            newMons.setF(0); //always.
+            newMons.setFootholdId(ret.fh);
+            newMons.setRx0(ret.x + 50);
+            newMons.setRx1(ret.x - 50); //does this matter
+            newMons.setPosition(new Point(ret.x, ret.y));
+            //SpawnPoint sp = addMonsterSpawn(newMons, 1, (byte) team, null);
+            //sp.setCarnival(num);
+        }
+        return ret != null;
+    }
+
+    public boolean makeCarnivalReactor(int team, int num) {
+        TacosReactor old = getReactorByName(team + "" + num);
+        if (old != null && old.getState() < 5) { //already exists
+            return false;
+        }
+        Point guardz = null;
+        List<TacosReactor> react = getAllReactors();
+        for (SimpleImmutableEntry<Point, Integer> guard : getNodeInfo().getGuardians()) {
+            if (guard.getValue() == team || guard.getValue() == -1) {
+                boolean found = false;
+                for (TacosReactor r : react) {
+                    if (r.getPosition().x == guard.getKey().x && r.getPosition().y == guard.getKey().y && r.getState() < 5) {
+                        found = true;
+                        break; //already used
+                    }
+                }
+                if (!found) {
+                    guardz = guard.getKey(); //this point is safe for use.
+                    break;
+                }
+            }
+        }
+        if (guardz != null) {
+            TacosReactor reactor = new TacosReactor(9980000 + team);
+            reactor.setPosition(guardz);
+            reactor.setState((byte) 1);
+            reactor.setName(team + "" + num); //lol
+            reactor.setMap(this);
+            addReactor(reactor);
+            MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
+            for (TacosMonster mons : getAllMonsters()) {
+                if (mons.getCarnivalTeam() == team) {
+                    skil.getSkill().applyEffect(null, mons, false);
+                }
+            }
+        }
+        return guardz != null;
+    }
+
+    // used by script
+    // used by script
+    public void spawnMonsterOnGroundBelow(TacosMonster mob, Point pos) {
+        spawnMonster_sSack(mob, pos, -2);
+    }
+
+    // used by script
+    public int spawnMonsterWithEffectBelow(TacosMonster mob, Point pos, int effect) {
+        Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+        return spawnMonsterWithEffect(mob, effect, spos);
+    }
+
+    // used by script
+    public void spawnChaosZakum(int x, int y) {
+        Point pos = new Point(x, y);
+        TacosMonster mainb = WzXML.MOB.createMob(8800100);
+        Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+        mainb.setPosition(spos);
+        mainb.setFake(true);
+
+        // Might be possible to use the map object for reference in future.
+        spawnFakeMonster(mainb);
+
+        int[] zakpart = {8800103, 8800104, 8800105, 8800106, 8800107,
+            8800108, 8800109, 8800110};
+
+        for (int i : zakpart) {
+            TacosMonster part = WzXML.MOB.createMob(i);
+            part.setPosition(spos);
+
+            spawnMonster(part, -2);
+        }
+        if (squadSchedule != null) {
+            cancelSquadSchedule();
+            broadcastPacket(ResCField.DestroyClock());
+        }
+    }
+
+    // used by script
+    public void spawnItemDrop(TacosCharacter player, TacosCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+        Point droppos = calcDropPos(pos, pos);
+        TacosDrop drop = new TacosDrop(item, 0, 0, droppos, owner.getId(), (byte) 2, playerDrop);
+        addDrop(drop);
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, player.getPosition()));
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, player.getPosition()));
+        activateItemReactors(drop, owner.getClient());
+    }
+
+    public void spawnItemDropByReactor(TacosReactor reactor, TacosCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+        Point droppos = calcDropPos(pos, pos);
+        TacosDrop drop = new TacosDrop(item, 0, 0, droppos, owner.getId(), (byte) 2, playerDrop);
+        addDrop(drop);
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
+        broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
     }
 }

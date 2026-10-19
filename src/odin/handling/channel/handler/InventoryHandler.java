@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.util.List;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
@@ -38,7 +39,6 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleInventoryManipulator;
 import odin.server.StructRewardItem;
 import odin.server.maps.SavedLocationType;
-import odin.server.maps.MapleMap;
 import odin.server.shops.HiredMerchant;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -46,8 +46,8 @@ import tacos.script.TacosScriptNPC;
 
 public class InventoryHandler {
 
-    public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
-        MapleCharacter player = client.getPlayer();
+    public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, TacosCharacter chr) {
+        TacosCharacter player = client.getPlayer();
         int unk1 = cp.Decode4();
         byte slot = (byte) cp.Decode2();
         int itemId = cp.Decode4();
@@ -80,7 +80,7 @@ public class InventoryHandler {
                 case 2430008: // Gold Compass
                 {
                     chr.saveLocation(SavedLocationType.RICHIE);
-                    MapleMap map;
+                    TacosMap map;
                     boolean warped = false;
 
                     for (int i = 390001000; i <= 390001004; i++) {
@@ -264,7 +264,7 @@ public class InventoryHandler {
         chr.updateInv();
     }
 
-    public static int UseTreasureChest(MapleCharacter chr, short slot, int item_id) {
+    public static int UseTreasureChest(TacosCharacter chr, short slot, int item_id) {
         Item toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
         if (toUse == null || toUse.getQuantity() <= 0 || toUse.getItemId() != item_id) {
             return 0;
@@ -317,11 +317,11 @@ public class InventoryHandler {
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
     public static void OwlWarp(TacosClient client, int id, int map) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         chr.updateInv();
         if (chr.getMapId() >= 910000000 && chr.getMapId() <= 910000022 && chr.getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
-                MapleMap mapp = chr.findMap(map);
+                TacosMap mapp = chr.findMap(map);
                 chr.changeMapPortal(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
                 List<HiredMerchant> objects;

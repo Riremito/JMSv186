@@ -1,12 +1,12 @@
 package odin.server;
 
-import odin.client.MapleCharacter;
 import java.util.LinkedList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.server.maps.MapleMap;
 
 /**
- * Note for this class : MapleCharacter reference must be removed immediately
+ * Note for this class : TacosCharacter reference must be removed immediately
  * after cpq or upon dc.
  *
  * @author Rob
@@ -14,16 +14,16 @@ import odin.server.maps.MapleMap;
 public class MapleCarnivalParty {
 
     private List<Integer> members = new LinkedList<>();
-    private MapleCharacter leader;
+    private TacosCharacter leader;
     private byte team;
     private int channel;
     private short availableCP = 0;
     private short totalCP = 0;
     private boolean winner = false;
 
-    public MapleCarnivalParty(MapleCharacter owner, List<MapleCharacter> members1, byte team1) {
+    public MapleCarnivalParty(TacosCharacter owner, List<TacosCharacter> members1, byte team1) {
         leader = owner;
-        for (MapleCharacter mem : members1) {
+        for (TacosCharacter mem : members1) {
             members.add(mem.getId());
             mem.setCarnivalParty(this);
         }
@@ -31,7 +31,7 @@ public class MapleCarnivalParty {
         channel = owner.getClient().getChannelId();
     }
 
-    public void addCP(MapleCharacter player, int ammount) {
+    public void addCP(TacosCharacter player, int ammount) {
         totalCP += ammount;
         availableCP += ammount;
         player.addCP(ammount);
@@ -41,13 +41,13 @@ public class MapleCarnivalParty {
         return availableCP;
     }
 
-    public void useCP(MapleCharacter player, int ammount) {
+    public void useCP(TacosCharacter player, int ammount) {
         availableCP -= ammount;
         player.useCP(ammount);
     }
 
     // used by script
-    public MapleCharacter getLeader() {
+    public TacosCharacter getLeader() {
         return leader;
     }
 
@@ -67,9 +67,9 @@ public class MapleCarnivalParty {
     }
 
     // used by script
-    public void warp(MapleMap map, String portalname) {
+    public void warp(TacosMap map, String portalname) {
         for (int character_id : members) {
-            MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            TacosCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
                 player.changeMapPortal(map, map.getPortal(portalname));
             }
@@ -77,9 +77,9 @@ public class MapleCarnivalParty {
     }
 
     // used by script
-    public void warp(MapleMap map, int portalid) {
+    public void warp(TacosMap map, int portalid) {
         for (int character_id : members) {
-            MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            TacosCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
                 player.changeMapPortal(map, map.getPortal(portalid));
             }
@@ -87,7 +87,7 @@ public class MapleCarnivalParty {
     }
 
     // used by script
-    public void removeMember(MapleCharacter chr) {
+    public void removeMember(TacosCharacter chr) {
         for (int i = 0; i < members.size(); i++) {
             if (members.get(i) == chr.getId()) {
                 members.remove(i);

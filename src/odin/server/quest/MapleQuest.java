@@ -1,12 +1,12 @@
 package odin.server.quest;
 
 import odin.constants.GameConstants;
-import odin.server.maps.MapleMap;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import odin.client.MapleCharacter;
 import odin.client.MapleQuestStatus;
 import tacos.packet.ops.OpsUserEffect;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -94,7 +94,7 @@ public class MapleQuest {
         return ret;
     }
 
-    public boolean canStart(MapleCharacter chr, Integer npcid) {
+    public boolean canStart(TacosCharacter chr, Integer npcid) {
         if (chr.getQuest(this).getStatus() != 0 && !(chr.getQuest(this).getStatus() == 2 && repeatable)) {
             return false;
         }
@@ -106,7 +106,7 @@ public class MapleQuest {
         return true;
     }
 
-    public boolean canComplete(MapleCharacter chr, Integer npcid) {
+    public boolean canComplete(TacosCharacter chr, Integer npcid) {
         if (chr.getQuest(this).getStatus() != 1) {
             return false;
         }
@@ -118,7 +118,7 @@ public class MapleQuest {
         return true;
     }
 
-    public void RestoreLostItem(MapleCharacter chr, int item_id) {
+    public void RestoreLostItem(TacosCharacter chr, int item_id) {
         for (MapleQuestAction a : startActs) {
             if (a.RestoreLostItem(chr, item_id)) {
                 break;
@@ -126,7 +126,7 @@ public class MapleQuest {
         }
     }
 
-    public void start(MapleCharacter chr, int npc_id) {
+    public void start(TacosCharacter chr, int npc_id) {
         if ((autoStart || checkNPCOnMap(chr, npc_id)) && canStart(chr, npc_id)) {
             for (MapleQuestAction a : startActs) {
                 if (!a.checkEnd(chr, null)) { //just in case
@@ -144,11 +144,11 @@ public class MapleQuest {
         }
     }
 
-    public void complete(MapleCharacter chr, int npc_id) {
+    public void complete(TacosCharacter chr, int npc_id) {
         complete(chr, npc_id, null);
     }
 
-    public void complete(MapleCharacter chr, int npc_id, Integer selection) {
+    public void complete(TacosCharacter chr, int npc_id, Integer selection) {
         if ((autoPreComplete || checkNPCOnMap(chr, npc_id)) && canComplete(chr, npc_id)) {
             for (MapleQuestAction a : completeActs) {
                 if (!a.checkEnd(chr, selection)) {
@@ -168,7 +168,7 @@ public class MapleQuest {
         }
     }
 
-    public void forfeit(MapleCharacter chr) {
+    public void forfeit(TacosCharacter chr) {
         if (chr.getQuest(this).getStatus() != (byte) 1) {
             return;
         }
@@ -179,7 +179,7 @@ public class MapleQuest {
         chr.updateQuest(newStatus);
     }
 
-    public void forceStart(MapleCharacter chr, int npc, String customData) {
+    public void forceStart(TacosCharacter chr, int npc, String customData) {
         MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 1, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         newStatus.setCompletionTime(chr.getQuest(this).getCompletionTime());
@@ -187,7 +187,7 @@ public class MapleQuest {
         chr.updateQuest(newStatus);
     }
 
-    public void forceComplete(MapleCharacter chr, int npc) {
+    public void forceComplete(TacosCharacter chr, int npc) {
         MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 2, npc);
         newStatus.setForfeited(chr.getQuest(this).getForfeited());
         chr.updateQuest(newStatus);
@@ -201,9 +201,9 @@ public class MapleQuest {
         return relevantMobs;
     }
 
-    private boolean checkNPCOnMap(MapleCharacter player, int npcid) {
+    private boolean checkNPCOnMap(TacosCharacter player, int npcid) {
         //mir = 1013000
-        MapleMap map = player.getMap();
+        TacosMap map = player.getMap();
         return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (map != null && map.containsNPC(npcid));
     }
 

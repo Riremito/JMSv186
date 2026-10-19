@@ -18,8 +18,8 @@
  */
 package tacos.script;
 
-import odin.client.MapleCharacter;
 import tacos.odin.OdinEventInstanceManager;
+import tacos.client.TacosCharacter;
 
 /**
  *
@@ -33,23 +33,23 @@ public interface IScriptEvent {
 
     public boolean setup();
 
-    public boolean playerEntry(OdinEventInstanceManager eim, MapleCharacter player);
+    public boolean playerEntry(OdinEventInstanceManager eim, TacosCharacter player);
 
-    public boolean playerDead(OdinEventInstanceManager eim, MapleCharacter player);
+    public boolean playerDead(OdinEventInstanceManager eim, TacosCharacter player);
 
-    public boolean playerRevive(OdinEventInstanceManager eim, MapleCharacter player);
+    public boolean playerRevive(OdinEventInstanceManager eim, TacosCharacter player);
 
     public boolean scheduledTimeout(OdinEventInstanceManager eim);
 
-    public boolean changedMap(OdinEventInstanceManager eim, MapleCharacter player, int map_id);
+    public boolean changedMap(OdinEventInstanceManager eim, TacosCharacter player, int map_id);
 
-    public boolean playerDisconnected(OdinEventInstanceManager eim, MapleCharacter player);
+    public boolean playerDisconnected(OdinEventInstanceManager eim, TacosCharacter player);
 
-    public boolean leftParty(OdinEventInstanceManager eim, MapleCharacter player);
+    public boolean leftParty(OdinEventInstanceManager eim, TacosCharacter player);
 
-    public boolean disbandParty(OdinEventInstanceManager eim, MapleCharacter player);
+    public boolean disbandParty(OdinEventInstanceManager eim, TacosCharacter player);
 
-    public boolean playerExit(OdinEventInstanceManager eim, MapleCharacter player);
+    public boolean playerExit(OdinEventInstanceManager eim, TacosCharacter player);
 
     public boolean clearPQ(OdinEventInstanceManager eim);
 

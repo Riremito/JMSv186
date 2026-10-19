@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.util.ArrayList;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.LinkedList;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
@@ -29,7 +31,6 @@ import java.util.Map.Entry;
 import odin.client.inventory.Equip;
 import odin.client.Skill;
 import odin.client.inventory.Item;
-import odin.client.MapleCharacter;
 import odin.constants.GameConstants;
 import odin.client.inventory.ItemFlag;
 import tacos.client.TacosClient;
@@ -41,7 +42,6 @@ import odin.server.MapleCarnivalParty;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleSquad;
-import odin.server.maps.MapleMap;
 import odin.server.maps.Event_DojoAgent;
 import odin.server.maps.AramiaFireWorks;
 import odin.server.quest.MapleQuest;
@@ -417,7 +417,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public int setRandomAvatar(int ticket, int... args_all) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (!haveItem(ticket)) {
             return -1;
         }
@@ -438,7 +438,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public int setAvatar(int ticket, int args) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (!haveItem(ticket)) {
             return -1;
         }
@@ -603,7 +603,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
 
     public int partyMembersInMap() {
         int inMap = 0;
-        for (MapleCharacter player : getPlayer().getMap().getAllPlayers()) {
+        for (TacosCharacter player : getPlayer().getMap().getAllPlayers()) {
             if (player.getParty() == getPlayer().getParty()) {
                 inMap++;
             }
@@ -611,13 +611,13 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         return inMap;
     }
 
-    public List<MapleCharacter> getPartyMembers() {
+    public List<TacosCharacter> getPartyMembers() {
         if (getPlayer().getParty() == null) {
             return null;
         }
-        List<MapleCharacter> chars = new LinkedList<>(); // creates an empty array full of shit..
+        List<TacosCharacter> chars = new LinkedList<>(); // creates an empty array full of shit..
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter player = getPlayer().getWorld().findOnlinePlayerById(chr.getId(), false);
+            TacosCharacter player = getPlayer().getWorld().findOnlinePlayerById(chr.getId(), false);
             if (player != null) {
                 chars.add(player);
             }
@@ -626,18 +626,18 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void warpPartyWithExp(int mapId, int exp) {
-        MapleMap target = getMap(mapId);
+        TacosMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
+            TacosCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
             player.changeMapPortal(target, target.getPortal(0));
             player.gainExp(exp, true, false, true);
         }
     }
 
     public void warpPartyWithExpMeso(int mapId, int exp, int meso) {
-        MapleMap target = getMap(mapId);
+        TacosMap target = getMap(mapId);
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
-            MapleCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
+            TacosCharacter player = client.getChannelServer().getOnlinePlayers().findByName(chr.getName());
             player.changeMapPortal(target, target.getPortal(0));
             player.gainExp(exp, true, false, true);
             player.gainMeso(meso, true);
@@ -657,11 +657,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean registerSquad(String type, int minutes, String startText) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleSquad squad = new MapleSquad(client.getChannelId(), type, chr, minutes * 60 * 1000);
         boolean ret = client.getChannelServer().addMapleSquad(squad, type);
         if (ret) {
-            MapleMap map = chr.getMap();
+            TacosMap map = chr.getMap();
 
             map.broadcastPacket(ResCField.Clock(minutes * 60));
             map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message(chr.getName() + startText).build()));
@@ -730,7 +730,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public byte isSquadMember(String type) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleSquad squad = client.getChannelServer().getMapleSquad(type);
         if (squad == null) {
             return -1;
@@ -750,7 +750,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void disbandGuild() {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         int gid = chr.getGuildId();
         if (gid <= 0 || chr.getGuildRank() != 1) {
             return;
@@ -759,7 +759,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void increaseGuildCapacity() {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr.getMeso() < 5000000) {
             client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_ALERT, PB_BroadcastMsg.builder().message("You do not have enough mesos.").build()));
             return;
@@ -781,7 +781,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void changeStat(byte slot, int type, short amount) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         Equip sel = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(slot);
         switch (type) {
             case 0:
@@ -882,7 +882,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean start_DojoAgent(boolean dojo, boolean party) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (dojo) {
             return Event_DojoAgent.warpStartDojo(chr, party);
         }
@@ -890,7 +890,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean start_PyramidSubway(int pyramid) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (pyramid >= 0) {
             return Event_PyramidSubway.warpStartPyramid(chr, pyramid);
         }
@@ -898,7 +898,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean bonus_PyramidSubway(int pyramid) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (pyramid >= 0) {
             return Event_PyramidSubway.warpBonusPyramid(chr, pyramid);
         }
@@ -945,12 +945,12 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         return client.getPlayer().getNextCarnivalRequest();
     }
 
-    public MapleCarnivalChallenge getCarnivalChallenge(MapleCharacter chr) {
+    public MapleCarnivalChallenge getCarnivalChallenge(TacosCharacter chr) {
         return new MapleCarnivalChallenge(chr);
     }
 
     public void maxStats() {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         chr.getStat().setStr((short) 32767);
         chr.getStat().setDex((short) 32767);
         chr.getStat().setInt((short) 32767);
@@ -1092,7 +1092,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (ii.getItemEffect(buff) != null && getPlayer().getGuildId() > 0) {
             MapleStatEffect mse = ii.getItemEffect(buff);
             for (TacosChannel srv_channel : this.client.getWorld().getChannels()) {
-                for (MapleCharacter chr : srv_channel.getOnlinePlayers().get()) {
+                for (TacosCharacter chr : srv_channel.getOnlinePlayers().get()) {
                     if (chr.getGuildId() == getPlayer().getGuildId()) {
                         mse.applyTo(chr, chr, true, null, duration);
                         chr.dropMessage(5, "Your guild has gotten a " + msg + " buff.");
@@ -1103,9 +1103,9 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean createAlliance(String alliancename) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         MapleParty pt = chr.getParty();
-        MapleCharacter player = client.getChannelServer().getOnlinePlayers().findById(pt.getMemberByIndex(1).getId());
+        TacosCharacter player = client.getChannelServer().getOnlinePlayers().findById(pt.getMemberByIndex(1).getId());
         if (player == null || player.getId() == chr.getId()) {
             return false;
         }
@@ -1118,7 +1118,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean addCapacityToAlliance() {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         try {
             MapleGuild gs = client.getWorld().getGuild().getGuild(chr.getGuildId());
             if (gs != null && chr.getGuildRank() == 1 && chr.getAllianceRank() == 1) {
@@ -1134,7 +1134,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean disbandAlliance() {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         try {
             MapleGuild gs = client.getWorld().getGuild().getGuild(chr.getGuildId());
             if (gs != null && chr.getGuildRank() == 1 && chr.getAllianceRank() == 1) {
@@ -1177,11 +1177,11 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void setQuestRecord(Object ch, int questid, String data) {
-        ((MapleCharacter) ch).getQuestNAdd(MapleQuest.getInstance(questid)).setCustomData(data);
+        ((TacosCharacter) ch).getQuestNAdd(MapleQuest.getInstance(questid)).setCustomData(data);
     }
 
     public void doWeddingEffect(Object ch) {
-        MapleCharacter chr = (MapleCharacter) ch;
+        TacosCharacter chr = (TacosCharacter) ch;
         getMap().broadcastPacket(ResCWvsContext.SetWeekEventMessage(getPlayer().getName() + ", do you take " + chr.getName() + " as your wife and promise to stay beside her through all downtimes, crashes, and lags?"));
         CloneTimer.getInstance().schedule(new Runnable() {
 

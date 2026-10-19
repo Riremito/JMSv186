@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import tacos.packet.ServerPacket;
+import tacos.client.TacosCharacter;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.request.parse.ParseCMovePath;
 
@@ -29,7 +29,7 @@ import tacos.packet.request.parse.ParseCMovePath;
  */
 public class ResCUser_FoxMan {
 
-    public static ServerPacket FoxManEnterField(MapleCharacter chr) {
+    public static ServerPacket FoxManEnterField(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManEnterField);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
@@ -51,7 +51,7 @@ public class ResCUser_FoxMan {
     }
 
     // CFoxMan::OnMove
-    public static ServerPacket FoxManMove(MapleCharacter chr, ParseCMovePath data) {
+    public static ServerPacket FoxManMove(TacosCharacter chr, ParseCMovePath data) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManMove);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
@@ -60,7 +60,7 @@ public class ResCUser_FoxMan {
     }
 
     // CFoxMan::OnExclResult
-    public static ServerPacket FoxManExclResult(MapleCharacter chr) {
+    public static ServerPacket FoxManExclResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManExclResult);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
@@ -68,7 +68,7 @@ public class ResCUser_FoxMan {
     }
 
     // CFoxMan::OnShowChangeEffect
-    public static ServerPacket FoxManShowChangeEffect(MapleCharacter chr) {
+    public static ServerPacket FoxManShowChangeEffect(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManShowChangeEffect);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
@@ -76,7 +76,7 @@ public class ResCUser_FoxMan {
     }
 
     // CFoxMan::OnModified
-    public static ServerPacket FoxManModified(MapleCharacter chr, boolean is_change_equip) {
+    public static ServerPacket FoxManModified(TacosCharacter chr, boolean is_change_equip) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManModified);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID
@@ -89,7 +89,7 @@ public class ResCUser_FoxMan {
         return sp;
     }
 
-    public static ServerPacket FoxManLeaveField(MapleCharacter chr) {
+    public static ServerPacket FoxManLeaveField(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FoxManLeaveField);
 
         sp.Encode4(chr.getId()); // m_dwCharacterID

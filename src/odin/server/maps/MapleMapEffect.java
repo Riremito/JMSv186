@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.server.maps;
 
-import odin.client.MapleCharacter;
 import tacos.packet.ServerPacket;
+import tacos.client.TacosCharacter;
 import tacos.packet.response.ResCField;
 
 public class MapleMapEffect {
@@ -48,7 +48,7 @@ public class MapleMapEffect {
         return jukebox ? ResCField.PlayJukeBox(itemId, msg) : ResCField.BlowWeather(msg, itemId, active);
     }
 
-    public void sendStartData(MapleCharacter chr) {
+    public void sendStartData(TacosCharacter chr) {
         chr.SendPacket(makeStartData());
     }
 }

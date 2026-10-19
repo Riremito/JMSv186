@@ -21,7 +21,6 @@ package tacos.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import odin.client.MapleCharacter;
 import org.apache.mina.common.IoSession;
 import tacos.config.DeveloperMode;
 import tacos.constants.MapleClientState;
@@ -62,14 +61,14 @@ public class TacosClient extends BaseClient {
     private boolean gameMaster;
     private byte gender = 0;
     private int charslots = TacosConstants.DEFAULT_CHARSLOT;
-    private List<MapleCharacter> characters = null;
+    private List<TacosCharacter> characters = null;
     // server info
     private int loginAttempt = 0;
     private int world = 0;
     private int selected_world = 0;
     private int selected_channel = 1;
     // in game info
-    private MapleCharacter character = null;
+    private TacosCharacter character = null;
 
     public TacosClient(IoSession session) {
         super(session);
@@ -252,11 +251,11 @@ public class TacosClient extends BaseClient {
         this.loginAttempt = 0;
     }
 
-    public MapleCharacter getPlayer() {
+    public TacosCharacter getPlayer() {
         return this.character;
     }
 
-    public void setPlayer(MapleCharacter character) {
+    public void setPlayer(TacosCharacter character) {
         this.character = character;
     }
 
@@ -266,25 +265,25 @@ public class TacosClient extends BaseClient {
         getSession().close();
     }
 
-    public List<MapleCharacter> loadCharactersFromDB(List<Integer> character_ids) {
+    public List<TacosCharacter> loadCharactersFromDB(List<Integer> character_ids) {
         this.characters = new ArrayList<>();
         for (int character_id : character_ids) {
-            MapleCharacter chr_mine = MapleCharacter.loadCharFromDB(character_id, this, false);
+            TacosCharacter chr_mine = TacosCharacter.loadCharFromDB(character_id, this, false);
             this.characters.add(chr_mine);
         }
         return this.characters;
     }
 
-    public List<MapleCharacter> getCharacters() {
+    public List<TacosCharacter> getCharacters() {
         return this.characters;
     }
 
-    public void addCharacter(MapleCharacter new_character) {
+    public void addCharacter(TacosCharacter new_character) {
         this.characters.add(new_character);
     }
 
     public boolean checkCharacterId(int character_id) {
-        for (MapleCharacter chr : this.characters) {
+        for (TacosCharacter chr : this.characters) {
             if (chr.getId() == character_id) {
                 return true;
             }
@@ -297,7 +296,7 @@ public class TacosClient extends BaseClient {
     }
 
     public boolean disconnect(boolean RemoveInChannelServer, boolean shutdown) {
-        MapleCharacter chr = getPlayer();
+        TacosCharacter chr = getPlayer();
         // save to DB
         if (chr != null) {
             chr.removalTask();

@@ -19,7 +19,7 @@
 package tacos.packet.response.builder;
 
 import lombok.Builder;
-import odin.client.MapleCharacter;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import java.util.List;
 
@@ -30,7 +30,7 @@ import java.util.List;
 @Builder
 public class PB_BroadcastMsg {
 
-    public MapleCharacter chr;
+    public TacosCharacter chr;
     @Builder.Default
     public String message = "";
     public byte ear;

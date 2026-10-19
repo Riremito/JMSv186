@@ -21,8 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;
@@ -173,11 +174,11 @@ public class MapScriptMethods {
     };
 
     public static void startScript_FirstUser(TacosClient client, String scriptName) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
         } //o_O
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         switch (onFirstUserEnter.fromString(scriptName)) {
             case dojang_Eff: {
                 int temp = (chr.getMapId() - 925000000) / 100;
@@ -439,7 +440,7 @@ public class MapScriptMethods {
     }
 
     public static void startScript_User(TacosClient client, String scriptName) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
         } //o_O
@@ -561,7 +562,7 @@ public class MapScriptMethods {
                         chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                         chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
-                        MapleMap mapto = chr.findMap(900010000);
+                        TacosMap mapto = chr.findMap(900010000);
                         chr.changeMapPortal(mapto, mapto.getPortal(0));
                         return;
                 }
@@ -681,7 +682,7 @@ public class MapScriptMethods {
             }
             case check_count: {
                 if (chr.getMapId() == 950101010 && (!chr.haveItem(4001433, 20) || chr.getLevel() < 50)) { //ravana Map
-                    MapleMap mapp = chr.findMap(950101100); //exit Map
+                    TacosMap mapp = chr.findMap(950101100); //exit Map
                     chr.changeMapPortal(mapp, mapp.getPortal(0));
                 }
                 break;
@@ -759,7 +760,7 @@ public class MapScriptMethods {
     }
 
     private static void handlePinkBeanStart(TacosClient client) {
-        MapleMap map = client.getPlayer().getMap();
+        TacosMap map = client.getPlayer().getMap();
         map.resetFully();
 
         if (!map.containsNPC(2141000)) {
@@ -768,8 +769,8 @@ public class MapScriptMethods {
     }
 
     private static void reloadWitchTower(TacosClient client) {
-        MapleCharacter chr = client.getPlayer();
-        MapleMap map = chr.getMap();
+        TacosCharacter chr = client.getPlayer();
+        TacosMap map = chr.getMap();
         map.killAllMonsters(false);
 
         int level = chr.getLevel();

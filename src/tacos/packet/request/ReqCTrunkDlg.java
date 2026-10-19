@@ -18,8 +18,8 @@
  */
 package tacos.packet.request;
 
-import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
@@ -40,7 +40,7 @@ public class ReqCTrunkDlg {
 
     // CTrunkDlg::OnPacket
     public static boolean OnPacket(TacosClient client, ClientPacket cp) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return false;
         }

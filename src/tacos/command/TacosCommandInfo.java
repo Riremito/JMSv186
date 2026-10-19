@@ -19,9 +19,9 @@
 package tacos.command;
 
 import java.util.ArrayList;
-import odin.server.maps.MapleMap;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.client.MapleCharacter;
 import odin.server.life.MonsterDropEntry;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosReward;
@@ -38,9 +38,9 @@ import tacos.wz.WzXML;
  */
 public class TacosCommandInfo {
 
-    public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
+    public static boolean executeCommand(TacosCommander dcmd, TacosCharacter chr) {
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         switch (dcmd.get(0)) {
             // server.
             case "/threadid" -> {
@@ -107,7 +107,7 @@ public class TacosCommandInfo {
         return false;
     }
 
-    private static boolean checkMapData(MapleCharacter chr) {
+    private static boolean checkMapData(TacosCharacter chr) {
         List<Integer> mob_ids = new ArrayList<>();
         List<Integer> mob_counts = new ArrayList<>();
         for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {

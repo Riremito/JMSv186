@@ -18,8 +18,8 @@
  */
 package tacos.packet.response;
 
-import odin.client.MapleCharacter;
 import odin.client.inventory.Item;
+import tacos.client.TacosCharacter;
 import odin.server.MTSStorage;
 import tacos.config.Config;
 import tacos.packet.ServerPacket;
@@ -43,7 +43,7 @@ public class ResCITC {
     }
 
     // CITC::OnQueryCashResult
-    public static ServerPacket ITCQueryCashResult(MapleCharacter chr) {
+    public static ServerPacket ITCQueryCashResult(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_ITCQueryCashResult);
 
         sp.Encode4(chr.getNexonPoint()); // nNexonCash (signed)

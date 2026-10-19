@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.client.MapleCharacter;
-import odin.server.maps.MapleMap;
 import java.util.List;
+import tacos.server.map.TacosMap;
+import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.Map;
 import odin.client.inventory.Item;
@@ -123,11 +123,11 @@ public class ItemMakerHandler {
         }
     }
 
-    public static boolean OnItemMakeRequest(ClientPacket cp, MapleCharacter chr) {
+    public static boolean OnItemMakeRequest(ClientPacket cp, TacosCharacter chr) {
         TacosClient client = chr.getClient();
         int type = cp.Decode4();
 
-        MapleMap map = chr.getMap();
+        TacosMap map = chr.getMap();
         switch (RecipeClass.find(type)) {
             case RECIPE_CLASS_NORMAL: {
                 int toCreate = cp.Decode4();
@@ -484,7 +484,7 @@ public class ItemMakerHandler {
     }
 
     private static boolean hasSkill(TacosClient client, int reqlvl) {
-        MapleCharacter chr = client.getPlayer();
+        TacosCharacter chr = client.getPlayer();
         if (GameConstants.isKOC(chr.getJob())) { // KoC Maker skill.
             return chr.getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
         } else if (GameConstants.isAran(chr.getJob())) { // KoC Maker skill.
