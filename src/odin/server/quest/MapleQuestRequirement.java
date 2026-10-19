@@ -10,9 +10,7 @@ import odin.client.MapleCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import java.util.AbstractMap.SimpleImmutableEntry;
-import tacos.wz.MapleData;
 import tacos.wz.QuestWz;
-import tacos.wz.WzXML;
 
 public class MapleQuestRequirement {
 
@@ -22,14 +20,12 @@ public class MapleQuestRequirement {
     private String stringStore;
     private List<SimpleImmutableEntry<Integer, Integer>> dataStore;
 
-    public MapleQuestRequirement(MapleQuest quest, MapleQuestRequirementType type, MapleData data) {
-        this.type = type;
+    public MapleQuestRequirement(MapleQuest quest, QuestWz.QuestRequirementInfo info) {
+        this.type = info.getType();
         this.quest = quest;
-
-        QuestWz.QuestRequirementData parsed = WzXML.QUEST.parseQuestRequirement(type, data);
-        this.intStore = parsed.intStore;
-        this.stringStore = parsed.stringStore;
-        this.dataStore = parsed.dataStore;
+        this.intStore = info.getIntStore();
+        this.stringStore = info.getStringStore();
+        this.dataStore = info.getDataStore();
     }
 
     public boolean check(MapleCharacter chr, Integer npc_id) {
