@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.LinkedList;
 import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
-import tacos.client.TacosClient;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import java.awt.Point;
@@ -350,8 +349,7 @@ public class MaplePlayerShop {
         }
     }
 
-    public void buy(TacosClient client, int item, short quantity) {
-        TacosCharacter chr = client.getPlayer();
+    public void buy(TacosCharacter chr, int item, short quantity) {
         MaplePlayerShopItem pItem = items.get(item);
         if (pItem.bundles > 0) {
             Item newItem = pItem.item.copy();
@@ -365,7 +363,7 @@ public class MaplePlayerShop {
             }
             int gainmeso = pItem.price * quantity;
             if (chr.getMeso() >= gainmeso) {
-                if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
+                if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(chr, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
                     pItem.bundles -= quantity;
                     bought.add(new BoughtItem(newItem.getItemId(), quantity, gainmeso, chr.getName()));
                     chr.gainMeso(-gainmeso, false);
@@ -401,7 +399,7 @@ public class MaplePlayerShop {
             if (items.bundles > 0) {
                 Item newItem = items.item.copy();
                 newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
-                if (MapleInventoryManipulator.addFromDrop(owner.getClient(), newItem, false)) {
+                if (MapleInventoryManipulator.addFromDrop(owner, newItem, false)) {
                     items.bundles = 0;
                 } else {
                     saveItems(); //O_o

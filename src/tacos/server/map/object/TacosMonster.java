@@ -664,7 +664,7 @@ public class TacosMonster extends TacosMapObject {
         for (TacosCharacter chr : map.getAllPlayers()) {
             chr.changeMapPortal(chr.getMap(), chr.getMap().getPortal(0));
         }
-        MapScriptMethods.startScript_FirstUser(client, "shammos_Fenter");
+        MapScriptMethods.startScript_FirstUser(client.getPlayer(), "shammos_Fenter");
     }
 
     public void sendSpawnData(TacosClient client) {

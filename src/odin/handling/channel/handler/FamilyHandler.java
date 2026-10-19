@@ -40,12 +40,11 @@ public class FamilyHandler {
         }
     }
 
-    public static void OpenFamily(ClientPacket cp, TacosClient client) {
-        client.SendPacket(ResCWvsContext.getFamilyInfo(client.getPlayer()));
+    public static void OpenFamily(ClientPacket cp, TacosCharacter chr) {
+        chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
     }
 
-    public static void UseFamily(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
+    public static void UseFamily(ClientPacket cp, TacosCharacter chr) {
         int type = cp.Decode4();
         MapleFamilyBuffEntry entry = MapleFamilyBuff.getBuffEntry(type);
         if (entry == null) {
@@ -58,7 +57,7 @@ public class FamilyHandler {
         TacosCharacter victim = null;
         switch (type) {
             case 0: //teleport: need add check for if not a safe place
-                victim = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+                victim = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
                     chr.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                     success = false;
@@ -73,7 +72,7 @@ public class FamilyHandler {
                 }
                 break;
             case 1: // TODO give a check to the player being forced somewhere else..
-                victim = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+                victim = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
                     chr.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
                 } else if (victim == null || (victim.isGM() && !chr.isGM())) {
@@ -103,19 +102,18 @@ public class FamilyHandler {
         }
         if (success) { //again
             chr.setCurrentRep(chr.getCurrentRep() - entry.rep);
-            client.SendPacket(ResCWvsContext.changeRep(-entry.rep));
+            chr.SendPacket(ResCWvsContext.changeRep(-entry.rep));
             chr.useFamilyBuff(entry);
         } else {
             chr.dropMessage(5, "An error occured.");
         }
     }
 
-    public static void FamilyOperation(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
+    public static void FamilyOperation(ClientPacket cp, TacosCharacter chr) {
         if (chr == null) {
             return;
         }
-        TacosCharacter addChr = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+        TacosCharacter addChr = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (addChr == null) {
             chr.dropMessage(1, "The name you requested is incorrect or he/she is currently not logged in.");
         } else if (addChr.getFamilyId() == chr.getFamilyId() && addChr.getFamilyId() > 0) {
@@ -140,20 +138,18 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static void FamilyPrecept(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
-        MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId());
+    public static void FamilyPrecept(ClientPacket cp, TacosCharacter chr) {
+        MapleFamily fam = chr.getWorld().getFamily().getFamily(chr.getFamilyId());
         if (fam == null || fam.getLeaderId() != chr.getId()) {
             return;
         }
         fam.setNotice(cp.DecodeStr());
     }
 
-    public static void FamilySummon(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
+    public static void FamilySummon(ClientPacket cp, TacosCharacter chr) {
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
-        TacosCharacter tt = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+        TacosCharacter tt = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (chr.getFamilyId() > 0 && tt != null && tt.getFamilyId() == chr.getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(tt.getMap().getFieldLimit())
                 && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) && chr.isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
                 && chr.getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep) {
@@ -173,14 +169,13 @@ public class FamilyHandler {
         chr.setTeleportName("");
     }
 
-    public static void DeleteJunior(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
+    public static void DeleteJunior(ClientPacket cp, TacosCharacter chr) {
         int juniorid = cp.Decode4();
         if (chr.getFamilyId() <= 0 || juniorid <= 0 || (chr.getJunior1() != juniorid && chr.getJunior2() != juniorid)) {
             return;
         }
         //junior is not required to be online.
-        MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId());
+        MapleFamily fam = chr.getWorld().getFamily().getFamily(chr.getFamilyId());
         MapleFamilyCharacter other = fam.getMFC(juniorid);
         MapleFamilyCharacter oth = chr.getMFC();
         boolean junior2 = oth.getJunior2() == juniorid;
@@ -206,13 +201,12 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static void DeleteSenior(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
+    public static void DeleteSenior(ClientPacket cp, TacosCharacter chr) {
         if (chr.getFamilyId() <= 0 || chr.getSeniorId() <= 0) {
             return;
         }
         //not required to be online
-        MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId()); //this is old family
+        MapleFamily fam = chr.getWorld().getFamily().getFamily(chr.getFamilyId()); //this is old family
         MapleFamilyCharacter mgc = fam.getMFC(chr.getSeniorId());
         MapleFamilyCharacter mgc_ = chr.getMFC();
         mgc_.setSeniorId(0);
@@ -238,8 +232,7 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static void AcceptFamily(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
+    public static void AcceptFamily(ClientPacket cp, TacosCharacter chr) {
         TacosCharacter inviter = chr.getMap().getPlayerById(cp.Decode4());
         // note : the name is decoded only when the preceding conditions are true.
         if (!(inviter != null && chr.getSeniorId() == 0
@@ -252,14 +245,14 @@ public class FamilyHandler {
         if (!accepted) {
             return;
         }
-        client.SendPacket(ResCWvsContext.getSeniorMessage(inviter.getName()));
+        chr.SendPacket(ResCWvsContext.getSeniorMessage(inviter.getName()));
         MapleFamilyCharacter old = chr.getMFC();
         if (inviter.getFamilyId() != 0) {
-            joinFamily(client, chr, inviter, old);
+            joinFamily(chr.getClient(), chr, inviter, old);
         } else {
-            createFamily(client, chr, inviter, old);
+            createFamily(chr.getClient(), chr, inviter, old);
         }
-        client.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+        chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
     }
 
     // join the family of the inviter.

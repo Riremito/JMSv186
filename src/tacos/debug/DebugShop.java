@@ -264,13 +264,13 @@ public class DebugShop {
             return false;
         }
 
-        if (!MapleInventoryManipulator.checkSpace(chr.getClient(), item_id, quantity, "")) {
+        if (!MapleInventoryManipulator.checkSpace(chr, item_id, quantity, "")) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
             return false;
         }
 
         MapleItemInformationProvider miip = MapleItemInformationProvider.getInstance();
-        MapleInventoryManipulator.addById(chr.getClient(), item_id, (short) quantity); // bool...?
+        MapleInventoryManipulator.addById(chr, item_id, (short) quantity); // bool...?
         chr.gainMeso(-item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         chr.DebugMsg("DebugShop : buy " + item_id);
@@ -301,7 +301,7 @@ public class DebugShop {
         int item_price = miip.getWholePrice(item.getItemId());
         if (is_recharge_item) {
             double unit_price = miip.getPrice(item.getItemId());
-            item_price += (int) (unit_price * miip.getSlotMax(chr.getClient(), item.getItemId()));
+            item_price += (int) (unit_price * miip.getSlotMax(item.getItemId()));
         } else {
             item_price *= quantity;
         }
@@ -314,7 +314,7 @@ public class DebugShop {
             return false;
         }
 
-        MapleInventoryManipulator.removeFromSlot(chr.getClient(), GameConstants.getInventoryType(item_id), item_slot, (short) quantity, false);
+        MapleInventoryManipulator.removeFromSlot(chr, GameConstants.getInventoryType(item_id), item_slot, (short) quantity, false);
         chr.gainMeso(item_price, false);
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
         return true;

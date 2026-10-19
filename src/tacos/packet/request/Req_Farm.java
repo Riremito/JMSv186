@@ -18,7 +18,6 @@
  */
 package tacos.packet.request;
 
-import tacos.client.TacosClient;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
@@ -30,8 +29,7 @@ import tacos.packet.ClientPacketHeader;
  */
 public class Req_Farm {
 
-    public static boolean OnPacket(TacosClient client, ClientPacketHeader header, ClientPacket cp) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean OnPacket(TacosCharacter chr, ClientPacketHeader header, ClientPacket cp) {
         if (chr == null) {
             return false;
         }

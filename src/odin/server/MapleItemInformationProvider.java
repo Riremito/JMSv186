@@ -10,7 +10,6 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.ContentCustom;
 import tacos.config.ContentState;
@@ -63,17 +62,13 @@ public class MapleItemInformationProvider {
     /**
      * returns the maximum of items in one slot
      */
-    public short getSlotMax(TacosClient client, int itemId) {
+    public short getSlotMax(int itemId) {
         if (slotMaxCache.containsKey(itemId)) {
             return slotMaxCache.get(itemId);
         }
         short ret = WzXML.ITEM.loadSlotMax(itemId);
         slotMaxCache.put(itemId, ret);
         return ret;
-    }
-
-    public short getSlotMax(int item_id) {
-        return getSlotMax(null, item_id);
     }
 
     public int getWholePrice(int itemId) {

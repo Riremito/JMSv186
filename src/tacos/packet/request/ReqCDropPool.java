@@ -156,12 +156,12 @@ public class ReqCDropPool {
             DebugLogger.InfoLog("PickUp : useItem");
             return true;
         }
-        if (!MapleInventoryManipulator.checkSpace(chr.getClient(), mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+        if (!MapleInventoryManipulator.checkSpace(chr, mapitem.getItem().getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
             chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
             DebugLogger.ErrorLog("PickUp : checkSpace");
             return false;
         }
-        if (!MapleInventoryManipulator.addFromDrop(chr.getClient(), mapitem.getItem(), true, !mapitem.isPlayerDrop())) {
+        if (!MapleInventoryManipulator.addFromDrop(chr, mapitem.getItem(), true, !mapitem.isPlayerDrop())) {
             DebugLogger.ErrorLog("PickUp : addFromDrop");
             return false;
         }

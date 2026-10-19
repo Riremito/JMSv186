@@ -58,7 +58,7 @@ public class ReqCCashShop {
                 return true;
             }
             case CP_CashShopCashItemRequest: {
-                OnCashItem(client, cp);
+                OnCashItem(chr, cp);
                 chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
                 return false;
             }
@@ -70,7 +70,7 @@ public class ReqCCashShop {
                 if (!character_name.equals("")) {
                     message = cp.DecodeStr();
                 }
-                OnCheckCoupon(client, character_name, coupon_code, (coupon_15 != 0), message);
+                OnCheckCoupon(chr, character_name, coupon_code, (coupon_15 != 0), message);
                 chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
                 return true;
             }
@@ -109,8 +109,7 @@ public class ReqCCashShop {
     }
 
     // BuyCashItem
-    public static boolean OnCashItem(TacosClient client, ClientPacket cp) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean OnCashItem(TacosCharacter chr, ClientPacket cp) {
 
         if (chr == null) {
             return false;
@@ -124,7 +123,7 @@ public class ReqCCashShop {
             case CashItemReq_Buy: {
                 byte use_maple_point = cp.Decode1();
                 int item_SN = cp.Decode4();
-                return BuyCashItem(client, use_maple_point, item_SN);
+                return BuyCashItem(chr, use_maple_point, item_SN);
             }
             // 0x06
             case CashItemReq_IncSlotCount: {
@@ -134,12 +133,12 @@ public class ReqCCashShop {
                 // 8 slot
                 if (is_slot8 != 0) {
                     int item_SN = cp.Decode4();
-                    return BuyCashItem(client, use_maple_point, item_SN);
+                    return BuyCashItem(chr, use_maple_point, item_SN);
                 }
                 // 4 slot
                 byte inv_type = cp.Decode1();
                 if (IncSlotCount4(chr, use_maple_point, inv_type)) {
-                    chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncSlotCount_Done, client, new ResCCashShop.CashItemStruct(MapleInventoryType.getByType(inv_type))));
+                    chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncSlotCount_Done, chr.getClient(), new ResCCashShop.CashItemStruct(MapleInventoryType.getByType(inv_type))));
                 } else {
                     // faield   
                 }
@@ -150,7 +149,7 @@ public class ReqCCashShop {
                 byte use_maple_point = cp.Decode1();
                 byte unk2 = cp.Decode1();
                 if (IncTrunkCount4(chr, use_maple_point)) {
-                    chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncTrunkCount_Done, client));
+                    chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_IncTrunkCount_Done, chr.getClient()));
                 } else {
                     // failed
                 }
@@ -161,13 +160,13 @@ public class ReqCCashShop {
                 long cash_item_SN = cp.Decode8();
                 byte inv_type = cp.Decode1();
                 short inv_slot = cp.Decode2();
-                return MoveLtoS(client, cash_item_SN, inv_type, inv_slot);
+                return MoveLtoS(chr, cash_item_SN, inv_type, inv_slot);
             }
             // 0x0F
             case CashItemReq_MoveStoL: {
                 long inv_item_SN = cp.Decode8();
                 byte inv_type = cp.Decode1();
-                return MoveStoL(client, inv_item_SN, inv_type);
+                return MoveStoL(chr, inv_item_SN, inv_type);
             }
             // 0x1B
             case CashItemReq_Destroy: {
@@ -180,18 +179,18 @@ public class ReqCCashShop {
             // 0x1F
             case CashItemReq_BuyPackage: {
                 // not coded
-                chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_SetWish_Failed, client));
+                chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_SetWish_Failed, chr.getClient()));
                 return true;
             }
             // 0x21
             case CashItemReq_BuyNormal: {
                 int item_SN = cp.Decode4();
-                return BuyNormalItem(client, item_SN);
+                return BuyNormalItem(chr.getClient(), item_SN);
             }
             // 0x2A
             case CashItemReq_FreeCashItem: {
                 int item_SN = cp.Decode4();
-                return BuyFreeItem(client, item_SN);
+                return BuyFreeItem(chr, item_SN);
             }
             default: {
                 DebugLogger.ErrorLog("OnCashItem not coded : " + type);
@@ -232,8 +231,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    private static boolean BuyCashItem(TacosClient client, byte use_maple_point, int item_SN) {
-        TacosCharacter chr = client.getPlayer();
+    private static boolean BuyCashItem(TacosCharacter chr, byte use_maple_point, int item_SN) {
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
         if (chr == null) {
@@ -253,7 +251,7 @@ public class ReqCCashShop {
         Item item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
-            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, client, new ResCCashShop.CashItemStruct(item)));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item)));
             usePoint(chr, use_maple_point, cashitem.getPrice());
             checkBuyDestroy(chr, item.getItemId());
         } else {
@@ -265,11 +263,10 @@ public class ReqCCashShop {
 
     // 修正が必要、まぁ動くからいいか...
     private static boolean BuyNormalItem(TacosClient client, int item_SN) {
-        return BuyCashItem(client, (byte) 0, item_SN);
+        return BuyCashItem(client.getPlayer(), (byte) 0, item_SN);
     }
 
-    private static boolean BuyFreeItem(TacosClient client, int item_SN) {
-        TacosCharacter chr = client.getPlayer();
+    private static boolean BuyFreeItem(TacosCharacter chr, int item_SN) {
         CashItemInfo cashitem = CashItemFactory.getInstance().getItem(item_SN);
 
         if (chr == null) {
@@ -290,7 +287,7 @@ public class ReqCCashShop {
         Item item = chr.getCashInventory().toItem(cashitem);
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount()) {
             chr.getCashInventory().addToInventory(item);
-            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_FreeCashItem_Done, client, new ResCCashShop.CashItemStruct(item)));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_FreeCashItem_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item)));
         } else {
             DebugLogger.ErrorLog("BuyFreeItem : ERR");
         }
@@ -345,30 +342,28 @@ public class ReqCCashShop {
     }
 
     // ポイントショップからアイテム欄へ移動
-    private static boolean MoveLtoS(TacosClient client, long cash_item_SN, byte inv_type, short inv_slot) {
-        TacosCharacter chr = client.getPlayer();
+    private static boolean MoveLtoS(TacosCharacter chr, long cash_item_SN, byte inv_type, short inv_slot) {
         Item item_src = chr.getCashInventory().findByCashId(cash_item_SN);
         if (item_src == null || item_src.getQuantity() < 1) {
-            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Failed, client));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Failed, chr.getClient()));
             return false;
         }
         Item item_dst = item_src.copy();
         item_dst.setUniqueId(item_src.getUniqueId());
         // アイテム欄へ移動
-        short dst_slot = MapleInventoryManipulator.addbyItem(chr.getClient(), item_dst, true);
+        short dst_slot = MapleInventoryManipulator.addbyItem(chr, item_dst, true);
         // ポイントショップ上から削除
         chr.getCashInventory().removeFromInventory(item_src);
-        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Done, client, new ResCCashShop.CashItemStruct(item_dst)));
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveLtoS_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item_dst)));
         return true;
     }
 
     // アイテム欄からポイントショップへ移動
-    private static boolean MoveStoL(TacosClient client, long inv_item_SN, byte inv_type) {
-        TacosCharacter chr = client.getPlayer();
+    private static boolean MoveStoL(TacosCharacter chr, long inv_item_SN, byte inv_type) {
         MapleInventoryType inv_item_type = MapleInventoryType.getByType(inv_type);
 
         if (inv_item_type == null) {
-            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Failed, client));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Failed, chr.getClient()));
             return false;
         }
 
@@ -376,7 +371,7 @@ public class ReqCCashShop {
         Item item_src = inv.findByUniqueId(inv_item_SN);
 
         if (item_src == null || item_src.getQuantity() < 1) {
-            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Failed, client));
+            chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Failed, chr.getClient()));
             return false;
         }
         Item item_dst = item_src.copy();
@@ -385,7 +380,7 @@ public class ReqCCashShop {
         chr.getCashInventory().addToInventory(item_dst);
         // アイテム欄から削除
         inv.removeSlot(item_src.getPosition());
-        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Done, client, new ResCCashShop.CashItemStruct(item_dst)));
+        chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_MoveStoL_Done, chr.getClient(), new ResCCashShop.CashItemStruct(item_dst)));
         return true;
     }
 
@@ -411,8 +406,7 @@ public class ReqCCashShop {
     static final String COUPON_CODE_30_TEST_CODE = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
     static final String COUPON_CODE_15_TEST_CODE = "XXXXXXXXXXXXXXX";
 
-    private static boolean OnCheckCoupon(TacosClient client, String character_name, String coupon_code, boolean is_coupon_15, String message) {
-        TacosCharacter chr = client.getPlayer();
+    private static boolean OnCheckCoupon(TacosCharacter chr, String character_name, String coupon_code, boolean is_coupon_15, String message) {
 
         if (is_coupon_15) {
             if (coupon_code.length() != COUPON_CODE_LENGTH_2) {
@@ -474,8 +468,7 @@ public class ReqCCashShop {
         return true;
     }
 
-    public static boolean OnGachaponOpen(TacosClient client, long box_SN) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean OnGachaponOpen(TacosCharacter chr, long box_SN) {
 
         if (chr == null) {
             return false;
@@ -494,15 +487,14 @@ public class ReqCCashShop {
         if (item != null && item.getUniqueId() > 0 && item.getItemId() == cashitem.getId() && item.getQuantity() == cashitem.getCount() && WzDataStorage.ITEM.check(item.getItemId())) {
             chr.getCashInventory().removeFromInventory(box_item);
             chr.getCashInventory().addToInventory(item);
-            chr.SendPacket(ResCCashShop.OnCashItemGachaponResult(box_item, item, client));
+            chr.SendPacket(ResCCashShop.OnCashItemGachaponResult(box_item, item, chr.getClient()));
         }
 
         return true;
     }
 
-    private static void doCSPackets(TacosClient client) {
-        TacosCharacter chr = client.getPlayer();
-        client.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
-        chr.getCashInventory().checkExpire(client);
+    private static void doCSPackets(TacosCharacter chr) {
+        chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
+        chr.getCashInventory().checkExpire(chr.getClient());
     }
 }

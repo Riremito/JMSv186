@@ -292,7 +292,7 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public boolean canHold(int itemid, int quantity) {
-        return MapleInventoryManipulator.checkSpace(client, itemid, quantity, "");
+        return MapleInventoryManipulator.checkSpace(client.getPlayer(), itemid, quantity, "");
     }
 
     public MapleQuestStatus getQuestRecord(int id) {
@@ -423,17 +423,16 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner) {
-        return gainItem(id, quantity, randomStats, period, slots, owner, client);
+        return gainItem(id, quantity, randomStats, period, slots, owner, getPlayer());
     }
 
-    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner, TacosClient target) {
-        TacosCharacter chr = target.getPlayer();
+    public Item gainItem(int id, short quantity, boolean randomStats, long period, int slots, String owner, TacosCharacter chr) {
         Item item_info = null;
         if (quantity >= 0) {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
             MapleInventoryType type = GameConstants.getInventoryType(id);
 
-            if (!MapleInventoryManipulator.checkSpace(target, id, quantity, "")) {
+            if (!MapleInventoryManipulator.checkSpace(chr, id, quantity, "")) {
                 return null;
             }
             if (type.equals(MapleInventoryType.EQUIP) && !GameConstants.isThrowingStar(id) && !GameConstants.isBullet(id)) {
@@ -453,20 +452,20 @@ public abstract class OdinAbstractPlayerInteraction {
                     chr.dropMessage(-1, msg);
                     chr.dropMessage(5, msg);
                 }
-                MapleInventoryManipulator.addbyItem(target, item.copy());
+                MapleInventoryManipulator.addbyItem(chr, item.copy());
                 item_info = item;
             } else {
-                MapleInventoryManipulator.addById(target, id, quantity, owner == null ? "" : owner, null, period);
+                MapleInventoryManipulator.addById(chr, id, quantity, owner == null ? "" : owner, null, period);
             }
         } else {
-            MapleInventoryManipulator.removeById(target, GameConstants.getInventoryType(id), id, -quantity, true, false);
+            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(id), id, -quantity, true, false);
         }
 
         PB_UserEffect pb = PB_UserEffect.builder()
                 .item_id(id)
                 .item_quantity(quantity)
                 .build();
-        target.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
+        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
         return item_info;
     }
 
@@ -624,9 +623,9 @@ public abstract class OdinAbstractPlayerInteraction {
     public void givePartyItems(int id, short quantity, List<TacosCharacter> party) {
         for (TacosCharacter chr : party) {
             if (quantity >= 0) {
-                MapleInventoryManipulator.addById(chr.getClient(), id, quantity);
+                MapleInventoryManipulator.addById(chr, id, quantity);
             } else {
-                MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, -quantity, true, false);
+                MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(id), id, -quantity, true, false);
             }
 
             PB_UserEffect pb = PB_UserEffect.builder()
@@ -650,7 +649,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (MaplePartyCharacter chr : getPlayer().getParty().getMembers()) {
             TacosCharacter player = getMap().getPlayerById(chr.getId());
             if (player != null) {
-                gainItem(id, (short) (removeAll ? -player.itemQuantity(id) : quantity), false, 0, 0, "", player.getClient());
+                gainItem(id, (short) (removeAll ? -player.itemQuantity(id) : quantity), false, 0, 0, "", player);
             }
         }
     }
@@ -717,7 +716,7 @@ public abstract class OdinAbstractPlayerInteraction {
         for (TacosCharacter chr : party) {
             int possesed = chr.getInventory(GameConstants.getInventoryType(id)).countById(id);
             if (possesed > 0) {
-                MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(id), id, possesed, true, false);
+                MapleInventoryManipulator.removeById(getPlayer(), GameConstants.getInventoryType(id), id, possesed, true, false);
 
                 PB_UserEffect pb = PB_UserEffect.builder()
                         .item_id(id)
@@ -956,14 +955,14 @@ public abstract class OdinAbstractPlayerInteraction {
             fullness = 100;
         }
         try {
-            MapleInventoryManipulator.addById(client, id, (short) 1, "", TacosPet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
+            MapleInventoryManipulator.addById(getPlayer(), id, (short) 1, "", TacosPet.createPet(id, name, level, closeness, fullness, TacosWorld.getNextItemUniqueId(), id == 5000054 ? (int) period : 0), 45);
         } catch (NullPointerException ex) {
             ex.printStackTrace();
         }
     }
 
     public void removeSlot(int invType, byte slot, short quantity) {
-        MapleInventoryManipulator.removeFromSlot(client, getInvType(invType), slot, quantity, true);
+        MapleInventoryManipulator.removeFromSlot(getPlayer(), getInvType(invType), slot, quantity, true);
     }
 
     public void gainGP(int gp) {

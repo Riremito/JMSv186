@@ -467,7 +467,7 @@ public class MapleMiniGame {
             closeShop(false, false, 0);
             return;
         }
-        client.SendPacket(ResCMiniRoomBaseDlg.getMiniGame(client, this));
+        client.SendPacket(ResCMiniRoomBaseDlg.getMiniGame(client.getPlayer(), this));
     }
 
     public void setReady(int slot) {
@@ -670,6 +670,6 @@ public class MapleMiniGame {
         getMap().removeMiniGame(this.getObjectId());
     }
 
-    public void buy(TacosClient client, int z, short i) {
+    public void buy(TacosCharacter chr, int z, short i) {
     }
 }

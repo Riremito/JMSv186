@@ -236,11 +236,11 @@ public class ReqCUser {
                     DebugShop.OnUserShopRequestHook(chr, cp);
                     return true;
                 }
-                ReqCShopDlg.OnPacket(client, cp);
+                ReqCShopDlg.OnPacket(chr, cp);
                 return true;
             }
             case CP_UserTrunkRequest: {
-                ReqCTrunkDlg.OnPacket(client, cp);
+                ReqCTrunkDlg.OnPacket(chr, cp);
                 return true;
             }
             case CP_UserEntrustedShopRequest: {
@@ -268,7 +268,7 @@ public class ReqCUser {
             case CP_ShopLinkRequest: {
                 int shop_id = cp.Decode4();
                 int map_id = cp.Decode4();
-                InventoryHandler.OwlWarp(client, shop_id, map_id);
+                InventoryHandler.OwlWarp(chr, shop_id, map_id);
                 return true;
             }
             case CP_AdminShopRequest: {
@@ -327,7 +327,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
-                InventoryHandler.UseScriptedNPCItem(cp, client, chr);
+                InventoryHandler.UseScriptedNPCItem(cp,  chr);
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
@@ -476,7 +476,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserMacroSysDataModified: {
-                ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                ReqCFuncKeyMappedMan.OnPacket(chr, header, cp);
                 return true;
             }
             case CP_UserItemMakeRequest: {
@@ -541,11 +541,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_GuildRequest: {
-                GuildHandler.Guild(cp, client);
+                GuildHandler.Guild(cp, chr);
                 return true;
             }
             case CP_GuildResult: {
-                GuildHandler.DenyGuildRequest(cp, client);
+                GuildHandler.DenyGuildRequest(cp, chr);
                 return true;
             }
             case CP_Admin: {
@@ -570,11 +570,11 @@ public class ReqCUser {
                 return true;
             }
             case CP_FuncKeyMappedModified: {
-                ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                ReqCFuncKeyMappedMan.OnPacket(chr, header, cp);
                 return true;
             }
             case CP_RPSGame: {
-                ReqCRPSGameDlg.OnPacket(client, header, cp);
+                ReqCRPSGameDlg.OnPacket(chr, header, cp);
                 return true;
             }
             case CP_MarriageRequest: {
@@ -582,15 +582,15 @@ public class ReqCUser {
                 return true;
             }
             case CP_AllianceRequest: {
-                AllianceHandler.HandleAlliance(cp, client, false);
+                AllianceHandler.HandleAlliance(cp, chr, false);
                 return true;
             }
             case CP_AllianceResult: {
-                AllianceHandler.HandleAlliance(cp, client, true);
+                AllianceHandler.HandleAlliance(cp, chr, true);
                 return true;
             }
             case CP_GuildBBS: {
-                BBSHandler.BBSOperation(cp, client);
+                BBSHandler.BBSOperation(cp, chr);
                 return true;
             }
             case CP_JMS_InstancePortalEnter: {
@@ -682,7 +682,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_QuickslotKeyMappedModified: {
-                ReqCFuncKeyMappedMan.OnPacket(client, header, cp);
+                ReqCFuncKeyMappedMan.OnPacket(chr, header, cp);
                 return true;
             }
             case CP_UpdateScreenSetting: // 解像度変更
@@ -698,7 +698,7 @@ public class ReqCUser {
             }
             case CP_JMS_FarmEnter:
             case CP_JMS_FarmLeave: {
-                Req_Farm.OnPacket(client, header, cp);
+                Req_Farm.OnPacket(chr, header, cp);
                 return true;
             }
             default: {
@@ -761,7 +761,7 @@ public class ReqCUser {
             // アバターランダムボックスのオープン処理
             case CP_CashGachaponOpenRequest: {
                 long box_SN = cp.Decode8();
-                ReqCCashShop.OnGachaponOpen(client, box_SN);
+                ReqCCashShop.OnGachaponOpen(chr, box_SN);
                 return true;
             }
             default: {
@@ -789,35 +789,35 @@ public class ReqCUser {
                 return true;
             }
             case CP_FamilyInfoRequest: {
-                FamilyHandler.OpenFamily(cp, client);
+                FamilyHandler.OpenFamily(cp, chr);
                 return true;
             }
             case CP_FamilyRegisterJunior: {
-                FamilyHandler.FamilyOperation(cp, client);
+                FamilyHandler.FamilyOperation(cp, chr);
                 return true;
             }
             case CP_FamilyUnregisterJunior: {
-                FamilyHandler.DeleteJunior(cp, client);
+                FamilyHandler.DeleteJunior(cp, chr);
                 return true;
             }
             case CP_FamilyUnregisterParent: {
-                FamilyHandler.DeleteSenior(cp, client);
+                FamilyHandler.DeleteSenior(cp, chr);
                 return true;
             }
             case CP_FamilyJoinResult: {
-                FamilyHandler.AcceptFamily(cp, client);
+                FamilyHandler.AcceptFamily(cp, chr);
                 return true;
             }
             case CP_FamilyUsePrivilege: {
-                FamilyHandler.UseFamily(cp, client);
+                FamilyHandler.UseFamily(cp, chr);
                 return true;
             }
             case CP_FamilySetPrecept: {
-                FamilyHandler.FamilyPrecept(cp, client);
+                FamilyHandler.FamilyPrecept(cp, chr);
                 return true;
             }
             case CP_FamilySummonResult: {
-                FamilyHandler.FamilySummon(cp, client);
+                FamilyHandler.FamilySummon(cp, chr);
                 return true;
             }
             default: {
@@ -1545,7 +1545,7 @@ public class ReqCUser {
             DebugLogger.ErrorLog("OnUserShopScannerItemUseRequest : invalid owl.");
             return false;
         }
-        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, owl_item_id, 1, true, false);
+        MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, owl_item_id, 1, true, false);
         List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
         // not coded.
         chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
@@ -1602,7 +1602,7 @@ public class ReqCUser {
             return false;
         }
         if (MapleItemInformationProvider.getInstance().getItemEffect(item_used.getItemId()).applyReturnScroll(chr)) {
-            MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, item_slot, (short) 1, false);
         } else {
             chr.updateInv();
         }
@@ -1766,7 +1766,7 @@ public class ReqCUser {
         // Update
         chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
         if (whiteScroll) {
-            MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, wscroll.getPosition(), (short) 1, false, false);
         }
         if (scrollSuccess == Equip.ScrollResult.CURSE) {
             {
@@ -1849,7 +1849,7 @@ public class ReqCUser {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
             map.broadcastPacket(ResCUser.UserItemReleaseEffect(chr, eqq.getPosition()));
-            MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, magnify.getPosition(), (short) 1, false);
             //Debug.DebugLog("potential updated");
         } else {
             chr.updateInv();
@@ -2606,13 +2606,13 @@ public class ReqCUser {
 
         // drop
         if (slot_to == 0) {
-            MapleInventoryManipulator.drop(chr.getClient(), type, slot_from, quantity);
+            MapleInventoryManipulator.drop(chr, type, slot_from, quantity);
             return true;
         }
 
         if (type == MapleInventoryType.EQUIP) {
             if (1 <= slot_from && slot_to <= -1) {
-                MapleInventoryManipulator.equip(chr.getClient(), slot_from, slot_to);
+                MapleInventoryManipulator.equip(chr, slot_from, slot_to);
                 // 精霊のペンダント
                 if (chr.getInventory(MapleInventoryType.EQUIPPED).getItem(slot_to).getItemId() == 1122017) {
                     int rate = 10;
@@ -2622,7 +2622,7 @@ public class ReqCUser {
                 return true;
             }
             if (slot_from <= -1 && 1 <= slot_to) {
-                MapleInventoryManipulator.unequip(chr.getClient(), slot_from, slot_to);
+                MapleInventoryManipulator.unequip(chr, slot_from, slot_to);
                 // 精霊のペンダント
                 if (chr.getInventory(MapleInventoryType.EQUIP).getItem(slot_to).getItemId() == 1122017) {
                     int rate = 0;
@@ -2636,7 +2636,7 @@ public class ReqCUser {
             }
         }
 
-        MapleInventoryManipulator.move(chr.getClient(), type, slot_from, slot_to);
+        MapleInventoryManipulator.move(chr, type, slot_from, slot_to);
         return false;
     }
 
@@ -2681,7 +2681,7 @@ public class ReqCUser {
             return false;
         }
         // used
-        MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
+        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, item_slot, (short) 1, false);
         // spawn mobs
         List<SimpleImmutableEntry<Integer, Integer>> summon_info = MapleItemInformationProvider.getInstance().getSummonMobs(item_id);
         if (summon_info == null) {
@@ -2719,7 +2719,7 @@ public class ReqCUser {
                 }
             }
             map.broadcastPacket(ResCWvsContext.SetTamingMobInfo(chr, levelup));
-            MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.USE, item_slot, (short) 1, false);
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, item_slot, (short) 1, false);
         }
         chr.updateInv();
         return true;
@@ -2743,8 +2743,8 @@ public class ReqCUser {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
-                        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
-                        MapleInventoryManipulator.addById(chr.getClient(), 4001169, (short) 1);
+                        MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, item_id, 1, false, false);
+                        MapleInventoryManipulator.addById(chr, 4001169, (short) 1);
                     } else {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
@@ -2755,7 +2755,7 @@ public class ReqCUser {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
-                        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
+                        MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
@@ -2769,8 +2769,8 @@ public class ReqCUser {
                     }
                     map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                     map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
-                    MapleInventoryManipulator.addById(chr.getClient(), 1902000, (short) 1, null);
-                    MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
+                    MapleInventoryManipulator.addById(chr, 1902000, (short) 1, null);
+                    MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, item_id, 1, false, false);
                     break;
                 }
                 case 2270003: {
@@ -2781,7 +2781,7 @@ public class ReqCUser {
                     if (mob.getHp() <= mob.getMobMaxHp() / 2) {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, true));
                         map.killMonster(mob, chr, true, false, OpsMobLeaveField.MOBLEAVEFIELD_REMAINHP);
-                        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, item_id, 1, false, false);
+                        MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
                         chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
@@ -2834,7 +2834,7 @@ public class ReqCUser {
                 } else {
                     bSucceed = false;
                 }
-                MapleInventoryManipulator.removeFromSlot(chr.getClient(), GameConstants.getInventoryType(item_id), item_slot, (short) 1, false);
+                MapleInventoryManipulator.removeFromSlot(chr, GameConstants.getInventoryType(item_id), item_slot, (short) 1, false);
                 break;
             }
         }
@@ -3351,11 +3351,11 @@ public class ReqCUser {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetAlreadyEngaged, 0, null, null));
                     return true;
                 }
-                if (!MapleInventoryManipulator.checkSpace(client, ring_id, 1, "")) {
+                if (!MapleInventoryManipulator.checkSpace(client.getPlayer(), ring_id, 1, "")) {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_RequesterNoEmptySlot, 0, null, null));
                     return true;
                 }
-                if (!MapleInventoryManipulator.checkSpace(player.getClient(), ring_id, 1, "")) {
+                if (!MapleInventoryManipulator.checkSpace(player, ring_id, 1, "")) {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetNoEmptySlot, 0, null, null));
                     return true;
                 }
@@ -3384,13 +3384,13 @@ public class ReqCUser {
                     return true;
                 }
                 int ring_id = 1112300 + (player.getMarriageItemId() - 2240004);
-                if (!MapleInventoryManipulator.checkSpace(client, ring_id, 1, "") || !MapleInventoryManipulator.checkSpace(player.getClient(), ring_id, 1, "")) {
+                if (!MapleInventoryManipulator.checkSpace(client.getPlayer(), ring_id, 1, "") || !MapleInventoryManipulator.checkSpace(player, ring_id, 1, "")) {
                     chr.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_TargetNoEmptySlot, 0, null, null));
                     return true;
                 }
-                MapleInventoryManipulator.addById(client, ring_id, (short) 1);
-                MapleInventoryManipulator.removeById(player.getClient(), MapleInventoryType.USE, player.getMarriageItemId(), 1, false, false);
-                MapleInventoryManipulator.addById(player.getClient(), ring_id, (short) 1);
+                MapleInventoryManipulator.addById(client.getPlayer(), ring_id, (short) 1);
+                MapleInventoryManipulator.removeById(player, MapleInventoryType.USE, player.getMarriageItemId(), 1, false, false);
+                MapleInventoryManipulator.addById(player, ring_id, (short) 1);
                 player.setMarriageId(chr.getId());
                 chr.setMarriageId(player.getId());
                 player.SendPacket(ResCWvsContext.MarriageResult(OpsMarriage.MarriageRes_ReservationDone, ring_id, player, chr));
@@ -3401,7 +3401,7 @@ public class ReqCUser {
                 MapleInventoryType type = GameConstants.getInventoryType(item_id);
                 Item item = chr.getInventory(type).findById(item_id);
                 if (item != null && type == MapleInventoryType.ETC && item_id / 10000 == 421) {
-                    MapleInventoryManipulator.drop(client, type, item.getPosition(), item.getQuantity());
+                    MapleInventoryManipulator.drop(client.getPlayer(), type, item.getPosition(), item.getQuantity());
                 }
                 return true;
             }
@@ -3455,7 +3455,7 @@ public class ReqCUser {
             }
         }
 
-        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, nItemID, 1, true, false);
+        MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, nItemID, 1, true, false);
         return true;
     }
 

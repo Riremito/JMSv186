@@ -18,7 +18,6 @@
  */
 package tacos.packet.request;
 
-import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
 import odin.client.inventory.Item.ItemFlag;
@@ -39,8 +38,7 @@ import tacos.client.TacosStorage;
 public class ReqCTrunkDlg {
 
     // CTrunkDlg::OnPacket
-    public static boolean OnPacket(TacosClient client, ClientPacket cp) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean OnPacket(TacosCharacter chr, ClientPacket cp) {
         if (chr == null) {
             return false;
         }
@@ -62,13 +60,13 @@ public class ReqCTrunkDlg {
                     return false;
                 }
 
-                if (!MapleInventoryManipulator.checkSpace(client, item.getItemId(), item.getQuantity(), item.getOwner())) {
+                if (!MapleInventoryManipulator.checkSpace(chr, item.getItemId(), item.getQuantity(), item.getOwner())) {
                     storage.putItem(item);
                     chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_GetUnknown));
                     return false;
                 }
 
-                MapleInventoryManipulator.addFromDrop(client, item, false);
+                MapleInventoryManipulator.addFromDrop(chr, item, false);
                 chr.gainMeso(-storage.getFeeGet(), false, true, false);
                 storage.setLastModified(type);
                 chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_GetSuccess));
@@ -126,7 +124,7 @@ public class ReqCTrunkDlg {
                     if (GameConstants.isThrowingStar(itemId) || GameConstants.isBullet(itemId)) {
                         quantity = item.getQuantity();
                     }
-                    MapleInventoryManipulator.removeFromSlot(client, type, slot, quantity, false);
+                    MapleInventoryManipulator.removeFromSlot(chr, type, slot, quantity, false);
                     item.setQuantity(quantity);
                 } else {
                     // ?

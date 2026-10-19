@@ -200,7 +200,7 @@ public class ResCShopDlg {
             } else {
                 sp.Encode2(1); // nQuantity
             }
-            sp.Encode2(ii.getSlotMax(client, item.getItemId()), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // nMaxPerSlot
+            sp.Encode2(ii.getSlotMax(item.getItemId()), Config.PostBB() || Config.GreaterOrEqual(Region.KMS, 47) || Config.GreaterOrEqual(Region.JMS, 146) || Config.GreaterOrEqual(Region.CMS, 62) || Config.GreaterOrEqual(Region.TWMS, 73) || Config.GreaterOrEqual(Region.THMS, 0) || Config.GreaterOrEqual(Region.GMS, 61) || Config.GreaterOrEqual(Region.MSEA, 0) || Config.GreaterOrEqual(Region.EMS, 0) || Config.GreaterOrEqual(Region.BMS, 24) || Config.GreaterOrEqual(Region.VMS, 35)); // nMaxPerSlot
             sp.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131) || Config.GreaterOrEqual(Region.EMS, 89));
             sp.Encode4(0, Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.GMS, 131));
             if (Config.GreaterOrEqual(Region.GMS, 131)) {

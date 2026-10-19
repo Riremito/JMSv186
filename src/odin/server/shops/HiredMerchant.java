@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import odin.server.MapleInventoryManipulator;
-import tacos.client.TacosClient;
 import tacos.server.TacosWorld;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -244,8 +243,7 @@ public class HiredMerchant extends TacosMerchant {
         return itemz;
     }
 
-    public void buy(TacosClient client, int item, short quantity) {
-        TacosCharacter chr = client.getPlayer();
+    public void buy(TacosCharacter chr, int item, short quantity) {
         MaplePlayerShopItem pItem = items.get(item);
         Item shopItem = pItem.item;
         Item newItem = shopItem.copy();
@@ -260,7 +258,7 @@ public class HiredMerchant extends TacosMerchant {
             newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
         }
 
-        if (MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
+        if (MapleInventoryManipulator.checkSpace(chr, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
             pItem.bundles -= quantity; // Number remaining in the store
             bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), chr.getName()));
 

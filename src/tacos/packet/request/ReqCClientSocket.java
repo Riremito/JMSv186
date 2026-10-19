@@ -350,7 +350,7 @@ public class ReqCClientSocket {
                 world.getITC().getOnlinePlayers().add(transfer);
                 transfer.notityOnlineToFriends(true);
                 transfer.SendPacket(ResCStage.SetITC(transfer));
-                ReqCITC.MTSUpdate(client, MTSStorage.getInstance().getCart(transfer.getId()));
+                ReqCITC.MTSUpdate(client.getPlayer(), MTSStorage.getInstance().getCart(transfer.getId()));
                 break;
             }
             case CASHSHOP_SERVER: {

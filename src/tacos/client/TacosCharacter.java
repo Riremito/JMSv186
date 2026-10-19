@@ -397,7 +397,7 @@ public class TacosCharacter extends TacosPlayer {
                 return false;
             }
             DebugMsg("mapChangePortal : map = " + map.getId() + ", portal = \"" + portal_name + "\"" + " -> " + portal.getTargetMapId());
-            if (!portal.enterPortal(client)) {
+            if (!portal.enterPortal(this)) {
                 return false;
             }
             return true;
@@ -1307,12 +1307,12 @@ public class TacosCharacter extends TacosPlayer {
         // 高級餌を消費
         if (bait_level < 2 && ((TacosCharacter) this).haveItem(2300001, 1, false, true)) {
             bait_level = 2;
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300001, 1, false, false);
+            MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.USE, 2300001, 1, false, false);
         }
         // 餌を消費
         if (bait_level < 2 && ((TacosCharacter) this).haveItem(2300000, 1, false, true)) {
             bait_level = 1;
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2300000, 1, false, false);
+            MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.USE, 2300000, 1, false, false);
         }
         // 釣り終了
         if (bait_level <= 0) {
@@ -1342,7 +1342,7 @@ public class TacosCharacter extends TacosPlayer {
                     DebugMsg("Fishing : invalid reward, " + randval);
                     return false;
                 }
-                MapleInventoryManipulator.addById(client, randval, (short) 1);
+                MapleInventoryManipulator.addById(client.getPlayer(), randval, (short) 1);
                 SendPacket(ResCWvsContext.fishingUpdate((byte) 0, randval));
             }
         }
@@ -2255,7 +2255,7 @@ public class TacosCharacter extends TacosPlayer {
         if (job != 0 && job != 1000 && job != 2000 && job != 2001 && job != 3000) {
             int charms = getItemQuantity(5130000, false);
             if (charms > 0) {
-                MapleInventoryManipulator.removeById(client, MapleInventoryType.CASH, 5130000, 1, true, false);
+                MapleInventoryManipulator.removeById(client.getPlayer(), MapleInventoryType.CASH, 5130000, 1, true, false);
 
                 charms--;
                 if (charms > 0xFF) {
@@ -3511,7 +3511,7 @@ public class TacosCharacter extends TacosPlayer {
             return false;
         }
 
-        MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, item_slot, (short) 1, false);
+        MapleInventoryManipulator.removeFromSlot(client.getPlayer(), MapleInventoryType.USE, item_slot, (short) 1, false);
         if (map.getConsumeItemCoolTime() > 0) {
             this.setNextConsume(time + (this.map.getConsumeItemCoolTime() * 1000));
         }
@@ -4098,7 +4098,7 @@ public class TacosCharacter extends TacosPlayer {
         int possessed = getInventory(type).countById(id);
 
         if (possessed > 0) {
-            MapleInventoryManipulator.removeById(getClient(), type, id, possessed, true, false);
+            MapleInventoryManipulator.removeById(this, type, id, possessed, true, false);
 
             PB_UserEffect pb = PB_UserEffect.builder()
                     .item_id(id)

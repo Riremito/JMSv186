@@ -63,7 +63,7 @@ public class ReqCField {
                 return true;
             }
             case BEANS_OPERATION: {
-                BeanGame.BeanGame1(client, cp);
+                BeanGame.BeanGame1(chr, cp);
                 return true;
             }
             case BEANS_UPDATE: {

@@ -470,7 +470,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             if (!MapleItemInformationProvider.getInstance().itemExists(id)) {
                 return -1;
             }
-            Item item = MapleInventoryManipulator.addbyId_Gachapon(client, id, (short) quantity);
+            Item item = MapleInventoryManipulator.addbyId_Gachapon(client.getPlayer(), id, (short) quantity);
 
             if (item == null) {
                 return -1;
@@ -550,7 +550,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             ids.add(item.getPosition());
         }
         for (short id : ids) {
-            MapleInventoryManipulator.unequip(getC(), id, equip.getNextFreeSlot());
+            MapleInventoryManipulator.unequip(getPlayer(), id, equip.getNextFreeSlot());
         }
     }
 
@@ -995,7 +995,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     public boolean addFromDrop(Object statsSel) {
         if (statsSel instanceof Item) {
             Item it = (Item) statsSel;
-            return MapleInventoryManipulator.checkSpace(getClient(), it.getItemId(), it.getQuantity(), it.getOwner()) && MapleInventoryManipulator.addFromDrop(getClient(), it, false);
+            return MapleInventoryManipulator.checkSpace(getPlayer(), it.getItemId(), it.getQuantity(), it.getOwner()) && MapleInventoryManipulator.addFromDrop(getPlayer(), it, false);
         }
         return false;
     }
@@ -1075,8 +1075,8 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
             }
             item = eq.copy();
         }
-        MapleInventoryManipulator.removeFromSlot(getClient(), inv, (short) slot, item.getQuantity(), false);
-        return MapleInventoryManipulator.addFromDrop(getClient(), item, false);
+        MapleInventoryManipulator.removeFromSlot(getPlayer(), inv, (short) slot, item.getQuantity(), false);
+        return MapleInventoryManipulator.addFromDrop(getPlayer(), item, false);
     }
 
     public boolean replaceItem(int slot, int invType, Object statsSel, int upgradeSlots) {
@@ -1173,7 +1173,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
         if (inv == null) {
             return false;
         }
-        return MapleInventoryManipulator.drop(client, inv, (short) slot, (short) quantity, true);
+        return MapleInventoryManipulator.drop(client.getPlayer(), inv, (short) slot, (short) quantity, true);
     }
 
     public void setQuestRecord(Object ch, int questid, String data) {

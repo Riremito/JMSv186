@@ -663,7 +663,7 @@ public class PlayerStats {
                 }
                 durabilityHandling.remove(eqq);
                 short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
-                MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
+                MapleInventoryManipulator.unequip(chr, eqq.getPosition(), pos);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, eqq).build()));
             } else {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIPPED, eqq.copy()).build()));

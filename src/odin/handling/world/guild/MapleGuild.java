@@ -564,9 +564,8 @@ public class MapleGuild {
     // keep in mind that this will be called by a handler most of the time
     // so this will be running mostly on a channel server, unlike the rest
     // of the class
-    public static MapleGuildResponse sendInvite(TacosClient client, String targetName) {
-        TacosCharacter chr = client.getPlayer();
-        TacosCharacter mc = client.getChannelServer().getOnlinePlayers().findByName(targetName);
+    public static MapleGuildResponse sendInvite(TacosCharacter chr, String targetName) {
+        TacosCharacter mc = chr.getChannelServer().getOnlinePlayers().findByName(targetName);
         if (mc == null) {
             return MapleGuildResponse.NOT_IN_CHANNEL;
         }

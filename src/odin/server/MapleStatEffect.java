@@ -408,7 +408,7 @@ public class MapleStatEffect {
                 if (ContentState.CS_LOCK_LOSING_STONE.get()) {
                     // do nothing
                 } else {
-                    MapleInventoryManipulator.removeById(applyto.getClient(), GameConstants.getInventoryType(itemCon), itemCon, itemConNo, false, true);
+                    MapleInventoryManipulator.removeById(applyto, GameConstants.getInventoryType(itemCon), itemCon, itemConNo, false, true);
                 }
             }
         } else if (!primary && isResurrection()) {
@@ -452,7 +452,7 @@ public class MapleStatEffect {
                     if (ContentState.CS_LOCK_LOSING_THRWOING.get()) {
                         // do nothing
                     } else {
-                        MapleInventoryManipulator.removeById(applyto.getClient(), MapleInventoryType.USE, item.getItemId(), 200, false, true);
+                        MapleInventoryManipulator.removeById(applyto, MapleInventoryType.USE, item.getItemId(), 200, false, true);
                     }
                     break;
                 }

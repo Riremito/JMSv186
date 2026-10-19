@@ -105,7 +105,7 @@ public class MapleQuestAction {
                 int retitem = item.getId();
                 if (retitem == item_id) {
                     if (!client.haveItem(retitem, 1, true, false)) {
-                        MapleInventoryManipulator.addById(client.getClient(), retitem, (short) 1);
+                        MapleInventoryManipulator.addById(client, retitem, (short) 1);
                     }
                     return true;
                 }
@@ -142,7 +142,7 @@ public class MapleQuestAction {
             int id = item.getId();
             short count = (short) item.getCount();
             if (count < 0) { // remove items
-                MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
+                MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(id), id, (count * -1), true, false);
             } else { // add items
                 int period = item.getPeriod() / 1440; //im guessing.
                 String name = MapleItemInformationProvider.getInstance().getName(id);
@@ -151,7 +151,7 @@ public class MapleQuestAction {
                     chr.dropMessage(-1, msg);
                     chr.dropMessage(5, msg);
                 }
-                MapleInventoryManipulator.addById(chr.getClient(), id, count, "", null, period);
+                MapleInventoryManipulator.addById(chr, id, count, "", null, period);
             }
             PB_UserEffect pb = PB_UserEffect.builder()
                     .item_id(id)

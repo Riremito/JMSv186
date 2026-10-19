@@ -169,7 +169,7 @@ public class ReqCUIRaise {
             int quest_value = Integer.parseInt(quest_status.getCustomData()) + exp;
             quest_status.setCustomData(String.valueOf(quest_value));
             chr.updateQuest(quest_status, true);
-            MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.ETC, nSlotPosition, (short) 1, false);
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.ETC, nSlotPosition, (short) 1, false);
             chr.updateInv();
             return true;
         }

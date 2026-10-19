@@ -22,7 +22,6 @@ import tacos.packet.response.builder.PB_Message;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.maps.AramiaFireWorks;
-import tacos.client.TacosClient;
 import tacos.config.Config;
 import tacos.server.TacosWorld;
 
@@ -41,12 +40,11 @@ public class MapleInventoryManipulator {
         chr.SendPacket(ResCCashShop.CashItemResult(OpsCashItem.CashItemRes_Buy_Done, chr.getClient(), new ResCCashShop.CashItemStruct(ring)));
     }
 
-    public static boolean addbyItem(TacosClient client, Item item) {
-        return addbyItem(client, item, false) >= 0;
+    public static boolean addbyItem(TacosCharacter chr, Item item) {
+        return addbyItem(chr, item, false) >= 0;
     }
 
-    public static short addbyItem(TacosClient client, Item item, boolean fromcs) {
-        TacosCharacter chr = client.getPlayer();
+    public static short addbyItem(TacosCharacter chr, Item item, boolean fromcs) {
         MapleInventoryType type = GameConstants.getInventoryType(item.getItemId());
         short newSlot = chr.getInventory(type).addItem(item);
         if (newSlot == -1) {
@@ -76,28 +74,27 @@ public class MapleInventoryManipulator {
         return uniqueid;
     }
 
-    public static boolean addById(TacosClient client, int itemId, short quantity) {
-        return addById(client, itemId, quantity, null, null, 0);
+    public static boolean addById(TacosCharacter chr, int itemId, short quantity) {
+        return addById(chr, itemId, quantity, null, null, 0);
     }
 
-    public static boolean addById(TacosClient client, int itemId, short quantity, String owner) {
-        return addById(client, itemId, quantity, owner, null, 0);
+    public static boolean addById(TacosCharacter chr, int itemId, short quantity, String owner) {
+        return addById(chr, itemId, quantity, owner, null, 0);
     }
 
-    public static byte addId(TacosClient client, int itemId, short quantity, String owner) {
-        return addId(client, itemId, quantity, owner, null, 0);
+    public static byte addId(TacosCharacter chr, int itemId, short quantity, String owner) {
+        return addId(chr, itemId, quantity, owner, null, 0);
     }
 
-    public static boolean addById(TacosClient client, int itemId, short quantity, String owner, TacosPet pet) {
-        return addById(client, itemId, quantity, owner, pet, 0);
+    public static boolean addById(TacosCharacter chr, int itemId, short quantity, String owner, TacosPet pet) {
+        return addById(chr, itemId, quantity, owner, pet, 0);
     }
 
-    public static boolean addById(TacosClient client, int itemId, short quantity, String owner, TacosPet pet, long period) {
-        return addId(client, itemId, quantity, owner, pet, period) >= 0;
+    public static boolean addById(TacosCharacter chr, int itemId, short quantity, String owner, TacosPet pet, long period) {
+        return addId(chr, itemId, quantity, owner, pet, period) >= 0;
     }
 
-    public static byte addId(TacosClient client, int itemId, short quantity, String owner, TacosPet pet, long period) {
-        TacosCharacter chr = client.getPlayer();
+    public static byte addId(TacosCharacter chr, int itemId, short quantity, String owner, TacosPet pet, long period) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && chr.haveItem(itemId, 1, true, false)) {
             sendPickupUnavailable(chr);
@@ -127,7 +124,7 @@ public class MapleInventoryManipulator {
             return (byte) newSlot;
         }
 
-        short slotMax = ii.getSlotMax(client, itemId);
+        short slotMax = ii.getSlotMax(itemId);
         List<Item> existing = chr.getInventory(type).listById(itemId);
         if (GameConstants.isRechargable(itemId)) {
             // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
@@ -200,8 +197,7 @@ public class MapleInventoryManipulator {
         chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
     }
 
-    public static Item addbyId_Gachapon(TacosClient client, int itemId, short quantity) {
-        TacosCharacter chr = client.getPlayer();
+    public static Item addbyId_Gachapon(TacosCharacter chr, int itemId, short quantity) {
         if (chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot() == -1 || chr.getInventory(MapleInventoryType.USE).getNextFreeSlot() == -1 || chr.getInventory(MapleInventoryType.ETC).getNextFreeSlot() == -1 || chr.getInventory(MapleInventoryType.SETUP).getNextFreeSlot() == -1) {
             return null;
         }
@@ -224,7 +220,7 @@ public class MapleInventoryManipulator {
             return item;
         }
 
-        short slotMax = ii.getSlotMax(client, itemId);
+        short slotMax = ii.getSlotMax(itemId);
         List<Item> existing = chr.getInventory(type).listById(itemId);
         if (GameConstants.isRechargable(itemId)) {
             // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
@@ -273,12 +269,11 @@ public class MapleInventoryManipulator {
         return nItem;
     }
 
-    public static boolean addFromDrop(TacosClient client, Item item, boolean show) {
-        return addFromDrop(client, item, show, false);
+    public static boolean addFromDrop(TacosCharacter chr, Item item, boolean show) {
+        return addFromDrop(chr, item, show, false);
     }
 
-    public static boolean addFromDrop(TacosClient client, Item item, boolean show, boolean enhance) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean addFromDrop(TacosCharacter chr, Item item, boolean show, boolean enhance) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
         if (ii.isPickupRestricted(item.getItemId()) && chr.haveItem(item.getItemId(), 1, true, false)) {
@@ -290,7 +285,7 @@ public class MapleInventoryManipulator {
         MapleInventoryType type = GameConstants.getInventoryType(item.getItemId());
 
         if (!type.equals(MapleInventoryType.EQUIP)) {
-            short slotMax = ii.getSlotMax(client, item.getItemId());
+            short slotMax = ii.getSlotMax(item.getItemId());
             List<Item> existing = chr.getInventory(type).listById(item.getItemId());
             if (!GameConstants.isRechargable(item.getItemId())) {
                 if (quantity <= 0) { //wthsendPickupUnavailable(chr);
@@ -397,8 +392,7 @@ public class MapleInventoryManipulator {
         return Math.abs((int) Randomizer.rand(min, max));
     }
 
-    public static boolean checkSpace(TacosClient client, int itemid, int quantity, String owner) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean checkSpace(TacosCharacter chr, int itemid, int quantity, String owner) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemid) && chr.haveItem(itemid, 1, true, false)) {
             chr.updateInv();
@@ -408,11 +402,11 @@ public class MapleInventoryManipulator {
             return false;
         }
         MapleInventoryType type = GameConstants.getInventoryType(itemid);
-        if (client == null || chr == null || chr.getInventory(type) == null) { //wtf is causing this?
+        if (chr == null || chr.getInventory(type) == null) { //wtf is causing this?
             return false;
         }
         if (!type.equals(MapleInventoryType.EQUIP)) {
-            short slotMax = ii.getSlotMax(client, itemid);
+            short slotMax = ii.getSlotMax(itemid);
             List<Item> existing = chr.getInventory(type).listById(itemid);
             if (!GameConstants.isRechargable(itemid) && existing.size() > 0) { // first update all existing slots to slotMax
                 for (Item eItem : existing) {
@@ -438,12 +432,11 @@ public class MapleInventoryManipulator {
         return !chr.getInventory(type).isFull();
     }
 
-    public static void removeFromSlot(TacosClient client, MapleInventoryType type, short slot, short quantity, boolean unlock) {
-        removeFromSlot(client, type, slot, quantity, unlock, false);
+    public static void removeFromSlot(TacosCharacter chr, MapleInventoryType type, short slot, short quantity, boolean unlock) {
+        removeFromSlot(chr, type, slot, quantity, unlock, false);
     }
 
-    public static void removeFromSlot(TacosClient client, MapleInventoryType type, short slot, short quantity, boolean unlock, boolean consume) {
-        TacosCharacter chr = client.getPlayer();
+    public static void removeFromSlot(TacosCharacter chr, MapleInventoryType type, short slot, short quantity, boolean unlock, boolean consume) {
         if (chr == null || chr.getInventory(type) == null) {
             return;
         }
@@ -453,29 +446,28 @@ public class MapleInventoryManipulator {
             chr.getInventory(type).removeItem(slot, quantity, allowZero);
 
             if (item.getQuantity() == 0 && !allowZero) {
-                client.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().remove(type, item.getPosition()).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().remove(type, item.getPosition()).build()));
             } else {
-                client.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().update(type, (Item) item).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(unlock, PB_InvOp.builder().update(type, (Item) item).build()));
             }
         }
     }
 
-    public static boolean removeById(TacosClient client, MapleInventoryType type, int itemId, int quantity, boolean fromDrop, boolean consume) {
+    public static boolean removeById(TacosCharacter chr, MapleInventoryType type, int itemId, int quantity, boolean fromDrop, boolean consume) {
         int remremove = quantity;
-        for (Item item : client.getPlayer().getInventory(type).listById(itemId)) {
+        for (Item item : chr.getInventory(type).listById(itemId)) {
             if (remremove <= item.getQuantity()) {
-                removeFromSlot(client, type, item.getPosition(), (short) remremove, fromDrop, consume);
+                removeFromSlot(chr, type, item.getPosition(), (short) remremove, fromDrop, consume);
                 remremove = 0;
                 break;
             }
             remremove -= item.getQuantity();
-            removeFromSlot(client, type, item.getPosition(), item.getQuantity(), fromDrop, consume);
+            removeFromSlot(chr, type, item.getPosition(), item.getQuantity(), fromDrop, consume);
         }
         return remremove <= 0;
     }
 
-    public static void move(TacosClient client, MapleInventoryType type, short src, short dst) {
-        TacosCharacter chr = client.getPlayer();
+    public static void move(TacosCharacter chr, MapleInventoryType type, short src, short dst) {
         if (src < 0 || dst < 0 || dst > chr.getInventory(type).getSlotLimit() || src == dst) {
             return;
         }
@@ -490,7 +482,7 @@ public class MapleInventoryManipulator {
             olddstQ = initialTarget.getQuantity();
         }
         short oldsrcQ = source.getQuantity();
-        short slotMax = ii.getSlotMax(client, source.getItemId());
+        short slotMax = ii.getSlotMax(source.getItemId());
         chr.getInventory(type).move(src, dst, slotMax);
 
         if (!type.equals(MapleInventoryType.EQUIP) && initialTarget != null
@@ -501,19 +493,18 @@ public class MapleInventoryManipulator {
                 && !type.equals(MapleInventoryType.CASH)) {
             if ((olddstQ + oldsrcQ) > slotMax) {
                 // アイテム個数がMAXを超過する場合は古い移動前のスロットも維持
-                client.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, source).update(type, initialTarget).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().update(type, source).update(type, initialTarget).build()));
             } else {
                 // アイテム個数がMAXを超過しない場合は古い移動前のスロットを削除
-                client.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(type, src, initialTarget.getPosition()).remove(type, src).update(type, initialTarget).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(type, src, initialTarget.getPosition()).remove(type, src).update(type, initialTarget).build()));
             }
         } else {
-            client.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(type, src, dst).build()));
+            chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().move(type, src, dst).build()));
         }
     }
 
-    public static void equip(TacosClient client, short src, short dst) {
+    public static void equip(TacosCharacter chr, short src, short dst) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        TacosCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
         }
@@ -563,7 +554,7 @@ public class MapleInventoryManipulator {
                         sendInventoryFull(chr);
                         return;
                     }
-                    unequip(client, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                    unequip(chr, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
                 }
                 break;
             }
@@ -575,14 +566,14 @@ public class MapleInventoryManipulator {
                         sendInventoryFull(chr);
                         return;
                     }
-                    unequip(client, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                    unequip(chr, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
                 }
                 if (bottom != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
                         sendInventoryFull(chr);
                         return;
                     }
-                    unequip(client, (byte) -6, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                    unequip(chr, (byte) -6, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
                 }
                 break;
             }
@@ -598,7 +589,7 @@ public class MapleInventoryManipulator {
                         sendInventoryFull(chr);
                         return;
                     }
-                    unequip(client, (byte) -11, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                    unequip(chr, (byte) -11, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
                 }
                 break;
             }
@@ -609,7 +600,7 @@ public class MapleInventoryManipulator {
                         sendInventoryFull(chr);
                         return;
                     }
-                    unequip(client, (byte) -10, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
+                    unequip(chr, (byte) -10, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
                 }
                 break;
             }
@@ -643,8 +634,7 @@ public class MapleInventoryManipulator {
         chr.equipChanged();
     }
 
-    public static void unequip(TacosClient client, short src, short dst) {
-        TacosCharacter chr = client.getPlayer();
+    public static void unequip(TacosCharacter chr, short src, short dst) {
         Equip source = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(src);
         Equip target = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(dst);
 
@@ -669,12 +659,11 @@ public class MapleInventoryManipulator {
         chr.equipChanged();
     }
 
-    public static boolean drop(TacosClient client, MapleInventoryType type, short src, short quantity) {
-        return drop(client, type, src, quantity, false);
+    public static boolean drop(TacosCharacter chr, MapleInventoryType type, short src, short quantity) {
+        return drop(chr, type, src, quantity, false);
     }
 
-    public static boolean drop(TacosClient client, MapleInventoryType type, short src, short quantity, boolean npcInduced) {
-        TacosCharacter chr = client.getPlayer();
+    public static boolean drop(TacosCharacter chr, MapleInventoryType type, short src, short quantity, boolean npcInduced) {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (src < 0) {
             type = MapleInventoryType.EQUIPPED;

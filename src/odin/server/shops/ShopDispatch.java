@@ -22,7 +22,6 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import tacos.client.TacosCharacter;
 import java.util.List;
-import tacos.client.TacosClient;
 import tacos.packet.ServerPacket;
 
 /**
@@ -332,13 +331,13 @@ public final class ShopDispatch {
         }
     }
 
-    public static void buy(Object o, TacosClient client, int item, short quantity) {
+    public static void buy(Object o, TacosCharacter chr, int item, short quantity) {
         if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).buy(client, item, quantity);
+            ((HiredMerchant) o).buy(chr, item, quantity);
         } else if (o instanceof MaplePlayerShop) {
-            ((MaplePlayerShop) o).buy(client, item, quantity);
+            ((MaplePlayerShop) o).buy(chr, item, quantity);
         } else if (o instanceof MapleMiniGame) {
-            ((MapleMiniGame) o).buy(client, item, quantity);
+            ((MapleMiniGame) o).buy(chr, item, quantity);
         } else {
             throw new IllegalArgumentException("buy: unknown shop type: " + o);
         }

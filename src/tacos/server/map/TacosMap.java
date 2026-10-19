@@ -244,11 +244,11 @@ public class TacosMap extends TacosMapData {
         // user enter script.
         if (!getFirstUserEnter().equals("")) {
             if (getCharactersSize() == 1) {
-                MapScriptMethods.startScript_FirstUser(chr.getClient(), getFirstUserEnter());
+                MapScriptMethods.startScript_FirstUser(chr, getFirstUserEnter());
             }
         }
         if (!getUserEnter().equals("")) {
-            MapScriptMethods.startScript_User(chr.getClient(), getUserEnter());
+            MapScriptMethods.startScript_User(chr, getUserEnter());
         }
         // station clock.
         if (hasClock()) {

@@ -25,7 +25,6 @@ import java.util.Map;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
 import odin.constants.GameConstants;
@@ -84,7 +83,7 @@ public class InventoryHandler {
             Map.entry(2430229, new int[]{1102, 60}) //bunny rickshaw 60 day
     );
 
-    public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, TacosCharacter chr) {
+    public static void UseScriptedNPCItem(ClientPacket cp, TacosCharacter chr) {
         int unk1 = cp.Decode4();
         byte slot = (byte) cp.Decode2();
         int itemId = cp.Decode4();
@@ -96,21 +95,21 @@ public class InventoryHandler {
         }
         switch (itemId) {
             case 2430007: { // Blank Compass
-                useBlankCompass(client, chr, slot);
+                useBlankCompass(  chr, slot);
                 break;
             }
             case 2430008: { // Gold Compass
-                useGoldCompass(client, chr);
+                useGoldCompass(  chr);
                 break;
             }
             case 2430112: { //miracle cube
-                useMiracleCube(client, chr);
+                useMiracleCube(  chr);
                 break;
             }
             default: {
                 int[] mount = MOUNT_ITEMS.get(itemId);
                 if (mount != null) {
-                    useMountItem(client, chr, slot, mount[0], mount[1]);
+                    useMountItem(  chr, slot, mount[0], mount[1]);
                 }
                 break;
             }
@@ -118,39 +117,39 @@ public class InventoryHandler {
         chr.updateInv();
     }
 
-    private static void useBlankCompass(TacosClient client, TacosCharacter chr, byte slot) {
+    private static void useBlankCompass(TacosCharacter chr, byte slot) {
         MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
-        MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
+        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, slot, (byte) 1, false);
 
         if (inventory.countById(3994102) >= 20 // Compass Letter "North"
                 && inventory.countById(3994103) >= 20 // Compass Letter "South"
                 && inventory.countById(3994104) >= 20 // Compass Letter "East"
                 && inventory.countById(3994105) >= 20) { // Compass Letter "West"
-            MapleInventoryManipulator.addById(client, 2430008, (short) 1); // Gold Compass
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994102, 20, false, false);
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994103, 20, false, false);
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994104, 20, false, false);
-            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994105, 20, false, false);
+            MapleInventoryManipulator.addById(chr, 2430008, (short) 1); // Gold Compass
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994102, 20, false, false);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994103, 20, false, false);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994104, 20, false, false);
+            MapleInventoryManipulator.removeById(chr, MapleInventoryType.SETUP, 3994105, 20, false, false);
         } else {
-            MapleInventoryManipulator.addById(client, 2430007, (short) 1); // Blank Compass
+            MapleInventoryManipulator.addById(chr, 2430007, (short) 1); // Blank Compass
         }
-        TacosScriptNPC.getInstance().start(client, 2084001);
+        TacosScriptNPC.getInstance().start(chr.getClient(), 2084001);
     }
 
-    private static void useGoldCompass(TacosClient client, TacosCharacter chr) {
+    private static void useGoldCompass(TacosCharacter chr) {
         chr.saveLocation(SavedLocationType.RICHIE);
         for (int i = 390001000; i <= 390001004; i++) {
             TacosMap map = chr.findMap(i);
             if (map.getCharactersSize() == 0) {
                 chr.changeMapPortal(map, map.getPortal(0));
-                MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430008, 1, false, false); // Removal of gold compass
+                MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, 2430008, 1, false, false); // Removal of gold compass
                 return;
             }
         }
         chr.dropMessage(5, "All maps are currently in use, please try again later."); // Or mabe some other message.
     }
 
-    private static void useMiracleCube(TacosClient client, TacosCharacter chr) {
+    private static void useMiracleCube(TacosCharacter chr) {
         if (chr.getInventory(MapleInventoryType.USE).getNumFreeSlot() < 1) {
             chr.dropMessage(5, "Please make some space.");
             return;
@@ -168,21 +167,21 @@ public class InventoryHandler {
             chr.dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
             return;
         }
-        if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, cost, true, false)) {
-            MapleInventoryManipulator.addById(client, reward, (short) 1);
+        if (MapleInventoryManipulator.checkSpace(chr, 2049400, 1, "") && MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, 2430112, cost, true, false)) {
+            MapleInventoryManipulator.addById(chr, reward, (short) 1);
         } else {
             chr.dropMessage(5, "Please make some space.");
         }
     }
 
-    private static void useMountItem(TacosClient client, TacosCharacter chr, byte slot, int mountid, long expiration_days) {
+    private static void useMountItem(TacosCharacter chr, byte slot, int mountid, long expiration_days) {
         mountid += (GameConstants.isAran(chr.getJob()) ? 20000000 : (GameConstants.isEvan(chr.getJob()) ? 20010000 : (GameConstants.isKOC(chr.getJob()) ? 10000000 : (GameConstants.isResist(chr.getJob()) ? 30000000 : 0))));
         if (chr.getSkillLevel(mountid) > 0) {
             chr.dropMessage(5, "You already have this skill.");
             return;
         }
         if (expiration_days > 0) {
-            MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
+            MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, slot, (byte) 1, false);
             chr.changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
             chr.dropMessage(5, "The skill has been attained.");
         }
@@ -226,22 +225,21 @@ public class InventoryHandler {
             return 0;
         }
 
-        Item item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
+        Item item = MapleInventoryManipulator.addbyId_Gachapon(chr, reward, (short) amount);
 
         if (item == null) {
             return 0;
         }
 
-        MapleInventoryManipulator.removeFromSlot(chr.getClient(), MapleInventoryType.ETC, (byte) slot, (short) 1, true);
-        MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
+        MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.ETC, (byte) slot, (short) 1, true);
+        MapleInventoryManipulator.removeById(chr, MapleInventoryType.CASH, keyIDforRemoval, 1, true, false);
 
         return reward;
     }
 
     public static final int OWL_ID = 2; //don't change. 0 = owner ID, 1 = store ID, 2 = object ID
 
-    public static void OwlWarp(TacosClient client, int id, int map) {
-        TacosCharacter chr = client.getPlayer();
+    public static void OwlWarp(TacosCharacter chr, int id, int map) {
         chr.updateInv();
         if (chr.getMapId() < 910000000 || chr.getMapId() > 910000022 || chr.getPlayerShop() != null || map < 910000001 || map > 910000022) {
             return;

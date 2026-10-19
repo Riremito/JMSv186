@@ -132,7 +132,7 @@ public class ReqCUser_Pet {
         int inc_fullness = MapleItemInformationProvider.getInstance().getInt(item_id, "spec/inc");
         int pet_previous_level = pet.getLevel();
         pet.feed(inc_fullness, (item_type == MapleInventoryType.CASH) ? 100 : 10);
-        MapleInventoryManipulator.removeById(chr.getClient(), item_type, item_id, 1, true, false);
+        MapleInventoryManipulator.removeById(chr, item_type, item_id, 1, true, false);
         chr.updateInv();
 
         // 情報更新
@@ -277,8 +277,8 @@ public class ReqCUser_Pet {
             }
             if (ReqCDropPool.useDropItem(chr, mapitem.getItemId())) {
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
-            } else if (MapleInventoryManipulator.checkSpace(client, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
-                MapleInventoryManipulator.addFromDrop(client, mapitem.getItem(), true, !mapitem.isPlayerDrop());
+            } else if (MapleInventoryManipulator.checkSpace(chr, mapitem.getItemId(), mapitem.getItem().getQuantity(), mapitem.getItem().getOwner())) {
+                MapleInventoryManipulator.addFromDrop(chr, mapitem.getItem(), true, !mapitem.isPlayerDrop());
                 ReqCDropPool.removeDropItem(chr, mapitem, true, pet_index);
             }
         }

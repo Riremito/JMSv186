@@ -10,7 +10,6 @@ import java.util.Set;
 import odin.client.inventory.Item;
 import odin.client.SkillFactory;
 import odin.constants.GameConstants;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.query.DQ_Shopitems;
 import tacos.database.query.DQ_Shops;
@@ -81,7 +80,7 @@ public class MapleShop {
         chr.SendPacket(ResCShopDlg.OpenShopDlg(chr.getClient(), getNpcId(), items));
     }
 
-    public boolean buy(TacosClient client, TacosCharacter chr, int itemId, short quantity) {
+    public boolean buy(TacosCharacter chr, int itemId, short quantity) {
         MapleShopItem item = findById(itemId);
 
         if (quantity <= 0 || item == null) {
@@ -91,12 +90,12 @@ public class MapleShop {
 
         int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
 
-        if (item.getPrice() < 0 || client.getPlayer().getMeso() < price) {
+        if (item.getPrice() < 0 || chr.getMeso() < price) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyNoMoney));
             return false;
         }
 
-        if (!MapleInventoryManipulator.checkSpace(client, itemId, quantity, "")) {
+        if (!MapleInventoryManipulator.checkSpace(chr, itemId, quantity, "")) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyUnknown));
             return false;
         }
@@ -107,29 +106,28 @@ public class MapleShop {
                 return false;
             }
 
-            MapleInventoryManipulator.removeById(client, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, false);
+            MapleInventoryManipulator.removeById(chr, GameConstants.getInventoryType(item.getReqItem()), item.getReqItem(), item.getReqItemQ(), false, false);
         }
 
         chr.gainMeso(-price, false);
 
         if (GameConstants.isPet(itemId)) {
-            MapleInventoryManipulator.addById(client, itemId, quantity, "", TacosPet.createPet(itemId, TacosWorld.getNextItemUniqueId()), -1);
+            MapleInventoryManipulator.addById(chr, itemId, quantity, "", TacosPet.createPet(itemId, TacosWorld.getNextItemUniqueId()), -1);
         } else {
             MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
             if (GameConstants.isRechargable(itemId)) {
-                quantity = ii.getSlotMax(client, item.getItemId());
+                quantity = ii.getSlotMax(item.getItemId());
             }
 
-            MapleInventoryManipulator.addById(client, itemId, quantity);
+            MapleInventoryManipulator.addById(chr, itemId, quantity);
         }
 
         chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuySuccess));
         return true;
     }
 
-    public void sell(TacosClient client, MapleInventoryType type, byte slot, short quantity) {
-        TacosCharacter chr = client.getPlayer();
+    public void sell(TacosCharacter chr, MapleInventoryType type, byte slot, short quantity) {
         if (quantity == 0xFFFF || quantity == 0) {
             quantity = 1;
         }
@@ -153,10 +151,10 @@ public class MapleShop {
             return;
         }
         if (quantity <= iQuant && iQuant > 0) {
-            MapleInventoryManipulator.removeFromSlot(client, type, slot, quantity, false);
+            MapleInventoryManipulator.removeFromSlot(chr, type, slot, quantity, false);
             double price;
             if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
-                price = ii.getWholePrice(item.getItemId()) / (double) ii.getSlotMax(client, item.getItemId());
+                price = ii.getWholePrice(item.getItemId()) / (double) ii.getSlotMax(item.getItemId());
             } else {
                 price = ii.getPrice(item.getItemId());
             }
@@ -164,20 +162,19 @@ public class MapleShop {
             if (price != -1.0 && recvMesos > 0) {
                 chr.gainMeso(recvMesos, false);
             }
-            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
         }
     }
 
-    public boolean recharge(TacosClient client, byte slot) {
-        TacosCharacter chr = client.getPlayer();
+    public boolean recharge(TacosCharacter chr, byte slot) {
         Item item = chr.getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
-            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
             return false;
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        short slotMax = ii.getSlotMax(client, item.getItemId());
+        short slotMax = ii.getSlotMax(item.getItemId());
         int skill = GameConstants.getMasterySkill(chr.getJob());
 
         if (skill != 0) {
@@ -187,15 +184,15 @@ public class MapleShop {
             int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
             if (chr.getMeso() >= price) {
                 item.setQuantity(slotMax);
-                client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));
                 chr.gainMeso(-price, false, true, false);
-                client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
+                chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
                 return true;
             }
-            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
+            chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
             return false;
         }
-        client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_ServerMsg));
+        chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_ServerMsg));
         return false;
     }
 

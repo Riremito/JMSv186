@@ -344,7 +344,7 @@ public class ReqCMiniRoomBaseDlg {
                 }
 
                 if ((quantity <= item.getQuantity() && quantity >= 0) || GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
-                    chr.getTrade().setItems(chr.getClient(), item, targetSlot, quantity);
+                    chr.getTrade().setItems(chr, item, targetSlot, quantity);
                 }
                 return true;
             }
@@ -406,12 +406,12 @@ public class ReqCMiniRoomBaseDlg {
                         }
                         if (GameConstants.isThrowingStar(ivItem.getItemId()) || GameConstants.isBullet(ivItem.getItemId())) {
                             // Ignore the bundles
-                            MapleInventoryManipulator.removeFromSlot(chr.getClient(), type, slot, ivItem.getQuantity(), true);
+                            MapleInventoryManipulator.removeFromSlot(chr, type, slot, ivItem.getQuantity(), true);
 
                             Item sellItem = ivItem.copy();
                             ShopDispatch.addItem(shop, new MaplePlayerShopItem(sellItem, (short) 1, price));
                         } else {
-                            MapleInventoryManipulator.removeFromSlot(chr.getClient(), type, slot, bundles_perbundle, true);
+                            MapleInventoryManipulator.removeFromSlot(chr, type, slot, bundles_perbundle, true);
 
                             Item sellItem = ivItem.copy();
                             sellItem.setQuantity(perBundle);
@@ -447,7 +447,7 @@ public class ReqCMiniRoomBaseDlg {
                         || chr.getMeso() - (check2) < 0 || ShopDispatch.getMeso(shop) + (check2) < 0) {
                     return true;
                 }
-                ShopDispatch.buy(shop, chr.getClient(), item, quantity);
+                ShopDispatch.buy(shop, chr, item, quantity);
                 ShopDispatch.broadcastToVisitors(shop, ResCMiniRoomBaseDlg.shopItemUpdate(shop));
                 return true;
             }
@@ -468,8 +468,8 @@ public class ReqCMiniRoomBaseDlg {
                             return true;
                         }
                         item_get.setQuantity((short) check);
-                        if (MapleInventoryManipulator.checkSpace(chr.getClient(), item_get.getItemId(), item_get.getQuantity(), item_get.getOwner())) {
-                            MapleInventoryManipulator.addFromDrop(chr.getClient(), item_get, false);
+                        if (MapleInventoryManipulator.checkSpace(chr, item_get.getItemId(), item_get.getQuantity(), item_get.getOwner())) {
+                            MapleInventoryManipulator.addFromDrop(chr, item_get, false);
                             item.bundles = 0;
                             ShopDispatch.removeFromSlot(shop, slot);
                         }
@@ -537,7 +537,7 @@ public class ReqCMiniRoomBaseDlg {
                         if (items.bundles > 0) {
                             Item newItem = items.item.copy();
                             newItem.setQuantity((short) (items.bundles * newItem.getQuantity()));
-                            if (MapleInventoryManipulator.addFromDrop(chr.getClient(), newItem, false)) {
+                            if (MapleInventoryManipulator.addFromDrop(chr, newItem, false)) {
                                 items.bundles = 0;
                             }
                         }

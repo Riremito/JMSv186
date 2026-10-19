@@ -18,7 +18,6 @@
  */
 package tacos.packet.response;
 
-import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
@@ -286,8 +285,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getTradeStart(TacosClient client, MapleTrade trade, byte number, boolean isPointTrade) {
-        TacosCharacter chr = client.getPlayer();
+    public static ServerPacket getTradeStart(TacosCharacter chr, MapleTrade trade, byte number, boolean isPointTrade) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
@@ -502,13 +500,13 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getMiniGame(TacosClient client, MapleMiniGame minigame) {
+    public static ServerPacket getMiniGame(TacosCharacter chr, MapleMiniGame minigame) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
         sp.Encode1(minigame.getGameType());
         sp.Encode1(minigame.getMaxSize());
-        sp.Encode2(minigame.getVisitorSlot(client.getPlayer()));
+        sp.Encode2(minigame.getVisitorSlot(chr));
         sp.EncodeBuffer(RD_AvatarLook.Encode(minigame.getMCOwner()));
         sp.EncodeStr(minigame.getOwnerName());
         sp.Encode2(minigame.getMCOwner().getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87));

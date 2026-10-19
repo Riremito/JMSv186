@@ -3,7 +3,6 @@
 package odin.handling.channel.handler;
 
 import tacos.client.TacosCharacter;
-import tacos.client.TacosClient;
 import odin.constants.BeansConstants;
 import tacos.shared.TacosSharedExpTable;
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ public class BeanGame {
     public static int 黄金狗设置局数 = 0;
     public static int 海洋帽子 = 1002743;
 
-    public static void BeanGame1(TacosClient client, ClientPacket cp) {
+    public static void BeanGame1(TacosCharacter chr, ClientPacket cp) {
         BeansConstants Beans = new BeansConstants();
         String 豆豆装备[] = Beans.get豆豆装备();
         String 豆豆坐骑[] = Beans.get豆豆坐骑();
@@ -53,7 +52,6 @@ public class BeanGame {
         String 五职业奖励[] = Beans.get五职业奖励();
         String 女皇奖励[] = Beans.get女皇奖励();
         //System.out.println("豆豆出现包" +slea.toString());
-        TacosCharacter chr = client.getPlayer();
         List<MapleBeans> beansInfo = new ArrayList<>();
         int type = cp.Decode1();
         int 力度 = 0;
