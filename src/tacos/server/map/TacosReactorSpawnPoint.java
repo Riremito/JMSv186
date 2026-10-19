@@ -24,7 +24,6 @@ import odin.server.maps.MapleReactor;
 import tacos.debug.DebugLogger;
 import tacos.wz.MapleData;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 
 /**
  *
@@ -42,15 +41,15 @@ public class TacosReactorSpawnPoint {
 
     public boolean loadData(MapleData md_reactor) {
         this.node_id = Integer.parseInt(md_reactor.getName());
-        this.f = WzDataTool.getInt(md_reactor.getChildByPath("f"), 0);
-        this.id = WzDataTool.getInt(md_reactor.getChildByPath("id"), 0);
-        this.name = WzDataTool.getString(md_reactor.getChildByPath("name"), "");
-        this.reactorTime = WzDataTool.getInt(md_reactor.getChildByPath("reactorTime"), 0);
+        this.f = md_reactor.getInt("f");
+        this.id = md_reactor.getInt("id");
+        this.name = md_reactor.getString("name");
+        this.reactorTime = md_reactor.getInt("reactorTime");
         if (1 <= this.reactorTime) {
             this.reactorTime *= 1000;
         }
-        this.x = WzDataTool.getInt(md_reactor.getChildByPath("x"));
-        this.y = WzDataTool.getInt(md_reactor.getChildByPath("y"));
+        this.x = md_reactor.getInt("x");
+        this.y = md_reactor.getInt("y");
 
         if (!WzDataStorage.REACTOR.check(this.id)) {
             DebugLogger.ErrorLog("TacosReactorSpawnPoint : invalid reactor id, " + this.id);

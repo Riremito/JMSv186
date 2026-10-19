@@ -32,7 +32,6 @@ import tacos.wz.MapleData;
 import odin.server.maps.MapleNodes;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 /**
@@ -283,7 +282,7 @@ public class TacosMapData {
             DebugLogger.ErrorLog("loadData : invalid map id = " + this.map_id);
             return false;
         }
-        this.link_id = WzDataTool.getInt(mapData.getChildByPath("info/link"), -1);
+        this.link_id = mapData.getInt("info/link", -1);
 
         if (this.link_id != -1) {
             mapData = WzXML.MAP.getImg(this.link_id);
@@ -315,12 +314,12 @@ public class TacosMapData {
                 for (MapleData footHold : footCat) {
                     TacosFoothold fh = new TacosFoothold();
                     fh.setId(Integer.parseInt(footHold.getName()));
-                    fh.setX1(WzDataTool.getInt(footHold.getChildByPath("x1")));
-                    fh.setY1(WzDataTool.getInt(footHold.getChildByPath("y1")));
-                    fh.setX2(WzDataTool.getInt(footHold.getChildByPath("x2")));
-                    fh.setY2(WzDataTool.getInt(footHold.getChildByPath("y2")));
-                    fh.setPrev(WzDataTool.getInt(footHold.getChildByPath("prev")));
-                    fh.setNext(WzDataTool.getInt(footHold.getChildByPath("next")));
+                    fh.setX1(footHold.getInt("x1"));
+                    fh.setY1(footHold.getInt("y1"));
+                    fh.setX2(footHold.getInt("x2"));
+                    fh.setY2(footHold.getInt("y2"));
+                    fh.setPrev(footHold.getInt("prev"));
+                    fh.setNext(footHold.getInt("next"));
                     getFootholds().put(fh.getId(), fh);
                 }
             }
@@ -331,12 +330,12 @@ public class TacosMapData {
     public boolean loadPortals(MapleData mapData) {
         int nextDoorPortal = 0x80;
         for (MapleData portal_data : mapData.getChildByPath("portal")) {
-            TacosPortal portal = new TacosPortal(WzDataTool.getInt(portal_data.getChildByPath("pt")));
+            TacosPortal portal = new TacosPortal(portal_data.getInt("pt"));
 
-            portal.setName(WzDataTool.getString(portal_data.getChildByPath("pn")));
-            portal.setTarget(WzDataTool.getString(portal_data.getChildByPath("tn")));
-            portal.setTargetMapId(WzDataTool.getInt(portal_data.getChildByPath("tm")));
-            portal.setPosition(new Point(WzDataTool.getInt(portal_data.getChildByPath("x")), WzDataTool.getInt(portal_data.getChildByPath("y"))));
+            portal.setName(portal_data.getString("pn"));
+            portal.setTarget(portal_data.getString("tn"));
+            portal.setTargetMapId(portal_data.getInt("tm"));
+            portal.setPosition(new Point(portal_data.getInt("x"), portal_data.getInt("y")));
             String script = portal_data.getString("script");
             portal.setScriptName(script.equals("") ? null : script);
 
@@ -416,31 +415,31 @@ public class TacosMapData {
     public boolean loadInfo(MapleData mapData) {
         this.clock = mapData.getChildByPath("clock") != null;
         this.returnMapId = mapData.getInt("info/returnMap");
-        this.createMobInterval = WzDataTool.getInt(mapData.getChildByPath("info/createMobInterval"), 7000);
+        this.createMobInterval = mapData.getInt("info/createMobInterval", 7000);
         this.monsterRate = mapData.getFloat("info/mobRate");
-        this.everlast = WzDataTool.getInt(mapData.getChildByPath("info/everlast"), 0) > 0;
-        this.town = WzDataTool.getInt(mapData.getChildByPath("info/town"), 0) > 0;
-        this.soaring = WzDataTool.getInt(mapData.getChildByPath("info/needSkillForFly"), 0) > 0;
-        this.personalShop = WzDataTool.getInt(mapData.getChildByPath("info/personalShop"), 0) > 0;
-        this.lvForceMove = WzDataTool.getInt(mapData.getChildByPath("info/lvForceMove"), 0);
+        this.everlast = mapData.getInt("info/everlast") > 0;
+        this.town = mapData.getInt("info/town") > 0;
+        this.soaring = mapData.getInt("info/needSkillForFly") > 0;
+        this.personalShop = mapData.getInt("info/personalShop") > 0;
+        this.lvForceMove = mapData.getInt("info/lvForceMove");
         this.decHP = (int) mapData.getLong("info/decHP", 0L);
-        this.decHPInterval = WzDataTool.getInt(mapData.getChildByPath("info/decHPInterval"), 10000);
-        this.protectItem = WzDataTool.getInt(mapData.getChildByPath("info/protectItem"), 0);
-        this.forcedReturnMap = WzDataTool.getInt(mapData.getChildByPath("info/forcedReturn"), TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID);
-        this.timeLimit = WzDataTool.getInt(mapData.getChildByPath("info/timeLimit"), -1);
-        this.fieldLimit = WzDataTool.getInt(mapData.getChildByPath("info/fieldLimit"), 0);
-        this.onFirstUserEnter = WzDataTool.getString(mapData.getChildByPath("info/onFirstUserEnter"), "");
-        this.onUserEnter = WzDataTool.getString(mapData.getChildByPath("info/onUserEnter"), "");
+        this.decHPInterval = mapData.getInt("info/decHPInterval", 10000);
+        this.protectItem = mapData.getInt("info/protectItem");
+        this.forcedReturnMap = mapData.getInt("info/forcedReturn", TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID);
+        this.timeLimit = mapData.getInt("info/timeLimit", -1);
+        this.fieldLimit = mapData.getInt("info/fieldLimit");
+        this.onFirstUserEnter = mapData.getString("info/onFirstUserEnter");
+        this.onUserEnter = mapData.getString("info/onUserEnter");
         this.recoveryRate = mapData.getFloat("info/recovery", 1.0f);
-        this.fixedMob = WzDataTool.getInt(mapData.getChildByPath("info/fixedMobCapacity"), 0);
-        this.consumeItemCoolTime = WzDataTool.getInt(mapData.getChildByPath("info/consumeItemCoolTime"), 0);
+        this.fixedMob = mapData.getInt("info/fixedMobCapacity");
+        this.consumeItemCoolTime = mapData.getInt("info/consumeItemCoolTime");
 
         if (this.returnMapId == TacosConstants.DEFAULT_FORCED_RETURN_MAP_ID) {
             this.returnMapId = this.map_id;
         }
 
-        this.time_mob_id = WzDataTool.getInt(mapData.getChildByPath("info/timeMob/id"), 0);
-        this.time_mob_message = WzDataTool.getString(mapData.getChildByPath("info/timeMob/message"), null);
+        this.time_mob_id = mapData.getInt("info/timeMob/id");
+        this.time_mob_message = mapData.getString("info/timeMob/message", null);
         return true;
     }
 
@@ -523,7 +522,7 @@ public class TacosMapData {
     // life node.
     public boolean loadLife(MapleData mapData) {
         for (MapleData life : mapData.getChildByPath("life")) {
-            String type = WzDataTool.getString(life.getChildByPath("type"));
+            String type = life.getString("type");
 
             switch (type) {
                 case "m" -> {
@@ -567,20 +566,22 @@ public class TacosMapData {
 
     public boolean loadNodeInfo(MapleData mapData) {
         this.nodeInfo = new MapleNodes(this.map_id);
-        if (mapData.getChildByPath("nodeInfo") != null) {
-            for (MapleData node : mapData.getChildByPath("nodeInfo")) {
+        MapleData md_node_info = mapData.getChildByPath("nodeInfo");
+        if (md_node_info != null) {
+            for (MapleData node : md_node_info) {
                 try {
                     if (node.getName().equals("start")) {
-                        nodeInfo.setNodeStart(WzDataTool.getInt(node, 0));
+                        nodeInfo.setNodeStart(md_node_info.getInt(node.getName()));
                         continue;
                     } else if (node.getName().equals("end")) {
-                        nodeInfo.setNodeEnd(WzDataTool.getInt(node, 0));
+                        nodeInfo.setNodeEnd(md_node_info.getInt(node.getName()));
                         continue;
                     }
                     List<Integer> edges = new ArrayList<>();
-                    if (node.getChildByPath("edge") != null) {
-                        for (MapleData edge : node.getChildByPath("edge")) {
-                            edges.add(WzDataTool.getInt(edge, -1));
+                    MapleData md_edge = node.getChildByPath("edge");
+                    if (md_edge != null) {
+                        for (MapleData edge : md_edge) {
+                            edges.add(md_edge.getInt(edge.getName(), -1));
                         }
                     }
                     final MapleNodes.MapleNodeInfo mni = new MapleNodes.MapleNodeInfo(
@@ -624,10 +625,10 @@ public class TacosMapData {
             int x1, y1, x2, y2;
             Rectangle mapArea;
             for (MapleData area : mapData.getChildByPath("area")) {
-                x1 = WzDataTool.getInt(area.getChildByPath("x1"));
-                y1 = WzDataTool.getInt(area.getChildByPath("y1"));
-                x2 = WzDataTool.getInt(area.getChildByPath("x2"));
-                y2 = WzDataTool.getInt(area.getChildByPath("y2"));
+                x1 = area.getInt("x1");
+                y1 = area.getInt("y1");
+                x2 = area.getInt("x2");
+                y2 = area.getInt("y2");
                 mapArea = new Rectangle(x1, y1, (x2 - x1), (y2 - y1));
                 nodeInfo.addMapleArea(mapArea);
             }
@@ -636,26 +637,27 @@ public class TacosMapData {
             final MapleData mc = mapData.getChildByPath("monsterCarnival");
             if (mc.getChildByPath("mobGenPos") != null) {
                 for (MapleData area : mc.getChildByPath("mobGenPos")) {
-                    nodeInfo.addMonsterPoint(WzDataTool.getInt(area.getChildByPath("x")),
-                            WzDataTool.getInt(area.getChildByPath("y")),
-                            WzDataTool.getInt(area.getChildByPath("fh")),
-                            WzDataTool.getInt(area.getChildByPath("cy")),
+                    nodeInfo.addMonsterPoint(area.getInt("x"),
+                            area.getInt("y"),
+                            area.getInt("fh"),
+                            area.getInt("cy"),
                             area.getInt("team", -1));
                 }
             }
             if (mc.getChildByPath("mob") != null) {
                 for (MapleData area : mc.getChildByPath("mob")) {
-                    nodeInfo.addMobSpawn(WzDataTool.getInt(area.getChildByPath("id")), WzDataTool.getInt(area.getChildByPath("spendCP")));
+                    nodeInfo.addMobSpawn(area.getInt("id"), area.getInt("spendCP"));
                 }
             }
             if (mc.getChildByPath("guardianGenPos") != null) {
                 for (MapleData area : mc.getChildByPath("guardianGenPos")) {
-                    nodeInfo.addGuardianSpawn(new Point(WzDataTool.getInt(area.getChildByPath("x")), WzDataTool.getInt(area.getChildByPath("y"))), area.getInt("team", -1));
+                    nodeInfo.addGuardianSpawn(new Point(area.getInt("x"), area.getInt("y")), area.getInt("team", -1));
                 }
             }
-            if (mc.getChildByPath("skill") != null) {
-                for (MapleData area : mc.getChildByPath("skill")) {
-                    nodeInfo.addSkillId(WzDataTool.getInt(area));
+            MapleData md_skill = mc.getChildByPath("skill");
+            if (md_skill != null) {
+                for (MapleData area : md_skill) {
+                    nodeInfo.addSkillId(md_skill.getInt(area.getName()));
                 }
             }
         }

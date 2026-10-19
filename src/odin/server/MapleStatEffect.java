@@ -27,7 +27,6 @@ import tacos.wz.MapleData;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.builder.PB_UserEffect;
-import tacos.wz.WzDataTool;
 
 public class MapleStatEffect {
 
@@ -343,8 +342,8 @@ public class MapleStatEffect {
 
         final MapleData ltd = source.getChildByPath("lt");
         if (ltd != null) {
-            ret.lt = WzDataTool.getPoint(source.getChildByPath("lt"));
-            ret.rb = WzDataTool.getPoint(source.getChildByPath("rb"));
+            ret.lt = source.getPoint("lt");
+            ret.rb = source.getPoint("rb");
         }
 
         ret.x = source.getIntExpression("x", common_level);

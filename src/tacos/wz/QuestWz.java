@@ -154,7 +154,7 @@ public class QuestWz extends WzXML {
         MapleData md_start_reqs = md_check.getChildByPath("0");
         if (md_start_reqs != null) {
             for (MapleData md_req : md_start_reqs) {
-                QuestRequirementInfo req = parseRequirement(md_req);
+                QuestRequirementInfo req = parseRequirement(md_start_reqs, md_req);
                 if (req.type == MapleQuestRequirementType.interval) {
                     ret.repeatable = true;
                 } else if (req.type == MapleQuestRequirementType.mob) {
@@ -167,7 +167,7 @@ public class QuestWz extends WzXML {
         MapleData md_complete_reqs = md_check.getChildByPath("1");
         if (md_complete_reqs != null) {
             for (MapleData md_req : md_complete_reqs) {
-                QuestRequirementInfo req = parseRequirement(md_req);
+                QuestRequirementInfo req = parseRequirement(md_complete_reqs, md_req);
                 if (req.type == MapleQuestRequirementType.mob) {
                     parseRelevantMobs(md_req, ret.relevantMobs);
                 } else if (req.type == MapleQuestRequirementType.endscript) {
@@ -180,14 +180,14 @@ public class QuestWz extends WzXML {
         MapleData md_start_acts = md_act.getChildByPath("0");
         if (md_start_acts != null) {
             for (MapleData md_act_data : md_start_acts) {
-                ret.startActs.add(parseAction(md_act_data));
+                ret.startActs.add(parseAction(md_start_acts, md_act_data));
             }
         }
 
         MapleData md_complete_acts = md_act.getChildByPath("1");
         if (md_complete_acts != null) {
             for (MapleData md_act_data : md_complete_acts) {
-                ret.completeActs.add(parseAction(md_act_data));
+                ret.completeActs.add(parseAction(md_complete_acts, md_act_data));
             }
         }
 
@@ -209,7 +209,7 @@ public class QuestWz extends WzXML {
                     List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> pInfo = new ArrayList<>();
                     for (MapleData c : d) {
                         for (MapleData b : c) {
-                            pInfo.add(new SimpleImmutableEntry<>(c.getName(), new SimpleImmutableEntry<>(b.getName(), WzDataTool.getInt(b, 0))));
+                            pInfo.add(new SimpleImmutableEntry<>(c.getName(), new SimpleImmutableEntry<>(b.getName(), c.getInt(b.getName()))));
                         }
                     }
                     ret.partyQuestInfo.put(d.getName(), pInfo);
@@ -227,7 +227,7 @@ public class QuestWz extends WzXML {
         }
     }
 
-    private QuestRequirementInfo parseRequirement(MapleData data) {
+    private QuestRequirementInfo parseRequirement(MapleData md_reqs, MapleData data) {
         QuestRequirementInfo ret = new QuestRequirementInfo();
         ret.type = MapleQuestRequirementType.getByWZName(data.getName());
 
@@ -237,7 +237,7 @@ public class QuestWz extends WzXML {
                 ret.dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    ret.dataStore.add(new SimpleImmutableEntry<>(i, WzDataTool.getInt(child.get(i), -1)));
+                    ret.dataStore.add(new SimpleImmutableEntry<>(i, data.getInt(child.get(i).getName(), -1)));
                 }
                 break;
             }
@@ -279,11 +279,11 @@ public class QuestWz extends WzXML {
             case mbmin:
             case lvmax:
             case lvmin: {
-                ret.intStore = WzDataTool.getInt(data, -1);
+                ret.intStore = md_reqs.getInt(data.getName(), -1);
                 break;
             }
             case end: {
-                ret.stringStore = WzDataTool.getString(data, null);
+                ret.stringStore = md_reqs.getString(data.getName(), null);
                 break;
             }
             case mob: {
@@ -325,7 +325,7 @@ public class QuestWz extends WzXML {
         return ret;
     }
 
-    private QuestActionInfo parseAction(MapleData data) {
+    private QuestActionInfo parseAction(MapleData md_acts, MapleData data) {
         QuestActionInfo ret = new QuestActionInfo();
         ret.type = MapleQuestActionType.getByWZName(data.getName());
 
@@ -334,11 +334,11 @@ public class QuestWz extends WzXML {
             case nextQuest:
             case money:
             case pop: {
-                ret.value = WzDataTool.getInt(data, 0);
+                ret.value = md_acts.getInt(data.getName());
                 break;
             }
             case buffItemID: {
-                ret.value = WzDataTool.getInt(data, -1);
+                ret.value = md_acts.getInt(data.getName(), -1);
                 break;
             }
             case item: {
@@ -372,7 +372,7 @@ public class QuestWz extends WzXML {
                     MapleData md_job = md_skill.getChildByPath("job");
                     if (md_job != null) {
                         for (MapleData md_job_id : md_job) {
-                            skill.job.add(WzDataTool.getInt(md_job_id, 0));
+                            skill.job.add(md_job.getInt(md_job_id.getName()));
                         }
                     }
                     ret.skills.add(skill);
@@ -387,7 +387,7 @@ public class QuestWz extends WzXML {
                     if (md_job != null) {
                         sp.job = new ArrayList<>();
                         for (MapleData md_job_id : md_job) {
-                            sp.job.add(WzDataTool.getInt(md_job_id, 0));
+                            sp.job.add(md_job.getInt(md_job_id.getName()));
                         }
                     }
                     ret.sps.add(sp);

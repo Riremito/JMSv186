@@ -186,7 +186,7 @@ public class MobWz extends WzXML {
         if (reviveInfo != null) {
             List<Integer> revives = new LinkedList<>();
             for (MapleData bdata : reviveInfo) {
-                revives.add(WzDataTool.getInt(bdata));
+                revives.add(reviveInfo.getInt(bdata.getName()));
             }
             stats.setRevives(revives);
         }
@@ -289,10 +289,11 @@ public class MobWz extends WzXML {
                 for (MapleDataEntity entry : mapz.getFiles()) {
                     final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
                     MapleData dat = getData("QuestCountGroup/" + entry.getName());
-                    if (dat != null && dat.getChildByPath("info") != null) {
+                    MapleData md_info = (dat != null) ? dat.getChildByPath("info") : null;
+                    if (md_info != null) {
                         List<Integer> z = new ArrayList<>();
-                        for (MapleData da : dat.getChildByPath("info")) {
-                            z.add(WzDataTool.getInt(da, 0));
+                        for (MapleData da : md_info) {
+                            z.add(md_info.getInt(da.getName()));
                         }
                         map_QuestCountGroup.put(id, z);
                     } else {

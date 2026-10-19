@@ -29,7 +29,6 @@ import tacos.wz.MapleData;
 import tacos.wz.ServerImg;
 import tacos.wz.ServerImg.RewardData;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzNameStorage;
 import tacos.wz.WzXML;
 
@@ -125,7 +124,7 @@ public class TacosCommandInfo {
             int mob_id = mob_ids.get(i);
             int mob_count = mob_counts.get(i);
             MapleData md_mob = WzXML.STRING.getMob().getChildByPath(Integer.toString(mob_id));
-            String mob_name = md_mob != null ? WzDataTool.getString(md_mob.getChildByPath("name"), "NO_NAME") : "NO_NAME";
+            String mob_name = md_mob != null ? md_mob.getString("name", "NO_NAME") : "NO_NAME";
             if (!WzDataStorage.MOB.check(mob_id)) {
                 chr.DebugMsg2("[" + mob_id + " (" + mob_count + ") : \"" + mob_name + "\" ]");
                 continue;

@@ -321,8 +321,7 @@ public class ItemWz extends WzXML {
             return found;
         }
 
-        MapleData hungerData = getData("Pet/" + petId + ".img").getChildByPath("info/hungry");
-        Integer ret = WzDataTool.getInt(hungerData, 1);
+        Integer ret = getData("Pet/" + petId + ".img").getInt("info/hungry", 1);
         map_petHunger.put(petId, ret);
         return ret;
     }
@@ -354,7 +353,7 @@ public class ItemWz extends WzXML {
                     ret = 100;
                 }
             } else {
-                ret = (short) WzDataTool.getInt(smEntry);
+                ret = (short) item.getInt("info/slotMax");
             }
         }
         return ret;
@@ -369,7 +368,7 @@ public class ItemWz extends WzXML {
         if (pData == null) {
             return -1;
         }
-        return WzDataTool.getInt(pData);
+        return item.getInt("info/price");
     }
 
     public double loadPrice(int itemId) {
@@ -380,13 +379,13 @@ public class ItemWz extends WzXML {
         Double pEntry;
         MapleData pData = item.getChildByPath("info/unitPrice");
         if (pData != null) {
-            pEntry = WzDataTool.getDouble(pData, 1.0);
+            pEntry = item.getDouble("info/unitPrice", 1.0);
         } else {
             pData = item.getChildByPath("info/price");
             if (pData == null) {
                 return -1;
             }
-            pEntry = (double) WzDataTool.getInt(pData, 1);
+            pEntry = (double) item.getInt("info/price", 1);
         }
         if (itemId == 2070019 || itemId == 2330007) {
             pEntry = 1.0;
@@ -484,7 +483,7 @@ public class ItemWz extends WzXML {
         }
         for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
+                ret.put(data.getName().substring(3), info.getInt(data.getName()));
             }
         }
         ret.put("tuc", info.getInt("tuc"));
@@ -522,7 +521,7 @@ public class ItemWz extends WzXML {
             return ret;
         }
         for (MapleData req : data.getChildren()) {
-            ret.add(WzDataTool.getInt(req));
+            ret.add(data.getInt(req.getName()));
         }
         return ret;
     }
@@ -651,7 +650,7 @@ public class ItemWz extends WzXML {
         Map<String, Integer> ret = new LinkedHashMap<>();
         for (MapleData data : info.getChildren()) {
             if (data.getName().startsWith("inc")) {
-                ret.put(data.getName().substring(3), WzDataTool.getInt(data, 0));
+                ret.put(data.getName().substring(3), info.getInt(data.getName()));
             }
         }
         ret.put("masterLevel", info.getInt("masterLevel"));
@@ -675,8 +674,9 @@ public class ItemWz extends WzXML {
             return null;
         }
         List<Integer> consumeItems = new ArrayList<>();
-        for (MapleData consume : itemD.getChildByPath("consumeItem")) {
-            consumeItems.add(WzDataTool.getInt(consume, 0));
+        MapleData md_consume_item = itemD.getChildByPath("consumeItem");
+        for (MapleData consume : md_consume_item) {
+            consumeItems.add(md_consume_item.getInt(consume.getName()));
         }
         return new SimpleImmutableEntry<>(itemD.getInt("questId"), consumeItems);
     }

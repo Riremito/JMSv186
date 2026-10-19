@@ -26,7 +26,6 @@ import tacos.debug.DebugLogger;
 import tacos.packet.ops.OpsMobAppear;
 import tacos.wz.MapleData;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzXML;
 
 /**
@@ -52,24 +51,24 @@ public class TacosSpawnPoint {
 
     public boolean loadData(MapleData life) {
         this.node_id = Integer.parseInt(life.getName());
-        this.cy = WzDataTool.getInt(life.getChildByPath("cy"));
-        this.f = WzDataTool.getInt(life.getChildByPath("f"), 0);
-        this.fh = WzDataTool.getInt(life.getChildByPath("fh"), 0);
-        this.hide = WzDataTool.getInt(life.getChildByPath("hide"), 0);
-        this.id = WzDataTool.getInt(life.getChildByPath("id"), 0);
-        this.mobTime = WzDataTool.getInt(life.getChildByPath("mobTime"), 0) * 1000;
-        this.rx0 = WzDataTool.getInt(life.getChildByPath("rx0"));
-        this.rx1 = WzDataTool.getInt(life.getChildByPath("rx1"));
-        //this.type = WzDataTool.getString(life.getChildByPath("type"));
-        this.x = WzDataTool.getInt(life.getChildByPath("x"));
-        this.y = WzDataTool.getInt(life.getChildByPath("y"));
+        this.cy = life.getInt("cy");
+        this.f = life.getInt("f");
+        this.fh = life.getInt("fh");
+        this.hide = life.getInt("hide");
+        this.id = life.getInt("id");
+        this.mobTime = life.getInt("mobTime") * 1000;
+        this.rx0 = life.getInt("rx0");
+        this.rx1 = life.getInt("rx1");
+        //this.type = life.getString("type");
+        this.x = life.getInt("x");
+        this.y = life.getInt("y");
 
         if (!WzDataStorage.MOB.check(this.id)) {
             DebugLogger.ErrorLog("TacosSpawnPoint : invalid mob id, " + this.id);
             return false;
         }
 
-        //this.team = WzDataTool.getInt(life.getChildByPath("team"), -1);
+        //this.team = life.getInt("team", -1);
         return true;
     }
 

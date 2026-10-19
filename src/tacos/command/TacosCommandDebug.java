@@ -49,7 +49,6 @@ import tacos.server.map.TacosBossSpawnPoint;
 import tacos.server.map.TacosFoothold;
 import tacos.server.map.TacosPortal;
 import tacos.wz.WzDataStorage;
-import tacos.wz.WzDataTool;
 import tacos.wz.WzName;
 import tacos.wz.WzNameStorage;
 import tacos.wz.WzXML;
@@ -210,7 +209,7 @@ public class TacosCommandDebug {
 
                 nd_npc.sendDebugMsg(chr);
                 for (MapleData data : npc_location) {
-                    int map_id = WzDataTool.getInt(data);
+                    int map_id = npc_location.getInt(data.getName());
                     WzName nd_map = WzNameStorage.MAP.get(map_id);
                     if (nd_map == null) {
                         chr.DebugMsg("ERROR.");

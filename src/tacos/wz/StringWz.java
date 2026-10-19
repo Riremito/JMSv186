@@ -156,7 +156,7 @@ public class StringWz extends WzXML {
     public String getSkillName(int skill_id) {
         MapleData skillroot = getSkill().getChildByPath(String.format("%07d", skill_id));
         if (skillroot != null) {
-            return WzDataTool.getString(skillroot.getChildByPath("name"), "");
+            return skillroot.getString("name");
         }
         return null;
     }
@@ -299,7 +299,7 @@ public class StringWz extends WzXML {
                         break;
                     }
                     for (MapleData md_drop_item : md_reward.getChildren()) {
-                        int item_id = WzDataTool.getInt(md_drop_item);
+                        int item_id = md_reward.getInt(md_drop_item.getName());
                         if (!WzDataStorage.ITEM.check(item_id)) {
                             DebugLogger.ErrorLog("invalid monsterbook drop : " + item_id);
                             continue;

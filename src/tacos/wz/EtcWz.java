@@ -176,8 +176,9 @@ public class EtcWz extends WzXML {
         }
 
         list_fn = new ArrayList<>();
-        for (final MapleData data : getForbiddenName().getChildren()) {
-            list_fn.add(WzDataTool.getString(data));
+        MapleData md_forbidden_name = getForbiddenName();
+        for (final MapleData data : md_forbidden_name.getChildren()) {
+            list_fn.add(md_forbidden_name.getString(data.getName()));
         }
 
         return list_fn;

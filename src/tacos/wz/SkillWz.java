@@ -489,7 +489,7 @@ public class SkillWz extends WzXML {
         if (reqDataRoot != null) {
             for (final MapleData reqData : reqDataRoot.getChildren()) {
                 ret.setRequiredSkill(Integer.parseInt(reqData.getName()));
-                ret.setLevel((byte) WzDataTool.getInt(reqData, 1));
+                ret.setLevel((byte) reqDataRoot.getInt(reqData.getName(), 1));
             }
         }
         int animationTime = 0;
@@ -559,15 +559,15 @@ public class SkillWz extends WzXML {
             if (skillData.getChildByPath(String.valueOf(i)) == null) {
                 break;
             }
-            toSummon.add(WzDataTool.getInt(skillData.getChildByPath(String.valueOf(i)), 0));
+            toSummon.add(skillData.getInt(String.valueOf(i)));
         }
 
         final MapleData ltd = skillData.getChildByPath("lt");
         Point lt = null;
         Point rb = null;
         if (ltd != null) {
-            lt = WzDataTool.getPoint(skillData.getChildByPath("lt"));
-            rb = WzDataTool.getPoint(skillData.getChildByPath("rb"));
+            lt = skillData.getPoint("lt");
+            rb = skillData.getPoint("rb");
         }
 
         MobSkill ret = new MobSkill(skillId, level);
@@ -575,7 +575,7 @@ public class SkillWz extends WzXML {
         ret.setCoolTime(skillData.getInt("interval") * 1000);
         ret.setDuration(skillData.getInt("time", 1) * 1000);
         ret.setHp(skillData.getInt("hp", 100));
-        ret.setMpCon(WzDataTool.getInt(skillData.getChildByPath("mpCon"), 0));
+        ret.setMpCon(skillData.getInt("mpCon"));
         ret.setSpawnEffect(skillData.getInt("summonEffect"));
         ret.setX(skillData.getInt("x", 1));
         ret.setY(skillData.getInt("y", 1));
