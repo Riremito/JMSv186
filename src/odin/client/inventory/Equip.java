@@ -324,9 +324,8 @@ public class Equip extends Item {
         //aproximate value
         if (GameConstants.isWeapon(getItemId())) {
             return itemEXP / Equip.WEAPON_RATIO;
-        } else {
-            return itemEXP / Equip.ARMOR_RATIO;
         }
+        return itemEXP / Equip.ARMOR_RATIO;
     }
 
     public int getEquipExpForLevel() {
@@ -460,12 +459,8 @@ public class Equip extends Item {
             // ユニーク抽選
             if (3 <= getRank() || 50 <= Randomizer.nextInt(100)) {
                 // レジェンダリー抽選
-                if (master) {
-                    if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) {
-                        if (4 <= getRank() || 50 <= Randomizer.nextInt(100)) {
-                            return 4;
-                        }
-                    }
+                if (master && (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.EMS, 89)) && (4 <= getRank() || 50 <= Randomizer.nextInt(100))) {
+                    return 4;
                 }
                 return 3;
             }
@@ -483,10 +478,8 @@ public class Equip extends Item {
         setHidden(1); // 未確認状態
         setRank(newrank); // 等級
 
-        if (hyper) {
-            if (50 <= Randomizer.nextInt(100)) {
-                lines = 3;
-            }
+        if (hyper && 50 <= Randomizer.nextInt(100)) {
+            lines = 3;
         }
 
         setPotential1(DWI_Random.getRandomPotential(newrank));

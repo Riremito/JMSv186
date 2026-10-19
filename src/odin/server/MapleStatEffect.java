@@ -448,15 +448,13 @@ public class MapleStatEffect {
             Item item;
             for (int i = 0; i < use.getSlotLimit(); i++) { // impose order...
                 item = use.getItem((byte) i);
-                if (item != null) {
-                    if (GameConstants.isThrowingStar(item.getItemId()) && item.getQuantity() >= 200) {
-                        if (ContentState.CS_LOCK_LOSING_THRWOING.get()) {
-                            // do nothing
-                        } else {
-                            MapleInventoryManipulator.removeById(applyto.getClient(), MapleInventoryType.USE, item.getItemId(), 200, false, true);
-                        }
-                        break;
+                if (item != null && GameConstants.isThrowingStar(item.getItemId()) && item.getQuantity() >= 200) {
+                    if (ContentState.CS_LOCK_LOSING_THRWOING.get()) {
+                        // do nothing
+                    } else {
+                        MapleInventoryManipulator.removeById(applyto.getClient(), MapleInventoryType.USE, item.getItemId(), 200, false, true);
                     }
+                    break;
                 }
             }
         } else if (cp != 0 && applyto.getCarnivalParty() != null) {
@@ -610,10 +608,8 @@ public class MapleStatEffect {
             hpchange += (int) (applyfrom.getStat().getCurrentMaxHp() * hpR);
         }
         // actually receivers probably never get any hp when it's not heal but whatever
-        if (primary) {
-            if (hpCon != 0) {
-                hpchange -= hpCon;
-            }
+        if (primary && hpCon != 0) {
+            hpchange -= hpCon;
         }
         switch (this.sourceid) {
             case 4211001: // Chakra
@@ -663,21 +659,19 @@ public class MapleStatEffect {
         if (mpR != 0) {
             mpchange += (int) (applyfrom.getStat().getCurrentMaxMp() * mpR);
         }
-        if (primary) {
-            if (mpCon != 0) {
-                double mod = 1.0;
+        if (primary && mpCon != 0) {
+            double mod = 1.0;
 
-                int ElemSkillId = getElementalAmp(applyfrom.getJob());
-                if (ElemSkillId != -1) {
-                    Skill amp = SkillFactory.getSkill(ElemSkillId);
-                    int ampLevel = applyfrom.getSkillLevel(amp);
-                    if (ampLevel > 0) {
-                        MapleStatEffect ampStat = amp.getEffect(ampLevel);
-                        mod = ampStat.getX() / 100.0;
-                    }
+            int ElemSkillId = getElementalAmp(applyfrom.getJob());
+            if (ElemSkillId != -1) {
+                Skill amp = SkillFactory.getSkill(ElemSkillId);
+                int ampLevel = applyfrom.getSkillLevel(amp);
+                if (ampLevel > 0) {
+                    MapleStatEffect ampStat = amp.getEffect(ampLevel);
+                    mod = ampStat.getX() / 100.0;
                 }
-                mpchange -= mpCon * mod;
             }
+            mpchange -= mpCon * mod;
         }
         return mpchange;
     }

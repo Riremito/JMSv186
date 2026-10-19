@@ -96,9 +96,8 @@ public class Event_DojoAgent {
                 if (map.getCharactersSize() > 0) {
                     canenterr = false;
                     break;
-                } else {
-                    clearMap(map, false);
                 }
+                clearMap(map, false);
             }
             if (canenterr) {
                 canenter = true;
@@ -141,30 +140,13 @@ public class Event_DojoAgent {
             TacosMap currentmap = player.getMap();
             int temp = (currentmap.getId() - 925000000) / 100;
             int thisStage = (int) (temp - ((temp / 100) * 100));
-            int points = getDojoPoints(thisStage);
             if (!fromResting) {
                 clearMap(currentmap, true);
-                if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
-                    for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        TacosCharacter chr = currentmap.getPlayerById(mem.getId());
-                        if (chr != null) {
-                            int point = (points * 3);
-                            chr.modifyCSPoints(1, point * 4, true);
-                            chr.setDojo(chr.getDojo() + point);
-                            chr.SendPacket(Mulung_Pts(point, chr.getDojo()));
-                        }
-                    }
-                } else {
-                    int point = ((points + 1) * 3);
-                    player.modifyCSPoints(1, point * 4, true);
-                    player.setDojo(player.getDojo() + point);
-                    player.SendPacket(Mulung_Pts(point, player.getDojo()));
-                }
-
+                giveStagePoints(player, currentmap, getDojoPoints(thisStage));
             }
+            // last stage
             if (currentmap.getId() >= 925023800 && currentmap.getId() <= 925023814) {
                 TacosMap map = player.findMap(925020003);
-
                 if (player.getParty() != null) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         TacosCharacter chr = currentmap.getPlayerById(mem.getId());
@@ -183,38 +165,16 @@ public class Event_DojoAgent {
             //final int nextmapid = 925020000 + ((thisStage + 1) * 100);
             TacosMap map = player.findMap(currentmap.getId() + 100);
             if (map.getCharactersSize() == 0) {
-                clearMap(map, false);
-                if (player.getParty() != null) {
-                    for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                        TacosCharacter chr = currentmap.getPlayerById(mem.getId());
-                        if (chr != null) {
-                            chr.changeMapPortal(map, map.getPortal(0));
-                        }
-                    }
-                } else {
-                    player.changeMapPortal(map, map.getPortal(0));
-                }
-                spawnMonster(map, thisStage + 1);
+                enterNextStage(player, currentmap, map, thisStage + 1);
                 return true;
-            } else { //wtf, find a new map
-                int basemap = currentmap.getId() / 100 * 100 + 100;
-                for (int x = 0; x < 15; x++) {
-                    TacosMap mapz = player.findMap(basemap + x);
-                    if (mapz.getCharactersSize() == 0) {
-                        clearMap(mapz, false);
-                        if (player.getParty() != null) {
-                            for (MaplePartyCharacter mem : player.getParty().getMembers()) {
-                                TacosCharacter chr = currentmap.getPlayerById(mem.getId());
-                                if (chr != null) {
-                                    chr.changeMapPortal(mapz, mapz.getPortal(0));
-                                }
-                            }
-                        } else {
-                            player.changeMapPortal(mapz, mapz.getPortal(0));
-                        }
-                        spawnMonster(mapz, thisStage + 1);
-                        return true;
-                    }
+            }
+            //wtf, find a new map
+            int basemap = currentmap.getId() / 100 * 100 + 100;
+            for (int x = 0; x < 15; x++) {
+                TacosMap mapz = player.findMap(basemap + x);
+                if (mapz.getCharactersSize() == 0) {
+                    enterNextStage(player, currentmap, mapz, thisStage + 1);
+                    return true;
                 }
             }
         } catch (Exception rm) {
@@ -223,11 +183,44 @@ public class Event_DojoAgent {
         return false;
     }
 
-    private static void clearMap(TacosMap map, boolean check) {
-        if (check) {
-            if (map.getCharactersSize() != 0) {
-                return;
+    private static void giveStagePoints(TacosCharacter player, TacosMap currentmap, int points) {
+        if (player.getParty() == null || player.getParty().getMembers().size() <= 1) {
+            int point = ((points + 1) * 3);
+            player.modifyCSPoints(1, point * 4, true);
+            player.setDojo(player.getDojo() + point);
+            player.SendPacket(Mulung_Pts(point, player.getDojo()));
+            return;
+        }
+        for (MaplePartyCharacter mem : player.getParty().getMembers()) {
+            TacosCharacter chr = currentmap.getPlayerById(mem.getId());
+            if (chr != null) {
+                int point = (points * 3);
+                chr.modifyCSPoints(1, point * 4, true);
+                chr.setDojo(chr.getDojo() + point);
+                chr.SendPacket(Mulung_Pts(point, chr.getDojo()));
             }
+        }
+    }
+
+    // move the party members in the current map (or the player) to the next stage.
+    private static void enterNextStage(TacosCharacter player, TacosMap currentmap, TacosMap map, int stage) {
+        clearMap(map, false);
+        if (player.getParty() != null) {
+            for (MaplePartyCharacter mem : player.getParty().getMembers()) {
+                TacosCharacter chr = currentmap.getPlayerById(mem.getId());
+                if (chr != null) {
+                    chr.changeMapPortal(map, map.getPortal(0));
+                }
+            }
+        } else {
+            player.changeMapPortal(map, map.getPortal(0));
+        }
+        spawnMonster(map, stage);
+    }
+
+    private static void clearMap(TacosMap map, boolean check) {
+        if (check && map.getCharactersSize() != 0) {
+            return;
         }
         map.resetFully();
     }

@@ -241,61 +241,73 @@ public class FamilyHandler {
     public static void AcceptFamily(ClientPacket cp, TacosClient client) {
         TacosCharacter chr = client.getPlayer();
         TacosCharacter inviter = chr.getMap().getPlayerById(cp.Decode4());
-        if (inviter != null && chr.getSeniorId() == 0
+        // note : the name is decoded only when the preceding conditions are true.
+        if (!(inviter != null && chr.getSeniorId() == 0
                 && inviter.getLevel() - 20 < chr.getLevel() && inviter.getLevel() >= 10 && inviter.getName().equals(cp.DecodeStr()) && inviter.getNoJuniors() < 2
-                /*&& inviter.getFamily().getGens() < 1000*/ && chr.getLevel() >= 10) {
-            boolean accepted = cp.Decode1() > 0;
-            inviter.SendPacket(ResCWvsContext.sendFamilyJoinResponse(accepted, chr.getName()));
-            if (accepted) {
-                client.SendPacket(ResCWvsContext.getSeniorMessage(inviter.getName()));
-                MapleFamilyCharacter old = chr.getMFC();
-                if (inviter.getFamilyId() != 0) {
-
-                    MapleFamily fam = client.getWorld().getFamily().getFamily(inviter.getFamilyId());
-                    //if old isn't null, don't set the familyid yet, mergeFamily will take care of it
-                    chr.setFamily(old == null ? inviter.getFamilyId() : old.getFamilyId(), inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
-                    MapleFamilyCharacter mf = inviter.getMFC();
-                    if (mf.getJunior1() > 0) {
-                        mf.setJunior2(chr.getId());
-                    } else {
-                        mf.setJunior1(chr.getId());
-                    }
-                    inviter.saveFamilyStatus();
-                    if (old != null) { //has junior
-                        MapleFamily.mergeFamily(fam, client.getWorld().getFamily().getFamily(old.getFamilyId()));
-                    } else {
-                        fam.addFamilyMember(chr.getMFC());
-                        fam.setOnline(chr.getId(), true, client.getChannelId());
-                        chr.saveFamilyStatus();
-                    }
-                    if ((inviter.getNoJuniors() == 1 || old != null) && fam != null) {//just got their first junior whoopee
-                        fam.resetGens();
-                        fam.resetDescendants();
-                    }
-                    fam.resetPedigree(); //is this necessary?
-                } else {
-                    int id = MapleFamily.createFamily(inviter.getId());
-                    if (id > 0) {
-                        //before loading the family, set sql
-                        MapleFamily.setOfflineFamilyStatus(id, 0, chr.getId(), 0, inviter.getCurrentRep(), inviter.getTotalRep(), inviter.getId());
-                        MapleFamily.setOfflineFamilyStatus(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2(), chr.getCurrentRep(), chr.getTotalRep(), chr.getId());
-                        inviter.setFamily(id, 0, chr.getId(), 0); //load the family
-                        chr.setFamily(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
-                        MapleFamily fam = client.getWorld().getFamily().getFamily(id);
-                        fam.setOnline(inviter.getId(), true, inviter.getClient().getChannelId());
-                        if (old != null) { //has junior
-                            MapleFamily.mergeFamily(fam, client.getWorld().getFamily().getFamily(old.getFamilyId()));
-                        } else {
-                            fam.setOnline(chr.getId(), true, client.getChannelId());
-                        }
-                        fam.resetGens();
-                        fam.resetDescendants();
-                        fam.resetPedigree();
-
-                    }
-                }
-                client.SendPacket(ResCWvsContext.getFamilyInfo(chr));
-            }
+                /*&& inviter.getFamily().getGens() < 1000*/ && chr.getLevel() >= 10)) {
+            return;
         }
+        boolean accepted = cp.Decode1() > 0;
+        inviter.SendPacket(ResCWvsContext.sendFamilyJoinResponse(accepted, chr.getName()));
+        if (!accepted) {
+            return;
+        }
+        client.SendPacket(ResCWvsContext.getSeniorMessage(inviter.getName()));
+        MapleFamilyCharacter old = chr.getMFC();
+        if (inviter.getFamilyId() != 0) {
+            joinFamily(client, chr, inviter, old);
+        } else {
+            createFamily(client, chr, inviter, old);
+        }
+        client.SendPacket(ResCWvsContext.getFamilyInfo(chr));
+    }
+
+    // join the family of the inviter.
+    private static void joinFamily(TacosClient client, TacosCharacter chr, TacosCharacter inviter, MapleFamilyCharacter old) {
+        MapleFamily fam = client.getWorld().getFamily().getFamily(inviter.getFamilyId());
+        //if old isn't null, don't set the familyid yet, mergeFamily will take care of it
+        chr.setFamily(old == null ? inviter.getFamilyId() : old.getFamilyId(), inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
+        MapleFamilyCharacter mf = inviter.getMFC();
+        if (mf.getJunior1() > 0) {
+            mf.setJunior2(chr.getId());
+        } else {
+            mf.setJunior1(chr.getId());
+        }
+        inviter.saveFamilyStatus();
+        if (old != null) { //has junior
+            MapleFamily.mergeFamily(fam, client.getWorld().getFamily().getFamily(old.getFamilyId()));
+        } else {
+            fam.addFamilyMember(chr.getMFC());
+            fam.setOnline(chr.getId(), true, client.getChannelId());
+            chr.saveFamilyStatus();
+        }
+        if (inviter.getNoJuniors() == 1 || old != null) { //just got their first junior whoopee
+            fam.resetGens();
+            fam.resetDescendants();
+        }
+        fam.resetPedigree(); //is this necessary?
+    }
+
+    // create a new family with the inviter as the leader.
+    private static void createFamily(TacosClient client, TacosCharacter chr, TacosCharacter inviter, MapleFamilyCharacter old) {
+        int id = MapleFamily.createFamily(inviter.getId());
+        if (id <= 0) {
+            return;
+        }
+        //before loading the family, set sql
+        MapleFamily.setOfflineFamilyStatus(id, 0, chr.getId(), 0, inviter.getCurrentRep(), inviter.getTotalRep(), inviter.getId());
+        MapleFamily.setOfflineFamilyStatus(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2(), chr.getCurrentRep(), chr.getTotalRep(), chr.getId());
+        inviter.setFamily(id, 0, chr.getId(), 0); //load the family
+        chr.setFamily(id, inviter.getId(), old == null ? 0 : old.getJunior1(), old == null ? 0 : old.getJunior2());
+        MapleFamily fam = client.getWorld().getFamily().getFamily(id);
+        fam.setOnline(inviter.getId(), true, inviter.getClient().getChannelId());
+        if (old != null) { //has junior
+            MapleFamily.mergeFamily(fam, client.getWorld().getFamily().getFamily(old.getFamilyId()));
+        } else {
+            fam.setOnline(chr.getId(), true, client.getChannelId());
+        }
+        fam.resetGens();
+        fam.resetDescendants();
+        fam.resetPedigree();
     }
 }

@@ -40,22 +40,15 @@ public class MapleQuestRequirement {
             case skill: {
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
                     boolean acquire = a.getValue() > 0;
-                    int skill = a.getKey();
-                    Skill skil = SkillFactory.getSkill(skill);
+                    Skill skil = SkillFactory.getSkill(a.getKey());
                     if (acquire) {
-                        if (skil.isFourthJob()) {
-                            if (chr.getMasterLevel(skil) == 0) {
-                                return false;
-                            }
-                        } else {
-                            if (chr.getSkillLevel(skil) == 0) {
-                                return false;
-                            }
-                        }
-                    } else {
-                        if (chr.getSkillLevel(skil) > 0 || chr.getMasterLevel(skil) > 0) {
+                        // 4th job skills are checked by master level.
+                        int level = skil.isFourthJob() ? chr.getMasterLevel(skil) : chr.getSkillLevel(skil);
+                        if (level == 0) {
                             return false;
                         }
+                    } else if (chr.getSkillLevel(skil) > 0 || chr.getMasterLevel(skil) > 0) {
+                        return false;
                     }
                 }
                 return true;
@@ -64,13 +57,8 @@ public class MapleQuestRequirement {
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
                     MapleQuestStatus q = chr.getQuest(MapleQuest.getInstance(a.getKey()));
                     int state = a.getValue();
-                    if (state != 0) {
-                        if (q == null && state == 0) {
-                            continue;
-                        }
-                        if (q == null || q.getStatus() != state) {
-                            return false;
-                        }
+                    if (state != 0 && (q == null || q.getStatus() != state)) {
+                        return false;
                     }
                 }
                 return true;

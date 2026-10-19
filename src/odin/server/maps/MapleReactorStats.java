@@ -56,36 +56,32 @@ public class MapleReactorStats {
         StateData nextState = stateInfo.get(state);
         if (nextState != null) {
             return nextState.getNextState();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     public int getType(byte state) {
         StateData nextState = stateInfo.get(state);
         if (nextState != null) {
             return nextState.getType();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     public SimpleImmutableEntry<Integer, Integer> getReactItem(byte state) {
         StateData nextState = stateInfo.get(state);
         if (nextState != null) {
             return nextState.getReactItem();
-        } else {
-            return null;
         }
+        return null;
     }
 
     public int getTimeOut(byte state) {
         StateData nextState = stateInfo.get(state);
         if (nextState != null) {
             return nextState.getTimeOut();
-        } else {
-            return -1;
         }
+        return -1;
     }
 
     private static class StateData {

@@ -209,9 +209,8 @@ public class MapleMonsterStats {
         ElementalEffectiveness elementalEffectiveness = resistance.get(e);
         if (elementalEffectiveness == null) {
             return ElementalEffectiveness.NORMAL;
-        } else {
-            return elementalEffectiveness;
         }
+        return elementalEffectiveness;
     }
 
     public String getName() {

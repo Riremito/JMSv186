@@ -191,10 +191,9 @@ public class MapleShop {
                 chr.gainMeso(-price, false, true, false);
                 client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellSuccess));
                 return true;
-            } else {
-                client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
-                return false;
             }
+            client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellUnkonwn));
+            return false;
         }
         client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_ServerMsg));
         return false;

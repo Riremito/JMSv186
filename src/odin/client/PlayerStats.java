@@ -345,16 +345,14 @@ public class PlayerStats {
         for (Item item : chra.getInventory(MapleInventoryType.EQUIPPED)) {
             Equip equip = (Equip) item;
 
-            if (equip.getPosition() == -11) {
-                if (GameConstants.isMagicWeapon(equip.getItemId())) {
-                    Map<String, Integer> eqstat = MapleItemInformationProvider.getInstance().getEquipStats(equip.getItemId());
+            if (equip.getPosition() == -11 && GameConstants.isMagicWeapon(equip.getItemId())) {
+                Map<String, Integer> eqstat = MapleItemInformationProvider.getInstance().getEquipStats(equip.getItemId());
 
-                    element_fire = eqstat.get("incRMAF");
-                    element_ice = eqstat.get("incRMAI");
-                    element_light = eqstat.get("incRMAL");
-                    element_psn = eqstat.get("incRMAS");
-                    def = eqstat.get("elemDefault");
-                }
+                element_fire = eqstat.get("incRMAF");
+                element_ice = eqstat.get("incRMAI");
+                element_light = eqstat.get("incRMAL");
+                element_psn = eqstat.get("incRMAS");
+                def = eqstat.get("elemDefault");
             }
             accuracy += equip.getAcc();
             localmaxhp_ += equip.getHp();
@@ -605,24 +603,15 @@ public class PlayerStats {
 
             if (eq.getEquipLevel() > lvlz) { //lvlup
                 for (int i = eq.getEquipLevel() - lvlz; i > 0; i--) {
+                    int level = lvlz + i;
                     //now for the equipment increments...
                     Map<Integer, Map<String, Integer>> inc = ii.getEquipIncrements(eq.getItemId());
-                    if (inc != null && inc.containsKey(lvlz + i)) { //flair = 1
-                        eq = ii.levelUpEquip(eq, inc.get(lvlz + i));
+                    if (inc != null && inc.containsKey(level)) { //flair = 1
+                        eq = ii.levelUpEquip(eq, inc.get(level));
                     }
                     //UGH, skillz
                     if (GameConstants.getStatFromWeapon(eq.getItemId()) == null) {
-                        Map<Integer, List<Integer>> ins = ii.getEquipSkills(eq.getItemId());
-                        if (ins != null && ins.containsKey(lvlz + i)) {
-                            for (Integer z : ins.get(lvlz + i)) {
-                                if (Math.random() < 0.1) { //10% chance dood
-                                    Skill skil = SkillFactory.getSkill(z);
-                                    if (skil != null && skil.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(skil) < chr.getMasterLevel(skil)) { //dont go over masterlevel :D
-                                        chr.changeSkillLevel(skil, (byte) (chr.getSkillLevel(skil) + 1), chr.getMasterLevel(skil));
-                                    }
-                                }
-                            }
-                        }
+                        learnEquipSkills(chr, ii.getEquipSkills(eq.getItemId()), level);
                     }
                 }
                 changed = true;
@@ -639,6 +628,22 @@ public class PlayerStats {
             chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_ItemLevelUp, pb), chr.getId());
         }
         return changed;
+    }
+
+    // skills of the equip level : 10% chance to learn each skill
+    private static void learnEquipSkills(TacosCharacter chr, Map<Integer, List<Integer>> ins, int level) {
+        if (ins == null || !ins.containsKey(level)) {
+            return;
+        }
+        for (Integer z : ins.get(level)) {
+            if (Math.random() >= 0.1) { //10% chance dood
+                continue;
+            }
+            Skill skil = SkillFactory.getSkill(z);
+            if (skil != null && skil.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(skil) < chr.getMasterLevel(skil)) { //dont go over masterlevel :D
+                chr.changeSkillLevel(skil, (byte) (chr.getSkillLevel(skil) + 1), chr.getMasterLevel(skil));
+            }
+        }
     }
 
     public boolean checkEquipDurabilitys(TacosCharacter chr, int gain) {

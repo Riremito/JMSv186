@@ -51,8 +51,7 @@ public class MapleInventoryManipulator {
         short newSlot = chr.getInventory(type).addItem(item);
         if (newSlot == -1) {
             if (!fromcs) {
-                chr.updateInv();
-                chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                sendInventoryFull(chr);
             }
             return newSlot;
         }
@@ -101,108 +100,104 @@ public class MapleInventoryManipulator {
         TacosCharacter chr = client.getPlayer();
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && chr.haveItem(itemId, 1, true, false)) {
-            chr.updateInv();
-            chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
+            sendPickupUnavailable(chr);
             return -1;
         }
         MapleInventoryType type = GameConstants.getInventoryType(itemId);
         int uniqueid = getUniqueId(itemId, pet);
-        short newSlot = -1;
-        if (!type.equals(MapleInventoryType.EQUIP)) {
-            short slotMax = ii.getSlotMax(client, itemId);
-            List<Item> existing = chr.getInventory(type).listById(itemId);
-            if (!GameConstants.isRechargable(itemId)) {
-                if (existing.size() > 0) { // first update all existing slots to slotMax
-                    Iterator<Item> i = existing.iterator();
-                    while (quantity > 0) {
-                        if (i.hasNext()) {
-                            Item eItem = (Item) i.next();
-                            short oldQ = eItem.getQuantity();
-                            if (oldQ < slotMax && (eItem.getOwner().equals(owner) || owner == null) && eItem.getExpiration() == -1) {
-                                short newQ = (short) Math.min(oldQ + quantity, slotMax);
-                                quantity -= (newQ - oldQ);
-                                eItem.setQuantity(newQ);
-                                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(type, eItem).build()));
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                Item nItem;
-                // add new slots if there is still something left
-                while (quantity > 0) {
-                    short newQ = (short) Math.min(quantity, slotMax);
-                    if (newQ != 0) {
-                        quantity -= newQ;
-                        nItem = new Item(itemId, (byte) 0, newQ, (byte) 0, uniqueid);
-
-                        newSlot = chr.getInventory(type).addItem(nItem);
-                        if (newSlot == -1) {
-                            chr.updateInv();
-                            chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
-                            return -1;
-                        }
-                        if (owner != null) {
-                            nItem.setOwner(owner);
-                        }
-                        if (period > 0) {
-                            nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
-                        }
-                        if (pet != null) {
-                            nItem.setPet(pet);
-                            pet.setInventoryPosition(newSlot);
-                        }
-                        chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
-                        if (GameConstants.isRechargable(itemId) && quantity == 0) {
-                            break;
-                        }
-                    } else {
-                        chr.havePartyQuest(itemId);
-                        chr.updateInv();
-                        return (byte) newSlot;
-                    }
-                }
-            } else {
-                // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
-                Item nItem = new Item(itemId, (byte) 0, quantity, (byte) 0, uniqueid);
-                newSlot = chr.getInventory(type).addItem(nItem);
-
-                if (newSlot == -1) {
-                    chr.updateInv();
-                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
-                    return -1;
-                }
-                if (period > 0) {
-                    nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
-                }
-
-                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
-                chr.updateInv();
-            }
-        } else {
-            if (quantity == 1) {
-                Item nEquip = ii.getEquipById(itemId);
-                if (owner != null) {
-                    nEquip.setOwner(owner);
-                }
-                nEquip.setUniqueId(uniqueid);
-                if (period > 0) {
-                    nEquip.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
-                }
-                newSlot = chr.getInventory(type).addItem(nEquip);
-                if (newSlot == -1) {
-                    chr.updateInv();
-                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
-                    return -1;
-                }
-                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nEquip).build()));
-            } else {
+        if (type.equals(MapleInventoryType.EQUIP)) {
+            if (quantity != 1) {
                 return -1;
             }
+            Item nEquip = ii.getEquipById(itemId);
+            if (owner != null) {
+                nEquip.setOwner(owner);
+            }
+            nEquip.setUniqueId(uniqueid);
+            if (period > 0) {
+                nEquip.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
+            }
+            short newSlot = chr.getInventory(type).addItem(nEquip);
+            if (newSlot == -1) {
+                sendInventoryFull(chr);
+                return -1;
+            }
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nEquip).build()));
+            chr.havePartyQuest(itemId);
+            return (byte) newSlot;
+        }
+
+        short slotMax = ii.getSlotMax(client, itemId);
+        List<Item> existing = chr.getInventory(type).listById(itemId);
+        if (GameConstants.isRechargable(itemId)) {
+            // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
+            Item nItem = new Item(itemId, (byte) 0, quantity, (byte) 0, uniqueid);
+            short newSlot = chr.getInventory(type).addItem(nItem);
+            if (newSlot == -1) {
+                sendInventoryFull(chr);
+                return -1;
+            }
+            if (period > 0) {
+                nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
+            }
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
+            chr.updateInv();
+            chr.havePartyQuest(itemId);
+            return (byte) newSlot;
+        }
+
+        // first update all existing slots to slotMax
+        Iterator<Item> it = existing.iterator();
+        while (quantity > 0 && it.hasNext()) {
+            Item eItem = it.next();
+            short oldQ = eItem.getQuantity();
+            if (oldQ < slotMax && (eItem.getOwner().equals(owner) || owner == null) && eItem.getExpiration() == -1) {
+                short newQ = (short) Math.min(oldQ + quantity, slotMax);
+                quantity -= (newQ - oldQ);
+                eItem.setQuantity(newQ);
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(type, eItem).build()));
+            }
+        }
+        // add new slots if there is still something left
+        short newSlot = -1;
+        while (quantity > 0) {
+            short newQ = (short) Math.min(quantity, slotMax);
+            if (newQ == 0) {
+                chr.havePartyQuest(itemId);
+                chr.updateInv();
+                return (byte) newSlot;
+            }
+            quantity -= newQ;
+            Item nItem = new Item(itemId, (byte) 0, newQ, (byte) 0, uniqueid);
+            newSlot = chr.getInventory(type).addItem(nItem);
+            if (newSlot == -1) {
+                sendInventoryFull(chr);
+                return -1;
+            }
+            if (owner != null) {
+                nItem.setOwner(owner);
+            }
+            if (period > 0) {
+                nItem.setExpiration(System.currentTimeMillis() + (period * 24 * 60 * 60 * 1000));
+            }
+            if (pet != null) {
+                nItem.setPet(pet);
+                pet.setInventoryPosition(newSlot);
+            }
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
         }
         chr.havePartyQuest(itemId);
         return (byte) newSlot;
+    }
+
+    private static void sendInventoryFull(TacosCharacter chr) {
+        chr.updateInv();
+        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+    }
+
+    private static void sendPickupUnavailable(TacosCharacter chr) {
+        chr.updateInv();
+        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
     }
 
     public static Item addbyId_Gachapon(TacosClient client, int itemId, short quantity) {
@@ -212,93 +207,70 @@ public class MapleInventoryManipulator {
         }
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.isPickupRestricted(itemId) && chr.haveItem(itemId, 1, true, false)) {
-            chr.updateInv();
-            chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
+            sendPickupUnavailable(chr);
             return null;
         }
         MapleInventoryType type = GameConstants.getInventoryType(itemId);
-
-        if (!type.equals(MapleInventoryType.EQUIP)) {
-            short slotMax = ii.getSlotMax(client, itemId);
-            List<Item> existing = chr.getInventory(type).listById(itemId);
-
-            if (!GameConstants.isRechargable(itemId)) {
-                Item nItem = null;
-                boolean recieved = false;
-
-                if (existing.size() > 0) { // first update all existing slots to slotMax
-                    Iterator<Item> i = existing.iterator();
-                    while (quantity > 0) {
-                        if (i.hasNext()) {
-                            nItem = (Item) i.next();
-                            short oldQ = nItem.getQuantity();
-
-                            if (oldQ < slotMax) {
-                                recieved = true;
-
-                                short newQ = (short) Math.min(oldQ + quantity, slotMax);
-                                quantity -= (newQ - oldQ);
-                                nItem.setQuantity(newQ);
-                                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(type, nItem).build()));
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                }
-                // add new slots if there is still something left
-                while (quantity > 0) {
-                    short newQ = (short) Math.min(quantity, slotMax);
-                    if (newQ != 0) {
-                        quantity -= newQ;
-                        nItem = new Item(itemId, (byte) 0, newQ, (byte) 0);
-                        short newSlot = chr.getInventory(type).addItem(nItem);
-                        if (newSlot == -1 && recieved) {
-                            return nItem;
-                        } else if (newSlot == -1) {
-                            return null;
-                        }
-                        recieved = true;
-                        chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
-                        if (GameConstants.isRechargable(itemId) && quantity == 0) {
-                            break;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                if (recieved) {
-                    chr.havePartyQuest(nItem.getItemId());
-                    return nItem;
-                }
-            } else {
-                // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
-                Item nItem = new Item(itemId, (byte) 0, quantity, (byte) 0);
-                short newSlot = chr.getInventory(type).addItem(nItem);
-
-                if (newSlot == -1) {
-                    return null;
-                }
-                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
-                chr.havePartyQuest(nItem.getItemId());
-                return nItem;
-            }
-        } else {
-            if (quantity == 1) {
-                Item item = ii.randomizeStats((Equip) ii.getEquipById(itemId));
-                short newSlot = chr.getInventory(type).addItem(item);
-
-                if (newSlot == -1) {
-                    return null;
-                }
-                chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().add(type, item).build()));
-                chr.havePartyQuest(item.getItemId());
-                return item;
-            } else {
+        if (type.equals(MapleInventoryType.EQUIP)) {
+            if (quantity != 1) {
                 return null;
             }
+            Item item = ii.randomizeStats((Equip) ii.getEquipById(itemId));
+            if (chr.getInventory(type).addItem(item) == -1) {
+                return null;
+            }
+            chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().add(type, item).build()));
+            chr.havePartyQuest(item.getItemId());
+            return item;
         }
-        return null;
+
+        short slotMax = ii.getSlotMax(client, itemId);
+        List<Item> existing = chr.getInventory(type).listById(itemId);
+        if (GameConstants.isRechargable(itemId)) {
+            // Throwing Stars and Bullets - Add all into one slot regardless of quantity.
+            Item nItem = new Item(itemId, (byte) 0, quantity, (byte) 0);
+            if (chr.getInventory(type).addItem(nItem) == -1) {
+                return null;
+            }
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
+            chr.havePartyQuest(nItem.getItemId());
+            return nItem;
+        }
+
+        Item nItem = null;
+        boolean recieved = false;
+        // first update all existing slots to slotMax
+        Iterator<Item> it = existing.iterator();
+        while (quantity > 0 && it.hasNext()) {
+            nItem = it.next();
+            short oldQ = nItem.getQuantity();
+            if (oldQ < slotMax) {
+                recieved = true;
+                short newQ = (short) Math.min(oldQ + quantity, slotMax);
+                quantity -= (newQ - oldQ);
+                nItem.setQuantity(newQ);
+                chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(type, nItem).build()));
+            }
+        }
+        // add new slots if there is still something left
+        while (quantity > 0) {
+            short newQ = (short) Math.min(quantity, slotMax);
+            if (newQ == 0) {
+                break;
+            }
+            quantity -= newQ;
+            nItem = new Item(itemId, (byte) 0, newQ, (byte) 0);
+            if (chr.getInventory(type).addItem(nItem) == -1) {
+                return recieved ? nItem : null;
+            }
+            recieved = true;
+            chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
+        }
+        if (!recieved) {
+            return null;
+        }
+        chr.havePartyQuest(nItem.getItemId());
+        return nItem;
     }
 
     public static boolean addFromDrop(TacosClient client, Item item, boolean show) {
@@ -310,8 +282,7 @@ public class MapleInventoryManipulator {
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
         if (ii.isPickupRestricted(item.getItemId()) && chr.haveItem(item.getItemId(), 1, true, false)) {
-            chr.updateInv();
-            chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
+            sendPickupUnavailable(chr);
             return false;
         }
         int before = chr.itemQuantity(item.getItemId());
@@ -322,8 +293,7 @@ public class MapleInventoryManipulator {
             short slotMax = ii.getSlotMax(client, item.getItemId());
             List<Item> existing = chr.getInventory(type).listById(item.getItemId());
             if (!GameConstants.isRechargable(item.getItemId())) {
-                if (quantity <= 0) { //wthchr.updateInv();
-                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_UNAVAILABLE).build()));
+                if (quantity <= 0) { //wthsendPickupUnavailable(chr);
                     return false;
                 }
                 if (existing.size() > 0) { // first update all existing slots to slotMax
@@ -353,8 +323,7 @@ public class MapleInventoryManipulator {
                     nItem.setPet(item.getPet());
                     short newSlot = chr.getInventory(type).addItem(nItem);
                     if (newSlot == -1) {
-                        chr.updateInv();
-                        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                        sendInventoryFull(chr);
                         item.setQuantity((short) (quantity + newQ));
                         return false;
                     }
@@ -368,8 +337,7 @@ public class MapleInventoryManipulator {
                 nItem.setPet(item.getPet());
                 short newSlot = chr.getInventory(type).addItem(nItem);
                 if (newSlot == -1) {
-                    chr.updateInv();
-                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                    sendInventoryFull(chr);
                     return false;
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(type, nItem).build()));
@@ -383,8 +351,7 @@ public class MapleInventoryManipulator {
                 short newSlot = chr.getInventory(type).addItem(item);
 
                 if (newSlot == -1) {
-                    chr.updateInv();
-                    chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                    sendInventoryFull(chr);
                     return false;
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, PB_InvOp.builder().add(type, item).build()));
@@ -447,17 +414,15 @@ public class MapleInventoryManipulator {
         if (!type.equals(MapleInventoryType.EQUIP)) {
             short slotMax = ii.getSlotMax(client, itemid);
             List<Item> existing = chr.getInventory(type).listById(itemid);
-            if (!GameConstants.isRechargable(itemid)) {
-                if (existing.size() > 0) { // first update all existing slots to slotMax
-                    for (Item eItem : existing) {
-                        short oldQ = eItem.getQuantity();
-                        if (oldQ < slotMax && owner != null && owner.equals(eItem.getOwner())) {
-                            short newQ = (short) Math.min(oldQ + quantity, slotMax);
-                            quantity -= (newQ - oldQ);
-                        }
-                        if (quantity <= 0) {
-                            break;
-                        }
+            if (!GameConstants.isRechargable(itemid) && existing.size() > 0) { // first update all existing slots to slotMax
+                for (Item eItem : existing) {
+                    short oldQ = eItem.getQuantity();
+                    if (oldQ < slotMax && owner != null && owner.equals(eItem.getOwner())) {
+                        short newQ = (short) Math.min(oldQ + quantity, slotMax);
+                        quantity -= (newQ - oldQ);
+                    }
+                    if (quantity <= 0) {
+                        break;
                     }
                 }
             }
@@ -469,9 +434,8 @@ public class MapleInventoryManipulator {
                 numSlotsNeeded = 1;
             }
             return !chr.getInventory(type).isFull(numSlotsNeeded - 1);
-        } else {
-            return !chr.getInventory(type).isFull();
         }
+        return !chr.getInventory(type).isFull();
     }
 
     public static void removeFromSlot(TacosClient client, MapleInventoryType type, short slot, short quantity, boolean unlock) {
@@ -503,10 +467,9 @@ public class MapleInventoryManipulator {
                 removeFromSlot(client, type, item.getPosition(), (short) remremove, fromDrop, consume);
                 remremove = 0;
                 break;
-            } else {
-                remremove -= item.getQuantity();
-                removeFromSlot(client, type, item.getPosition(), item.getQuantity(), fromDrop, consume);
             }
+            remremove -= item.getQuantity();
+            removeFromSlot(client, type, item.getPosition(), item.getQuantity(), fromDrop, consume);
         }
         return remremove <= 0;
     }
@@ -556,7 +519,6 @@ public class MapleInventoryManipulator {
         }
         PlayerStats statst = chr.getStat();
         Equip source = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(src);
-        Equip target = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst);
 
         if (source == null || source.getDurability() == 0) {
             chr.updateInv();
@@ -598,8 +560,7 @@ public class MapleInventoryManipulator {
                 Item top = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -5);
                 if (top != null && GameConstants.isOverall(top.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        chr.updateInv();
-                        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                        sendInventoryFull(chr);
                         return;
                     }
                     unequip(client, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -611,16 +572,14 @@ public class MapleInventoryManipulator {
                 Item bottom = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -6);
                 if (top != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull(bottom != null && GameConstants.isOverall(source.getItemId()) ? 1 : 0)) {
-                        chr.updateInv();
-                        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                        sendInventoryFull(chr);
                         return;
                     }
                     unequip(client, (byte) -5, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
                 }
                 if (bottom != null && GameConstants.isOverall(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        chr.updateInv();
-                        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                        sendInventoryFull(chr);
                         return;
                     }
                     unequip(client, (byte) -6, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -631,14 +590,12 @@ public class MapleInventoryManipulator {
                 Item weapon = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -11);
                 if (GameConstants.isKatara(source.getItemId())) {
                     if ((chr.getJob() != 900 && (chr.getJob() < 430 || chr.getJob() > 434)) || weapon == null || !GameConstants.isDagger(weapon.getItemId())) {
-                        chr.updateInv();
-                        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                        sendInventoryFull(chr);
                         return;
                     }
                 } else if (weapon != null && GameConstants.isTwoHanded(weapon.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        chr.updateInv();
-                        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                        sendInventoryFull(chr);
                         return;
                     }
                     unequip(client, (byte) -11, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -649,8 +606,7 @@ public class MapleInventoryManipulator {
                 Item shield = chr.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -10);
                 if (shield != null && GameConstants.isTwoHanded(source.getItemId())) {
                     if (chr.getInventory(MapleInventoryType.EQUIP).isFull()) {
-                        chr.updateInv();;
-                        chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_INVENTORY_FULL).build()));
+                        sendInventoryFull(chr);
                         return;
                     }
                     unequip(client, (byte) -10, chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot());
@@ -659,7 +615,7 @@ public class MapleInventoryManipulator {
             }
         }
         source = (Equip) chr.getInventory(MapleInventoryType.EQUIP).getItem(src); // Equip
-        target = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst); // Currently equipping
+        Equip target = (Equip) chr.getInventory(MapleInventoryType.EQUIPPED).getItem(dst); // Currently equipping
         if (source == null) {
             chr.updateInv();
             return;

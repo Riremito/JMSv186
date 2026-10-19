@@ -114,32 +114,35 @@ public class MapleQuestAction {
         return false;
     }
 
-    private void giveItems(TacosCharacter chr, Integer extSelection) {
+    // items of this action for the character : job/gender filter, random selection (prop) and the selection of the user (prop == -1).
+    private List<QuestWz.QuestActionItemInfo> selectItems(TacosCharacter chr, Integer extSelection) {
         int selection = selectRandomItem(info.getItems(), chr);
         int extNum = 0;
+        List<QuestWz.QuestActionItemInfo> ret = new ArrayList<>();
         for (QuestWz.QuestActionItemInfo item : info.getItems()) {
             if (!canGetItem(item, chr)) {
                 continue;
             }
-            int id = item.getId();
             if (item.isHasProp()) {
                 if (item.getProp() == -1) {
                     if (extSelection != extNum++) {
                         continue;
                     }
-                } else if (id != selection) {
+                } else if (item.getId() != selection) {
                     continue;
                 }
             }
+            ret.add(item);
+        }
+        return ret;
+    }
+
+    private void giveItems(TacosCharacter chr, Integer extSelection) {
+        for (QuestWz.QuestActionItemInfo item : selectItems(chr, extSelection)) {
+            int id = item.getId();
             short count = (short) item.getCount();
             if (count < 0) { // remove items
                 MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
-
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .item_id(id)
-                        .item_quantity(count)
-                        .build();
-                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
             } else { // add items
                 int period = item.getPeriod() / 1440; //im guessing.
                 String name = MapleItemInformationProvider.getInstance().getName(id);
@@ -149,14 +152,45 @@ public class MapleQuestAction {
                     chr.dropMessage(5, msg);
                 }
                 MapleInventoryManipulator.addById(chr.getClient(), id, count, "", null, period);
+            }
+            PB_UserEffect pb = PB_UserEffect.builder()
+                    .item_id(id)
+                    .item_quantity(count)
+                    .build();
+            chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
+        }
+    }
 
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .item_id(id)
-                        .item_quantity(count)
-                        .build();
-                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
+    private static final MapleInventoryType[] REWARD_INVENTORY_TYPES = {MapleInventoryType.EQUIP, MapleInventoryType.USE, MapleInventoryType.SETUP, MapleInventoryType.ETC, MapleInventoryType.CASH};
+    private static final String[] REWARD_INVENTORY_NAMES = {"Equip", "Use", "Setup", "Etc", "Cash"};
+
+    private boolean checkItems(TacosCharacter chr, Integer extSelection) {
+        Map<MapleInventoryType, Integer> needed = new HashMap<>();
+        for (QuestWz.QuestActionItemInfo item : selectItems(chr, extSelection)) {
+            int id = item.getId();
+            short count = (short) item.getCount();
+            if (count < 0) { // remove items
+                if (!chr.haveItem(id, count, false, true)) {
+                    chr.dropMessage(1, "You are short of some item to complete quest.");
+                    return false;
+                }
+                continue;
+            }
+            // add items
+            if (MapleItemInformationProvider.getInstance().isPickupRestricted(id) && chr.haveItem(id, 1, true, false)) {
+                chr.dropMessage(1, "You have this item already: " + MapleItemInformationProvider.getInstance().getName(id));
+                return false;
+            }
+            needed.merge(GameConstants.getInventoryType(id), 1, Integer::sum);
+        }
+        for (int i = 0; i < REWARD_INVENTORY_TYPES.length; i++) {
+            MapleInventoryType type = REWARD_INVENTORY_TYPES[i];
+            if (chr.getInventory(type).getNumFreeSlot() < needed.getOrDefault(type, 0)) {
+                chr.dropMessage(1, "Please make space for your " + REWARD_INVENTORY_NAMES[i] + " inventory.");
+                return false;
             }
         }
+        return true;
     }
 
     private void updateQuests(TacosCharacter chr) {
@@ -286,78 +320,15 @@ public class MapleQuestAction {
     public boolean checkEnd(TacosCharacter chr, Integer extSelection) {
         switch (type) {
             case item: {
-                int selection = selectRandomItem(info.getItems(), chr);
-                int extNum = 0;
-                byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
-
-                for (QuestWz.QuestActionItemInfo item : info.getItems()) {
-                    if (!canGetItem(item, chr)) {
-                        continue;
-                    }
-                    int id = item.getId();
-                    if (item.isHasProp()) {
-                        if (item.getProp() == -1) {
-                            if (extSelection != extNum++) {
-                                continue;
-                            }
-                        } else if (id != selection) {
-                            continue;
-                        }
-                    }
-                    short count = (short) item.getCount();
-                    if (count < 0) { // remove items
-                        if (!chr.haveItem(id, count, false, true)) {
-                            chr.dropMessage(1, "You are short of some item to complete quest.");
-                            return false;
-                        }
-                    } else { // add items
-                        if (MapleItemInformationProvider.getInstance().isPickupRestricted(id) && chr.haveItem(id, 1, true, false)) {
-                            chr.dropMessage(1, "You have this item already: " + MapleItemInformationProvider.getInstance().getName(id));
-                            return false;
-                        }
-                        switch (GameConstants.getInventoryType(id)) {
-                            case EQUIP:
-                                eq++;
-                                break;
-                            case USE:
-                                use++;
-                                break;
-                            case SETUP:
-                                setup++;
-                                break;
-                            case ETC:
-                                etc++;
-                                break;
-                            case CASH:
-                                cash++;
-                                break;
-                        }
-                    }
-                }
-                if (chr.getInventory(MapleInventoryType.EQUIP).getNumFreeSlot() < eq) {
-                    chr.dropMessage(1, "Please make space for your Equip inventory.");
-                    return false;
-                } else if (chr.getInventory(MapleInventoryType.USE).getNumFreeSlot() < use) {
-                    chr.dropMessage(1, "Please make space for your Use inventory.");
-                    return false;
-                } else if (chr.getInventory(MapleInventoryType.SETUP).getNumFreeSlot() < setup) {
-                    chr.dropMessage(1, "Please make space for your Setup inventory.");
-                    return false;
-                } else if (chr.getInventory(MapleInventoryType.ETC).getNumFreeSlot() < etc) {
-                    chr.dropMessage(1, "Please make space for your Etc inventory.");
-                    return false;
-                } else if (chr.getInventory(MapleInventoryType.CASH).getNumFreeSlot() < cash) {
-                    chr.dropMessage(1, "Please make space for your Cash inventory.");
-                    return false;
-                }
-                return true;
+                return checkItems(chr, extSelection);
             }
             case money: {
                 int meso = info.getValue();
                 if (chr.getMeso() + meso < 0) { // Giving, overflow
                     chr.dropMessage(1, "Meso exceed the max amount, 2147483647.");
                     return false;
-                } else if (meso < 0 && chr.getMeso() < Math.abs(meso)) { //remove meso
+                }
+                if (meso < 0 && chr.getMeso() < Math.abs(meso)) { //remove meso
                     chr.dropMessage(1, "Insufficient meso.");
                     return false;
                 }

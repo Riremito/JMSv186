@@ -257,14 +257,13 @@ public class MapleSquad {
                 return 2;
             }
             return -1;
-        } else {
-            if (members.containsKey(member.getName())) {
-                members.remove(member.getName());
-                getLeader().dropMessage(5, member.getName() + " (" + job + ") have withdrawed from the fight.");
-                return 1;
-            }
-            return -1;
         }
+        if (members.containsKey(member.getName())) {
+            members.remove(member.getName());
+            getLeader().dropMessage(5, member.getName() + " (" + job + ") have withdrawed from the fight.");
+            return 1;
+        }
+        return -1;
     }
 
     // used by script

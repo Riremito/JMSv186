@@ -1133,10 +1133,8 @@ public class GameConstants {
                 if (mountid < 1902015 || mountid > 1902018) {
                     return false;
                 }
-            } else if (isEvan(jobid)) {
-                if (mountid < 1902040 || mountid > 1902042) {
-                    return false;
-                }
+            } else if (isEvan(jobid) && (mountid < 1902040 || mountid > 1902042)) {
+                return false;
             }
         }
         return true;

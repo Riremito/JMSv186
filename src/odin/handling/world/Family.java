@@ -47,7 +47,7 @@ public class Family {
         MapleFamily ret = families.get(id);
         if (ret == null) {
             ret = new MapleFamily(id);
-            if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
+            if (ret.getId() <= 0 || !ret.isProper()) { //failed to load
                 return null;
             }
             families.put(id, ret);

@@ -49,7 +49,7 @@ public class Alliance {
         MapleGuildAlliance ret = alliances.get(allianceid);
         if (ret == null) {
             ret = new MapleGuildAlliance(allianceid);
-            if (ret == null || ret.getId() <= 0) { //failed to load
+            if (ret.getId() <= 0) { //failed to load
                 return null;
             }
             alliances.put(allianceid, ret);

@@ -240,236 +240,215 @@ public class MapleItemInformationProvider {
     }
 
     public Item scrollEquipWithId(Item equip, Item scrollId, boolean ws, TacosCharacter chr, int vegas) {
-        if (equip.getType() == 1) { // See Item.java
-            Equip nEquip = (Equip) equip;
-            Map<String, Integer> stats = getEquipStats(scrollId.getItemId());
-            Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
-            int succ = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getSuccessTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("success"))));
-            int curse = (GameConstants.isTablet(scrollId.getItemId()) ? GameConstants.getCurseTablet(scrollId.getItemId(), nEquip.getLevel()) : ((GameConstants.isEquipScroll(scrollId.getItemId()) || GameConstants.isPotentialScroll(scrollId.getItemId()) ? 0 : stats.get("cursed"))));
-            int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
+        if (equip.getType() != 1) { // See Item.java
+            return equip;
+        }
+        Equip nEquip = (Equip) equip;
+        int scroll_id = scrollId.getItemId();
+        Map<String, Integer> stats = getEquipStats(scroll_id);
+        Map<String, Integer> eqstats = getEquipStats(equip.getItemId());
+        boolean always_success = GameConstants.isEquipScroll(scroll_id) || GameConstants.isPotentialScroll(scroll_id);
+        int succ = GameConstants.isTablet(scroll_id) ? GameConstants.getSuccessTablet(scroll_id, nEquip.getLevel()) : (always_success ? 0 : stats.get("success"));
+        int curse = GameConstants.isTablet(scroll_id) ? GameConstants.getCurseTablet(scroll_id, nEquip.getLevel()) : (always_success ? 0 : stats.get("cursed"));
+        int success = succ + (vegas == 5610000 && succ == 10 ? 20 : (vegas == 5610001 && succ == 60 ? 30 : 0));
 
-            if (scrollId.getItemId() == 2049100) {
-                success = 100;
+        if (scroll_id == 2049100) {
+            success = 100;
+        }
+
+        // slot consuming scroll (not clean slate, special, enhance or potential scroll)
+        boolean uses_slot = !GameConstants.isCleanSlate(scroll_id) && !GameConstants.isSpecialScroll(scroll_id) && !always_success;
+
+        if (GameConstants.isPotentialScroll(scroll_id) || GameConstants.isEquipScroll(scroll_id) || Randomizer.nextInt(100) <= success) {
+            applyScroll(nEquip, scroll_id, stats, eqstats);
+            if (uses_slot) {
+                nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+                nEquip.setLevel((byte) (nEquip.getLevel() + 1));
             }
+            return equip;
+        }
 
-            if (GameConstants.isPotentialScroll(scrollId.getItemId()) || GameConstants.isEquipScroll(scrollId.getItemId()) || Randomizer.nextInt(100) <= success) {
-                switch (scrollId.getItemId()) {
-                    case 2049000:
-                    case 2049001:
-                    case 2049002:
-                    case 2049003:
-                    case 2049004:
-                    case 2049005: {
-                        if (nEquip.getLevel() + nEquip.getUpgradeSlots() < eqstats.get("tuc")) {
-                            nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() + 1));
-                        }
-                        break;
-                    }
-                    case 2049006:
-                    case 2049007:
-                    case 2049008: {
-                        if (nEquip.getLevel() + nEquip.getUpgradeSlots() < eqstats.get("tuc")) {
-                            nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() + 2));
-                        }
-                        break;
-                    }
-                    case 2040727: // Spikes on shoe, prevents slip
-                    {
-                        byte flag = nEquip.getFlag();
-                        flag |= ItemFlag.SPIKES.getValue();
-                        nEquip.setFlag(flag);
-                        break;
-                    }
-                    case 2041058: // Cape for Cold protection
-                    {
-                        byte flag = nEquip.getFlag();
-                        flag |= ItemFlag.COLD.getValue();
-                        nEquip.setFlag(flag);
-                        break;
-                    }
-                    default: {
-                        if (GameConstants.isChaosScroll(scrollId.getItemId())) {
-                            int z = GameConstants.getChaosNumber(scrollId.getItemId());
-                            if (nEquip.getStr() > 0) {
-                                nEquip.setStr((short) (nEquip.getStr() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getDex() > 0) {
-                                nEquip.setDex((short) (nEquip.getDex() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getInt() > 0) {
-                                nEquip.setInt((short) (nEquip.getInt() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getLuk() > 0) {
-                                nEquip.setLuk((short) (nEquip.getLuk() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getWatk() > 0) {
-                                nEquip.setWatk((short) (nEquip.getWatk() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getWdef() > 0) {
-                                nEquip.setWdef((short) (nEquip.getWdef() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getMatk() > 0) {
-                                nEquip.setMatk((short) (nEquip.getMatk() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getMdef() > 0) {
-                                nEquip.setMdef((short) (nEquip.getMdef() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getAcc() > 0) {
-                                nEquip.setAcc((short) (nEquip.getAcc() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getAvoid() > 0) {
-                                nEquip.setAvoid((short) (nEquip.getAvoid() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getSpeed() > 0) {
-                                nEquip.setSpeed((short) (nEquip.getSpeed() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getJump() > 0) {
-                                nEquip.setJump((short) (nEquip.getJump() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getHp() > 0) {
-                                nEquip.setHp((short) (nEquip.getHp() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            if (nEquip.getMp() > 0) {
-                                nEquip.setMp((short) (nEquip.getMp() + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1)));
-                            }
-                            break;
-                        } else if (GameConstants.isEquipScroll(scrollId.getItemId())) {
-                            int chanc = Math.max((scrollId.getItemId() == 2049300 ? 100 : 80) - (nEquip.getEnhance() * 10), 10);
-                            // all success
-                            /*
-                            if (Randomizer.nextInt(100) > chanc) {
-                                return null; //destroyed, nib
-                            }
-                             */
-                            if (nEquip.getStr() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-                                nEquip.setStr((short) (nEquip.getStr() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getDex() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-                                nEquip.setDex((short) (nEquip.getDex() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getInt() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-                                nEquip.setInt((short) (nEquip.getInt() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getLuk() > 0 || Randomizer.nextInt(50) == 1) { //1/50
-                                nEquip.setLuk((short) (nEquip.getLuk() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getWatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
-                                int add = (nEquip.getWatk() / 50);
-                                if (add == 0) {
-                                    add = 1;
-                                }
-                                nEquip.setWatk((short) (nEquip.getWatk() + add));
-                            }
-                            if (nEquip.getWdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
-                                nEquip.setWdef((short) (nEquip.getWdef() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getMatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
-                                int add = (nEquip.getMatk() / 50);
-                                if (add == 0) {
-                                    add = 1;
-                                }
-                                nEquip.setMatk((short) (nEquip.getMatk() + add));
-                            }
-                            if (nEquip.getMdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
-                                nEquip.setMdef((short) (nEquip.getMdef() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getAcc() > 0 || Randomizer.nextInt(20) == 1) { //1/20
-                                nEquip.setAcc((short) (nEquip.getAcc() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getAvoid() > 0 || Randomizer.nextInt(20) == 1) { //1/20
-                                nEquip.setAvoid((short) (nEquip.getAvoid() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getSpeed() > 0 || Randomizer.nextInt(10) == 1) { //1/10
-                                nEquip.setSpeed((short) (nEquip.getSpeed() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getJump() > 0 || Randomizer.nextInt(10) == 1) { //1/10
-                                nEquip.setJump((short) (nEquip.getJump() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getHp() > 0 || Randomizer.nextInt(5) == 1) { //1/5
-                                nEquip.setHp((short) (nEquip.getHp() + Randomizer.nextInt(5)));
-                            }
-                            if (nEquip.getMp() > 0 || Randomizer.nextInt(5) == 1) { //1/5
-                                nEquip.setMp((short) (nEquip.getMp() + Randomizer.nextInt(5)));
-                            }
-                            nEquip.setEnhance((byte) (nEquip.getEnhance() + 1));
-                            break;
-                        } else if (GameConstants.isPotentialScroll(scrollId.getItemId())) {
-                            if (nEquip.getHidden() == 0 && nEquip.getRank() == 0) {
-                                int chanc = scrollId.getItemId() == 2049400 ? 90 : 70;
-                                //if (Randomizer.nextInt(100) > chanc) {
-                                //    return null; //destroyed, nib
-                                //}
-                                nEquip.resetPotential(false, false);
-                            }
-                            break;
-                        } else {
-                            for (Entry<String, Integer> stat : stats.entrySet()) {
-                                String key = stat.getKey();
+        // failed
+        if (!ws && uses_slot && !ContentState.CS_LOCK_LOSING_UPGRADE_SLOT.get()) {
+            nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
+        }
+        if (Randomizer.nextInt(99) < curse && !ContentState.CS_LOCK_BOOM.get()) {
+            return null; // boom
+        }
+        return equip;
+    }
 
-                                if (key.equals("STR")) {
-                                    nEquip.setStr((short) (nEquip.getStr() + stat.getValue().intValue()));
-                                } else if (key.equals("DEX")) {
-                                    nEquip.setDex((short) (nEquip.getDex() + stat.getValue().intValue()));
-                                } else if (key.equals("INT")) {
-                                    nEquip.setInt((short) (nEquip.getInt() + stat.getValue().intValue()));
-                                } else if (key.equals("LUK")) {
-                                    nEquip.setLuk((short) (nEquip.getLuk() + stat.getValue().intValue()));
-                                } else if (key.equals("PAD")) {
-                                    nEquip.setWatk((short) (nEquip.getWatk() + stat.getValue().intValue()));
-                                } else if (key.equals("PDD")) {
-                                    nEquip.setWdef((short) (nEquip.getWdef() + stat.getValue().intValue()));
-                                } else if (key.equals("MAD")) {
-                                    nEquip.setMatk((short) (nEquip.getMatk() + stat.getValue().intValue()));
-                                } else if (key.equals("MDD")) {
-                                    nEquip.setMdef((short) (nEquip.getMdef() + stat.getValue().intValue()));
-                                } else if (key.equals("ACC")) {
-                                    nEquip.setAcc((short) (nEquip.getAcc() + stat.getValue().intValue()));
-                                } else if (key.equals("EVA")) {
-                                    nEquip.setAvoid((short) (nEquip.getAvoid() + stat.getValue().intValue()));
-                                } else if (key.equals("Speed")) {
-                                    nEquip.setSpeed((short) (nEquip.getSpeed() + stat.getValue().intValue()));
-                                } else if (key.equals("Jump")) {
-                                    nEquip.setJump((short) (nEquip.getJump() + stat.getValue().intValue()));
-                                } else if (key.equals("MHP")) {
-                                    nEquip.setHp((short) (nEquip.getHp() + stat.getValue().intValue()));
-                                } else if (key.equals("MMP")) {
-                                    nEquip.setMp((short) (nEquip.getMp() + stat.getValue().intValue()));
-                                } else if (key.equals("MHPr")) {
-                                    nEquip.setHpR((short) (nEquip.getHpR() + stat.getValue().intValue()));
-                                } else if (key.equals("MMPr")) {
-                                    nEquip.setMpR((short) (nEquip.getMpR() + stat.getValue().intValue()));
-                                    // 攻撃速度の書
-                                } else if (key.equals("attackSpeed")) {
-                                    nEquip.setIncAttackSpeed(nEquip.getIncAttackSpeed() + stat.getValue().intValue());
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-                if (!GameConstants.isCleanSlate(scrollId.getItemId()) && !GameConstants.isSpecialScroll(scrollId.getItemId()) && !GameConstants.isEquipScroll(scrollId.getItemId()) && !GameConstants.isPotentialScroll(scrollId.getItemId())) {
-                    nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
-                    nEquip.setLevel((byte) (nEquip.getLevel() + 1));
-                }
-            } else {
-                if (!ws && !GameConstants.isCleanSlate(scrollId.getItemId()) && !GameConstants.isSpecialScroll(scrollId.getItemId()) && !GameConstants.isEquipScroll(scrollId.getItemId()) && !GameConstants.isPotentialScroll(scrollId.getItemId())) {
-                    if (ContentState.CS_LOCK_LOSING_UPGRADE_SLOT.get()) {
-                        // do nothing
-                    } else {
-                        nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() - 1));
-                    }
-                }
-                if (Randomizer.nextInt(99) < curse) {
-                    if (ContentState.CS_LOCK_BOOM.get()) {
-                        // do nothing
-                    } else {
-                        // boom
-                        return null;
-                    }
+    private void applyScroll(Equip nEquip, int scroll_id, Map<String, Integer> stats, Map<String, Integer> eqstats) {
+        switch (scroll_id) {
+            case 2049000:
+            case 2049001:
+            case 2049002:
+            case 2049003:
+            case 2049004:
+            case 2049005: {
+                addUpgradeSlots(nEquip, eqstats, 1);
+                return;
+            }
+            case 2049006:
+            case 2049007:
+            case 2049008: {
+                addUpgradeSlots(nEquip, eqstats, 2);
+                return;
+            }
+            case 2040727: { // Spikes on shoe, prevents slip
+                nEquip.setFlag((byte) (nEquip.getFlag() | ItemFlag.SPIKES.getValue()));
+                return;
+            }
+            case 2041058: { // Cape for Cold protection
+                nEquip.setFlag((byte) (nEquip.getFlag() | ItemFlag.COLD.getValue()));
+                return;
+            }
+            default: {
+                break;
+            }
+        }
+        if (GameConstants.isChaosScroll(scroll_id)) {
+            applyChaosScroll(nEquip, GameConstants.getChaosNumber(scroll_id));
+        } else if (GameConstants.isEquipScroll(scroll_id)) {
+            applyEnhanceScroll(nEquip);
+        } else if (GameConstants.isPotentialScroll(scroll_id)) {
+            if (nEquip.getHidden() == 0 && nEquip.getRank() == 0) {
+                nEquip.resetPotential(false, false);
+            }
+        } else {
+            applyStatScroll(nEquip, stats);
+        }
+    }
+
+    private void addUpgradeSlots(Equip nEquip, Map<String, Integer> eqstats, int slots) {
+        if (nEquip.getLevel() + nEquip.getUpgradeSlots() < eqstats.get("tuc")) {
+            nEquip.setUpgradeSlots((byte) (nEquip.getUpgradeSlots() + slots));
+        }
+    }
+
+    // stat +- random(z)
+    private static short chaosStat(int value, int z) {
+        return (short) (value + Randomizer.nextInt(z) * (Randomizer.nextBoolean() ? 1 : -1));
+    }
+
+    private void applyChaosScroll(Equip nEquip, int z) {
+        if (nEquip.getStr() > 0) {
+            nEquip.setStr(chaosStat(nEquip.getStr(), z));
+        }
+        if (nEquip.getDex() > 0) {
+            nEquip.setDex(chaosStat(nEquip.getDex(), z));
+        }
+        if (nEquip.getInt() > 0) {
+            nEquip.setInt(chaosStat(nEquip.getInt(), z));
+        }
+        if (nEquip.getLuk() > 0) {
+            nEquip.setLuk(chaosStat(nEquip.getLuk(), z));
+        }
+        if (nEquip.getWatk() > 0) {
+            nEquip.setWatk(chaosStat(nEquip.getWatk(), z));
+        }
+        if (nEquip.getWdef() > 0) {
+            nEquip.setWdef(chaosStat(nEquip.getWdef(), z));
+        }
+        if (nEquip.getMatk() > 0) {
+            nEquip.setMatk(chaosStat(nEquip.getMatk(), z));
+        }
+        if (nEquip.getMdef() > 0) {
+            nEquip.setMdef(chaosStat(nEquip.getMdef(), z));
+        }
+        if (nEquip.getAcc() > 0) {
+            nEquip.setAcc(chaosStat(nEquip.getAcc(), z));
+        }
+        if (nEquip.getAvoid() > 0) {
+            nEquip.setAvoid(chaosStat(nEquip.getAvoid(), z));
+        }
+        if (nEquip.getSpeed() > 0) {
+            nEquip.setSpeed(chaosStat(nEquip.getSpeed(), z));
+        }
+        if (nEquip.getJump() > 0) {
+            nEquip.setJump(chaosStat(nEquip.getJump(), z));
+        }
+        if (nEquip.getHp() > 0) {
+            nEquip.setHp(chaosStat(nEquip.getHp(), z));
+        }
+        if (nEquip.getMp() > 0) {
+            nEquip.setMp(chaosStat(nEquip.getMp(), z));
+        }
+    }
+
+    // equip enhancement scroll (always success)
+    private void applyEnhanceScroll(Equip nEquip) {
+        if (nEquip.getStr() > 0 || Randomizer.nextInt(50) == 1) { //1/50
+            nEquip.setStr((short) (nEquip.getStr() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getDex() > 0 || Randomizer.nextInt(50) == 1) { //1/50
+            nEquip.setDex((short) (nEquip.getDex() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getInt() > 0 || Randomizer.nextInt(50) == 1) { //1/50
+            nEquip.setInt((short) (nEquip.getInt() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getLuk() > 0 || Randomizer.nextInt(50) == 1) { //1/50
+            nEquip.setLuk((short) (nEquip.getLuk() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getWatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
+            nEquip.setWatk((short) (nEquip.getWatk() + Math.max(nEquip.getWatk() / 50, 1)));
+        }
+        if (nEquip.getWdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
+            nEquip.setWdef((short) (nEquip.getWdef() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getMatk() > 0 && GameConstants.isWeapon(nEquip.getItemId())) {
+            nEquip.setMatk((short) (nEquip.getMatk() + Math.max(nEquip.getMatk() / 50, 1)));
+        }
+        if (nEquip.getMdef() > 0 || Randomizer.nextInt(40) == 1) { //1/40
+            nEquip.setMdef((short) (nEquip.getMdef() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getAcc() > 0 || Randomizer.nextInt(20) == 1) { //1/20
+            nEquip.setAcc((short) (nEquip.getAcc() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getAvoid() > 0 || Randomizer.nextInt(20) == 1) { //1/20
+            nEquip.setAvoid((short) (nEquip.getAvoid() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getSpeed() > 0 || Randomizer.nextInt(10) == 1) { //1/10
+            nEquip.setSpeed((short) (nEquip.getSpeed() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getJump() > 0 || Randomizer.nextInt(10) == 1) { //1/10
+            nEquip.setJump((short) (nEquip.getJump() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getHp() > 0 || Randomizer.nextInt(5) == 1) { //1/5
+            nEquip.setHp((short) (nEquip.getHp() + Randomizer.nextInt(5)));
+        }
+        if (nEquip.getMp() > 0 || Randomizer.nextInt(5) == 1) { //1/5
+            nEquip.setMp((short) (nEquip.getMp() + Randomizer.nextInt(5)));
+        }
+        nEquip.setEnhance((byte) (nEquip.getEnhance() + 1));
+    }
+
+    // normal scroll : add the stats of the scroll
+    private void applyStatScroll(Equip nEquip, Map<String, Integer> stats) {
+        for (Entry<String, Integer> stat : stats.entrySet()) {
+            int value = stat.getValue();
+            switch (stat.getKey()) {
+                case "STR" -> nEquip.setStr((short) (nEquip.getStr() + value));
+                case "DEX" -> nEquip.setDex((short) (nEquip.getDex() + value));
+                case "INT" -> nEquip.setInt((short) (nEquip.getInt() + value));
+                case "LUK" -> nEquip.setLuk((short) (nEquip.getLuk() + value));
+                case "PAD" -> nEquip.setWatk((short) (nEquip.getWatk() + value));
+                case "PDD" -> nEquip.setWdef((short) (nEquip.getWdef() + value));
+                case "MAD" -> nEquip.setMatk((short) (nEquip.getMatk() + value));
+                case "MDD" -> nEquip.setMdef((short) (nEquip.getMdef() + value));
+                case "ACC" -> nEquip.setAcc((short) (nEquip.getAcc() + value));
+                case "EVA" -> nEquip.setAvoid((short) (nEquip.getAvoid() + value));
+                case "Speed" -> nEquip.setSpeed((short) (nEquip.getSpeed() + value));
+                case "Jump" -> nEquip.setJump((short) (nEquip.getJump() + value));
+                case "MHP" -> nEquip.setHp((short) (nEquip.getHp() + value));
+                case "MMP" -> nEquip.setMp((short) (nEquip.getMp() + value));
+                case "MHPr" -> nEquip.setHpR((short) (nEquip.getHpR() + value));
+                case "MMPr" -> nEquip.setMpR((short) (nEquip.getMpR() + value));
+                case "attackSpeed" -> nEquip.setIncAttackSpeed(nEquip.getIncAttackSpeed() + value); // 攻撃速度の書
+                default -> {
                 }
             }
         }
-        return equip;
     }
 
     public Item getEquipById(int equipId) {

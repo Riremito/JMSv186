@@ -127,144 +127,16 @@ public class ItemMakerHandler {
         TacosClient client = chr.getClient();
         int type = cp.Decode4();
 
-        TacosMap map = chr.getMap();
         switch (RecipeClass.find(type)) {
             case RECIPE_CLASS_NORMAL: {
                 int toCreate = cp.Decode4();
-
                 if (GameConstants.isGem(toCreate)) {
-                    GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
-                    if (gem == null) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 1");
-                        return false;
-                    }
-                    if (!hasSkill(client, gem.getReqSkillLevel())) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 2");
-                        return false;
-                    }
-                    if (chr.getMeso() < gem.getCost()) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 3");
-                        return false;
-                    }
-                    int randGemGiven = getRandomGem(gem.getRandomReward());
-
-                    if (chr.getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 4");
-                        return false;
-                    }
-                    int taken = checkRequiredNRemove(client, gem.getReqRecipes());
-                    if (taken == 0) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 5");
-                        return false;
-                    }
-
-                    chr.gainMeso(-gem.getCost(), false);
-                    MapleInventoryManipulator.addById(client, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
-                    PB_UserEffect pb = PB_UserEffect.builder()
-                            .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
-                            .build();
-                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
-                    return true;
+                    return makeGem(chr, toCreate);
                 }
                 if (GameConstants.isOtherGem(toCreate)) {
-                    GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
-                    if (gem == null) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 6");
-                        return false;
-                    }
-                    if (!hasSkill(client, gem.getReqSkillLevel())) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 7");
-                        return false;
-                    }
-                    if (chr.getMeso() < gem.getCost()) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 8");
-                        return false;
-                    }
-
-                    if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 9");
-                        return false;
-                    }
-                    if (checkRequiredNRemove(client, gem.getReqRecipes()) == 0) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 10");
-                        return false;
-                    }
-
-                    chr.gainMeso(-gem.getCost(), false);
-
-                    if (GameConstants.getInventoryType(toCreate) == MapleInventoryType.EQUIP) {
-                        MapleInventoryManipulator.addbyItem(client, MapleItemInformationProvider.getInstance().getEquipById(toCreate));
-                    } else {
-                        MapleInventoryManipulator.addById(client, toCreate, (byte) 1); // Gem is always 1
-                    }
-                    PB_UserEffect pb = PB_UserEffect.builder()
-                            .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
-                            .build();
-                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
-                    return true;
+                    return makeOtherGem(chr, toCreate);
                 }
-                {
-                    boolean stimulator = cp.Decode1() > 0;
-                    int numEnchanter = cp.Decode4();
-
-                    ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(toCreate);
-                    if (create == null) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 11");
-                        return false;
-                    }
-                    if (numEnchanter > create.getTUC()) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 12");
-                        return false;
-                    }
-                    if (!hasSkill(client, create.getReqSkillLevel())) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 13");
-                        return false;
-                    }
-                    if (chr.getMeso() < create.getCost()) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 14");
-                        return false;
-                    }
-                    if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 15");
-                        return false;
-                    }
-                    if (checkRequiredNRemove(client, create.getReqItems()) == 0) {
-                        DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 16");
-                        return false;
-                    }
-
-                    chr.gainMeso(-create.getCost(), false);
-
-                    MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-                    Equip toGive = (Equip) ii.getEquipById(toCreate);
-
-                    if (stimulator || numEnchanter > 0) {
-                        if (chr.haveItem(create.getStimulator(), 1, false, true)) {
-                            ii.randomizeStats(toGive);
-                            MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
-                        }
-                        for (int i = 0; i < numEnchanter; i++) {
-                            int enchant = cp.Decode4();
-                            if (chr.haveItem(enchant, 1, false, true)) {
-                                Map<String, Byte> stats = ii.getItemMakeStats(enchant);
-                                if (stats != null) {
-                                    addEnchantStats(stats, toGive);
-                                    MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, enchant, 1, false, false);
-                                }
-                            }
-                        }
-                    }
-
-                    MapleInventoryManipulator.addbyItem(client, toGive);
-                    PB_UserEffect pb = PB_UserEffect.builder()
-                            .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
-                            .build();
-                    chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
-                }
-                return true;
+                return makeEquip(cp, chr, toCreate);
             }
             case RECIPE_CLASS_MONSTER_CRYSTAL: {
                 int etc = cp.Decode4();
@@ -275,12 +147,7 @@ public class ItemMakerHandler {
                 }
                 MapleInventoryManipulator.addById(client, getCreateCrystal(etc), (short) 1);
                 MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, etc, 100, false, false);
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
-                        .build();
-                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
-
+                sendMakeSuccess(chr);
                 return true;
             }
             case RECIPE_CLASS_EQUIP_DISASSEMBLE: {
@@ -295,26 +162,152 @@ public class ItemMakerHandler {
                 }
 
                 MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-
                 if (!ii.isDropRestricted(itemId) && !ii.isAccountShared(itemId)) {
                     int[] toGive = getCrystal(itemId, ii.getReqLevel(itemId));
                     MapleInventoryManipulator.addById(client, toGive[0], (byte) toGive[1]);
                     MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.EQUIP, (short) slot, (byte) 1, false);
                 }
-                PB_UserEffect pb = PB_UserEffect.builder()
-                        .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
-                        .build();
-                chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                sendMakeSuccess(chr);
                 return true;
             }
             default: {
                 DebugLogger.ErrorLog("OnItemMakeRequest : not coded.");
-                break;
+                return false;
             }
         }
+    }
 
-        return false;
+    private static void sendMakeSuccess(TacosCharacter chr) {
+        PB_UserEffect pb = PB_UserEffect.builder()
+                .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
+                .build();
+        chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
+        chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+    }
+
+    private static boolean makeGem(TacosCharacter chr, int toCreate) {
+        TacosClient client = chr.getClient();
+        GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
+        if (gem == null) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 1");
+            return false;
+        }
+        if (!hasSkill(client, gem.getReqSkillLevel())) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 2");
+            return false;
+        }
+        if (chr.getMeso() < gem.getCost()) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 3");
+            return false;
+        }
+        int randGemGiven = getRandomGem(gem.getRandomReward());
+        if (chr.getInventory(GameConstants.getInventoryType(randGemGiven)).isFull()) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 4");
+            return false;
+        }
+        int taken = checkRequiredNRemove(client, gem.getReqRecipes());
+        if (taken == 0) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 5");
+            return false;
+        }
+
+        chr.gainMeso(-gem.getCost(), false);
+        MapleInventoryManipulator.addById(client, randGemGiven, (byte) (taken == randGemGiven ? 9 : 1)); // Gem is always 1
+        sendMakeSuccess(chr);
+        return true;
+    }
+
+    private static boolean makeOtherGem(TacosCharacter chr, int toCreate) {
+        TacosClient client = chr.getClient();
+        GemCreateEntry gem = ItemMakerFactory.getInstance().getGemInfo(toCreate);
+        if (gem == null) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 6");
+            return false;
+        }
+        if (!hasSkill(client, gem.getReqSkillLevel())) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 7");
+            return false;
+        }
+        if (chr.getMeso() < gem.getCost()) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 8");
+            return false;
+        }
+        if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 9");
+            return false;
+        }
+        if (checkRequiredNRemove(client, gem.getReqRecipes()) == 0) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 10");
+            return false;
+        }
+
+        chr.gainMeso(-gem.getCost(), false);
+        if (GameConstants.getInventoryType(toCreate) == MapleInventoryType.EQUIP) {
+            MapleInventoryManipulator.addbyItem(client, MapleItemInformationProvider.getInstance().getEquipById(toCreate));
+        } else {
+            MapleInventoryManipulator.addById(client, toCreate, (byte) 1); // Gem is always 1
+        }
+        sendMakeSuccess(chr);
+        return true;
+    }
+
+    private static boolean makeEquip(ClientPacket cp, TacosCharacter chr, int toCreate) {
+        TacosClient client = chr.getClient();
+        boolean stimulator = cp.Decode1() > 0;
+        int numEnchanter = cp.Decode4();
+
+        ItemMakerCreateEntry create = ItemMakerFactory.getInstance().getCreateInfo(toCreate);
+        if (create == null) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 11");
+            return false;
+        }
+        if (numEnchanter > create.getTUC()) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 12");
+            return false;
+        }
+        if (!hasSkill(client, create.getReqSkillLevel())) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 13");
+            return false;
+        }
+        if (chr.getMeso() < create.getCost()) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 14");
+            return false;
+        }
+        if (chr.getInventory(GameConstants.getInventoryType(toCreate)).isFull()) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 15");
+            return false;
+        }
+        if (checkRequiredNRemove(client, create.getReqItems()) == 0) {
+            DebugLogger.ErrorLog("RECIPE_CLASS_NORMAL : 16");
+            return false;
+        }
+
+        chr.gainMeso(-create.getCost(), false);
+
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        Equip toGive = (Equip) ii.getEquipById(toCreate);
+
+        // the stimulator is also used when enchanters are used.
+        if ((stimulator || numEnchanter > 0) && chr.haveItem(create.getStimulator(), 1, false, true)) {
+            ii.randomizeStats(toGive);
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, create.getStimulator(), 1, false, false);
+        }
+        for (int i = 0; i < numEnchanter; i++) {
+            int enchant = cp.Decode4();
+            if (!chr.haveItem(enchant, 1, false, true)) {
+                continue;
+            }
+            Map<String, Byte> stats = ii.getItemMakeStats(enchant);
+            if (stats == null) {
+                continue;
+            }
+            addEnchantStats(stats, toGive);
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.ETC, enchant, 1, false, false);
+        }
+
+        MapleInventoryManipulator.addbyItem(client, toGive);
+        sendMakeSuccess(chr);
+        return true;
     }
 
     private static int getCreateCrystal(int etc) {

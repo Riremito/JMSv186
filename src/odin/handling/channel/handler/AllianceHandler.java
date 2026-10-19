@@ -105,17 +105,13 @@ public class AllianceHandler {
                 } else {
                     gid = client.getPlayer().getGuildId();
                 }
-                if (client.getPlayer().getAllianceRank() <= 2 && (client.getPlayer().getAllianceRank() == 1 || client.getPlayer().getGuildId() == gid)) {
-                    if (!client.getWorld().getAlliance().removeGuildFromAlliance(gs.getAllianceId(), gid, client.getPlayer().getGuildId() != gid)) {
-                        client.getPlayer().dropMessage(5, "An error occured when removing guild.");
-                    }
+                if (client.getPlayer().getAllianceRank() <= 2 && (client.getPlayer().getAllianceRank() == 1 || client.getPlayer().getGuildId() == gid) && !client.getWorld().getAlliance().removeGuildFromAlliance(gs.getAllianceId(), gid, client.getPlayer().getGuildId() != gid)) {
+                    client.getPlayer().dropMessage(5, "An error occured when removing guild.");
                 }
                 break;
             case 7: //change leader
-                if (client.getPlayer().getAllianceRank() == 1 && leaderid == client.getPlayer().getId()) {
-                    if (!client.getWorld().getAlliance().changeAllianceLeader(gs.getAllianceId(), cp.Decode4())) {
-                        client.getPlayer().dropMessage(5, "An error occured when changing leader.");
-                    }
+                if (client.getPlayer().getAllianceRank() == 1 && leaderid == client.getPlayer().getId() && !client.getWorld().getAlliance().changeAllianceLeader(gs.getAllianceId(), cp.Decode4())) {
+                    client.getPlayer().dropMessage(5, "An error occured when changing leader.");
                 }
                 break;
             case 8: //title update
@@ -128,10 +124,8 @@ public class AllianceHandler {
                 }
                 break;
             case 9:
-                if (client.getPlayer().getAllianceRank() <= 2) {
-                    if (!client.getWorld().getAlliance().changeAllianceRank(gs.getAllianceId(), cp.Decode4(), cp.Decode1())) {
-                        client.getPlayer().dropMessage(5, "An error occured when changing rank.");
-                    }
+                if (client.getPlayer().getAllianceRank() <= 2 && !client.getWorld().getAlliance().changeAllianceRank(gs.getAllianceId(), cp.Decode4(), cp.Decode1())) {
+                    client.getPlayer().dropMessage(5, "An error occured when changing rank.");
                 }
                 break;
             case 10: //notice update

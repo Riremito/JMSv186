@@ -55,7 +55,7 @@ public class Guild {
         MapleGuild ret = guilds.get(id);
         if (ret == null) {
             ret = new MapleGuild(id);
-            if (ret == null || ret.getId() <= 0 || !ret.isProper()) { //failed to load
+            if (ret.getId() <= 0 || !ret.isProper()) { //failed to load
                 return null;
             }
             guilds.put(id, ret);

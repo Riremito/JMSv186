@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.util.List;
+import java.util.Map;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
@@ -46,222 +47,145 @@ import tacos.script.TacosScriptNPC;
 
 public class InventoryHandler {
 
+    // mount skill items : item id -> {mount id, expiration days}
+    private static final Map<Integer, int[]> MOUNT_ITEMS = Map.ofEntries(
+            Map.entry(2430036, new int[]{1027, 1}), //croco 1 day
+            Map.entry(2430037, new int[]{1028, 1}), //black scooter 1 day
+            Map.entry(2430038, new int[]{1029, 1}), //pink scooter 1 day
+            Map.entry(2430039, new int[]{1030, 1}), //clouds 1 day
+            Map.entry(2430040, new int[]{1031, 1}), //balrog 1 day
+            Map.entry(2430053, new int[]{1027, 1}), //croco 30 day
+            Map.entry(2430054, new int[]{1028, 30}), //black scooter 30 day
+            Map.entry(2430055, new int[]{1029, 30}), //pink scooter 30 day
+            Map.entry(2430056, new int[]{1035, 30}), //mist rog 30 day
+            //race kart 30 day? unknown 2430057
+            Map.entry(2430072, new int[]{1034, 7}), //ZD tiger 7 day
+            Map.entry(2430073, new int[]{1036, 15}), //lion 15 day
+            Map.entry(2430074, new int[]{1037, 15}), //unicorn 15 day
+            Map.entry(2430075, new int[]{1038, 15}), //low rider 15 day
+            Map.entry(2430076, new int[]{1039, 15}), //red truck 15 day
+            Map.entry(2430077, new int[]{1040, 15}), //gargoyle 15 day
+            Map.entry(2430080, new int[]{1042, 20}), //shinjo 20 day
+            Map.entry(2430082, new int[]{1044, 7}), //orange mush 7 day
+            Map.entry(2430091, new int[]{1049, 10}), //nightmare 10 day
+            Map.entry(2430092, new int[]{1050, 10}), //yeti 10 day
+            Map.entry(2430093, new int[]{1051, 10}), //ostrich 10 day
+            Map.entry(2430101, new int[]{1052, 10}), //pink bear 10 day
+            Map.entry(2430102, new int[]{1053, 10}), //transformation robo 10 day
+            Map.entry(2430103, new int[]{1054, 30}), //chicken 30 day
+            Map.entry(2430117, new int[]{1036, 365}), //lion 1 year
+            Map.entry(2430118, new int[]{1039, 365}), //red truck 1 year
+            Map.entry(2430119, new int[]{1040, 365}), //gargoyle 1 year
+            Map.entry(2430120, new int[]{1037, 365}), //unicorn 1 year
+            Map.entry(2430136, new int[]{1069, 30}), //owl 30 day
+            Map.entry(2430137, new int[]{1069, 365}), //owl 1 year
+            Map.entry(2430201, new int[]{1096, 60}), //giant bunny 60 day
+            Map.entry(2430228, new int[]{1101, 60}), //tiny bunny 60 day
+            Map.entry(2430229, new int[]{1102, 60}) //bunny rickshaw 60 day
+    );
+
     public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, TacosCharacter chr) {
-        TacosCharacter player = client.getPlayer();
         int unk1 = cp.Decode4();
         byte slot = (byte) cp.Decode2();
         int itemId = cp.Decode4();
         Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
-        long expiration_days = 0;
-        int mountid = 0;
 
-        if (toUse != null && toUse.getQuantity() >= 1 && toUse.getItemId() == itemId) {
-            switch (toUse.getItemId()) {
-                case 2430007: // Blank Compass
-                {
-                    MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
-                    MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
-
-                    if (inventory.countById(3994102) >= 20 // Compass Letter "North"
-                            && inventory.countById(3994103) >= 20 // Compass Letter "South"
-                            && inventory.countById(3994104) >= 20 // Compass Letter "East"
-                            && inventory.countById(3994105) >= 20) { // Compass Letter "West"
-                        MapleInventoryManipulator.addById(client, 2430008, (short) 1); // Gold Compass
-                        MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994102, 20, false, false);
-                        MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994103, 20, false, false);
-                        MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994104, 20, false, false);
-                        MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994105, 20, false, false);
-                    } else {
-                        MapleInventoryManipulator.addById(client, 2430007, (short) 1); // Blank Compass
-                    }
-                    TacosScriptNPC.getInstance().start(client, 2084001);
-                    break;
-                }
-                case 2430008: // Gold Compass
-                {
-                    chr.saveLocation(SavedLocationType.RICHIE);
-                    TacosMap map;
-                    boolean warped = false;
-
-                    for (int i = 390001000; i <= 390001004; i++) {
-                        map = chr.findMap(i);
-
-                        if (map.getCharactersSize() == 0) {
-                            chr.changeMapPortal(map, map.getPortal(0));
-                            warped = true;
-                            break;
-                        }
-                    }
-                    if (warped) { // Removal of gold compass
-                        MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430008, 1, false, false);
-                    } else { // Or mabe some other message.
-                        player.dropMessage(5, "All maps are currently in use, please try again later.");
-                    }
-                    break;
-                }
-                case 2430112: //miracle cube
-                    if (player.getInventory(MapleInventoryType.USE).getNumFreeSlot() >= 1) {
-                        if (player.getInventory(MapleInventoryType.USE).countById(2430112) >= 25) {
-                            if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, 25, true, false)) {
-                                MapleInventoryManipulator.addById(client, 2049400, (short) 1);
-                            } else {
-                                player.dropMessage(5, "Please make some space.");
-                            }
-                        } else if (player.getInventory(MapleInventoryType.USE).countById(2430112) >= 10) {
-                            if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, 10, true, false)) {
-                                MapleInventoryManipulator.addById(client, 2049401, (short) 1);
-                            } else {
-                                player.dropMessage(5, "Please make some space.");
-                            }
-                        } else {
-                            player.dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
-                        }
-                    } else {
-                        player.dropMessage(5, "Please make some space.");
-                    }
-                    break;
-                case 2430036: //croco 1 day
-                    mountid = 1027;
-                    expiration_days = 1;
-                    break;
-                case 2430037: //black scooter 1 day
-                    mountid = 1028;
-                    expiration_days = 1;
-                    break;
-                case 2430038: //pink scooter 1 day
-                    mountid = 1029;
-                    expiration_days = 1;
-                    break;
-                case 2430039: //clouds 1 day
-                    mountid = 1030;
-                    expiration_days = 1;
-                    break;
-                case 2430040: //balrog 1 day
-                    mountid = 1031;
-                    expiration_days = 1;
-                    break;
-                case 2430053: //croco 30 day
-                    mountid = 1027;
-                    expiration_days = 1;
-                    break;
-                case 2430054: //black scooter 30 day
-                    mountid = 1028;
-                    expiration_days = 30;
-                    break;
-                case 2430055: //pink scooter 30 day
-                    mountid = 1029;
-                    expiration_days = 30;
-                    break;
-                case 2430056: //mist rog 30 day
-                    mountid = 1035;
-                    expiration_days = 30;
-                    break;
-                //race kart 30 day? unknown 2430057
-                case 2430072: //ZD tiger 7 day
-                    mountid = 1034;
-                    expiration_days = 7;
-                    break;
-                case 2430073: //lion 15 day
-                    mountid = 1036;
-                    expiration_days = 15;
-                    break;
-                case 2430074: //unicorn 15 day
-                    mountid = 1037;
-                    expiration_days = 15;
-                    break;
-                case 2430075: //low rider 15 day
-                    mountid = 1038;
-                    expiration_days = 15;
-                    break;
-                case 2430076: //red truck 15 day
-                    mountid = 1039;
-                    expiration_days = 15;
-                    break;
-                case 2430077: //gargoyle 15 day
-                    mountid = 1040;
-                    expiration_days = 15;
-                    break;
-                case 2430080: //shinjo 20 day
-                    mountid = 1042;
-                    expiration_days = 20;
-                    break;
-                case 2430082: //orange mush 7 day
-                    mountid = 1044;
-                    expiration_days = 7;
-                    break;
-                case 2430091: //nightmare 10 day
-                    mountid = 1049;
-                    expiration_days = 10;
-                    break;
-                case 2430092: //yeti 10 day
-                    mountid = 1050;
-                    expiration_days = 10;
-                    break;
-                case 2430093: //ostrich 10 day
-                    mountid = 1051;
-                    expiration_days = 10;
-                    break;
-                case 2430101: //pink bear 10 day
-                    mountid = 1052;
-                    expiration_days = 10;
-                    break;
-                case 2430102: //transformation robo 10 day
-                    mountid = 1053;
-                    expiration_days = 10;
-                    break;
-                case 2430103: //chicken 30 day
-                    mountid = 1054;
-                    expiration_days = 30;
-                    break;
-                case 2430117: //lion 1 year
-                    mountid = 1036;
-                    expiration_days = 365;
-                    break;
-                case 2430118: //red truck 1 year
-                    mountid = 1039;
-                    expiration_days = 365;
-                    break;
-                case 2430119: //gargoyle 1 year
-                    mountid = 1040;
-                    expiration_days = 365;
-                    break;
-                case 2430120: //unicorn 1 year
-                    mountid = 1037;
-                    expiration_days = 365;
-                    break;
-                case 2430136: //owl 30 day
-                    mountid = 1069;
-                    expiration_days = 30;
-                    break;
-                case 2430137: //owl 1 year
-                    mountid = 1069;
-                    expiration_days = 365;
-                    break;
-                case 2430201: //giant bunny 60 day
-                    mountid = 1096;
-                    expiration_days = 60;
-                    break;
-                case 2430228: //tiny bunny 60 day
-                    mountid = 1101;
-                    expiration_days = 60;
-                    break;
-                case 2430229: //bunny rickshaw 60 day
-                    mountid = 1102;
-                    expiration_days = 60;
-                    break;
-            }
+        if (toUse == null || toUse.getQuantity() < 1 || toUse.getItemId() != itemId) {
+            chr.updateInv();
+            return;
         }
-        if (mountid > 0) {
-            mountid += (GameConstants.isAran(player.getJob()) ? 20000000 : (GameConstants.isEvan(player.getJob()) ? 20010000 : (GameConstants.isKOC(player.getJob()) ? 10000000 : (GameConstants.isResist(player.getJob()) ? 30000000 : 0))));
-            if (player.getSkillLevel(mountid) > 0) {
-                player.dropMessage(5, "You already have this skill.");
-            } else if (expiration_days > 0) {
-                MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
-                player.changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
-                player.dropMessage(5, "The skill has been attained.");
+        switch (itemId) {
+            case 2430007: { // Blank Compass
+                useBlankCompass(client, chr, slot);
+                break;
+            }
+            case 2430008: { // Gold Compass
+                useGoldCompass(client, chr);
+                break;
+            }
+            case 2430112: { //miracle cube
+                useMiracleCube(client, chr);
+                break;
+            }
+            default: {
+                int[] mount = MOUNT_ITEMS.get(itemId);
+                if (mount != null) {
+                    useMountItem(client, chr, slot, mount[0], mount[1]);
+                }
+                break;
             }
         }
         chr.updateInv();
+    }
+
+    private static void useBlankCompass(TacosClient client, TacosCharacter chr, byte slot) {
+        MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
+        MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
+
+        if (inventory.countById(3994102) >= 20 // Compass Letter "North"
+                && inventory.countById(3994103) >= 20 // Compass Letter "South"
+                && inventory.countById(3994104) >= 20 // Compass Letter "East"
+                && inventory.countById(3994105) >= 20) { // Compass Letter "West"
+            MapleInventoryManipulator.addById(client, 2430008, (short) 1); // Gold Compass
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994102, 20, false, false);
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994103, 20, false, false);
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994104, 20, false, false);
+            MapleInventoryManipulator.removeById(client, MapleInventoryType.SETUP, 3994105, 20, false, false);
+        } else {
+            MapleInventoryManipulator.addById(client, 2430007, (short) 1); // Blank Compass
+        }
+        TacosScriptNPC.getInstance().start(client, 2084001);
+    }
+
+    private static void useGoldCompass(TacosClient client, TacosCharacter chr) {
+        chr.saveLocation(SavedLocationType.RICHIE);
+        for (int i = 390001000; i <= 390001004; i++) {
+            TacosMap map = chr.findMap(i);
+            if (map.getCharactersSize() == 0) {
+                chr.changeMapPortal(map, map.getPortal(0));
+                MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430008, 1, false, false); // Removal of gold compass
+                return;
+            }
+        }
+        chr.dropMessage(5, "All maps are currently in use, please try again later."); // Or mabe some other message.
+    }
+
+    private static void useMiracleCube(TacosClient client, TacosCharacter chr) {
+        if (chr.getInventory(MapleInventoryType.USE).getNumFreeSlot() < 1) {
+            chr.dropMessage(5, "Please make some space.");
+            return;
+        }
+        int fragments = chr.getInventory(MapleInventoryType.USE).countById(2430112);
+        int cost;
+        int reward;
+        if (fragments >= 25) {
+            cost = 25;
+            reward = 2049400;
+        } else if (fragments >= 10) {
+            cost = 10;
+            reward = 2049401;
+        } else {
+            chr.dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
+            return;
+        }
+        if (MapleInventoryManipulator.checkSpace(client, 2049400, 1, "") && MapleInventoryManipulator.removeById(client, MapleInventoryType.USE, 2430112, cost, true, false)) {
+            MapleInventoryManipulator.addById(client, reward, (short) 1);
+        } else {
+            chr.dropMessage(5, "Please make some space.");
+        }
+    }
+
+    private static void useMountItem(TacosClient client, TacosCharacter chr, byte slot, int mountid, long expiration_days) {
+        mountid += (GameConstants.isAran(chr.getJob()) ? 20000000 : (GameConstants.isEvan(chr.getJob()) ? 20010000 : (GameConstants.isKOC(chr.getJob()) ? 10000000 : (GameConstants.isResist(chr.getJob()) ? 30000000 : 0))));
+        if (chr.getSkillLevel(mountid) > 0) {
+            chr.dropMessage(5, "You already have this skill.");
+            return;
+        }
+        if (expiration_days > 0) {
+            MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
+            chr.changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
+            chr.dropMessage(5, "The skill has been attained.");
+        }
     }
 
     public static int UseTreasureChest(TacosCharacter chr, short slot, int item_id) {
@@ -319,60 +243,64 @@ public class InventoryHandler {
     public static void OwlWarp(TacosClient client, int id, int map) {
         TacosCharacter chr = client.getPlayer();
         chr.updateInv();
-        if (chr.getMapId() >= 910000000 && chr.getMapId() <= 910000022 && chr.getPlayerShop() == null) {
-            if (map >= 910000001 && map <= 910000022) {
-                TacosMap mapp = chr.findMap(map);
-                chr.changeMapPortal(mapp, mapp.getPortal(0));
-                HiredMerchant merchant = null;
-                List<HiredMerchant> objects;
-                switch (OWL_ID) {
-                    case 0:
-                        objects = mapp.getAllMerchants();
-                        for (HiredMerchant merch : objects) {
-                            if (merch.getOwnerId() == id) {
-                                merchant = merch;
-                                break;
-                            }
-                        }
-                        break;
-                    case 1:
-                        objects = mapp.getAllMerchants();
-                        for (HiredMerchant merch : objects) {
-                            if (merch.getStoreId() == id) {
-                                merchant = merch;
-                                break;
-                            }
-                        }
-                        break;
-                    default:
-                        merchant = mapp.getMerchantByOid(id);
-                        break;
-                }
-                if (merchant != null) {
-                    if (merchant.isOwner(chr)) {
-                        merchant.setOpen(false);
-                        merchant.removeAllVisitors((byte) 16, (byte) 0);
-                        chr.setPlayerShop(merchant);
-                        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
-                    } else {
-                        if (!merchant.isOpen() || !merchant.isAvailable()) {
-                            chr.dropMessage(1, "This shop is in maintenance, please come by later.");
-                        } else {
-                            if (merchant.getFreeSlot() == -1) {
-                                chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
-                            } else if (merchant.isInBlackList(chr.getName())) {
-                                chr.dropMessage(1, "You have been banned from this store.");
-                            } else {
-                                chr.setPlayerShop(merchant);
-                                merchant.addVisitor(chr);
-                                chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
-                            }
-                        }
+        if (chr.getMapId() < 910000000 || chr.getMapId() > 910000022 || chr.getPlayerShop() != null || map < 910000001 || map > 910000022) {
+            return;
+        }
+        TacosMap mapp = chr.findMap(map);
+        chr.changeMapPortal(mapp, mapp.getPortal(0));
+        visitOwlMerchant(chr, findOwlMerchant(mapp, id));
+    }
+
+    private static HiredMerchant findOwlMerchant(TacosMap mapp, int id) {
+        switch (OWL_ID) {
+            case 0: {
+                for (HiredMerchant merch : mapp.getAllMerchants()) {
+                    if (merch.getOwnerId() == id) {
+                        return merch;
                     }
-                } else {
-                    chr.dropMessage(1, "This shop is in maintenance, please come by later.");
                 }
+                return null;
+            }
+            case 1: {
+                for (HiredMerchant merch : mapp.getAllMerchants()) {
+                    if (merch.getStoreId() == id) {
+                        return merch;
+                    }
+                }
+                return null;
+            }
+            default: {
+                return mapp.getMerchantByOid(id);
             }
         }
+    }
+
+    private static void visitOwlMerchant(TacosCharacter chr, HiredMerchant merchant) {
+        if (merchant == null) {
+            chr.dropMessage(1, "This shop is in maintenance, please come by later.");
+            return;
+        }
+        if (merchant.isOwner(chr)) {
+            merchant.setOpen(false);
+            merchant.removeAllVisitors((byte) 16, (byte) 0);
+            chr.setPlayerShop(merchant);
+            chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
+            return;
+        }
+        if (!merchant.isOpen() || !merchant.isAvailable()) {
+            chr.dropMessage(1, "This shop is in maintenance, please come by later.");
+            return;
+        }
+        if (merchant.getFreeSlot() == -1) {
+            chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
+            return;
+        }
+        if (merchant.isInBlackList(chr.getName())) {
+            chr.dropMessage(1, "You have been banned from this store.");
+            return;
+        }
+        chr.setPlayerShop(merchant);
+        merchant.addVisitor(chr);
+        chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
     }
 }

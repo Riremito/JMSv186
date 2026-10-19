@@ -68,12 +68,10 @@ public class MapleTrade {
     }
 
     public void cancel(TacosClient client, int unsuccessful) {
-        if (items != null) { // just to be on the safe side...
-            for (Item item : items) {
-                MapleInventoryManipulator.addFromDrop(client, item, false);
-            }
-            items.clear();
+        for (Item item : items) {
+            MapleInventoryManipulator.addFromDrop(client, item, false);
         }
+        items.clear();
         if (meso > 0) {
             client.getPlayer().gainMeso(meso, false, true, false);
         }
@@ -158,11 +156,9 @@ public class MapleTrade {
             chr.updateInv();
             return false;
         }
-        if (ii.isDropRestricted(item.getItemId()) || ii.isAccountShared(item.getItemId())) {
-            if (!(ItemFlag.KARMA_EQ.check(flag) || ItemFlag.KARMA_USE.check(flag))) {
-                chr.updateInv();
-                return false;
-            }
+        if ((ii.isDropRestricted(item.getItemId()) || ii.isAccountShared(item.getItemId())) && !(ItemFlag.KARMA_EQ.check(flag) || ItemFlag.KARMA_USE.check(flag))) {
+            chr.updateInv();
+            return false;
         }
         Item tradeItem = item.copy();
         if (GameConstants.isThrowingStar(item.getItemId()) || GameConstants.isBullet(item.getItemId())) {
