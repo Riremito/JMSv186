@@ -497,7 +497,7 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static final byte[] InventoryInfo(MapleCharacter chr, long datamask) {
+    public static byte[] InventoryInfo(MapleCharacter chr, long datamask) {
         ServerPacket data = new ServerPacket();
         // アイテム欄の数
         // v165-v194
@@ -845,9 +845,9 @@ public class RD_CharacterData {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(1, Config.GreaterOrEqual(Region.KMS, 148) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
-        final Map<Skill, SkillEntry> skills = chr.getSkills();
+        Map<Skill, SkillEntry> skills = chr.getSkills();
         data.Encode2(skills.size());
-        for (final Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
+        for (Map.Entry<Skill, SkillEntry> skill : skills.entrySet()) {
             data.Encode4(skill.getKey().getId());
             data.Encode4(skill.getValue().skillevel);
 
@@ -867,13 +867,13 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static byte[] addQuestInfo(final MapleCharacter chr) {
+    public static byte[] addQuestInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        final List<MapleQuestStatus> started = chr.getStartedQuests();
+        List<MapleQuestStatus> started = chr.getStartedQuests();
 
         data.Encode1(0, Config.GreaterOrEqual(Region.KMS, 138) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148) || Config.GreaterOrEqual(Region.GMS, 111) || Config.GreaterOrEqual(Region.EMS, 89));
         data.Encode2(started.size());
-        for (final MapleQuestStatus q : started) {
+        for (MapleQuestStatus q : started) {
             data.Encode2(q.getQuest().getId());
             data.EncodeStr(q.getCustomData() != null ? q.getCustomData() : "");
         }
@@ -900,7 +900,7 @@ public class RD_CharacterData {
     }
 
     // v165, v186
-    public static final byte[] addRingInfo(final MapleCharacter chr) {
+    public static byte[] addRingInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
         SimpleImmutableEntry<List<MapleRing>, List<MapleRing>> aRing = chr.getRings(true);
         List<MapleRing> cRing = aRing.getKey();
@@ -950,9 +950,9 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static final byte[] addRocksInfo(final MapleCharacter chr) {
+    public static byte[] addRocksInfo(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
-        final int[] mapz = chr.getRegRocks();
+        int[] mapz = chr.getRegRocks();
         for (int i = 0; i < 5; i++) { // VIP teleport map
             data.Encode4(mapz[i]);
         }
@@ -961,7 +961,7 @@ public class RD_CharacterData {
             return data.getBytes();
         }
 
-        final int[] map = chr.getRocks();
+        int[] map = chr.getRocks();
         for (int i = 0; i < 10; i++) { // VIP teleport map
             data.Encode4(map[i]);
         }
@@ -981,12 +981,12 @@ public class RD_CharacterData {
         return data.getBytes();
     }
 
-    public static final byte[] QuestInfoPacket(final MapleCharacter chr) {
+    public static byte[] QuestInfoPacket(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
         Map<Integer, String> questinfo = chr.getInfoQuest_Map();
 
         data.Encode2(questinfo.size());
-        for (final Map.Entry<Integer, String> q : questinfo.entrySet()) {
+        for (Map.Entry<Integer, String> q : questinfo.entrySet()) {
             data.Encode2(q.getKey());
             data.EncodeStr(q.getValue() == null ? "" : q.getValue());
         }

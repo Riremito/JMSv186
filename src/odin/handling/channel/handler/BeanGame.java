@@ -30,7 +30,7 @@ public class BeanGame {
     public static int 黄金狗设置局数 = 0;
     public static int 海洋帽子 = 1002743;
 
-    public static final void BeanGame1(TacosClient client, ClientPacket cp) {
+    public static void BeanGame1(TacosClient client, ClientPacket cp) {
         BeansConstants Beans = new BeansConstants();
         String 豆豆装备[] = Beans.get豆豆装备();
         String 豆豆坐骑[] = Beans.get豆豆坐骑();
@@ -470,15 +470,15 @@ public class BeanGame {
         return beanType;
     }
 
-    public static final int get进洞次数() {
+    public static int get进洞次数() {
         return 进洞次数;
     }
 
-    public static final void gain进洞次数(int a) {
+    public static void gain进洞次数(int a) {
         进洞次数 += a;
     }
 
-    public static final void set进洞次数(int a) {
+    public static void set进洞次数(int a) {
         进洞次数 = a;
     }
 

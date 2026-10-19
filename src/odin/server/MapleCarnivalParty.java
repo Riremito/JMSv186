@@ -22,7 +22,7 @@ public class MapleCarnivalParty {
     private short totalCP = 0;
     private boolean winner = false;
 
-    public MapleCarnivalParty(final MapleCharacter owner, final List<MapleCharacter> members1, final byte team1) {
+    public MapleCarnivalParty(MapleCharacter owner, List<MapleCharacter> members1, byte team1) {
         leader = new WeakReference<>(owner);
         for (MapleCharacter mem : members1) {
             members.add(mem.getId());
@@ -48,7 +48,7 @@ public class MapleCarnivalParty {
     }
 
     // used by script
-    public final MapleCharacter getLeader() {
+    public MapleCharacter getLeader() {
         return leader.get();
     }
 
@@ -68,9 +68,9 @@ public class MapleCarnivalParty {
     }
 
     // used by script
-    public void warp(final MapleMap map, final String portalname) {
+    public void warp(MapleMap map, String portalname) {
         for (int character_id : members) {
-            final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
                 player.changeMapPortal(map, map.getPortal(portalname));
             }
@@ -78,9 +78,9 @@ public class MapleCarnivalParty {
     }
 
     // used by script
-    public void warp(final MapleMap map, final int portalid) {
+    public void warp(MapleMap map, int portalid) {
         for (int character_id : members) {
-            final MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
+            MapleCharacter player = getLeader().getChannelServer().getOnlinePlayers().findById(character_id);
             if (player != null) {
                 player.changeMapPortal(map, map.getPortal(portalid));
             }

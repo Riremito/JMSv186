@@ -66,7 +66,7 @@ public enum OpsCommodity implements IPacketOps {
     }
 
     public static OpsCommodity find(int val) {
-        for (final OpsCommodity ops : OpsCommodity.values()) {
+        for (OpsCommodity ops : OpsCommodity.values()) {
             if (ops.get() == val) {
                 return ops;
             }

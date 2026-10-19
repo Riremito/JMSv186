@@ -233,7 +233,7 @@ public class QuestWz extends WzXML {
 
         switch (ret.type) {
             case job: {
-                final List<MapleData> child = data.getChildren();
+                List<MapleData> child = data.getChildren();
                 ret.dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
@@ -242,31 +242,31 @@ public class QuestWz extends WzXML {
                 break;
             }
             case skill: {
-                final List<MapleData> child = data.getChildren();
+                List<MapleData> child = data.getChildren();
                 ret.dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    MapleData childdata = child.get(i);
                     ret.dataStore.add(new SimpleImmutableEntry<>(childdata.getInt("id"), childdata.getInt("acquire")));
                 }
                 break;
             }
             case quest: {
-                final List<MapleData> child = data.getChildren();
+                List<MapleData> child = data.getChildren();
                 ret.dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    MapleData childdata = child.get(i);
                     ret.dataStore.add(new SimpleImmutableEntry<>(childdata.getInt("id"), childdata.getInt("state")));
                 }
                 break;
             }
             case item: {
-                final List<MapleData> child = data.getChildren();
+                List<MapleData> child = data.getChildren();
                 ret.dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    MapleData childdata = child.get(i);
                     ret.dataStore.add(new SimpleImmutableEntry<>(childdata.getInt("id"), childdata.getInt("count")));
                 }
                 break;
@@ -287,11 +287,11 @@ public class QuestWz extends WzXML {
                 break;
             }
             case mob: {
-                final List<MapleData> child = data.getChildren();
+                List<MapleData> child = data.getChildren();
                 ret.dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    MapleData childdata = child.get(i);
                     ret.dataStore.add(new SimpleImmutableEntry<>(childdata.getInt("id"), childdata.getInt("count")));
                 }
                 break;
@@ -301,11 +301,11 @@ public class QuestWz extends WzXML {
                 break;
             }
             case mbcard: {
-                final List<MapleData> child = data.getChildren();
+                List<MapleData> child = data.getChildren();
                 ret.dataStore = new LinkedList<>();
 
                 for (int i = 0; i < child.size(); i++) {
-                    final MapleData childdata = child.get(i);
+                    MapleData childdata = child.get(i);
                     ret.dataStore.add(new SimpleImmutableEntry<>(childdata.getInt("id"), childdata.getInt("min")));
                 }
                 break;

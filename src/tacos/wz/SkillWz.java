@@ -326,12 +326,12 @@ public class SkillWz extends WzXML {
         return map_Skill;
     }
 
-    private Skill parseSkill(final int id, final MapleData data) {
+    private Skill parseSkill(int id, MapleData data) {
         Skill ret = new Skill(id);
 
         boolean isBuff = false;
-        final int skillType = data.getInt("skillType", -1);
-        final String elem = data.getString("elemAttr", null);
+        int skillType = data.getInt("skillType", -1);
+        String elem = data.getString("elemAttr", null);
         if (elem != null) {
             ret.setElement(Element.getFromChar(elem.charAt(0)));
         } else {
@@ -340,15 +340,15 @@ public class SkillWz extends WzXML {
         ret.setInvisible(data.getInt("invisible") > 0);
         ret.setTimeLimited(data.getInt("timeLimited") > 0);
         ret.setMasterLevel(data.getInt("masterLevel"));
-        final MapleData effect = data.getChildByPath("effect");
+        MapleData effect = data.getChildByPath("effect");
         if (skillType != -1) {
             if (skillType == 2) {
                 isBuff = true;
             }
         } else {
-            final MapleData action_ = data.getChildByPath("action");
-            final MapleData hit = data.getChildByPath("hit");
-            final MapleData ball = data.getChildByPath("ball");
+            MapleData action_ = data.getChildByPath("action");
+            MapleData hit = data.getChildByPath("hit");
+            MapleData ball = data.getChildByPath("ball");
 
             boolean action = false;
             if (action_ == null) {
@@ -465,7 +465,7 @@ public class SkillWz extends WzXML {
         ret.setChargeSkill(data.getChildByPath("keydown") != null);
 
         if (Config.PreBB()) {
-            for (final MapleData level : data.getChildByPath("level")) {
+            for (MapleData level : data.getChildByPath("level")) {
                 ret.addEffect(MapleStatEffect.loadSkillEffectFromData(loadSkillEffect(level, 0), id, isBuff, Byte.parseByte(level.getName())));
             }
         } else {
@@ -479,22 +479,22 @@ public class SkillWz extends WzXML {
                 }
             } else {
                 // old skills
-                for (final MapleData level : data.getChildByPath("level")) {
+                for (MapleData level : data.getChildByPath("level")) {
                     ret.addEffect(MapleStatEffect.loadSkillEffectFromData(loadSkillEffect(level, 0), id, isBuff, Byte.parseByte(level.getName())));
                 }
             }
         }
 
-        final MapleData reqDataRoot = data.getChildByPath("req");
+        MapleData reqDataRoot = data.getChildByPath("req");
         if (reqDataRoot != null) {
-            for (final MapleData reqData : reqDataRoot.getChildren()) {
+            for (MapleData reqData : reqDataRoot.getChildren()) {
                 ret.setRequiredSkill(Integer.parseInt(reqData.getName()));
                 ret.setLevel((byte) reqDataRoot.getInt(reqData.getName(), 1));
             }
         }
         int animationTime = 0;
         if (effect != null) {
-            for (final MapleData effectEntry : effect) {
+            for (MapleData effectEntry : effect) {
                 animationTime += effectEntry.getInt("delay");
             }
         }
@@ -544,7 +544,7 @@ public class SkillWz extends WzXML {
             return null;
         }
 
-        final MapleData skillData = getMobSkill().getChildByPath(skillId + "/level/" + level);
+        MapleData skillData = getMobSkill().getChildByPath(skillId + "/level/" + level);
 
         if (skillData == null) {
             return null;
@@ -562,7 +562,7 @@ public class SkillWz extends WzXML {
             toSummon.add(skillData.getInt(String.valueOf(i)));
         }
 
-        final MapleData ltd = skillData.getChildByPath("lt");
+        MapleData ltd = skillData.getChildByPath("lt");
         Point lt = null;
         Point rb = null;
         if (ltd != null) {

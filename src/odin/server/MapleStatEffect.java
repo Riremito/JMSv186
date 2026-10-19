@@ -91,11 +91,11 @@ public class MapleStatEffect {
     private Point rb;
     private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
 
-    public static final MapleStatEffect loadSkillEffectFromData(final StatEffectData source, final int skillid, final boolean overtime, final byte level) {
+    public static MapleStatEffect loadSkillEffectFromData(StatEffectData source, int skillid, boolean overtime, byte level) {
         return loadFromData(source, skillid, true, overtime, level);
     }
 
-    public static final MapleStatEffect loadItemEffectFromData(final StatEffectData source, final int itemid) {
+    public static MapleStatEffect loadItemEffectFromData(StatEffectData source, int itemid) {
         return loadFromData(source, itemid, false, false, (byte) 1);
     }
 
@@ -263,8 +263,8 @@ public class MapleStatEffect {
         return true;
     }
 
-    private static MapleStatEffect loadFromData(final StatEffectData source, final int sourceid, final boolean skill, final boolean overTime, final byte level) {
-        final MapleStatEffect ret = new MapleStatEffect();
+    private static MapleStatEffect loadFromData(StatEffectData source, int sourceid, boolean skill, boolean overTime, byte level) {
+        MapleStatEffect ret = new MapleStatEffect();
         ret.sourceid = sourceid;
         ret.skill = skill;
         ret.level = level;
@@ -378,19 +378,19 @@ public class MapleStatEffect {
         }
     }
 
-    public final boolean applyTo(MapleCharacter chr) {
+    public boolean applyTo(MapleCharacter chr) {
         return applyTo(chr, chr, true, null, duration);
     }
 
-    public final boolean applyTo(MapleCharacter chr, Point pos) {
+    public boolean applyTo(MapleCharacter chr, Point pos) {
         return applyTo(chr, chr, true, pos, duration);
     }
 
-    private final boolean applyTo(final MapleCharacter applyfrom, final MapleCharacter applyto, final boolean primary, final Point pos) {
+    private boolean applyTo(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary, Point pos) {
         return applyTo(applyfrom, applyto, primary, pos, duration);
     }
 
-    public final boolean applyTo(final MapleCharacter applyfrom, final MapleCharacter applyto, final boolean primary, final Point pos, int newDuration) {
+    public boolean applyTo(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary, Point pos, int newDuration) {
         if (isHeal() && (applyfrom.getMapId() == 749040100 || applyto.getMapId() == 749040100)) {
             return false;
         } else if (sourceid == 33101004 && applyfrom.getMap().isTown()) {
@@ -401,7 +401,7 @@ public class MapleStatEffect {
         int hpchange = calcHPChange(applyfrom, primary);
         int mpchange = calcMPChange(applyfrom, primary);
 
-        final PlayerStats stat = applyto.getStat();
+        PlayerStats stat = applyto.getStat();
         if (primary) {
             if (itemConNo != 0) {
                 if (ContentState.CS_LOCK_LOSING_STONE.get()) {
@@ -415,7 +415,7 @@ public class MapleStatEffect {
             applyto.setMoveAction(0); //TODO fix death bug, player doesnt spawn on other screen
         }
         if (isMPRecovery()) {
-            final int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);
+            int toDecreaseHP = ((stat.getMaxHp() / 100) * 10);
             if (stat.getHp() > toDecreaseHP) {
                 hpchange += -toDecreaseHP; // -10% of max HP
             } else {
@@ -485,7 +485,7 @@ public class MapleStatEffect {
         return true;
     }
 
-    public final boolean applyReturnScroll(final MapleCharacter applyto) {
+    public boolean applyReturnScroll(MapleCharacter applyto) {
         if (moveTo != -1) {
             MapleMap target;
             if (moveTo == 999999999) {
@@ -499,11 +499,11 @@ public class MapleStatEffect {
         return false;
     }
 
-    private final boolean isSoulStone() {
+    private boolean isSoulStone() {
         return skill && sourceid == 22181003;
     }
 
-    private final void applyBuff(final MapleCharacter applyfrom, int newDuration) {
+    private void applyBuff(MapleCharacter applyfrom, int newDuration) {
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
@@ -531,10 +531,10 @@ public class MapleStatEffect {
                 }
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
-            final Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            final List<MapleCharacter> affecteds = applyfrom.getMap().getPlayersInRect(bounds);
+            Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
+            List<MapleCharacter> affecteds = applyfrom.getMap().getPlayersInRect(bounds);
 
-            for (final MapleCharacter affected : affecteds) {
+            for (MapleCharacter affected : affecteds) {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {
                     if ((isResurrection() && !affected.isAlive()) || (!isResurrection() && affected.isAlive())) {
                         applyTo(applyfrom, affected, false, null, newDuration);
@@ -571,7 +571,7 @@ public class MapleStatEffect {
         }
     }
 
-    private Rectangle calculateBoundingBox(final Point posFrom, final boolean facingLeft) {
+    private Rectangle calculateBoundingBox(Point posFrom, boolean facingLeft) {
         if (lt == null || rb == null) {
             return new Rectangle(posFrom.x, posFrom.y, facingLeft ? 1 : -1, 1);
         }
@@ -587,11 +587,11 @@ public class MapleStatEffect {
         return new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
     }
 
-    public final void setDuration(int d) {
+    public void setDuration(int d) {
         this.duration = d;
     }
 
-    private final int calcHPChange(final MapleCharacter applyfrom, final boolean primary) {
+    private int calcHPChange(MapleCharacter applyfrom, boolean primary) {
         int hpchange = 0;
         if (hp != 0) {
             if (!skill) {
@@ -615,7 +615,7 @@ public class MapleStatEffect {
         }
         switch (this.sourceid) {
             case 4211001: // Chakra
-                final PlayerStats stat = applyfrom.getStat();
+                PlayerStats stat = applyfrom.getStat();
                 int v42 = getY() + 100;
                 int v38 = Randomizer.rand(1, 100) + 100;
                 hpchange = (int) ((v38 * stat.getLuk() * 0.033 + stat.getDex()) * v42 * 0.002);
@@ -625,11 +625,11 @@ public class MapleStatEffect {
         return hpchange;
     }
 
-    private static final int makeHealHP(double rate, double stat, double lowerfactor, double upperfactor) {
+    private static int makeHealHP(double rate, double stat, double lowerfactor, double upperfactor) {
         return (int) ((Math.random() * ((int) (stat * upperfactor * rate) - (int) (stat * lowerfactor * rate) + 1)) + (int) (stat * lowerfactor * rate));
     }
 
-    private static final int getElementalAmp(final int job) {
+    private static int getElementalAmp(int job) {
         switch (job) {
             case 211:
             case 212:
@@ -649,7 +649,7 @@ public class MapleStatEffect {
         return -1;
     }
 
-    private final int calcMPChange(final MapleCharacter applyfrom, final boolean primary) {
+    private int calcMPChange(MapleCharacter applyfrom, boolean primary) {
         int mpchange = 0;
         if (mp != 0) {
             if (primary) {
@@ -665,10 +665,10 @@ public class MapleStatEffect {
             if (mpCon != 0) {
                 double mod = 1.0;
 
-                final int ElemSkillId = getElementalAmp(applyfrom.getJob());
+                int ElemSkillId = getElementalAmp(applyfrom.getJob());
                 if (ElemSkillId != -1) {
-                    final Skill amp = SkillFactory.getSkill(ElemSkillId);
-                    final int ampLevel = applyfrom.getSkillLevel(amp);
+                    Skill amp = SkillFactory.getSkill(ElemSkillId);
+                    int ampLevel = applyfrom.getSkillLevel(amp);
                     if (ampLevel > 0) {
                         MapleStatEffect ampStat = amp.getEffect(ampLevel);
                         mod = ampStat.getX() / 100.0;
@@ -680,10 +680,10 @@ public class MapleStatEffect {
         return mpchange;
     }
 
-    private final int alchemistModifyVal(final MapleCharacter chr, final int val, final boolean withX) {
+    private int alchemistModifyVal(MapleCharacter chr, int val, boolean withX) {
         if (!skill) {
             int offset = chr.getStat().RecoveryUP;
-            final MapleStatEffect alchemistEffect = getAlchemistEffect(chr);
+            MapleStatEffect alchemistEffect = getAlchemistEffect(chr);
             if (alchemistEffect != null) {
                 offset += (withX ? alchemistEffect.getX() : alchemistEffect.getY());
             } else {
@@ -694,7 +694,7 @@ public class MapleStatEffect {
         return val;
     }
 
-    private final MapleStatEffect getAlchemistEffect(final MapleCharacter chr) {
+    private MapleStatEffect getAlchemistEffect(MapleCharacter chr) {
         Skill al;
         switch (chr.getJob()) {
             case 411:
@@ -722,11 +722,11 @@ public class MapleStatEffect {
         return null;
     }
 
-    public final void setSourceId(final int newid) {
+    public void setSourceId(int newid) {
         sourceid = newid;
     }
 
-    private final boolean isGmBuff() {
+    private boolean isGmBuff() {
         switch (sourceid) {
             case 1005: // echo of hero acts like a gm buff
             case 10001005: // cygnus Echo
@@ -745,11 +745,11 @@ public class MapleStatEffect {
         }
     }
 
-    private final boolean isEnergyCharge() {
+    private boolean isEnergyCharge() {
         return skill && (sourceid == 5110001 || sourceid == 15100004);
     }
 
-    private final boolean isMonsterBuff() {
+    private boolean isMonsterBuff() {
         switch (sourceid) {
             case 1201006: // threaten
             case 2101003: // fp slow
@@ -773,7 +773,7 @@ public class MapleStatEffect {
         return false;
     }
 
-    private final boolean isPartyBuff() {
+    private boolean isPartyBuff() {
         if (lt == null || rb == null || !partyBuff) {
             return isSoulStone();
         }
@@ -794,59 +794,59 @@ public class MapleStatEffect {
         return true;
     }
 
-    public final boolean isHeal() {
+    public boolean isHeal() {
         return sourceid == 2301002 || sourceid == 9101000;
     }
 
-    public final boolean isResurrection() {
+    public boolean isResurrection() {
         return sourceid == 9001005 || sourceid == 2321006;
     }
 
-    public final boolean isTimeLeap() {
+    public boolean isTimeLeap() {
         return sourceid == 5121010;
     }
 
-    public final short getHp() {
+    public short getHp() {
         return hp;
     }
 
-    public final short getMp() {
+    public short getMp() {
         return mp;
     }
 
-    public final short getWatk() {
+    public short getWatk() {
         return watk;
     }
 
-    public final short getMatk() {
+    public short getMatk() {
         return matk;
     }
 
-    public final short getWdef() {
+    public short getWdef() {
         return wdef;
     }
 
-    public final short getMdef() {
+    public short getMdef() {
         return mdef;
     }
 
-    public final short getAcc() {
+    public short getAcc() {
         return acc;
     }
 
-    public final short getAvoid() {
+    public short getAvoid() {
         return avoid;
     }
 
-    public final short getHands() {
+    public short getHands() {
         return hands;
     }
 
-    public final short getSpeed() {
+    public short getSpeed() {
         return speed;
     }
 
-    public final short getJump() {
+    public short getJump() {
         return jump;
     }
 
@@ -854,23 +854,23 @@ public class MapleStatEffect {
         return oss;
     }
 
-    public final int getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public final int getX() {
+    public int getX() {
         return x;
     }
 
-    public final int getY() {
+    public int getY() {
         return y;
     }
 
-    public final short getDamage() {
+    public short getDamage() {
         return damage;
     }
 
-    public final byte getMobCount() {
+    public byte getMobCount() {
         return mobCount;
     }
 
@@ -878,23 +878,23 @@ public class MapleStatEffect {
         return cooldown;
     }
 
-    public final Map<MonsterStatus, Integer> getMonsterStati() {
+    public Map<MonsterStatus, Integer> getMonsterStati() {
         return monsterStatus;
     }
 
-    public final boolean isBeholder() {
+    public boolean isBeholder() {
         return skill && sourceid == 1321007;
     }
 
-    public final boolean isMPRecovery() {
+    public boolean isMPRecovery() {
         return skill && sourceid == 5101005;
     }
 
-    public final boolean isMagicDoor() {
+    public boolean isMagicDoor() {
         return skill && (sourceid == 2311002 || sourceid == 8001 || sourceid == 10008001 || sourceid == 20008001 || sourceid == 20018001 || sourceid == 30008001);
     }
 
-    public final boolean isPoison() {
+    public boolean isPoison() {
         switch (sourceid) {
             case 2111003:
             case 2101005:
@@ -909,15 +909,15 @@ public class MapleStatEffect {
         return false;
     }
 
-    private final boolean isMist() {
+    private boolean isMist() {
         return skill && (sourceid == 2111003 || sourceid == 4221006 || sourceid == 12111005 || sourceid == 14111006 || sourceid == 22161003); // poison mist, smokescreen and flame gear, recovery aura
     }
 
-    private final boolean isSpiritClaw() {
+    private boolean isSpiritClaw() {
         return skill && sourceid == 4121006;
     }
 
-    public final boolean isPirateMorph() {
+    public boolean isPirateMorph() {
         switch (sourceid) {
             case 15111002:
             case 5111005:
@@ -927,11 +927,11 @@ public class MapleStatEffect {
         return false;
     }
 
-    public final boolean isMorph() {
+    public boolean isMorph() {
         return morphId > 0;
     }
 
-    public final int getMorph() {
+    public int getMorph() {
         switch (sourceid) {
             case 15111002:
             case 5111005:
@@ -946,8 +946,8 @@ public class MapleStatEffect {
         return morphId;
     }
 
-    public final int getMorph(final MapleCharacter chr) {
-        final int morph = getMorph();
+    public int getMorph(MapleCharacter chr) {
+        int morph = getMorph();
         switch (morph) {
             case 1000:
             case 1001:
@@ -957,15 +957,15 @@ public class MapleStatEffect {
         return morph;
     }
 
-    public final byte getLevel() {
+    public byte getLevel() {
         return level;
     }
 
-    public final int getSourceId() {
+    public int getSourceId() {
         return sourceid;
     }
 
-    public final boolean isFinalAttack() {
+    public boolean isFinalAttack() {
         switch (sourceid) {
             case 13101002:
             case 11101002:
@@ -979,15 +979,15 @@ public class MapleStatEffect {
      * @return true if the effect should happen based on it's probablity, false
      * otherwise
      */
-    public final boolean makeChanceResult() {
+    public boolean makeChanceResult() {
         return prop == 100 || Randomizer.nextInt(99) < prop;
     }
 
-    public final short getProb() {
+    public short getProb() {
         return prop;
     }
 
-    public final int getExp() {
+    public int getExp() {
         return exp;
     }
 

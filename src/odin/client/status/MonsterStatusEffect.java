@@ -32,11 +32,11 @@ public class MonsterStatusEffect {
         this.skill = skillId;
     }
 
-    public final MonsterStatus getStati() {
+    public MonsterStatus getStati() {
         return stati;
     }
 
-    public final int getSkill() {
+    public int getSkill() {
         return skill;
     }
 }

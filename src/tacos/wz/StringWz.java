@@ -42,7 +42,7 @@ public class StringWz extends WzXML {
         return md;
     }
 
-    public MapleData getItemStringData(final int itemId) {
+    public MapleData getItemStringData(int itemId) {
         String cat = null;
         MapleData data;
 
@@ -117,16 +117,16 @@ public class StringWz extends WzXML {
         }
     }
 
-    public String loadItemName(final int itemId) {
-        final MapleData strings = getItemStringData(itemId);
+    public String loadItemName(int itemId) {
+        MapleData strings = getItemStringData(itemId);
         if (strings == null) {
             return null;
         }
         return strings.getString("name", null);
     }
 
-    public String loadItemMsg(final int itemId) {
-        final MapleData strings = getItemStringData(itemId);
+    public String loadItemMsg(int itemId) {
+        MapleData strings = getItemStringData(itemId);
         if (strings == null) {
             return null;
         }

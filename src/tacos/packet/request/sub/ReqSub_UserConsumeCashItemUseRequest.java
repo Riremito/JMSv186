@@ -125,7 +125,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
                 String msg = miip.getMsg(cash_item_id).replaceFirst("%s", chr.getName()).replaceFirst("%s", message);
                 map.startMapEffect(msg, cash_item_id);
 
-                final int buff = miip.getStateChangeItem(cash_item_id);
+                int buff = miip.getStateChangeItem(cash_item_id);
                 if (buff != 0) {
                     for (MapleCharacter mChar : map.getAllPlayers()) {
                         miip.getItemEffect(buff).applyTo(mChar);
@@ -153,7 +153,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 523: {
                 // OnUserShopScannerItemUseRequest
                 int target_item_id = cp.Decode4();
-                final List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
+                List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
                 chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
                 item_use.run();
                 return true;
@@ -517,7 +517,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 5200001:
             case 5200002: // メル袋
             {
-                final int meso = MapleItemInformationProvider.getInstance().getMeso(cash_item_id);
+                int meso = MapleItemInformationProvider.getInstance().getMeso(cash_item_id);
 
                 if (!chr.gainMeso(meso, false)) {
                     chr.SendPacket(ResCUserLocal.MesoGive_Failed());

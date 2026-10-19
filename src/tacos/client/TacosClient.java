@@ -331,7 +331,7 @@ public class TacosClient extends BaseClient {
         this.alive_res++;
     }
 
-    public final boolean sendPing() {
+    public boolean sendPing() {
         int alive_diff = alive_req - alive_res;
 
         // or use  PingTimer.

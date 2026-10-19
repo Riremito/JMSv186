@@ -30,7 +30,7 @@ public class MapleCarnivalChallenge {
         challengeinfo += "#k";
     }
 
-    public static final String getJobNameById(int job) {
+    public static String getJobNameById(int job) {
         switch (job) {
             case 0:
                 return "Beginner";
@@ -211,7 +211,7 @@ public class MapleCarnivalChallenge {
         }
     }
 
-    public static final String getJobBasicNameById(int job) {
+    public static String getJobBasicNameById(int job) {
         switch (job) {
             case 0:
             case 1000:

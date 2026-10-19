@@ -50,7 +50,7 @@ public enum OpsFuncKeyMapped implements IPacketOps {
     }
 
     public static OpsFuncKeyMapped find(int val) {
-        for (final OpsFuncKeyMapped ops : values()) {
+        for (OpsFuncKeyMapped ops : values()) {
             if (ops.get() == val) {
                 return ops;
             }

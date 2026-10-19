@@ -68,11 +68,11 @@ public class ReqCField_MonsterCarnival {
             chr.sendStatChanged(true);
             return;
         }
-        final int tab = cp.Decode1();
-        final int num = cp.Decode4();
+        int tab = cp.Decode1();
+        int num = cp.Decode4();
 
         if (tab == 0) {
-            final List<SimpleImmutableEntry<Integer, Integer>> mobs = chr.getMap().getNodeInfo().getMobsToSpawn();
+            List<SimpleImmutableEntry<Integer, Integer>> mobs = chr.getMap().getNodeInfo().getMobsToSpawn();
             if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getValue()) {
                 chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
@@ -93,13 +93,13 @@ public class ReqCField_MonsterCarnival {
             }
 
         } else if (tab == 1) { //debuff
-            final List<Integer> skillid = chr.getMap().getNodeInfo().getSkillIds();
+            List<Integer> skillid = chr.getMap().getNodeInfo().getSkillIds();
             if (num >= skillid.size()) {
                 chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("An error occurred.").build()));
                 chr.sendStatChanged(true);
                 return;
             }
-            final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(skillid.get(num)); //ugh wtf
+            MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(skillid.get(num)); //ugh wtf
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
                 chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);
@@ -120,7 +120,7 @@ public class ReqCField_MonsterCarnival {
                 chr.sendStatChanged(true);
             }
         } else if (tab == 2) { //skill
-            final MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
+            MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
                 chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
                 chr.sendStatChanged(true);

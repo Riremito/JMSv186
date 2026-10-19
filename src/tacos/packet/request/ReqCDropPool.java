@@ -102,14 +102,14 @@ public class ReqCDropPool {
         if (mapitem.getMeso() > 0) {
             // ?_?
             if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
-                final List<MapleCharacter> toGive = new LinkedList<>();
+                List<MapleCharacter> toGive = new LinkedList<>();
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
                     MapleCharacter player = chr.getMap().getPlayerById(z.getId());
                     if (player != null) {
                         toGive.add(player);
                     }
                 }
-                for (final MapleCharacter player : toGive) {
+                for (MapleCharacter player : toGive) {
                     player.gainMeso(mapitem.getMeso() / toGive.size() + (player.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true, true);
                 }
             } else {

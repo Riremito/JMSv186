@@ -302,7 +302,7 @@ public class ResCUserRemote {
     }
 
     //its likely that durability items use this
-    public static ServerPacket showHpHealed(int cid, final int amount) {
+    public static ServerPacket showHpHealed(int cid, int amount) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(cid);

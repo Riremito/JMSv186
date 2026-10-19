@@ -194,7 +194,7 @@ public class EtcWz extends WzXML {
 
         list_fn = new ArrayList<>();
         MapleData md_forbidden_name = getForbiddenName();
-        for (final MapleData data : md_forbidden_name.getChildren()) {
+        for (MapleData data : md_forbidden_name.getChildren()) {
             list_fn.add(md_forbidden_name.getString(data.getName()));
         }
 
@@ -202,7 +202,7 @@ public class EtcWz extends WzXML {
     }
 
     public boolean isForbiddenName(String character_name) {
-        for (final String forbidden_name : getFN()) {
+        for (String forbidden_name : getFN()) {
             if (character_name.contains(forbidden_name)) {
                 return true;
             }

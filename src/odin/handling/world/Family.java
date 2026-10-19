@@ -117,7 +117,7 @@ public class Family {
         if (targetIds == exception) {
             return;
         }
-        final MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
+        MapleCharacter player = TacosWorld.find(0).findOnlinePlayerById(targetIds, false);
         if (player != null && player.getFamilyId() == guildid) {
             player.SendPacket(packet);
         }

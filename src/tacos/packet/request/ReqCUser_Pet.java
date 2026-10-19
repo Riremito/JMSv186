@@ -252,15 +252,15 @@ public class ReqCUser_Pet {
 
         if (mapitem.getMeso() > 0) {
             if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
-                final List<MapleCharacter> toGive = new LinkedList<>();
-                final int splitMeso = mapitem.getMeso() * 40 / 100;
+                List<MapleCharacter> toGive = new LinkedList<>();
+                int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
                     MapleCharacter player = chr.getMap().getPlayerById(z.getId());
                     if (player != null && player.getId() != chr.getId()) {
                         toGive.add(player);
                     }
                 }
-                for (final MapleCharacter player : toGive) {
+                for (MapleCharacter player : toGive) {
                     player.gainMeso(splitMeso / toGive.size() + (player.getStat().hasPartyBonus ? (int) (mapitem.getMeso() / 20.0) : 0), true);
                 }
                 chr.gainMeso(mapitem.getMeso() - splitMeso, true);

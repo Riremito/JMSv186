@@ -31,17 +31,17 @@ import tacos.packet.ServerPacket;
 
 public class GuildHandler {
 
-    public static final void DenyGuildRequest(ClientPacket cp, final TacosClient client) {
+    public static void DenyGuildRequest(ClientPacket cp, TacosClient client) {
         byte unk1 = cp.Decode1();
         String from = cp.DecodeStr();
 
-        final MapleCharacter cfrom = client.getChannelServer().getOnlinePlayers().findByName(from);
+        MapleCharacter cfrom = client.getChannelServer().getOnlinePlayers().findByName(from);
         if (cfrom != null) {
             cfrom.SendPacket(ResCWvsContext.denyGuildInvitation(client.getPlayer().getName()));
         }
     }
 
-    private static boolean isGuildNameAcceptable(final String name) {
+    private static boolean isGuildNameAcceptable(String name) {
         if (name.getBytes().length < 3 || name.getBytes().length > 12) {
             return false;
         }
@@ -59,14 +59,14 @@ public class GuildHandler {
         public int gid;
         public long expiration;
 
-        public Invited(final String n, final int id) {
+        public Invited(String n, int id) {
             name = n.toLowerCase();
             gid = id;
             expiration = System.currentTimeMillis() + 60 * 60 * 1000; // 1 hr expiration
         }
 
         @Override
-        public final boolean equals(Object other) {
+        public boolean equals(Object other) {
             if (!(other instanceof Invited)) {
                 return false;
             }
@@ -77,7 +77,7 @@ public class GuildHandler {
     private static final java.util.List<Invited> invited = new java.util.LinkedList<>();
     private static long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
-    public static final void Guild(ClientPacket cp, final TacosClient client) {
+    public static void Guild(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         if (System.currentTimeMillis() >= nextPruneTime) {
             Iterator<Invited> itr = invited.iterator();
@@ -100,7 +100,7 @@ public class GuildHandler {
                     chr.dropMessage(1, "You do not have enough mesos to create a client.getWorld().getGuild().");
                     return;
                 }
-                final String guildName = cp.DecodeStr();
+                String guildName = cp.DecodeStr();
 
                 if (!isGuildNameAcceptable(guildName)) {
                     chr.dropMessage(1, "The Guild name you have chosen is not accepted.");
@@ -124,7 +124,7 @@ public class GuildHandler {
                     return;
                 }
                 String name = cp.DecodeStr();
-                final MapleGuildResponse mgr = MapleGuild.sendInvite(client, name);
+                MapleGuildResponse mgr = MapleGuild.sendInvite(client, name);
 
                 if (mgr != null) {
                     client.SendPacket(mgr.getPacket());
@@ -162,7 +162,7 @@ public class GuildHandler {
                             return;
                         }
                         client.SendPacket(ResCWvsContext.showGuildInfo(chr));
-                        final MapleGuild gs = client.getWorld().getGuild().getGuild(guildId);
+                        MapleGuild gs = client.getWorld().getGuild().getGuild(guildId);
                         for (ServerPacket pack : client.getWorld().getAlliance().getAllianceInfo(gs.getAllianceId(), true)) {
                             if (pack != null) {
                                 client.SendPacket(pack);
@@ -222,17 +222,17 @@ public class GuildHandler {
                     chr.dropMessage(1, "You do not have enough mesos to create a client.getWorld().getGuild().");
                     return;
                 }
-                final short bg = cp.Decode2();
-                final byte bgcolor = cp.Decode1();
-                final short logo = cp.Decode2();
-                final byte logocolor = cp.Decode1();
+                short bg = cp.Decode2();
+                byte bgcolor = cp.Decode1();
+                short logo = cp.Decode2();
+                byte logocolor = cp.Decode1();
 
                 client.getWorld().getGuild().setGuildEmblem(chr.getGuildId(), bg, bgcolor, logo, logocolor);
 
                 chr.gainMeso(-15000000, true, false, true);
                 break;
             case 0x10: // guild notice change
-                final String notice = cp.DecodeStr();
+                String notice = cp.DecodeStr();
                 if (notice.length() > 100 || chr.getGuildId() <= 0 || chr.getGuildRank() > 2) {
                     return;
                 }

@@ -49,9 +49,9 @@ public class InventoryHandler {
     public static void UseScriptedNPCItem(ClientPacket cp, TacosClient client, MapleCharacter chr) {
         MapleCharacter player = client.getPlayer();
         int unk1 = cp.Decode4();
-        final byte slot = (byte) cp.Decode2();
-        final int itemId = cp.Decode4();
-        final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
+        byte slot = (byte) cp.Decode2();
+        int itemId = cp.Decode4();
+        Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(slot);
         long expiration_days = 0;
         int mountid = 0;
 
@@ -59,7 +59,7 @@ public class InventoryHandler {
             switch (toUse.getItemId()) {
                 case 2430007: // Blank Compass
                 {
-                    final MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
+                    MapleInventory inventory = chr.getInventory(MapleInventoryType.SETUP);
                     MapleInventoryManipulator.removeFromSlot(client, MapleInventoryType.USE, slot, (byte) 1, false);
 
                     if (inventory.countById(3994102) >= 20 // Compass Letter "North"
@@ -264,8 +264,8 @@ public class InventoryHandler {
         chr.updateInv();
     }
 
-    public static final int UseTreasureChest(MapleCharacter chr, short slot, int item_id) {
-        final Item toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
+    public static int UseTreasureChest(MapleCharacter chr, short slot, int item_id) {
+        Item toUse = chr.getInventory(MapleInventoryType.ETC).getItem((byte) slot);
         if (toUse == null || toUse.getQuantity() <= 0 || toUse.getItemId() != item_id) {
             return 0;
         }
@@ -302,7 +302,7 @@ public class InventoryHandler {
             return 0;
         }
 
-        final Item item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
+        Item item = MapleInventoryManipulator.addbyId_Gachapon(chr.getClient(), reward, (short) amount);
 
         if (item == null) {
             return 0;
@@ -321,7 +321,7 @@ public class InventoryHandler {
         chr.updateInv();
         if (chr.getMapId() >= 910000000 && chr.getMapId() <= 910000022 && chr.getPlayerShop() == null) {
             if (map >= 910000001 && map <= 910000022) {
-                final MapleMap mapp = chr.findMap(map);
+                MapleMap mapp = chr.findMap(map);
                 chr.changeMapPortal(mapp, mapp.getPortal(0));
                 HiredMerchant merchant = null;
                 List<HiredMerchant> objects;

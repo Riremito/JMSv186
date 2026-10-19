@@ -83,7 +83,7 @@ public class MobWz extends WzXML {
         return false;
     }
 
-    private boolean isDmgSponge(final int mid) {
+    private boolean isDmgSponge(int mid) {
         switch (mid) {
             case 8810018:
             case 8810118:
@@ -152,8 +152,8 @@ public class MobWz extends WzXML {
         stats.setPhysicalDefense((short) monsterInfoData.getInt("PDDamage"));
         stats.setMagicDefense((short) monsterInfoData.getInt("MDDamage"));
         stats.setEva((short) monsterInfoData.getInt("eva"));
-        final boolean hideHP = monsterInfoData.getInt("HPgaugeHide") > 0 || monsterInfoData.getInt("hideHP") > 0;
-        final MapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
+        boolean hideHP = monsterInfoData.getInt("HPgaugeHide") > 0 || monsterInfoData.getInt("hideHP") > 0;
+        MapleData selfd = monsterInfoData.getChildByPath("selfDestruction");
         if (selfd != null) {
             stats.setSelfDHP(selfd.getInt("hp"));
             stats.setSelfD((byte) selfd.getInt("action", -1));
@@ -191,7 +191,7 @@ public class MobWz extends WzXML {
             stats.setRevives(revives);
         }
 
-        final MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
+        MapleData monsterSkillData = monsterInfoData.getChildByPath("skill");
         if (monsterSkillData != null) {
             int i = 0;
             List<SimpleImmutableEntry<Integer, Integer>> skills = new ArrayList<>();
@@ -287,7 +287,7 @@ public class MobWz extends WzXML {
         for (MapleDataDirectoryEntry mapz : getRootDirectory().getSubDirectories()) {
             if (mapz.getName().equals("QuestCountGroup")) {
                 for (MapleDataEntity entry : mapz.getFiles()) {
-                    final int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
+                    int id = Integer.parseInt(entry.getName().substring(0, entry.getName().length() - 4));
                     MapleData dat = getData("QuestCountGroup/" + entry.getName());
                     MapleData md_info = (dat != null) ? dat.getChildByPath("info") : null;
                     if (md_info != null) {

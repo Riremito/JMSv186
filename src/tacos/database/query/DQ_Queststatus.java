@@ -53,9 +53,9 @@ public class DQ_Queststatus {
             ps.setInt(1, characterId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    final MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
-                    final MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"));
-                    final long cTime = rs.getLong("time");
+                    MapleQuest q = MapleQuest.getInstance(rs.getInt("quest"));
+                    MapleQuestStatus status = new MapleQuestStatus(q, rs.getByte("status"));
+                    long cTime = rs.getLong("time");
                     if (cTime > -1) {
                         status.setCompletionTime(cTime * 1000);
                     }
@@ -79,7 +79,7 @@ public class DQ_Queststatus {
 
         try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (`queststatusid`, `characterid`, `quest`, `status`, `time`, `forfeited`, `customData`) VALUES (DEFAULT, ?, ?, ?, ?, ?, ?)", DatabaseConnection.RETURN_GENERATED_KEYS); PreparedStatement pse = con.prepareStatement("INSERT INTO " + DQ_Queststatusmobs.DB_TABLE_NAME + " VALUES (DEFAULT, ?, ?, ?)")) {
             ps.setInt(1, characterId);
-            for (final MapleQuestStatus q : quests) {
+            for (MapleQuestStatus q : quests) {
                 ps.setInt(2, q.getQuest().getId());
                 ps.setInt(3, q.getStatus());
                 ps.setInt(4, (int) (q.getCompletionTime() / 1000));

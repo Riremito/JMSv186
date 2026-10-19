@@ -43,7 +43,7 @@ public class TacosPortal {
     private int targetmap;
     private boolean portalState = true;
 
-    public TacosPortal(final int type) {
+    public TacosPortal(int type) {
         this.type = type;
     }
 

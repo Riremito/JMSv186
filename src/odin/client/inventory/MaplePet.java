@@ -56,7 +56,7 @@ public class MaplePet extends TacosPet {
     }
 
     public static MaplePet loadFromDb(int itemid, int petid, short inventorypos) {
-        final MaplePet ret = new MaplePet(itemid, petid, inventorypos);
+        MaplePet ret = new MaplePet(itemid, petid, inventorypos);
         if (!DQ_Pets.load(ret, petid)) {
             return null;
         }

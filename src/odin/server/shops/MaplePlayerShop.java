@@ -200,7 +200,7 @@ public class MaplePlayerShop {
     }
 
     public void removeVisitor(MapleCharacter visitor) {
-        final byte slot = getVisitorSlot(visitor);
+        byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
@@ -343,7 +343,7 @@ public class MaplePlayerShop {
         public int totalPrice;
         public String buyer;
 
-        public BoughtItem(final int id, final int quantity, final int totalPrice, final String buyer) {
+        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
             this.id = id;
             this.quantity = quantity;
             this.totalPrice = totalPrice;
@@ -364,7 +364,7 @@ public class MaplePlayerShop {
             } else if (ItemFlag.KARMA_USE.check(flag)) {
                 newItem.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
             }
-            final int gainmeso = pItem.price * quantity;
+            int gainmeso = pItem.price * quantity;
             if (chr.getMeso() >= gainmeso) {
                 if (getMCOwner().getMeso() + gainmeso > 0 && MapleInventoryManipulator.checkSpace(client, newItem.getItemId(), newItem.getQuantity(), newItem.getOwner()) && MapleInventoryManipulator.addFromDrop(client, newItem, false)) {
                     pItem.bundles -= quantity;

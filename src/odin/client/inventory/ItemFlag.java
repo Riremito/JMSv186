@@ -34,11 +34,11 @@ public enum ItemFlag {
         this.i = i;
     }
 
-    public final int getValue() {
+    public int getValue() {
         return i;
     }
 
-    public final boolean check(int flag) {
+    public boolean check(int flag) {
         return (flag & i) == i;
     }
 }

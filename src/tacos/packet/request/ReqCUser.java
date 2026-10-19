@@ -1546,7 +1546,7 @@ public class ReqCUser {
             return false;
         }
         MapleInventoryManipulator.removeById(chr.getClient(), MapleInventoryType.USE, owl_item_id, 1, true, false);
-        final List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
+        List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
         // not coded.
         chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
         return true;
@@ -1597,7 +1597,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserPortalScrollUseRequest(MapleCharacter chr, short item_slot, int item_id) {
-        final Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (item_used == null || item_used.getQuantity() < 1 || item_used.getItemId() != item_id) {
             return false;
         }
@@ -1613,7 +1613,7 @@ public class ReqCUser {
     public static boolean OnUserUpgradeItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot, int vegas) {
         boolean whiteScroll = true;
         boolean legendarySpirit = false; // legendary spirit skill
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
 
         Equip toScroll;
         if (equip_slot < 0) {
@@ -1626,11 +1626,11 @@ public class ReqCUser {
         if (toScroll == null) {
             return false;
         }
-        final byte oldLevel = (byte) toScroll.getLevel();
-        final byte oldEnhance = (byte) toScroll.getEnhance();
-        final byte oldState = (byte) toScroll.getHidden();
-        final byte oldFlag = (byte) toScroll.getFlag();
-        final byte oldSlots = (byte) toScroll.getUpgradeSlots();
+        byte oldLevel = (byte) toScroll.getLevel();
+        byte oldEnhance = (byte) toScroll.getEnhance();
+        byte oldState = (byte) toScroll.getHidden();
+        byte oldFlag = (byte) toScroll.getFlag();
+        byte oldSlots = (byte) toScroll.getUpgradeSlots();
         Item scroll = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (scroll == null) {
             chr.updateInv();
@@ -1638,7 +1638,7 @@ public class ReqCUser {
         }
         // 黄金つち (ビシャスのハンマー)
         if (scroll.getItemId() == 2470000) {
-            final Equip toHammer = (Equip) toScroll;
+            Equip toHammer = (Equip) toScroll;
             if (toHammer.getViciousHammer() >= 2 || toHammer.getUpgradeSlots() > 120) {
                 chr.updateInv();
                 return false;
@@ -1752,7 +1752,7 @@ public class ReqCUser {
             }
         }
         // Scroll Success/ Failure/ Curse
-        final Equip scrolled = (Equip) ii.scrollEquipWithId(toScroll, scroll, whiteScroll, chr, vegas);
+        Equip scrolled = (Equip) ii.scrollEquipWithId(toScroll, scroll, whiteScroll, chr, vegas);
         Equip.ScrollResult scrollSuccess;
         if (scrolled == null) {
             scrollSuccess = Equip.ScrollResult.CURSE;
@@ -1821,7 +1821,7 @@ public class ReqCUser {
     }
 
     public static boolean OnUserItemReleaseRequest(MapleCharacter chr, MapleMap map, short item_slot, short equip_slot) {
-        final Item magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item magnify = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         Item toReveal = (equip_slot < 0) ? chr.getInventory(MapleInventoryType.EQUIPPED).getItem(equip_slot) : chr.getInventory(MapleInventoryType.EQUIP).getItem(equip_slot);
 
         if (magnify == null || toReveal == null) {
@@ -1829,9 +1829,9 @@ public class ReqCUser {
             return false;
         }
 
-        final Equip eqq = (Equip) toReveal;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
-        final int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
+        Equip eqq = (Equip) toReveal;
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        int reqLevel = ii.getReqLevel(eqq.getItemId()) / 10;
 
         //Debug.DebugLog("eqq.getState =  " + eqq.getHidden() + ", magnify.getItemId = " + magnify.getItemId() + ", reqLevel = " + reqLevel);
         //Debug.DebugLog("" + eqq.getPotential1() + ", " + eqq.getPotential2() + ", " + eqq.getPotential3());
@@ -1875,8 +1875,8 @@ public class ReqCUser {
     }
 
     public static boolean OnAbilityUpRequestInternal(MapleCharacter chr, long flag) {
-        final PlayerStats stat = chr.getStat();
-        final int job = chr.getJob();
+        PlayerStats stat = chr.getStat();
+        int job = chr.getJob();
         if (chr.getRemainingAp() > 0) {
             switch (OpsChangeStat.find((int) flag)) { // need to fix
                 case CS_STR:
@@ -2149,9 +2149,9 @@ public class ReqCUser {
             case 1000:
             case 1001:
             case 1002: {
-                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(1000));
-                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(1001));
-                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(1002));
+                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(1000));
+                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(1001));
+                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(1002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2159,9 +2159,9 @@ public class ReqCUser {
             case 10001000:
             case 10001001:
             case 10001002: {
-                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(10001000));
-                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(10001001));
-                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(10001002));
+                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(10001000));
+                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(10001001));
+                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(10001002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2169,9 +2169,9 @@ public class ReqCUser {
             case 20001000:
             case 20001001:
             case 20001002: {
-                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20001000));
-                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20001001));
-                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20001002));
+                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20001000));
+                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20001001));
+                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20001002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2179,9 +2179,9 @@ public class ReqCUser {
             case 20011000:
             case 20011001:
             case 20011002: {
-                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20011000));
-                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20011001));
-                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20011002));
+                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20011000));
+                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20011001));
+                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20011002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2189,9 +2189,9 @@ public class ReqCUser {
             case 30001000:
             case 30001001:
             case 30000002: {
-                final int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(30001000));
-                final int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(30001001));
-                final int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(30000002));
+                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(30001000));
+                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(30001001));
+                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(30000002));
                 remainingSp = Math.min(chr.getLevel() - 1, 9) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true; //resist can max ALL THREE
                 break;
@@ -2201,15 +2201,15 @@ public class ReqCUser {
                 break;
             }
         }
-        final Skill skill = SkillFactory.getSkill(skill_id);
+        Skill skill = SkillFactory.getSkill(skill_id);
         if (skill.hasRequiredSkill()) {
             if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
                 DebugLogger.ErrorLog("Use SP 1 = " + skill_id);
                 return false;
             }
         }
-        final int maxlevel = skill.isFourthJob() ? chr.getMasterLevel(skill) : skill.getMaxLevel();
-        final int curLevel = chr.getSkillLevel(skill);
+        int maxlevel = skill.isFourthJob() ? chr.getMasterLevel(skill) : skill.getMaxLevel();
+        int curLevel = chr.getSkillLevel(skill);
         if (skill.isInvisible() && chr.getSkillLevel(skill) == 0) {
             if ((skill.isFourthJob() && chr.getMasterLevel(skill) == 0) || (!skill.isFourthJob() && maxlevel < 10 && !isBeginnerSkill)) {
                 DebugLogger.ErrorLog("Use SP 2 = " + skill_id);
@@ -2219,7 +2219,7 @@ public class ReqCUser {
 
         if ((remainingSp > 0 && curLevel + 1 <= maxlevel) && skill.canBeLearnedBy(chr.getJob())) {
             if (!isBeginnerSkill) {
-                final int skillbook = GameConstants.getSkillBookForSkill(skill_id);
+                int skillbook = GameConstants.getSkillBookForSkill(skill_id);
                 chr.setRemainingSp(chr.getRemainingSp(skillbook) - 1, skillbook);
             }
             chr.sendStatChanged(false);
@@ -2703,16 +2703,16 @@ public class ReqCUser {
     }
 
     public static boolean OnUserTamingMobFoodItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id) {
-        final Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
-        final MapleMount mount = chr.getMount();
+        Item item_used = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        MapleMount mount = chr.getMount();
 
         if (item_used != null && item_used.getQuantity() > 0 && item_used.getItemId() == item_id && mount != null) {
-            final int fatigue = mount.getFatigue();
+            int fatigue = mount.getFatigue();
             boolean levelup = false;
             mount.setFatigue((byte) -30);
             if (fatigue > 0) {
                 mount.increaseExp();
-                final int level = mount.getLevel();
+                int level = mount.getLevel();
                 if (mount.getExp() >= GameConstants.getMountExpNeededForLevel(level + 1) && level < 31) {
                     mount.setLevel((byte) (level + 1));
                     levelup = true;
@@ -2736,7 +2736,7 @@ public class ReqCUser {
             return false;
         }
 
-        final Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
+        Item toUse = chr.getInventory(MapleInventoryType.USE).getItem(item_slot);
         if (toUse != null && toUse.getQuantity() > 0 && toUse.getItemId() == item_id && mob != null) {
             switch (item_id) {
                 case 2270004: {
@@ -2795,27 +2795,27 @@ public class ReqCUser {
         return true;
     }
 
-    public static boolean OnUserSkillLearnItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, final int item_id) {
+    public static boolean OnUserSkillLearnItemUseRequest(MapleCharacter chr, MapleMap map, short item_slot, int item_id) {
         int item_type = item_id / 10000;
         boolean bIsMaterbook = (item_type == 229 || item_type == 562);
         boolean bUsed = false;
         boolean bSucceed = false;
 
-        final Item item_used = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
+        Item item_used = chr.getInventory(GameConstants.getInventoryType(item_id)).getItem(item_slot);
         if (item_used == null || item_used.getQuantity() < 1 || item_used.getItemId() != item_id) {
             chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
             return false;
         }
 
-        final Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(item_used.getItemId());
+        Map<String, Integer> skilldata = MapleItemInformationProvider.getInstance().getSkillStats(item_used.getItemId());
         if (skilldata == null) {
             chr.SendPacket(ResCWvsContext.SkillLearnItemResult(chr, bIsMaterbook, bUsed, bSucceed));
             return false;
         }
 
-        final int SuccessRate = skilldata.get("success");
-        final int ReqSkillLevel = skilldata.get("reqSkillLevel");
-        final int MasterLevel = skilldata.get("masterLevel");
+        int SuccessRate = skilldata.get("success");
+        int ReqSkillLevel = skilldata.get("reqSkillLevel");
+        int MasterLevel = skilldata.get("masterLevel");
         byte i = 0;
         Integer CurrentLoopedSkillId;
 
@@ -2825,7 +2825,7 @@ public class ReqCUser {
             if (CurrentLoopedSkillId == null) {
                 break; // End of data
             }
-            final Skill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
+            Skill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
             if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
                 bUsed = true;
                 if (Randomizer.nextInt(100) <= SuccessRate && SuccessRate != 0) {
@@ -3286,7 +3286,7 @@ public class ReqCUser {
                 short unk = cp.Decode2();
 
                 for (int i = 0; i < num; i++) {
-                    final int id = cp.Decode4();
+                    int id = cp.Decode4();
                     chr.deleteNote(id, cp.Decode1() > 0 ? 1 : 0);
                 }
                 return true;

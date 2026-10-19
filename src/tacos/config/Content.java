@@ -88,7 +88,7 @@ public enum Content {
     }
 
     public static void showContentList() {
-        for (final Content content : Content.values()) {
+        for (Content content : Content.values()) {
             DebugLogger.InfoLog(content.toString() + " : " + content.get());
         }
     }

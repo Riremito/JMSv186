@@ -149,7 +149,7 @@ public class CashShop {
             item.setExpiration((long) (System.currentTimeMillis() + (long) (period * 24 * 60 * 60 * 1000)));
             item.setGiftFrom(gift);
             if (GameConstants.isPet(cItem.getId())) {
-                final MaplePet pet = MaplePet.createPet(cItem.getId(), uniqueid);
+                MaplePet pet = MaplePet.createPet(cItem.getId(), uniqueid);
                 if (pet != null) {
                     item.setPet(pet);
                 }

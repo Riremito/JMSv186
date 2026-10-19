@@ -34,7 +34,7 @@ public class ReqCParcelDlg {
         UNKNOWN((byte) -1);
 
         public static Action Find(byte b) {
-            for (final Action o : Action.values()) {
+            for (Action o : Action.values()) {
                 if (o.Get() == b) {
                     return o;
                 }

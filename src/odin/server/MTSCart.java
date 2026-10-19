@@ -71,7 +71,7 @@ public class MTSCart {
         return cart;
     }
 
-    public boolean addToCart(final int car) {
+    public boolean addToCart(int car) {
         if (!cart.contains(car)) {
             cart.add(car);
             return true;
@@ -79,7 +79,7 @@ public class MTSCart {
         return false;
     }
 
-    public void removeFromCart(final int car) {
+    public void removeFromCart(int car) {
         for (int i = 0; i < cart.size(); i++) {
             if (cart.get(i) == car) {
                 cart.remove(i);
@@ -91,11 +91,11 @@ public class MTSCart {
         return notYetSold;
     }
 
-    public void addToNotYetSold(final int car) {
+    public void addToNotYetSold(int car) {
         notYetSold.add(car);
     }
 
-    public void removeFromNotYetSold(final int car) {
+    public void removeFromNotYetSold(int car) {
         for (int i = 0; i < notYetSold.size(); i++) {
             if (notYetSold.get(i) == car) {
                 notYetSold.remove(i);
@@ -103,13 +103,13 @@ public class MTSCart {
         }
     }
 
-    public final int getSetOwedNX() {
-        final int on = owedNX;
+    public int getSetOwedNX() {
+        int on = owedNX;
         owedNX = 0;
         return on;
     }
 
-    public void increaseOwedNX(final int newNX) {
+    public void increaseOwedNX(int newNX) {
         owedNX += newNX;
     }
 
@@ -143,7 +143,7 @@ public class MTSCart {
         }
     }
 
-    public void changeInfo(final int tab, final int type, final int page) {
+    public void changeInfo(int tab, int type, int page) {
         this.tab = tab;
         this.type = type;
         this.page = page;

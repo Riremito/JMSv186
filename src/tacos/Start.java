@@ -49,7 +49,7 @@ import tacos.server.TacosWorld;
  */
 public class Start {
 
-    public final static void main(final String args[]) {
+    public static void main(String args[]) {
         // set region & version
         if (3 <= args.length) {
             DebugLogger.SetupLog("SET_VERSION");

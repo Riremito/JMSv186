@@ -295,7 +295,7 @@ public class DQ_Accounts {
                 ps.setInt(1, client.getId());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        final String sessionIP = rs.getString("SessionIP");
+                        String sessionIP = rs.getString("SessionIP");
 
                         if (sessionIP != null) {
                             ret = client.getIPAddress().equals(sessionIP.split(":")[0]);

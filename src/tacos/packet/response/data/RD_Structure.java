@@ -29,7 +29,7 @@ import tacos.packet.ServerPacket;
 public class RD_Structure {
 
     // addAnnounceBox
-    public static final byte[] AnnounceBox(MapleCharacter chr) {
+    public static byte[] AnnounceBox(MapleCharacter chr) {
         ServerPacket data = new ServerPacket();
 
         if (chr.getPlayerShop() != null && ShopDispatch.isOwner(chr.getPlayerShop(), chr) && ShopDispatch.getShopType(chr.getPlayerShop()) != 1 && ShopDispatch.isAvailable(chr.getPlayerShop())) {
@@ -42,7 +42,7 @@ public class RD_Structure {
     }
 
     // addInteraction
-    public static final byte[] Interaction(Object shop) {
+    public static byte[] Interaction(Object shop) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(ShopDispatch.getGameType(shop));

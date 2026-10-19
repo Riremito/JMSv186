@@ -146,7 +146,7 @@ public class MobSkill {
             case 114:
                 if (lt != null && rb != null && skill && monster != null) {
                     Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
-                    final int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
+                    int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
                     for (MapleMonster target : monster.getMap().getMonstersInRect(bounds)) {
                         target.heal(hp, getY(), true);
                     }
@@ -325,12 +325,12 @@ public class MobSkill {
             myrb = new Point(lt.x * -1 + posFrom.x, rb.y + posFrom.y);
             mylt = new Point(rb.x * -1 + posFrom.x, lt.y + posFrom.y);
         }
-        final Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
+        Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
         return bounds;
     }
 
     private List<MapleCharacter> getPlayersInRange(MapleMonster monster, MapleCharacter player) {
-        final Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
+        Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
         List<MapleCharacter> players = new ArrayList<>();
         players.add(player);
         return monster.getMap().getPlayersInRectAndInList(bounds, players);

@@ -34,7 +34,7 @@ public class MapleQuest {
     private int selectedSkillID = 0;
     protected Map<String, List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>>> partyQuestInfo; //[rank, [more/less/equal, [property, value]]]
 
-    protected MapleQuest(final int id) {
+    protected MapleQuest(int id) {
         relevantMobs = new LinkedHashMap<>();
         startReqs = new LinkedList<>();
         completeReqs = new LinkedList<>();
@@ -171,8 +171,8 @@ public class MapleQuest {
         if (chr.getQuest(this).getStatus() != (byte) 1) {
             return;
         }
-        final MapleQuestStatus oldStatus = chr.getQuest(this);
-        final MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 0);
+        MapleQuestStatus oldStatus = chr.getQuest(this);
+        MapleQuestStatus newStatus = new MapleQuestStatus(this, (byte) 0);
         newStatus.setForfeited(oldStatus.getForfeited() + 1);
         newStatus.setCompletionTime(oldStatus.getCompletionTime());
         chr.updateQuest(newStatus);

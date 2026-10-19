@@ -50,7 +50,7 @@ public class MapleFamily {
     private boolean proper = true;
     private boolean bDirty = false;
 
-    public MapleFamily(final int fid) {
+    public MapleFamily(int fid) {
         super();
 
         DQ_Families.FamilyRow row = DQ_Families.load(fid);
@@ -110,8 +110,8 @@ public class MapleFamily {
         return proper;
     }
 
-    public static final Collection<MapleFamily> loadAll() {
-        final Collection<MapleFamily> ret = new ArrayList<>();
+    public static Collection<MapleFamily> loadAll() {
+        Collection<MapleFamily> ret = new ArrayList<>();
         MapleFamily g;
         for (int familyid : DQ_Families.getAllFamilyIds()) {
             g = new MapleFamily(familyid);
@@ -122,7 +122,7 @@ public class MapleFamily {
         return ret;
     }
 
-    public final void writeToDB(final boolean bDisband) {
+    public void writeToDB(boolean bDisband) {
         if (!bDisband) {
             DQ_Families.update(id, notice, leaderid);
         } else {
@@ -136,11 +136,11 @@ public class MapleFamily {
         }
     }
 
-    public final int getId() {
+    public int getId() {
         return id;
     }
 
-    public final int getLeaderId() {
+    public int getLeaderId() {
         return leaderid;
     }
 
@@ -159,11 +159,11 @@ public class MapleFamily {
         broadcast(packet, -1, FCOp.NONE, cids);
     }
 
-    public void broadcast(ServerPacket packet, final int exception, List<Integer> cids) {
+    public void broadcast(ServerPacket packet, int exception, List<Integer> cids) {
         broadcast(packet, exception, FCOp.NONE, cids);
     }
 
-    public void broadcast(ServerPacket packet, final int exceptionId, final FCOp bcop, List<Integer> cids) {
+    public void broadcast(ServerPacket packet, int exceptionId, FCOp bcop, List<Integer> cids) {
         //passing null to cids will ensure all
         buildNotifications();
         for (MapleFamilyCharacter mgc : members.values()) {
@@ -182,11 +182,11 @@ public class MapleFamily {
 
     }
 
-    private final void buildNotifications() {
+    private void buildNotifications() {
         if (!bDirty) {
             return;
         }
-        final Iterator<Entry<Integer, MapleFamilyCharacter>> toRemove = members.entrySet().iterator();
+        Iterator<Entry<Integer, MapleFamilyCharacter>> toRemove = members.entrySet().iterator();
         while (toRemove.hasNext()) {
             if (toRemove.next().getValue().getFamilyId() != id) {
                 toRemove.remove();
@@ -196,8 +196,8 @@ public class MapleFamily {
         bDirty = false;
     }
 
-    public final void setOnline(final int cid, final boolean online, final int channel) {
-        final MapleFamilyCharacter mgc = getMFC(cid);
+    public void setOnline(int cid, boolean online, int channel) {
+        MapleFamilyCharacter mgc = getMFC(cid);
         if (mgc != null && mgc.getFamilyId() == id) {
             if (mgc.isOnline() != online) {
                 broadcast(ResCWvsContext.familyLoggedIn(online, mgc.getName()), cid, mgc.getId() == leaderid ? null : mgc.getPedigree());
@@ -208,8 +208,8 @@ public class MapleFamily {
         bDirty = true; // member formation has changed, update notifications
     }
 
-    public final int setRep(final int cid, int addrep, final int oldLevel) {
-        final MapleFamilyCharacter mgc = getMFC(cid);
+    public int setRep(int cid, int addrep, int oldLevel) {
+        MapleFamilyCharacter mgc = getMFC(cid);
         if (mgc != null && mgc.getFamilyId() == id) {
             if (oldLevel > mgc.getLevel()) {
                 addrep /= 2; //:D
@@ -229,8 +229,8 @@ public class MapleFamily {
         return 0;
     }
 
-    public final MapleFamilyCharacter addFamilyMemberInfo(final MapleCharacter mc, final int seniorid, final int junior1, final int junior2) {
-        final MapleFamilyCharacter ret = new MapleFamilyCharacter(mc, id, seniorid, junior1, junior2);
+    public MapleFamilyCharacter addFamilyMemberInfo(MapleCharacter mc, int seniorid, int junior1, int junior2) {
+        MapleFamilyCharacter ret = new MapleFamilyCharacter(mc, id, seniorid, junior1, junior2);
         members.put(mc.getId(), ret);
         ret.resetPedigree(this);
         bDirty = true;
@@ -240,7 +240,7 @@ public class MapleFamily {
         return ret;
     }
 
-    public final int addFamilyMember(final MapleFamilyCharacter mgc) {
+    public int addFamilyMember(MapleFamilyCharacter mgc) {
         members.put(mgc.getId(), mgc);
         mgc.resetPedigree(this);
         bDirty = true;
@@ -250,11 +250,11 @@ public class MapleFamily {
         return 1;
     }
 
-    public final void leaveFamily(final int id) {
+    public void leaveFamily(int id) {
         leaveFamily(getMFC(id), true);
     }
 
-    public final void leaveFamily(final MapleFamilyCharacter mgc, final boolean skipLeader) {
+    public void leaveFamily(MapleFamilyCharacter mgc, boolean skipLeader) {
         bDirty = true;
         if (mgc.getId() == leaderid && !skipLeader) {
             //disband
@@ -276,12 +276,12 @@ public class MapleFamily {
         members.remove(mgc.getId());
     }
 
-    public final void setNotice(final String notice) {
+    public void setNotice(String notice) {
         this.notice = notice;
     }
 
-    public final void memberLevelJobUpdate(final MapleCharacter mgc) {
-        final MapleFamilyCharacter member = getMFC(mgc.getId());
+    public void memberLevelJobUpdate(MapleCharacter mgc) {
+        MapleFamilyCharacter member = getMFC(mgc.getId());
         if (member != null) {
             int old_level = member.getLevel();
             int old_job = member.getJobId();
@@ -296,11 +296,11 @@ public class MapleFamily {
         }
     }
 
-    public final void disbandFamily() {
+    public void disbandFamily() {
         writeToDB(true);
     }
 
-    public final MapleFamilyCharacter getMFC(final int cid) {
+    public MapleFamilyCharacter getMFC(int cid) {
         return members.get(cid);
     }
 
@@ -340,14 +340,14 @@ public class MapleFamily {
         //if it's junior, splitId will be the new leaderID, if its senior it's toSplit thats the new leader
         //happens when someone in fam breaks off with anyone else, either junior/senior
         //update all the members.
-        final MapleFamilyCharacter leader = getMFC(splitId);
+        MapleFamilyCharacter leader = getMFC(splitId);
         try {
             List<MapleFamilyCharacter> all = leader.getAllJuniors(this); //leader is included in this collection
             if (all.size() <= 1) { //but if leader is the only person, then we're done
                 leaveFamily(leader, false);
                 return true;
             }
-            final int newId = createFamily(leader.getId());
+            int newId = createFamily(leader.getId());
             if (newId <= 0) {
                 return false;
             }
@@ -357,7 +357,7 @@ public class MapleFamily {
                 setOfflineFamilyStatus(newId, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());
                 members.remove(mgc.getId()); //clean remove
             }
-            final MapleFamily newfam = TacosWorld.find(0).getFamily().getFamily(newId);
+            MapleFamily newfam = TacosWorld.find(0).getFamily().getFamily(newId);
             for (MapleFamilyCharacter mgc : all) {
                 if (mgc.isOnline()) { //NOW we change the char info
                     TacosWorld.find(0).getFamily().setFamily(newId, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep(), mgc.getTotalRep(), mgc.getId());

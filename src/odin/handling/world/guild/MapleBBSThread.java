@@ -35,8 +35,8 @@ public class MapleBBSThread {
     public int icon;
     public Map<Integer, MapleBBSReply> replies = new HashMap<>();
 
-    public MapleBBSThread(final int localthreadID, final String name, final String text, final long timestamp,
-            final int guildID, final int ownerID, final int icon) {
+    public MapleBBSThread(int localthreadID, String name, String text, long timestamp,
+            int guildID, int ownerID, int icon) {
         this.localthreadID = localthreadID;
         this.name = name;
         this.text = text;
@@ -46,11 +46,11 @@ public class MapleBBSThread {
         this.icon = icon;
     }
 
-    public final int getReplyCount() {
+    public int getReplyCount() {
         return replies.size();
     }
 
-    public final boolean isNotice() {
+    public boolean isNotice() {
         return localthreadID == 0;
     }
 
@@ -61,7 +61,7 @@ public class MapleBBSThread {
         public long timestamp;
         public String content;
 
-        public MapleBBSReply(final int replyid, final int ownerID, final String content, final long timestamp) {
+        public MapleBBSReply(int replyid, int ownerID, String content, long timestamp) {
             this.ownerID = ownerID;
             this.replyid = replyid;
             this.content = content;

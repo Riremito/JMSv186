@@ -84,7 +84,7 @@ public class RD_CharacterStat {
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
             // is_extendsp_job
             if (GameConstants.is_extendsp_job(chr.getJob())) {
-                final int size = chr.getRemainingSpSize();
+                int size = chr.getRemainingSpSize();
                 // ExtendSP::Decode
                 data.Encode1(size);
                 for (int i = 0; i < chr.getRemainingSps().length; i++) {

@@ -675,7 +675,7 @@ public class ItemWz extends WzXML {
         return getResolvedItemData(itemId).getInt("info/stateChangeItem");
     }
 
-    public int loadMeso(final int itemId) {
+    public int loadMeso(int itemId) {
         return getResolvedItemData(itemId).getInt("info/meso");
     }
 

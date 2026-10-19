@@ -264,7 +264,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket TradeMessage(final byte UserSlot, final byte message) {
+    public static ServerPacket TradeMessage(byte UserSlot, byte message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
@@ -308,7 +308,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getTradeCancel(final byte UserSlot, final int unsuccessful) {
+    public static ServerPacket getTradeCancel(byte UserSlot, int unsuccessful) {
         //0 = canceled 1 = invent space 2 = pickuprestricted
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
@@ -419,9 +419,9 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopMessage(final int type) {
+    public static ServerPacket shopMessage(int type) {
         // show when closed the shop
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
         // 0x28 = All of your belongings are moved successfully.
 
         sp.Encode1(type); // hard coded.
@@ -478,8 +478,8 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopVisitorAdd(final MapleCharacter chr, final int slot) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+    public static ServerPacket shopVisitorAdd(MapleCharacter chr, int slot) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(4);
         sp.Encode1(slot);
@@ -491,7 +491,7 @@ public class ResCMiniRoomBaseDlg {
 
     // 雇用商人 整理中 (他人用)
     public static ServerPacket MaintenanceHiredMerchant(int slot) {
-        final ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         // UIを閉じる
         sp.Encode1(10);
@@ -540,7 +540,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopChat(final String message, final int slot) {
+    public static ServerPacket shopChat(String message, int slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Chat.get());
@@ -550,7 +550,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getPlayerStore(final MapleCharacter chr, final boolean firstTime) {
+    public static ServerPacket getPlayerStore(MapleCharacter chr, boolean firstTime) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         Object ips = chr.getPlayerShop();
@@ -576,7 +576,7 @@ public class ResCMiniRoomBaseDlg {
         sp.EncodeBuffer(RD_AvatarLook.Encode(ShopDispatch.getMCOwner(ips)));
         sp.EncodeStr(ShopDispatch.getOwnerName(ips));
         sp.Encode2(ShopDispatch.getMCOwner(ips).getJob(), Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.THMS, 87));
-        for (final SimpleImmutableEntry<Byte, MapleCharacter> storechr : ShopDispatch.getVisitors(ips)) {
+        for (SimpleImmutableEntry<Byte, MapleCharacter> storechr : ShopDispatch.getVisitors(ips)) {
             sp.Encode1(storechr.getKey());
             sp.EncodeBuffer(RD_AvatarLook.Encode(storechr.getValue()));
             sp.EncodeStr(storechr.getValue().getName());
@@ -586,7 +586,7 @@ public class ResCMiniRoomBaseDlg {
         sp.EncodeStr(ShopDispatch.getDescription(ips));
         sp.Encode1(10);
         sp.Encode1(ShopDispatch.getItems(ips).size());
-        for (final MaplePlayerShopItem item : ShopDispatch.getItems(ips)) {
+        for (MaplePlayerShopItem item : ShopDispatch.getItems(ips)) {
             sp.Encode2(item.bundles);
             sp.Encode2(item.item.getQuantity());
             sp.Encode4(item.price);
@@ -595,7 +595,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket Merchant_Buy_Error(final byte message) {
+    public static ServerPacket Merchant_Buy_Error(byte message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
         // 2 = You have not enough meso
 
@@ -613,7 +613,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopItemUpdate(final Object shop) {
+    public static ServerPacket shopItemUpdate(Object shop) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.PSP_Refresh.get());
@@ -624,7 +624,7 @@ public class ResCMiniRoomBaseDlg {
         }
         // CPersonalShopDlg::OnRefresh
         sp.Encode1(ShopDispatch.getItems(shop).size());
-        for (final MaplePlayerShopItem item : ShopDispatch.getItems(shop)) {
+        for (MaplePlayerShopItem item : ShopDispatch.getItems(shop)) {
             sp.Encode2(item.bundles);
             sp.Encode2(item.item.getQuantity());
             sp.Encode4(item.price);
@@ -633,7 +633,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket shopVisitorLeave(final byte slot) {
+    public static ServerPacket shopVisitorLeave(byte slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());

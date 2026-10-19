@@ -56,11 +56,11 @@ public class AramiaFireWorks {
     private static final int flake_Y = 149;
     private short kegs = 0;
 
-    public static final AramiaFireWorks getInstance() {
+    public static AramiaFireWorks getInstance() {
         return instance;
     }
 
-    public final void giveKegs(final MapleCharacter player, final int kegs) {
+    public void giveKegs(MapleCharacter player, int kegs) {
         this.kegs += kegs;
         if (this.kegs >= MAX_KEGS) {
             this.kegs = 0;
@@ -72,7 +72,7 @@ public class AramiaFireWorks {
         player.getWorld().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_NOTICEWITHOUTPREFIX, PB_BroadcastMsg.builder().message("<Channel " + player.getClient().getChannelId() + "> " + "MAP_NAME" + " : The amount of {" + MapleItemInformationProvider.getInstance().getName(itemid) + "} has reached the limit!").item_id(itemid).build()));
     }
 
-    public final short getKegsPercentage() {
+    public short getKegsPercentage() {
         return (short) ((kegs / MAX_KEGS) * 10000);
     }
 
@@ -81,7 +81,7 @@ public class AramiaFireWorks {
         startEvent(player.findMap(100000200));
     }
 
-    private final void startEvent(final MapleMap map) {
+    private void startEvent(MapleMap map) {
         map.startMapEffect("Who's going crazy with the fireworks?", 5121010);
         spawnMonster(map);
     }
@@ -98,8 +98,8 @@ public class AramiaFireWorks {
     public void giveSuns(MapleCharacter player, int kegs) {
         this.sunshines += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = player.findMap(555000000);
-        final TacosReactor reactor = map.getReactorByName("XmasTree");
+        MapleMap map = player.findMap(555000000);
+        TacosReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_SUN / 6); gogo > 0; gogo -= (MAX_SUN / 6)) {
             switch (reactor.getState()) {
                 case 0: //first state
@@ -126,7 +126,7 @@ public class AramiaFireWorks {
         }
     }
 
-    public final short getSunsPercentage() {
+    public short getSunsPercentage() {
         return (short) ((sunshines / MAX_SUN) * 10000);
     }
 
@@ -135,14 +135,14 @@ public class AramiaFireWorks {
         startSun(player.findMap(970010000));
     }
 
-    private final void startSun(final MapleMap map) {
+    private void startSun(MapleMap map) {
         map.startMapEffect("The tree is bursting with sunshine!", 5121010);
         for (int i = 0; i < 3; i++) {
             spawnItem(map);
         }
     }
 
-    private final void spawnItem(final MapleMap map) {
+    private void spawnItem(MapleMap map) {
         Point pos;
 
         for (int i = 0; i < Randomizer.nextInt(5) + 10; i++) {
@@ -151,11 +151,11 @@ public class AramiaFireWorks {
         }
     }
 
-    public final void giveDecs(final MapleCharacter player, final int kegs) {
+    public void giveDecs(MapleCharacter player, int kegs) {
         this.decorations += kegs;
         //have to broadcast a Reactor?
-        final MapleMap map = player.findMap(555000000);
-        final TacosReactor reactor = map.getReactorByName("XmasTree");
+        MapleMap map = player.findMap(555000000);
+        TacosReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_DEC / 6); gogo > 0; gogo -= (MAX_DEC / 6)) {
             switch (reactor.getState()) {
                 case 0: //first state
@@ -182,7 +182,7 @@ public class AramiaFireWorks {
         }
     }
 
-    public final short getDecsPercentage() {
+    public short getDecsPercentage() {
         return (short) ((decorations / MAX_DEC) * 10000);
     }
 
@@ -191,14 +191,14 @@ public class AramiaFireWorks {
         startDec(player.findMap(555000000));
     }
 
-    private final void startDec(final MapleMap map) {
+    private void startDec(MapleMap map) {
         map.startMapEffect("The tree is bursting with snow!", 5120000);
         for (int i = 0; i < 3; i++) {
             spawnDec(map);
         }
     }
 
-    private final void spawnDec(final MapleMap map) {
+    private void spawnDec(MapleMap map) {
         Point pos;
 
         for (int i = 0; i < Randomizer.nextInt(10) + 40; i++) {

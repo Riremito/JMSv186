@@ -42,7 +42,7 @@ public class RD_GW_ItemSlotBase {
         UNKNOWN;
     }
 
-    public static final byte[] EncodeSlot(final Item item) {
+    public static byte[] EncodeSlot(Item item) {
         ServerPacket data = new ServerPacket();
 
         short pos = item.getPosition();
@@ -66,7 +66,7 @@ public class RD_GW_ItemSlotBase {
         return data.getBytes();
     }
 
-    public static final byte[] EncodeSlotEnd(ItemType it) {
+    public static byte[] EncodeSlotEnd(ItemType it) {
         ServerPacket data = new ServerPacket();
 
         if (Config.LessOrEqual(Region.KMS, 84) || Config.LessOrEqual(Region.JMS, 165) || Config.LessOrEqual(Region.CMS, 73) || Config.LessOrEqual(Region.TWMS, 94) || Region.HKMS.check() || Config.LessOrEqual(Region.GMS, 73) || Config.LessOrEqual(Region.EMS, 55) || Region.BMS.check() || Region.VMS.check()) {
@@ -104,7 +104,7 @@ public class RD_GW_ItemSlotBase {
 
     // GW_ItemSlotBase::Decode
     // addItemInfo
-    public static final byte[] Encode(final Item item) {
+    public static byte[] Encode(Item item) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(item.getPet() != null ? 3 : item.getType());
@@ -114,7 +114,7 @@ public class RD_GW_ItemSlotBase {
         switch (it) {
             // Equip
             case 1: {
-                final Equip equip = (Equip) item;
+                Equip equip = (Equip) item;
                 boolean hasUniqueId = 0 < equip.getUniqueId();
                 data.EncodeBuffer(RawEncode(item));
                 // JMS184-185, KMS95 (test version of potential system)
@@ -318,7 +318,7 @@ public class RD_GW_ItemSlotBase {
     }
     // JMS v184, v185, KMS 95
 
-    public static final byte[] EncodeEquip_JMS184(Equip equip, boolean hasUniqueId) {
+    public static byte[] EncodeEquip_JMS184(Equip equip, boolean hasUniqueId) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(equip.getUpgradeSlots());
@@ -359,7 +359,7 @@ public class RD_GW_ItemSlotBase {
         return data.getBytes();
     }
 
-    public static final byte[] EncodeEquip_EMS89(Equip equip, boolean hasUniqueId) {
+    public static byte[] EncodeEquip_EMS89(Equip equip, boolean hasUniqueId) {
         ServerPacket data = new ServerPacket();
 
         data.Encode1(equip.getUpgradeSlots());
@@ -413,7 +413,7 @@ public class RD_GW_ItemSlotBase {
         return data.getBytes();
     }
 
-    public static final byte[] EncodeEquip_KMS197(Equip equip, boolean hasUniqueId) {
+    public static byte[] EncodeEquip_KMS197(Equip equip, boolean hasUniqueId) {
         ServerPacket data = new ServerPacket();
 
         {
@@ -568,7 +568,7 @@ public class RD_GW_ItemSlotBase {
 
     // E8 ?? ?? ?? ?? 84 C0 74 ?? 6A 08
     // GW_ItemSlotBase::RawDecode
-    public static final byte[] RawEncode(final Item item) {
+    public static byte[] RawEncode(Item item) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(item.getItemId());

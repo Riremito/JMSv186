@@ -60,7 +60,7 @@ public class DQ_Savedlocations {
 
         try (PreparedStatement ps = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME + " (characterid, `locationtype`, `map`) VALUES (?, ?, ?)")) {
             ps.setInt(1, characterId);
-            for (final SavedLocationType savedLocationType : SavedLocationType.values()) {
+            for (SavedLocationType savedLocationType : SavedLocationType.values()) {
                 if (savedLocations[savedLocationType.getValue()] != -1) {
                     ps.setInt(2, savedLocationType.getValue());
                     ps.setInt(3, savedLocations[savedLocationType.getValue()]);

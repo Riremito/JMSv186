@@ -114,60 +114,60 @@ public class PlayerStats {
     private int accuracy;
     public ReentrantLock lock = new ReentrantLock(); //we're getting concurrentmodificationexceptions, but would this slow things down?
 
-    public PlayerStats(final MapleCharacter chr) {
+    public PlayerStats(MapleCharacter chr) {
         // TODO, move str/dex/int etc here -_-
         this.chr = new WeakReference<>(chr);
     }
 
     //POTENTIALS:
     //incMesoProp, incRewardProp
-    public final void init() {
+    public void init() {
         recalcLocalStats();
         relocHeal();
     }
 
-    public final int getStr() {
+    public int getStr() {
         return str;
     }
 
-    public final int getDex() {
+    public int getDex() {
         return dex;
     }
 
-    public final int getLuk() {
+    public int getLuk() {
         return luk;
     }
 
-    public final int getInt() {
+    public int getInt() {
         return int_;
     }
 
-    public final void setStr(final int str) {
+    public void setStr(int str) {
         this.str = str;
         recalcLocalStats();
     }
 
-    public final void setDex(final int dex) {
+    public void setDex(int dex) {
         this.dex = dex;
         recalcLocalStats();
     }
 
-    public final void setLuk(final int luk) {
+    public void setLuk(int luk) {
         this.luk = luk;
         recalcLocalStats();
     }
 
-    public final void setInt(final int int_) {
+    public void setInt(int int_) {
         this.int_ = int_;
         recalcLocalStats();
     }
 
-    public final boolean setHp(final int newhp) {
+    public boolean setHp(int newhp) {
         return setHp(newhp, false);
     }
 
-    public final boolean setHp(int newhp, boolean silent) {
-        final int oldHp = hp;
+    public boolean setHp(int newhp, boolean silent) {
+        int oldHp = hp;
         int thp = newhp;
         if (thp < 0) {
             thp = 0;
@@ -177,7 +177,7 @@ public class PlayerStats {
         }
         this.hp = (short) thp;
 
-        final MapleCharacter chra = chr.get();
+        MapleCharacter chra = chr.get();
         if (chra != null) {
             if (!silent) {
                 chra.updatePartyMemberHP();
@@ -189,8 +189,8 @@ public class PlayerStats {
         return hp != oldHp;
     }
 
-    public final boolean setMp(final int newmp) {
-        final int oldMp = mp;
+    public boolean setMp(int newmp) {
+        int oldMp = mp;
         int tmp = newmp;
         if (tmp < 0) {
             tmp = 0;
@@ -202,65 +202,65 @@ public class PlayerStats {
         return mp != oldMp;
     }
 
-    public final void setMaxHp(final int hp) {
+    public void setMaxHp(int hp) {
         this.maxhp = hp;
         recalcLocalStats();
     }
 
-    public final void setMaxMp(final int mp) {
+    public void setMaxMp(int mp) {
         this.maxmp = mp;
         recalcLocalStats();
     }
 
-    public final int getHp() {
+    public int getHp() {
         return hp;
     }
 
-    public final int getMaxHp() {
+    public int getMaxHp() {
         return maxhp;
     }
 
-    public final int getMp() {
+    public int getMp() {
         return mp;
     }
 
-    public final int getMaxMp() {
+    public int getMaxMp() {
         return maxmp;
     }
 
-    public final int getTotalDex() {
+    public int getTotalDex() {
         return localdex;
     }
 
-    public final int getTotalInt() {
+    public int getTotalInt() {
         return localint_;
     }
 
-    public final int getTotalStr() {
+    public int getTotalStr() {
         return localstr;
     }
 
-    public final int getTotalLuk() {
+    public int getTotalLuk() {
         return localluk;
     }
 
-    public final int getTotalMagic() {
+    public int getTotalMagic() {
         return magic;
     }
 
-    public final int getTotalWatk() {
+    public int getTotalWatk() {
         return watk;
     }
 
-    public final short getCurrentMaxHp() {
+    public short getCurrentMaxHp() {
         return localmaxhp;
     }
 
-    public final short getCurrentMaxMp() {
+    public short getCurrentMaxMp() {
         return localmaxmp;
     }
 
-    public final int getHands() {
+    public int getHands() {
         return hands;
     }
 
@@ -269,7 +269,7 @@ public class PlayerStats {
     }
 
     public void recalcLocalStats(boolean first_login) {
-        final MapleCharacter chra = chr.get();
+        MapleCharacter chra = chr.get();
         if (chra == null) {
             return;
         }
@@ -282,7 +282,7 @@ public class PlayerStats {
         } finally {
             lock.unlock();
         }
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         int oldmaxhp = localmaxhp;
         int localmaxhp_ = getMaxHp();
         int localmaxmp_ = getMaxMp();
@@ -325,7 +325,7 @@ public class PlayerStats {
         hasPartyBonus = false;
         hasVac = false;
         hasClone = false;
-        final boolean canEquipLevel = chra.getLevel() >= 120 && !GameConstants.isKOC(chra.getJob());
+        boolean canEquipLevel = chra.getLevel() >= 120 && !GameConstants.isKOC(chra.getJob());
         equipmentBonusExp = 0;
         RecoveryUP = 0;
         dropMod = 1;
@@ -343,11 +343,11 @@ public class PlayerStats {
         def = 100;
 
         for (Item item : chra.getInventory(MapleInventoryType.EQUIPPED)) {
-            final Equip equip = (Equip) item;
+            Equip equip = (Equip) item;
 
             if (equip.getPosition() == -11) {
                 if (GameConstants.isMagicWeapon(equip.getItemId())) {
-                    final Map<String, Integer> eqstat = MapleItemInformationProvider.getInstance().getEquipStats(equip.getItemId());
+                    Map<String, Integer> eqstat = MapleItemInformationProvider.getInstance().getEquipStats(equip.getItemId());
 
                     element_fire = eqstat.get("incRMAF");
                     element_ice = eqstat.get("incRMAI");
@@ -474,7 +474,7 @@ public class PlayerStats {
         //dam_r += (chra.getJob() >= 430 && chra.getJob() <= 434 ? 70 : 0); //leniency on upper stab
         this.localstr += (percent_str * localstr) / 100f;
         this.localdex += (percent_dex * localdex) / 100f;
-        final int before_ = localint_;
+        int before_ = localint_;
         this.localint_ += (percent_int * localint_) / 100f;
         this.magic += localint_ - before_;
         this.localluk += (percent_luk * localluk) / 100f;
@@ -487,16 +487,16 @@ public class PlayerStats {
 
         switch (chra.getJob()) {
             case 322: { // Crossbowman
-                final Skill expert = SkillFactory.getSkill(3220004);
-                final int boostLevel = chra.getSkillLevel(expert);
+                Skill expert = SkillFactory.getSkill(3220004);
+                int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
                 }
                 break;
             }
             case 312: { // Bowmaster
-                final Skill expert = SkillFactory.getSkill(3120005);
-                final int boostLevel = chra.getSkillLevel(expert);
+                Skill expert = SkillFactory.getSkill(3120005);
+                int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
                 }
@@ -504,8 +504,8 @@ public class PlayerStats {
             }
             case 211:
             case 212: { // IL
-                final Skill amp = SkillFactory.getSkill(2110001);
-                final int level = chra.getSkillLevel(amp);
+                Skill amp = SkillFactory.getSkill(2110001);
+                int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
                     bossdam_r *= amp.getEffect(level).getY() / 100.0;
@@ -514,8 +514,8 @@ public class PlayerStats {
             }
             case 221:
             case 222: { // IL
-                final Skill amp = SkillFactory.getSkill(2210001);
-                final int level = chra.getSkillLevel(amp);
+                Skill amp = SkillFactory.getSkill(2210001);
+                int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
                     bossdam_r *= amp.getEffect(level).getY() / 100.0;
@@ -524,8 +524,8 @@ public class PlayerStats {
             }
             case 1211:
             case 1212: { // flame
-                final Skill amp = SkillFactory.getSkill(12110001);
-                final int level = chra.getSkillLevel(amp);
+                Skill amp = SkillFactory.getSkill(12110001);
+                int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
                     bossdam_r *= amp.getEffect(level).getY() / 100.0;
@@ -536,8 +536,8 @@ public class PlayerStats {
             case 2216:
             case 2217:
             case 2218: {
-                final Skill amp = SkillFactory.getSkill(22150000);
-                final int level = chra.getSkillLevel(amp);
+                Skill amp = SkillFactory.getSkill(22150000);
+                int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
                     bossdam_r *= amp.getEffect(level).getY() / 100.0;
@@ -545,22 +545,22 @@ public class PlayerStats {
                 break;
             }
             case 2112: { // Aran
-                final Skill expert = SkillFactory.getSkill(21120001);
-                final int boostLevel = chra.getSkillLevel(expert);
+                Skill expert = SkillFactory.getSkill(21120001);
+                int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
                 }
                 break;
             }
         }
-        final Skill blessoffairy = SkillFactory.getSkill(GameConstants.getBOF_ForJob(chra.getJob()));
-        final int boflevel = chra.getSkillLevel(blessoffairy);
+        Skill blessoffairy = SkillFactory.getSkill(GameConstants.getBOF_ForJob(chra.getJob()));
+        int boflevel = chra.getSkillLevel(blessoffairy);
         if (boflevel > 0) {
             watk += blessoffairy.getEffect(boflevel).getX();
             magic += blessoffairy.getEffect(boflevel).getY();
             accuracy += blessoffairy.getEffect(boflevel).getX();
         }
-        final Skill bx = SkillFactory.getSkill(1320006);
+        Skill bx = SkillFactory.getSkill(1320006);
         if (chra.getSkillLevel(bx) > 0) {
             dam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
             bossdam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
@@ -595,9 +595,9 @@ public class PlayerStats {
         }
     }
 
-    public boolean checkEquipLevels(final MapleCharacter chr, int gain) {
+    public boolean checkEquipLevels(MapleCharacter chr, int gain) {
         boolean changed = false;
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         List<Equip> all = new ArrayList<>(equipLevelHandling);
         for (Equip eq : all) {
             int lvlz = eq.getEquipLevel();
@@ -606,17 +606,17 @@ public class PlayerStats {
             if (eq.getEquipLevel() > lvlz) { //lvlup
                 for (int i = eq.getEquipLevel() - lvlz; i > 0; i--) {
                     //now for the equipment increments...
-                    final Map<Integer, Map<String, Integer>> inc = ii.getEquipIncrements(eq.getItemId());
+                    Map<Integer, Map<String, Integer>> inc = ii.getEquipIncrements(eq.getItemId());
                     if (inc != null && inc.containsKey(lvlz + i)) { //flair = 1
                         eq = ii.levelUpEquip(eq, inc.get(lvlz + i));
                     }
                     //UGH, skillz
                     if (GameConstants.getStatFromWeapon(eq.getItemId()) == null) {
-                        final Map<Integer, List<Integer>> ins = ii.getEquipSkills(eq.getItemId());
+                        Map<Integer, List<Integer>> ins = ii.getEquipSkills(eq.getItemId());
                         if (ins != null && ins.containsKey(lvlz + i)) {
                             for (Integer z : ins.get(lvlz + i)) {
                                 if (Math.random() < 0.1) { //10% chance dood
-                                    final Skill skil = SkillFactory.getSkill(z);
+                                    Skill skil = SkillFactory.getSkill(z);
                                     if (skil != null && skil.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(skil) < chr.getMasterLevel(skil)) { //dont go over masterlevel :D
                                         chr.changeSkillLevel(skil, (byte) (chr.getSkillLevel(skil) + 1), chr.getMasterLevel(skil));
                                     }
@@ -641,7 +641,7 @@ public class PlayerStats {
         return changed;
     }
 
-    public boolean checkEquipDurabilitys(final MapleCharacter chr, int gain) {
+    public boolean checkEquipDurabilitys(MapleCharacter chr, int gain) {
         for (Equip item : durabilityHandling) {
             item.setDurability(item.getDurability() + gain);
             if (item.getDurability() < 0) { //shouldnt be less than 0
@@ -657,7 +657,7 @@ public class PlayerStats {
                     return false;
                 }
                 durabilityHandling.remove(eqq);
-                final short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
+                short pos = chr.getInventory(MapleInventoryType.EQUIP).getNextFreeSlot();
                 MapleInventoryManipulator.unequip(chr.getClient(), eqq.getPosition(), pos);
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.EQUIP, eqq).build()));
             } else {
@@ -667,16 +667,16 @@ public class PlayerStats {
         return true;
     }
 
-    public final byte passive_mastery() {
+    public byte passive_mastery() {
         return passive_mastery; //* 5 + 10 for mastery %
     }
 
-    public final void relocHeal() {
-        final MapleCharacter chra = chr.get();
+    public void relocHeal() {
+        MapleCharacter chra = chr.get();
         if (chra == null) {
             return;
         }
-        final int playerjob = chra.getJob();
+        int playerjob = chra.getJob();
 
         shouldHealHP = 10 + recoverHP; // Reset
         shouldHealMP = 3 + mpRestore + recoverMP; // i think
@@ -685,37 +685,37 @@ public class PlayerStats {
             shouldHealMP += ((float) ((float) chra.getSkillLevel(SkillFactory.getSkill(2000000)) / 10) * chra.getLevel());
 
         } else if (GameConstants.isJobFamily(111, playerjob)) {
-            final Skill effect = SkillFactory.getSkill(1110000); // Improving MP Recovery
-            final int lvl = chra.getSkillLevel(effect);
+            Skill effect = SkillFactory.getSkill(1110000); // Improving MP Recovery
+            int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(121, playerjob)) {
-            final Skill effect = SkillFactory.getSkill(1210000); // Improving MP Recovery
-            final int lvl = chra.getSkillLevel(effect);
+            Skill effect = SkillFactory.getSkill(1210000); // Improving MP Recovery
+            int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(1111, playerjob)) {
-            final Skill effect = SkillFactory.getSkill(11110000); // Improving MP Recovery
-            final int lvl = chra.getSkillLevel(effect);
+            Skill effect = SkillFactory.getSkill(11110000); // Improving MP Recovery
+            int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(410, playerjob)) {
-            final Skill effect = SkillFactory.getSkill(4100002); // Endure
-            final int lvl = chra.getSkillLevel(effect);
+            Skill effect = SkillFactory.getSkill(4100002); // Endure
+            int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealHP += effect.getEffect(lvl).getHp();
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(420, playerjob)) {
-            final Skill effect = SkillFactory.getSkill(4200001); // Endure
-            final int lvl = chra.getSkillLevel(effect);
+            Skill effect = SkillFactory.getSkill(4200001); // Endure
+            int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealHP += effect.getEffect(lvl).getHp();
                 shouldHealMP += effect.getEffect(lvl).getMp();
@@ -729,7 +729,7 @@ public class PlayerStats {
             shouldHealHP += 99; // Until the values of Chair heal has been fixed,
             shouldHealMP += 99; // MP is different here, if chair data MP = 0, heal + 1.5
         } else { // Because Heal isn't multipled when there's a chair :)
-            final float recvRate = chra.getMap().getRecoveryRate();
+            float recvRate = chra.getMap().getRecoveryRate();
             shouldHealHP *= recvRate;
             shouldHealMP *= recvRate;
         }

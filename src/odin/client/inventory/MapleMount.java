@@ -45,7 +45,7 @@ public class MapleMount {
         this.owner = new WeakReference<>(owner);
     }
 
-    public void saveMount(final int charid) throws SQLException {
+    public void saveMount(int charid) throws SQLException {
         if (!changed) {
             return;
         }

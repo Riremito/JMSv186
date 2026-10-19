@@ -33,18 +33,18 @@ import tacos.wz.opt.FieldOpt;
 
 public class FamilyHandler {
 
-    public static final void RequestFamily(ClientPacket cp, TacosClient client) {
+    public static void RequestFamily(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (chr != null) {
             client.SendPacket(ResCWvsContext.getFamilyPedigree(chr));
         }
     }
 
-    public static final void OpenFamily(ClientPacket cp, TacosClient client) {
+    public static void OpenFamily(ClientPacket cp, TacosClient client) {
         client.SendPacket(ResCWvsContext.getFamilyInfo(client.getPlayer()));
     }
 
-    public static final void UseFamily(ClientPacket cp, TacosClient client) {
+    public static void UseFamily(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         int type = cp.Decode4();
         MapleFamilyBuffEntry entry = MapleFamilyBuff.getBuffEntry(type);
@@ -110,7 +110,7 @@ public class FamilyHandler {
         }
     }
 
-    public static final void FamilyOperation(ClientPacket cp, TacosClient client) {
+    public static void FamilyOperation(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         if (chr == null) {
             return;
@@ -140,7 +140,7 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static final void FamilyPrecept(ClientPacket cp, TacosClient client) {
+    public static void FamilyPrecept(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId());
         if (fam == null || fam.getLeaderId() != chr.getId()) {
@@ -149,7 +149,7 @@ public class FamilyHandler {
         fam.setNotice(cp.DecodeStr());
     }
 
-    public static final void FamilySummon(ClientPacket cp, TacosClient client) {
+    public static void FamilySummon(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         int TYPE = 1; //the type of the summon request.
         MapleFamilyBuffEntry cost = MapleFamilyBuff.getBuffEntry(TYPE);
@@ -173,16 +173,16 @@ public class FamilyHandler {
         chr.setTeleportName("");
     }
 
-    public static final void DeleteJunior(ClientPacket cp, TacosClient client) {
+    public static void DeleteJunior(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         int juniorid = cp.Decode4();
         if (chr.getFamilyId() <= 0 || juniorid <= 0 || (chr.getJunior1() != juniorid && chr.getJunior2() != juniorid)) {
             return;
         }
         //junior is not required to be online.
-        final MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId());
-        final MapleFamilyCharacter other = fam.getMFC(juniorid);
-        final MapleFamilyCharacter oth = chr.getMFC();
+        MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId());
+        MapleFamilyCharacter other = fam.getMFC(juniorid);
+        MapleFamilyCharacter oth = chr.getMFC();
         boolean junior2 = oth.getJunior2() == juniorid;
         if (junior2) {
             oth.setJunior2(0);
@@ -206,15 +206,15 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static final void DeleteSenior(ClientPacket cp, TacosClient client) {
+    public static void DeleteSenior(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         if (chr.getFamilyId() <= 0 || chr.getSeniorId() <= 0) {
             return;
         }
         //not required to be online
-        final MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId()); //this is old family
-        final MapleFamilyCharacter mgc = fam.getMFC(chr.getSeniorId());
-        final MapleFamilyCharacter mgc_ = chr.getMFC();
+        MapleFamily fam = client.getWorld().getFamily().getFamily(chr.getFamilyId()); //this is old family
+        MapleFamilyCharacter mgc = fam.getMFC(chr.getSeniorId());
+        MapleFamilyCharacter mgc_ = chr.getMFC();
         mgc_.setSeniorId(0);
         boolean junior2 = mgc.getJunior2() == chr.getId();
         if (junior2) {
@@ -238,7 +238,7 @@ public class FamilyHandler {
         chr.updateStat();
     }
 
-    public static final void AcceptFamily(ClientPacket cp, TacosClient client) {
+    public static void AcceptFamily(ClientPacket cp, TacosClient client) {
         MapleCharacter chr = client.getPlayer();
         MapleCharacter inviter = chr.getMap().getPlayerById(cp.Decode4());
         if (inviter != null && chr.getSeniorId() == 0

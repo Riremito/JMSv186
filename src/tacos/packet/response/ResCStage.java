@@ -157,7 +157,7 @@ public class ResCStage {
     }
 
     // CStage::OnSetITC
-    public static ServerPacket SetITC(final MapleCharacter chr) {
+    public static ServerPacket SetITC(MapleCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_SetITC);
 
         sp.EncodeBuffer(RD_CharacterData.Encode(chr));

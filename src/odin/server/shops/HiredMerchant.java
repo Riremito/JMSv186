@@ -202,7 +202,7 @@ public class HiredMerchant extends TacosMerchant {
         public int totalPrice;
         public String buyer;
 
-        public BoughtItem(final int id, final int quantity, final int totalPrice, final String buyer) {
+        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
             this.id = id;
             this.quantity = quantity;
             this.totalPrice = totalPrice;
@@ -229,12 +229,12 @@ public class HiredMerchant extends TacosMerchant {
         return HIRED_MERCHANT;
     }
 
-    public final void setStoreid(final int storeid) {
+    public void setStoreid(int storeid) {
         this.storeid = storeid;
     }
 
-    public List<MaplePlayerShopItem> searchItem(final int itemSearch) {
-        final List<MaplePlayerShopItem> itemz = new LinkedList<>();
+    public List<MaplePlayerShopItem> searchItem(int itemSearch) {
+        List<MaplePlayerShopItem> itemz = new LinkedList<>();
         for (MaplePlayerShopItem item : items) {
             if (item.item.getItemId() == itemSearch && item.bundles > 0) {
                 itemz.add(item);
@@ -245,10 +245,10 @@ public class HiredMerchant extends TacosMerchant {
 
     public void buy(TacosClient client, int item, short quantity) {
         MapleCharacter chr = client.getPlayer();
-        final MaplePlayerShopItem pItem = items.get(item);
-        final Item shopItem = pItem.item;
-        final Item newItem = shopItem.copy();
-        final short perbundle = newItem.getQuantity();
+        MaplePlayerShopItem pItem = items.get(item);
+        Item shopItem = pItem.item;
+        Item newItem = shopItem.copy();
+        short perbundle = newItem.getQuantity();
         newItem.setQuantity((short) (quantity * perbundle));
 
         byte flag = newItem.getFlag();
@@ -263,7 +263,7 @@ public class HiredMerchant extends TacosMerchant {
             pItem.bundles -= quantity; // Number remaining in the store
             bought.add(new BoughtItem(newItem.getItemId(), quantity, (pItem.price * quantity), chr.getName()));
 
-            final int gainmeso = getMeso() + (pItem.price * quantity);
+            int gainmeso = getMeso() + (pItem.price * quantity);
             setMeso(gainmeso - GameConstants.EntrustedStoreTax(gainmeso));
             chr.gainMeso(-pItem.price * quantity, false);
             saveItems();
@@ -287,7 +287,7 @@ public class HiredMerchant extends TacosMerchant {
         return (int) ((System.currentTimeMillis() - start) / 1000);
     }
 
-    public final int getStoreId() {
+    public int getStoreId() {
         return storeid;
     }
 }

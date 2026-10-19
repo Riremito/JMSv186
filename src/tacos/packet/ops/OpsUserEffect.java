@@ -89,7 +89,7 @@ public enum OpsUserEffect {
     }
 
     public static OpsUserEffect find(int val) {
-        for (final OpsUserEffect o : OpsUserEffect.values()) {
+        for (OpsUserEffect o : OpsUserEffect.values()) {
             if (o.get() == val) {
                 return o;
             }

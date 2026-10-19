@@ -213,7 +213,7 @@ public enum OpsSecondaryStat implements IPacketOps {
     }
 
     public static OpsSecondaryStat find(int val) {
-        for (final OpsSecondaryStat ops : OpsSecondaryStat.values()) {
+        for (OpsSecondaryStat ops : OpsSecondaryStat.values()) {
             if (ops.get() == val) {
                 return ops;
             }

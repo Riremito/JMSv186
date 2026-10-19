@@ -311,11 +311,11 @@ public class WzXML {
         private Node node;
         private File imageDataDir;
 
-        private XmlDomData(final Node node) {
+        private XmlDomData(Node node) {
             this.node = node;
         }
 
-        public XmlDomData(final FileInputStream fis, final File imageDataDir) {
+        public XmlDomData(FileInputStream fis, File imageDataDir) {
             try {
                 DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -331,8 +331,8 @@ public class WzXML {
         }
 
         @Override
-        public MapleData getChildByPath(final String path) {
-            final String segments[] = path.split("/");
+        public MapleData getChildByPath(String path) {
+            String segments[] = path.split("/");
             if (segments[0].equals("..")) {
                 return ((MapleData) getParent()).getChildByPath(path.substring(path.indexOf("/") + 1));
             }
@@ -343,7 +343,7 @@ public class WzXML {
                 boolean foundChild = false;
                 for (int i = 0; i < childNodes.getLength(); i++) {
                     try {
-                        final Node childNode = childNodes.item(i);
+                        Node childNode = childNodes.item(i);
                         if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getAttributes().getNamedItem("name").getNodeValue().equals(segment)) {
                             myNode = childNode;
                             foundChild = true;
@@ -356,19 +356,19 @@ public class WzXML {
                     return null;
                 }
             }
-            final XmlDomData ret = new XmlDomData(myNode);
+            XmlDomData ret = new XmlDomData(myNode);
             ret.imageDataDir = new File(imageDataDir, getName() + "/" + path).getParentFile();
             return ret;
         }
 
         @Override
         public List<MapleData> getChildren() {
-            final List<MapleData> ret = new ArrayList<>();
-            final NodeList childNodes = node.getChildNodes();
+            List<MapleData> ret = new ArrayList<>();
+            NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
-                final Node childNode = childNodes.item(i);
+                Node childNode = childNodes.item(i);
                 if (childNode != null && childNode.getNodeType() == Node.ELEMENT_NODE) {
-                    final XmlDomData child = new XmlDomData(childNode);
+                    XmlDomData child = new XmlDomData(childNode);
                     child.imageDataDir = new File(imageDataDir, getName());
                     ret.add(child);
                 }
@@ -378,8 +378,8 @@ public class WzXML {
 
         @Override
         public Object getData() {
-            final NamedNodeMap attributes = node.getAttributes();
-            final DataType type = getType();
+            NamedNodeMap attributes = node.getAttributes();
+            DataType type = getType();
             switch (type) {
                 case DOUBLE: {
                     return Double.valueOf(attributes.getNamedItem("value").getNodeValue());
@@ -408,8 +408,8 @@ public class WzXML {
         }
 
         @Override
-        public final DataType getType() {
-            final String nodeName = node.getNodeName();
+        public DataType getType() {
+            String nodeName = node.getNodeName();
             switch (nodeName) {
                 case "imgdir":
                     return DataType.PROPERTY;
@@ -443,11 +443,11 @@ public class WzXML {
 
         @Override
         public MapleDataEntity getParent() {
-            final Node parentNode = node.getParentNode();
+            Node parentNode = node.getParentNode();
             if (parentNode.getNodeType() == Node.DOCUMENT_NODE) {
                 return null; // can't traverse outside the img file - TODO is this a problem?
             }
-            final XmlDomData parentData = new XmlDomData(parentNode);
+            XmlDomData parentData = new XmlDomData(parentNode);
             parentData.imageDataDir = imageDataDir.getParentFile();
             return parentData;
         }

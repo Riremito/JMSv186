@@ -55,12 +55,12 @@ public class MapleQuestAction {
     }
 
     private static boolean canGetItem(QuestWz.QuestActionItemInfo item, MapleCharacter client) {
-        final int gender = item.getGender();
+        int gender = item.getGender();
         if (gender != 2 && gender != client.getGender()) {
             return false;
         }
         if (item.isHasJob()) {
-            final List<Integer> code = getJobBy5ByteEncoding(item.getJob());
+            List<Integer> code = getJobBy5ByteEncoding(item.getJob());
             boolean jobFound = false;
             for (int codec : code) {
                 if (codec / 100 == client.getJob() / 100) {
@@ -69,7 +69,7 @@ public class MapleQuestAction {
                 }
             }
             if (!jobFound) {
-                final List<Integer> codeEx = getJobBy5ByteEncoding(item.getJobEx());
+                List<Integer> codeEx = getJobBy5ByteEncoding(item.getJobEx());
                 for (int codec : codeEx) {
                     if (codec / 100 == client.getJob() / 100) {
                         jobFound = true;
@@ -102,7 +102,7 @@ public class MapleQuestAction {
     public boolean RestoreLostItem(MapleCharacter client, int item_id) {
         if (type == MapleQuestActionType.item) {
             for (QuestWz.QuestActionItemInfo item : info.getItems()) {
-                final int retitem = item.getId();
+                int retitem = item.getId();
                 if (retitem == item_id) {
                     if (!client.haveItem(retitem, 1, true, false)) {
                         MapleInventoryManipulator.addById(client.getClient(), retitem, (short) 1);
@@ -115,13 +115,13 @@ public class MapleQuestAction {
     }
 
     private void giveItems(MapleCharacter chr, Integer extSelection) {
-        final int selection = selectRandomItem(info.getItems(), chr);
+        int selection = selectRandomItem(info.getItems(), chr);
         int extNum = 0;
         for (QuestWz.QuestActionItemInfo item : info.getItems()) {
             if (!canGetItem(item, chr)) {
                 continue;
             }
-            final int id = item.getId();
+            int id = item.getId();
             if (item.isHasProp()) {
                 if (item.getProp() == -1) {
                     if (extSelection != extNum++) {
@@ -131,7 +131,7 @@ public class MapleQuestAction {
                     continue;
                 }
             }
-            final short count = (short) item.getCount();
+            short count = (short) item.getCount();
             if (count < 0) { // remove items
                 MapleInventoryManipulator.removeById(chr.getClient(), GameConstants.getInventoryType(id), id, (count * -1), true, false);
 
@@ -141,10 +141,10 @@ public class MapleQuestAction {
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_Quest, pb));
             } else { // add items
-                final int period = item.getPeriod() / 1440; //im guessing.
-                final String name = MapleItemInformationProvider.getInstance().getName(id);
+                int period = item.getPeriod() / 1440; //im guessing.
+                String name = MapleItemInformationProvider.getInstance().getName(id);
                 if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
-                    final String msg = "You have attained title <" + name + ">";
+                    String msg = "You have attained title <" + name + ">";
                     chr.dropMessage(-1, msg);
                     chr.dropMessage(5, msg);
                 }
@@ -167,7 +167,7 @@ public class MapleQuestAction {
 
     private void changeSkills(MapleCharacter chr) {
         for (QuestWz.QuestActionSkillInfo s : info.getSkills()) {
-            final Skill skillObject = SkillFactory.getSkill(s.getId());
+            Skill skillObject = SkillFactory.getSkill(s.getId());
 
             for (int applicableJob : s.getJob()) {
                 if (skillObject.isBeginnerSkill() || chr.getJob() == applicableJob) {
@@ -181,14 +181,14 @@ public class MapleQuestAction {
     }
 
     private void gainFame(MapleCharacter chr) {
-        final int fameGain = info.getValue();
+        int fameGain = info.getValue();
         chr.addFame(fameGain);
         chr.sendStatChanged();
         chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fameGain).build()));
     }
 
     private void applyBuffItem(MapleCharacter chr) {
-        final int tobuff = info.getValue();
+        int tobuff = info.getValue();
         if (tobuff == -1) {
             return;
         }
@@ -264,9 +264,9 @@ public class MapleQuestAction {
                     break;
                 }
                 for (QuestWz.QuestActionSpInfo sp : info.getSps()) {
-                    final int sp_val = sp.getSpValue();
+                    int sp_val = sp.getSpValue();
                     if (sp.getJob() != null) {
-                        final int finalJob = getFinalJob(chr, sp.getJob());
+                        int finalJob = getFinalJob(chr, sp.getJob());
                         if (finalJob == 0) {
                             chr.gainSP(sp_val);
                         } else {
@@ -286,7 +286,7 @@ public class MapleQuestAction {
     public boolean checkEnd(MapleCharacter chr, Integer extSelection) {
         switch (type) {
             case item: {
-                final int selection = selectRandomItem(info.getItems(), chr);
+                int selection = selectRandomItem(info.getItems(), chr);
                 int extNum = 0;
                 byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
 
@@ -294,7 +294,7 @@ public class MapleQuestAction {
                     if (!canGetItem(item, chr)) {
                         continue;
                     }
-                    final int id = item.getId();
+                    int id = item.getId();
                     if (item.isHasProp()) {
                         if (item.getProp() == -1) {
                             if (extSelection != extNum++) {
@@ -304,7 +304,7 @@ public class MapleQuestAction {
                             continue;
                         }
                     }
-                    final short count = (short) item.getCount();
+                    short count = (short) item.getCount();
                     if (count < 0) { // remove items
                         if (!chr.haveItem(id, count, false, true)) {
                             chr.dropMessage(1, "You are short of some item to complete quest.");
@@ -353,7 +353,7 @@ public class MapleQuestAction {
                 return true;
             }
             case money: {
-                final int meso = info.getValue();
+                int meso = info.getValue();
                 if (chr.getMeso() + meso < 0) { // Giving, overflow
                     chr.dropMessage(1, "Meso exceed the max amount, 2147483647.");
                     return false;
@@ -408,7 +408,7 @@ public class MapleQuestAction {
             }
             case sp: {
                 for (QuestWz.QuestActionSpInfo sp : info.getSps()) {
-                    final int sp_val = sp.getSpValue();
+                    int sp_val = sp.getSpValue();
                     if (sp.getJob() != null) {
                         chr.gainSP(sp_val, GameConstants.getSkillBook(getFinalJob(chr, sp.getJob())));
                     } else {

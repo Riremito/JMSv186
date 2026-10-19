@@ -26,12 +26,12 @@ public class MapleTrade {
     private final WeakReference<MapleCharacter> wrchr;
     private final byte tradingslot;
 
-    public MapleTrade(final byte tradingslot, final MapleCharacter chr) {
+    public MapleTrade(byte tradingslot, MapleCharacter chr) {
         this.tradingslot = tradingslot;
         this.wrchr = new WeakReference<>(chr);
     }
 
-    public MapleTrade(final byte tradingslot, final MapleCharacter chr, boolean isPointTrade) {
+    public MapleTrade(byte tradingslot, MapleCharacter chr, boolean isPointTrade) {
         this.tradingslot = tradingslot;
         this.wrchr = new WeakReference<>(chr);
         this.isPointTrade = isPointTrade;
@@ -41,9 +41,9 @@ public class MapleTrade {
         return this.isPointTrade;
     }
 
-    public final void CompleteTrade() {
+    public void CompleteTrade() {
         if (exchangeItems != null) { // just to be on the safe side...
-            for (final Item item : exchangeItems) {
+            for (Item item : exchangeItems) {
                 byte flag = item.getFlag();
 
                 if (ItemFlag.KARMA_EQ.check(flag)) {
@@ -63,13 +63,13 @@ public class MapleTrade {
         wrchr.get().SendPacket(ResCMiniRoomBaseDlg.TradeMessage(tradingslot, (byte) 0x07));
     }
 
-    public final void cancel(final TacosClient client) {
+    public void cancel(TacosClient client) {
         cancel(client, 0);
     }
 
-    public final void cancel(final TacosClient client, final int unsuccessful) {
+    public void cancel(TacosClient client, int unsuccessful) {
         if (items != null) { // just to be on the safe side...
-            for (final Item item : items) {
+            for (Item item : items) {
                 MapleInventoryManipulator.addFromDrop(client, item, false);
             }
             items.clear();
@@ -82,11 +82,11 @@ public class MapleTrade {
         client.SendPacket(ResCMiniRoomBaseDlg.getTradeCancel(tradingslot, unsuccessful));
     }
 
-    public final boolean isLocked() {
+    public boolean isLocked() {
         return locked;
     }
 
-    public final void setMeso(final int meso) {
+    public void setMeso(int meso) {
         if (locked || partner == null || meso <= 0 || this.meso + meso <= 0) {
             return;
         }
@@ -100,7 +100,7 @@ public class MapleTrade {
         }
     }
 
-    public final void addItem(final Item item) {
+    public void addItem(Item item) {
         if (locked || partner == null) {
             return;
         }
@@ -118,22 +118,22 @@ public class MapleTrade {
         }
     }
 
-    public final MapleTrade getPartner() {
+    public MapleTrade getPartner() {
         return partner;
     }
 
-    public final void setPartner(final MapleTrade partner) {
+    public void setPartner(MapleTrade partner) {
         if (locked) {
             return;
         }
         this.partner = partner;
     }
 
-    public final MapleCharacter getChr() {
+    public MapleCharacter getChr() {
         return wrchr.get();
     }
 
-    public final int getNextTargetSlot() {
+    public int getNextTargetSlot() {
         if (items.size() >= 9) {
             return -1;
         }
@@ -146,14 +146,14 @@ public class MapleTrade {
         return ret;
     }
 
-    public final boolean setItems(final TacosClient client, final Item item, byte targetSlot, final int quantity) {
+    public boolean setItems(TacosClient client, Item item, byte targetSlot, int quantity) {
         MapleCharacter chr = client.getPlayer();
         int target = getNextTargetSlot();
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (target == -1 || GameConstants.isPet(item.getItemId()) || isLocked() || (GameConstants.getInventoryType(item.getItemId()) == MapleInventoryType.CASH && quantity != 1) || (GameConstants.getInventoryType(item.getItemId()) == MapleInventoryType.EQUIP && quantity != 1)) {
             return false;
         }
-        final byte flag = item.getFlag();
+        byte flag = item.getFlag();
         if (ItemFlag.UNTRADEABLE.check(flag) || ItemFlag.LOCK.check(flag)) {
             chr.updateInv();
             return false;
@@ -187,13 +187,13 @@ public class MapleTrade {
         return true;
     }
 
-    private final int check() { //0 = fine, 1 = invent space not, 2 = pickupRestricted
+    private int check() { //0 = fine, 1 = invent space not, 2 = pickupRestricted
         if (wrchr.get().getMeso() + exchangeMeso < 0) {
             return 1;
         }
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         byte eq = 0, use = 0, setup = 0, etc = 0, cash = 0;
-        for (final Item item : exchangeItems) {
+        for (Item item : exchangeItems) {
             switch (GameConstants.getInventoryType(item.getItemId())) {
                 case EQUIP:
                     eq++;
@@ -221,9 +221,9 @@ public class MapleTrade {
         return 0;
     }
 
-    public final static void completeTrade(final MapleCharacter player) {
-        final MapleTrade local = player.getTrade();
-        final MapleTrade partner = local.getPartner();
+    public static void completeTrade(MapleCharacter player) {
+        MapleTrade local = player.getTrade();
+        MapleTrade partner = local.getPartner();
 
         if (partner == null || local.locked) {
             return;
@@ -249,10 +249,10 @@ public class MapleTrade {
         }
     }
 
-    public static final void cancelTrade(final MapleTrade Localtrade, final TacosClient client) {
+    public static void cancelTrade(MapleTrade Localtrade, TacosClient client) {
         Localtrade.cancel(client);
 
-        final MapleTrade partner = Localtrade.getPartner();
+        MapleTrade partner = Localtrade.getPartner();
         if (partner != null) {
             partner.cancel(partner.getChr().getClient());
             partner.getChr().setTrade(null);
@@ -262,7 +262,7 @@ public class MapleTrade {
         }
     }
 
-    public static final void startTrade(final MapleCharacter player, boolean isPointTrade) {
+    public static void startTrade(MapleCharacter player, boolean isPointTrade) {
         if (player.getTrade() == null) {
             player.setTrade(new MapleTrade((byte) 0, player, isPointTrade));
             player.SendPacket(ResCMiniRoomBaseDlg.getTradeStart(player.getClient(), player.getTrade(), (byte) 0, isPointTrade));
@@ -271,7 +271,7 @@ public class MapleTrade {
         }
     }
 
-    public static final void inviteTrade(final MapleCharacter player1, final MapleCharacter player2) {
+    public static void inviteTrade(MapleCharacter player1, MapleCharacter player2) {
         if (player1 == null || player1.getTrade() == null) {
             return;
         }
@@ -286,7 +286,7 @@ public class MapleTrade {
         }
     }
 
-    public static final void visitTrade(final MapleCharacter player1, final MapleCharacter player2, boolean isPointTrade) {
+    public static void visitTrade(MapleCharacter player1, MapleCharacter player2, boolean isPointTrade) {
         if (player1.getTrade() != null && player1.getTrade().getPartner() == player2.getTrade() && player2.getTrade() != null && player2.getTrade().getPartner() == player1.getTrade()) {
             // We don't need to check for map here as the user is found via MapleMap.getCharacterById()
             player2.SendPacket(ResCMiniRoomBaseDlg.getTradePartnerAdd(player1));
@@ -298,8 +298,8 @@ public class MapleTrade {
         }
     }
 
-    public static final void declineTrade(final MapleCharacter player) {
-        final MapleTrade trade = player.getTrade();
+    public static void declineTrade(MapleCharacter player) {
+        MapleTrade trade = player.getTrade();
         if (trade != null) {
             if (trade.getPartner() != null) {
                 MapleCharacter other = trade.getPartner().getChr();

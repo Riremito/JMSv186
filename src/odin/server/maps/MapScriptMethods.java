@@ -560,7 +560,7 @@ public class MapScriptMethods {
                         chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                         chr.SendPacket(ResCUserLocal.SetDirectionMode(false));
                         chr.updateStat();
-                        final MapleMap mapto = chr.findMap(900010000);
+                        MapleMap mapto = chr.findMap(900010000);
                         chr.changeMapPortal(mapto, mapto.getPortal(0));
                         return;
                 }
@@ -680,7 +680,7 @@ public class MapScriptMethods {
             }
             case check_count: {
                 if (chr.getMapId() == 950101010 && (!chr.haveItem(4001433, 20) || chr.getLevel() < 50)) { //ravana Map
-                    final MapleMap mapp = chr.findMap(950101100); //exit Map
+                    MapleMap mapp = chr.findMap(950101100); //exit Map
                     chr.changeMapPortal(mapp, mapp.getPortal(0));
                 }
                 break;
@@ -702,7 +702,7 @@ public class MapScriptMethods {
         }
     }
 
-    private static final int getTiming(int ids) {
+    private static int getTiming(int ids) {
         if (ids <= 5) {
             return 5;
         } else if (ids >= 7 && ids <= 11) {
@@ -721,7 +721,7 @@ public class MapScriptMethods {
         return 0;
     }
 
-    private static final int getDojoStageDec(int ids) {
+    private static int getDojoStageDec(int ids) {
         if (ids <= 5) {
             return 0;
         } else if (ids >= 7 && ids <= 11) {
@@ -740,7 +740,7 @@ public class MapScriptMethods {
         return 0;
     }
 
-    private static void showIntro(final TacosClient client, final String data) {
+    private static void showIntro(TacosClient client, String data) {
         client.SendPacket(ResCUserLocal.SetStandAloneMode(true));
         client.SendPacket(ResCUserLocal.SetDirectionMode(true));
         client.SendPacket(ResCUserLocal.ShowWZEffect(data));
@@ -758,7 +758,7 @@ public class MapScriptMethods {
     }
 
     private static void handlePinkBeanStart(TacosClient client) {
-        final MapleMap map = client.getPlayer().getMap();
+        MapleMap map = client.getPlayer().getMap();
         map.resetFully();
 
         if (!map.containsNPC(2141000)) {
@@ -768,10 +768,10 @@ public class MapScriptMethods {
 
     private static void reloadWitchTower(TacosClient client) {
         MapleCharacter chr = client.getPlayer();
-        final MapleMap map = chr.getMap();
+        MapleMap map = chr.getMap();
         map.killAllMonsters(false);
 
-        final int level = chr.getLevel();
+        int level = chr.getLevel();
         int mob;
         if (level <= 10) {
             mob = 9300367;

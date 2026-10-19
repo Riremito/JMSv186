@@ -167,11 +167,11 @@ public class TacosChannel extends TacosServer {
         this.serverMessage = newMessage;
     }
 
-    public final int getExpRate() {
+    public int getExpRate() {
         return this.expRate;
     }
 
-    public final int getMesoRate() {
+    public int getMesoRate() {
         return this.mesoRate;
     }
 

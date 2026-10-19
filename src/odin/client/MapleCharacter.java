@@ -182,32 +182,32 @@ public class MapleCharacter extends TacosCharacter {
         return quests.get(quest);
     }
 
-    public final void setQuestAdd(final MapleQuest quest, final byte status, final String customData) {
+    public void setQuestAdd(MapleQuest quest, byte status, String customData) {
         if (!quests.containsKey(quest)) {
-            final MapleQuestStatus stat = new MapleQuestStatus(quest, status);
+            MapleQuestStatus stat = new MapleQuestStatus(quest, status);
             stat.setCustomData(customData);
             quests.put(quest, stat);
         }
     }
 
-    public final MapleQuestStatus getQuestNAdd(MapleQuest quest) {
+    public MapleQuestStatus getQuestNAdd(MapleQuest quest) {
         if (!quests.containsKey(quest)) {
-            final MapleQuestStatus status = new MapleQuestStatus(quest, (byte) 0);
+            MapleQuestStatus status = new MapleQuestStatus(quest, (byte) 0);
             quests.put(quest, status);
             return status;
         }
         return quests.get(quest);
     }
 
-    public final MapleQuestStatus getQuestNoAdd(MapleQuest quest) {
+    public MapleQuestStatus getQuestNoAdd(MapleQuest quest) {
         return quests.get(quest);
     }
 
-    public final void updateQuest(final MapleQuestStatus quest) {
+    public void updateQuest(MapleQuestStatus quest) {
         updateQuest(quest, false);
     }
 
-    public final void updateQuest(final MapleQuestStatus quest, final boolean update) {
+    public void updateQuest(MapleQuestStatus quest, boolean update) {
         quests.put(quest.getQuest(), quest);
         if (!(quest.isCustom())) {
             client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
@@ -217,11 +217,11 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public final Map<Integer, String> getInfoQuest_Map() {
+    public Map<Integer, String> getInfoQuest_Map() {
         return questinfo;
     }
 
-    public final Map<MapleQuest, MapleQuestStatus> getQuest_Map() {
+    public Map<MapleQuest, MapleQuestStatus> getQuest_Map() {
         return quests;
     }
 
@@ -248,11 +248,11 @@ public class MapleCharacter extends TacosCharacter {
         sendStatChanged();
     }
 
-    public final String getBlessOfFairyOrigin() {
+    public String getBlessOfFairyOrigin() {
         return this.BlessOfFairy_Origin;
     }
 
-    public final int getDojo() {
+    public int getDojo() {
         return dojo;
     }
 
@@ -282,7 +282,7 @@ public class MapleCharacter extends TacosCharacter {
         this.fame = fame;
     }
 
-    public void setDojo(final int dojo) {
+    public void setDojo(int dojo) {
         this.dojo = dojo;
     }
 
@@ -290,7 +290,7 @@ public class MapleCharacter extends TacosCharacter {
         this.remainingSp[GameConstants.getSkillBook(job)] = remainingSp; //default
     }
 
-    public void setRemainingSp(int remainingSp, final int skillbook) {
+    public void setRemainingSp(int remainingSp, int skillbook) {
         this.remainingSp[skillbook] = remainingSp;
     }
 
@@ -299,7 +299,7 @@ public class MapleCharacter extends TacosCharacter {
             List<Integer> skills = SkillFactory.getSkillsByJob(job);
             if (skills != null) {
                 for (int i : skills) {
-                    final Skill skil = SkillFactory.getSkill(i);
+                    Skill skil = SkillFactory.getSkill(i);
                     if (skil != null && !skil.isInvisible() && skil.isFourthJob() && getSkillLevel(skil) <= 0 && getMasterLevel(skil) <= 0 && skil.getMasterLevel() > 0) {
                         changeSkillLevel(skil, (byte) 0, (byte) skil.getMasterLevel()); //usually 10 master
                     }
@@ -308,14 +308,14 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void changeSkillLevel(final Skill skill, byte newLevel, byte newMasterlevel) { //1 month
+    public void changeSkillLevel(Skill skill, byte newLevel, byte newMasterlevel) { //1 month
         if (skill == null) {
             return;
         }
         changeSkillLevel(skill, newLevel, newMasterlevel, skill.isTimeLimited() ? (System.currentTimeMillis() + (long) (30L * 24L * 60L * 60L * 1000L)) : -1);
     }
 
-    public void changeSkillLevel(final Skill skill, byte newLevel, byte newMasterlevel, long expiration) {
+    public void changeSkillLevel(Skill skill, byte newLevel, byte newMasterlevel, long expiration) {
         if (skill == null || (!GameConstants.isApplicableSkill(skill.getId()) && !GameConstants.isApplicableSkill_(skill.getId()))) {
             DebugLogger.ErrorLog("changeSkillLevel : error = " + skill.getId());
             return;
@@ -384,10 +384,10 @@ public class MapleCharacter extends TacosCharacter {
 
     public void updatePartyMemberHP() {
         if (party != null) {
-            final int channel = client.getChannelId();
+            int channel = client.getChannelId();
             for (MaplePartyCharacter partychar : party.getMembers()) {
                 if (partychar.getMapid() == getMapId() && partychar.getChannel() == channel) {
-                    final MapleCharacter other = client.getChannelServer().getOnlinePlayers().findByName(partychar.getName());
+                    MapleCharacter other = client.getChannelServer().getOnlinePlayers().findByName(partychar.getName());
                     if (other != null) {
                         other.SendPacket(ResCUserRemote.UserHP(getId(), stats.getHp(), stats.getCurrentMaxHp()));
                     }
@@ -433,7 +433,7 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void gainExpMonster(final int gain, final boolean show, final boolean white, final byte pty, int Class_Bonus_EXP, int Equipment_Bonus_EXP, int Premium_Bonus_EXP) {
+    public void gainExpMonster(int gain, boolean show, boolean white, byte pty, int Class_Bonus_EXP, int Equipment_Bonus_EXP, int Premium_Bonus_EXP) {
         int total = gain + Class_Bonus_EXP + Equipment_Bonus_EXP + Premium_Bonus_EXP;
         int partyinc = 0;
         int prevexp = getExp();
@@ -533,7 +533,7 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
-    public void mobKilled(final int id, final int skillID) {
+    public void mobKilled(int id, int skillID) {
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() != 1 || !q.hasMobKills()) {
                 continue;
@@ -553,7 +553,7 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public final List<MapleQuestStatus> getStartedQuests() {
+    public List<MapleQuestStatus> getStartedQuests() {
         List<MapleQuestStatus> ret = new LinkedList<>();
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() == 1 && !(q.isCustom())) {
@@ -563,7 +563,7 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    public final List<MapleQuestStatus> getCompletedQuests() {
+    public List<MapleQuestStatus> getCompletedQuests() {
         List<MapleQuestStatus> ret = new LinkedList<>();
         for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() == 2 && !(q.isCustom())) {
@@ -594,16 +594,16 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(12, 16);
             maxmp += Randomizer.rand(10, 12);
         } else if (job >= 100 && job <= 132) { // Warrior
-            final Skill improvingMaxHP = SkillFactory.getSkill(1000001);
-            final int slevel = getSkillLevel(improvingMaxHP);
+            Skill improvingMaxHP = SkillFactory.getSkill(1000001);
+            int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
             }
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 200 && job <= 232) { // Magician
-            final Skill improvingMaxMP = SkillFactory.getSkill(2000001);
-            final int slevel = getSkillLevel(improvingMaxMP);
+            Skill improvingMaxMP = SkillFactory.getSkill(2000001);
+            int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
             }
@@ -616,32 +616,32 @@ public class MapleCharacter extends TacosCharacter {
             maxhp += Randomizer.rand(20, 24);
             maxmp += Randomizer.rand(14, 16);
         } else if ((job >= 500 && job <= 522) || (job >= 3500 && job <= 3512)) { // Pirate
-            final Skill improvingMaxHP = SkillFactory.getSkill(5100000);
-            final int slevel = getSkillLevel(improvingMaxHP);
+            Skill improvingMaxHP = SkillFactory.getSkill(5100000);
+            int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
             }
             maxhp += Randomizer.rand(22, 26);
             maxmp += Randomizer.rand(18, 22);
         } else if (job >= 1100 && job <= 1111) { // Soul Master
-            final Skill improvingMaxHP = SkillFactory.getSkill(11000000);
-            final int slevel = getSkillLevel(improvingMaxHP);
+            Skill improvingMaxHP = SkillFactory.getSkill(11000000);
+            int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
             }
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 1200 && job <= 1211) { // Flame Wizard
-            final Skill improvingMaxMP = SkillFactory.getSkill(12000000);
-            final int slevel = getSkillLevel(improvingMaxMP);
+            Skill improvingMaxMP = SkillFactory.getSkill(12000000);
+            int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
             }
             maxhp += Randomizer.rand(10, 14);
             maxmp += Randomizer.rand(22, 24);
         } else if (job >= 1500 && job <= 1512) { // Pirate
-            final Skill improvingMaxHP = SkillFactory.getSkill(15100000);
-            final int slevel = getSkillLevel(improvingMaxHP);
+            Skill improvingMaxHP = SkillFactory.getSkill(15100000);
+            int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
             }
@@ -886,7 +886,7 @@ public class MapleCharacter extends TacosCharacter {
         OK, NOT_TODAY, NOT_THIS_MONTH
     }
 
-    public void setLevel(final int level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 
@@ -953,14 +953,14 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean IsBerserk() {
-        final Skill BerserkX = SkillFactory.getSkill(1320006);
-        final int skilllevel = getSkillLevel(BerserkX);
+        Skill BerserkX = SkillFactory.getSkill(1320006);
+        int skilllevel = getSkillLevel(BerserkX);
 
         if (skilllevel < 1) {
             return false;
         }
 
-        final MapleStatEffect ampStat = BerserkX.getEffect(skilllevel);
+        MapleStatEffect ampStat = BerserkX.getEffect(skilllevel);
         if (stats.getHp() * 100 / stats.getMaxHp() <= ampStat.getX()) {
             return true;
         }
@@ -1063,7 +1063,7 @@ public class MapleCharacter extends TacosCharacter {
         if (!(playerShop instanceof HiredMerchant)) {
             return null;
         }
-        final HiredMerchant merchant = (HiredMerchant) playerShop;
+        HiredMerchant merchant = (HiredMerchant) playerShop;
         if (!merchant.isOwner(this)) {
             return null;
         }
@@ -1092,7 +1092,7 @@ public class MapleCharacter extends TacosCharacter {
         return availableCP;
     }
 
-    public void CPUpdate(final boolean party, final int available, final int total, final int team) {
+    public void CPUpdate(boolean party, int available, int total, int team) {
         SendPacket(ResCField_MonsterCarnival.CPUpdate(party, available, total, team));
     }
 
@@ -1190,10 +1190,10 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // TODO: gvup, vic, lose, draw, VR
-    public boolean startPartyQuest(final int questid) {
+    public boolean startPartyQuest(int questid) {
         boolean ret = false;
         if (!quests.containsKey(MapleQuest.getInstance(questid)) || !questinfo.containsKey(questid)) {
-            final MapleQuestStatus status = getQuestNAdd(MapleQuest.getInstance(questid));
+            MapleQuestStatus status = getQuestNAdd(MapleQuest.getInstance(questid));
             status.setStatus((byte) 1);
             updateQuest(status);
             switch (questid) {
@@ -1217,9 +1217,9 @@ public class MapleCharacter extends TacosCharacter {
         return ret;
     }
 
-    public void recalcPartyQuestRank(final int questid) {
+    public void recalcPartyQuestRank(int questid) {
         if (!startPartyQuest(questid)) {
-            final String oldRank = getOneInfo(questid, "rank");
+            String oldRank = getOneInfo(questid, "rank");
             if (oldRank == null || oldRank.equals("S")) {
                 return;
             }
@@ -1238,10 +1238,10 @@ public class MapleCharacter extends TacosCharacter {
             } else {
                 return;
             }
-            final List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> questInfo = MapleQuest.getInstance(questid).getInfoByRank(newRank);
+            List<SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>>> questInfo = MapleQuest.getInstance(questid).getInfoByRank(newRank);
             for (SimpleImmutableEntry<String, SimpleImmutableEntry<String, Integer>> q : questInfo) {
                 boolean found = false;
-                final String val = getOneInfo(questid, q.getValue().getKey());
+                String val = getOneInfo(questid, q.getValue().getKey());
                 if (val == null) {
                     return;
                 }
@@ -1267,7 +1267,7 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void havePartyQuest(final int itemId) {
+    public void havePartyQuest(int itemId) {
         int questid = 0, index = -1;
         switch (itemId) {
             case 1002798:
@@ -1343,7 +1343,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public boolean canUseFamilyBuff(MapleFamilyBuffEntry buff) {
-        final MapleQuestStatus stat = getQuestNAdd(MapleQuest.getInstance(buff.questID));
+        MapleQuestStatus stat = getQuestNAdd(MapleQuest.getInstance(buff.questID));
         if (stat.getCustomData() == null) {
             stat.setCustomData("0");
         }
@@ -1351,7 +1351,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void useFamilyBuff(MapleFamilyBuffEntry buff) {
-        final MapleQuestStatus stat = getQuestNAdd(MapleQuest.getInstance(buff.questID));
+        MapleQuestStatus stat = getQuestNAdd(MapleQuest.getInstance(buff.questID));
         stat.setCustomData(String.valueOf(System.currentTimeMillis()));
     }
 
@@ -1370,7 +1370,7 @@ public class MapleCharacter extends TacosCharacter {
         return teleportname;
     }
 
-    public void setTeleportName(final String tname) {
+    public void setTeleportName(String tname) {
         teleportname = tname;
     }
 
@@ -1385,7 +1385,7 @@ public class MapleCharacter extends TacosCharacter {
         return mfc;
     }
 
-    public void makeMFC(final int familyid, final int seniorid, final int junior1, final int junior2) {
+    public void makeMFC(int familyid, int seniorid, int junior1, int junior2) {
         if (familyid > 0) {
             MapleFamily f = getWorld().getFamily().getFamily(familyid);
             if (f == null) {
@@ -1410,7 +1410,7 @@ public class MapleCharacter extends TacosCharacter {
         }
     }
 
-    public void setFamily(final int newf, final int news, final int newj1, final int newj2) {
+    public void setFamily(int newf, int news, int newj1, int newj2) {
         if (mfc == null || newf != mfc.getFamilyId() || news != mfc.getSeniorId() || newj1 != mfc.getJunior1() || newj2 != mfc.getJunior2()) {
             makeMFC(newf, news, newj1, newj2);
         }
@@ -1490,7 +1490,7 @@ public class MapleCharacter extends TacosCharacter {
     public MapleCharacter cloneCopy() {
         TacosClient client_clone = new TacosClient(new MockIOSession());
 
-        final int minus = (getId() + Randomizer.nextInt(getId())); // really randomize it, dont want it to fail
+        int minus = (getId() + Randomizer.nextInt(getId())); // really randomize it, dont want it to fail
 
         MapleCharacter ret = new MapleCharacter();
         ret.init_step1();
@@ -1606,11 +1606,11 @@ public class MapleCharacter extends TacosCharacter {
         return true;
     }
 
-    public final void removalTask() {
+    public void removalTask() {
         try {
             if (this.getMarriageId() > 0) {
-                final MapleQuestStatus stat1 = this.getQuestNAdd(MapleQuest.getInstance(160001));
-                final MapleQuestStatus stat2 = this.getQuestNAdd(MapleQuest.getInstance(160002));
+                MapleQuestStatus stat1 = this.getQuestNAdd(MapleQuest.getInstance(160001));
+                MapleQuestStatus stat2 = this.getQuestNAdd(MapleQuest.getInstance(160002));
                 if (stat1.getCustomData() != null && (stat1.getCustomData().equals("2_") || stat1.getCustomData().equals("2"))) {
                     //dc in process of marriage
                     if (stat2.getCustomData() != null) {
@@ -1624,7 +1624,7 @@ public class MapleCharacter extends TacosCharacter {
                 this.getMap().userLeaveField(this);
             }
 
-            final Object shop = this.getPlayerShop();
+            Object shop = this.getPlayerShop();
             if (shop != null) {
                 ShopDispatch.removeVisitor(shop, this);
                 if (ShopDispatch.isOwner(shop, this)) {
@@ -1635,18 +1635,18 @@ public class MapleCharacter extends TacosCharacter {
                     }
                 }
             }
-        } catch (final Throwable e) {
+        } catch (Throwable e) {
             DebugLogger.ErrorLog("removalTask");
         }
     }
 
-    public final boolean disconnect(final boolean RemoveInChannelServer, final boolean fromCS) {
+    public boolean disconnect(boolean RemoveInChannelServer, boolean fromCS) {
         this.getName();
-        final int idz = this.getId(), gid = this.getGuildId(), fid = this.getFamilyId();
+        int idz = this.getId(), gid = this.getGuildId(), fid = this.getFamilyId();
         this.getBuddylist();
-        final MaplePartyCharacter chrp = new MaplePartyCharacter(this);
-        final MapleGuildCharacter chrg = this.getMGC();
-        final MapleFamilyCharacter chrf = this.getMFC();
+        MaplePartyCharacter chrp = new MaplePartyCharacter(this);
+        MapleGuildCharacter chrg = this.getMGC();
+        MapleFamilyCharacter chrf = this.getMFC();
 
         // fix---
         if (!fromCS) {
@@ -1677,7 +1677,7 @@ public class MapleCharacter extends TacosCharacter {
                 if (fid > 0) {
                     getWorld().getFamily().setFamilyMemberOnline(chrf, false, -1);
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
             } finally {
                 if (RemoveInChannelServer && srv_ch != null) {
                     srv_ch.getOnlinePlayers().remove(this);
@@ -1696,7 +1696,7 @@ public class MapleCharacter extends TacosCharacter {
                 if (gid > 0) {
                     getWorld().getGuild().setGuildMemberOnline(chrg, false, -1);
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
             }
         }
 
@@ -1704,13 +1704,13 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public final void updateInfoQuest(final int questid, final String data) {
+    public void updateInfoQuest(int questid, String data) {
         questinfo.put(questid, data);
         client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) questid).str(data).build()));
     }
 
     // used by script
-    public final String getInfoQuest(final int questid) {
+    public String getInfoQuest(int questid) {
         if (questinfo.containsKey(questid)) {
             return questinfo.get(questid);
         }
@@ -1718,9 +1718,9 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public final int getNumQuest() {
+    public int getNumQuest() {
         int i = 0;
-        for (final MapleQuestStatus q : quests.values()) {
+        for (MapleQuestStatus q : quests.values()) {
             if (q.getStatus() == 2 && !(q.isCustom())) {
                 i++;
             }
@@ -1739,7 +1739,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public final int getDojoRecord() {
+    public int getDojoRecord() {
         return dojoRecord;
     }
 
@@ -1769,7 +1769,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public void setDojoRecord(final boolean reset) {
+    public void setDojoRecord(boolean reset) {
         if (reset) {
             dojo = 0;
             dojoRecord = 0;
@@ -1786,7 +1786,7 @@ public class MapleCharacter extends TacosCharacter {
     // used by script
     public void changeJob(int newJob) {
         try {
-            final boolean isEv = GameConstants.isEvan(job) || GameConstants.isResist(job);
+            boolean isEv = GameConstants.isEvan(job) || GameConstants.isResist(job);
             this.job = (short) newJob;
             if (newJob != 0 && newJob != 1000 && newJob != 2000 && newJob != 2001 && newJob != 3000) {
                 if (isEv) {
@@ -1915,7 +1915,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public void gainSP(int sp, final int skillbook) {
+    public void gainSP(int sp, int skillbook) {
         this.remainingSp[skillbook] += sp; //default
         sendStatChanged(false);
         SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncSPMessage, PB_Message.builder().JobID((short) job).Inc_SP((byte) sp).build()));
@@ -1938,7 +1938,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public void gainExp(final int total, final boolean show, final boolean inChat, final boolean white) {
+    public void gainExp(int total, boolean show, boolean inChat, boolean white) {
         try {
             int prevexp = getExp();
             int needed = TacosSharedExpTable.getExpNeededForLevel(level);
@@ -2017,13 +2017,13 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public byte getSkillLevel(final Skill skill) {
+    public byte getSkillLevel(Skill skill) {
         // 存在しないスキルID
         if (skill == null) {
             return 0;
         }
 
-        final SkillEntry ret = skills.get(skill);
+        SkillEntry ret = skills.get(skill);
         if (ret == null || ret.skillevel <= 0) {
             return 0;
         }
@@ -2031,17 +2031,17 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public byte getMasterLevel(final int skill) {
+    public byte getMasterLevel(int skill) {
         return getMasterLevel(SkillFactory.getSkill(skill));
     }
 
     // used by script
-    public byte getMasterLevel(final Skill skill) {
+    public byte getMasterLevel(Skill skill) {
         // 存在しないスキルID
         if (skill == null) {
             return 0;
         }
-        final SkillEntry ret = skills.get(skill);
+        SkillEntry ret = skills.get(skill);
         if (ret == null) {
             return 0;
         }
@@ -2154,7 +2154,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public final MapleCarnivalChallenge getNextCarnivalRequest() {
+    public MapleCarnivalChallenge getNextCarnivalRequest() {
         return pendingCarnivalRequests.pollLast();
     }
 
@@ -2195,7 +2195,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public void resetStats(final int str, final int dex, final int int_, final int luk) {
+    public void resetStats(int str, int dex, int int_, int luk) {
         int total = stats.getStr() + stats.getDex() + stats.getLuk() + stats.getInt() + getRemainingAp();
 
         total -= str;
@@ -2215,25 +2215,25 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public int itemQuantity(final int itemid) {
+    public int itemQuantity(int itemid) {
         return getInventory(GameConstants.getInventoryType(itemid)).countById(itemid);
     }
 
     // used by script
     public void expandInventory(byte type, int amount) {
-        final MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
+        MapleInventory inv = getInventory(MapleInventoryType.getByType(type));
         inv.addSlot((byte) amount);
         SendPacket(ResCWvsContext.InventoryGrow(type, (byte) inv.getSlotLimit()));
     }
 
     // used by script
-    public String getOneInfo(final int questid, final String key) {
+    public String getOneInfo(int questid, String key) {
         if (!questinfo.containsKey(questid) || key == null) {
             return null;
         }
-        final String[] split = questinfo.get(questid).split(";");
+        String[] split = questinfo.get(questid).split(";");
         for (String x : split) {
-            final String[] split2 = x.split("="); //should be only 2
+            String[] split2 = x.split("="); //should be only 2
             if (split2.length == 2 && split2[0].equals(key)) {
                 return split2[1];
             }
@@ -2242,15 +2242,15 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public void updateOneInfo(final int questid, final String key, final String value) {
+    public void updateOneInfo(int questid, String key, String value) {
         if (!questinfo.containsKey(questid) || key == null || value == null) {
             return;
         }
-        final String[] split = questinfo.get(questid).split(";");
+        String[] split = questinfo.get(questid).split(";");
         boolean changed = false;
-        final StringBuilder newQuest = new StringBuilder();
+        StringBuilder newQuest = new StringBuilder();
         for (String x : split) {
-            final String[] split2 = x.split("="); //should be only 2
+            String[] split2 = x.split("="); //should be only 2
             if (split2.length != 2) {
                 continue;
             }
@@ -2267,7 +2267,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public void tryPartyQuest(final int questid) {
+    public void tryPartyQuest(int questid) {
         try {
             startPartyQuest(questid);
             pqStartTime = System.currentTimeMillis();
@@ -2279,20 +2279,20 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     // used by script
-    public void endPartyQuest(final int questid) {
+    public void endPartyQuest(int questid) {
         try {
             startPartyQuest(questid);
             if (pqStartTime > 0) {
-                final long changeTime = System.currentTimeMillis() - pqStartTime;
-                final int mins = (int) (changeTime / 1000 / 60), secs = (int) (changeTime / 1000 % 60);
-                final int mins2 = Integer.parseInt(getOneInfo(questid, "min"));
+                long changeTime = System.currentTimeMillis() - pqStartTime;
+                int mins = (int) (changeTime / 1000 / 60), secs = (int) (changeTime / 1000 % 60);
+                int mins2 = Integer.parseInt(getOneInfo(questid, "min"));
                 Integer.parseInt(getOneInfo(questid, "sec"));
                 if (mins2 <= 0 || mins < mins2) {
                     updateOneInfo(questid, "min", String.valueOf(mins));
                     updateOneInfo(questid, "sec", String.valueOf(secs));
                     updateOneInfo(questid, "date", TacosSharedDate.getDateString());
                 }
-                final int newCmp = Integer.parseInt(getOneInfo(questid, "cmp")) + 1;
+                int newCmp = Integer.parseInt(getOneInfo(questid, "cmp")) + 1;
                 updateOneInfo(questid, "cmp", String.valueOf(newCmp));
                 updateOneInfo(questid, "CR", String.valueOf((int) Math.ceil((newCmp * 100.0) / Integer.parseInt(getOneInfo(questid, "try")))));
                 recalcPartyQuestRank(questid);

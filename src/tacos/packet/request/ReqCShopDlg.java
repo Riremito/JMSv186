@@ -56,20 +56,20 @@ public class ReqCShopDlg {
 
                 byte unk2 = cp.Decode1(Config.GreaterOrEqual(Region.KMS, 114) || Config.GreaterOrEqual(Region.KMST, 391) || Config.GreaterOrEqual(Region.JMS, 194) || Config.GreaterOrEqual(Region.JMST, 110) || Config.GreaterOrEqual(Region.EMS, 76));
 
-                final int itemId = cp.Decode4();
-                final short quantity = cp.Decode2();
+                int itemId = cp.Decode4();
+                short quantity = cp.Decode2();
                 shop.buy(client, chr, itemId, quantity);
                 break;
             }
             case ShopReq_Sell: {
-                final byte slot = (byte) cp.Decode2();
-                final int itemId = cp.Decode4();
-                final short quantity = cp.Decode2();
+                byte slot = (byte) cp.Decode2();
+                int itemId = cp.Decode4();
+                short quantity = cp.Decode2();
                 shop.sell(client, GameConstants.getInventoryType(itemId), slot, quantity);
                 break;
             }
             case ShopReq_Recharge: {
-                final byte slot = (byte) cp.Decode2();
+                byte slot = (byte) cp.Decode2();
                 shop.recharge(client, slot);
                 break;
             }

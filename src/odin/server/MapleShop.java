@@ -89,7 +89,7 @@ public class MapleShop {
             return false;
         }
 
-        final int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
+        int price = GameConstants.isRechargable(itemId) ? item.getPrice() : (item.getPrice() * quantity);
 
         if (item.getPrice() < 0 || client.getPlayer().getMeso() < price) {
             chr.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_BuyNoMoney));
@@ -148,7 +148,7 @@ public class MapleShop {
         if (iQuant == 0xFFFF) {
             iQuant = 1;
         }
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         if (ii.cantSell(item.getItemId())) {
             return;
         }
@@ -160,7 +160,7 @@ public class MapleShop {
             } else {
                 price = ii.getPrice(item.getItemId());
             }
-            final int recvMesos = (int) Math.max(Math.ceil(price * quantity), 0);
+            int recvMesos = (int) Math.max(Math.ceil(price * quantity), 0);
             if (price != -1.0 && recvMesos > 0) {
                 chr.gainMeso(recvMesos, false);
             }
@@ -168,23 +168,23 @@ public class MapleShop {
         }
     }
 
-    public boolean recharge(final TacosClient client, final byte slot) {
+    public boolean recharge(TacosClient client, byte slot) {
         MapleCharacter chr = client.getPlayer();
-        final Item item = chr.getInventory(MapleInventoryType.USE).getItem(slot);
+        Item item = chr.getInventory(MapleInventoryType.USE).getItem(slot);
 
         if (item == null || (!GameConstants.isThrowingStar(item.getItemId()) && !GameConstants.isBullet(item.getItemId()))) {
             client.SendPacket(ResCShopDlg.ShopResult(OpsShop.ShopRes_SellNoStock));
             return false;
         }
-        final MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
+        MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         short slotMax = ii.getSlotMax(client, item.getItemId());
-        final int skill = GameConstants.getMasterySkill(chr.getJob());
+        int skill = GameConstants.getMasterySkill(chr.getJob());
 
         if (skill != 0) {
             slotMax += chr.getSkillLevel(SkillFactory.getSkill(skill)) * 10;
         }
         if (item.getQuantity() < slotMax) {
-            final int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
+            int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));
             if (chr.getMeso() >= price) {
                 item.setQuantity(slotMax);
                 client.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().update(MapleInventoryType.USE, (Item) item).build()));

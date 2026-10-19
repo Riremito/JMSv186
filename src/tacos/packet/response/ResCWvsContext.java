@@ -785,7 +785,7 @@ public class ResCWvsContext {
         // CUIUserInfo::SetTamingMobInfo
         Item inv_mount = player.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18);
         boolean TamingMobEnabled = false;
-        final MapleMount tm = player.getMount();
+        MapleMount tm = player.getMount();
         if (tm != null && inv_mount != null) {
             TamingMobEnabled = MapleItemInformationProvider.getInstance().getReqLevel(inv_mount.getItemId()) <= player.getLevel();
         }
@@ -797,11 +797,11 @@ public class ResCWvsContext {
         }
 
         // CUIUserInfo::SetWishItemInfo
-        final int wishlistSize = player.getWishlistSize();
+        int wishlistSize = player.getWishlistSize();
         sp.Encode1(wishlistSize);
         if (wishlistSize > 0) {
             // CInPacket::DecodeBuffer(v4, iPacket, 4 * wishlistSize);
-            final int[] wishlist = player.getWishlist();
+            int[] wishlist = player.getWishlist();
             for (int x = 0; x < wishlistSize; x++) {
                 sp.Encode4(wishlist[x]);
             }
@@ -1509,7 +1509,7 @@ public class ResCWvsContext {
     // CWvsContext::OnSessionValue
     // CWvsContext::OnPartyValue
     // CWvsContext::OnFieldSetVariable
-    public static ServerPacket sendString(final int type, String object, final String amount) {
+    public static ServerPacket sendString(int type, String object, String amount) {
         ServerPacketHeader header = ServerPacketHeader.UNKNOWN;
 
         switch (type) {
@@ -1659,13 +1659,13 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
-    public static ServerPacket changeAlliance(MapleGuildAlliance alliance, final boolean in) {
+    public static ServerPacket changeAlliance(MapleGuildAlliance alliance, boolean in) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(1);
         sp.Encode1(in ? 1 : 0);
         sp.Encode4(in ? alliance.getId() : 0);
-        final int noGuilds = alliance.getNoGuilds();
+        int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < noGuilds; i++) {
             g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
@@ -1710,7 +1710,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, final boolean add) {
+    public static ServerPacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, boolean add) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
         sp.Encode1(4);
@@ -1767,7 +1767,7 @@ public class ResCWvsContext {
             sp.Encode4(0);
             return sp;
         }
-        final int noGuilds = alliance.getNoGuilds();
+        int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
@@ -1977,7 +1977,7 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket BBSThreadList(final List<MapleBBSThread> bbs, int start) {
+    public static ServerPacket BBSThreadList(List<MapleBBSThread> bbs, int start) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
         sp.Encode1(6);
@@ -1995,7 +1995,7 @@ public class ResCWvsContext {
                 break;
             }
         }
-        final int ret = notice == null ? 0 : 1;
+        int ret = notice == null ? 0 : 1;
         sp.Encode1(ret);
         if (notice != null) {
             //has a notice
@@ -2009,7 +2009,7 @@ public class ResCWvsContext {
         }
         //each page has 10 threads, start = page # in packet but not here
         sp.Encode4(threadCount);
-        final int pages = Math.min(10, threadCount - start);
+        int pages = Math.min(10, threadCount - start);
         sp.Encode4(pages);
         for (int i = 0; i < pages; i++) {
             sp.EncodeBuffer(addThread(bbs.get(start + i + ret))); //because 0 = notice
@@ -2022,7 +2022,7 @@ public class ResCWvsContext {
 
         sp.Encode1(15);
         sp.EncodeBuffer(addAllianceInfo(alliance));
-        final int noGuilds = alliance.getNoGuilds();
+        int noGuilds = alliance.getNoGuilds();
         MapleGuild[] g = new MapleGuild[noGuilds];
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));

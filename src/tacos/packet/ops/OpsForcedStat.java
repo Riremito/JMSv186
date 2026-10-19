@@ -61,7 +61,7 @@ public enum OpsForcedStat implements IPacketOps {
     }
 
     public static OpsForcedStat find(int val) {
-        for (final OpsForcedStat ops : OpsForcedStat.values()) {
+        for (OpsForcedStat ops : OpsForcedStat.values()) {
             if (ops.get() == val) {
                 return ops;
             }

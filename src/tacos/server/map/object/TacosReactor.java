@@ -198,7 +198,7 @@ public class TacosReactor extends TacosMapObject {
     }
 
     // used by script
-    public void delayedHitReactor(final TacosClient client, long delay) {
+    public void delayedHitReactor(TacosClient client, long delay) {
         hitReactor(client);
     }
 }

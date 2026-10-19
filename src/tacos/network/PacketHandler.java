@@ -148,7 +148,7 @@ public class PacketHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void sessionIdle(final IoSession session, final IdleStatus status) throws Exception {
+    public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
         log(session, "sessionIdle.");
         TacosClient client = (TacosClient) session.getAttribute(TacosClient.CLIENT_KEY);
 
@@ -167,7 +167,7 @@ public class PacketHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void messageReceived(final IoSession session, final Object message) {
+    public void messageReceived(IoSession session, Object message) {
         log(session, "messageReceived.");
         try {
             ClientPacket cp = new ClientPacket((byte[]) message);
@@ -188,7 +188,7 @@ public class PacketHandler extends IoHandlerAdapter {
     }
 
     @Override
-    public void messageSent(final IoSession session, final Object message) throws Exception {
+    public void messageSent(IoSession session, Object message) throws Exception {
         log(session, "messageSent.");
         //log(session, (new ClientPacket(((MaplePacket) message).getBytes())).get()); // server packet
         super.messageSent(session, message);

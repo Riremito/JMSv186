@@ -39,10 +39,10 @@ public class Event_DojoAgent {
     private final static Point point3 = new Point(355, 0);
 
     public static boolean warpStartAgent(MapleCharacter player, boolean party) {
-        final int stage = 1;
-        final int mapid = baseAgentMapId + (stage * 100);
+        int stage = 1;
+        int mapid = baseAgentMapId + (stage * 100);
         for (int i = mapid; i < mapid + 15; i++) {
-            final MapleMap map = player.findMap(i);
+            MapleMap map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 player.changeMapPortal(map, map.getPortal(0));
@@ -53,8 +53,8 @@ public class Event_DojoAgent {
     }
 
     public static boolean warpNextMap_Agent(MapleCharacter player, boolean fromResting) {
-        final int currentmap = player.getMapId();
-        final int thisStage = (currentmap - baseAgentMapId) / 100;
+        int currentmap = player.getMapId();
+        int thisStage = (currentmap - baseAgentMapId) / 100;
 
         MapleMap map = player.getMap();
         if (map.getNumMonsters() > 0) {
@@ -69,7 +69,7 @@ public class Event_DojoAgent {
             player.changeMapPortal(map, map.getPortal(0));
             return true;
         }
-        final int nextmapid = baseAgentMapId + ((thisStage + 1) * 100);
+        int nextmapid = baseAgentMapId + ((thisStage + 1) * 100);
         for (int i = nextmapid; i < nextmapid + 7; i++) {
             map = player.findMap(i);
             if (map.getCharactersSize() == 0) {
@@ -105,8 +105,8 @@ public class Event_DojoAgent {
                 break;
             }
         }
-        final MapleMap map = player.findMap(mapid);
-        final MapleMap mapidd = player.getMap();
+        MapleMap map = player.findMap(mapid);
+        MapleMap mapidd = player.getMap();
         if (canenter) {
             if (party && player.getParty() != null) {
                 for (MaplePartyCharacter mem : player.getParty().getMembers()) {
@@ -135,26 +135,26 @@ public class Event_DojoAgent {
     // 925022400 ~ 925022409
     // 925023000 ~ 925023009
     // 925023600 ~ 925023609
-    public static boolean warpNextMap(MapleCharacter player, final boolean fromResting) {
+    public static boolean warpNextMap(MapleCharacter player, boolean fromResting) {
         try {
-            final MapleMap currentmap = player.getMap();
-            final int temp = (currentmap.getId() - 925000000) / 100;
-            final int thisStage = (int) (temp - ((temp / 100) * 100));
-            final int points = getDojoPoints(thisStage);
+            MapleMap currentmap = player.getMap();
+            int temp = (currentmap.getId() - 925000000) / 100;
+            int thisStage = (int) (temp - ((temp / 100) * 100));
+            int points = getDojoPoints(thisStage);
             if (!fromResting) {
                 clearMap(currentmap, true);
                 if (player.getParty() != null && player.getParty().getMembers().size() > 1) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
                         MapleCharacter chr = currentmap.getPlayerById(mem.getId());
                         if (chr != null) {
-                            final int point = (points * 3);
+                            int point = (points * 3);
                             chr.modifyCSPoints(1, point * 4, true);
                             chr.setDojo(chr.getDojo() + point);
                             chr.SendPacket(Mulung_Pts(point, chr.getDojo()));
                         }
                     }
                 } else {
-                    final int point = ((points + 1) * 3);
+                    int point = ((points + 1) * 3);
                     player.modifyCSPoints(1, point * 4, true);
                     player.setDojo(player.getDojo() + point);
                     player.SendPacket(Mulung_Pts(point, player.getDojo()));
@@ -162,7 +162,7 @@ public class Event_DojoAgent {
 
             }
             if (currentmap.getId() >= 925023800 && currentmap.getId() <= 925023814) {
-                final MapleMap map = player.findMap(925020003);
+                MapleMap map = player.findMap(925020003);
 
                 if (player.getParty() != null) {
                     for (MaplePartyCharacter mem : player.getParty().getMembers()) {
@@ -180,7 +180,7 @@ public class Event_DojoAgent {
             }
 
             //final int nextmapid = 925020000 + ((thisStage + 1) * 100);
-            final MapleMap map = player.findMap(currentmap.getId() + 100);
+            MapleMap map = player.findMap(currentmap.getId() + 100);
             if (map.getCharactersSize() == 0) {
                 clearMap(map, false);
                 if (player.getParty() != null) {
@@ -222,7 +222,7 @@ public class Event_DojoAgent {
         return false;
     }
 
-    private static final void clearMap(final MapleMap map, final boolean check) {
+    private static void clearMap(MapleMap map, boolean check) {
         if (check) {
             if (map.getCharactersSize() != 0) {
                 return;
@@ -231,7 +231,7 @@ public class Event_DojoAgent {
         map.resetFully();
     }
 
-    private static final int getDojoPoints(final int stage) {
+    private static int getDojoPoints(int stage) {
 
         switch (stage) {
             case 1:
@@ -278,8 +278,8 @@ public class Event_DojoAgent {
         }
     }
 
-    private static final void spawnMonster(final MapleMap map, final int stage) {
-        final int mobid;
+    private static void spawnMonster(MapleMap map, int stage) {
+        int mobid;
 
         switch (stage) {
             case 1:

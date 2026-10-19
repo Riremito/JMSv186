@@ -36,7 +36,7 @@ public class Item {
     private String GameMaster_log = null;
     private String giftFrom = "";
 
-    public Item(final int id, final short position, final short quantity, final byte flag, final int uniqueid) {
+    public Item(int id, short position, short quantity, byte flag, int uniqueid) {
         super();
         this.id = id;
         this.position = position;
@@ -45,7 +45,7 @@ public class Item {
         this.uniqueid = uniqueid;
     }
 
-    public Item(final int id, final short position, final short quantity, final byte flag) {
+    public Item(int id, short position, short quantity, byte flag) {
         super();
         this.id = id;
         this.position = position;
@@ -61,7 +61,7 @@ public class Item {
     }
 
     public Item copy() {
-        final Item ret = new Item(id, position, quantity, flag, uniqueid);
+        Item ret = new Item(id, position, quantity, flag, uniqueid);
         ret.pet = pet;
         ret.owner = owner;
         ret.GameMaster_log = GameMaster_log;
@@ -70,7 +70,7 @@ public class Item {
         return ret;
     }
 
-    public final void setPosition(final short position) {
+    public void setPosition(short position) {
         this.position = position;
 
         if (pet != null) {
@@ -78,7 +78,7 @@ public class Item {
         }
     }
 
-    public void setQuantity(final short quantity) {
+    public void setQuantity(short quantity) {
         this.quantity = quantity;
     }
 
@@ -89,7 +89,7 @@ public class Item {
         0x0008
         0x0010 1回交換可能
      */
-    public final byte getFlag() {
+    public byte getFlag() {
         return flag;
     }
 
@@ -97,39 +97,39 @@ public class Item {
         return 2; // An Item
     }
 
-    public final String getOwner() {
+    public String getOwner() {
         return owner;
     }
 
-    public final void setOwner(final String owner) {
+    public void setOwner(String owner) {
         this.owner = owner;
     }
 
-    public final void setFlag(final byte flag) {
+    public void setFlag(byte flag) {
         this.flag = flag;
     }
 
-    public final long getExpiration() {
+    public long getExpiration() {
         return expiration;
     }
 
-    public final void setExpiration(final long expire) {
+    public void setExpiration(long expire) {
         this.expiration = expire;
     }
 
-    public final String getGMLog() {
+    public String getGMLog() {
         return GameMaster_log;
     }
 
-    public void setGMLog(final String GameMaster_log) {
+    public void setGMLog(String GameMaster_log) {
         this.GameMaster_log = GameMaster_log;
     }
 
-    public final int getUniqueId() {
+    public int getUniqueId() {
         return uniqueid;
     }
 
-    public final void setUniqueId(final int id) {
+    public void setUniqueId(int id) {
         this.uniqueid = id;
     }
 
@@ -137,7 +137,7 @@ public class Item {
         return pet;
     }
 
-    public final void setPet(final MaplePet pet) {
+    public void setPet(MaplePet pet) {
         this.pet = pet;
     }
 
@@ -174,17 +174,17 @@ public class Item {
     }
 
     // used by script
-    public final int getItemId() {
+    public int getItemId() {
         return id;
     }
 
     // used by script
-    public final short getPosition() {
+    public short getPosition() {
         return position;
     }
 
     // used by script
-    public final short getQuantity() {
+    public short getQuantity() {
         return quantity;
     }
 

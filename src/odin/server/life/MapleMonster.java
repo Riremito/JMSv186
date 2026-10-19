@@ -119,7 +119,7 @@ public class MapleMonster extends TacosMonster {
         initWithStats(monster.stats);
     }
 
-    private void initWithStats(final MapleMonsterStats stats) {
+    private void initWithStats(MapleMonsterStats stats) {
         setStance(5);
         this.stats = stats;
         hp = stats.getHp();
@@ -135,81 +135,81 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public final MapleMonsterStats getStats() {
+    public MapleMonsterStats getStats() {
         return stats;
     }
 
-    public final void disableDrops() {
+    public void disableDrops() {
         this.dropsDisabled = true;
     }
 
-    public final boolean dropsDisabled() {
+    public boolean dropsDisabled() {
         return dropsDisabled;
     }
 
-    public final void setSponge(final MapleMonster mob) {
+    public void setSponge(MapleMonster mob) {
         sponge = new WeakReference<>(mob);
     }
 
-    public void setMap(final MapleMap map) {
+    public void setMap(MapleMap map) {
         this.map = map;
     }
 
-    public final long getHp() {
+    public long getHp() {
         return hp;
     }
 
-    public final void setHp(long hp) {
+    public void setHp(long hp) {
         this.hp = hp;
     }
 
-    public final long getMobMaxHp() {
+    public long getMobMaxHp() {
         if (ostats != null) {
             return ostats.getHp();
         }
         return stats.getHp();
     }
 
-    public final int getMp() {
+    public int getMp() {
         return mp;
     }
 
-    public final void setMp(int mp) {
+    public void setMp(int mp) {
         if (mp < 0) {
             mp = 0;
         }
         this.mp = mp;
     }
 
-    public final int getMobMaxMp() {
+    public int getMobMaxMp() {
         if (ostats != null) {
             return ostats.getMp();
         }
         return stats.getMp();
     }
 
-    public final int getMobExp() {
+    public int getMobExp() {
         if (ostats != null) {
             return ostats.getExp();
         }
         return stats.getExp();
     }
 
-    public final void setOverrideStats(final OverrideMonsterStats ostats) {
+    public void setOverrideStats(OverrideMonsterStats ostats) {
         this.ostats = ostats;
         this.hp = ostats.getHp();
         this.mp = ostats.getMp();
     }
 
-    public final MapleMonster getSponge() {
+    public MapleMonster getSponge() {
         return sponge.get();
     }
 
-    public final void damage(final MapleCharacter from, final long damage, final boolean updateAttackTime) {
+    public void damage(MapleCharacter from, long damage, boolean updateAttackTime) {
         damage(from, damage, updateAttackTime, 0);
     }
 
-    public final boolean isRaid() {
+    public boolean isRaid() {
         if (!stats.isBoss()) {
             return false;
         }
@@ -232,7 +232,7 @@ public class MapleMonster extends TacosMonster {
         return false;
     }
 
-    public final void damage(final MapleCharacter from, long damage, final boolean updateAttackTime, final int lastSkill) {
+    public void damage(MapleCharacter from, long damage, boolean updateAttackTime, int lastSkill) {
         if (from == null || damage <= 0 || !isAlive()) {
             return;
         }
@@ -255,7 +255,7 @@ public class MapleMonster extends TacosMonster {
             attacker = new SingleAttackerEntry(from, map.getChannel());
         }
         boolean replaced = false;
-        for (final AttackerEntry aentry : attackers) {
+        for (AttackerEntry aentry : attackers) {
             if (aentry.equals(attacker)) {
                 attacker = aentry;
                 replaced = true;
@@ -265,14 +265,14 @@ public class MapleMonster extends TacosMonster {
         if (!replaced) {
             attackers.add(attacker);
         }
-        final long rDamage = Math.max(0, Math.min(damage, hp));
+        long rDamage = Math.max(0, Math.min(damage, hp));
         attacker.addDamage(from, rDamage, updateAttackTime);
 
         if (stats.getSelfD() != -1) {
             hp -= rDamage;
             if (hp > 0) {
-                for (final AttackerEntry mattacker : attackers) {
-                    for (final AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
+                for (AttackerEntry mattacker : attackers) {
+                    for (AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
                         if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
                             if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
                                 cattacker.getAttacker().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
@@ -312,8 +312,8 @@ public class MapleMonster extends TacosMonster {
                             from.mulung_EnergyModify(true);
                             break;
                         case 3:
-                            for (final AttackerEntry mattacker : attackers) {
-                                for (final AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
+                            for (AttackerEntry mattacker : attackers) {
+                                for (AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
                                     if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
                                         if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
                                             cattacker.getAttacker().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
@@ -336,7 +336,7 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public void heal(int hp, int mp, final boolean broadcast) {
+    public void heal(int hp, int mp, boolean broadcast) {
         long TotalHP = getHp() + hp;
         int TotalMP = getMp() + mp;
 
@@ -388,14 +388,14 @@ public class MapleMonster extends TacosMonster {
         int totalBaseExp = getMobExp();
         AttackerEntry highest = null;
         long highdamage = 0;
-        for (final AttackerEntry attackEntry : attackers) {
+        for (AttackerEntry attackEntry : attackers) {
             if (attackEntry.getDamage() > highdamage) {
                 highest = attackEntry;
                 highdamage = attackEntry.getDamage();
             }
         }
         int baseExp;
-        for (final AttackerEntry attackEntry : attackers) {
+        for (AttackerEntry attackEntry : attackers) {
             baseExp = (int) Math.ceil(totalBaseExp * ((double) attackEntry.getDamage() / getMobMaxHp()));
             attackEntry.killedMob(getMap(), baseExp, attackEntry == highest, lastSkill);
         }
@@ -429,7 +429,7 @@ public class MapleMonster extends TacosMonster {
 
     public void spawnRevives() {
         // chaos zakum
-        final List<Integer> toSpawn = stats.getRevives();
+        List<Integer> toSpawn = stats.getRevives();
 
         if (toSpawn == null) {
             return;
@@ -502,7 +502,7 @@ public class MapleMonster extends TacosMonster {
                 if (spongy != null) {
                     map.spawnRevives(spongy, this.getObjectId());
 
-                    for (final MapleMonster i : mobs) {
+                    for (MapleMonster i : mobs) {
                         i.setSponge(spongy);
                         map.spawnRevives(i, this.getObjectId());
                     }
@@ -529,15 +529,15 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public final boolean isAlive() {
+    public boolean isAlive() {
         return hp > 0;
     }
 
-    public final void setCarnivalTeam(final byte team) {
+    public void setCarnivalTeam(byte team) {
         carnivalTeam = team;
     }
 
-    public final byte getCarnivalTeam() {
+    public byte getCarnivalTeam() {
         return carnivalTeam;
     }
 
@@ -551,7 +551,7 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public final void resetShammos(TacosClient client) {
+    public void resetShammos(TacosClient client) {
         map.killAllMonsters(true);
         map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("A player has moved too far from Shammos. Shammos is going back to the start.").build()));
         for (MapleCharacter chr : map.getAllPlayers()) {
@@ -589,15 +589,15 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public final OdinEventInstanceManager getEventInstance() {
+    public OdinEventInstanceManager getEventInstance() {
         return eventInstance;
     }
 
-    public final void applyStatus(final MapleCharacter from, final MonsterStatusEffect status, final boolean poison, final long duration, final boolean venom) {
+    public void applyStatus(MapleCharacter from, MonsterStatusEffect status, boolean poison, long duration, boolean venom) {
         applyStatus(from, status, poison, duration, venom, true);
     }
 
-    public final void applyStatus(final MapleCharacter from, final MonsterStatusEffect status, final boolean poison, final long duration, final boolean venom, final boolean checkboss) {
+    public void applyStatus(MapleCharacter from, MonsterStatusEffect status, boolean poison, long duration, boolean venom, boolean checkboss) {
         if (!isAlive()) {
             return;
         }
@@ -615,7 +615,7 @@ public class MapleMonster extends TacosMonster {
             }
         }
         // compos don't have an elemental (they have 2 - so we have to hack here...)
-        final int statusSkill = status.getSkill();
+        int statusSkill = status.getSkill();
         switch (statusSkill) {
             case 2111006: { // FP compo
                 switch (stats.getEffectiveness(Element.POISON)) {
@@ -643,7 +643,7 @@ public class MapleMonster extends TacosMonster {
                 break;
             }
         }
-        final MonsterStatus stat = status.getStati();
+        MonsterStatus stat = status.getStati();
         if (stats.isNoDoom() && stat == MonsterStatus.DOOM) {
             return;
         }
@@ -696,30 +696,30 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public final void setFake(final boolean fake) {
+    public void setFake(boolean fake) {
         this.fake = fake;
     }
 
-    public final MapleMap getMap() {
+    public MapleMap getMap() {
         return map;
     }
 
-    public final List<SimpleImmutableEntry<Integer, Integer>> getSkills() {
+    public List<SimpleImmutableEntry<Integer, Integer>> getSkills() {
         return stats.getSkills();
     }
 
-    public final boolean hasSkill(final int skillId, final int level) {
+    public boolean hasSkill(int skillId, int level) {
         return stats.hasSkill(skillId, level);
     }
 
-    public final long getLastSkillUsed(final int skillId) {
+    public long getLastSkillUsed(int skillId) {
         if (usedSkills.containsKey(skillId)) {
             return usedSkills.get(skillId);
         }
         return 0;
     }
 
-    public final void setLastSkillUsed(final int skillId, final long now, final long cooltime) {
+    public void setLastSkillUsed(int skillId, long now, long cooltime) {
         switch (skillId) {
             case 140:
                 usedSkills.put(skillId, now + (cooltime * 2));
@@ -735,15 +735,15 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public final byte getNoSkills() {
+    public byte getNoSkills() {
         return stats.getNoSkills();
     }
 
-    public final boolean isFirstAttack() {
+    public boolean isFirstAttack() {
         return stats.isFirstAttack();
     }
 
-    public final int getBuffToGive() {
+    public int getBuffToGive() {
         return stats.getBuffToGive();
     }
 
@@ -756,17 +756,17 @@ public class MapleMonster extends TacosMonster {
         private MapleCharacter attacker;
         private long lastAttackTime;
 
-        public AttackingMapleCharacter(final MapleCharacter attacker, final long lastAttackTime) {
+        public AttackingMapleCharacter(MapleCharacter attacker, long lastAttackTime) {
             super();
             this.attacker = attacker;
             this.lastAttackTime = lastAttackTime;
         }
 
-        public final long getLastAttackTime() {
+        public long getLastAttackTime() {
             return lastAttackTime;
         }
 
-        public final MapleCharacter getAttacker() {
+        public MapleCharacter getAttacker() {
             return attacker;
         }
     }
@@ -791,13 +791,13 @@ public class MapleMonster extends TacosMonster {
         private int chrid;
         private int channel;
 
-        public SingleAttackerEntry(final MapleCharacter from, final int cserv) {
+        public SingleAttackerEntry(MapleCharacter from, int cserv) {
             this.chrid = from.getId();
             this.channel = cserv;
         }
 
         @Override
-        public void addDamage(final MapleCharacter from, final long damage, final boolean updateAttackTime) {
+        public void addDamage(MapleCharacter from, long damage, boolean updateAttackTime) {
             if (chrid == from.getId()) {
                 this.damage += damage;
                 if (updateAttackTime) {
@@ -807,8 +807,8 @@ public class MapleMonster extends TacosMonster {
         }
 
         @Override
-        public final List<AttackingMapleCharacter> getAttackers() {
-            final MapleCharacter chr = map.getPlayerById(chrid);
+        public List<AttackingMapleCharacter> getAttackers() {
+            MapleCharacter chr = map.getPlayerById(chrid);
             if (chr != null) {
                 return Collections.singletonList(new AttackingMapleCharacter(chr, lastAttackTime));
             } else {
@@ -817,7 +817,7 @@ public class MapleMonster extends TacosMonster {
         }
 
         @Override
-        public boolean contains(final MapleCharacter chr) {
+        public boolean contains(MapleCharacter chr) {
             return chrid == chr.getId();
         }
 
@@ -827,8 +827,8 @@ public class MapleMonster extends TacosMonster {
         }
 
         @Override
-        public void killedMob(final MapleMap map, final int baseExp, final boolean mostDamage, final int lastSkill) {
-            final MapleCharacter chr = map.getPlayerById(chrid);
+        public void killedMob(MapleMap map, int baseExp, boolean mostDamage, int lastSkill) {
+            MapleCharacter chr = map.getPlayerById(chrid);
             if (chr != null && chr.isAlive()) {
                 giveExpToCharacter(chr, baseExp, mostDamage, 1, (byte) 0, (byte) 0, (byte) 0, lastSkill);
             }
@@ -840,7 +840,7 @@ public class MapleMonster extends TacosMonster {
         }
 
         @Override
-        public final boolean equals(Object obj) {
+        public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -850,7 +850,7 @@ public class MapleMonster extends TacosMonster {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final SingleAttackerEntry other = (SingleAttackerEntry) obj;
+            SingleAttackerEntry other = (SingleAttackerEntry) obj;
             return chrid == other.chrid;
         }
     }
@@ -862,7 +862,7 @@ public class MapleMonster extends TacosMonster {
         public final byte Class_Bonus_EXP;
         public final byte Premium_Bonus_EXP;
 
-        public ExpMap(final int exp, final byte ptysize, final byte Class_Bonus_EXP, final byte Premium_Bonus_EXP) {
+        public ExpMap(int exp, byte ptysize, byte Class_Bonus_EXP, byte Premium_Bonus_EXP) {
             super();
             this.exp = exp;
             this.ptysize = ptysize;
@@ -877,7 +877,7 @@ public class MapleMonster extends TacosMonster {
         public long damage;
         public long lastAttackTime;
 
-        public OnePartyAttacker(final MapleParty lastKnownParty, final long damage) {
+        public OnePartyAttacker(MapleParty lastKnownParty, long damage) {
             super();
             this.lastKnownParty = lastKnownParty;
             this.damage = damage;
@@ -892,15 +892,15 @@ public class MapleMonster extends TacosMonster {
         private int partyid;
         private int channel;
 
-        public PartyAttackerEntry(final int partyid, final int cserv) {
+        public PartyAttackerEntry(int partyid, int cserv) {
             this.partyid = partyid;
             this.channel = cserv;
         }
 
         public List<AttackingMapleCharacter> getAttackers() {
-            final List<AttackingMapleCharacter> ret = new ArrayList<>(attackers.size());
-            for (final Entry<Integer, OnePartyAttacker> entry : attackers.entrySet()) {
-                final MapleCharacter chr = map.getPlayerById(entry.getKey());
+            List<AttackingMapleCharacter> ret = new ArrayList<>(attackers.size());
+            for (Entry<Integer, OnePartyAttacker> entry : attackers.entrySet()) {
+                MapleCharacter chr = map.getPlayerById(entry.getKey());
                 if (chr != null) {
                     ret.add(new AttackingMapleCharacter(chr, entry.getValue().lastAttackTime));
                 }
@@ -908,10 +908,10 @@ public class MapleMonster extends TacosMonster {
             return ret;
         }
 
-        private final Map<MapleCharacter, OnePartyAttacker> resolveAttackers() {
-            final Map<MapleCharacter, OnePartyAttacker> ret = new HashMap<>(attackers.size());
-            for (final Entry<Integer, OnePartyAttacker> aentry : attackers.entrySet()) {
-                final MapleCharacter chr = map.getPlayerById(aentry.getKey());
+        private Map<MapleCharacter, OnePartyAttacker> resolveAttackers() {
+            Map<MapleCharacter, OnePartyAttacker> ret = new HashMap<>(attackers.size());
+            for (Entry<Integer, OnePartyAttacker> aentry : attackers.entrySet()) {
+                MapleCharacter chr = map.getPlayerById(aentry.getKey());
                 if (chr != null) {
                     ret.put(chr, aentry.getValue());
                 }
@@ -920,17 +920,17 @@ public class MapleMonster extends TacosMonster {
         }
 
         @Override
-        public final boolean contains(final MapleCharacter chr) {
+        public boolean contains(MapleCharacter chr) {
             return attackers.containsKey(chr.getId());
         }
 
         @Override
-        public final long getDamage() {
+        public long getDamage() {
             return totDamage;
         }
 
-        public void addDamage(final MapleCharacter from, final long damage, final boolean updateAttackTime) {
-            final OnePartyAttacker oldPartyAttacker = attackers.get(from.getId());
+        public void addDamage(MapleCharacter from, long damage, boolean updateAttackTime) {
+            OnePartyAttacker oldPartyAttacker = attackers.get(from.getId());
             if (oldPartyAttacker != null) {
                 oldPartyAttacker.damage += damage;
                 oldPartyAttacker.lastKnownParty = from.getParty();
@@ -942,7 +942,7 @@ public class MapleMonster extends TacosMonster {
                 // only the last setup will get exp - but otherwise we'd have to store the full party
                 // constellation for every attack/everytime it changes, might be wanted/needed in the
                 // future but not now
-                final OnePartyAttacker onePartyAttacker = new OnePartyAttacker(from.getParty(), damage);
+                OnePartyAttacker onePartyAttacker = new OnePartyAttacker(from.getParty(), damage);
                 attackers.put(from.getId(), onePartyAttacker);
                 if (!updateAttackTime) {
                     onePartyAttacker.lastAttackTime = 0;
@@ -952,26 +952,26 @@ public class MapleMonster extends TacosMonster {
         }
 
         @Override
-        public final void killedMob(final MapleMap map, final int baseExp, final boolean mostDamage, final int lastSkill) {
+        public void killedMob(MapleMap map, int baseExp, boolean mostDamage, int lastSkill) {
             MapleCharacter pchr, highest = null;
             long iDamage, highestDamage = 0;
             int iexp = 0;
             MapleParty party;
             double averagePartyLevel, expWeight, levelMod, innerBaseExp, expFraction;
             List<MapleCharacter> expApplicable;
-            final Map<MapleCharacter, ExpMap> expMap = new HashMap<>(6);
+            Map<MapleCharacter, ExpMap> expMap = new HashMap<>(6);
             byte Class_Bonus_EXP;
             byte Premium_Bonus_EXP;
             byte added_partyinc = 0;
 
-            for (final Entry<MapleCharacter, OnePartyAttacker> attacker : resolveAttackers().entrySet()) {
+            for (Entry<MapleCharacter, OnePartyAttacker> attacker : resolveAttackers().entrySet()) {
                 party = attacker.getValue().lastKnownParty;
                 averagePartyLevel = 0;
 
                 Class_Bonus_EXP = 0;
                 Premium_Bonus_EXP = 0;
                 expApplicable = new ArrayList<>();
-                for (final MaplePartyCharacter partychar : party.getMembers()) {
+                for (MaplePartyCharacter partychar : party.getMembers()) {
                     if (attacker.getKey().getLevel() - partychar.getLevel() <= 5 || stats.getLevel() - partychar.getLevel() <= 5) {
                         pchr = map.getPlayerById(partychar.getId());
                         if (pchr != null) {
@@ -1001,7 +1001,7 @@ public class MapleMonster extends TacosMonster {
                 innerBaseExp = baseExp * ((double) iDamage / totDamage);
                 expFraction = innerBaseExp / (expApplicable.size() + 1);
 
-                for (final MapleCharacter expReceiver : expApplicable) {
+                for (MapleCharacter expReceiver : expApplicable) {
                     iexp = expMap.get(expReceiver) == null ? 0 : expMap.get(expReceiver).exp;
                     expWeight = (expReceiver == attacker.getKey() ? 2.0 : 0.3); //hopefully this is correct o.o -/+0.4
                     levelMod = expReceiver.getLevel() / averagePartyLevel;
@@ -1013,22 +1013,22 @@ public class MapleMonster extends TacosMonster {
                 }
             }
             ExpMap expmap;
-            for (final Entry<MapleCharacter, ExpMap> expReceiver : expMap.entrySet()) {
+            for (Entry<MapleCharacter, ExpMap> expReceiver : expMap.entrySet()) {
                 expmap = expReceiver.getValue();
                 giveExpToCharacter(expReceiver.getKey(), expmap.exp, mostDamage ? expReceiver.getKey() == highest : false, expMap.size(), expmap.ptysize, expmap.Class_Bonus_EXP, expmap.Premium_Bonus_EXP, lastSkill);
             }
         }
 
         @Override
-        public final int hashCode() {
-            final int prime = 31;
+        public int hashCode() {
+            int prime = 31;
             int result = 1;
             result = prime * result + partyid;
             return result;
         }
 
         @Override
-        public final boolean equals(Object obj) {
+        public boolean equals(Object obj) {
             if (this == obj) {
                 return true;
             }
@@ -1038,7 +1038,7 @@ public class MapleMonster extends TacosMonster {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final PartyAttackerEntry other = (PartyAttackerEntry) obj;
+            PartyAttackerEntry other = (PartyAttackerEntry) obj;
             if (partyid != other.partyid) {
                 return false;
             }
@@ -1075,19 +1075,19 @@ public class MapleMonster extends TacosMonster {
         }
     }
 
-    public final void setLastNode(final int lastNode) {
+    public void setLastNode(int lastNode) {
         this.lastNode = lastNode;
     }
 
-    public final int getLastNode() {
+    public int getLastNode() {
         return lastNode;
     }
 
-    public final void setLastNodeController(final int lastNode) {
+    public void setLastNodeController(int lastNode) {
         this.lastNodeController = lastNode;
     }
 
-    public final void cancelDropItem() {
+    public void cancelDropItem() {
         if (dropItemSchedule != null) {
             dropItemSchedule.cancel(false);
             dropItemSchedule = null;

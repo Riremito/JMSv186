@@ -48,7 +48,7 @@ public enum OpsFieldEffect {
     }
 
     public static OpsFieldEffect find(int val) {
-        for (final OpsFieldEffect o : OpsFieldEffect.values()) {
+        for (OpsFieldEffect o : OpsFieldEffect.values()) {
             if (o.get() == val) {
                 return o;
             }

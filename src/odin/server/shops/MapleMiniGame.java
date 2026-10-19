@@ -217,7 +217,7 @@ public class MapleMiniGame {
     }
 
     public void removeVisitor(MapleCharacter visitor) {
-        final byte slot = getVisitorSlot(visitor);
+        byte slot = getVisitorSlot(visitor);
         boolean shouldUpdate = getFreeSlot() == -1;
         if (slot > 0) {
             broadcastToVisitors(ResCMiniRoomBaseDlg.shopVisitorLeave(slot), slot);
@@ -366,7 +366,7 @@ public class MapleMiniGame {
         public int totalPrice;
         public String buyer;
 
-        public BoughtItem(final int id, final int quantity, final int totalPrice, final String buyer) {
+        public BoughtItem(int id, int quantity, int totalPrice, String buyer) {
             this.id = id;
             this.quantity = quantity;
             this.totalPrice = totalPrice;

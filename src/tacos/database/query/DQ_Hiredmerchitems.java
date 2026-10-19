@@ -215,7 +215,7 @@ public class DQ_Hiredmerchitems {
         query_2.append(")");
         ps = con.prepareStatement(query_2.toString(), Statement.RETURN_GENERATED_KEYS);
         PreparedStatement pse = con.prepareStatement("INSERT INTO " + DB_TABLE_NAME_EQUIP + " VALUES (DEFAULT, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        final Iterator<SimpleImmutableEntry<Item, MapleInventoryType>> iter = items.iterator();
+        Iterator<SimpleImmutableEntry<Item, MapleInventoryType>> iter = items.iterator();
         SimpleImmutableEntry<Item, MapleInventoryType> pair;
         while (iter.hasNext()) {
             pair = iter.next();

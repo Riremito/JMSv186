@@ -134,7 +134,7 @@ public class TacosMap extends TacosMapData {
         return this.environment;
     }
 
-    public final MapleSquad getSquadBegin() {
+    public MapleSquad getSquadBegin() {
         if (this.squad.length() > 0) {
             return TacosWorld.find(0).getChannelServer(this.channel).getMapleSquad(this.squad); // TODO : fix
         }
@@ -145,7 +145,7 @@ public class TacosMap extends TacosMapData {
         this.squad = squad;
     }
 
-    public final void cancelSquadSchedule() {
+    public void cancelSquadSchedule() {
         this.squadTimer = false;
         if (this.squadSchedule != null) {
             this.squadSchedule.cancel(false);

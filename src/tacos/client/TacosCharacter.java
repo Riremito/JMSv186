@@ -1743,7 +1743,7 @@ public class TacosCharacter extends TacosPlayer {
 
                 ret.dojo = extras.dojo;
                 ret.dojoRecord = extras.dojoRecord;
-                final String[] pets = extras.pets.split(",");
+                String[] pets = extras.pets.split(",");
                 for (int i = 0; i < ret.petStore.length; i++) {
                     ret.petStore[i] = Byte.parseByte(pets[i]);
                 }
@@ -1751,7 +1751,7 @@ public class TacosCharacter extends TacosPlayer {
 
             boolean compensate_previousEvans = false;
             ret.quests.putAll(DQ_Queststatus.loadAll(character_id));
-            for (final MapleQuestStatus loadedStatus : ret.quests.values()) {
+            for (MapleQuestStatus loadedStatus : ret.quests.values()) {
                 if (loadedStatus.getQuest().getId() == 170000) {
                     compensate_previousEvans = true;
                     break;
@@ -1768,7 +1768,7 @@ public class TacosCharacter extends TacosPlayer {
                     ret.vpoints = acc.vpoints;
 
                     if (acc.lastlogon != null) {
-                        final Calendar cal = Calendar.getInstance();
+                        Calendar cal = Calendar.getInstance();
                         cal.setTimeInMillis(acc.lastlogon.getTime());
                         if (cal.get(Calendar.DAY_OF_WEEK) + 1 == Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
                             ret.nexonPoint += 500;
@@ -1813,7 +1813,7 @@ public class TacosCharacter extends TacosPlayer {
                 }
 
                 // 精霊の祝福
-                final Skill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
+                Skill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
 
                 if (bofskill != null) {
                     ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
@@ -1822,18 +1822,18 @@ public class TacosCharacter extends TacosPlayer {
 
                 DQ_Skillmacros.loadAll(ret);
 
-                for (final Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
+                for (Map.Entry<Integer, Integer> e : DQ_Savedlocations.loadAll(character_id).entrySet()) {
                     ret.savedLocations[e.getKey()] = e.getValue();
                 }
 
-                final DQ_Famelog.RecentFame recentFame = DQ_Famelog.loadRecent(character_id);
+                DQ_Famelog.RecentFame recentFame = DQ_Famelog.loadRecent(character_id);
                 ret.lastfametime = recentFame.lastFameTime;
                 ret.lastmonthfameids = recentFame.lastMonthFameIds;
 
                 ret.cs = new CashShop(ret.accountid, character_id, ret.getJob());
 
                 int i = 0;
-                for (final int sn : DQ_Wishlist.loadAll(character_id)) {
+                for (int sn : DQ_Wishlist.loadAll(character_id)) {
                     ret.wishlist[i] = sn;
                     i++;
                 }
@@ -1843,7 +1843,7 @@ public class TacosCharacter extends TacosPlayer {
                 }
 
                 int r = 0;
-                for (final int mapid : DQ_Trocklocations.loadAll(character_id)) {
+                for (int mapid : DQ_Trocklocations.loadAll(character_id)) {
                     ret.rocks[r] = mapid;
                     r++;
                 }
@@ -1853,7 +1853,7 @@ public class TacosCharacter extends TacosPlayer {
                 }
 
                 r = 0;
-                for (final int mapid : DQ_Regrocklocations.loadAll(character_id)) {
+                for (int mapid : DQ_Regrocklocations.loadAll(character_id)) {
                     ret.regrocks[r] = mapid;
                     r++;
                 }
@@ -1862,8 +1862,8 @@ public class TacosCharacter extends TacosPlayer {
                     r++;
                 }
 
-                final DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
-                final Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
+                DQ_Mountdata.Row mountRow = DQ_Mountdata.load(character_id);
+                Item mount = ret.getInventory(MapleInventoryType.EQUIPPED).getItem((byte) -18/*-22*/);
                 ret.mount = new MapleMount(ret, mount != null ? mount.getItemId() : 0, ret.job > 1000 && ret.job < 2000 ? 10001004 : (ret.job >= 2000 ? (ret.job == 2001 || ret.job >= 2200 ? 20011004 : (ret.job >= 3000 ? 30001004 : 20001004)) : 1004), mountRow.fatigue, mountRow.level, mountRow.exp);
 
                 ret.stats.recalcLocalStats(true);
@@ -1883,14 +1883,14 @@ public class TacosCharacter extends TacosPlayer {
             con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
             con.setAutoCommit(false);
 
-            final StringBuilder sps = new StringBuilder();
+            StringBuilder sps = new StringBuilder();
             for (int i = 0; i < remainingSp.length; i++) {
                 sps.append(remainingSp[i]);
                 sps.append(",");
             }
-            final String sp = sps.toString();
+            String sp = sps.toString();
 
-            final int mapToSave;
+            int mapToSave;
             if (!fromcs && map != null) {
                 if (map.getForcedReturnId() != 999999999) {
                     mapToSave = map.getForcedReturnId();
@@ -1901,11 +1901,11 @@ public class TacosCharacter extends TacosPlayer {
                 mapToSave = dwPosMap;
             }
 
-            final byte spawnpointToSave;
+            byte spawnpointToSave;
             if (map == null) {
                 spawnpointToSave = (byte) 0;
             } else {
-                final TacosPortal closest = map.findClosestSpawnpoint(getPosition());
+                TacosPortal closest = map.findClosestSpawnpoint(getPosition());
                 spawnpointToSave = (byte) (closest != null ? closest.getId() : 0);
             }
 

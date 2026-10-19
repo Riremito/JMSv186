@@ -176,8 +176,8 @@ public class ReqCMobPool {
                 MobSkill mobSkill = WzXML.SKILL.getMobSkillData(realskill, level);
 
                 if (mobSkill != null) {
-                    final long now = System.currentTimeMillis();
-                    final long ls = monster.getLastSkillUsed(realskill);
+                    long now = System.currentTimeMillis();
+                    long ls = monster.getLastSkillUsed(realskill);
 
                     if (ls == 0 || ((now - ls) > mobSkill.getCoolTime())) {
                         monster.setLastSkillUsed(realskill, now, mobSkill.getCoolTime());
@@ -307,7 +307,7 @@ public class ReqCMobPool {
 
         int nodeSize = map.getNodeInfo().getNodes().size();
         if (monster != null && nodeSize > 0 && nodeSize >= m_nCurrentDestIndex) {
-            final MapleNodes.MapleNodeInfo mni = map.getNodeInfo().getNode(m_nCurrentDestIndex);
+            MapleNodes.MapleNodeInfo mni = map.getNodeInfo().getNode(m_nCurrentDestIndex);
             if (mni == null) {
                 return false;
             }

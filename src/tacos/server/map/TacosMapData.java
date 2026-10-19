@@ -567,7 +567,7 @@ public class TacosMapData {
                 nodeInfo.setNodeEnd(mapData.getNodeEnd());
             }
             for (MapWz.NodeInfo node : mapData.getNodes()) {
-                final MapleNodes.MapleNodeInfo mni = new MapleNodes.MapleNodeInfo(
+                MapleNodes.MapleNodeInfo mni = new MapleNodes.MapleNodeInfo(
                         node.getId(),
                         node.getKey(),
                         node.getX(),
@@ -584,8 +584,8 @@ public class TacosMapData {
             if (sn_count <= 0 || speed <= 0 || name.equals("")) {
                 continue;
             }
-            final List<Integer> SN = new ArrayList<>(node.getSn());
-            final MapleNodes.MaplePlatform mni = new MapleNodes.MaplePlatform(
+            List<Integer> SN = new ArrayList<>(node.getSn());
+            MapleNodes.MaplePlatform mni = new MapleNodes.MaplePlatform(
                     name, node.getStart(), speed,
                     node.getX1(),
                     node.getY1(),

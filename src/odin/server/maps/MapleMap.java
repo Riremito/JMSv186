@@ -140,7 +140,7 @@ public final class MapleMap extends TacosMap {
         int mobid = monster.getId();
         if (mobid >= 8800003 && mobid <= 8800010) {
             boolean makeZakReal = true;
-            final Collection<MapleMonster> monsters = getAllMonsters();
+            Collection<MapleMonster> monsters = getAllMonsters();
 
             for (MapleMonster mons : monsters) {
                 if (mons.getId() >= 8800003 && mons.getId() <= 8800010) {
@@ -180,14 +180,14 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (mobid == 8820008) { //wipe out statues and respawn
-            for (final Object mmo : getAllMonsters()) {
+            for (Object mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
                 if (mons.getSummonOption() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
                 }
             }
         } else if (mobid >= 8820010 && mobid <= 8820014) {
-            for (final Object mmo : getAllMonsters()) {
+            for (Object mmo : getAllMonsters()) {
                 MapleMonster mons = (MapleMonster) mmo;
                 if (mons.getId() != 8820000 && mons.getObjectId() != monster.getObjectId() && mons.getSummonOption() != monster.getObjectId()) {
                     killMonster(mons, chr, false, false, animation);
@@ -204,8 +204,8 @@ public final class MapleMap extends TacosMap {
         TacosReward.getReward(killer, monster);
     }
 
-    public final void spawnMonster_sSack(final MapleMonster mob, final Point pos, final int spawnType) {
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+    public void spawnMonster_sSack(MapleMonster mob, Point pos, int spawnType) {
+        Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
         mob.setPosition(spos);
         spawnMonster(mob, spawnType);
     }
@@ -251,11 +251,11 @@ public final class MapleMap extends TacosMap {
         broadcastPacket(ResCMobPool.MobEscortReturnBefore(monster));
     }
 
-    public final void startMapEffect(final String msg, final int itemId) {
+    public void startMapEffect(String msg, int itemId) {
         startMapEffect(msg, itemId, false);
     }
 
-    public final void startMapEffect(final String msg, final int itemId, final boolean jukebox) {
+    public void startMapEffect(String msg, int itemId, boolean jukebox) {
         if (mapEffect != null) {
             return;
         }
@@ -272,7 +272,7 @@ public final class MapleMap extends TacosMap {
         }, jukebox ? 300000 : 30000);
     }
 
-    public final void startExtendedMapEffect(final String msg, final int itemId) {
+    public void startExtendedMapEffect(String msg, int itemId) {
         broadcastPacket(ResCField.BlowWeather(msg, itemId, true));
         MapTimer.getInstance().schedule(new Runnable() {
 
@@ -285,7 +285,7 @@ public final class MapleMap extends TacosMap {
         }, 60000);
     }
 
-    public final void startJukebox(final String msg, final int itemId) {
+    public void startJukebox(String msg, int itemId) {
         startMapEffect(msg, itemId, true);
     }
 
@@ -361,13 +361,13 @@ public final class MapleMap extends TacosMap {
         return ret != null;
     }
 
-    public final boolean makeCarnivalReactor(final int team, final int num) {
-        final TacosReactor old = getReactorByName(team + "" + num);
+    public boolean makeCarnivalReactor(int team, int num) {
+        TacosReactor old = getReactorByName(team + "" + num);
         if (old != null && old.getState() < 5) { //already exists
             return false;
         }
         Point guardz = null;
-        final List<TacosReactor> react = getAllReactors();
+        List<TacosReactor> react = getAllReactors();
         for (SimpleImmutableEntry<Point, Integer> guard : getNodeInfo().getGuardians()) {
             if (guard.getValue() == team || guard.getValue() == -1) {
                 boolean found = false;
@@ -390,7 +390,7 @@ public final class MapleMap extends TacosMap {
             reactor.setName(team + "" + num); //lol
             reactor.setMap(this);
             addReactor(reactor);
-            final MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
+            MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             for (MapleMonster mons : getAllMonsters()) {
                 if (mons.getCarnivalTeam() == team) {
                     skil.getSkill().applyEffect(null, mons, false);
@@ -408,13 +408,13 @@ public final class MapleMap extends TacosMap {
     }
 
     // used by script
-    public final void spawnMonsterOnGroundBelow(final MapleMonster mob, final Point pos) {
+    public void spawnMonsterOnGroundBelow(MapleMonster mob, Point pos) {
         spawnMonster_sSack(mob, pos, -2);
     }
 
     // used by script
-    public final int spawnMonsterWithEffectBelow(final MapleMonster mob, final Point pos, final int effect) {
-        final Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
+    public int spawnMonsterWithEffectBelow(MapleMonster mob, Point pos, int effect) {
+        Point spos = calcPointBelow(new Point(pos.x, pos.y - 1));
         return spawnMonsterWithEffect(mob, effect, spos);
     }
 
@@ -429,7 +429,7 @@ public final class MapleMap extends TacosMap {
         // Might be possible to use the map object for reference in future.
         spawnFakeMonster(mainb);
 
-        final int[] zakpart = {8800103, 8800104, 8800105, 8800106, 8800107,
+        int[] zakpart = {8800103, 8800104, 8800105, 8800106, 8800107,
             8800108, 8800109, 8800110};
 
         for (int i : zakpart) {

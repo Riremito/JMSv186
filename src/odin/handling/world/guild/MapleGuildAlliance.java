@@ -46,7 +46,7 @@ public class MapleGuildAlliance {
     private String notice;
     private String ranks[] = new String[5];
 
-    public MapleGuildAlliance(final int id) {
+    public MapleGuildAlliance(int id) {
         super();
 
         DQ_Alliances.AllianceRow row = DQ_Alliances.load(id);
@@ -65,8 +65,8 @@ public class MapleGuildAlliance {
         notice = row.notice;
     }
 
-    public static final Collection<MapleGuildAlliance> loadAll() {
-        final Collection<MapleGuildAlliance> ret = new ArrayList<>();
+    public static Collection<MapleGuildAlliance> loadAll() {
+        Collection<MapleGuildAlliance> ret = new ArrayList<>();
         MapleGuildAlliance g;
         for (int id : DQ_Alliances.getAllAllianceIds()) {
             g = new MapleGuildAlliance(id);
@@ -87,14 +87,14 @@ public class MapleGuildAlliance {
         return ret;
     }
 
-    public static final int createToDb(final int leaderId, final String name, final int guild1, final int guild2) {
+    public static int createToDb(int leaderId, String name, int guild1, int guild2) {
         if (name.length() > 12) {
             return -1;
         }
         return DQ_Alliances.create(leaderId, name, guild1, guild2);
     }
 
-    public final boolean deleteAlliance() {
+    public boolean deleteAlliance() {
         for (int i = 0; i < getNoGuilds(); i++) {
             DQ_Characters.resetAllianceRankForGuild(guilds[i]);
         }
@@ -121,15 +121,15 @@ public class MapleGuildAlliance {
 
     }
 
-    public final boolean disband() {
-        final boolean ret = deleteAlliance();
+    public boolean disband() {
+        boolean ret = deleteAlliance();
         if (ret) {
             broadcast(null, -1, GAOp.DISBAND, false);
         }
         return ret;
     }
 
-    public final void saveToDb() {
+    public void saveToDb() {
         DQ_Alliances.update(allianceid, guilds, ranks, capacity, leaderid, notice);
     }
 
@@ -172,7 +172,7 @@ public class MapleGuildAlliance {
         return true;
     }
 
-    public boolean addGuild(final int guildid) {
+    public boolean addGuild(int guildid) {
         if (getNoGuilds() >= getCapacity()) {
             return false;
         }
@@ -182,7 +182,7 @@ public class MapleGuildAlliance {
         return true;
     }
 
-    public boolean removeGuild(final int guildid, final boolean expelled) {
+    public boolean removeGuild(int guildid, boolean expelled) {
         for (int i = 0; i < getNoGuilds(); i++) {
             if (guilds[i] == guildid) {
                 broadcast(null, guildid, GAOp.DISBAND, expelled);
@@ -215,7 +215,7 @@ public class MapleGuildAlliance {
         return leaderid;
     }
 
-    public boolean setLeaderId(final int c) {
+    public boolean setLeaderId(int c) {
         if (leaderid == c) {
             return false;
         }
@@ -243,7 +243,7 @@ public class MapleGuildAlliance {
         if (g == -1) {
             return false; //nothing was done
         }
-        final int oldGuild = guilds[g];
+        int oldGuild = guilds[g];
         guilds[g] = guilds[0];
         guilds[0] = oldGuild;
         if (leaderName != null) {
@@ -258,7 +258,7 @@ public class MapleGuildAlliance {
         return true;
     }
 
-    public boolean changeAllianceRank(final int cid, final int change) {
+    public boolean changeAllianceRank(int cid, int change) {
         if (leaderid == cid || change < 0 || change > 1) {
             return false;
         }

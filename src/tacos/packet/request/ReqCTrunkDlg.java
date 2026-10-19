@@ -106,7 +106,7 @@ public class ReqCTrunkDlg {
                     return false;
                 }
 
-                final byte flag = item.getFlag();
+                byte flag = item.getFlag();
                 if (ii.isPickupRestricted(item.getItemId()) && storage.findById(item.getItemId()) != null) {
                     chr.updateInv();
                     return false;

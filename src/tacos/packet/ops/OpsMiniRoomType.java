@@ -53,7 +53,7 @@ public enum OpsMiniRoomType implements IPacketOps {
     }
 
     public static OpsMiniRoomType find(int val) {
-        for (final OpsMiniRoomType ops : OpsMiniRoomType.values()) {
+        for (OpsMiniRoomType ops : OpsMiniRoomType.values()) {
             if (ops.get() == val) {
                 return ops;
             }

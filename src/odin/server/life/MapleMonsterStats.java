@@ -117,15 +117,15 @@ public class MapleMonsterStats {
         this.fixedDamage = damage;
     }
 
-    public void setPhysicalDefense(final short PhysicalDefense) {
+    public void setPhysicalDefense(short PhysicalDefense) {
         this.PhysicalDefense = PhysicalDefense;
     }
 
-    public final void setMagicDefense(final short MagicDefense) {
+    public void setMagicDefense(short MagicDefense) {
         this.MagicDefense = MagicDefense;
     }
 
-    public final void setEva(final short eva) {
+    public void setEva(short eva) {
         this.eva = eva;
     }
 

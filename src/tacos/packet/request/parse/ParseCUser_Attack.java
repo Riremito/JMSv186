@@ -111,7 +111,7 @@ public class ParseCUser_Attack {
             return null;
         }
         if (GameConstants.isLinkedAranSkill(skill)) {
-            final Skill skillLink = SkillFactory.getSkill(skill);
+            Skill skillLink = SkillFactory.getSkill(skill);
             return skillLink.getEffect(skillLevel);
         }
         return skill_.getEffect(skillLevel);
