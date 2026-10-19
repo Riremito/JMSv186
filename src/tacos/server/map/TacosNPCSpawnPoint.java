@@ -19,7 +19,7 @@
 package tacos.server.map;
 
 import java.awt.Point;
-import odin.server.life.MapleNPC;
+import tacos.server.map.object.TacosNpc;
 import odin.server.maps.MapleMap;
 import tacos.debug.DebugLogger;
 import tacos.wz.MapWz;
@@ -71,9 +71,9 @@ public class TacosNPCSpawnPoint {
         return this.id;
     }
 
-    private MapleNPC npc = null;
+    private TacosNpc npc = null;
 
-    public MapleNPC regen(MapleMap map) {
+    public TacosNpc regen(MapleMap map) {
         if (this.npc != null) {
             return null;
         }
@@ -102,7 +102,7 @@ public class TacosNPCSpawnPoint {
         return this.npc;
     }
 
-    public MapleNPC getNPC() {
+    public TacosNpc getNPC() {
         return this.npc;
     }
 

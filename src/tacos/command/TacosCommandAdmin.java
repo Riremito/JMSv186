@@ -19,6 +19,8 @@
 package tacos.command;
 
 import odin.client.Skill;
+import tacos.server.map.object.TacosReactor;
+import tacos.server.map.object.TacosNpc;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
@@ -32,11 +34,9 @@ import tacos.packet.response.ResCNpcPool;
 import tacos.packet.response.ResCUserLocal;
 import odin.server.MapleItemInformationProvider;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
 import odin.server.maps.MapleMap;
 import tacos.database.query.DQ_Accounts;
-import odin.server.maps.MapleReactor;
 import odin.server.maps.MapleReactorStats;
 import tacos.debug.DebugJob;
 import tacos.debug.DebugLogger;
@@ -196,7 +196,7 @@ public class TacosCommandAdmin {
                     return true;
                 }
                 int npc_id = dcmd.getInt(1);
-                MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+                TacosNpc npc = WzXML.NPC.createNpc(npc_id);
                 if (npc != null) {
                     npc.setPosition(chr.getPosition());
                     npc.setCy(chr.getPosition().y);
@@ -235,7 +235,7 @@ public class TacosCommandAdmin {
                     return true;
                 }
 
-                MapleReactor reactor = new MapleReactor(reactor_id);
+                TacosReactor reactor = new TacosReactor(reactor_id);
                 Point pos = new Point(chr.getPosition());
                 int foothold_id = chr.getFootholdId();
                 if (foothold_id == 0) {

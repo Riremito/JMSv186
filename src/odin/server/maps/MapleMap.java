@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
+import tacos.server.map.object.TacosDrop;
 import java.util.Collection;
 import java.util.List;
 import odin.client.inventory.Item;
@@ -213,7 +215,7 @@ public final class MapleMap extends TacosMap {
     }
 
     // 多分Reactorの中心座標とサイズが必要, Map上の座標を利用すると足場より下に設置されているように見えるので落下する
-    public void spawnZakum(MapleReactor zakum_reactor) {
+    public void spawnZakum(TacosReactor zakum_reactor) {
         MapleMonster mainb = WzXML.MOB.createMob(8800000);
         int reactor_fh_id = findBelow(zakum_reactor.getMobSpawnPoint()).getId();
         Point zakum_pos = new Point(zakum_reactor.getMobSpawnPoint());
@@ -287,9 +289,9 @@ public final class MapleMap extends TacosMap {
         startMapEffect(msg, itemId, true);
     }
 
-    private void activateItemReactors(MapleMapItem drop, TacosClient client) {
+    private void activateItemReactors(TacosDrop drop, TacosClient client) {
         Item item = drop.getItem();
-        for (MapleReactor reactor : getAllReactors()) {
+        for (TacosReactor reactor : getAllReactors()) {
             if (reactor.getReactorType() == 100) {
                 if (GameConstants.isCustomReactItem(reactor.getId(), item.getItemId(), reactor.getReactItem().getKey()) && reactor.getReactItem().getValue() == item.getQuantity()) {
                     if (reactor.getArea().contains(drop.getPosition())) {
@@ -360,16 +362,16 @@ public final class MapleMap extends TacosMap {
     }
 
     public final boolean makeCarnivalReactor(final int team, final int num) {
-        final MapleReactor old = getReactorByName(team + "" + num);
+        final TacosReactor old = getReactorByName(team + "" + num);
         if (old != null && old.getState() < 5) { //already exists
             return false;
         }
         Point guardz = null;
-        final List<MapleReactor> react = getAllReactors();
+        final List<TacosReactor> react = getAllReactors();
         for (SimpleImmutableEntry<Point, Integer> guard : getNodeInfo().getGuardians()) {
             if (guard.getValue() == team || guard.getValue() == -1) {
                 boolean found = false;
-                for (MapleReactor r : react) {
+                for (TacosReactor r : react) {
                     if (r.getPosition().x == guard.getKey().x && r.getPosition().y == guard.getKey().y && r.getState() < 5) {
                         found = true;
                         break; //already used
@@ -382,7 +384,7 @@ public final class MapleMap extends TacosMap {
             }
         }
         if (guardz != null) {
-            MapleReactor reactor = new MapleReactor(9980000 + team);
+            TacosReactor reactor = new TacosReactor(9980000 + team);
             reactor.setPosition(guardz);
             reactor.setState((byte) 1);
             reactor.setName(team + "" + num); //lol
@@ -445,16 +447,16 @@ public final class MapleMap extends TacosMap {
     // used by script
     public void spawnItemDrop(MapleCharacter player, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
-        MapleMapItem drop = new MapleMapItem(item, droppos, owner, (byte) 2, playerDrop);
+        TacosDrop drop = new TacosDrop(item, 0, 0, droppos, owner.getId(), (byte) 2, playerDrop);
         addDrop(drop);
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, player.getPosition()));
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, player.getPosition()));
         activateItemReactors(drop, owner.getClient());
     }
 
-    public void spawnItemDropByReactor(MapleReactor reactor, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
+    public void spawnItemDropByReactor(TacosReactor reactor, MapleCharacter owner, Item item, Point pos, boolean ffaDrop, boolean playerDrop) {
         Point droppos = calcDropPos(pos, pos);
-        MapleMapItem drop = new MapleMapItem(item, droppos, owner, (byte) 2, playerDrop);
+        TacosDrop drop = new TacosDrop(item, 0, 0, droppos, owner.getId(), (byte) 2, playerDrop);
         addDrop(drop);
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));

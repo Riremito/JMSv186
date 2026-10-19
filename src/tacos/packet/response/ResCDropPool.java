@@ -19,10 +19,10 @@
 package tacos.packet.response;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosDrop;
 import tacos.config.Region;
 import java.awt.Point;
 import tacos.packet.ServerPacket;
-import odin.server.maps.MapleMapItem;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 import tacos.server.map.object.TacosDrop.DropEnterType;
@@ -35,7 +35,7 @@ import tacos.server.map.object.TacosDrop.DropLeaveType;
 public class ResCDropPool {
 
     // CDropPool::OnDropEnterField
-    public static ServerPacket DropEnterField(MapleMapItem drop, DropEnterType et, Point dropto, Point dropfrom, int mobid) {
+    public static ServerPacket DropEnterField(TacosDrop drop, DropEnterType et, Point dropto, Point dropfrom, int mobid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropEnterField);
 
         sp.Encode1(et.get()); // nEnterType
@@ -78,7 +78,7 @@ public class ResCDropPool {
     }
 
     // CDropPool::OnDropLeaveField
-    public static ServerPacket DropLeaveField(MapleMapItem drop, DropLeaveType lt, MapleCharacter chr, int pet_slot) {
+    public static ServerPacket DropLeaveField(TacosDrop drop, DropLeaveType lt, MapleCharacter chr, int pet_slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_DropLeaveField);
 
         sp.Encode1(lt.get()); // leave type
@@ -112,15 +112,15 @@ public class ResCDropPool {
         return sp;
     }
 
-    public static ServerPacket DropEnterField(MapleMapItem drop, DropEnterType et, Point dropto) {
+    public static ServerPacket DropEnterField(TacosDrop drop, DropEnterType et, Point dropto) {
         return DropEnterField(drop, et, dropto, null, 0);
     }
 
-    public static ServerPacket DropEnterField(MapleMapItem drop, DropEnterType et, Point dropto, Point dropfrom) {
+    public static ServerPacket DropEnterField(TacosDrop drop, DropEnterType et, Point dropto, Point dropfrom) {
         return DropEnterField(drop, et, dropto, dropfrom, 0);
     }
 
-    public static ServerPacket DropLeaveField(MapleMapItem drop, DropLeaveType lt) {
+    public static ServerPacket DropLeaveField(TacosDrop drop, DropLeaveType lt) {
         return DropLeaveField(drop, lt, null, 0);
     }
 }

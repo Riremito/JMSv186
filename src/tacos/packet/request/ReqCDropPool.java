@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import java.util.LinkedList;
+import tacos.server.map.object.TacosDrop;
 import java.util.List;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
@@ -29,7 +30,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacket;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapItem;
 import tacos.config.Config;
 import tacos.constants.TacosConstants;
 import tacos.debug.DebugLogger;
@@ -85,7 +85,7 @@ public class ReqCDropPool {
     }
 
     public static boolean OnDropPickUpRequest(MapleCharacter chr, int object_id) {
-        MapleMapItem mapitem = chr.getMap().getDropByOid(object_id);
+        TacosDrop mapitem = chr.getMap().getDropByOid(object_id);
         if (mapitem == null) {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;
@@ -168,11 +168,11 @@ public class ReqCDropPool {
         return true;
     }
 
-    public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem) {
+    public static void removeDropItem(MapleCharacter chr, TacosDrop mapitem) {
         removeDropItem(chr, mapitem, false, 0);
     }
 
-    public static void removeDropItem(MapleCharacter chr, MapleMapItem mapitem, boolean is_pet, int pet_index) {
+    public static void removeDropItem(MapleCharacter chr, TacosDrop mapitem, boolean is_pet, int pet_index) {
         chr.getMap().removeDrop(mapitem.getObjectId());
         chr.getMap().broadcastPacket(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index));
     }

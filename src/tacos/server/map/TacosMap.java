@@ -19,6 +19,10 @@
 package tacos.server.map;
 
 import tacos.server.map.object.TacosMapObject;
+import tacos.server.map.object.TacosReactor;
+import tacos.server.map.object.TacosNpc;
+import tacos.server.map.object.TacosMist;
+import tacos.server.map.object.TacosDrop;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -41,14 +45,10 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
 import odin.server.maps.MapleMapEffect;
-import odin.server.maps.MapleMapItem;
-import odin.server.maps.MapleMist;
-import odin.server.maps.MapleReactor;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
@@ -437,7 +437,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // npc
-        for (MapleNPC npc : this.npcs.values()) {
+        for (TacosNpc npc : this.npcs.values()) {
             int number = split.find(npc.getPosition());
             if (split.getTotal() <= number) {
                 continue;
@@ -452,7 +452,7 @@ public class TacosMap extends TacosMapData {
             chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
         }
         // drop
-        for (MapleMapItem drop : this.drops.values()) {
+        for (TacosDrop drop : this.drops.values()) {
             // quest item.
             int quest_id = drop.getQuestId();
             if (0 < quest_id) {
@@ -469,7 +469,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mist
-        for (MapleMist mist : this.mists.values()) {
+        for (TacosMist mist : this.mists.values()) {
             int number = split.find(mist.getPosition());
             if (split.getTotal() <= number) {
                 continue;
@@ -494,7 +494,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // reactor
-        for (MapleReactor reactor : this.reactors.values()) {
+        for (TacosReactor reactor : this.reactors.values()) {
             chr.SendPacket(ResCReactorPool.ReactorEnterField(reactor));
         }
     }
@@ -594,7 +594,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // npc
-        for (MapleNPC npc : this.npcs.values()) {
+        for (TacosNpc npc : this.npcs.values()) {
             int number = split.find(npc.getPosition());
             if (split.getTotal() <= number) {
                 continue;
@@ -612,7 +612,7 @@ public class TacosMap extends TacosMapData {
             // none.
         }
         // drop
-        for (MapleMapItem drop : this.drops.values()) {
+        for (TacosDrop drop : this.drops.values()) {
             // quest item.
             int quest_id = drop.getQuestId();
             if (0 < quest_id) {
@@ -632,7 +632,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // mist
-        for (MapleMist mist : this.mists.values()) {
+        for (TacosMist mist : this.mists.values()) {
             int number = split.find(mist.getPosition());
             if (split.getTotal() <= number) {
                 continue;
@@ -662,7 +662,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // reactor
-        for (MapleReactor reactor : this.reactors.values()) {
+        for (TacosReactor reactor : this.reactors.values()) {
             // none.
         }
     }
@@ -1087,9 +1087,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // npc.
-    private LinkedHashMap<Integer, MapleNPC> npcs = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosNpc> npcs = new LinkedHashMap<>();
 
-    public void addNPC(MapleNPC npc) {
+    public void addNPC(TacosNpc npc) {
         if (npc.getObjectId() == 0) {
             npc.setObjectId();
         }
@@ -1097,12 +1097,12 @@ public class TacosMap extends TacosMapData {
         broadcastPacket(ResCNpcPool.NpcEnterField(npc));
     }
 
-    public boolean removeNPC(MapleNPC npc) {
+    public boolean removeNPC(TacosNpc npc) {
         this.npcs.remove(npc.getObjectId());
         broadcastPacket(ResCNpcPool.NpcLeaveField(npc));
         // remove from spawn point.
         for (TacosNPCSpawnPoint sp : getNPCSpawnPoint()) {
-            MapleNPC npc_sp = sp.getNPC();
+            TacosNpc npc_sp = sp.getNPC();
             if (npc_sp != null) {
                 if (npc_sp.getObjectId() == npc.getObjectId()) {
                     sp.removeNPC();
@@ -1114,16 +1114,16 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public List<MapleNPC> getAllNPCs() {
-        ArrayList<MapleNPC> ret = new ArrayList<>();
-        for (MapleNPC npc : this.npcs.values()) {
+    public List<TacosNpc> getAllNPCs() {
+        ArrayList<TacosNpc> ret = new ArrayList<>();
+        for (TacosNpc npc : this.npcs.values()) {
             ret.add(npc);
         }
         return ret;
     }
 
     public boolean containsNPC(int npc_id) {
-        for (MapleNPC npc : this.npcs.values()) {
+        for (TacosNpc npc : this.npcs.values()) {
             if (npc.getId() == npc_id) {
                 return true;
             }
@@ -1131,8 +1131,8 @@ public class TacosMap extends TacosMapData {
         return false;
     }
 
-    public MapleNPC getNPCById(int npc_id) {
-        for (MapleNPC npc : this.npcs.values()) {
+    public TacosNpc getNPCById(int npc_id) {
+        for (TacosNpc npc : this.npcs.values()) {
             if (npc.getId() == npc_id) {
                 return npc;
             }
@@ -1140,13 +1140,13 @@ public class TacosMap extends TacosMapData {
         return null;
     }
 
-    public MapleNPC getNPCByOid(int object_id) {
+    public TacosNpc getNPCByOid(int object_id) {
         return this.npcs.get(object_id);
     }
 
     // used by script.
     public void spawnNpc(int npc_id, Point pos) {
-        MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+        TacosNpc npc = WzXML.NPC.createNpc(npc_id);
         if (npc != null) {
             npc.setPosition(pos);
             npc.setCy(pos.y);
@@ -1158,7 +1158,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public boolean removeNPCById(int npc_id) {
-        MapleNPC npc = getNPCById(npc_id);
+        TacosNpc npc = getNPCById(npc_id);
         if (npc == null) {
             return false;
         }
@@ -1168,9 +1168,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // mist.
-    private LinkedHashMap<Integer, MapleMist> mists = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosMist> mists = new LinkedHashMap<>();
 
-    public void addMist(MapleMist mist) {
+    public void addMist(TacosMist mist) {
         if (mist.getObjectId() == 0) {
             mist.setObjectId();
         }
@@ -1178,15 +1178,15 @@ public class TacosMap extends TacosMapData {
         splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaCreated(mist));
     }
 
-    public boolean removeMist(MapleMist mist) {
+    public boolean removeMist(TacosMist mist) {
         this.mists.remove(mist.getObjectId());
         splitSendPacket(mist, ResCAffectedAreaPool.AffectedAreaRemoved(mist));
         return true;
     }
 
-    public List<MapleMist> getAllMists() {
-        ArrayList<MapleMist> ret = new ArrayList<>();
-        for (MapleMist mist : this.mists.values()) {
+    public List<TacosMist> getAllMists() {
+        ArrayList<TacosMist> ret = new ArrayList<>();
+        for (TacosMist mist : this.mists.values()) {
             ret.add(mist);
         }
         return ret;
@@ -1271,9 +1271,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // drop item.
-    private final LinkedHashMap<Integer, MapleMapItem> drops = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, TacosDrop> drops = new LinkedHashMap<>();
 
-    public void addDrop(MapleMapItem drop) {
+    public void addDrop(TacosDrop drop) {
         if (drop.getObjectId() == 0) {
             drop.setObjectId();
         }
@@ -1285,13 +1285,13 @@ public class TacosMap extends TacosMapData {
         return true;
     }
 
-    public MapleMapItem getDropByOid(int object_id) {
+    public TacosDrop getDropByOid(int object_id) {
         return this.drops.get(object_id);
     }
 
-    public List<MapleMapItem> getAllDrops() {
-        ArrayList<MapleMapItem> ret = new ArrayList<>();
-        for (MapleMapItem drop : this.drops.values()) {
+    public List<TacosDrop> getAllDrops() {
+        ArrayList<TacosDrop> ret = new ArrayList<>();
+        for (TacosDrop drop : this.drops.values()) {
             ret.add(drop);
         }
         return ret;
@@ -1303,13 +1303,13 @@ public class TacosMap extends TacosMapData {
 
     public void spawnMesoDrop(int meso, Point position, Point dropperPosition, MapleCharacter owner, boolean playerDrop, byte droptype) {
         Point droppos = calcDropPos(position, position);
-        MapleMapItem mdrop = new MapleMapItem(meso, droppos, owner, droptype, playerDrop);
+        TacosDrop mdrop = new TacosDrop(null, meso, 0, droppos, owner.getId(), droptype, playerDrop);
         addDrop(mdrop);
         broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, droppos, dropperPosition));
     }
 
     public void spawnMobMesoDrop(int meso, Point position, MapleMonster dropper, MapleCharacter owner, boolean playerDrop, byte droptype, int delay) {
-        MapleMapItem mdrop = new MapleMapItem(meso, position, owner, droptype, playerDrop);
+        TacosDrop mdrop = new TacosDrop(null, meso, 0, position, owner.getId(), droptype, playerDrop);
         addDrop(mdrop);
         mdrop.setDelay(delay);
         broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, position, dropper.getPosition()));
@@ -1317,7 +1317,7 @@ public class TacosMap extends TacosMapData {
     }
 
     public void spawnMobDrop(Item idrop, Point dropPos, MapleMonster mob, MapleCharacter chr, byte droptype, short quest_id, int delay) {
-        MapleMapItem mdrop = new MapleMapItem(idrop, dropPos, chr, droptype, false, quest_id);
+        TacosDrop mdrop = new TacosDrop(idrop, 0, quest_id, dropPos, chr.getId(), droptype, false);
         addDrop(mdrop);
         mdrop.setDelay(delay);
         broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, dropPos, mob.getPosition(), mob.getObjectId()));
@@ -1332,7 +1332,7 @@ public class TacosMap extends TacosMapData {
         } else {
             idrop = new Item(itemid, (byte) 0, (short) 1, (byte) 0);
         }
-        MapleMapItem mdrop = new MapleMapItem(pos, idrop);
+        TacosDrop mdrop = new TacosDrop(idrop, 0, 0, pos, 0, (byte) 2, false);
         addDrop(mdrop);
         broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.NORMAL, pos, pos));
         broadcastPacket(ResCDropPool.DropEnterField(mdrop, DropEnterType.UPDATE, pos, pos));
@@ -1411,23 +1411,23 @@ public class TacosMap extends TacosMapData {
     }
 
     // reactor.
-    private LinkedHashMap<Integer, MapleReactor> reactors = new LinkedHashMap<>();
+    private LinkedHashMap<Integer, TacosReactor> reactors = new LinkedHashMap<>();
 
     public void resetReactors() {
-        for (MapleReactor reactor : this.reactors.values()) {
+        for (TacosReactor reactor : this.reactors.values()) {
             reactor.forceHitReactor((byte) 0);
         }
     }
 
-    public List<MapleReactor> getAllReactors() {
-        ArrayList<MapleReactor> ret = new ArrayList<>();
-        for (MapleReactor reactor : this.reactors.values()) {
+    public List<TacosReactor> getAllReactors() {
+        ArrayList<TacosReactor> ret = new ArrayList<>();
+        for (TacosReactor reactor : this.reactors.values()) {
             ret.add(reactor);
         }
         return ret;
     }
 
-    public void addReactor(MapleReactor reactor) {
+    public void addReactor(TacosReactor reactor) {
         if (reactor.getObjectId() == 0) {
             reactor.setObjectId();
         }
@@ -1435,17 +1435,17 @@ public class TacosMap extends TacosMapData {
         broadcastPacket(ResCReactorPool.ReactorEnterField(reactor));
     }
 
-    public void removeReactor(MapleReactor reactor) {
+    public void removeReactor(TacosReactor reactor) {
         this.reactors.remove(reactor.getObjectId());
         broadcastPacket(ResCReactorPool.ReactorLeaveField(reactor));
     }
 
-    public MapleReactor getReactorByOid(int object_id) {
+    public TacosReactor getReactorByOid(int object_id) {
         return this.reactors.get(object_id);
     }
 
-    public MapleReactor getReactorByName(String name) {
-        for (MapleReactor reactor : this.reactors.values()) {
+    public TacosReactor getReactorByName(String name) {
+        for (TacosReactor reactor : this.reactors.values()) {
             if (reactor.getName().equalsIgnoreCase(name)) {
                 return reactor;
             }
@@ -1455,7 +1455,7 @@ public class TacosMap extends TacosMapData {
 
     // used by script
     public void setReactorState() {
-        for (MapleReactor reactor : this.reactors.values()) {
+        for (TacosReactor reactor : this.reactors.values()) {
             reactor.forceHitReactor((byte) 1);
         }
     }
@@ -1468,13 +1468,13 @@ public class TacosMap extends TacosMapData {
     // used by script
     public void shuffleReactors(int first, int last) {
         List<Point> points = new ArrayList<>();
-        for (MapleReactor mr : this.reactors.values()) {
+        for (TacosReactor mr : this.reactors.values()) {
             if (mr.getId() >= first && mr.getId() <= last) {
                 points.add(mr.getPosition());
             }
         }
         Collections.shuffle(points);
-        for (MapleReactor mr : this.reactors.values()) {
+        for (TacosReactor mr : this.reactors.values()) {
             if (mr.getId() >= first && mr.getId() <= last) {
                 mr.setPosition(points.remove(points.size() - 1));
             }
@@ -1610,17 +1610,17 @@ public class TacosMap extends TacosMapData {
         for (MapleMonster monster : getAllMonsters()) {
             removeMonster(monster);
         }
-        for (MapleReactor reactor : getAllReactors()) {
+        for (TacosReactor reactor : getAllReactors()) {
             removeReactor(reactor);
         }
-        for (MapleNPC npc : getAllNPCs()) {
+        for (TacosNpc npc : getAllNPCs()) {
             removeNPC(npc);
         }
-        for (MapleMapItem mmi : getAllDrops()) {
+        for (TacosDrop mmi : getAllDrops()) {
             removeDrop(mmi.getObjectId());
             broadcastPacket(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
         }
-        for (MapleMist mist : getAllMists()) {
+        for (TacosMist mist : getAllMists()) {
             removeMist(mist);
         }
     }
@@ -1662,7 +1662,7 @@ public class TacosMap extends TacosMapData {
         ArrayList<MapSplitState> area_states = getSplit().getArea(player.getPosition().x, player.getPosition().y, MapSplitState.ACTIVE);
         // drop removal.
         if (this.task_drop_removal.check(time_current, 5000)) {
-            for (MapleMapItem mmi : getAllDrops()) {
+            for (TacosDrop mmi : getAllDrops()) {
                 if (mmi.checkTime(time_current, 120000)) {
                     removeDrop(mmi.getObjectId());
                     broadcastPacket(ResCDropPool.DropLeaveField(mmi, DropLeaveType.EXPIRED));
@@ -1719,7 +1719,7 @@ public class TacosMap extends TacosMapData {
             for (TacosReactorSpawnPoint sp : getReactorSpawnPoint()) {
                 if (1 <= sp.getReactorTime()) {
                     if (sp.getLastRegenTime() + sp.getReactorTime() <= time_current) {
-                        MapleReactor reactor = sp.regen((MapleMap) this);
+                        TacosReactor reactor = sp.regen((MapleMap) this);
                         if (reactor != null) {
                             addReactor(reactor);
                         }
@@ -1729,7 +1729,7 @@ public class TacosMap extends TacosMapData {
         }
         // mist.
         if (this.task_mist.check(time_current, 1000)) {
-            for (MapleMist mist : getAllMists()) {
+            for (TacosMist mist : getAllMists()) {
                 // TODO : fix interval.
                 switch (mist.isPoisonMist()) {
                     case 1 -> {

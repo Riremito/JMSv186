@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.constants.GameConstants;
+import tacos.server.map.object.TacosMist;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Map;
@@ -31,7 +32,6 @@ import java.util.LinkedList;
 import odin.client.MapleCharacter;
 import odin.client.status.MonsterStatus;
 import java.util.EnumMap;
-import odin.server.maps.MapleMist;
 import tacos.wz.MobWz.MobBanInfo;
 import tacos.wz.WzXML;
 
@@ -173,7 +173,7 @@ public class MobSkill {
                 break;
             case 131: // Mist
                 if (monster != null) {
-                    monster.getMap().addMist(new MapleMist(calculateBoundingBox(monster.getPosition(), true), monster, this, x * 10));
+                    monster.getMap().addMist(new TacosMist(calculateBoundingBox(monster.getPosition(), true), monster.getId(), getSkillLevel(), x * 10, this, null));
                 }
                 break;
             case 140:

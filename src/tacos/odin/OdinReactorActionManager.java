@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,14 +33,13 @@ import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.ReactorDropEntry;
-import odin.server.maps.MapleReactor;
 import tacos.script.TacosScriptReactor;
 
 public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
 
-    private MapleReactor reactor;
+    private TacosReactor reactor;
 
-    public OdinReactorActionManager(TacosClient client, MapleReactor reactor) {
+    public OdinReactorActionManager(TacosClient client, TacosReactor reactor) {
         super(client);
         this.reactor = reactor;
     }
@@ -120,7 +120,7 @@ public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {
         return pos;
     }
 
-    public MapleReactor getReactor() {
+    public TacosReactor getReactor() {
         return this.reactor;
     }
 

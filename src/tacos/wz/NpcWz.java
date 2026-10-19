@@ -19,8 +19,8 @@
 package tacos.wz;
 
 import java.util.HashMap;
+import tacos.server.map.object.TacosNpc;
 import lombok.Getter;
-import odin.server.life.MapleNPC;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 
@@ -34,12 +34,12 @@ public class NpcWz extends WzXML {
         super(Content.Wz_SingleFile.get() ? "Data.wz/Npc" : "Npc.wz");
     }
 
-    public MapleNPC createNpc(int npc_id) {
+    public TacosNpc createNpc(int npc_id) {
         if (!WzDataStorage.NPC.check(npc_id)) {
             DebugLogger.ErrorLog("createNpc : invalid id, " + npc_id);
             return null;
         }
-        return new MapleNPC(npc_id);
+        return new TacosNpc(npc_id);
     }
 
     private MapleData getImg(int npc_id) {

@@ -19,10 +19,10 @@
 package tacos.packet.request.sub;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosNpc;
 import tacos.debug.DebugLogger;
 import java.awt.Point;
 import tacos.packet.ClientPacket;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.wz.WzDataStorage;
@@ -276,7 +276,7 @@ public class ReqSub_Admin {
             return false;
         }
 
-        MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+        TacosNpc npc = WzXML.NPC.createNpc(npc_id);
         if (npc == null) {
             return false;
         }

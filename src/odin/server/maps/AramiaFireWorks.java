@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.maps;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
 import odin.client.MapleCharacter;
 import tacos.packet.response.ResCReactorPool;
 import tacos.packet.response.ResCWvsContext;
@@ -98,7 +99,7 @@ public class AramiaFireWorks {
         this.sunshines += kegs;
         //have to broadcast a Reactor?
         final MapleMap map = player.findMap(555000000);
-        final MapleReactor reactor = map.getReactorByName("XmasTree");
+        final TacosReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_SUN / 6); gogo > 0; gogo -= (MAX_SUN / 6)) {
             switch (reactor.getState()) {
                 case 0: //first state
@@ -154,7 +155,7 @@ public class AramiaFireWorks {
         this.decorations += kegs;
         //have to broadcast a Reactor?
         final MapleMap map = player.findMap(555000000);
-        final MapleReactor reactor = map.getReactorByName("XmasTree");
+        final TacosReactor reactor = map.getReactorByName("XmasTree");
         for (int gogo = kegs + (MAX_DEC / 6); gogo > 0; gogo -= (MAX_DEC / 6)) {
             switch (reactor.getState()) {
                 case 0: //first state

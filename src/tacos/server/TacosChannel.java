@@ -19,6 +19,8 @@
 package tacos.server;
 
 import java.util.HashMap;
+import tacos.server.map.object.TacosReactor;
+import tacos.server.map.object.TacosNpc;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +29,7 @@ import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.server.MapleSquad;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleReactor;
 import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
 import tacos.packet.response.ResCWvsContext;
@@ -131,14 +131,14 @@ public class TacosChannel extends TacosServer {
         }
         // npc is always spawned.
         for (TacosNPCSpawnPoint sp : map.getNPCSpawnPoint()) {
-            MapleNPC npc = sp.regen(map);
+            TacosNpc npc = sp.regen(map);
             if (npc != null) {
                 map.addNPC(npc);
             }
         }
         // reactor.
         for (TacosReactorSpawnPoint sp : map.getReactorSpawnPoint()) {
-            MapleReactor reactor = sp.regen(map);
+            TacosReactor reactor = sp.regen(map);
             if (reactor != null) {
                 map.addReactor(reactor);
             }

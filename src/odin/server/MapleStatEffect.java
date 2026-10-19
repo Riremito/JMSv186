@@ -1,6 +1,7 @@
 package odin.server;
 
 import odin.client.Skill;
+import tacos.server.map.object.TacosMist;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import tacos.packet.ops.OpsSkill;
 import tacos.packet.ops.OpsUserEffect;
 import odin.server.life.MapleMonster;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMist;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.StatEffectData;
 import tacos.packet.response.ResCUserLocal;
@@ -475,7 +475,7 @@ public class MapleStatEffect {
         }
         if (isMist()) {
             Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
-            MapleMist mist = new MapleMist(bounds, applyfrom, this, getDuration());
+            TacosMist mist = new TacosMist(bounds, applyfrom.getId(), applyfrom.getSkillLevel(SkillFactory.getSkill(getSourceId())), getDuration(), null, this);
             applyfrom.getMap().addMist(mist);
 
         } else if (isTimeLeap()) {

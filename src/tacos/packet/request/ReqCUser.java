@@ -19,6 +19,8 @@
 package tacos.packet.request;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosNpc;
+import tacos.server.map.object.TacosDrop;
 import odin.client.Skill;
 import odin.client.MapleCharacter;
 import tacos.client.TacosClient;
@@ -69,11 +71,9 @@ import odin.server.MapleItemInformationProvider;
 import odin.server.MapleStatEffect;
 import odin.server.Randomizer;
 import odin.server.life.MapleMonster;
-import odin.server.life.MapleNPC;
 import odin.server.life.MobSkill;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapItem;
 import odin.server.quest.MapleQuest;
 import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift.MapleGiftData;
@@ -1061,7 +1061,7 @@ public class ReqCUser {
         // meso explosion.
         if (is_meso_explosion) {
             for (int drop_id : attack.allMeso) {
-                MapleMapItem mmi = map.getDropByOid(drop_id);
+                TacosDrop mmi = map.getDropByOid(drop_id);
                 if (mmi == null || mmi.getMeso() <= 0) {
                     DebugLogger.ErrorLog("attack : err meso explosion.");
                     continue;
@@ -1345,7 +1345,7 @@ public class ReqCUser {
 
         TacosClient client = chr.getClient();
         MapleMap map = chr.getMap();
-        MapleNPC npc = map.getNPCByOid(m_dwNpcId);
+        TacosNpc npc = map.getNPCByOid(m_dwNpcId);
         if (npc == null) {
             DebugLogger.ErrorLog("OnUserSelectNpc : npc");
             return false;

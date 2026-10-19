@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
 import java.util.List;
 import odin.client.inventory.Equip;
 import odin.client.SkillFactory;
@@ -39,7 +40,6 @@ import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleReactor;
 import odin.server.maps.SavedLocationType;
 import odin.server.maps.Event_DojoAgent;
 import odin.server.life.MapleMonster;
@@ -340,10 +340,10 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void forceStartReactor(final int mapid, final int id) {
         MapleMap map = getPlayer().findMap(mapid);
-        MapleReactor react;
+        TacosReactor react;
 
         for (final Object remo : map.getAllReactors()) {
-            react = (MapleReactor) remo;
+            react = (TacosReactor) remo;
             if (react.getId() == id) {
                 react.forceStartReactor(client);
                 break;
@@ -353,10 +353,10 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void destroyReactor(final int mapid, final int id) {
         MapleMap map = getPlayer().findMap(mapid);
-        MapleReactor react;
+        TacosReactor react;
 
         for (final Object remo : map.getAllReactors()) {
-            react = (MapleReactor) remo;
+            react = (TacosReactor) remo;
             if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
@@ -366,10 +366,10 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public final void hitReactor(final int mapid, final int id) {
         MapleMap map = getPlayer().findMap(mapid);
-        MapleReactor react;
+        TacosReactor react;
 
         for (final Object remo : map.getAllReactors()) {
-            react = (MapleReactor) remo;
+            react = (TacosReactor) remo;
             if (react.getId() == id) {
                 react.hitReactor(client);
                 break;
@@ -977,7 +977,7 @@ public abstract class OdinAbstractPlayerInteraction {
 
     public boolean isAllReactorState(final int reactorId, final int state) {
         boolean ret = false;
-        for (MapleReactor r : getMap().getAllReactors()) {
+        for (TacosReactor r : getMap().getAllReactors()) {
             if (r.getId() == reactorId) {
                 ret = r.getState() == state;
             }

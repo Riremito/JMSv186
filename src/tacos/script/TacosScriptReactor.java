@@ -19,13 +19,13 @@
 package tacos.script;
 
 import java.util.HashMap;
+import tacos.server.map.object.TacosReactor;
 import java.util.List;
 import java.util.Map;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import tacos.client.TacosClient;
 import tacos.odin.OdinReactorActionManager;
-import odin.server.maps.MapleReactor;
 import odin.server.maps.ReactorDropEntry;
 import tacos.database.query.DQ_ReactorDrops;
 
@@ -51,7 +51,7 @@ public class TacosScriptReactor extends TacosScript {
 
     }
 
-    public boolean act(TacosClient client, MapleReactor reactor) {
+    public boolean act(TacosClient client, TacosReactor reactor) {
         DebugMsg(client, TacosScriptType.REACOTR, reactor.getId());
 
         ScriptEngine engine = getScript(TacosScriptType.REACOTR.get() + reactor.getId());

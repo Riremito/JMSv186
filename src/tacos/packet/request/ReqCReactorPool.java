@@ -19,10 +19,10 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosReactor;
 import odin.server.maps.MapleMap;
 import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
-import odin.server.maps.MapleReactor;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.script.TacosScriptReactor;
@@ -45,7 +45,7 @@ public class ReqCReactorPool {
 
         int object_id = cp.Decode4(); // dwID
 
-        MapleReactor reactor = map.getReactorByOid(object_id);
+        TacosReactor reactor = map.getReactorByOid(object_id);
         if (reactor == null) {
             return false;
         }
@@ -69,7 +69,7 @@ public class ReqCReactorPool {
 
     // CReactorPool::FindHitReactor, 0
     // CReactorPool::FindSkillReactor, 1
-    public static boolean OnReactorHit(TacosClient client, MapleReactor reactor, ClientPacket cp) {
+    public static boolean OnReactorHit(TacosClient client, TacosReactor reactor, ClientPacket cp) {
         int type = Config.PostBB() ? cp.Decode4() : 0;
         int dwHitOption = cp.Decode4(); // dwHitOption, dwOption
         short tDelay = cp.Decode2(); // tDelay, tActionDelay
@@ -80,7 +80,7 @@ public class ReqCReactorPool {
     }
 
     // CReactorPool::FindTouchReactorAroundLocalUser
-    public static boolean OnReactorTouch(TacosClient client, MapleReactor reactor, ClientPacket cp) {
+    public static boolean OnReactorTouch(TacosClient client, TacosReactor reactor, ClientPacket cp) {
         boolean is_in_rect = cp.Decode1() != 0;
 
         if (is_in_rect) {

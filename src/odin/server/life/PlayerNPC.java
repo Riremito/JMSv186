@@ -22,8 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosNpc;
 
-public class PlayerNPC extends MapleNPC {
+public class PlayerNPC extends TacosNpc {
 
     private MapleCharacter player = null;
     private String player_name = "";

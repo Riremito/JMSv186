@@ -18,8 +18,8 @@
  */
 package tacos.unofficial;
 
-import odin.server.life.MapleNPC;
 import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosNpc;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
@@ -32,7 +32,7 @@ import tacos.wz.WzXML;
 public class PetNPC implements IPetEx {
 
     private TacosCharacter character;
-    private MapleNPC npc = null;
+    private TacosNpc npc = null;
 
     public PetNPC(TacosCharacter character) {
         this.character = character;

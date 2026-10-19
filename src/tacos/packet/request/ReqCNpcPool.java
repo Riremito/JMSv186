@@ -19,11 +19,11 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosNpc;
 import tacos.client.TacosClient;
 import tacos.packet.ClientPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.ResCNpcPool;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -47,7 +47,7 @@ public class ReqCNpcPool {
 
         int npc_oid = cp.Decode4();
 
-        MapleNPC npc = map.getNPCByOid(npc_oid);
+        TacosNpc npc = map.getNPCByOid(npc_oid);
         if (npc == null) {
             return false;
         }

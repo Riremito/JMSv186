@@ -19,12 +19,12 @@
 package tacos.unofficial;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosNpc;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import odin.server.life.MapleNPC;
 import odin.server.maps.MapleMap;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -75,7 +75,7 @@ public class CustomMap {
                 continue;
             }
 
-            MapleNPC npc = WzXML.NPC.createNpc(npc_id);
+            TacosNpc npc = WzXML.NPC.createNpc(npc_id);
             if (npc != null) {
                 npc.setPosition(new Point(npc_x, npc_y));
                 npc.setCy(npc_y);

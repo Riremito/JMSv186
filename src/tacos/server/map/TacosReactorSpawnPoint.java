@@ -19,8 +19,8 @@
 package tacos.server.map;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosReactor;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleReactor;
 import tacos.debug.DebugLogger;
 import tacos.wz.MapWz;
 import tacos.wz.WzDataStorage;
@@ -63,15 +63,15 @@ public class TacosReactorSpawnPoint {
         return this.reactorTime;
     }
 
-    private MapleReactor reactor = null;
+    private TacosReactor reactor = null;
     private long last_regen_time = 0;
 
-    public MapleReactor regen(MapleMap map) {
+    public TacosReactor regen(MapleMap map) {
         if (this.reactor != null) {
             return null;
         }
 
-        this.reactor = new MapleReactor(this.id);
+        this.reactor = new TacosReactor(this.id);
         this.reactor.setFacingDirection(this.f);
         this.reactor.setName(this.name);
         this.reactor.setState((byte) 0);
@@ -81,7 +81,7 @@ public class TacosReactorSpawnPoint {
         return this.reactor;
     }
 
-    public MapleReactor getReactor() {
+    public TacosReactor getReactor() {
         return this.reactor;
     }
 

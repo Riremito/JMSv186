@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import odin.client.MapleCharacter;
+import tacos.server.map.object.TacosDrop;
 import tacos.client.TacosClient;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -40,7 +41,6 @@ import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
 import odin.server.maps.MapleMap;
-import odin.server.maps.MapleMapItem;
 import tacos.config.Config;
 import tacos.packet.ClientPacketHeader;
 import tacos.wz.WzXML;
@@ -217,7 +217,7 @@ public class ReqCUser_Pet {
             int drop_xy_CRC = Config.LessOrEqual(Region.JMS, 147) ? 0 : cp.Decode4();
         }
 
-        MapleMapItem mapitem = chr.getMap().getDropByOid(drop_id);
+        TacosDrop mapitem = chr.getMap().getDropByOid(drop_id);
         if (mapitem == null) {
             return false;
         }
@@ -236,7 +236,7 @@ public class ReqCUser_Pet {
         return true;
     }
 
-    public static void Pickup_Pet(MapleCharacter chr, MapleMapItem mapitem, int pet_index) {
+    public static void Pickup_Pet(MapleCharacter chr, TacosDrop mapitem, int pet_index) {
         TacosClient client = chr.getClient();
         if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;

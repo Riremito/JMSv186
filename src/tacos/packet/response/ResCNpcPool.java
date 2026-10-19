@@ -19,10 +19,10 @@
 package tacos.packet.response;
 
 import tacos.config.Region;
+import tacos.server.map.object.TacosNpc;
 import tacos.packet.ServerPacket;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.RD_AvatarLook;
-import odin.server.life.MapleNPC;
 import odin.server.life.PlayerNPC;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
@@ -47,7 +47,7 @@ public class ResCNpcPool {
         return sp;
     }
 
-    public static ServerPacket NpcEnterField(MapleNPC npc) {
+    public static ServerPacket NpcEnterField(TacosNpc npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcEnterField);
 
         sp.Encode4(npc.getObjectId()); // dwNpcId
@@ -57,7 +57,7 @@ public class ResCNpcPool {
     }
 
     // CNpc::Init
-    public static byte[] CNpc_Init(MapleNPC npc) {
+    public static byte[] CNpc_Init(TacosNpc npc) {
         ServerPacket data = new ServerPacket();
 
         data.Encode2(npc.getX()); // m_ptPos.x
@@ -71,14 +71,14 @@ public class ResCNpcPool {
         return data.getBytes();
     }
 
-    public static ServerPacket NpcLeaveField(MapleNPC npc) {
+    public static ServerPacket NpcLeaveField(TacosNpc npc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcLeaveField);
 
         sp.Encode4(npc.getObjectId());
         return sp;
     }
 
-    public static ServerPacket NpcChangeController(MapleNPC npc, boolean is_local) {
+    public static ServerPacket NpcChangeController(TacosNpc npc, boolean is_local) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcChangeController);
 
         sp.Encode1(is_local ? 1 : 0);
@@ -92,7 +92,7 @@ public class ResCNpcPool {
         return sp;
     }
 
-    public static ServerPacket NpcMove(MapleNPC npc, int nChatIdx, int m_nOneTimeAction, ParseCMovePath move_path) {
+    public static ServerPacket NpcMove(TacosNpc npc, int nChatIdx, int m_nOneTimeAction, ParseCMovePath move_path) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_NpcMove);
 
         sp.Encode4(npc.getObjectId());
