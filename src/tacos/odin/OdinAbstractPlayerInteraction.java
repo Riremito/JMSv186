@@ -36,7 +36,7 @@ import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
 import odin.client.inventory.Item;
 import odin.handling.world.MapleParty;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.Randomizer;
 import odin.server.MapleInventoryManipulator;

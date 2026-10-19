@@ -19,6 +19,7 @@
 package odin.server.shops;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
+import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import tacos.client.TacosCharacter;
 import java.util.List;
 import tacos.client.TacosClient;

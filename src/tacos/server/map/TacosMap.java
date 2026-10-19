@@ -39,14 +39,13 @@ import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
-import odin.handling.world.PartyOperation;
+import odin.handling.world.MapleParty.PartyOperation;
 import tacos.odin.OdinEventManager;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
-import odin.server.maps.MapleMapEffect;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
@@ -2166,5 +2165,34 @@ public class TacosMap extends TacosMapData {
         addDrop(drop);
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.NORMAL, droppos, reactor.getPosition()));
         broadcastPacket(ResCDropPool.DropEnterField(drop, DropEnterType.UPDATE, droppos, reactor.getPosition()));
+    }
+
+    public static class MapleMapEffect {
+
+        private String msg = "";
+        private int itemId = 0;
+        private boolean active = true;
+        private boolean jukebox = false;
+
+        public MapleMapEffect(String msg, int itemId) {
+            this.msg = msg;
+            this.itemId = itemId;
+        }
+
+        public void setJukebox(boolean actie) {
+            this.jukebox = actie;
+        }
+
+        public ServerPacket makeDestroyData() { //jukebox doesn't REALLY have a destroy, but 0 stops all music
+            return jukebox ? ResCField.PlayJukeBox(0, "") : ResCField.BlowWeather(null, 0, false);
+        }
+
+        public ServerPacket makeStartData() {
+            return jukebox ? ResCField.PlayJukeBox(itemId, msg) : ResCField.BlowWeather(msg, itemId, active);
+        }
+
+        public void sendStartData(TacosCharacter chr) {
+            chr.SendPacket(makeStartData());
+        }
     }
 }

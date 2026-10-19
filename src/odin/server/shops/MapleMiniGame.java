@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.ArrayList;
+import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.Collections;

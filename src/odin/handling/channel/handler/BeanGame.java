@@ -2,7 +2,6 @@
 // CMS v72のソースを流用
 package odin.handling.channel.handler;
 
-import odin.client.MapleBeans;
 import tacos.client.TacosCharacter;
 import tacos.client.TacosClient;
 import odin.constants.BeansConstants;
@@ -505,6 +504,31 @@ public class BeanGame {
 
         public byte getType() {
             return type;
+        }
+    }
+
+    public static class MapleBeans {
+
+        private final int number;
+        private final int type;
+        private final int pos;
+
+        public MapleBeans(int pos, int type, int number) {
+            this.pos = pos;
+            this.number = number;
+            this.type = type;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public int getNumber() {
+            return number;
+        }
+
+        public int getPos() {
+            return pos;
         }
     }
 }

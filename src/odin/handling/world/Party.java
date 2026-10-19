@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.world;
 
 import java.util.HashMap;
+import odin.handling.world.MapleParty.PartyOperation;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import tacos.client.TacosCharacter;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;

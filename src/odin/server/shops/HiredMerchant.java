@@ -21,9 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import odin.client.inventory.Item;
+import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import java.util.LinkedList;
 import java.util.List;

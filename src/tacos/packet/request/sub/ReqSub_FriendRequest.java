@@ -20,7 +20,7 @@ package tacos.packet.request.sub;
 
 import odin.client.BuddyList;
 import tacos.client.TacosCharacter;
-import odin.client.BuddylistEntry;
+import odin.client.BuddyList.BuddylistEntry;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;

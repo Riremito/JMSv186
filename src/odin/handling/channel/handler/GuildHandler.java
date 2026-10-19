@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import odin.handling.world.guild.MapleGuildResponse;
+import odin.handling.world.guild.MapleGuild.MapleGuildResponse;
 import tacos.client.TacosCharacter;
 import odin.handling.world.guild.MapleGuild;
 import java.util.Iterator;

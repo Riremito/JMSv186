@@ -26,7 +26,7 @@ import tacos.client.TacosCharacter;
 import java.util.List;
 import java.util.LinkedList;
 import odin.client.inventory.Item;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import tacos.client.TacosClient;
 import odin.server.MapleInventoryManipulator;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
@@ -419,5 +419,18 @@ public class MaplePlayerShop {
             return true;
         }
         return false;
+    }
+
+    public static class MaplePlayerShopItem {
+
+        public Item item;
+        public short bundles;
+        public int price;
+
+        public MaplePlayerShopItem(Item item, short bundles, int price) {
+            this.item = item;
+            this.bundles = bundles;
+            this.price = price;
+        }
     }
 }

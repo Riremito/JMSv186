@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.List;
-import odin.server.life.MonsterDropEntry;
+import tacos.server.map.TacosReward.MonsterDropEntry;
 import tacos.debug.DebugLogger;
 import tacos.server.map.TacosReward;
 import tacos.server.map.TacosSpawnPoint;

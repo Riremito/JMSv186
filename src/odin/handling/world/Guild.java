@@ -28,7 +28,7 @@ import java.util.Map;
 import odin.handling.world.guild.MapleBBSThread;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
-import odin.handling.world.guild.MapleGuildSummary;
+import odin.handling.world.guild.MapleGuild.MapleGuildSummary;
 import tacos.packet.ServerPacket;
 import tacos.packet.response.ResCWvsContext;
 import tacos.server.TacosWorld;

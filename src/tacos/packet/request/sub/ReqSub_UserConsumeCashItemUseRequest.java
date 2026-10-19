@@ -23,7 +23,7 @@ import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;
 import odin.constants.GameConstants;

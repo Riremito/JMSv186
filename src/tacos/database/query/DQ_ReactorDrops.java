@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
-import odin.server.maps.ReactorDropEntry;
+import odin.server.maps.MapleReactorStats.ReactorDropEntry;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 

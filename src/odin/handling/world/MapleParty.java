@@ -23,6 +23,7 @@ package odin.handling.world;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import tacos.client.TacosCharacter;
 
 public class MapleParty {
 
@@ -90,4 +91,72 @@ public class MapleParty {
         return leader;
     }
 
+
+    public enum PartyOperation {
+
+        JOIN, LEAVE, EXPEL, DISBAND, SILENT_UPDATE, LOG_ONOFF, CHANGE_LEADER, CHANGE_LEADER_DC
+    }
+
+    public static class MaplePartyCharacter {
+
+        private String name;
+        private int id;
+        private int level;
+        private int channel;
+        private int jobid;
+        private int mapid;
+        private boolean online;
+
+        public MaplePartyCharacter(TacosCharacter maplechar) {
+            this.name = maplechar.getName();
+            this.level = maplechar.getLevel();
+            this.channel = maplechar.getClient().getChannelId();
+            this.id = maplechar.getId();
+            this.jobid = maplechar.getJob();
+            this.mapid = maplechar.getMapId();
+            this.online = true;
+        }
+
+        public MaplePartyCharacter() {
+            this.name = "";
+        }
+
+        public boolean isOnline() {
+            return online;
+        }
+
+        public void setOnline(boolean online) {
+            this.online = online;
+        }
+
+        // used by script
+        public int getLevel() {
+            return level;
+        }
+
+        // used by script
+        public int getChannel() {
+            return channel;
+        }
+
+        // used by script
+        public int getMapid() {
+            return mapid;
+        }
+
+        // used by script
+        public String getName() {
+            return name;
+        }
+
+        // used by script
+        public int getId() {
+            return id;
+        }
+
+        // used by script
+        public int getJobId() {
+            return jobid;
+        }
+    }
 }

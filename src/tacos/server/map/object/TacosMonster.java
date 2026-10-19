@@ -38,9 +38,9 @@ import odin.client.inventory.MapleInventoryType;
 import tacos.client.TacosClient;
 import odin.client.SkillFactory;
 import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
+import odin.client.status.MonsterStatus.MonsterStatusEffect;
 import odin.handling.world.MapleParty;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import java.awt.Point;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
@@ -58,10 +58,9 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsMobLeaveField;
 import tacos.server.map.TacosReward;
 import tacos.wz.WzXML;
-import odin.server.life.Element;
+import odin.server.life.MapleMonsterStats.Element;
 import odin.server.life.MapleMonsterStats;
-import odin.server.life.MonsterDropEntry;
-import odin.server.life.OverrideMonsterStats;
+import tacos.server.map.TacosReward.MonsterDropEntry;
 
 /**
  *
@@ -1208,5 +1207,52 @@ public class TacosMonster extends TacosMapObject {
 
     public void setNodePacket(ServerPacket np) {
         this.nodepack = np;
+    }
+
+    public static class OverrideMonsterStats {
+
+        private long hp;
+        private int exp;
+        private int mp;
+
+        public OverrideMonsterStats() {
+            hp = 0;
+            exp = 0;
+            mp = 0;
+        }
+
+        public OverrideMonsterStats(long hp, int mp, int exp, boolean change) {
+            this.hp = /*change ? (hp * 3L / 2L) : */ hp;
+            this.mp = mp;
+            this.exp = exp;
+        }
+
+        public OverrideMonsterStats(long hp, int mp, int exp) {
+            this(hp, mp, exp, true);
+        }
+
+        public int getExp() {
+            return exp;
+        }
+
+        public void setOExp(int exp) {
+            this.exp = exp;
+        }
+
+        public long getHp() {
+            return hp;
+        }
+
+        public void setOHp(long hp) {
+            this.hp = hp;
+        }
+
+        public int getMp() {
+            return mp;
+        }
+
+        public void setOMp(int mp) {
+            this.mp = mp;
+        }
     }
 }

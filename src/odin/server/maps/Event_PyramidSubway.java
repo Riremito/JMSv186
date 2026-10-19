@@ -23,7 +23,7 @@ package odin.server.maps;
 import odin.client.MapleQuestStatus;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import java.awt.Point;
 import java.util.concurrent.ScheduledFuture;
 import tacos.packet.response.ResCField;

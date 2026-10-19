@@ -21,7 +21,7 @@ package tacos.packet.request;
 import tacos.client.TacosClient;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Item;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import tacos.debug.DebugLogger;

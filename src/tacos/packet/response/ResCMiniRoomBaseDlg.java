@@ -35,7 +35,7 @@ import odin.server.MapleTrade;
 import odin.server.shops.ShopDispatch;
 import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
-import odin.server.shops.MaplePlayerShopItem;
+import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import tacos.config.Config;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.config.Region;

@@ -18,7 +18,7 @@
  */
 package tacos.packet.response.data;
 
-import odin.client.BuddylistEntry;
+import odin.client.BuddyList.BuddylistEntry;
 import tacos.server.map.object.TacosPet;
 import java.util.Collection;
 import tacos.client.TacosCharacter;

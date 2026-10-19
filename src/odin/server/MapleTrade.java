@@ -5,7 +5,7 @@ import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.List;
 import odin.client.inventory.Item;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;

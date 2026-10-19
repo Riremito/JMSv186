@@ -33,7 +33,7 @@ import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.LinkedHashMap;
 import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
-import odin.server.life.Element;
+import odin.server.life.MapleMonsterStats.Element;
 import tacos.client.TacosDoorSkill;
 import tacos.client.TacosSkill;
 import tacos.client.TacosSummonSkill;

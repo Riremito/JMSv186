@@ -23,7 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import odin.server.life.MonsterDropEntry;
+import tacos.server.map.TacosReward.MonsterDropEntry;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;
 

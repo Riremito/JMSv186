@@ -24,7 +24,7 @@ import odin.constants.GameConstants;
 import java.util.ArrayList;
 import java.util.List;
 import odin.server.MapleStatEffect;
-import odin.server.life.Element;
+import odin.server.life.MapleMonsterStats.Element;
 
 public class Skill {
 
@@ -207,5 +207,18 @@ public class Skill {
     public boolean isBeginnerSkill() {
         int jobId = id / 10000;
         return jobId == 0 || jobId == 1000 || jobId == 2000 || jobId == 2001 || jobId == 3000;
+    }
+
+    public static class SkillEntry {
+
+        public final byte skillevel;
+        public final byte masterlevel;
+        public final long expiration;
+
+        public SkillEntry(byte skillevel, byte masterlevel, long expiration) {
+            this.skillevel = skillevel;
+            this.masterlevel = masterlevel;
+            this.expiration = expiration;
+        }
     }
 }

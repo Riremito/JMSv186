@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
@@ -893,4 +893,14 @@ public class MapleItemInformationProvider {
         return ret;
     }
      */
+
+    public static class StructRewardItem {
+
+        public int itemid;
+        public long period;
+        public short prob;
+        public short quantity;
+        public String effect;
+        public String worldmsg;
+    }
 }

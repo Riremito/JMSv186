@@ -21,7 +21,7 @@ package tacos.packet.response.data;
 import odin.client.MapleQuestStatus;
 import tacos.client.TacosCharacter;
 import odin.client.Skill;
-import odin.client.SkillEntry;
+import odin.client.Skill.SkillEntry;
 import odin.client.inventory.MapleRing;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;

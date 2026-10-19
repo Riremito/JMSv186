@@ -16,7 +16,7 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatusEffect;
+import odin.client.status.MonsterStatus.MonsterStatusEffect;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
 import tacos.packet.ops.OpsSecondaryStat;

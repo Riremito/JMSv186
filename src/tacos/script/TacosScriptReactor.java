@@ -26,7 +26,7 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import tacos.client.TacosClient;
 import tacos.odin.OdinReactorActionManager;
-import odin.server.maps.ReactorDropEntry;
+import odin.server.maps.MapleReactorStats.ReactorDropEntry;
 import tacos.database.query.DQ_ReactorDrops;
 
 /**

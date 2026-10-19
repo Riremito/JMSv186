@@ -31,7 +31,6 @@ import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.life.MonsterDropEntry;
 import tacos.client.TacosSkill;
 import tacos.constants.TacosConstants;
 import tacos.database.query.DQ_DropData;
@@ -179,5 +178,21 @@ public class TacosReward {
 
         drop_pos.x += (dropped_count % 2 == 0) ? (25 * (dropped_count + 1) / 2) : -(25 * (dropped_count / 2));
         return drop_pos;
+    }
+
+    public static class MonsterDropEntry {
+
+        public MonsterDropEntry(int itemId, int chance, int Minimum, int Maximum, short questid) {
+            this.itemId = itemId;
+            this.chance = chance;
+            this.questid = questid;
+            this.Minimum = Minimum;
+            this.Maximum = Maximum;
+        }
+        public short questid;
+        public int itemId;
+        public int chance;
+        public int Minimum;
+        public int Maximum;
     }
 }

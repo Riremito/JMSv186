@@ -32,7 +32,7 @@ import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.server.MapleItemInformationProvider;
 import odin.server.Randomizer;
-import odin.server.maps.ReactorDropEntry;
+import odin.server.maps.MapleReactorStats.ReactorDropEntry;
 import tacos.script.TacosScriptReactor;
 
 public class OdinReactorActionManager extends OdinAbstractPlayerInteraction {

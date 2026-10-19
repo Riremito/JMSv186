@@ -1,6 +1,6 @@
 package tacos.packet.response;
 
-import odin.client.MapleBeans;
+import odin.handling.channel.handler.BeanGame.MapleBeans;
 import tacos.client.TacosCharacter;
 import odin.handling.channel.handler.BeanGame;
 import java.util.List;

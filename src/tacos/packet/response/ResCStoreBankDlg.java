@@ -20,9 +20,10 @@ package tacos.packet.response;
 
 import odin.client.inventory.Item;
 import tacos.packet.ServerPacket;
-import odin.server.MerchItemPackage;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.response.data.RD_GW_ItemSlotBase;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -82,5 +83,25 @@ public class ResCStoreBankDlg {
         }
         sp.EncodeZeroBytes(3);
         return sp;
+    }
+
+    public static class MerchItemPackage {
+
+        private int mesos = 0;
+        private int packageid;
+        private List<Item> items = new ArrayList<>();
+
+        public void setItems(List<Item> items) {
+            this.items = items;
+        }
+
+        public List<Item> getItems() {
+            return items;
+        }
+
+        public int getMesos() {
+            return mesos;
+        }
+
     }
 }

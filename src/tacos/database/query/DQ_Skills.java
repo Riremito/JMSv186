@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import odin.client.Skill;
-import odin.client.SkillEntry;
+import odin.client.Skill.SkillEntry;
 import odin.constants.GameConstants;
 import tacos.database.DatabaseConnection;
 import tacos.debug.DebugLogger;

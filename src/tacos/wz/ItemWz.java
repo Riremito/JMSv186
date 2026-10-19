@@ -18,7 +18,6 @@
  */
 package tacos.wz;
 
-import odin.client.inventory.PetCommand;
 import tacos.config.Content;
 import tacos.debug.DebugLogger;
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
-import odin.server.StructRewardItem;
+import odin.server.MapleItemInformationProvider.StructRewardItem;
 
 /**
  *
@@ -765,5 +764,36 @@ public class ItemWz extends WzXML {
             consumeItems.add(md_consume_item.getInt(consume.getName()));
         }
         return new SimpleImmutableEntry<>(itemD.getInt("questId"), consumeItems);
+    }
+
+    /**
+     *
+     * @author Danny (Leifde)
+     */
+    public static class PetCommand {
+
+        private int petId;
+        private int skillId;
+        private int prob;
+        private int inc;
+
+        public PetCommand(int petId, int skillId, int prob, int inc) {
+            this.petId = petId;
+            this.skillId = skillId;
+            this.prob = prob;
+            this.inc = inc;
+        }
+
+        public int getSkillId() {
+            return skillId;
+        }
+
+        public int getProbability() {
+            return prob;
+        }
+
+        public int getIncrease() {
+            return inc;
+        }
     }
 }

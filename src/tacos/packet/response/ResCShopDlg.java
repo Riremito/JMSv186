@@ -27,7 +27,7 @@ import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsShop;
 import odin.server.MapleItemInformationProvider;
-import odin.server.MapleShopItem;
+import odin.server.MapleShop.MapleShopItem;
 import tacos.config.Config;
 import tacos.packet.ServerPacketHeader;
 

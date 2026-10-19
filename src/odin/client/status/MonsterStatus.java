@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.client.status;
 
+import odin.server.life.MobSkill;
+
 public enum MonsterStatus {
 
     NEUTRALISE(0x02), // first int on v.87 or else it won't work.
@@ -74,5 +76,24 @@ public enum MonsterStatus {
 
     public long getValue() {
         return i;
+    }
+
+    public static class MonsterStatusEffect {
+
+        private MonsterStatus stati;
+        private final int skill;
+
+        public MonsterStatusEffect(MonsterStatus stat, Integer x, int skillId, MobSkill mobskill, boolean monsterSkill) {
+            this.stati = stat;
+            this.skill = skillId;
+        }
+
+        public MonsterStatus getStati() {
+            return stati;
+        }
+
+        public int getSkill() {
+            return skill;
+        }
     }
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 import odin.constants.GameConstants;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
-import odin.client.inventory.ItemFlag;
+import odin.client.inventory.Item.ItemFlag;
 import odin.client.PlayerStats;
 import odin.client.inventory.MapleInventoryType;
 import tacos.config.Region;

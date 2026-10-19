@@ -37,7 +37,7 @@ import odin.server.Randomizer;
 import odin.server.RandomRewards;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleInventoryManipulator;
-import odin.server.StructRewardItem;
+import odin.server.MapleItemInformationProvider.StructRewardItem;
 import odin.server.maps.SavedLocationType;
 import odin.server.shops.HiredMerchant;
 import java.util.AbstractMap.SimpleImmutableEntry;

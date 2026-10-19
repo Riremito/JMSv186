@@ -26,7 +26,7 @@ import java.util.List;
 import tacos.client.TacosClient;
 import odin.constants.GameConstants;
 import tacos.config.Region;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
 import tacos.packet.ClientPacket;

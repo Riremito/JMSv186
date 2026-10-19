@@ -23,7 +23,7 @@ package odin.server.maps;
 import java.awt.Point;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.response.builder.PB_Message;

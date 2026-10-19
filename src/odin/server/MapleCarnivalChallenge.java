@@ -4,7 +4,7 @@
  */
 package odin.server;
 
-import odin.handling.world.MaplePartyCharacter;
+import odin.handling.world.MapleParty.MaplePartyCharacter;
 import tacos.client.TacosCharacter;
 
 /**

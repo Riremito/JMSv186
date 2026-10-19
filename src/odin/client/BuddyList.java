@@ -88,4 +88,79 @@ public class BuddyList {
         return buddyIds;
     }
 
+
+    public static class BuddylistEntry {
+
+        private String name;
+        private String group;
+        private int cid;
+        private int channel;
+        private int level;
+        private int job;
+        private boolean visible;
+        private boolean hidden = false;
+
+        public BuddylistEntry(String name, int characterId, String group, int channel, boolean visible, int level, int job) {
+            this.name = name;
+            this.cid = characterId;
+            this.group = group;
+            this.channel = channel;
+            this.visible = visible;
+            this.level = level;
+            this.job = job;
+        }
+
+        public boolean getHidden() {
+            return this.hidden;
+        }
+
+        public void setHidden(boolean hidden) {
+            this.hidden = hidden;
+        }
+
+        public int getChannel() {
+            return channel;
+        }
+
+        public void setChannel(int channel) {
+            this.channel = channel;
+        }
+
+        public boolean isOnline() {
+            return channel >= 0;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getCharacterId() {
+            return cid;
+        }
+
+        public void setVisible(boolean visible) {
+            this.visible = visible;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+
+        public String getGroup() {
+            return group;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public int getJob() {
+            return job;
+        }
+
+        public void setGroup(String g) {
+            this.group = g;
+        }
+
+    }
 }
