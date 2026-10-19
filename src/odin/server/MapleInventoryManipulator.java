@@ -1,6 +1,7 @@
 package odin.server;
 
 import java.awt.Point;
+import odin.server.maps.MapleMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -741,6 +742,7 @@ public class MapleInventoryManipulator {
             return false;
         }
         Point dropPos = new Point(chr.getPosition());
+        MapleMap map = chr.getMap();
         if (quantity < source.getQuantity() && !GameConstants.isRechargable(source.getItemId())) {
             Item target = source.copy();
             target.setQuantity(quantity);
@@ -750,20 +752,20 @@ public class MapleInventoryManipulator {
             if (ii.isDropRestricted(target.getItemId()) || ii.isAccountShared(target.getItemId())) {
                 if (ItemFlag.KARMA_EQ.check(flag)) {
                     target.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
-                    chr.getMap().spawnItemDrop(chr, chr, target, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
                 } else if (ItemFlag.KARMA_USE.check(flag)) {
                     target.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
-                    chr.getMap().spawnItemDrop(chr, chr, target, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
                 } else {
                     //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), target, dropPos);
-                    chr.getMap().spawnItemDrop(chr, chr, target, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
                 }
             } else {
                 if (GameConstants.isPet(source.getItemId()) || ItemFlag.UNTRADEABLE.check(flag)) {
                     //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), target, dropPos);
-                    chr.getMap().spawnItemDrop(chr, chr, target, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
                 } else {
-                    chr.getMap().spawnItemDrop(chr, chr, target, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, target, dropPos, true, true);
                 }
             }
         } else {
@@ -775,20 +777,20 @@ public class MapleInventoryManipulator {
             if (ii.isDropRestricted(source.getItemId()) || ii.isAccountShared(source.getItemId())) {
                 if (ItemFlag.KARMA_EQ.check(flag)) {
                     source.setFlag((byte) (flag - ItemFlag.KARMA_EQ.getValue()));
-                    chr.getMap().spawnItemDrop(chr, chr, source, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
                 } else if (ItemFlag.KARMA_USE.check(flag)) {
                     source.setFlag((byte) (flag - ItemFlag.KARMA_USE.getValue()));
-                    chr.getMap().spawnItemDrop(chr, chr, source, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
                 } else {
                     //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), source, dropPos);
-                    chr.getMap().spawnItemDrop(chr, chr, source, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
                 }
             } else {
                 if (GameConstants.isPet(source.getItemId()) || ItemFlag.UNTRADEABLE.check(flag)) {
                     //c.getPlayer().getMap().disappearingItemDrop(c.getPlayer(), c.getPlayer(), source, dropPos);
-                    chr.getMap().spawnItemDrop(chr, chr, source, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
                 } else {
-                    chr.getMap().spawnItemDrop(chr, chr, source, dropPos, true, true);
+                    map.spawnItemDrop(chr, chr, source, dropPos, true, true);
                 }
             }
         }

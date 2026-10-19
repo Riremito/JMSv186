@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client;
 
 import odin.constants.GameConstants;
+import odin.server.maps.MapleMap;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.Item;
@@ -1607,6 +1608,7 @@ public class MapleCharacter extends TacosCharacter {
     }
 
     public void removalTask() {
+        MapleMap map = this.getMap();
         try {
             if (this.getMarriageId() > 0) {
                 MapleQuestStatus stat1 = this.getQuestNAdd(MapleQuest.getInstance(160001));
@@ -1620,8 +1622,8 @@ public class MapleCharacter extends TacosCharacter {
                 }
             }
             this.changeRemoval(true);
-            if (this.getMap() != null) {
-                this.getMap().userLeaveField(this);
+            if (map != null) {
+                map.userLeaveField(this);
             }
 
             Object shop = this.getPlayerShop();

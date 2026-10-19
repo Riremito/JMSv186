@@ -268,12 +268,13 @@ public class MapleMonster extends TacosMonster {
         long rDamage = Math.max(0, Math.min(damage, hp));
         attacker.addDamage(from, rDamage, updateAttackTime);
 
+        MapleMap from_map = from.getMap();
         if (stats.getSelfD() != -1) {
             hp -= rDamage;
             if (hp > 0) {
                 for (AttackerEntry mattacker : attackers) {
                     for (AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
-                        if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
+                        if (cattacker.getAttacker().getMap() == from_map) { // current attacker is on the map of the monster
                             if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
                                 cattacker.getAttacker().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                             }
@@ -314,7 +315,7 @@ public class MapleMonster extends TacosMonster {
                         case 3:
                             for (AttackerEntry mattacker : attackers) {
                                 for (AttackingMapleCharacter cattacker : mattacker.getAttackers()) {
-                                    if (cattacker.getAttacker().getMap() == from.getMap()) { // current attacker is on the map of the monster
+                                    if (cattacker.getAttacker().getMap() == from_map) { // current attacker is on the map of the monster
                                         if (cattacker.getLastAttackTime() >= System.currentTimeMillis() - 4000) {
                                             cattacker.getAttacker().SendPacket(ResCMobPool.MobHPIndicator(this, (int) Math.ceil((hp * 100.0) / getMobMaxHp())));
                                         }

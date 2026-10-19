@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import odin.client.MapleCharacter;
+import odin.server.maps.MapleMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
@@ -126,6 +127,7 @@ public class ItemMakerHandler {
         TacosClient client = chr.getClient();
         int type = cp.Decode4();
 
+        MapleMap map = chr.getMap();
         switch (RecipeClass.find(type)) {
             case RECIPE_CLASS_NORMAL: {
                 int toCreate = cp.Decode4();
@@ -162,7 +164,7 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                     return true;
                 }
                 if (GameConstants.isOtherGem(toCreate)) {
@@ -200,7 +202,7 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                     return true;
                 }
                 {
@@ -260,7 +262,7 @@ public class ItemMakerHandler {
                             .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                 }
                 return true;
             }
@@ -277,7 +279,7 @@ public class ItemMakerHandler {
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
 
                 return true;
             }
@@ -303,7 +305,7 @@ public class ItemMakerHandler {
                         .maker(ItemMakerResult.ITEM_MAKER_RESULT_SUCCESS)
                         .build();
                 chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_ItemMaker, pb));
-                chr.getMap().splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
+                map.splitSendPacket(chr, ResCUserRemote.ItemMakerResultTo(chr, true), chr.getId());
                 return true;
             }
             default: {

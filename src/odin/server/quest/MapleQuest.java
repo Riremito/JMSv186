@@ -1,6 +1,7 @@
 package odin.server.quest;
 
 import odin.constants.GameConstants;
+import odin.server.maps.MapleMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -202,7 +203,8 @@ public class MapleQuest {
 
     private boolean checkNPCOnMap(MapleCharacter player, int npcid) {
         //mir = 1013000
-        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (player.getMap() != null && player.getMap().containsNPC(npcid));
+        MapleMap map = player.getMap();
+        return (GameConstants.isEvan(player.getJob()) && npcid == 1013000) || (map != null && map.containsNPC(npcid));
     }
 
     public int getMedalItem() {

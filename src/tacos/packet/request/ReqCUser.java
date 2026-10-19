@@ -1656,7 +1656,7 @@ public class ReqCUser {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
             chr.getInventory(MapleInventoryType.USE).removeItem(scroll.getPosition(), (short) 1, false);
-            chr.getMap().splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
+            map.splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), Equip.ScrollResult.SUCCESS, legendarySpirit));
             return true;
         }
         if (!GameConstants.isSpecialScroll(scroll.getItemId()) && !GameConstants.isCleanSlate(scroll.getItemId()) && !GameConstants.isEquipScroll(scroll.getItemId()) && !GameConstants.isPotentialScroll(scroll.getItemId())) {
@@ -1796,7 +1796,7 @@ public class ReqCUser {
                 chr.SendPacket(ResCWvsContext.InventoryOperation(true, io.build()));
             }
         }
-        chr.getMap().splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), scrollSuccess, legendarySpirit));
+        map.splitSendPacket(chr, ResCUser.getScrollEffect(chr.getId(), scrollSuccess, legendarySpirit));
         // equipped item was scrolled and changed
         if (equip_slot < 0 && (scrollSuccess == Equip.ScrollResult.SUCCESS || scrollSuccess == Equip.ScrollResult.CURSE) && vegas == 0) {
             chr.equipChanged();
@@ -2691,7 +2691,7 @@ public class ReqCUser {
             if (Randomizer.nextInt(100) < summon_data.getValue()) {
                 MapleMonster monster = WzXML.MOB.createMob(summon_data.getKey());
                 if (monster != null) {
-                    chr.getMap().spawnMonster_sSack(monster, chr.getPosition(), 0);
+                    map.spawnMonster_sSack(monster, chr.getPosition(), 0);
                 }
             }
         }

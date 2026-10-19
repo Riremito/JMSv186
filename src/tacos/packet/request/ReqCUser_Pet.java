@@ -181,6 +181,7 @@ public class ReqCUser_Pet {
         byte command = cp.Decode1();
         PetCommand petCommand = WzXML.ITEM.getPetCommand(pet.getPetItemId(), (int) command);
         boolean success = false;
+        MapleMap map = chr.getMap();
         if (Randomizer.nextInt(99) <= petCommand.getProbability()) {
             success = true;
             if (pet.getCloseness() < 30000) {
@@ -192,13 +193,13 @@ public class ReqCUser_Pet {
                 if (newCloseness >= MaplePet.getClosenessNeededForLevel(pet.getLevel() + 1)) {
                     pet.setLevel(pet.getLevel() + 1);
                     chr.SendPacket(ResCUserLocal.showOwnPetLevelUp(petIndex));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.showPetLevelUp(chr, petIndex), chr.getId());
                 }
                 chr.SendPacket(ResCWvsContext.InventoryOperation(false, PB_InvOp.builder().add(MapleInventoryType.CASH, chr.getInventory(MapleInventoryType.CASH).getItem((byte) pet.getInventoryPosition())).build()));
             }
         }
 
-        chr.getMap().splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
+        map.splitSendPacket(chr, ResCUser_Pet.PetActionCommand(chr, command, petIndex, success, false), chr.getId());
     }
 
     public static boolean OnPetDropPickUpRequest(MapleCharacter chr, MaplePet pet, ClientPacket cp) {
@@ -241,7 +242,8 @@ public class ReqCUser_Pet {
         if (mapitem.getOwnerId() != chr.getId() && mapitem.isPlayerDrop()) {
             return;
         }
-        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+        MapleMap map = chr.getMap();
+        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && map.getEverlast()))) {
             chr.updateInv();
             return;
         }
@@ -255,7 +257,7 @@ public class ReqCUser_Pet {
                 List<MapleCharacter> toGive = new LinkedList<>();
                 int splitMeso = mapitem.getMeso() * 40 / 100;
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter player = chr.getMap().getPlayerById(z.getId());
+                    MapleCharacter player = map.getPlayerById(z.getId());
                     if (player != null && player.getId() != chr.getId()) {
                         toGive.add(player);
                     }

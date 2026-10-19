@@ -19,6 +19,7 @@
 package tacos.command;
 
 import java.util.ArrayList;
+import odin.server.maps.MapleMap;
 import java.util.List;
 import odin.client.MapleCharacter;
 import odin.server.life.MonsterDropEntry;
@@ -39,6 +40,7 @@ public class TacosCommandInfo {
 
     public static boolean executeCommand(TacosCommander dcmd, MapleCharacter chr) {
 
+        MapleMap map = chr.getMap();
         switch (dcmd.get(0)) {
             // server.
             case "/threadid" -> {
@@ -59,7 +61,7 @@ public class TacosCommandInfo {
             }
             // map.
             case "/mobtime" -> {
-                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+                for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
                     if (sp.getMobTime() != 0) {
                         chr.DebugMsg(String.format("mobtime : %.1f hours.", (double) sp.getMobTime() / 1000 / 3600));
                     }
@@ -68,7 +70,7 @@ public class TacosCommandInfo {
             }
             case "/dropinfo" -> {
                 ArrayList<Integer> mob_ids = new ArrayList<>();
-                for (TacosSpawnPoint sp : chr.getMap().getMonsterSpawnPoint()) {
+                for (TacosSpawnPoint sp : map.getMonsterSpawnPoint()) {
                     int mob_id = sp.getId();
                     if (!mob_ids.contains(mob_id)) {
                         mob_ids.add(mob_id);

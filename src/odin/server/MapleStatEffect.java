@@ -391,9 +391,10 @@ public class MapleStatEffect {
     }
 
     public boolean applyTo(MapleCharacter applyfrom, MapleCharacter applyto, boolean primary, Point pos, int newDuration) {
+        MapleMap map = applyfrom.getMap();
         if (isHeal() && (applyfrom.getMapId() == 749040100 || applyto.getMapId() == 749040100)) {
             return false;
-        } else if (sourceid == 33101004 && applyfrom.getMap().isTown()) {
+        } else if (sourceid == 33101004 && map.isTown()) {
             applyfrom.dropMessage(5, "You may not use this skill in towns.");
             applyfrom.updateStat();
             return false; //not supposed to
@@ -476,7 +477,7 @@ public class MapleStatEffect {
         if (isMist()) {
             Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
             TacosMist mist = new TacosMist(bounds, applyfrom.getId(), applyfrom.getSkillLevel(SkillFactory.getSkill(getSourceId())), getDuration(), null, this);
-            applyfrom.getMap().addMist(mist);
+            map.addMist(mist);
 
         } else if (isTimeLeap()) {
             applyto.getCoolTime().timeLeap();
@@ -504,17 +505,18 @@ public class MapleStatEffect {
     }
 
     private void applyBuff(MapleCharacter applyfrom, int newDuration) {
+        MapleMap map = applyfrom.getMap();
         if (isSoulStone()) {
             if (applyfrom.getParty() != null) {
                 int membrs = 0;
-                for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
+                for (MapleCharacter chr : map.getAllPlayers()) {
                     if (chr.getParty() != null && chr.getParty().equals(applyfrom.getParty()) && chr.isAlive()) {
                         membrs++;
                     }
                 }
                 List<MapleCharacter> awarded = new ArrayList<>();
                 while (awarded.size() < Math.min(membrs, y)) {
-                    for (MapleCharacter chr : applyfrom.getMap().getAllPlayers()) {
+                    for (MapleCharacter chr : map.getAllPlayers()) {
                         if (chr.isAlive() && chr.getParty().equals(applyfrom.getParty()) && !awarded.contains(chr) && Randomizer.nextInt(y) == 0) {
                             awarded.add(chr);
                         }
@@ -532,7 +534,7 @@ public class MapleStatEffect {
             }
         } else if (isPartyBuff() && (applyfrom.getParty() != null || isGmBuff())) {
             Rectangle bounds = calculateBoundingBox(applyfrom.getPosition(), applyfrom.isFacingLeft());
-            List<MapleCharacter> affecteds = applyfrom.getMap().getPlayersInRect(bounds);
+            List<MapleCharacter> affecteds = map.getPlayersInRect(bounds);
 
             for (MapleCharacter affected : affecteds) {
                 if (affected != applyfrom && (isGmBuff() || applyfrom.getParty().equals(affected.getParty()))) {

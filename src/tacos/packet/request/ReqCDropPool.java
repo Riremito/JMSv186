@@ -85,12 +85,13 @@ public class ReqCDropPool {
     }
 
     public static boolean OnDropPickUpRequest(MapleCharacter chr, int object_id) {
-        TacosDrop mapitem = chr.getMap().getDropByOid(object_id);
+        MapleMap map = chr.getMap();
+        TacosDrop mapitem = map.getDropByOid(object_id);
         if (mapitem == null) {
             DebugLogger.ErrorLog("PickUp : item null");
             return false;
         }
-        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && chr.getMap().getEverlast()))) {
+        if (mapitem.getOwnerId() != chr.getId() && ((!mapitem.isPlayerDrop() && mapitem.getDropType() == 0) || (mapitem.isPlayerDrop() && map.getEverlast()))) {
             DebugLogger.ErrorLog("PickUp : getOwner");
             return false;
         }
@@ -104,7 +105,7 @@ public class ReqCDropPool {
             if (chr.getParty() != null && mapitem.getOwnerId() != chr.getId()) {
                 List<MapleCharacter> toGive = new LinkedList<>();
                 for (MaplePartyCharacter z : chr.getParty().getMembers()) {
-                    MapleCharacter player = chr.getMap().getPlayerById(z.getId());
+                    MapleCharacter player = map.getPlayerById(z.getId());
                     if (player != null) {
                         toGive.add(player);
                     }
@@ -138,7 +139,7 @@ public class ReqCDropPool {
                             .player(chr)
                             .build();
                     chr.SendPacket(ResCUserLocal.UserEffectLocal(OpsUserEffect.UserEffect_MonsterBookCardGet));
-                    chr.getMap().splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), chr.getId());
+                    map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_MonsterBookCardGet, pb), chr.getId());
 
                     chr.SendPacket(ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MONSTER_CARD).ItemID(nCardID).build()));
                 } else {
@@ -173,8 +174,9 @@ public class ReqCDropPool {
     }
 
     public static void removeDropItem(MapleCharacter chr, TacosDrop mapitem, boolean is_pet, int pet_index) {
-        chr.getMap().removeDrop(mapitem.getObjectId());
-        chr.getMap().broadcastPacket(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index));
+        MapleMap map = chr.getMap();
+        map.removeDrop(mapitem.getObjectId());
+        map.broadcastPacket(ResCDropPool.DropLeaveField(mapitem, is_pet ? DropLeaveType.PET : DropLeaveType.NORMAL, chr, pet_index));
     }
 
     public static boolean useDropItem(MapleCharacter chr, int id) {

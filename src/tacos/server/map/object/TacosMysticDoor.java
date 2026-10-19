@@ -44,8 +44,9 @@ public class TacosMysticDoor extends TacosMapObject {
 
     public TacosMysticDoor(MapleMap map, TacosCharacter owner, TacosDoorSkill tds) {
         this.skill_id = tds.getId();
-        this.town_map_id = owner.getMap().getReturnMapId();
-        this.field_map_id = owner.getMap().getId();
+        MapleMap owner_map = owner.getMap();
+        this.town_map_id = owner_map.getReturnMapId();
+        this.field_map_id = owner_map.getId();
         setPosition(owner.getPosition());
         setFieldPosition(owner.getPosition());
         setOwnerId(owner.getId());

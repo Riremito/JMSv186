@@ -108,8 +108,8 @@ public class ReqCMiniRoomBaseDlg {
                         game.setAvailable(true);
                         game.setOpen(true);
                         game.send(chr.getClient());
-                        chr.getMap().addMiniGame(game);
-                        chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                        map.addMiniGame(game);
+                        map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                         return true;
                     }
                     case MR_TradingRoom: {
@@ -129,7 +129,7 @@ public class ReqCMiniRoomBaseDlg {
 
                         MaplePlayerShop mps = new MaplePlayerShop(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(mps);
-                        chr.getMap().addPlayerShop(mps);
+                        map.addPlayerShop(mps);
                         chr.SendPacket(ResCMiniRoomBaseDlg.getPlayerStore(chr, true));
                         return true;
                     }
@@ -147,7 +147,7 @@ public class ReqCMiniRoomBaseDlg {
                         HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(merch);
                         chr.setRemoteStore(merch);
-                        chr.getMap().addMerchant(merch);
+                        map.addMerchant(merch);
                         chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merch, true));
                         return true;
                     }
@@ -167,7 +167,7 @@ public class ReqCMiniRoomBaseDlg {
             }
             case MRP_Invite: {
                 int character_id = cp.Decode4();
-                MapleTrade.inviteTrade(chr, chr.getMap().getPlayerById(character_id));
+                MapleTrade.inviteTrade(chr, map.getPlayerById(character_id));
                 return true;
             }
             case MRP_InviteResult: {
@@ -177,7 +177,7 @@ public class ReqCMiniRoomBaseDlg {
             case MRP_Enter: {
                 int object_id = cp.Decode4();
                 // 雇用商人
-                HiredMerchant merchant = chr.getMap().getMerchantByOid(object_id);
+                HiredMerchant merchant = map.getMerchantByOid(object_id);
                 if (merchant != null) {
                     TacosRoom room = world.getRoom(merchant.getRoomId());
                     if (room != null) {
@@ -303,7 +303,7 @@ public class ReqCMiniRoomBaseDlg {
             case MRP_Balloon: {
                 Object shop = chr.getPlayerShop();
                 if (shop != null && ShopDispatch.isOwner(shop, chr) && ShopDispatch.getShopType(shop) < 3) {
-                    if (chr.getMap().allowPersonalShop()) {
+                    if (map.allowPersonalShop()) {
 
                         if (ShopDispatch.getShopType(shop) == 1) {
                             HiredMerchant merchant = (HiredMerchant) shop;
@@ -311,12 +311,12 @@ public class ReqCMiniRoomBaseDlg {
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
                             chr.setPlayerShop(null);
-                            chr.getMap().splitSendPacket(chr, ResCEmployeePool.EmployeeMiniRoomBalloon((HiredMerchant) shop));
+                            map.splitSendPacket(chr, ResCEmployeePool.EmployeeMiniRoomBalloon((HiredMerchant) shop));
 
                         } else if (ShopDispatch.getShopType(shop) == 2) {
                             ShopDispatch.setOpen(shop, true);
                             ShopDispatch.setAvailable(shop, true);
-                            chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                            map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                         }
                     }
                 }
@@ -622,7 +622,7 @@ public class ReqCMiniRoomBaseDlg {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 1, game.getRequestedTie()));
                             game.nextLoser();
                             game.setOpen(true);
-                            chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                            map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                             game.checkExitAfterGame();
                         } else {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameDenyTie());
@@ -642,7 +642,7 @@ public class ReqCMiniRoomBaseDlg {
                     game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameResult(game, 0, game.getVisitorSlot(chr)));
                     game.nextLoser();
                     game.setOpen(true);
-                    chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                    map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                     game.checkExitAfterGame();
                 }
                 return true;
@@ -714,7 +714,7 @@ public class ReqCMiniRoomBaseDlg {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardStart(game, game.getLoser()));
                         }
                         game.setOpen(false);
-                        chr.getMap().splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
+                        map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                     }
                 }
                 return true;

@@ -177,6 +177,7 @@ public class MapScriptMethods {
         if (chr == null) {
             return;
         } //o_O
+        MapleMap map = chr.getMap();
         switch (onFirstUserEnter.fromString(scriptName)) {
             case dojang_Eff: {
                 int temp = (chr.getMapId() - 925000000) / 100;
@@ -196,25 +197,25 @@ public class MapScriptMethods {
             }
             //5120018 = ludi(none), 5120019 = orbis(start_itemTake - onUser)
             case moonrabbit_mapEnter: {
-                chr.getMap().startMapEffect("Gather the Primrose Seeds around the moon and protect the Moon Bunny!", 5120016);
+                map.startMapEffect("Gather the Primrose Seeds around the moon and protect the Moon Bunny!", 5120016);
                 break;
             }
             case StageMsg_together: {
                 switch (chr.getMapId()) {
                     case 103000800:
-                        chr.getMap().startMapEffect("Solve the question and gather the amount of passes!", 5120017);
+                        map.startMapEffect("Solve the question and gather the amount of passes!", 5120017);
                         break;
                     case 103000801:
-                        chr.getMap().startMapEffect("Get on the ropes and unveil the correct combination!", 5120017);
+                        map.startMapEffect("Get on the ropes and unveil the correct combination!", 5120017);
                         break;
                     case 103000802:
-                        chr.getMap().startMapEffect("Get on the platforms and unveil the correct combination!", 5120017);
+                        map.startMapEffect("Get on the platforms and unveil the correct combination!", 5120017);
                         break;
                     case 103000803:
-                        chr.getMap().startMapEffect("Get on the barrels and unveil the correct combination!", 5120017);
+                        map.startMapEffect("Get on the barrels and unveil the correct combination!", 5120017);
                         break;
                     case 103000804:
-                        chr.getMap().startMapEffect("Defeat King Slime and his minions!", 5120017);
+                        map.startMapEffect("Defeat King Slime and his minions!", 5120017);
                         break;
                 }
                 break;
@@ -222,25 +223,25 @@ public class MapScriptMethods {
             case StageMsg_romio: {
                 switch (chr.getMapId()) {
                     case 926100000:
-                        chr.getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120021);
+                        map.startMapEffect("Please find the hidden door by investigating the Lab!", 5120021);
                         break;
                     case 926100001:
-                        chr.getMap().startMapEffect("Find  your way through this darkness!", 5120021);
+                        map.startMapEffect("Find  your way through this darkness!", 5120021);
                         break;
                     case 926100100:
-                        chr.getMap().startMapEffect("Fill the beakers to power the energy!", 5120021);
+                        map.startMapEffect("Fill the beakers to power the energy!", 5120021);
                         break;
                     case 926100200:
-                        chr.getMap().startMapEffect("Get the files for the experiment through each door!", 5120021);
+                        map.startMapEffect("Get the files for the experiment through each door!", 5120021);
                         break;
                     case 926100203:
-                        chr.getMap().startMapEffect("Please defeat all the monsters!", 5120021);
+                        map.startMapEffect("Please defeat all the monsters!", 5120021);
                         break;
                     case 926100300:
-                        chr.getMap().startMapEffect("Find your way through the Lab!", 5120021);
+                        map.startMapEffect("Find your way through the Lab!", 5120021);
                         break;
                     case 926100401:
-                        chr.getMap().startMapEffect("Please, protect my love!", 5120021);
+                        map.startMapEffect("Please, protect my love!", 5120021);
 
                         break;
                 }
@@ -249,25 +250,25 @@ public class MapScriptMethods {
             case StageMsg_juliet: {
                 switch (chr.getMapId()) {
                     case 926110000:
-                        chr.getMap().startMapEffect("Please find the hidden door by investigating the Lab!", 5120022);
+                        map.startMapEffect("Please find the hidden door by investigating the Lab!", 5120022);
                         break;
                     case 926110001:
-                        chr.getMap().startMapEffect("Find  your way through this darkness!", 5120022);
+                        map.startMapEffect("Find  your way through this darkness!", 5120022);
                         break;
                     case 926110100:
-                        chr.getMap().startMapEffect("Fill the beakers to power the energy!", 5120022);
+                        map.startMapEffect("Fill the beakers to power the energy!", 5120022);
                         break;
                     case 926110200:
-                        chr.getMap().startMapEffect("Get the files for the experiment through each door!", 5120022);
+                        map.startMapEffect("Get the files for the experiment through each door!", 5120022);
                         break;
                     case 926110203:
-                        chr.getMap().startMapEffect("Please defeat all the monsters!", 5120022);
+                        map.startMapEffect("Please defeat all the monsters!", 5120022);
                         break;
                     case 926110300:
-                        chr.getMap().startMapEffect("Find your way through the Lab!", 5120022);
+                        map.startMapEffect("Find your way through the Lab!", 5120022);
                         break;
                     case 926110401:
-                        chr.getMap().startMapEffect("Please, protect my love!", 5120022);
+                        map.startMapEffect("Please, protect my love!", 5120022);
                         break;
                 }
                 break;
@@ -275,25 +276,25 @@ public class MapScriptMethods {
             case party6weatherMsg: {
                 switch (chr.getMapId()) {
                     case 930000000:
-                        chr.getMap().startMapEffect("Step in the portal to be transformed.", 5120023);
+                        map.startMapEffect("Step in the portal to be transformed.", 5120023);
                         break;
                     case 930000100:
-                        chr.getMap().startMapEffect("Defeat the poisoned monsters!", 5120023);
+                        map.startMapEffect("Defeat the poisoned monsters!", 5120023);
                         break;
                     case 930000200:
-                        chr.getMap().startMapEffect("Eliminate the spore that blocks the way by purifying the poison!", 5120023);
+                        map.startMapEffect("Eliminate the spore that blocks the way by purifying the poison!", 5120023);
                         break;
                     case 930000300:
-                        chr.getMap().startMapEffect("Uh oh! The forest is too confusing! Find me, quick!", 5120023);
+                        map.startMapEffect("Uh oh! The forest is too confusing! Find me, quick!", 5120023);
                         break;
                     case 930000400:
-                        chr.getMap().startMapEffect("Purify the monsters by getting Purification Marbles from me!", 5120023);
+                        map.startMapEffect("Purify the monsters by getting Purification Marbles from me!", 5120023);
                         break;
                     case 930000500:
-                        chr.getMap().startMapEffect("Find the Purple Magic Stone!", 5120023);
+                        map.startMapEffect("Find the Purple Magic Stone!", 5120023);
                         break;
                     case 930000600:
-                        chr.getMap().startMapEffect("Place the Magic Stone on the altar!", 5120023);
+                        map.startMapEffect("Place the Magic Stone on the altar!", 5120023);
                         break;
                 }
                 break;
@@ -301,33 +302,33 @@ public class MapScriptMethods {
             case StageMsg_davy: {
                 switch (chr.getMapId()) {
                     case 925100000:
-                        chr.getMap().startMapEffect("Defeat the monsters outside of the ship to advance!", 5120020);
+                        map.startMapEffect("Defeat the monsters outside of the ship to advance!", 5120020);
                         break;
                     case 925100100:
-                        chr.getMap().startMapEffect("We must prove ourselves! Get me Pirate Medals!", 5120020);
+                        map.startMapEffect("We must prove ourselves! Get me Pirate Medals!", 5120020);
                         break;
                     case 925100200:
-                        chr.getMap().startMapEffect("Defeat the guards here to pass!", 5120020);
+                        map.startMapEffect("Defeat the guards here to pass!", 5120020);
                         break;
                     case 925100300:
-                        chr.getMap().startMapEffect("Eliminate the guards here to pass!", 5120020);
+                        map.startMapEffect("Eliminate the guards here to pass!", 5120020);
                         break;
                     case 925100400:
-                        chr.getMap().startMapEffect("Lock the doors! Seal the root of the Ship's power!", 5120020);
+                        map.startMapEffect("Lock the doors! Seal the root of the Ship's power!", 5120020);
                         break;
                     case 925100500:
-                        chr.getMap().startMapEffect("Destroy the Lord Pirate!", 5120020);
+                        map.startMapEffect("Destroy the Lord Pirate!", 5120020);
                         break;
                 }
                 break;
             }
             case astaroth_summon: {
-                chr.getMap().resetFully();
-                chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(9400633), new Point(600, -26)); //rough estimate
+                map.resetFully();
+                map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(9400633), new Point(600, -26)); //rough estimate
                 break;
             }
             case boss_Ravana: { //event handles this so nothing for now until i find out something to do with it
-                chr.getMap().broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
+                map.broadcastPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Ravana has appeared!").build()));
                 break;
             }
             case killing_BonusSetting: { //spawns monsters according to mapid
@@ -337,7 +338,7 @@ public class MapScriptMethods {
                 //926010050-926010069 = 40 Yetis
                 //926010070-926010089 - 50 Yetis (specialized? immortality)
                 //TODO also find positions to spawn these at
-                chr.getMap().resetFully();
+                map.resetFully();
                 client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/bonus").build()));
                 client.SendPacket(ResCField.FieldEffect(OpsFieldEffect.FieldEffect_Screen, PB_FieldEffect.builder().wz_path("killing/bonus/stage").build()));
                 Point pos1 = null, pos2 = null, pos3 = null;
@@ -379,18 +380,18 @@ public class MapScriptMethods {
                     break;
                 }
                 for (int i = 0; i < spawnPer; i++) {
-                    chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos1));
-                    chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos2));
-                    chr.getMap().spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos3));
+                    map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos1));
+                    map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos2));
+                    map.spawnMonsterOnGroundBelow(WzXML.MOB.createMob(mobId), new Point(pos3));
                 }
                 break;
             }
             case shammos_Fenter: {
                 if (chr.getMapId() >= 921120100 && chr.getMapId() < 921120500) {
                     MapleMonster shammos = WzXML.MOB.createMob(9300275);
-                    chr.getMap().spawnMonsterWithEffectBelow(shammos, new Point(chr.getMap().getPortal(0).getPosition()), 12);
+                    map.spawnMonsterWithEffectBelow(shammos, new Point(map.getPortal(0).getPosition()), 12);
                     shammos.switchShammosController(chr, false);
-                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, chr.getMap()));
+                    client.SendPacket(ResCMobPool.MobRequestResultEscortInfo(shammos, map));
 
                 }
                 break;
@@ -398,25 +399,25 @@ public class MapScriptMethods {
             case PRaid_D_Fenter: {
                 switch (chr.getMapId() % 10) {
                     case 0:
-                        chr.getMap().startMapEffect("Eliminate all the monsters!", 5120033);
+                        map.startMapEffect("Eliminate all the monsters!", 5120033);
                         break;
                     case 1:
-                        chr.getMap().startMapEffect("Break the boxes and eliminate the monsters!", 5120033);
+                        map.startMapEffect("Break the boxes and eliminate the monsters!", 5120033);
                         break;
                     case 2:
-                        chr.getMap().startMapEffect("Eliminate the Officer!", 5120033);
+                        map.startMapEffect("Eliminate the Officer!", 5120033);
                         break;
                     case 3:
-                        chr.getMap().startMapEffect("Eliminate all the monsters!", 5120033);
+                        map.startMapEffect("Eliminate all the monsters!", 5120033);
                         break;
                     case 4:
-                        chr.getMap().startMapEffect("Find the way to the other side!", 5120033);
+                        map.startMapEffect("Find the way to the other side!", 5120033);
                         break;
                 }
                 break;
             }
             case PRaid_B_Fenter: {
-                chr.getMap().startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
+                map.startMapEffect("Defeat the Ghost Ship Captain!", 5120033);
                 break;
             }
             case balog_summon:
@@ -427,7 +428,7 @@ public class MapScriptMethods {
             case killing_MapSetting:
             case Sky_TrapFEnter:
             case balog_bonusSetting: { //not needed
-                chr.getMap().resetFully();
+                map.resetFully();
                 break;
             }
             default: {
