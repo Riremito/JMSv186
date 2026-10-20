@@ -1681,6 +1681,10 @@ public class TacosMap extends TacosMapData {
                 }
             }
         }
+        // mob buff.
+        for (TacosMonster monster : getAllMonsters()) {
+            monster.updateBuffs(time_current);
+        }
         // mob regen.
         if (this.task_mob_regen.check(time_current, 7000)) {
             for (TacosSpawnPoint sp : getMonsterSpawnPoint()) {
@@ -1750,7 +1754,7 @@ public class TacosMap extends TacosMapData {
                                 player.DebugMsg("Mist : " + mist.getObjectId() + " -> " + monster.getObjectId());
                                 int max_hp = (int) monster.getMobMaxHp();
                                 int damage = max_hp / (70 - mist.getSkillLevel());
-                                //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), new MonsterStatusEffect(MonsterStatus.POISON, 1, mist.getSourceSkill().getId(), null, false), true, mist.getDuration(), false);
+                                //monster.applyStatus(map.getCharacterById(mist.getOwnerId()), OpsMobStat.MS_Poison, 1, mist.getSourceSkill().getId(), true, mist.getDuration(), false);
                                 monster.setHp(Math.max(1, monster.getHp() - damage));
                                 splitSendPacket(monster, ResCMobPool.MobDamaged(monster, damage, 0));
                                 /*

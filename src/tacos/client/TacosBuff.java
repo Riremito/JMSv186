@@ -67,33 +67,6 @@ public class TacosBuff {
         return new int[2]; // 8
     }
 
-    public static int[] getMobBuffBuffer() {
-        if (Config.GreaterOrEqual(Region.KMS, 197)) {
-            return new int[12]; // 48
-        }
-        if (Config.GreaterOrEqual(Region.EMS, 89)) {
-            return new int[9]; //36
-        }
-        if (Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.CMS, 104) || Config.GreaterOrEqual(Region.TWMS, 148)) {
-            return new int[8]; // 32
-        }
-        // post bb ex.
-        if (Config.Equal(Region.KMST, 330) || Config.Equal(Region.GMS, 95) || Config.Equal(Region.THMS, 96) || Config.Equal(Region.IMS, 1)) {
-            return new int[4]; // 16
-        }
-        // JMS187-194 (Post-BB)
-        if (Config.PostBB()) {
-            return new int[5]; // 20
-        }
-        // KMS84, JMS180-186 (Pre-BB)
-        if (Config.GreaterOrEqual(Region.KMS, 84) || Config.GreaterOrEqual(Region.JMS, 180) || Config.Equal(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 83)) {
-            return new int[4]; // 16
-        }
-        // KMS1 = none or 4.
-        // JMS131-165, KMS1-71, BMS24
-        return new int[1]; // 4
-    }
-
     public static class Buff {
 
         public OpsSecondaryStat ops;

@@ -28,6 +28,7 @@ import tacos.client.TacosForcedStat;
 import tacos.client.TacosMapleGift;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.ops.OpsMobSkill;
+import tacos.packet.ops.OpsMobStat;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsUI;
 import tacos.packet.response.ResCField;
@@ -268,10 +269,15 @@ public class TacosCommandTest {
                 chr.SendPacket(ResCMobPool.MobSuspendReset(monster));
             }
             case 16 -> {
-                chr.SendPacket(ResCMobPool.MobStatReset(monster));
+                int buff_id = OpsMobSkill.MOBSKILL_POWERUP.get();
+                chr.SendPacket(ResCMobPool.MobStatReset(monster, buff_id));
+                monster.getBuff().remove(buff_id);
             }
             case 17 -> {
-                chr.SendPacket(ResCMobPool.MobStatSet(monster));
+                int buff_id = OpsMobSkill.MOBSKILL_POWERUP.get();
+                if (monster.getBuff().update(OpsMobStat.MS_PowerUp, buff_id, 10, 30000)) {
+                    chr.SendPacket(ResCMobPool.MobStatSet(monster, buff_id));
+                }
             }
             default -> {
             }

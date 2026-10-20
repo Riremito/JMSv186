@@ -36,8 +36,7 @@ import odin.client.inventory.Item;
 import odin.client.Skill;
 import odin.client.inventory.MapleInventoryType;
 import tacos.client.TacosClient;
-import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatus.MonsterStatusEffect;
+import tacos.packet.ops.OpsMobStat;
 import odin.handling.world.MapleParty;
 import odin.handling.world.MapleParty.MaplePartyCharacter;
 import java.awt.Point;
@@ -206,6 +205,7 @@ public class TacosMonster extends TacosMapObject {
     private ServerPacket reflectpack = null;
     private ServerPacket nodepack = null;
     private Map<Integer, Long> usedSkills;
+    private final TacosMobBuff buffs = new TacosMobBuff();
     private ScheduledFuture<?> dropItemSchedule;
 
     public TacosMonster(int id, MapleMonsterStats stats) {
@@ -699,15 +699,15 @@ public class TacosMonster extends TacosMapObject {
         return eventInstance;
     }
 
-    public void applyStatus(TacosCharacter from, MonsterStatusEffect status, boolean poison, long duration, boolean venom) {
-        applyStatus(from, status, poison, duration, venom, true);
+    public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom) {
+        applyStatus(from, stat, value, skill_id, poison, duration, venom, true);
     }
 
-    public void applyStatus(TacosCharacter from, MonsterStatusEffect status, boolean poison, long duration, boolean venom, boolean checkboss) {
+    public void applyStatus(TacosCharacter from, OpsMobStat stat, int value, int skill_id, boolean poison, long duration, boolean venom, boolean checkboss) {
         if (!isAlive()) {
             return;
         }
-        Skill skilz = WzXML.SKILL.getSkill().get(status.getSkill());
+        Skill skilz = WzXML.SKILL.getSkill().get(skill_id);
         if (skilz != null) {
             switch (stats.getEffectiveness(skilz.getElement())) {
                 case IMMUNE:
@@ -721,8 +721,7 @@ public class TacosMonster extends TacosMapObject {
             }
         }
         // compos don't have an elemental (they have 2 - so we have to hack here...)
-        int statusSkill = status.getSkill();
-        switch (statusSkill) {
+        switch (skill_id) {
             case 2111006: { // FP compo
                 switch (stats.getEffectiveness(Element.POISON)) {
                     case IMMUNE:
@@ -749,16 +748,15 @@ public class TacosMonster extends TacosMapObject {
                 break;
             }
         }
-        MonsterStatus stat = status.getStati();
-        if (stats.isNoDoom() && stat == MonsterStatus.DOOM) {
+        if (stats.isNoDoom() && stat == OpsMobStat.MS_Doom) {
             return;
         }
 
         if (stats.isBoss()) {
-            if (stat == MonsterStatus.STUN) {
+            if (stat == OpsMobStat.MS_Stun) {
                 return;
             }
-            if (checkboss && stat != (MonsterStatus.SPEED) && stat != (MonsterStatus.NINJA_AMBUSH) && stat != (MonsterStatus.WATK)) {
+            if (checkboss && stat != OpsMobStat.MS_Speed && stat != OpsMobStat.MS_Ambush && stat != OpsMobStat.MS_PAD) {
                 return;
             }
         }
@@ -800,6 +798,9 @@ public class TacosMonster extends TacosMapObject {
                     return; // Hack, using venom without the job required
             }
         }
+        if (getBuff().update(stat, skill_id, value, (int) duration)) {
+            map.broadcastPacket(ResCMobPool.MobStatSet(this, skill_id));
+        }
     }
 
     public void setFake(boolean fake) {
@@ -808,6 +809,17 @@ public class TacosMonster extends TacosMapObject {
 
     public TacosMap getMap() {
         return map;
+    }
+
+    public TacosMobBuff getBuff() {
+        return buffs;
+    }
+
+    public void updateBuffs(long time_current) {
+        for (int buff_id : getBuff().getTimeoutIds(time_current)) {
+            map.broadcastPacket(ResCMobPool.MobStatReset(this, buff_id));
+            getBuff().remove(buff_id);
+        }
     }
 
     public List<SimpleImmutableEntry<Integer, Integer>> getSkills() {

@@ -15,8 +15,7 @@ import odin.client.PlayerStats;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.status.MonsterStatus;
-import odin.client.status.MonsterStatus.MonsterStatusEffect;
+import tacos.packet.ops.OpsMobStat;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
 import tacos.packet.ops.OpsSecondaryStat;
@@ -86,7 +85,7 @@ public class MapleStatEffect {
     private boolean overTime;
     private boolean skill;
     private boolean partyBuff = true;
-    private Map<MonsterStatus, Integer> monsterStatus;
+    private Map<OpsMobStat, Integer> monsterStatus;
     private Point lt;
     private Point rb;
     private ArrayList<SimpleImmutableEntry<OpsSecondaryStat, Integer>> oss = new ArrayList<>();
@@ -560,8 +559,8 @@ public class MapleStatEffect {
 
         for (TacosMonster monster : applyfrom.getMap().getMonstersInRect(bounds)) {
             if (makeChanceResult()) {
-                for (Map.Entry<MonsterStatus, Integer> stat : getMonsterStati().entrySet()) {
-                    monster.applyStatus(applyfrom, new MonsterStatusEffect(stat.getKey(), stat.getValue(), sourceid, null, false), isPoison(), getDuration(), false);
+                for (Map.Entry<OpsMobStat, Integer> stat : getMonsterStati().entrySet()) {
+                    monster.applyStatus(applyfrom, stat.getKey(), stat.getValue(), sourceid, isPoison(), getDuration(), false);
                 }
             }
             i++;
@@ -874,7 +873,7 @@ public class MapleStatEffect {
         return cooldown;
     }
 
-    public Map<MonsterStatus, Integer> getMonsterStati() {
+    public Map<OpsMobStat, Integer> getMonsterStati() {
         return monsterStatus;
     }
 

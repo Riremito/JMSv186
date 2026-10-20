@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.constants;
 
 import odin.client.inventory.MapleInventoryType;
-import odin.client.status.MonsterStatus;
+import tacos.packet.ops.OpsMobStat;
 import java.util.Calendar;
 import tacos.config.Config;
 import tacos.config.Region;
@@ -913,7 +913,7 @@ public class GameConstants {
         return 0;
     }
 
-    public static MonsterStatus getStatFromWeapon(int itemid) {
+    public static OpsMobStat getStatFromWeapon(int itemid) {
         switch (itemid) {
             case 1302109:
             case 1312041:
@@ -930,7 +930,7 @@ public class GameConstants {
             case 1462058:
             case 1472079:
             case 1482035:
-                return MonsterStatus.ACC;
+                return OpsMobStat.MS_ACC;
             case 1302108:
             case 1312040:
             case 1322066:
@@ -946,7 +946,7 @@ public class GameConstants {
             case 1462057:
             case 1472078:
             case 1482036:
-                return MonsterStatus.SPEED;
+                return OpsMobStat.MS_Speed;
         }
         return null;
     }
