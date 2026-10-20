@@ -315,6 +315,7 @@ public class RD_CUser {
     }
 
     // SecondaryStat::DecodeForRemote order, GMS95
+    // JMS147 : no rShadowPartner, stats after DefenseState and DojangShield are not used (disabled by OpsSecondaryStat).
     private static final OpsSecondaryStat[] REMOTE_STAT_DECODE_ORDER = {
         OpsSecondaryStat.CTS_Speed,
         OpsSecondaryStat.CTS_ComboCounter,
@@ -412,6 +413,9 @@ public class RD_CUser {
                     case CTS_Poison -> {
                         data.Encode2(buff.buff_effect); // n
                         data.Encode4(buff.buff_id); // r
+                    }
+                    case CTS_ShadowPartner -> {
+                        data.Encode4(buff.buff_id, Config.PostBB()); // r, not in JMS147
                     }
                     case CTS_DarkSight, CTS_SoulArrow, CTS_DojangBerserk, CTS_DojangInvincible, CTS_WindWalk, CTS_Flying, CTS_Sneak, CTS_MorewildDamageUp, CTS_BlessingArmor -> {
                         // no data.
