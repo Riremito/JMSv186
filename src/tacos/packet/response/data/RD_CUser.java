@@ -363,6 +363,30 @@ public class RD_CUser {
         OpsSecondaryStat.CTS_BlessingArmor
     };
 
+    // buffs shown to other users.
+    public static List<Buff> getRemoteBuffs(List<Buff> all) {
+        int buff_mask_length = TacosBuff.getBuffBuffer().length;
+        List<Buff> buffs = new ArrayList<>();
+        for (Buff buff : all) {
+            // not active or disabled in this region.
+            if (buff.buff_id == 0 || buff.ops.get() < 0 || buff_mask_length <= buff.ops.getNl()) {
+                continue;
+            }
+            if (buff.ops.isTwoState() || Arrays.asList(REMOTE_STAT_DECODE_ORDER).contains(buff.ops)) {
+                buffs.add(buff);
+            }
+        }
+        return buffs;
+    }
+
+    public static int[] getRemoteBuffMask(List<Buff> buffs) {
+        int[] buff_mask = TacosBuff.getBuffBuffer();
+        for (Buff buff : buffs) {
+            buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
+        }
+        return buff_mask;
+    }
+
     // SecondaryStat::DecodeForRemote
     public static byte[] SecondaryStat_EncodeForRemote_JMS147(TacosCharacter chr) {
         return SecondaryStat_EncodeForRemote_JMS147(chr, chr.getBuff().getAll());
@@ -379,18 +403,8 @@ public class RD_CUser {
             return data.getBytes();
         }
 
-        int[] buff_mask = TacosBuff.getBuffBuffer();
-        List<Buff> buffs = new ArrayList<>();
-        for (Buff buff : all) {
-            // not active or disabled in this region.
-            if (buff.buff_id == 0 || buff.ops.get() < 0 || buff_mask.length <= buff.ops.getNl()) {
-                continue;
-            }
-            if (buff.ops.isTwoState() || Arrays.asList(REMOTE_STAT_DECODE_ORDER).contains(buff.ops)) {
-                buffs.add(buff);
-                buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
-            }
-        }
+        List<Buff> buffs = getRemoteBuffs(all);
+        int[] buff_mask = getRemoteBuffMask(buffs);
         for (int index = 0; index < buff_mask.length; index++) {
             data.Encode4(buff_mask[buff_mask.length - 1 - index]); // uFlagTemp
         }

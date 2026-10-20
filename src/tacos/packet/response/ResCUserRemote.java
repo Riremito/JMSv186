@@ -266,7 +266,27 @@ public class ResCUserRemote {
     }
 
     // CUserRemote::OnSetTemporaryStat
+    public static ServerPacket UserTemporaryStatSet(TacosCharacter chr, int buff_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatSet);
+
+        sp.Encode4(chr.getId()); // dwCharacterId
+        sp.EncodeBuffer(RD_CUser.SecondaryStat_EncodeForRemote_JMS147(chr, chr.getBuff().getCTS(buff_id))); // SecondaryStat::DecodeForRemote
+        sp.Encode2(0); // tDelay
+        return sp;
+    }
+
     // CUserRemote::OnResetTemporaryStat
+    public static ServerPacket UserTemporaryStatReset(TacosCharacter chr, int buff_id) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserTemporaryStatReset);
+
+        sp.Encode4(chr.getId()); // dwCharacterId
+        int[] buff_mask = RD_CUser.getRemoteBuffMask(RD_CUser.getRemoteBuffs(chr.getBuff().getCTS(buff_id)));
+        for (int index = 0; index < buff_mask.length; index++) {
+            sp.Encode4(buff_mask[buff_mask.length - 1 - index]); // uFlagTemp
+        }
+        return sp;
+    }
+
     // CUserRemote::OnReceiveHP
     public static ServerPacket UserHP(int cid, int curhp, int maxhp) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserHP);

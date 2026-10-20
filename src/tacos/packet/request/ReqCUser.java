@@ -2283,6 +2283,7 @@ public class ReqCUser {
 
         if (chr.getBuff().update(nSkillID)) {
             chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, nSkillID));
+            chr.sendRemoteTemporaryStatSet(nSkillID);
             return true;
         }
 
@@ -2339,6 +2340,7 @@ public class ReqCUser {
         int buff_id = cp.Decode4();
 
         chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
+        chr.sendRemoteTemporaryStatReset(buff_id);
         if (!chr.getBuff().remove(buff_id)) {
             return false;
         }
@@ -2645,6 +2647,7 @@ public class ReqCUser {
         if (chr.useItem(item_slot, item_id)) {
             if (chr.getBuff().update(-item_id)) {
                 chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, -item_id));
+                chr.sendRemoteTemporaryStatSet(-item_id);
                 return true;
             }
         }
@@ -2655,6 +2658,7 @@ public class ReqCUser {
         int buff_id = cp.Decode4(); // negative item id.
 
         chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
+        chr.sendRemoteTemporaryStatReset(buff_id);
         if (!chr.getBuff().remove(buff_id)) {
             return false;
         }

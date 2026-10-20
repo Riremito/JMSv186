@@ -391,6 +391,7 @@ public class MobSkill {
         for (TacosCharacter chr : getTargets(player, monster, skill)) {
             if (chr.getBuff().updateDisease(disease, buff_id, Math.max(x, 1), (int) duration)) {
                 chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
+                chr.sendRemoteTemporaryStatSet(buff_id);
             }
         }
     }
@@ -399,6 +400,7 @@ public class MobSkill {
         for (TacosCharacter chr : getTargets(player, monster, skill)) {
             for (int buff_id : chr.getBuff().getDispelIds()) {
                 chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
+                chr.sendRemoteTemporaryStatReset(buff_id);
                 chr.getMap().splitSendPacket(chr, ResCUserRemote.UserSkillCancel(chr, buff_id), chr.getId());
                 chr.getBuff().remove(buff_id);
             }

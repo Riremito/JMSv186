@@ -92,6 +92,7 @@ import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCStage;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
+import tacos.packet.response.data.RD_CUser;
 import tacos.packet.response.ResCUser_Dragon;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
@@ -1615,9 +1616,32 @@ public class TacosCharacter extends TacosPlayer {
         return true;
     }
 
+    // show buffs to other users.
+    public void sendRemoteTemporaryStatSet(int buff_id) {
+        // SecondaryStat::DecodeForRemote is not coded.
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            return;
+        }
+        if (RD_CUser.getRemoteBuffs(getBuff().getCTS(buff_id)).isEmpty()) {
+            return;
+        }
+        getMap().splitSendPacket(this, ResCUserRemote.UserTemporaryStatSet(this, buff_id), getId());
+    }
+
+    public void sendRemoteTemporaryStatReset(int buff_id) {
+        if (Config.GreaterOrEqual(Region.JMS, 302)) {
+            return;
+        }
+        if (RD_CUser.getRemoteBuffs(getBuff().getCTS(buff_id)).isEmpty()) {
+            return;
+        }
+        getMap().splitSendPacket(this, ResCUserRemote.UserTemporaryStatReset(this, buff_id), getId());
+    }
+
     public void updateBuffs(long time_current) {
         for (TacosBuff.Buff buff : getBuff().getCTSTimeout(time_current)) {
             SendPacket(ResCWvsContext.TemporaryStatReset(this, buff.buff_id));
+            sendRemoteTemporaryStatReset(buff.buff_id);
         }
         getBuff().removeTimeout(time_current);
     }
