@@ -269,15 +269,19 @@ public class TacosCommandTest {
                 chr.SendPacket(ResCMobPool.MobSuspendReset(monster));
             }
             case 16 -> {
-                int buff_id = OpsMobSkill.MOBSKILL_POWERUP.get();
-                chr.SendPacket(ResCMobPool.MobStatReset(monster, buff_id));
-                monster.getBuff().remove(buff_id);
-            }
-            case 17 -> {
-                int buff_id = OpsMobSkill.MOBSKILL_POWERUP.get();
-                if (monster.getBuff().update(OpsMobStat.MS_PowerUp, buff_id, 10, 30000)) {
+                int mob_skill_level = 1;
+                int mob_skill_id = OpsMobSkill.MOBSKILL_PHYSICALIMMUNE.get();
+                int buff_id = mob_skill_id | (mob_skill_level << 16);
+                if (monster.getBuff().update(OpsMobStat.MS_PImmune, buff_id, 1, 5000)) {
                     chr.SendPacket(ResCMobPool.MobStatSet(monster, buff_id));
                 }
+            }
+            case 17 -> {
+                int mob_skill_level = 1;
+                int mob_skill_id = OpsMobSkill.MOBSKILL_PHYSICALIMMUNE.get();
+                int buff_id = mob_skill_id | (mob_skill_level << 16);
+                chr.SendPacket(ResCMobPool.MobStatReset(monster, buff_id));
+                monster.getBuff().remove(buff_id);
             }
             default -> {
             }
