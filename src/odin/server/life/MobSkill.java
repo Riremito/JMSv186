@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.LinkedList;
 import tacos.packet.ops.OpsMobStat;
 import tacos.packet.response.ResCMobPool;
+import tacos.packet.response.ResCWvsContext;
+import tacos.packet.response.ResCUserRemote;
+import tacos.packet.ops.OpsSecondaryStat;
 import java.util.EnumMap;
 import tacos.wz.MobWz.MobBanInfo;
 import tacos.wz.WzXML;
@@ -165,8 +168,24 @@ public class MobSkill {
                     monster.heal(getX(), getY(), true);
                 }
                 break;
+            case MOBSKILL_SEAL:
+            case MOBSKILL_DARKNESS:
+            case MOBSKILL_WEAKNESS:
+            case MOBSKILL_STUN:
+            case MOBSKILL_CURSE:
+            case MOBSKILL_POISON:
+            case MOBSKILL_SLOW:
+            case MOBSKILL_ATTRACT:
+            case MOBSKILL_REVERSE_INPUT:
+            case MOBSKILL_UNDEAD:
+            case MOBSKILL_STOPPORTION:
+            case MOBSKILL_STOPMOTION:
+            case MOBSKILL_FEAR:
+            case MOBSKILL_FROZEN:
+                applyDisease(player, monster, skill);
+                break;
             case MOBSKILL_DISPEL:
-                // dispel.
+                applyDispel(player, monster, skill);
                 break;
             case MOBSKILL_BANMAP: // Banish
                 if (monster != null) {
@@ -353,6 +372,37 @@ public class MobSkill {
         }
         Rectangle bounds = new Rectangle(mylt.x, mylt.y, myrb.x - mylt.x, myrb.y - mylt.y);
         return bounds;
+    }
+
+    private List<TacosCharacter> getTargets(TacosCharacter player, TacosMonster monster, boolean skill) {
+        List<TacosCharacter> targets = new ArrayList<>();
+        if (lt != null && rb != null && skill && monster != null) {
+            targets.addAll(monster.getMap().getPlayersInRect(calculateBoundingBox(monster.getPosition(), monster.isFacingLeft())));
+        } else if (player != null) {
+            targets.add(player);
+        }
+        targets.removeIf(chr -> !chr.isAlive() || (skill && !makeChanceResult()));
+        return targets;
+    }
+
+    private void applyDisease(TacosCharacter player, TacosMonster monster, boolean skill) {
+        OpsSecondaryStat disease = OpsMobSkill.find(skillId).getDisease();
+        int buff_id = skillId | (skillLevel << 16);
+        for (TacosCharacter chr : getTargets(player, monster, skill)) {
+            if (chr.getBuff().updateDisease(disease, buff_id, Math.max(x, 1), (int) duration)) {
+                chr.SendPacket(ResCWvsContext.TemporaryStatSet(chr, buff_id));
+            }
+        }
+    }
+
+    private void applyDispel(TacosCharacter player, TacosMonster monster, boolean skill) {
+        for (TacosCharacter chr : getTargets(player, monster, skill)) {
+            for (int buff_id : chr.getBuff().getDispelIds()) {
+                chr.SendPacket(ResCWvsContext.TemporaryStatReset(chr, buff_id));
+                chr.getMap().splitSendPacket(chr, ResCUserRemote.UserSkillCancel(chr, buff_id), chr.getId());
+                chr.getBuff().remove(buff_id);
+            }
+        }
     }
 
     private List<TacosCharacter> getPlayersInRange(TacosMonster monster, TacosCharacter player) {

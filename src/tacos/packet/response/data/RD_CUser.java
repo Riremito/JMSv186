@@ -24,6 +24,12 @@ import odin.constants.GameConstants;
 import odin.handling.world.guild.MapleGuild;
 import odin.server.shops.ShopDispatch;
 import tacos.client.TacosBuff;
+import tacos.client.TacosBuff.Buff;
+import tacos.packet.ops.OpsSecondaryStat;
+import tacos.packet.response.ResCWvsContext;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
@@ -308,21 +314,124 @@ public class RD_CUser {
         return data.getBytes();
     }
 
+    // SecondaryStat::DecodeForRemote order, GMS95
+    private static final OpsSecondaryStat[] REMOTE_STAT_DECODE_ORDER = {
+        OpsSecondaryStat.CTS_Speed,
+        OpsSecondaryStat.CTS_ComboCounter,
+        OpsSecondaryStat.CTS_WeaponCharge,
+        OpsSecondaryStat.CTS_Stun,
+        OpsSecondaryStat.CTS_Darkness,
+        OpsSecondaryStat.CTS_Seal,
+        OpsSecondaryStat.CTS_Weakness,
+        OpsSecondaryStat.CTS_Curse,
+        OpsSecondaryStat.CTS_Poison,
+        OpsSecondaryStat.CTS_ShadowPartner,
+        OpsSecondaryStat.CTS_DarkSight,
+        OpsSecondaryStat.CTS_SoulArrow,
+        OpsSecondaryStat.CTS_Morph,
+        OpsSecondaryStat.CTS_Ghost,
+        OpsSecondaryStat.CTS_Attract,
+        OpsSecondaryStat.CTS_SpiritJavelin,
+        OpsSecondaryStat.CTS_BanMap,
+        OpsSecondaryStat.CTS_Barrier,
+        OpsSecondaryStat.CTS_DojangShield,
+        OpsSecondaryStat.CTS_ReverseInput,
+        OpsSecondaryStat.CTS_RespectPImmune,
+        OpsSecondaryStat.CTS_RespectMImmune,
+        OpsSecondaryStat.CTS_DefenseAtt,
+        OpsSecondaryStat.CTS_DefenseState,
+        OpsSecondaryStat.CTS_DojangBerserk,
+        OpsSecondaryStat.CTS_DojangInvincible,
+        OpsSecondaryStat.CTS_WindWalk,
+        OpsSecondaryStat.CTS_RepeatEffect,
+        OpsSecondaryStat.CTS_StopPortion,
+        OpsSecondaryStat.CTS_StopMotion,
+        OpsSecondaryStat.CTS_Fear,
+        OpsSecondaryStat.CTS_MagicShield,
+        OpsSecondaryStat.CTS_Flying,
+        OpsSecondaryStat.CTS_Frozen,
+        OpsSecondaryStat.CTS_SuddenDeath,
+        OpsSecondaryStat.CTS_FinalCut,
+        OpsSecondaryStat.CTS_Cyclone,
+        OpsSecondaryStat.CTS_Sneak,
+        OpsSecondaryStat.CTS_MorewildDamageUp,
+        OpsSecondaryStat.CTS_Mechanic,
+        OpsSecondaryStat.CTS_DarkAura,
+        OpsSecondaryStat.CTS_BlueAura,
+        OpsSecondaryStat.CTS_YellowAura,
+        OpsSecondaryStat.CTS_BlessingArmor
+    };
+
     // SecondaryStat::DecodeForRemote
     public static byte[] SecondaryStat_EncodeForRemote_JMS147(TacosCharacter chr) {
-        ServerPacket data = new ServerPacket();
+        return SecondaryStat_EncodeForRemote_JMS147(chr, chr.getBuff().getAll());
+    }
 
-        for (int empty_mask : TacosBuff.getBuffBuffer()) {
-            data.Encode4(empty_mask); // uFlagTemp
-        }
+    public static byte[] SecondaryStat_EncodeForRemote_JMS147(TacosCharacter chr, List<Buff> all) {
+        ServerPacket data = new ServerPacket();
 
         // JMS131
         if (Config.LessOrEqual(Region.JMS, 131)) {
+            for (int empty_mask : TacosBuff.getBuffBuffer()) {
+                data.Encode4(empty_mask); // uFlagTemp
+            }
             return data.getBytes();
         }
+
+        int[] buff_mask = TacosBuff.getBuffBuffer();
+        List<Buff> buffs = new ArrayList<>();
+        for (Buff buff : all) {
+            // not active or disabled in this region.
+            if (buff.buff_id == 0 || buff.ops.get() < 0 || buff_mask.length <= buff.ops.getNl()) {
+                continue;
+            }
+            if (buff.ops.isTwoState() || Arrays.asList(REMOTE_STAT_DECODE_ORDER).contains(buff.ops)) {
+                buffs.add(buff);
+                buff_mask[buff.ops.getNl()] |= buff.ops.getNr();
+            }
+        }
+        for (int index = 0; index < buff_mask.length; index++) {
+            data.Encode4(buff_mask[buff_mask.length - 1 - index]); // uFlagTemp
+        }
+
+        for (OpsSecondaryStat ops : REMOTE_STAT_DECODE_ORDER) {
+            for (Buff buff : buffs) {
+                if (buff.ops != ops) {
+                    continue;
+                }
+                switch (ops) {
+                    case CTS_Speed, CTS_ComboCounter, CTS_Cyclone -> {
+                        data.Encode1(buff.buff_effect); // n
+                    }
+                    case CTS_Morph, CTS_Ghost -> {
+                        data.Encode2(buff.buff_effect); // n
+                    }
+                    case CTS_SpiritJavelin, CTS_RespectPImmune, CTS_RespectMImmune, CTS_DefenseAtt, CTS_DefenseState, CTS_MagicShield -> {
+                        data.Encode4(buff.buff_effect); // n
+                    }
+                    case CTS_Poison -> {
+                        data.Encode2(buff.buff_effect); // n
+                        data.Encode4(buff.buff_id); // r
+                    }
+                    case CTS_DarkSight, CTS_SoulArrow, CTS_DojangBerserk, CTS_DojangInvincible, CTS_WindWalk, CTS_Flying, CTS_Sneak, CTS_MorewildDamageUp, CTS_BlessingArmor -> {
+                        // no data.
+                    }
+                    default -> {
+                        data.Encode4(buff.buff_id); // r
+                    }
+                }
+            }
+        }
+
         // JMS147
         data.Encode1(0); // nDefenseAtt_CS
         data.Encode1(0); // nDefenseState_CS
+
+        for (Buff buff : buffs) {
+            if (buff.ops.isTwoState()) {
+                ResCWvsContext.EncodeTwoState(data, chr, buff);
+            }
+        }
         return data.getBytes();
     }
 

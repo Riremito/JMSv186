@@ -175,6 +175,59 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // TemporaryStatBase<long>::DecodeForClient
+    public static void EncodeTwoState(ServerPacket sp, TacosCharacter chr, Buff buff) {
+        switch (buff.ops.getTwoState()) {
+            case RIDING: {
+                sp.Encode4(chr.getMount() != null ? chr.getMount().getItemId() : 0); // m_value
+                sp.Encode4(1); // m_reason
+                sp.Encode1(0); // DecodeTime
+                sp.Encode4(0); // DecodeTime
+                break;
+            }
+            case NO_EXPIRE: {
+                sp.Encode4(buff.buff_effect); // m_value
+                sp.Encode4(buff.buff_effect_2); // m_reason
+                sp.Encode1(0); // DecodeTime
+                sp.Encode4(0); // DecodeTime
+                break;
+            }
+            case EXPIRE_LAST: {
+                sp.Encode4(buff.buff_effect); // m_value
+                sp.Encode4(buff.buff_effect_2); // m_reason
+                sp.Encode1(0); // DecodeTime
+                sp.Encode4(0); // DecodeTime
+                sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
+                break;
+            }
+            case EXPIRE_CURRENT: {
+                sp.Encode4(buff.buff_effect); // m_value
+                sp.Encode4(buff.buff_effect_2); // m_reason
+                sp.Encode1(0); // DecodeTime
+                sp.Encode4(0); // DecodeTime
+                sp.Encode1(0); // DecodeTime
+                sp.Encode4(0); // DecodeTime -> m_tCurrentTime
+                sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
+                break;
+            }
+            case GUIDED_BULLET: {
+                sp.Encode4(buff.buff_effect); // m_value
+                sp.Encode4(buff.buff_effect_2); // m_reason
+                sp.Encode1(0); // DecodeTime
+                sp.Encode4(0); // DecodeTime
+                sp.Encode4(0); // m_dwMobID
+                break;
+            }
+            default: {
+                sp.Encode4(buff.buff_effect); // m_value
+                sp.Encode4(buff.buff_effect_2); // m_reason
+                sp.Encode1(0); // DecodeTime
+                sp.Encode4(0); // DecodeTime
+                break;
+            }
+        }
+    }
+
     // CWvsContext::OnTemporaryStatSet
     public static ServerPacket TemporaryStatSet(TacosCharacter chr, int buff_id) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_TemporaryStatSet);
@@ -241,56 +294,7 @@ public class ResCWvsContext {
             if (!buff.ops.isTwoState()) {
                 continue;
             }
-            // TemporaryStatBase<long>::DecodeForClient
-            switch (buff.ops.getTwoState()) {
-                case RIDING: {
-                    sp.Encode4(chr.getMount() != null ? chr.getMount().getItemId() : 0); // m_value
-                    sp.Encode4(1); // m_reason
-                    sp.Encode1(0); // DecodeTime
-                    sp.Encode4(0); // DecodeTime
-                    break;
-                }
-                case NO_EXPIRE: {
-                    sp.Encode4(buff.buff_effect); // m_value
-                    sp.Encode4(buff.buff_effect_2); // m_reason
-                    sp.Encode1(0); // DecodeTime
-                    sp.Encode4(0); // DecodeTime
-                    break;
-                }
-                case EXPIRE_LAST: {
-                    sp.Encode4(buff.buff_effect); // m_value
-                    sp.Encode4(buff.buff_effect_2); // m_reason
-                    sp.Encode1(0); // DecodeTime
-                    sp.Encode4(0); // DecodeTime
-                    sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
-                    break;
-                }
-                case EXPIRE_CURRENT: {
-                    sp.Encode4(buff.buff_effect); // m_value
-                    sp.Encode4(buff.buff_effect_2); // m_reason
-                    sp.Encode1(0); // DecodeTime
-                    sp.Encode4(0); // DecodeTime
-                    sp.Encode1(0); // DecodeTime
-                    sp.Encode4(0); // DecodeTime -> m_tCurrentTime
-                    sp.Encode2(buff.buff_time / 1000); // m_usExpireTerm
-                    break;
-                }
-                case GUIDED_BULLET: {
-                    sp.Encode4(buff.buff_effect); // m_value
-                    sp.Encode4(buff.buff_effect_2); // m_reason
-                    sp.Encode1(0); // DecodeTime
-                    sp.Encode4(0); // DecodeTime
-                    sp.Encode4(0); // m_dwMobID
-                    break;
-                }
-                default: {
-                    sp.Encode4(buff.buff_effect); // m_value
-                    sp.Encode4(buff.buff_effect_2); // m_reason
-                    sp.Encode1(0); // DecodeTime
-                    sp.Encode4(0); // DecodeTime
-                    break;
-                }
-            }
+            EncodeTwoState(sp, chr, buff);
         }
         sp.Encode1(0, Config.GreaterOrEqual(Region.KMS, 197) || Config.GreaterOrEqual(Region.JMS, 302) || Config.GreaterOrEqual(Region.TWMS, 148));
         if (Config.GreaterOrEqual(Region.KMS, 197)) {

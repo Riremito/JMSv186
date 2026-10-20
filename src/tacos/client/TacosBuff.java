@@ -28,6 +28,7 @@ import tacos.config.Config;
 import tacos.config.Region;
 import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
 import tacos.packet.ops.OpsSkill;
 import tacos.wz.opt.FieldOpt;
@@ -197,6 +198,61 @@ public class TacosBuff {
             }
         }
         return false;
+    }
+
+    // mob skill disease.
+    public boolean updateDisease(OpsSecondaryStat ops, int buff_id, int buff_effect, int buff_time) {
+        // disabled in this region.
+        if (ops.get() < 0) {
+            return false;
+        }
+        if (has(OpsSecondaryStat.CTS_Holyshield)) {
+            return false;
+        }
+        long time = System.currentTimeMillis();
+        for (Buff buff : buffs) {
+            if (buff.ops == ops) {
+                buff.buff_effect = buff_effect;
+                buff.buff_effect_2 = 0;
+                buff.buff_id = buff_id;
+                buff.buff_time = buff_time;
+                buff.server_time = time;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean has(OpsSecondaryStat ops) {
+        for (Buff buff : buffs) {
+            if (buff.ops == ops && buff.buff_id != 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isDisease(OpsSecondaryStat ops) {
+        for (OpsMobSkill oms : OpsMobSkill.values()) {
+            if (oms.getDisease() == ops) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // mob skill dispel, buffs from skills and items.
+    public ArrayList<Integer> getDispelIds() {
+        ArrayList<Integer> ret = new ArrayList<>();
+        for (Buff buff : buffs) {
+            if (buff.buff_id == 0 || buff.ops.isTwoState() || isDisease(buff.ops)) {
+                continue;
+            }
+            if (!ret.contains(buff.buff_id)) {
+                ret.add(buff.buff_id);
+            }
+        }
+        return ret;
     }
 
     public ArrayList<Buff> getCTS(int buff_id) {
