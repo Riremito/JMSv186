@@ -2008,7 +2008,6 @@ public class TacosCharacter extends TacosPlayer {
         }
     }
 
-
     private String chalktext;
     private String teleportname = "";
     private long nextConsume = 0;
@@ -2123,7 +2122,7 @@ public class TacosCharacter extends TacosPlayer {
     public void updateQuest(MapleQuestStatus quest, boolean update) {
         quests.put(quest.getQuest(), quest);
         if (!(quest.isCustom())) {
-            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
+            SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) quest.getQuest().getId()).qt(OpsQuestRecordMessage.get(quest.getStatus())).str(quest.getCustomData() != null ? quest.getCustomData() : "").build()));
             if (quest.getStatus() == 1 && !update) {
                 SendPacket(ResCUserLocal.UserQuestResult(this, quest.getQuest().getId(), quest.getNpc(), OpsQuest.QuestRes_Act_Success));
             }
@@ -2392,7 +2391,7 @@ public class TacosCharacter extends TacosPlayer {
             }
             sendStatChanged();
             if (show) { // still show the expgain even if it's not there
-                client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
+                SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(gain).Inc_EXP_PartyBonus(partyinc).Inc_EXP_EquipmentBonus(Equipment_Bonus_EXP).Inc_EXP_PremiumBonus(Premium_Bonus_EXP).Inc_EXP_ClassBonus(Class_Bonus_EXP).build()));
             }
             stats.checkEquipLevels(this, total);
         }
@@ -2457,7 +2456,7 @@ public class TacosCharacter extends TacosPlayer {
                     for (int kills : q.getMobKills().values()) {
                         sb.append(String.format("%03d", kills));
                     }
-                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) q.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(sb.toString()).build()));
+                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordMessage, PB_Message.builder().QuestID((short) q.getQuest().getId()).qt(OpsQuestRecordMessage.QUEST_UPDATE).str(sb.toString()).build()));
                 }
                 if (q.getQuest().canComplete(this, null)) {
                     SendPacket(ResCWvsContext.QuestClear(q.getQuest().getId()));
@@ -2835,7 +2834,7 @@ public class TacosCharacter extends TacosPlayer {
         if (gift != null && gift == fame && fame > 0) { //not exploited! hurray
             addFame(fame);
             sendStatChanged();
-            client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fame).build()));
+            SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncPOPMessage, PB_Message.builder().Inc_Fame(fame).build()));
         }
         DQ_Notes.deleteById(id);
     }
@@ -3620,7 +3619,7 @@ public class TacosCharacter extends TacosPlayer {
     // used by script
     public void updateInfoQuest(int questid, String data) {
         questinfo.put(questid, data);
-        client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) questid).str(data).build()));
+        SendPacket(ResCWvsContext.Message(OpsMessage.MS_QuestRecordExMessage, PB_Message.builder().QuestID((short) questid).str(data).build()));
     }
 
     // used by script
@@ -3889,7 +3888,7 @@ public class TacosCharacter extends TacosPlayer {
                 }
                 sendStatChanged();
                 if (show) { // still show the expgain even if it's not there
-                    client.SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
+                    SendPacket(ResCWvsContext.Message(OpsMessage.MS_IncEXPMessage, PB_Message.builder().Inc_EXP_TextColor(white ? 1 : 0).Inc_EXP(total).InChat(inChat ? 1 : 0).build()));
                 }
                 if (total > 0) {
                     stats.checkEquipLevels(this, total); //gms like
@@ -3923,7 +3922,7 @@ public class TacosCharacter extends TacosPlayer {
         meso += gain;
         sendStatChanged(enableActions);
         if (show) {
-            client.SendPacket((!inChat
+            SendPacket((!inChat
                     ? ResCWvsContext.Message(OpsMessage.MS_DropPickUpMessage, PB_Message.builder().dt(OpsDropPickUpMessage.PICKUP_MESO).Inc_Meso(gain).build())
                     : ResCWvsContext.Message(OpsMessage.MS_IncMoneyMessage, PB_Message.builder().Inc_Meso(gain).build())));
         }
@@ -4043,12 +4042,16 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public void dropMessage(int type, String message) {
-        if (type == -1) {
-            SendPacket(ResCWvsContext.ScriptProgressMessage(message));
-        } else if (type == -2) {
-            SendPacket(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
-        } else {
-            client.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
+        switch (type) {
+            case -1 -> {
+                SendPacket(ResCWvsContext.ScriptProgressMessage(message));
+            }
+            case -2 -> {
+                SendPacket(ResCMiniRoomBaseDlg.shopChat(message, 0)); //0 or what
+            }
+            default -> {
+                SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.find((byte) type), PB_BroadcastMsg.builder().message(message).build()));
+            }
         }
     }
 

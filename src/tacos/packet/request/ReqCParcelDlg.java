@@ -18,7 +18,7 @@
  */
 package tacos.packet.request;
 
-import tacos.client.TacosClient;
+import tacos.client.TacosCharacter;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCParcelDlg;
 
@@ -60,13 +60,13 @@ public class ReqCParcelDlg {
     };
 
     // 宅配
-    public static boolean Accept(TacosClient client, ClientPacket cp) {
+    public static boolean Accept(TacosCharacter chr, ClientPacket cp) {
         // 処理内容
         byte action = cp.Decode1();
         switch (Action.Find(action)) {
             // 配送
             case SEND: {
-                client.SendPacket(ResCParcelDlg.Send());
+                chr.SendPacket(ResCParcelDlg.Send());
                 return true;
             }
             // 閉じる

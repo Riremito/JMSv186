@@ -29,12 +29,12 @@ import java.util.List;
 import odin.client.inventory.Item;
 import odin.constants.GameConstants;
 import odin.client.inventory.ItemLoader;
-import tacos.client.TacosClient;
 import odin.client.inventory.MapleRing;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.query.DQ_Gifts;
 import tacos.packet.response.ResCCashShop;
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.client.TacosCharacter;
 import tacos.server.TacosWorld;
 
 public class CashShop {
@@ -95,7 +95,7 @@ public class CashShop {
         return null;
     }
 
-    public void checkExpire(TacosClient client) {
+    public void checkExpire(TacosCharacter chr) {
         List<Item> toberemove = new ArrayList<>();
         for (Item item : inventory) {
             if (item != null && !GameConstants.isPet(item.getItemId()) && item.getExpiration() > 0 && item.getExpiration() < System.currentTimeMillis()) {
@@ -105,7 +105,7 @@ public class CashShop {
         if (!toberemove.isEmpty()) {
             for (Item item : toberemove) {
                 removeFromInventory(item);
-                client.SendPacket(ResCCashShop.cashItemExpired(item.getUniqueId()));
+                chr.SendPacket(ResCCashShop.cashItemExpired(item.getUniqueId()));
             }
             toberemove.clear();
         }

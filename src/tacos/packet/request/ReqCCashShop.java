@@ -495,6 +495,6 @@ public class ReqCCashShop {
 
     private static void doCSPackets(TacosCharacter chr) {
         chr.SendPacket(ResCCashShop.CashShopQueryCashResult(chr));
-        chr.getCashInventory().checkExpire(chr.getClient());
+        chr.getCashInventory().checkExpire(chr);
     }
 }

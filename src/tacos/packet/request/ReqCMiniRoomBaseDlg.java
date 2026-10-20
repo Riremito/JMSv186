@@ -107,7 +107,7 @@ public class ReqCMiniRoomBaseDlg {
                         chr.setPlayerShop(game);
                         game.setAvailable(true);
                         game.setOpen(true);
-                        game.send(chr.getClient());
+                        game.send(chr);
                         map.addMiniGame(game);
                         map.splitSendPacket(chr, ResCUser.sendPlayerShopBox(chr));
                         return true;

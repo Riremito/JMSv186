@@ -258,7 +258,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserParcelRequest: {
-                ReqCParcelDlg.Accept(client, cp);
+                ReqCParcelDlg.Accept(chr, cp);
                 return true;
             }
             case CP_ShopScannerRequest: {
@@ -327,7 +327,7 @@ public class ReqCUser {
                 return true;
             }
             case CP_UserScriptItemUseRequest: {
-                InventoryHandler.UseScriptedNPCItem(cp,  chr);
+                InventoryHandler.UseScriptedNPCItem(cp, chr);
                 return true;
             }
             case CP_UserConsumeCashItemUseRequest: {
@@ -1373,7 +1373,7 @@ public class ReqCUser {
             storage.setNpcId(npc_script_id);
             storage.setFeeGet(npc_info.getTrunkGet());
             storage.setFeePut(npc_info.getTrunkPut());
-            client.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_OpenTrunkDlg));
+            chr.SendPacket(ResCTrunkDlg.TrunkResult(storage, OpsTrunk.TrunkRes_OpenTrunkDlg));
             chr.DebugMsg("OnUserSelectNpc (Trunk) : " + npc_script_id);
             return true;
         }

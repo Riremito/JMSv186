@@ -462,12 +462,12 @@ public class MapleMiniGame {
         return loser;
     }
 
-    public void send(TacosClient client) {
+    public void send(TacosCharacter chr) {
         if (getMCOwner() == null) {
             closeShop(false, false, 0);
             return;
         }
-        client.SendPacket(ResCMiniRoomBaseDlg.getMiniGame(client.getPlayer(), this));
+        chr.SendPacket(ResCMiniRoomBaseDlg.getMiniGame(chr, this));
     }
 
     public void setReady(int slot) {
