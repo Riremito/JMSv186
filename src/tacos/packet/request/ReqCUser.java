@@ -2264,6 +2264,8 @@ public class ReqCUser {
                 return false;
             }
             chr.getStat().setHp(cur_hp - con_hp);
+            // skill effect for other users.
+            map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillUse, PB_UserEffect.builder().player(chr).skill_id(nSkillID).skill_level(nSLV_SS).build()), chr.getId());
         }
 
         OpsSkill ops_skill = OpsSkill.find(nSkillID);

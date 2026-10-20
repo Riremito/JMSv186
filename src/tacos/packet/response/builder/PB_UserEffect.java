@@ -33,6 +33,7 @@ public class PB_UserEffect {
     public int item_id;
     public int item_quantity;
     public int skill_id;
+    public int skill_level;
     public boolean skill_on;
     public ItemMakerHandler.ItemMakerResult maker;
 }

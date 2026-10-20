@@ -74,9 +74,26 @@ public class ResCUserLocal {
 
         switch (ops) {
             case UserEffect_SkillUse: {
-                data.Encode4(pb.skill_id);
-                data.Encode1(1);
-                data.Encode1(pb.skill_on ? 0 : 1);
+                data.Encode4(pb.skill_id); // nSkillID
+                data.Encode1(pb.player.getLevel(), Config.PostBB()); // nCharLevel
+                data.Encode1(pb.skill_level); // nSLV
+                switch (pb.skill_id) {
+                    // Berserk
+                    case 1320006: {
+                        data.Encode1(pb.skill_on ? 1 : 0);
+                        break;
+                    }
+                    // Monster Magnet
+                    case 1121001:
+                    case 1221001:
+                    case 1321001: {
+                        data.Encode1(0); // direction
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
                 break;
             }
             case UserEffect_SkillAffected: {
