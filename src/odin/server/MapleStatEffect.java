@@ -1,6 +1,7 @@
 package odin.server;
 
 import odin.client.Skill;
+import tacos.wz.WzXML;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
@@ -11,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import odin.client.PlayerStats;
-import odin.client.SkillFactory;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -395,7 +395,7 @@ public class MapleStatEffect {
         if (isHeal() && (applyfrom.getMapId() == 749040100 || applyto.getMapId() == 749040100)) {
             return false;
         } else if (sourceid == 33101004 && map.isTown()) {
-            applyfrom.dropMessage(5, "You may not use this skill in towns.");
+            applyfrom.Notice("You may not use this skill in towns.");
             applyfrom.updateStat();
             return false; //not supposed to
         }
@@ -474,7 +474,7 @@ public class MapleStatEffect {
         }
         if (isMist()) {
             Rectangle bounds = calculateBoundingBox(pos != null ? pos : new Point(applyfrom.getPosition()), applyfrom.isFacingLeft());
-            TacosMist mist = new TacosMist(bounds, applyfrom.getId(), applyfrom.getSkillLevel(SkillFactory.getSkill(getSourceId())), getDuration(), null, this);
+            TacosMist mist = new TacosMist(bounds, applyfrom.getId(), applyfrom.getSkillLevel(WzXML.SKILL.getSkill().get(getSourceId())), getDuration(), null, this);
             map.addMist(mist);
 
         } else if (isTimeLeap()) {
@@ -664,7 +664,7 @@ public class MapleStatEffect {
 
             int ElemSkillId = getElementalAmp(applyfrom.getJob());
             if (ElemSkillId != -1) {
-                Skill amp = SkillFactory.getSkill(ElemSkillId);
+                Skill amp = WzXML.SKILL.getSkill().get(ElemSkillId);
                 int ampLevel = applyfrom.getSkillLevel(amp);
                 if (ampLevel > 0) {
                     MapleStatEffect ampStat = amp.getEffect(ampLevel);
@@ -695,21 +695,21 @@ public class MapleStatEffect {
         switch (chr.getJob()) {
             case 411:
             case 412:
-                al = SkillFactory.getSkill(4110000);
+                al = WzXML.SKILL.getSkill().get(4110000);
                 if (chr.getSkillLevel(al) <= 0) {
                     return null;
                 }
                 return al.getEffect(chr.getSkillLevel(al));
             case 1411:
             case 1412:
-                al = SkillFactory.getSkill(14110003);
+                al = WzXML.SKILL.getSkill().get(14110003);
                 if (chr.getSkillLevel(al) <= 0) {
                     return null;
                 }
                 return al.getEffect(chr.getSkillLevel(al));
         }
         if (GameConstants.isResist(chr.getJob())) {
-            al = SkillFactory.getSkill(30000002);
+            al = WzXML.SKILL.getSkill().get(30000002);
             if (chr.getSkillLevel(al) <= 0) {
                 return null;
             }

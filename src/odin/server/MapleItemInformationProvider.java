@@ -1,6 +1,5 @@
 package odin.server;
 
-import java.util.ArrayList;
 import tacos.client.TacosCharacter;
 import java.util.HashMap;
 import java.util.List;

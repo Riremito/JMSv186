@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import java.awt.Point;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosPet;
@@ -28,7 +29,6 @@ import tacos.server.map.object.TacosDrop;
 import odin.client.Skill;
 import tacos.client.TacosClient;
 import odin.client.PlayerStats;
-import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
@@ -66,8 +66,6 @@ import tacos.packet.response.ResCUser;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.ResCUserRemote;
 import tacos.packet.response.ResCWvsContext;
-import tacos.packet.ops.OpsBroadcastMsg;
-import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleInventoryManipulator;
 import odin.server.MapleItemInformationProvider;
@@ -76,7 +74,6 @@ import odin.server.Randomizer;
 import odin.server.life.MobSkill;
 import tacos.server.map.object.TacosDynamicPortal;
 import odin.server.quest.MapleQuest;
-import odin.server.shops.HiredMerchant;
 import tacos.client.TacosMapleGift.MapleGiftData;
 import tacos.config.Config;
 import tacos.config.ContentState;
@@ -994,7 +991,7 @@ public class ReqCUser {
         TacosMap map = chr.getMap();
         boolean is_skill_attack = attack.skill != 0;
         if (is_skill_attack) {
-            Skill skill = SkillFactory.getSkill(GameConstants.getLinkedAranSkill(attack.skill));
+            Skill skill = WzXML.SKILL.getSkill().get(GameConstants.getLinkedAranSkill(attack.skill));
             int skillLevel = chr.getSkillLevel(skill);
             MapleStatEffect skill_effect = attack.getAttackEffect(chr, skillLevel, skill);
             if (skill_effect == null) {
@@ -1015,14 +1012,14 @@ public class ReqCUser {
         if (!ContentState.CS_LOCK_LOSING_THRWOING.get()) {
             // consume star code.
         }
-        Skill eaterSkill = SkillFactory.getSkill(GameConstants.getMPEaterForJob(chr.getJob()));
+        Skill eaterSkill = WzXML.SKILL.getSkill().get(GameConstants.getMPEaterForJob(chr.getJob()));
         int eaterLevel = chr.getSkillLevel(eaterSkill);
         boolean is_meso_explosion = attack.skill == OpsSkill.THIEFMASTER_MESO_EXPLOSION.get();
         boolean is_pick_pocket = false;
         Skill skill_pick_pocket = null;
         MapleStatEffect skill_effect_pick_pocket = null;
         if (is_pick_pocket) {
-            skill_pick_pocket = SkillFactory.getSkill(OpsSkill.THIEFMASTER_PICKPOCKET.get());
+            skill_pick_pocket = WzXML.SKILL.getSkill().get(OpsSkill.THIEFMASTER_PICKPOCKET.get());
             skill_effect_pick_pocket = skill_pick_pocket.getEffect(30); // level.
         }
 
@@ -1546,7 +1543,7 @@ public class ReqCUser {
             return false;
         }
         MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, owl_item_id, 1, true, false);
-        List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
+        List<TacosMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
         // not coded.
         chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
         return true;
@@ -1747,7 +1744,7 @@ public class ReqCUser {
             return false;
         }
         if (legendarySpirit && vegas == 0) {
-            if (chr.getSkillLevel(SkillFactory.getSkill(1003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(10001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20001003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(20011003)) <= 0 && chr.getSkillLevel(SkillFactory.getSkill(30001003)) <= 0) {
+            if (chr.getSkillLevel(WzXML.SKILL.getSkill().get(1003)) <= 0 && chr.getSkillLevel(WzXML.SKILL.getSkill().get(10001003)) <= 0 && chr.getSkillLevel(WzXML.SKILL.getSkill().get(20001003)) <= 0 && chr.getSkillLevel(WzXML.SKILL.getSkill().get(20011003)) <= 0 && chr.getSkillLevel(WzXML.SKILL.getSkill().get(30001003)) <= 0) {
                 return false;
             }
         }
@@ -1918,7 +1915,7 @@ public class ReqCUser {
                         maxhp += Randomizer.rand(8, 12);
                     } else if ((job >= 100 && job <= 132) || (job >= 3200 && job <= 3212)) {
                         // Warrior
-                        Skill improvingMaxHP = SkillFactory.getSkill(1000001);
+                        Skill improvingMaxHP = WzXML.SKILL.getSkill().get(1000001);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(20, 25);
                         if (improvingMaxHPLevel >= 1) {
@@ -1932,7 +1929,7 @@ public class ReqCUser {
                         maxhp += Randomizer.rand(16, 20);
                     } else if ((job >= 500 && job <= 522) || (job >= 3500 && job <= 3512)) {
                         // Pirate
-                        Skill improvingMaxHP = SkillFactory.getSkill(5100000);
+                        Skill improvingMaxHP = WzXML.SKILL.getSkill().get(5100000);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(18, 22);
                         if (improvingMaxHPLevel >= 1) {
@@ -1940,7 +1937,7 @@ public class ReqCUser {
                         }
                     } else if (job >= 1500 && job <= 1512) {
                         // Pirate
-                        Skill improvingMaxHP = SkillFactory.getSkill(15100000);
+                        Skill improvingMaxHP = WzXML.SKILL.getSkill().get(15100000);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(18, 22);
                         if (improvingMaxHPLevel >= 1) {
@@ -1948,7 +1945,7 @@ public class ReqCUser {
                         }
                     } else if (job >= 1100 && job <= 1112) {
                         // Soul Master
-                        Skill improvingMaxHP = SkillFactory.getSkill(11000000);
+                        Skill improvingMaxHP = WzXML.SKILL.getSkill().get(11000000);
                         int improvingMaxHPLevel = chr.getSkillLevel(improvingMaxHP);
                         maxhp += Randomizer.rand(36, 42);
                         if (improvingMaxHPLevel >= 1) {
@@ -1982,7 +1979,7 @@ public class ReqCUser {
                         maxmp += Randomizer.rand(2, 4);
                     } else if ((job >= 200 && job <= 232) || (GameConstants.isEvan(job)) || (job >= 3200 && job <= 3212)) {
                         // Magician
-                        Skill improvingMaxMP = SkillFactory.getSkill(2000001);
+                        Skill improvingMaxMP = WzXML.SKILL.getSkill().get(2000001);
                         int improvingMaxMPLevel = chr.getSkillLevel(improvingMaxMP);
                         maxmp += Randomizer.rand(18, 20);
                         if (improvingMaxMPLevel >= 1) {
@@ -1996,7 +1993,7 @@ public class ReqCUser {
                         maxmp += Randomizer.rand(6, 9);
                     } else if (job >= 1200 && job <= 1212) {
                         // Flame Wizard
-                        Skill improvingMaxMP = SkillFactory.getSkill(12000000);
+                        Skill improvingMaxMP = WzXML.SKILL.getSkill().get(12000000);
                         int improvingMaxMPLevel = chr.getSkillLevel(improvingMaxMP);
                         maxmp += Randomizer.rand(18, 20);
                         if (improvingMaxMPLevel >= 1) {
@@ -2149,9 +2146,9 @@ public class ReqCUser {
             case 1000:
             case 1001:
             case 1002: {
-                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(1000));
-                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(1001));
-                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(1002));
+                int snailsLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(1000));
+                int recoveryLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(1001));
+                int nimbleFeetLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(1002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2159,9 +2156,9 @@ public class ReqCUser {
             case 10001000:
             case 10001001:
             case 10001002: {
-                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(10001000));
-                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(10001001));
-                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(10001002));
+                int snailsLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(10001000));
+                int recoveryLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(10001001));
+                int nimbleFeetLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(10001002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2169,9 +2166,9 @@ public class ReqCUser {
             case 20001000:
             case 20001001:
             case 20001002: {
-                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20001000));
-                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20001001));
-                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20001002));
+                int snailsLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(20001000));
+                int recoveryLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(20001001));
+                int nimbleFeetLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(20001002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2179,9 +2176,9 @@ public class ReqCUser {
             case 20011000:
             case 20011001:
             case 20011002: {
-                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(20011000));
-                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(20011001));
-                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(20011002));
+                int snailsLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(20011000));
+                int recoveryLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(20011001));
+                int nimbleFeetLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(20011002));
                 remainingSp = Math.min(chr.getLevel() - 1, 6) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true;
                 break;
@@ -2189,9 +2186,9 @@ public class ReqCUser {
             case 30001000:
             case 30001001:
             case 30000002: {
-                int snailsLevel = chr.getSkillLevel(SkillFactory.getSkill(30001000));
-                int recoveryLevel = chr.getSkillLevel(SkillFactory.getSkill(30001001));
-                int nimbleFeetLevel = chr.getSkillLevel(SkillFactory.getSkill(30000002));
+                int snailsLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(30001000));
+                int recoveryLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(30001001));
+                int nimbleFeetLevel = chr.getSkillLevel(WzXML.SKILL.getSkill().get(30000002));
                 remainingSp = Math.min(chr.getLevel() - 1, 9) - snailsLevel - recoveryLevel - nimbleFeetLevel;
                 isBeginnerSkill = true; //resist can max ALL THREE
                 break;
@@ -2201,9 +2198,9 @@ public class ReqCUser {
                 break;
             }
         }
-        Skill skill = SkillFactory.getSkill(skill_id);
+        Skill skill = WzXML.SKILL.getSkill().get(skill_id);
         if (skill.hasRequiredSkill()) {
-            if (chr.getSkillLevel(SkillFactory.getSkill(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
+            if (chr.getSkillLevel(WzXML.SKILL.getSkill().get(skill.getRequiredSkillId())) < skill.getRequiredSkillLevel()) {
                 DebugLogger.ErrorLog("Use SP 1 = " + skill_id);
                 return false;
             }
@@ -2244,7 +2241,7 @@ public class ReqCUser {
 
         chr.SendPacket(ResCWvsContext.SkillUseResult());
 
-        Skill skill = SkillFactory.getSkill(nSkillID);
+        Skill skill = WzXML.SKILL.getSkill().get(nSkillID);
         int nSLV_SS = 0;
         if (skill != null) {
             nSLV_SS = chr.getSkillLevel(skill);
@@ -2362,7 +2359,7 @@ public class ReqCUser {
         }
         byte attack_speed_degree = cp.Decode1();
 
-        Skill skill = SkillFactory.getSkill(nSkillID);
+        Skill skill = WzXML.SKILL.getSkill().get(nSkillID);
         if (chr == null) {
             return false;
         }
@@ -2747,7 +2744,7 @@ public class ReqCUser {
                         MapleInventoryManipulator.addById(chr, 4001169, (short) 1);
                     } else {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
-                        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
+                        chr.Notice("The monster has too much physical strength, so you cannot catch it.");
                     }
                     break;
                 }
@@ -2758,7 +2755,7 @@ public class ReqCUser {
                         MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
-                        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
+                        chr.Notice("The monster has too much physical strength, so you cannot catch it.");
                     }
                     break;
                 }
@@ -2784,7 +2781,7 @@ public class ReqCUser {
                         MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, item_id, 1, false, false);
                     } else {
                         map.broadcastPacket(ResCMobPool.MobEffectByItem(mob, item_id, false));
-                        chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The monster has too much physical strength, so you cannot catch it.").build()));
+                        chr.Notice("The monster has too much physical strength, so you cannot catch it.");
                     }
                     break;
                 }
@@ -2825,7 +2822,7 @@ public class ReqCUser {
             if (CurrentLoopedSkillId == null) {
                 break; // End of data
             }
-            Skill CurrSkillData = SkillFactory.getSkill(CurrentLoopedSkillId);
+            Skill CurrSkillData = WzXML.SKILL.getSkill().get(CurrentLoopedSkillId);
             if (CurrSkillData != null && CurrSkillData.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(CurrSkillData) >= ReqSkillLevel && chr.getMasterLevel(CurrSkillData) < MasterLevel) {
                 bUsed = true;
                 if (Randomizer.nextInt(100) <= SuccessRate && SuccessRate != 0) {

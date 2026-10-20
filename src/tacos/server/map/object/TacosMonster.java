@@ -36,7 +36,6 @@ import odin.client.inventory.Item;
 import odin.client.Skill;
 import odin.client.inventory.MapleInventoryType;
 import tacos.client.TacosClient;
-import odin.client.SkillFactory;
 import odin.client.status.MonsterStatus;
 import odin.client.status.MonsterStatus.MonsterStatusEffect;
 import odin.handling.world.MapleParty;
@@ -708,7 +707,7 @@ public class TacosMonster extends TacosMapObject {
         if (!isAlive()) {
             return;
         }
-        Skill skilz = SkillFactory.getSkill(status.getSkill());
+        Skill skilz = WzXML.SKILL.getSkill().get(status.getSkill());
         if (skilz != null) {
             switch (stats.getEffectiveness(skilz.getElement())) {
                 case IMMUNE:
@@ -769,33 +768,33 @@ public class TacosMonster extends TacosMapObject {
 
             switch (from.getJob()) {
                 case 412:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(4120005));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(4120005));
                     if (poisonLevel <= 0) {
                         return;
                     }
-                    matk = SkillFactory.getSkill(4120005).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(4120005).getEffect(poisonLevel).getMatk();
                     break;
                 case 422:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(4220005));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(4220005));
                     if (poisonLevel <= 0) {
                         return;
                     }
-                    matk = SkillFactory.getSkill(4220005).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(4220005).getEffect(poisonLevel).getMatk();
                     break;
                 case 1411:
                 case 1412:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(14110004));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(14110004));
                     if (poisonLevel <= 0) {
                         return;
                     }
-                    matk = SkillFactory.getSkill(14110004).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(14110004).getEffect(poisonLevel).getMatk();
                     break;
                 case 434:
-                    poisonLevel = from.getSkillLevel(SkillFactory.getSkill(4340001));
+                    poisonLevel = from.getSkillLevel(WzXML.SKILL.getSkill().get(4340001));
                     if (poisonLevel <= 0) {
                         return;
                     }
-                    matk = SkillFactory.getSkill(4340001).getEffect(poisonLevel).getMatk();
+                    matk = WzXML.SKILL.getSkill().get(4340001).getEffect(poisonLevel).getMatk();
                     break;
                 default:
                     return; // Hack, using venom without the job required
@@ -1158,7 +1157,7 @@ public class TacosMonster extends TacosMapObject {
     }
 
     public void handleSteal(TacosCharacter chr) {
-        Skill steal = SkillFactory.getSkill(4201004);
+        Skill steal = WzXML.SKILL.getSkill().get(4201004);
         int level = chr.getSkillLevel(steal);
         if (level > 0 && !getStats().isBoss() && stolen == -1 && steal.getEffect(level).makeChanceResult()) {
             ArrayList<MonsterDropEntry> dropEntry = new ArrayList<>(TacosReward.getMonsterDrops(getId()));

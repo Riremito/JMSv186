@@ -25,9 +25,6 @@ import tacos.client.TacosClient;
 import java.util.List;
 import tacos.packet.ClientPacket;
 import tacos.packet.response.ResCField_MonsterCarnival;
-import tacos.packet.response.ResCWvsContext;
-import tacos.packet.ops.OpsBroadcastMsg;
-import tacos.packet.response.builder.PB_BroadcastMsg;
 import odin.server.MapleCarnivalFactory;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ClientPacketHeader;
@@ -75,7 +72,7 @@ public class ReqCField_MonsterCarnival {
         if (tab == 0) {
             List<SimpleImmutableEntry<Integer, Integer>> mobs = map.getNodeInfo().getMobsToSpawn();
             if (num >= mobs.size() || chr.getAvailableCP() < mobs.get(num).getValue()) {
-                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
+                chr.Notice("You do not have the CP.");
                 chr.sendStatChanged(true);
                 return;
             }
@@ -89,20 +86,20 @@ public class ReqCField_MonsterCarnival {
                 map.broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You may no longer summon the monster.").build()));
+                chr.Notice("You may no longer summon the monster.");
                 chr.sendStatChanged(true);
             }
 
         } else if (tab == 1) { //debuff
             List<Integer> skillid = map.getNodeInfo().getSkillIds();
             if (num >= skillid.size()) {
-                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("An error occurred.").build()));
+                chr.Notice("An error occurred.");
                 chr.sendStatChanged(true);
                 return;
             }
             MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getSkill(skillid.get(num)); //ugh wtf
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
-                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
+                chr.Notice("You do not have the CP.");
                 chr.sendStatChanged(true);
                 return;
             }
@@ -112,18 +109,18 @@ public class ReqCField_MonsterCarnival {
                 chr.CPUpdate(false, chr.getAvailableCP(), chr.getTotalCP(), 0);
                 for (TacosCharacter player : map.getAllPlayers()) {
                     player.CPUpdate(true, player.getCarnivalParty().getAvailableCP(), player.getCarnivalParty().getTotalCP(), player.getCarnivalParty().getTeam());
-                    //chr.dropMessage(5, "[" + (chr.getCarnivalParty().getTeam() == 0 ? "Red" : "Blue") + "] " + chr.getName() + " has used a skill. [" + dis.name() + "].");
+                    //chr.Notice("[" + (chr.getCarnivalParty().getTeam() == 0 ? "Red" : "Blue") + "] " + chr.getName() + " has used a skill. [" + dis.name() + "].");
                 }
                 map.broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("An error occurred.").build()));
+                chr.Notice("An error occurred.");
                 chr.sendStatChanged(true);
             }
         } else if (tab == 2) { //skill
             MapleCarnivalFactory.MCSkill skil = MapleCarnivalFactory.getInstance().getGuardian(num);
             if (skil == null || chr.getAvailableCP() < skil.cpLoss) {
-                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You do not have the CP.").build()));
+                chr.Notice("You do not have the CP.");
                 chr.sendStatChanged(true);
                 return;
             }
@@ -136,7 +133,7 @@ public class ReqCField_MonsterCarnival {
                 map.broadcastPacket(ResCField_MonsterCarnival.MCarnivalResultSuccess(chr.getName(), tab, num));
                 chr.sendStatChanged(true);
             } else {
-                chr.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You may no longer summon the being.").build()));
+                chr.Notice("You may no longer summon the being.");
                 chr.sendStatChanged(true);
             }
         }

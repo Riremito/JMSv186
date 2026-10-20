@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.client;
 
 import odin.constants.GameConstants;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.Item;
@@ -468,7 +469,7 @@ public class PlayerStats {
                     break;
             }
         }
-        magic += chra.getSkillLevel(SkillFactory.getSkill(22000000));
+        magic += chra.getSkillLevel(WzXML.SKILL.getSkill().get(22000000));
         //dam_r += (chra.getJob() >= 430 && chra.getJob() <= 434 ? 70 : 0); //leniency on upper stab
         this.localstr += (percent_str * localstr) / 100f;
         this.localdex += (percent_dex * localdex) / 100f;
@@ -485,7 +486,7 @@ public class PlayerStats {
 
         switch (chra.getJob()) {
             case 322: { // Crossbowman
-                Skill expert = SkillFactory.getSkill(3220004);
+                Skill expert = WzXML.SKILL.getSkill().get(3220004);
                 int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
@@ -493,7 +494,7 @@ public class PlayerStats {
                 break;
             }
             case 312: { // Bowmaster
-                Skill expert = SkillFactory.getSkill(3120005);
+                Skill expert = WzXML.SKILL.getSkill().get(3120005);
                 int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
@@ -502,7 +503,7 @@ public class PlayerStats {
             }
             case 211:
             case 212: { // IL
-                Skill amp = SkillFactory.getSkill(2110001);
+                Skill amp = WzXML.SKILL.getSkill().get(2110001);
                 int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -512,7 +513,7 @@ public class PlayerStats {
             }
             case 221:
             case 222: { // IL
-                Skill amp = SkillFactory.getSkill(2210001);
+                Skill amp = WzXML.SKILL.getSkill().get(2210001);
                 int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -522,7 +523,7 @@ public class PlayerStats {
             }
             case 1211:
             case 1212: { // flame
-                Skill amp = SkillFactory.getSkill(12110001);
+                Skill amp = WzXML.SKILL.getSkill().get(12110001);
                 int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -534,7 +535,7 @@ public class PlayerStats {
             case 2216:
             case 2217:
             case 2218: {
-                Skill amp = SkillFactory.getSkill(22150000);
+                Skill amp = WzXML.SKILL.getSkill().get(22150000);
                 int level = chra.getSkillLevel(amp);
                 if (level > 0) {
                     dam_r *= amp.getEffect(level).getY() / 100.0;
@@ -543,7 +544,7 @@ public class PlayerStats {
                 break;
             }
             case 2112: { // Aran
-                Skill expert = SkillFactory.getSkill(21120001);
+                Skill expert = WzXML.SKILL.getSkill().get(21120001);
                 int boostLevel = chra.getSkillLevel(expert);
                 if (boostLevel > 0) {
                     watk += expert.getEffect(boostLevel).getX();
@@ -551,14 +552,14 @@ public class PlayerStats {
                 break;
             }
         }
-        Skill blessoffairy = SkillFactory.getSkill(GameConstants.getBOF_ForJob(chra.getJob()));
+        Skill blessoffairy = WzXML.SKILL.getSkill().get(GameConstants.getBOF_ForJob(chra.getJob()));
         int boflevel = chra.getSkillLevel(blessoffairy);
         if (boflevel > 0) {
             watk += blessoffairy.getEffect(boflevel).getX();
             magic += blessoffairy.getEffect(boflevel).getY();
             accuracy += blessoffairy.getEffect(boflevel).getX();
         }
-        Skill bx = SkillFactory.getSkill(1320006);
+        Skill bx = WzXML.SKILL.getSkill().get(1320006);
         if (chra.getSkillLevel(bx) > 0) {
             dam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
             bossdam_r *= bx.getEffect(chra.getSkillLevel(bx)).getDamage() / 100.0;
@@ -639,7 +640,7 @@ public class PlayerStats {
             if (Math.random() >= 0.1) { //10% chance dood
                 continue;
             }
-            Skill skil = SkillFactory.getSkill(z);
+            Skill skil = WzXML.SKILL.getSkill().get(z);
             if (skil != null && skil.canBeLearnedBy(chr.getJob()) && chr.getSkillLevel(skil) < chr.getMasterLevel(skil)) { //dont go over masterlevel :D
                 chr.changeSkillLevel(skil, (byte) (chr.getSkillLevel(skil) + 1), chr.getMasterLevel(skil));
             }
@@ -687,31 +688,31 @@ public class PlayerStats {
         shouldHealMP = 3 + mpRestore + recoverMP; // i think
 
         if (GameConstants.isJobFamily(200, playerjob)) { // Improving MP recovery
-            shouldHealMP += ((float) ((float) chra.getSkillLevel(SkillFactory.getSkill(2000000)) / 10) * chra.getLevel());
+            shouldHealMP += ((float) ((float) chra.getSkillLevel(WzXML.SKILL.getSkill().get(2000000)) / 10) * chra.getLevel());
 
         } else if (GameConstants.isJobFamily(111, playerjob)) {
-            Skill effect = SkillFactory.getSkill(1110000); // Improving MP Recovery
+            Skill effect = WzXML.SKILL.getSkill().get(1110000); // Improving MP Recovery
             int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(121, playerjob)) {
-            Skill effect = SkillFactory.getSkill(1210000); // Improving MP Recovery
+            Skill effect = WzXML.SKILL.getSkill().get(1210000); // Improving MP Recovery
             int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(1111, playerjob)) {
-            Skill effect = SkillFactory.getSkill(11110000); // Improving MP Recovery
+            Skill effect = WzXML.SKILL.getSkill().get(11110000); // Improving MP Recovery
             int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealMP += effect.getEffect(lvl).getMp();
             }
 
         } else if (GameConstants.isJobFamily(410, playerjob)) {
-            Skill effect = SkillFactory.getSkill(4100002); // Endure
+            Skill effect = WzXML.SKILL.getSkill().get(4100002); // Endure
             int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealHP += effect.getEffect(lvl).getHp();
@@ -719,7 +720,7 @@ public class PlayerStats {
             }
 
         } else if (GameConstants.isJobFamily(420, playerjob)) {
-            Skill effect = SkillFactory.getSkill(4200001); // Endure
+            Skill effect = WzXML.SKILL.getSkill().get(4200001); // Endure
             int lvl = chra.getSkillLevel(effect);
             if (lvl > 0) {
                 shouldHealHP += effect.getEffect(lvl).getHp();

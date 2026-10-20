@@ -19,7 +19,6 @@
 package tacos.database.query;
 
 import java.sql.Connection;
-import tacos.client.TacosCharacter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

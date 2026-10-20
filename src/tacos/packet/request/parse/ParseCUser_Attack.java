@@ -19,6 +19,7 @@
 package tacos.packet.request.parse;
 
 import java.awt.Point;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import odin.client.Skill;
-import odin.client.SkillFactory;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -111,7 +111,7 @@ public class ParseCUser_Attack {
             return null;
         }
         if (GameConstants.isLinkedAranSkill(skill)) {
-            Skill skillLink = SkillFactory.getSkill(skill);
+            Skill skillLink = WzXML.SKILL.getSkill().get(skill);
             return skillLink.getEffect(skillLevel);
         }
         return skill_.getEffect(skillLevel);

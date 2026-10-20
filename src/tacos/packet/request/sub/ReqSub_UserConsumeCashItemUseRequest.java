@@ -19,6 +19,7 @@
 package tacos.packet.request.sub;
 
 import tacos.server.map.object.TacosPet;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import odin.client.inventory.Equip;
@@ -47,7 +48,6 @@ import tacos.packet.response.ResCUser_Pet;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.response.builder.PB_InvOp;
 import odin.server.MapleItemInformationProvider;
-import odin.server.shops.HiredMerchant;
 import tacos.config.Config;
 import tacos.packet.ops.OpsCashItem;
 import tacos.wz.opt.FieldOpt;
@@ -153,7 +153,7 @@ public class ReqSub_UserConsumeCashItemUseRequest {
             case 523: {
                 // OnUserShopScannerItemUseRequest
                 int target_item_id = cp.Decode4();
-                List<HiredMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
+                List<TacosMerchant> hms = chr.getChannelServer().searchMerchant(target_item_id);
                 chr.SendPacket(ResCWvsContext.ShopScannerResult(OpsShopScanner.ShopScannerRes_SearchResult));
                 item_use.run();
                 return true;

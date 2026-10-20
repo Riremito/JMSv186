@@ -32,7 +32,6 @@ import odin.server.MapleTrade;
 import tacos.packet.ClientPacket;
 import tacos.packet.ops.OpsMiniRoomProtocol;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import odin.server.shops.HiredMerchant;
 import odin.server.shops.ShopDispatch;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
@@ -144,7 +143,7 @@ public class ReqCMiniRoomBaseDlg {
                             return true;
                         }
 
-                        HiredMerchant merch = new HiredMerchant(chr, shop.getItemId(), desc);
+                        TacosMerchant merch = new TacosMerchant(chr, shop.getItemId(), desc);
                         chr.setPlayerShop(merch);
                         chr.setRemoteStore(merch);
                         map.addMerchant(merch);
@@ -177,7 +176,7 @@ public class ReqCMiniRoomBaseDlg {
             case MRP_Enter: {
                 int object_id = cp.Decode4();
                 // 雇用商人
-                HiredMerchant merchant = map.getMerchantByOid(object_id);
+                TacosMerchant merchant = map.getMerchantByOid(object_id);
                 if (merchant != null) {
                     TacosRoom room = world.getRoom(merchant.getRoomId());
                     if (room != null) {
@@ -198,7 +197,7 @@ public class ReqCMiniRoomBaseDlg {
                 int miniroom_id = cp.Decode4();
                 byte unk = cp.Decode1();
 
-                HiredMerchant hm = (HiredMerchant) chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
+                TacosMerchant hm = (TacosMerchant) chr.getMap().getMapObject(miniroom_id, MapleMapObjectType.HIRED_MERCHANT);
                 if (hm == null) {
                     DebugLogger.ErrorLog("hm == null.");
                     return false;
@@ -217,7 +216,7 @@ public class ReqCMiniRoomBaseDlg {
                     if ((ob instanceof MaplePlayerShop || ob instanceof MapleMiniGame) && chr.getPlayerShop() == null) {
                         final Object ips = ob;
                         if (ips instanceof MaplePlayerShop && ((MaplePlayerShop) ips).isBanned(chr.getName())) {
-                            chr.dropMessage(1, "You have been banned from this store.");
+                            chr.Alert("You have been banned from this store.");
                             return true;
                         } else {
                             if (ShopDispatch.getFreeSlot(ips) < 0 || ShopDispatch.getVisitorSlot(ips, chr) > -1 || !ShopDispatch.isOpen(ips) || !ShopDispatch.isAvailable(ips)) {
@@ -227,11 +226,11 @@ public class ReqCMiniRoomBaseDlg {
                                 if (unk1 > 0) { //a password has been entered
                                     String pass = cp.DecodeStr();
                                     if (!pass.equals(ShopDispatch.getPassword(ips))) {
-                                        chr.dropMessage(1, "The password you entered is incorrect.");
+                                        chr.Alert("The password you entered is incorrect.");
                                         return true;
                                     }
                                 } else if (ShopDispatch.getPassword(ips).length() > 0) {
-                                    chr.dropMessage(1, "The password you entered is incorrect.");
+                                    chr.Alert("The password you entered is incorrect.");
                                     return true;
                                 }
                                 chr.setPlayerShop(ips);
@@ -306,12 +305,12 @@ public class ReqCMiniRoomBaseDlg {
                     if (map.allowPersonalShop()) {
 
                         if (ShopDispatch.getShopType(shop) == 1) {
-                            HiredMerchant merchant = (HiredMerchant) shop;
+                            TacosMerchant merchant = (TacosMerchant) shop;
                             merchant.setStoreid(chr.getChannelServer().addMerchant(merchant));
                             merchant.setOpen(true);
                             merchant.setAvailable(true);
                             chr.setPlayerShop(null);
-                            map.splitSendPacket(chr, ResCEmployeePool.EmployeeMiniRoomBalloon((HiredMerchant) shop));
+                            map.splitSendPacket(chr, ResCEmployeePool.EmployeeMiniRoomBalloon((TacosMerchant) shop));
 
                         } else if (ShopDispatch.getShopType(shop) == 2) {
                             ShopDispatch.setOpen(shop, true);
@@ -556,7 +555,7 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case ESP_DeliverVisitList: {
-                HiredMerchant merchant = chr.getMyHiredMerchant();
+                TacosMerchant merchant = chr.getMyHiredMerchant();
                 if (merchant == null) {
                     DebugLogger.ErrorLog("OnMiniRoom : ESP_DeliverVisitList");
                     return true;
@@ -565,7 +564,7 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case ESP_DeliverBlackList: {
-                HiredMerchant merchant = chr.getMyHiredMerchant();
+                TacosMerchant merchant = chr.getMyHiredMerchant();
                 if (merchant == null) {
                     DebugLogger.ErrorLog("OnMiniRoom : ESP_DeliverBlackList");
                     return true;
@@ -574,7 +573,7 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case ESP_AddBlackList: {
-                HiredMerchant merchant = chr.getMyHiredMerchant();
+                TacosMerchant merchant = chr.getMyHiredMerchant();
                 if (merchant == null) {
                     DebugLogger.ErrorLog("OnMiniRoom : ESP_AddBlackList");
                     return true;
@@ -584,7 +583,7 @@ public class ReqCMiniRoomBaseDlg {
                 return true;
             }
             case ESP_DeleteBlackList: {
-                HiredMerchant merchant = chr.getMyHiredMerchant();
+                TacosMerchant merchant = chr.getMyHiredMerchant();
                 if (merchant == null) {
                     DebugLogger.ErrorLog("OnMiniRoom : ESP_DeleteBlackList");
                     return true;
@@ -801,12 +800,12 @@ public class ReqCMiniRoomBaseDlg {
             return false;
         }
 
-        HiredMerchant merchant = (HiredMerchant) chr.getRemoteStore();
+        TacosMerchant merchant = (TacosMerchant) chr.getRemoteStore();
         if (merchant == null) {
             // test
             //chr.SendPacket(ResCMiniRoomBaseDlg.EnterResultStaticTest(chr));
 
-            HiredMerchant hm = new HiredMerchant(chr, 5030000, "DebugHiredMarchant");
+            TacosMerchant hm = new TacosMerchant(chr, 5030000, "DebugHiredMarchant");
             chr.getMap().addMerchant(hm);
             return false;
         }

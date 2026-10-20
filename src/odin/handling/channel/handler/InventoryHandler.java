@@ -20,7 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import java.util.List;
+import tacos.wz.WzXML;
+import tacos.server.map.object.TacosMerchant;
 import java.util.Map;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
@@ -28,19 +29,10 @@ import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.inventory.MapleInventory;
 import odin.constants.GameConstants;
-import odin.client.SkillFactory;
 import tacos.packet.ClientPacket;
-import tacos.packet.response.ResCUserLocal;
-import tacos.packet.response.ResCUserRemote;
-import tacos.packet.response.ResCWvsContext;
-import odin.server.Randomizer;
 import odin.server.RandomRewards;
-import odin.server.MapleItemInformationProvider;
 import odin.server.MapleInventoryManipulator;
-import odin.server.MapleItemInformationProvider.StructRewardItem;
 import odin.server.maps.SavedLocationType;
-import odin.server.shops.HiredMerchant;
-import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.script.TacosScriptNPC;
 
@@ -146,12 +138,12 @@ public class InventoryHandler {
                 return;
             }
         }
-        chr.dropMessage(5, "All maps are currently in use, please try again later."); // Or mabe some other message.
+        chr.Notice("All maps are currently in use, please try again later."); // Or mabe some other message.
     }
 
     private static void useMiracleCube(TacosCharacter chr) {
         if (chr.getInventory(MapleInventoryType.USE).getNumFreeSlot() < 1) {
-            chr.dropMessage(5, "Please make some space.");
+            chr.Notice("Please make some space.");
             return;
         }
         int fragments = chr.getInventory(MapleInventoryType.USE).countById(2430112);
@@ -164,26 +156,26 @@ public class InventoryHandler {
             cost = 10;
             reward = 2049401;
         } else {
-            chr.dropMessage(5, "There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
+            chr.Notice("There needs to be 10 Fragments for a Potential Scroll, 25 for Advanced Potential Scroll.");
             return;
         }
         if (MapleInventoryManipulator.checkSpace(chr, 2049400, 1, "") && MapleInventoryManipulator.removeById(chr, MapleInventoryType.USE, 2430112, cost, true, false)) {
             MapleInventoryManipulator.addById(chr, reward, (short) 1);
         } else {
-            chr.dropMessage(5, "Please make some space.");
+            chr.Notice("Please make some space.");
         }
     }
 
     private static void useMountItem(TacosCharacter chr, byte slot, int mountid, long expiration_days) {
         mountid += (GameConstants.isAran(chr.getJob()) ? 20000000 : (GameConstants.isEvan(chr.getJob()) ? 20010000 : (GameConstants.isKOC(chr.getJob()) ? 10000000 : (GameConstants.isResist(chr.getJob()) ? 30000000 : 0))));
         if (chr.getSkillLevel(mountid) > 0) {
-            chr.dropMessage(5, "You already have this skill.");
+            chr.Notice("You already have this skill.");
             return;
         }
         if (expiration_days > 0) {
             MapleInventoryManipulator.removeFromSlot(chr, MapleInventoryType.USE, slot, (byte) 1, false);
-            chr.changeSkillLevel(SkillFactory.getSkill(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
-            chr.dropMessage(5, "The skill has been attained.");
+            chr.changeSkillLevel(WzXML.SKILL.getSkill().get(mountid), (byte) 1, (byte) 1, System.currentTimeMillis() + (long) (expiration_days * 24 * 60 * 60 * 1000));
+            chr.Notice("The skill has been attained.");
         }
     }
 
@@ -249,10 +241,10 @@ public class InventoryHandler {
         visitOwlMerchant(chr, findOwlMerchant(mapp, id));
     }
 
-    private static HiredMerchant findOwlMerchant(TacosMap mapp, int id) {
+    private static TacosMerchant findOwlMerchant(TacosMap mapp, int id) {
         switch (OWL_ID) {
             case 0: {
-                for (HiredMerchant merch : mapp.getAllMerchants()) {
+                for (TacosMerchant merch : mapp.getAllMerchants()) {
                     if (merch.getOwnerId() == id) {
                         return merch;
                     }
@@ -260,7 +252,7 @@ public class InventoryHandler {
                 return null;
             }
             case 1: {
-                for (HiredMerchant merch : mapp.getAllMerchants()) {
+                for (TacosMerchant merch : mapp.getAllMerchants()) {
                     if (merch.getStoreId() == id) {
                         return merch;
                     }
@@ -273,9 +265,9 @@ public class InventoryHandler {
         }
     }
 
-    private static void visitOwlMerchant(TacosCharacter chr, HiredMerchant merchant) {
+    private static void visitOwlMerchant(TacosCharacter chr, TacosMerchant merchant) {
         if (merchant == null) {
-            chr.dropMessage(1, "This shop is in maintenance, please come by later.");
+            chr.Alert("This shop is in maintenance, please come by later.");
             return;
         }
         if (merchant.isOwner(chr)) {
@@ -286,15 +278,15 @@ public class InventoryHandler {
             return;
         }
         if (!merchant.isOpen() || !merchant.isAvailable()) {
-            chr.dropMessage(1, "This shop is in maintenance, please come by later.");
+            chr.Alert("This shop is in maintenance, please come by later.");
             return;
         }
         if (merchant.getFreeSlot() == -1) {
-            chr.dropMessage(1, "This shop has reached it's maximum capacity, please come by later.");
+            chr.Alert("This shop has reached it's maximum capacity, please come by later.");
             return;
         }
         if (merchant.isInBlackList(chr.getName())) {
-            chr.dropMessage(1, "You have been banned from this store.");
+            chr.Alert("You have been banned from this store.");
             return;
         }
         chr.setPlayerShop(merchant);

@@ -19,6 +19,7 @@
 package tacos.server.map;
 
 import tacos.server.map.object.TacosMapObject;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
@@ -46,7 +47,6 @@ import odin.server.MapleSquad;
 import odin.server.Timer.MapTimer;
 import odin.server.maps.MapScriptMethods;
 import tacos.server.map.object.TacosDynamicPortal;
-import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop;
 import tacos.client.TacosCharacter;
@@ -97,7 +97,6 @@ import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.response.ResCUserLocal;
 import tacos.packet.response.builder.PB_UserEffect;
-import odin.server.maps.MapleNodes;
 
 /**
  *
@@ -457,7 +456,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (HiredMerchant employee : this.merchants.values()) {
+        for (TacosMerchant employee : this.merchants.values()) {
             chr.SendPacket(ResCEmployeePool.EmployeeEnterField(employee));
         }
         // drop
@@ -617,7 +616,7 @@ public class TacosMap extends TacosMapData {
             }
         }
         // hired merchant
-        for (HiredMerchant employee : this.merchants.values()) {
+        for (TacosMerchant employee : this.merchants.values()) {
             // none.
         }
         // drop
@@ -1206,9 +1205,9 @@ public class TacosMap extends TacosMapData {
     }
 
     // merchant.
-    private final LinkedHashMap<Integer, HiredMerchant> merchants = new LinkedHashMap<>();
+    private final LinkedHashMap<Integer, TacosMerchant> merchants = new LinkedHashMap<>();
 
-    public void addMerchant(HiredMerchant merchant) {
+    public void addMerchant(TacosMerchant merchant) {
         if (merchant.getObjectId() == 0) {
             merchant.setObjectId();
         }
@@ -1216,20 +1215,20 @@ public class TacosMap extends TacosMapData {
         broadcastPacket(ResCEmployeePool.EmployeeEnterField(merchant));
     }
 
-    public void removeMerchant(HiredMerchant merchant) {
+    public void removeMerchant(TacosMerchant merchant) {
         this.merchants.remove(merchant.getObjectId());
         broadcastPacket(ResCEmployeePool.EmployeeLeaveField(merchant));
     }
 
-    public List<HiredMerchant> getAllMerchants() {
-        ArrayList<HiredMerchant> ret = new ArrayList<>();
-        for (HiredMerchant merchant : this.merchants.values()) {
+    public List<TacosMerchant> getAllMerchants() {
+        ArrayList<TacosMerchant> ret = new ArrayList<>();
+        for (TacosMerchant merchant : this.merchants.values()) {
             ret.add(merchant);
         }
         return ret;
     }
 
-    public HiredMerchant getMerchantByOid(int object_id) {
+    public TacosMerchant getMerchantByOid(int object_id) {
         return this.merchants.get(object_id);
     }
 

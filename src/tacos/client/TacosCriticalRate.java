@@ -19,7 +19,7 @@
 package tacos.client;
 
 import odin.client.Skill;
-import odin.client.SkillFactory;
+import tacos.wz.WzXML;
 import odin.server.MapleStatEffect;
 import tacos.config.Config;
 import tacos.packet.ops.OpsSkill;
@@ -72,7 +72,7 @@ public class TacosCriticalRate {
             }
         }
 
-        Skill skill = SkillFactory.getSkill(ops_skill.get());
+        Skill skill = WzXML.SKILL.getSkill().get(ops_skill.get());
         MapleStatEffect mse = skill.getEffect(this.chr.getSkillLevel(ops_skill));
         return mse.getProb();
     }

@@ -1,11 +1,11 @@
 package odin.server.quest;
 
 import odin.client.Skill;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import java.util.Calendar;
 import java.util.List;
 import odin.client.inventory.Item;
-import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
@@ -40,7 +40,7 @@ public class MapleQuestRequirement {
             case skill: {
                 for (SimpleImmutableEntry<Integer, Integer> a : dataStore) {
                     boolean acquire = a.getValue() > 0;
-                    Skill skil = SkillFactory.getSkill(a.getKey());
+                    Skill skil = WzXML.SKILL.getSkill().get(a.getKey());
                     if (acquire) {
                         // 4th job skills are checked by master level.
                         int level = skil.isFourthJob() ? chr.getMasterLevel(skil) : chr.getSkillLevel(skil);

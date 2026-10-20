@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package tacos.odin;
 
 import java.util.ArrayList;
+import tacos.wz.WzXML;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.LinkedList;
@@ -36,7 +37,6 @@ import odin.client.inventory.Item.ItemFlag;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
-import odin.client.SkillFactory;
 import odin.client.Skill.SkillEntry;
 import odin.server.MapleCarnivalParty;
 import odin.server.Randomizer;
@@ -562,7 +562,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public boolean hasSkill(int skillid) {
-        Skill theSkill = SkillFactory.getSkill(skillid);
+        Skill theSkill = WzXML.SKILL.getSkill().get(skillid);
         if (theSkill != null) {
             return client.getPlayer().getSkillLevel(theSkill) > 0;
         }
@@ -1095,7 +1095,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
                 for (TacosCharacter chr : srv_channel.getOnlinePlayers().get()) {
                     if (chr.getGuildId() == getPlayer().getGuildId()) {
                         mse.applyTo(chr, chr, true, null, duration);
-                        chr.dropMessage(5, "Your guild has gotten a " + msg + " buff.");
+                        chr.Notice("Your guild has gotten a " + msg + " buff.");
                     }
                 }
             }
@@ -1157,7 +1157,7 @@ public class OdinNPCConversationManager extends OdinAbstractPlayerInteraction {
     }
 
     public void maxAllSkills() {
-        for (Skill skil : SkillFactory.getAllSkills()) {
+        for (Skill skil : WzXML.SKILL.getSkill().values()) {
             if (GameConstants.isApplicableSkill(skil.getId())) { //no db/additionals/resistance skills
                 teachSkill(skil.getId(), skil.getMaxLevel(), skil.getMaxLevel());
             }

@@ -1,6 +1,7 @@
 package odin.server;
 
 import tacos.server.map.object.TacosPet;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -8,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import odin.client.inventory.Item;
-import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import tacos.database.query.DQ_Shopitems;
@@ -178,7 +178,7 @@ public class MapleShop {
         int skill = GameConstants.getMasterySkill(chr.getJob());
 
         if (skill != 0) {
-            slotMax += chr.getSkillLevel(SkillFactory.getSkill(skill)) * 10;
+            slotMax += chr.getSkillLevel(WzXML.SKILL.getSkill().get(skill)) * 10;
         }
         if (item.getQuantity() < slotMax) {
             int price = (int) Math.round(ii.getPrice(item.getItemId()) * (slotMax - item.getQuantity()));

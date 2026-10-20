@@ -92,16 +92,16 @@ public class GuildHandler {
         switch (cp.Decode1()) {
             case 0x02: // Create guild
                 if (chr.getGuildId() > 0 || chr.getMapId() != 200000301) {
-                    chr.dropMessage(1, "You cannot create a new Guild while in one.");
+                    chr.Alert("You cannot create a new Guild while in one.");
                     return;
                 } else if (chr.getMeso() < 5000000) {
-                    chr.dropMessage(1, "You do not have enough mesos to create a chr.getWorld().getGuild().");
+                    chr.Alert("You do not have enough mesos to create a chr.getWorld().getGuild().");
                     return;
                 }
                 String guildName = cp.DecodeStr();
 
                 if (!isGuildNameAcceptable(guildName)) {
-                    chr.dropMessage(1, "The Guild name you have chosen is not accepted.");
+                    chr.Alert("The Guild name you have chosen is not accepted.");
                     return;
                 }
                 int guildId = chr.getWorld().getGuild().createGuild(chr.getId(), guildName);
@@ -115,7 +115,7 @@ public class GuildHandler {
                 chr.saveGuildStatus();
                 chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
                 chr.getWorld().getGuild().setGuildMemberOnline(chr.getMGC(), true, chr.getClient().getChannelId());
-                chr.dropMessage(1, "You have successfully created a chr.getWorld().getGuild().");
+                chr.Alert("You have successfully created a chr.getWorld().getGuild().");
                 break;
             case 0x05: // invitation
                 if (chr.getGuildId() <= 0 || chr.getGuildRank() > 2) { // 1 == guild master, 2 == jr
@@ -155,7 +155,7 @@ public class GuildHandler {
 
                         int s = chr.getWorld().getGuild().addGuildMember(chr.getMGC());
                         if (s == 0) {
-                            chr.dropMessage(1, "The Guild you are trying to join is already full.");
+                            chr.Alert("The Guild you are trying to join is already full.");
                             chr.setGuildId(0);
                             return;
                         }
@@ -217,7 +217,7 @@ public class GuildHandler {
                 }
 
                 if (chr.getMeso() < 15000000) {
-                    chr.dropMessage(1, "You do not have enough mesos to create a chr.getWorld().getGuild().");
+                    chr.Alert("You do not have enough mesos to create a chr.getWorld().getGuild().");
                     return;
                 }
                 short bg = cp.Decode2();

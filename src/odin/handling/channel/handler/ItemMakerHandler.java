@@ -21,13 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.handling.channel.handler;
 
 import java.util.List;
-import tacos.server.map.TacosMap;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import java.util.ArrayList;
 import java.util.Map;
 import odin.client.inventory.Item;
 import odin.client.inventory.Equip;
-import odin.client.SkillFactory;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import odin.constants.GameConstants;
@@ -478,15 +477,15 @@ public class ItemMakerHandler {
 
     private static boolean hasSkill(TacosCharacter chr, int reqlvl) {
         if (GameConstants.isKOC(chr.getJob())) { // KoC Maker skill.
-            return chr.getSkillLevel(SkillFactory.getSkill(10001007)) >= reqlvl;
+            return chr.getSkillLevel(WzXML.SKILL.getSkill().get(10001007)) >= reqlvl;
         } else if (GameConstants.isAran(chr.getJob())) { // KoC Maker skill.
-            return chr.getSkillLevel(SkillFactory.getSkill(20001007)) >= reqlvl;
+            return chr.getSkillLevel(WzXML.SKILL.getSkill().get(20001007)) >= reqlvl;
         } else if (GameConstants.isEvan(chr.getJob())) { // KoC Maker skill.
-            return chr.getSkillLevel(SkillFactory.getSkill(20011007)) >= reqlvl;
+            return chr.getSkillLevel(WzXML.SKILL.getSkill().get(20011007)) >= reqlvl;
         } else if (GameConstants.isResist(chr.getJob())) { // KoC Maker skill.
-            return chr.getSkillLevel(SkillFactory.getSkill(30001007)) >= reqlvl;
+            return chr.getSkillLevel(WzXML.SKILL.getSkill().get(30001007)) >= reqlvl;
         } else {
-            return chr.getSkillLevel(SkillFactory.getSkill(1007)) >= reqlvl;
+            return chr.getSkillLevel(WzXML.SKILL.getSkill().get(1007)) >= reqlvl;
         }
     }
 }

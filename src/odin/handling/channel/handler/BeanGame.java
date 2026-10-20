@@ -292,7 +292,7 @@ public class BeanGame {
                         case 0://大白怪
                             if (Randomizer.nextInt(Integer.parseInt(白怪奖励[0])) > Randomizer.nextInt(Integer.parseInt(白怪奖励[1]))) {
                                 chr.gainExp(exp, false, false, false);
-                                chr.dropMessage(5, "在豆豆机中获得：" + exp + "经验值！");
+                                chr.Notice("在豆豆机中获得：" + exp + "经验值！");
                             } else if (Randomizer.nextInt(Integer.parseInt(白怪奖励[2])) > Randomizer.nextInt(Integer.parseInt(白怪奖励[3]))) {
                                 for (int i = 0; i < 消耗品.length; i++) {
                                     if (Randomizer.nextInt(消耗品.length) == i) {
@@ -308,7 +308,7 @@ public class BeanGame {
                         case 3://粉色怪
                             if (Randomizer.nextInt(Integer.parseInt(色怪奖励[0])) > Randomizer.nextInt(Integer.parseInt(色怪奖励[1]))) {
                                 chr.gainExp(exp, false, false, false);
-                                chr.dropMessage(5, "在豆豆机中获得：" + exp + "经验值！");
+                                chr.Notice("在豆豆机中获得：" + exp + "经验值！");
                             } else if (Randomizer.nextInt(Integer.parseInt(色怪奖励[4])) > Randomizer.nextInt(Integer.parseInt(色怪奖励[5]))) {
                                 for (int i = 0; i < 豆豆装备.length; i++) {
                                     if (Randomizer.nextInt(豆豆装备.length) == i) {
@@ -335,7 +335,7 @@ public class BeanGame {
                         case 8://弓箭手
                             if (Randomizer.nextInt(Integer.parseInt(五职业奖励[0])) > Randomizer.nextInt(Integer.parseInt(五职业奖励[1]))) {
                                 chr.gainExp(exp, false, false, false);
-                                chr.dropMessage(5, "在豆豆机中获得：" + exp + "经验值！");
+                                chr.Notice("在豆豆机中获得：" + exp + "经验值！");
                             } else if (Randomizer.nextInt(Integer.parseInt(五职业奖励[4])) > Randomizer.nextInt(Integer.parseInt(五职业奖励[5]))) {
                                 for (int i = 0; i < 豆豆装备.length; i++) {
                                     if (Randomizer.nextInt(豆豆装备.length) == i) {
@@ -400,7 +400,7 @@ public class BeanGame {
                     // int 奖励豆豆 = Randomizer.nextInt(150) + 50;
                     int 奖励豆豆 = (第二排 + 1) * 豆豆奖励范围;
                     chr.gainTama(奖励豆豆);
-                    chr.dropMessage(5, "在豆豆机中获得: " + 奖励豆豆 + "个豆豆！");
+                    chr.Notice("在豆豆机中获得: " + 奖励豆豆 + "个豆豆！");
                     // chr.gainExp(1, true, false, true);
                     if (chr.getMapId() == 809030000) {
                         String notea = "恭喜你打豆豆成功中奖！当前中奖获得豆豆：" + 奖励豆豆 + "个！";

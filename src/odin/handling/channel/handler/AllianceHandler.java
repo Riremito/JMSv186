@@ -88,7 +88,7 @@ public class AllianceHandler {
                 inviteid = player.getWorld().getGuild().getInvitedId(player.getGuildId());
                 if (inviteid > 0) {
                     if (!player.getWorld().getAlliance().addGuildToAlliance(inviteid, player.getGuildId())) {
-                        player.dropMessage(5, "An error occured when adding guild.");
+                        player.Notice("An error occured when adding guild.");
                     }
                     player.getWorld().getGuild().setInvitedId(player.getGuildId(), 0);
                 }
@@ -105,12 +105,12 @@ public class AllianceHandler {
                     gid = player.getGuildId();
                 }
                 if (player.getAllianceRank() <= 2 && (player.getAllianceRank() == 1 || player.getGuildId() == gid) && !player.getWorld().getAlliance().removeGuildFromAlliance(gs.getAllianceId(), gid, player.getGuildId() != gid)) {
-                    player.dropMessage(5, "An error occured when removing guild.");
+                    player.Notice("An error occured when removing guild.");
                 }
                 break;
             case 7: //change leader
                 if (player.getAllianceRank() == 1 && leaderid == player.getId() && !player.getWorld().getAlliance().changeAllianceLeader(gs.getAllianceId(), cp.Decode4())) {
-                    player.dropMessage(5, "An error occured when changing leader.");
+                    player.Notice("An error occured when changing leader.");
                 }
                 break;
             case 8: //title update
@@ -124,7 +124,7 @@ public class AllianceHandler {
                 break;
             case 9:
                 if (player.getAllianceRank() <= 2 && !player.getWorld().getAlliance().changeAllianceRank(gs.getAllianceId(), cp.Decode4(), cp.Decode1())) {
-                    player.dropMessage(5, "An error occured when changing rank.");
+                    player.Notice("An error occured when changing rank.");
                 }
                 break;
             case 10: //notice update
@@ -149,7 +149,7 @@ public class AllianceHandler {
             if (newAlliance > 0) {
                 TacosCharacter chr = player.getChannelServer().getOnlinePlayers().findById(newAlliance);
                 if (chr != null) {
-                    chr.dropMessage(5, gs.getName() + " Guild has rejected the Guild Union invitation.");
+                    chr.Notice(gs.getName() + " Guild has rejected the Guild Union invitation.");
                 }
                 player.getWorld().getGuild().setInvitedId(player.getGuildId(), 0);
             }

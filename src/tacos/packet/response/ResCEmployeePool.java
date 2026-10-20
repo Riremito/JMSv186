@@ -19,7 +19,7 @@
 package tacos.packet.response;
 
 import tacos.packet.ServerPacket;
-import odin.server.shops.HiredMerchant;
+import tacos.server.map.object.TacosMerchant;
 import tacos.packet.ServerPacketHeader;
 
 /**
@@ -28,7 +28,7 @@ import tacos.packet.ServerPacketHeader;
  */
 public class ResCEmployeePool {
 
-    public static ServerPacket EmployeeEnterField(HiredMerchant merchant) {
+    public static ServerPacket EmployeeEnterField(TacosMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeEnterField);
 
         sp.Encode4(merchant.getOwnerId()); // dwEmployerID
@@ -38,14 +38,14 @@ public class ResCEmployeePool {
         return sp;
     }
 
-    public static ServerPacket EmployeeLeaveField(HiredMerchant merchant) {
+    public static ServerPacket EmployeeLeaveField(TacosMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeLeaveField);
 
         sp.Encode4(merchant.getOwnerId());
         return sp;
     }
 
-    public static ServerPacket EmployeeMiniRoomBalloon(HiredMerchant merchant) {
+    public static ServerPacket EmployeeMiniRoomBalloon(TacosMerchant merchant) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_EmployeeMiniRoomBalloon);
 
         sp.Encode4(merchant.getOwnerId());
@@ -53,7 +53,7 @@ public class ResCEmployeePool {
         return sp;
     }
 
-    private static byte[] CEmployee_Init(HiredMerchant merchant) {
+    private static byte[] CEmployee_Init(TacosMerchant merchant) {
         ServerPacket data = new ServerPacket();
 
         data.Encode2(merchant.getX()); // m_ptPos.x
@@ -63,7 +63,7 @@ public class ResCEmployeePool {
         return data.getBytes();
     }
 
-    private static byte[] CEmployee_SetBalloon(HiredMerchant merchant) {
+    private static byte[] CEmployee_SetBalloon(TacosMerchant merchant) {
         ServerPacket data = new ServerPacket();
 
         int m_nMiniRoomType = merchant.getGameType();

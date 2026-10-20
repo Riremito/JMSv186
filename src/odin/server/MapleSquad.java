@@ -82,7 +82,7 @@ public class MapleSquad {
             members.put(toadd, bannedMembers.get(toadd));
             bannedMembers.remove(toadd);
 
-            getChar(toadd).dropMessage(5, getLeaderName() + " has decided to add you back to the squad.");
+            getChar(toadd).Notice(getLeaderName() + " has decided to add you back to the squad.");
         }
     }
 
@@ -96,7 +96,7 @@ public class MapleSquad {
             bannedMembers.put(toban, members.get(toban));
             members.remove(toban);
 
-            getChar(toban).dropMessage(5, getLeaderName() + " has removed you from the squad.");
+            getChar(toban).Notice(getLeaderName() + " has removed you from the squad.");
         }
     }
 
@@ -251,7 +251,7 @@ public class MapleSquad {
             if (!members.containsKey(member.getName())) {
                 if (members.size() <= 30) {
                     members.put(member.getName(), job);
-                    getLeader().dropMessage(5, member.getName() + " (" + job + ") has joined the fight!");
+                    getLeader().Notice(member.getName() + " (" + job + ") has joined the fight!");
                     return 1;
                 }
                 return 2;
@@ -260,7 +260,7 @@ public class MapleSquad {
         }
         if (members.containsKey(member.getName())) {
             members.remove(member.getName());
-            getLeader().dropMessage(5, member.getName() + " (" + job + ") have withdrawed from the fight.");
+            getLeader().Notice(member.getName() + " (" + job + ") have withdrawed from the fight.");
             return 1;
         }
         return -1;

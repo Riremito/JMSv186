@@ -25,7 +25,6 @@ import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import tacos.server.map.object.TacosNpc;
 import tacos.client.TacosClient;
-import odin.client.SkillFactory;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import tacos.property.Property_Packet;
@@ -631,7 +630,7 @@ public class TacosCommandAdmin {
                 continue;
             }
             chr.DebugMsg("AddSkill : " + skill_id);
-            Skill skill = SkillFactory.getSkill(skill_id);
+            Skill skill = WzXML.SKILL.getSkill().get(skill_id);
             chr.changeSkillLevel(skill, skill.getMaxLevel(), skill.getMaxLevel());
         }
         return true;
@@ -640,7 +639,7 @@ public class TacosCommandAdmin {
     private static boolean resetBasicSkill(TacosCharacter chr) {
         for (int skill_id : WzXML.SKILL.getBasicSkill(chr, debug_basic_job)) {
             chr.DebugMsg("RemoveSkill : " + skill_id);
-            Skill skill = SkillFactory.getSkill(skill_id);
+            Skill skill = WzXML.SKILL.getSkill().get(skill_id);
             chr.changeSkillLevel(skill, (byte) 0, (byte) 0);
         }
         return true;

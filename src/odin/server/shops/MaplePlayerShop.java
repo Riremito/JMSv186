@@ -376,10 +376,10 @@ public class MaplePlayerShop {
                         }
                     }
                 } else {
-                    chr.dropMessage(1, "Your inventory is full.");
+                    chr.Alert("Your inventory is full.");
                 }
             } else {
-                chr.dropMessage(1, "You do not have enough mesos.");
+                chr.Alert("You do not have enough mesos.");
                 //}
             }
             getMCOwner().SendPacket(ResCMiniRoomBaseDlg.shopItemUpdate(this));

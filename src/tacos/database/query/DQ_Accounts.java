@@ -19,7 +19,6 @@
 package tacos.database.query;
 
 import tacos.client.TacosClient;
-import tacos.client.TacosCharacter;
 import tacos.constants.MapleClientState;
 import tacos.database.DatabaseConnection;
 import tacos.database.DatabaseException;

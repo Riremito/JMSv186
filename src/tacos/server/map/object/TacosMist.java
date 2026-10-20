@@ -19,8 +19,8 @@
 package tacos.server.map.object;
 
 import java.awt.Rectangle;
+import tacos.wz.WzXML;
 import odin.client.Skill;
-import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.MobSkill;
 
@@ -83,7 +83,7 @@ public class TacosMist extends TacosMapObject {
     }
 
     public Skill getSourceSkill() {
-        return SkillFactory.getSkill(source.getSourceId());
+        return WzXML.SKILL.getSkill().get(source.getSourceId());
     }
 
     public boolean isMobMist() {

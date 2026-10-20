@@ -19,6 +19,7 @@
 package tacos.server;
 
 import java.util.HashMap;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
@@ -30,7 +31,6 @@ import java.util.Map;
 import tacos.property.Property_World;
 import tacos.debug.DebugLogger;
 import odin.server.MapleSquad;
-import odin.server.shops.HiredMerchant;
 import tacos.config.Region;
 import tacos.packet.response.ResCWvsContext;
 import tacos.packet.ops.OpsBroadcastMsg;
@@ -185,28 +185,28 @@ public class TacosChannel extends TacosServer {
 
     // merch
     private int running_MerchantID = 0;
-    private Map<Integer, HiredMerchant> merchants = new HashMap<>();
+    private Map<Integer, TacosMerchant> merchants = new HashMap<>();
 
     public void closeAllMerchant() {
-        for (HiredMerchant hm : this.merchants.values()) {
+        for (TacosMerchant hm : this.merchants.values()) {
             hm.closeShop(true, false, 0);
         }
         this.merchants.clear();
     }
 
-    public int addMerchant(HiredMerchant hMerchant) {
+    public int addMerchant(TacosMerchant hMerchant) {
         int shop_id = this.running_MerchantID;
         this.merchants.put(shop_id, hMerchant);
         this.running_MerchantID++;
         return shop_id;
     }
 
-    public void removeMerchant(HiredMerchant hMerchant) {
+    public void removeMerchant(TacosMerchant hMerchant) {
         this.merchants.remove(hMerchant.getStoreId());
     }
 
     public boolean containsMerchant(int character_id) {
-        for (HiredMerchant hm : this.merchants.values()) {
+        for (TacosMerchant hm : this.merchants.values()) {
             if (hm.getOwnerAccId() == character_id) {
                 return true;
             }
@@ -214,9 +214,9 @@ public class TacosChannel extends TacosServer {
         return false;
     }
 
-    public List<HiredMerchant> searchMerchant(int item_id) {
-        List<HiredMerchant> list = new LinkedList<>();
-        for (HiredMerchant hm : this.merchants.values()) {
+    public List<TacosMerchant> searchMerchant(int item_id) {
+        List<TacosMerchant> list = new LinkedList<>();
+        for (TacosMerchant hm : this.merchants.values()) {
             if (!hm.searchItem(item_id).isEmpty()) {
                 list.add(hm);
             }

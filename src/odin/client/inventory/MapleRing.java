@@ -23,7 +23,6 @@ package odin.client.inventory;
 import java.sql.SQLException;
 import tacos.client.TacosCharacter;
 import java.util.Comparator;
-import odin.server.MapleInventoryManipulator;
 import tacos.database.query.DQ_Rings;
 
 public class MapleRing {

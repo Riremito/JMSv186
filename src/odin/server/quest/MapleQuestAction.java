@@ -21,13 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.quest;
 
 import java.util.HashMap;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import java.util.Map;
 import odin.client.Skill;
 import odin.constants.GameConstants;
 import odin.client.inventory.MapleInventoryType;
 import odin.client.MapleQuestStatus;
-import odin.client.SkillFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -149,7 +149,7 @@ public class MapleQuestAction {
                 if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                     String msg = "You have attained title <" + name + ">";
                     chr.dropMessage(-1, msg);
-                    chr.dropMessage(5, msg);
+                    chr.Notice(msg);
                 }
                 MapleInventoryManipulator.addById(chr, id, count, "", null, period);
             }
@@ -171,14 +171,14 @@ public class MapleQuestAction {
             short count = (short) item.getCount();
             if (count < 0) { // remove items
                 if (!chr.haveItem(id, count, false, true)) {
-                    chr.dropMessage(1, "You are short of some item to complete quest.");
+                    chr.Alert("You are short of some item to complete quest.");
                     return false;
                 }
                 continue;
             }
             // add items
             if (MapleItemInformationProvider.getInstance().isPickupRestricted(id) && chr.haveItem(id, 1, true, false)) {
-                chr.dropMessage(1, "You have this item already: " + MapleItemInformationProvider.getInstance().getName(id));
+                chr.Alert("You have this item already: " + MapleItemInformationProvider.getInstance().getName(id));
                 return false;
             }
             needed.merge(GameConstants.getInventoryType(id), 1, Integer::sum);
@@ -186,7 +186,7 @@ public class MapleQuestAction {
         for (int i = 0; i < REWARD_INVENTORY_TYPES.length; i++) {
             MapleInventoryType type = REWARD_INVENTORY_TYPES[i];
             if (chr.getInventory(type).getNumFreeSlot() < needed.getOrDefault(type, 0)) {
-                chr.dropMessage(1, "Please make space for your " + REWARD_INVENTORY_NAMES[i] + " inventory.");
+                chr.Alert("Please make space for your " + REWARD_INVENTORY_NAMES[i] + " inventory.");
                 return false;
             }
         }
@@ -201,7 +201,7 @@ public class MapleQuestAction {
 
     private void changeSkills(TacosCharacter chr) {
         for (QuestWz.QuestActionSkillInfo s : info.getSkills()) {
-            Skill skillObject = SkillFactory.getSkill(s.getId());
+            Skill skillObject = WzXML.SKILL.getSkill().get(s.getId());
 
             for (int applicableJob : s.getJob()) {
                 if (skillObject.isBeginnerSkill() || chr.getJob() == applicableJob) {
@@ -325,11 +325,11 @@ public class MapleQuestAction {
             case money: {
                 int meso = info.getValue();
                 if (chr.getMeso() + meso < 0) { // Giving, overflow
-                    chr.dropMessage(1, "Meso exceed the max amount, 2147483647.");
+                    chr.Alert("Meso exceed the max amount, 2147483647.");
                     return false;
                 }
                 if (meso < 0 && chr.getMeso() < Math.abs(meso)) { //remove meso
-                    chr.dropMessage(1, "Insufficient meso.");
+                    chr.Alert("Insufficient meso.");
                     return false;
                 }
                 return true;

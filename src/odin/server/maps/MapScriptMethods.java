@@ -25,7 +25,6 @@ import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import tacos.client.TacosClient;
-import odin.client.SkillFactory;
 import tacos.packet.ops.OpsFieldEffect;
 import tacos.packet.response.builder.PB_FieldEffect;
 import tacos.packet.response.ResCField;
@@ -652,11 +651,11 @@ public class MapScriptMethods {
                 break;
             }
             case iceCave: {
-                chr.changeSkillLevel(SkillFactory.getSkill(20000014), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000015), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000016), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000017), (byte) -1, (byte) 0);
-                chr.changeSkillLevel(SkillFactory.getSkill(20000018), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000014), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000015), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000016), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000017), (byte) -1, (byte) 0);
+                chr.changeSkillLevel(WzXML.SKILL.getSkill().get(20000018), (byte) -1, (byte) 0);
                 chr.SendPacket(ResCUserLocal.ShowWZEffect("Effect/Direction1.img/aranTutorial/ClickLirin"));
                 chr.SendPacket(ResCUserLocal.SetStandAloneMode(false));
                 chr.SendPacket(ResCUserLocal.SetDirectionMode(false));

@@ -19,6 +19,8 @@
 package tacos.client;
 
 import tacos.server.map.object.TacosDragon;
+import tacos.wz.WzXML;
+import tacos.server.map.object.TacosMerchant;
 import tacos.server.map.TacosMap;
 import tacos.server.map.object.TacosSkillPet;
 import java.awt.Point;
@@ -32,7 +34,6 @@ import odin.client.BuddyList.BuddylistEntry;
 import odin.client.Skill;
 import odin.client.PlayerStats;
 import odin.client.Skill.SkillEntry;
-import odin.client.SkillFactory;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventory;
 import odin.client.inventory.MapleInventoryType;
@@ -147,7 +148,6 @@ import odin.server.MapleCarnivalParty;
 import odin.server.maps.SavedLocationType;
 import odin.server.shops.ShopDispatch;
 import odin.server.MapleCarnivalChallenge;
-import odin.server.shops.HiredMerchant;
 import tacos.network.MockIOSession;
 import tacos.database.query.DQ_Notes;
 import tacos.debug.DebugShop;
@@ -793,7 +793,7 @@ public class TacosCharacter extends TacosPlayer {
     protected Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
 
     public int getSkillLevel(OpsSkill ops) {
-        Skill skill = SkillFactory.getSkill(ops.get());
+        Skill skill = WzXML.SKILL.getSkill().get(ops.get());
         if (skill == null) {
             return 0;
         }
@@ -951,7 +951,7 @@ public class TacosCharacter extends TacosPlayer {
 
     // ピンク
     public void DebugMsg2(String text) {
-        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+        Notice(text);
     }
 
     // 黄色
@@ -961,6 +961,11 @@ public class TacosCharacter extends TacosPlayer {
 
     public void Notice(String text) {
         SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(text).build()));
+    }
+
+    // alert dialog
+    public void Alert(String text) {
+        SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_ALERT, PB_BroadcastMsg.builder().message(text).build()));
     }
 
     public FreeMarketPortal getFreeMarketPortal() {
@@ -1819,7 +1824,7 @@ public class TacosCharacter extends TacosPlayer {
 
                 Skill skil;
                 for (DQ_Skills.SkillRow row : DQ_Skills.loadAll(character_id)) {
-                    skil = SkillFactory.getSkill(row.skillId);
+                    skil = WzXML.SKILL.getSkill().get(row.skillId);
                     if (skil != null && GameConstants.isApplicableSkill(row.skillId)) {
                         ret.skills.put(skil, new SkillEntry(row.skillLevel, row.masterLevel, row.expiration));
                     } else if (skil == null) { //doesnt. exist. e.g. bb
@@ -1850,7 +1855,7 @@ public class TacosCharacter extends TacosPlayer {
                 }
 
                 // 精霊の祝福
-                Skill bofskill = SkillFactory.getSkill(GameConstants.getBOF_ForJob(ret.job));
+                Skill bofskill = WzXML.SKILL.getSkill().get(GameConstants.getBOF_ForJob(ret.job));
 
                 if (bofskill != null) {
                     ret.skills.put(bofskill, new SkillEntry(maxlevel_, (byte) 0, -1));
@@ -2208,10 +2213,10 @@ public class TacosCharacter extends TacosPlayer {
 
     public void baseSkills() {
         if (GameConstants.getJobNumber(job) >= 3) { //third job.
-            List<Integer> skills = SkillFactory.getSkillsByJob(job);
+            List<Integer> skills = WzXML.SKILL.getSkillsByJob().get(job);
             if (skills != null) {
                 for (int i : skills) {
-                    Skill skil = SkillFactory.getSkill(i);
+                    Skill skil = WzXML.SKILL.getSkill().get(i);
                     if (skil != null && !skil.isInvisible() && skil.isFourthJob() && getSkillLevel(skil) <= 0 && getMasterLevel(skil) <= 0 && skil.getMasterLevel() > 0) {
                         changeSkillLevel(skil, (byte) 0, (byte) skil.getMasterLevel()); //usually 10 master
                     }
@@ -2286,7 +2291,7 @@ public class TacosCharacter extends TacosPlayer {
         sendStatChanged();
 
         if (!stats.checkEquipDurabilitys(this, -100)) { //i guess this is how it works ?
-            dropMessage(5, "An item has run out of durability but has no inventory room to go to.");
+            Notice("An item has run out of durability but has no inventory room to go to.");
         } //lol
         if (getPyramidSubway() != null) {
             stats.setHp((short) 50);
@@ -2506,7 +2511,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(12, 16);
             maxmp += Randomizer.rand(10, 12);
         } else if (job >= 100 && job <= 132) { // Warrior
-            Skill improvingMaxHP = SkillFactory.getSkill(1000001);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(1000001);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2514,7 +2519,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 200 && job <= 232) { // Magician
-            Skill improvingMaxMP = SkillFactory.getSkill(2000001);
+            Skill improvingMaxMP = WzXML.SKILL.getSkill().get(2000001);
             int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
@@ -2528,7 +2533,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(20, 24);
             maxmp += Randomizer.rand(14, 16);
         } else if ((job >= 500 && job <= 522) || (job >= 3500 && job <= 3512)) { // Pirate
-            Skill improvingMaxHP = SkillFactory.getSkill(5100000);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(5100000);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2536,7 +2541,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(22, 26);
             maxmp += Randomizer.rand(18, 22);
         } else if (job >= 1100 && job <= 1111) { // Soul Master
-            Skill improvingMaxHP = SkillFactory.getSkill(11000000);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(11000000);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2544,7 +2549,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(24, 28);
             maxmp += Randomizer.rand(4, 6);
         } else if (job >= 1200 && job <= 1211) { // Flame Wizard
-            Skill improvingMaxMP = SkillFactory.getSkill(12000000);
+            Skill improvingMaxMP = WzXML.SKILL.getSkill().get(12000000);
             int slevel = getSkillLevel(improvingMaxMP);
             if (slevel > 0) {
                 maxmp += improvingMaxMP.getEffect(slevel).getX() * 2;
@@ -2552,7 +2557,7 @@ public class TacosCharacter extends TacosPlayer {
             maxhp += Randomizer.rand(10, 14);
             maxmp += Randomizer.rand(22, 24);
         } else if (job >= 1500 && job <= 1512) { // Pirate
-            Skill improvingMaxHP = SkillFactory.getSkill(15100000);
+            Skill improvingMaxHP = WzXML.SKILL.getSkill().get(15100000);
             int slevel = getSkillLevel(improvingMaxHP);
             if (slevel > 0) {
                 maxhp += improvingMaxHP.getEffect(slevel).getX();
@@ -2865,7 +2870,7 @@ public class TacosCharacter extends TacosPlayer {
     }
 
     public boolean IsBerserk() {
-        Skill BerserkX = SkillFactory.getSkill(1320006);
+        Skill BerserkX = WzXML.SKILL.getSkill().get(1320006);
         int skilllevel = getSkillLevel(BerserkX);
 
         if (skilllevel < 1) {
@@ -2971,11 +2976,11 @@ public class TacosCharacter extends TacosPlayer {
         return playerShop;
     }
 
-    public HiredMerchant getMyHiredMerchant() {
-        if (!(playerShop instanceof HiredMerchant)) {
+    public TacosMerchant getMyHiredMerchant() {
+        if (!(playerShop instanceof TacosMerchant)) {
             return null;
         }
-        HiredMerchant merchant = (HiredMerchant) playerShop;
+        TacosMerchant merchant = (TacosMerchant) playerShop;
         if (!merchant.isOwner(this)) {
             return null;
         }
@@ -3648,7 +3653,7 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public int getSkillLevel(int skillid) {
-        return getSkillLevel(SkillFactory.getSkill(skillid));
+        return getSkillLevel(WzXML.SKILL.getSkill().get(skillid));
     }
 
     // used by script
@@ -3726,7 +3731,7 @@ public class TacosCharacter extends TacosPlayer {
                     expandInventory((byte) 3, 4);
                     expandInventory((byte) 4, 4);
                     SendPacket(ResCScriptMan.getEvanTutorial("UI/tutorial/evan/14/0"));
-                    dropMessage(5, "The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
+                    Notice("The baby Dragon hatched and appears to have something to tell you. Click the baby Dragon to start a conversation.");
                 }
             }
             sendStatChanged();
@@ -3945,7 +3950,7 @@ public class TacosCharacter extends TacosPlayer {
 
     // used by script
     public byte getMasterLevel(int skill) {
-        return getMasterLevel(SkillFactory.getSkill(skill));
+        return getMasterLevel(WzXML.SKILL.getSkill().get(skill));
     }
 
     // used by script

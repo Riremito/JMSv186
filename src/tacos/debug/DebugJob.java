@@ -19,9 +19,9 @@
 package tacos.debug;
 
 import odin.client.Skill;
+import tacos.wz.WzXML;
 import tacos.client.TacosCharacter;
 import odin.client.PlayerStats;
-import odin.client.SkillFactory;
 import java.util.ArrayList;
 import odin.server.Randomizer;
 import tacos.config.Config;
@@ -79,7 +79,7 @@ public class DebugJob {
     }
 
     public static int GetSkillEffect(TacosCharacter chr, int skill_id) {
-        Skill skill = SkillFactory.getSkill(skill_id);
+        Skill skill = WzXML.SKILL.getSkill().get(skill_id);
         if (skill == null) {
             return 0;
         }
@@ -442,8 +442,8 @@ public class DebugJob {
         }
 
         for (Integer v : job_list) {
-            for (Integer skill_id : SkillFactory.getSkillsByJob(v)) {
-                Skill skill = SkillFactory.getSkill(skill_id);
+            for (Integer skill_id : WzXML.SKILL.getSkillsByJob().get(v)) {
+                Skill skill = WzXML.SKILL.getSkill().get(skill_id);
                 chr.changeSkillLevel(skill, reset ? 0 : skill.getMaxLevel(), (v % 10 == 2) ? (byte) skill.getMaxLevel() : (byte) 0);
             }
         }

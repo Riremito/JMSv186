@@ -357,13 +357,13 @@ public class MapleInventoryManipulator {
         if (before == 0) {
             switch (item.getItemId()) {
                 case AramiaFireWorks.KEG_ID:
-                    chr.dropMessage(5, "You have gained a Powder Keg, you can give this in to Aramia of Henesys.");
+                    chr.Notice("You have gained a Powder Keg, you can give this in to Aramia of Henesys.");
                     break;
                 case AramiaFireWorks.SUN_ID:
-                    chr.dropMessage(5, "You have gained a Warm Sun, you can give this in to Maple Tree Hill through @joyce.");
+                    chr.Notice("You have gained a Warm Sun, you can give this in to Maple Tree Hill through @joyce.");
                     break;
                 case AramiaFireWorks.DEC_ID:
-                    chr.dropMessage(5, "You have gained a Tree Decoration, you can give this in to White Christmas Hill through @joyce.");
+                    chr.Notice("You have gained a Tree Decoration, you can give this in to White Christmas Hill through @joyce.");
                     break;
             }
         }

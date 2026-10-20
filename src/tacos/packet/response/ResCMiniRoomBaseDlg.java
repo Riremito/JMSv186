@@ -19,6 +19,7 @@
 package tacos.packet.response;
 
 import tacos.client.TacosCharacter;
+import tacos.server.map.object.TacosMerchant;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
 import odin.client.inventory.MapleInventoryType;
@@ -32,7 +33,6 @@ import tacos.packet.response.data.RD_GW_ItemSlotBase;
 import odin.server.MapleItemInformationProvider;
 import odin.server.MapleTrade;
 import odin.server.shops.ShopDispatch;
-import odin.server.shops.HiredMerchant;
 import odin.server.shops.MapleMiniGame;
 import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import tacos.config.Config;
@@ -47,7 +47,7 @@ import tacos.wz.WzDataStorage;
  */
 public class ResCMiniRoomBaseDlg {
 
-    public static ServerPacket EnterResultStatic(HiredMerchant hm, TacosCharacter chr) {
+    public static ServerPacket EnterResultStatic(TacosMerchant hm, TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         byte m_nMyPosition = hm.getVisitorSlot(chr);
@@ -83,7 +83,7 @@ public class ResCMiniRoomBaseDlg {
                 sp.Encode4((16 * 60 * 60 + 52 * 60) * 1000); // 商店終了 / 07:07
                 sp.Encode1(0); // 0 = already opened, 1 = open
                 sp.Encode1(hm.getBoughtItems().size());
-                for (HiredMerchant.BoughtItem item_sold : hm.getBoughtItems()) {
+                for (TacosMerchant.BoughtItem item_sold : hm.getBoughtItems()) {
                     sp.Encode4(item_sold.id);
                     sp.Encode2(item_sold.quantity); // quanty
                     sp.Encode4(item_sold.totalPrice); // price
@@ -427,7 +427,7 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket getHiredMerch(TacosCharacter chr, HiredMerchant merch, boolean firstTime) {
+    public static ServerPacket getHiredMerch(TacosCharacter chr, TacosMerchant merch, boolean firstTime) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(5);
@@ -452,7 +452,7 @@ public class ResCMiniRoomBaseDlg {
             sp.Encode4(merch.getTimeLeft());
             sp.Encode1(firstTime ? 1 : 0);
             sp.Encode1(merch.getBoughtItems().size());
-            for (HiredMerchant.BoughtItem SoldItem : merch.getBoughtItems()) {
+            for (TacosMerchant.BoughtItem SoldItem : merch.getBoughtItems()) {
                 sp.Encode4(SoldItem.id);
                 sp.Encode2(SoldItem.quantity); // number of purchased
                 sp.Encode4(SoldItem.totalPrice); // total price

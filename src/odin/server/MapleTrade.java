@@ -1,7 +1,6 @@
 package odin.server;
 
 import java.util.LinkedList;
-import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.List;
 import odin.client.inventory.Item;
@@ -10,9 +9,6 @@ import odin.constants.GameConstants;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
-import tacos.packet.response.ResCWvsContext;
-import tacos.packet.ops.OpsBroadcastMsg;
-import tacos.packet.response.builder.PB_BroadcastMsg;
 
 public class MapleTrade {
 
@@ -262,7 +258,7 @@ public class MapleTrade {
             player.setTrade(new MapleTrade((byte) 0, player, isPointTrade));
             player.SendPacket(ResCMiniRoomBaseDlg.getTradeStart(player, player.getTrade(), (byte) 0, isPointTrade));
         } else {
-            player.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("You are already in a trade").build()));
+            player.Notice("You are already in a trade");
         }
     }
 
@@ -276,7 +272,7 @@ public class MapleTrade {
             player1.getTrade().setPartner(player2.getTrade());
             player2.SendPacket(ResCMiniRoomBaseDlg.getTradeInvite(player1, player1.getTrade().IsPointTrading()));
         } else {
-            player1.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The other player is already trading with someone else.").build()));
+            player1.Notice("The other player is already trading with someone else.");
             cancelTrade(player1.getTrade(), player1.getClient());
         }
     }
@@ -289,7 +285,7 @@ public class MapleTrade {
             //c1.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
             //c2.dropMessage(-2, "System : Use @tradehelp to see the list of trading commands");
         } else {
-            player1.SendPacket(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("The other player has already closed the trade").build()));
+            player1.Notice("The other player has already closed the trade");
         }
     }
 
@@ -300,7 +296,7 @@ public class MapleTrade {
                 TacosCharacter other = trade.getPartner().getChr();
                 other.getTrade().cancel(other);
                 other.setTrade(null);
-                other.dropMessage(5, player.getName() + " has declined your trade request");
+                other.Notice(player.getName() + " has declined your trade request");
             }
             trade.cancel(player);
             player.setTrade(null);

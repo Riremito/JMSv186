@@ -31,7 +31,6 @@ import odin.server.MapleCarnivalFactory;
 import odin.server.life.MobSkill;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.LinkedHashMap;
-import odin.client.SkillFactory;
 import odin.server.MapleStatEffect;
 import odin.server.life.MapleMonsterStats.Element;
 import tacos.client.TacosDoorSkill;
@@ -311,7 +310,7 @@ public class SkillWz extends WzXML {
                                 // THMS meme
                                 String skill_name = "";
                                 try {
-                                    skill_name = SkillFactory.getName(skillid);
+                                    skill_name = WzXML.STRING.getSkillName(skillid);
                                 } catch (RuntimeException e) {
                                     DebugLogger.ErrorLog("" + skillid);
                                 }

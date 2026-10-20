@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.life;
 
 import odin.constants.GameConstants;
+import tacos.packet.ops.OpsMobSkill;
 import tacos.client.TacosCharacter;
 import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosMist;
@@ -111,40 +112,40 @@ public class MobSkill {
         Map<MonsterStatus, Integer> stats = new EnumMap<>(MonsterStatus.class);
         List<Integer> reflection = new LinkedList<>();
 
-        switch (skillId) {
-            case 100:
-            case 110:
-            case 150:
+        switch (OpsMobSkill.find(skillId)) {
+            case MOBSKILL_POWERUP:
+            case MOBSKILL_POWERUP_M:
+            case MOBSKILL_PAD:
                 stats.put(MonsterStatus.WEAPON_ATTACK_UP, x);
                 break;
-            case 101:
-            case 111:
-            case 151:
+            case MOBSKILL_MAGICUP:
+            case MOBSKILL_MAGICUP_M:
+            case MOBSKILL_MAD:
                 stats.put(MonsterStatus.MAGIC_ATTACK_UP, x);
                 break;
-            case 102:
-            case 112:
-            case 152:
+            case MOBSKILL_PGUARDUP:
+            case MOBSKILL_PGUARDUP_M:
+            case MOBSKILL_PDR:
                 stats.put(MonsterStatus.WEAPON_DEFENSE_UP, x);
                 break;
-            case 103:
-            case 113:
-            case 153:
+            case MOBSKILL_MGUARDUP:
+            case MOBSKILL_MGUARDUP_M:
+            case MOBSKILL_MDR:
                 stats.put(MonsterStatus.MAGIC_DEFENSE_UP, x);
                 break;
-            case 154:
+            case MOBSKILL_ACC:
                 stats.put(MonsterStatus.ACC, x);
                 break;
-            case 155:
+            case MOBSKILL_EVA:
                 stats.put(MonsterStatus.AVOID, x);
                 break;
-            case 156:
+            case MOBSKILL_SPEED:
                 stats.put(MonsterStatus.SPEED, x);
                 break;
-            case 157:
+            case MOBSKILL_SEALSKILL:
                 stats.put(MonsterStatus.SEAL, x); //o.o
                 break;
-            case 114:
+            case MOBSKILL_HEAL_M:
                 if (lt != null && rb != null && skill && monster != null) {
                     Rectangle bounds = calculateBoundingBox(monster.getPosition(), monster.isFacingLeft());
                     int hp = (getX() / 1000) * (int) (950 + 1050 * Math.random());
@@ -155,10 +156,10 @@ public class MobSkill {
                     monster.heal(getX(), getY(), true);
                 }
                 break;
-            case 127:
+            case MOBSKILL_DISPEL:
                 // dispel.
                 break;
-            case 129: // Banish
+            case MOBSKILL_BANMAP: // Banish
                 if (monster != null) {
                     MobBanInfo info = monster.getStats().getBanishInfo();
                     if (info != null) {
@@ -172,31 +173,31 @@ public class MobSkill {
                     }
                 }
                 break;
-            case 131: // Mist
+            case MOBSKILL_AREA_POISON: // Mist
                 if (monster != null) {
                     monster.getMap().addMist(new TacosMist(calculateBoundingBox(monster.getPosition(), true), monster.getId(), getSkillLevel(), x * 10, this, null));
                 }
                 break;
-            case 140:
+            case MOBSKILL_PHYSICALIMMUNE:
                 stats.put(MonsterStatus.WEAPON_IMMUNITY, x);
                 break;
-            case 141:
+            case MOBSKILL_MAGICIMMUNE:
                 stats.put(MonsterStatus.MAGIC_IMMUNITY, x);
                 break;
-            case 142: // Weapon / Magic Immunity
+            case MOBSKILL_HARDSKIN: // Weapon / Magic Immunity
                 stats.put(MonsterStatus.DAMAGE_IMMUNITY, x);
                 break;
-            case 143: // Weapon Reflect
+            case MOBSKILL_PCOUNTER: // Weapon Reflect
                 stats.put(MonsterStatus.WEAPON_DAMAGE_REFLECT, x);
                 stats.put(MonsterStatus.WEAPON_IMMUNITY, x);
                 reflection.add(x);
                 break;
-            case 144: // Magic Reflect
+            case MOBSKILL_MCOUNTER: // Magic Reflect
                 stats.put(MonsterStatus.MAGIC_DAMAGE_REFLECT, x);
                 stats.put(MonsterStatus.MAGIC_IMMUNITY, x);
                 reflection.add(x);
                 break;
-            case 145: // Weapon / Magic reflect
+            case MOBSKILL_PMCOUNTER: // Weapon / Magic reflect
                 stats.put(MonsterStatus.WEAPON_DAMAGE_REFLECT, x);
                 stats.put(MonsterStatus.WEAPON_IMMUNITY, x);
                 stats.put(MonsterStatus.MAGIC_DAMAGE_REFLECT, x);
@@ -204,7 +205,7 @@ public class MobSkill {
                 reflection.add(x);
                 reflection.add(x);
                 break;
-            case 200:
+            case MOBSKILL_SUMMON:
                 if (monster == null) {
                     return;
                 }
@@ -262,6 +263,8 @@ public class MobSkill {
                     }
                     monster.getMap().spawnMonsterWithEffect(toSpawn, getSpawnEffect(), monster.getMap().calcPointBelow(new Point(xpos, ypos - 1)));
                 }
+                break;
+            default:
                 break;
         }
 

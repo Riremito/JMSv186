@@ -28,7 +28,6 @@ import tacos.server.map.object.TacosMonster;
 import tacos.server.map.object.TacosReactor;
 import java.util.List;
 import odin.client.inventory.Equip;
-import odin.client.SkillFactory;
 import odin.constants.GameConstants;
 import odin.client.Skill;
 import tacos.client.TacosClient;
@@ -450,7 +449,7 @@ public abstract class OdinAbstractPlayerInteraction {
                 if (id / 10000 == 114 && name != null && name.length() > 0) { //medal
                     String msg = "You have attained title <" + name + ">";
                     chr.dropMessage(-1, msg);
-                    chr.dropMessage(5, msg);
+                    chr.Notice(msg);
                 }
                 MapleInventoryManipulator.addbyItem(chr, item.copy());
                 item_info = item;
@@ -735,7 +734,7 @@ public abstract class OdinAbstractPlayerInteraction {
         if (level <= 0) {
             return;
         }
-        SkillFactory.getSkill(skill).getEffect(level).applyTo(client.getPlayer());
+        WzXML.SKILL.getSkill().get(skill).getEffect(level).applyTo(client.getPlayer());
     }
 
     public void useItem(int id) {
@@ -806,11 +805,11 @@ public abstract class OdinAbstractPlayerInteraction {
     }
 
     public void teachSkill(int id, byte level, byte masterlevel) {
-        getPlayer().changeSkillLevel(SkillFactory.getSkill(id), level, masterlevel);
+        getPlayer().changeSkillLevel(WzXML.SKILL.getSkill().get(id), level, masterlevel);
     }
 
     public void teachSkill(int id, byte level) {
-        Skill skil = SkillFactory.getSkill(id);
+        Skill skil = WzXML.SKILL.getSkill().get(id);
         if (getPlayer().getSkillLevel(skil) > level) {
             level = getPlayer().getSkillLevel(skil);
         }

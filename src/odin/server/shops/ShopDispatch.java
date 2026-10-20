@@ -19,13 +19,14 @@
 package odin.server.shops;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
+import tacos.server.map.object.TacosMerchant;
 import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
 import tacos.client.TacosCharacter;
 import java.util.List;
 import tacos.packet.ServerPacket;
 
 /**
- * AbstractPlayerStoreを HiredMerchant / MaplePlayerShop / MapleMiniGame の3クラスへ
+ * AbstractPlayerStoreを TacosMerchant / MaplePlayerShop / MapleMiniGame の3クラスへ
  * 統合(フラット化)したことに伴い、共通の店舗操作をObject型経由でinstanceof分岐して行うための ディスパッチヘルパー。
  * 新しく店舗として扱う型を追加した場合は、このクラスの各メソッドにも分岐を追加すること。
  *
@@ -37,8 +38,8 @@ public final class ShopDispatch {
     }
 
     public static byte getShopType(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getShopType();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getShopType();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getShopType();
         } else if (o instanceof MapleMiniGame) {
@@ -48,8 +49,8 @@ public final class ShopDispatch {
     }
 
     public static int getMaxSize(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getMaxSize();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getMaxSize();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getMaxSize();
         } else if (o instanceof MapleMiniGame) {
@@ -59,8 +60,8 @@ public final class ShopDispatch {
     }
 
     public static int getSize(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getSize();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getSize();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getSize();
         } else if (o instanceof MapleMiniGame) {
@@ -70,8 +71,8 @@ public final class ShopDispatch {
     }
 
     public static void broadcastToVisitors(Object o, ServerPacket packet) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).broadcastToVisitors(packet);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).broadcastToVisitors(packet);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).broadcastToVisitors(packet);
         } else if (o instanceof MapleMiniGame) {
@@ -82,8 +83,8 @@ public final class ShopDispatch {
     }
 
     public static int getMeso(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getMeso();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getMeso();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getMeso();
         } else if (o instanceof MapleMiniGame) {
@@ -93,8 +94,8 @@ public final class ShopDispatch {
     }
 
     public static void setMeso(Object o, int meso) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).setMeso(meso);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).setMeso(meso);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).setMeso(meso);
         } else if (o instanceof MapleMiniGame) {
@@ -105,8 +106,8 @@ public final class ShopDispatch {
     }
 
     public static void setOpen(Object o, boolean open) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).setOpen(open);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).setOpen(open);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).setOpen(open);
         } else if (o instanceof MapleMiniGame) {
@@ -117,8 +118,8 @@ public final class ShopDispatch {
     }
 
     public static boolean isOpen(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).isOpen();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).isOpen();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).isOpen();
         } else if (o instanceof MapleMiniGame) {
@@ -128,8 +129,8 @@ public final class ShopDispatch {
     }
 
     public static void addVisitor(Object o, TacosCharacter visitor) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).addVisitor(visitor);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).addVisitor(visitor);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).addVisitor(visitor);
         } else if (o instanceof MapleMiniGame) {
@@ -140,8 +141,8 @@ public final class ShopDispatch {
     }
 
     public static void removeVisitor(Object o, TacosCharacter visitor) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).removeVisitor(visitor);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).removeVisitor(visitor);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).removeVisitor(visitor);
         } else if (o instanceof MapleMiniGame) {
@@ -152,8 +153,8 @@ public final class ShopDispatch {
     }
 
     public static byte getVisitorSlot(Object o, TacosCharacter visitor) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getVisitorSlot(visitor);
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getVisitorSlot(visitor);
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getVisitorSlot(visitor);
         } else if (o instanceof MapleMiniGame) {
@@ -163,8 +164,8 @@ public final class ShopDispatch {
     }
 
     public static void removeAllVisitors(Object o, int error, int type) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).removeAllVisitors(error, type);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).removeAllVisitors(error, type);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).removeAllVisitors(error, type);
         } else if (o instanceof MapleMiniGame) {
@@ -175,8 +176,8 @@ public final class ShopDispatch {
     }
 
     public static String getOwnerName(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getOwnerName();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getOwnerName();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getOwnerName();
         } else if (o instanceof MapleMiniGame) {
@@ -186,8 +187,8 @@ public final class ShopDispatch {
     }
 
     public static String getDescription(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getDescription();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getDescription();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getDescription();
         } else if (o instanceof MapleMiniGame) {
@@ -197,8 +198,8 @@ public final class ShopDispatch {
     }
 
     public static List<SimpleImmutableEntry<Byte, TacosCharacter>> getVisitors(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getVisitors();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getVisitors();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getVisitors();
         } else if (o instanceof MapleMiniGame) {
@@ -208,8 +209,8 @@ public final class ShopDispatch {
     }
 
     public static List<MaplePlayerShopItem> getItems(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getItems();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getItems();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getItems();
         } else if (o instanceof MapleMiniGame) {
@@ -219,8 +220,8 @@ public final class ShopDispatch {
     }
 
     public static void addItem(Object o, MaplePlayerShopItem item) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).addItem(item);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).addItem(item);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).addItem(item);
         } else if (o instanceof MapleMiniGame) {
@@ -231,8 +232,8 @@ public final class ShopDispatch {
     }
 
     public static void removeFromSlot(Object o, int slot) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).removeFromSlot(slot);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).removeFromSlot(slot);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).removeFromSlot(slot);
         } else if (o instanceof MapleMiniGame) {
@@ -243,8 +244,8 @@ public final class ShopDispatch {
     }
 
     public static byte getFreeSlot(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getFreeSlot();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getFreeSlot();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getFreeSlot();
         } else if (o instanceof MapleMiniGame) {
@@ -254,8 +255,8 @@ public final class ShopDispatch {
     }
 
     public static int getItemId(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getItemId();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getItemId();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getItemId();
         } else if (o instanceof MapleMiniGame) {
@@ -265,8 +266,8 @@ public final class ShopDispatch {
     }
 
     public static boolean isOwner(Object o, TacosCharacter chr) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).isOwner(chr);
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).isOwner(chr);
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).isOwner(chr);
         } else if (o instanceof MapleMiniGame) {
@@ -276,8 +277,8 @@ public final class ShopDispatch {
     }
 
     public static String getPassword(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getPassword();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getPassword();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getPassword();
         } else if (o instanceof MapleMiniGame) {
@@ -287,8 +288,8 @@ public final class ShopDispatch {
     }
 
     public static TacosCharacter getMCOwner(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getMCOwner();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getMCOwner();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getMCOwner();
         } else if (o instanceof MapleMiniGame) {
@@ -298,8 +299,8 @@ public final class ShopDispatch {
     }
 
     public static int getGameType(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getGameType();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getGameType();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getGameType();
         } else if (o instanceof MapleMiniGame) {
@@ -309,8 +310,8 @@ public final class ShopDispatch {
     }
 
     public static boolean isAvailable(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).isAvailable();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).isAvailable();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).isAvailable();
         } else if (o instanceof MapleMiniGame) {
@@ -320,8 +321,8 @@ public final class ShopDispatch {
     }
 
     public static void setAvailable(Object o, boolean b) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).setAvailable(b);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).setAvailable(b);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).setAvailable(b);
         } else if (o instanceof MapleMiniGame) {
@@ -332,8 +333,8 @@ public final class ShopDispatch {
     }
 
     public static void buy(Object o, TacosCharacter chr, int item, short quantity) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).buy(chr, item, quantity);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).buy(chr, item, quantity);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).buy(chr, item, quantity);
         } else if (o instanceof MapleMiniGame) {
@@ -344,8 +345,8 @@ public final class ShopDispatch {
     }
 
     public static void closeShop(Object o, boolean saveItems, boolean remove, int reason) {
-        if (o instanceof HiredMerchant) {
-            ((HiredMerchant) o).closeShop(saveItems, remove, reason);
+        if (o instanceof TacosMerchant) {
+            ((TacosMerchant) o).closeShop(saveItems, remove, reason);
         } else if (o instanceof MaplePlayerShop) {
             ((MaplePlayerShop) o).closeShop(saveItems, remove, reason);
         } else if (o instanceof MapleMiniGame) {
@@ -356,8 +357,8 @@ public final class ShopDispatch {
     }
 
     public static int getObjectId(Object o) {
-        if (o instanceof HiredMerchant) {
-            return ((HiredMerchant) o).getObjectId();
+        if (o instanceof TacosMerchant) {
+            return ((TacosMerchant) o).getObjectId();
         } else if (o instanceof MaplePlayerShop) {
             return ((MaplePlayerShop) o).getObjectId();
         } else if (o instanceof MapleMiniGame) {

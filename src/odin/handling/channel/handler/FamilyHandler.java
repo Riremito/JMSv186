@@ -59,31 +59,31 @@ public class FamilyHandler {
             case 0: //teleport: need add check for if not a safe place
                 victim = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
-                    chr.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
+                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
                     success = false;
                 } else if (victim == null || (victim.isGM() && !chr.isGM())) {
-                    chr.dropMessage(1, "Invalid name or you are not on the same channel.");
+                    chr.Alert("Invalid name or you are not on the same channel.");
                     success = false;
                 } else if (victim.getFamilyId() == chr.getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != chr.getId()) {
                     chr.changeMapPortal(victim.getMap(), victim.getMap().getPortal(0));
                 } else {
-                    chr.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
+                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
                     success = false;
                 }
                 break;
             case 1: // TODO give a check to the player being forced somewhere else..
                 victim = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
                 if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
-                    chr.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
+                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
                 } else if (victim == null || (victim.isGM() && !chr.isGM())) {
-                    chr.dropMessage(1, "Invalid name or you are not on the same channel.");
+                    chr.Alert("Invalid name or you are not on the same channel.");
                 } else if (victim.getTeleportName().length() > 0) {
-                    chr.dropMessage(1, "Another character has requested to summon this character. Please try again later.");
+                    chr.Alert("Another character has requested to summon this character. Please try again later.");
                 } else if (victim.getFamilyId() == chr.getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != chr.getId()) {
                     victim.SendPacket(ResCWvsContext.familySummonRequest(chr.getName(), "MAP_NAME"));
                     victim.setTeleportName(chr.getName());
                 } else {
-                    chr.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
+                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
                 }
                 return; //RETURN not break
             case 4: // 6 family members in pedigree online Drop Rate & Exp Rate + 100% 30 minutes
@@ -105,7 +105,7 @@ public class FamilyHandler {
             chr.SendPacket(ResCWvsContext.changeRep(-entry.rep));
             chr.useFamilyBuff(entry);
         } else {
-            chr.dropMessage(5, "An error occured.");
+            chr.Notice("An error occured.");
         }
     }
 
@@ -115,23 +115,23 @@ public class FamilyHandler {
         }
         TacosCharacter addChr = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (addChr == null) {
-            chr.dropMessage(1, "The name you requested is incorrect or he/she is currently not logged in.");
+            chr.Alert("The name you requested is incorrect or he/she is currently not logged in.");
         } else if (addChr.getFamilyId() == chr.getFamilyId() && addChr.getFamilyId() > 0) {
-            chr.dropMessage(1, "You belong to the same family.");
+            chr.Alert("You belong to the same family.");
         } else if (addChr.getMapId() != chr.getMapId()) {
-            chr.dropMessage(1, "The one you wish to add as a junior must be in the same map.");
+            chr.Alert("The one you wish to add as a junior must be in the same map.");
         } else if (addChr.getSeniorId() != 0) {
-            chr.dropMessage(1, "The character is already a junior of another character.");
+            chr.Alert("The character is already a junior of another character.");
         } else if (addChr.getLevel() >= chr.getLevel()) {
-            chr.dropMessage(1, "The junior you wish to add must be at a lower rank.");
+            chr.Alert("The junior you wish to add must be at a lower rank.");
         } else if (addChr.getLevel() < chr.getLevel() - 20) {
-            chr.dropMessage(1, "The gap between you and your junior must be within 20 levels.");
+            chr.Alert("The gap between you and your junior must be within 20 levels.");
             //} else if (c.getPlayer().getFamilyId() != 0 && c.getPlayer().getFamily().getGens() >= 1000) {
-            //	c.getPlayer().dropMessage(5, "Your family cannot extend more than 1000 generations from above and below.");
+            //	c.getPlayer().Notice("Your family cannot extend more than 1000 generations from above and below.");
         } else if (addChr.getLevel() < 10) {
-            chr.dropMessage(1, "The junior you wish to add must be over Level 10.");
+            chr.Alert("The junior you wish to add must be over Level 10.");
         } else if (chr.getJunior1() > 0 && chr.getJunior2() > 0) {
-            chr.dropMessage(1, "You have 2 juniors already.");
+            chr.Alert("You have 2 juniors already.");
         } else if (chr.isGM() || !addChr.isGM()) {
             addChr.SendPacket(ResCWvsContext.sendFamilyInvite(chr.getId(), chr.getLevel(), chr.getJob(), chr.getName()));
         }
@@ -161,10 +161,10 @@ public class FamilyHandler {
                 tt.SendPacket(ResCWvsContext.changeRep(-cost.rep));
                 tt.useFamilyBuff(cost);
             } else {
-                tt.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
+                tt.Notice("Summons failed. Your current location or state does not allow a summons.");
             }
         } else {
-            chr.dropMessage(5, "Summons failed. Your current location or state does not allow a summons.");
+            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
         }
         chr.setTeleportName("");
     }
@@ -197,7 +197,7 @@ public class FamilyHandler {
             }
             fam.resetPedigree();
         }
-        chr.dropMessage(1, "Broke up with (" + other.getName() + ").\r\nFamily relationship has ended.");
+        chr.Alert("Broke up with (" + other.getName() + ").\r\nFamily relationship has ended.");
         chr.updateStat();
     }
 
@@ -228,7 +228,7 @@ public class FamilyHandler {
             }
             fam.resetPedigree();
         }
-        chr.dropMessage(1, "Broke up with (" + mgc.getName() + ").\r\nFamily relationship has ended.");
+        chr.Alert("Broke up with (" + mgc.getName() + ").\r\nFamily relationship has ended.");
         chr.updateStat();
     }
 
