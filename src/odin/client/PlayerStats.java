@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.concurrent.locks.ReentrantLock;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.ops.OpsDropPickUpMessage;
@@ -113,7 +112,6 @@ public class PlayerStats {
     private int watk;
     private int hands;
     private int accuracy;
-    public ReentrantLock lock = new ReentrantLock(); //we're getting concurrentmodificationexceptions, but would this slow things down?
 
     public PlayerStats(TacosCharacter chr) {
         // TODO, move str/dex/int etc here -_-
@@ -274,15 +272,10 @@ public class PlayerStats {
         if (chra == null) {
             return;
         }
-        lock.lock();
-        try {
-            if (isRecalc) {
-                return;
-            }
-            isRecalc = true;
-        } finally {
-            lock.unlock();
+        if (isRecalc) {
+            return;
         }
+        isRecalc = true;
         MapleItemInformationProvider ii = MapleItemInformationProvider.getInstance();
         int oldmaxhp = localmaxhp;
         int localmaxhp_ = getMaxHp();
@@ -586,12 +579,7 @@ public class PlayerStats {
         if (oldmaxhp != 0 && oldmaxhp != localmaxhp) {
             chra.updatePartyMemberHP();
         }
-        lock.lock();
-        try {
-            isRecalc = false;
-        } finally {
-            lock.unlock();
-        }
+        isRecalc = false;
     }
 
     public boolean checkEquipLevels(TacosCharacter chr, int gain) {
