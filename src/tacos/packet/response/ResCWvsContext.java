@@ -904,7 +904,7 @@ public class ResCWvsContext {
             }
             case PartyRes_LoadParty_Done: {
                 sp.Encode4(party.getId());
-                sp.EncodeBuffer(addPartyStatus(forChannel, party, true));
+                sp.EncodeBuffer(addPartyStatus(forChannel, party));
                 break;
             }
             case PartyRes_CreateNewParty_Done: {
@@ -1056,13 +1056,15 @@ public class ResCWvsContext {
     }
 
     // PARTYDATA::Decode
-    private static byte[] addPartyStatus(int forchannel, MapleParty party, boolean leaving) {
+    // PARTYDATA::Decode (JMS147 : 0x12A, JMS186 : 0x142, JMS187, GMS95 : 0x17A bytes)
+    private static byte[] addPartyStatus(int forchannel, MapleParty party) {
         ServerPacket data = new ServerPacket();
 
         List<MaplePartyCharacter> partymembers = new ArrayList<>(party.getMembers());
         while (partymembers.size() < 6) {
             partymembers.add(new MaplePartyCharacter());
         }
+        // PARTYMEMBER
         for (MaplePartyCharacter partychar : partymembers) {
             data.Encode4(partychar.getId());
         }
@@ -1078,26 +1080,32 @@ public class ResCWvsContext {
         for (MaplePartyCharacter partychar : partymembers) {
             data.Encode4(partychar.isOnline() ? partychar.getChannel() - 1 : -2);
         }
-        data.Encode4(party.getLeader().getId());
-        for (MaplePartyCharacter partychar : partymembers) {
-            data.Encode4(partychar.getChannel() == forchannel ? partychar.getMapid() : 0);
-        }
-        for (MaplePartyCharacter partychar : partymembers) {
-            if (partychar.getChannel() == forchannel && !leaving) {
-                /*
-                data.Encode4(partychar.getDoorTown());
-                data.Encode4(partychar.getDoorTarget());
-                data.Encode4(partychar.getDoorSkill());
-                data.Encode4(partychar.getDoorPosition().x);
-                data.Encode4(partychar.getDoorPosition().y);
-                 */
-            } else {
-                data.Encode4(leaving ? 999999999 : 0);
-                data.Encode8(leaving ? 999999999 : 0);
-                data.Encode8(leaving ? -1 : 0);
+        data.Encode4(party.getLeader().getId()); // dwPartyBossCharacterID
+        // adwFieldID, JMS186
+        if (!Config.LessOrEqual(Region.JMS, 164)) {
+            for (MaplePartyCharacter partychar : partymembers) {
+                data.Encode4(partychar.getChannel() == forchannel ? partychar.getMapid() : 0);
             }
         }
-
+        // aTownPortal : mystic doors are not coded.
+        for (int i = 0; i < partymembers.size(); i++) {
+            data.Encode4(999999999); // m_dwTownID
+            data.Encode4(999999999); // m_dwFieldID
+            data.Encode4(0); // m_nSKillID
+            data.Encode4(-1); // m_ptFieldPortal.x
+            data.Encode4(-1); // m_ptFieldPortal.y
+        }
+        // JMS187, GMS95
+        if (Config.PostBB()) {
+            for (int i = 0; i < partymembers.size(); i++) {
+                data.Encode4(0); // aPQReward
+            }
+            for (int i = 0; i < partymembers.size(); i++) {
+                data.Encode4(0); // aPQRewardType
+            }
+            data.Encode4(0); // dwPQRewardMobTemplateID
+            data.Encode4(0); // bPQReward
+        }
         return data.getBytes();
     }
 
@@ -1117,20 +1125,20 @@ public class ResCWvsContext {
                 } else {
                     sp.Encode1(op == PartyOperation.EXPEL ? 1 : 0);
                     sp.EncodeStr(target.getName());
-                    sp.EncodeBuffer(addPartyStatus(forChannel, party, op == PartyOperation.LEAVE));
+                    sp.EncodeBuffer(addPartyStatus(forChannel, party));
                 }
                 break;
             case JOIN:
                 sp.Encode1(15);
                 sp.Encode4(party.getId());
                 sp.EncodeStr(target.getName());
-                sp.EncodeBuffer(addPartyStatus(forChannel, party, false));
+                sp.EncodeBuffer(addPartyStatus(forChannel, party));
                 break;
             case SILENT_UPDATE:
             case LOG_ONOFF:
                 sp.Encode1(7);
                 sp.Encode4(party.getId());
-                sp.EncodeBuffer(addPartyStatus(forChannel, party, op == PartyOperation.LOG_ONOFF));
+                sp.EncodeBuffer(addPartyStatus(forChannel, party));
                 break;
             case CHANGE_LEADER:
             case CHANGE_LEADER_DC:
