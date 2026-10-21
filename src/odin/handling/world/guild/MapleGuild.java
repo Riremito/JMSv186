@@ -43,6 +43,7 @@ import tacos.database.query.DQ_Notes;
 import tacos.packet.ops.OpsChatGroup;
 import tacos.packet.response.ResCField;
 import tacos.packet.response.ResCWvsContext;
+import tacos.packet.ops.OpsGuild;
 import tacos.packet.ops.OpsMessage;
 import tacos.packet.response.builder.PB_Message;
 import tacos.packet.ServerPacket;
@@ -658,22 +659,22 @@ public class MapleGuild {
 
     public enum MapleGuildResponse {
 
-        NOT_IN_CHANNEL(0x2a),
-        ALREADY_IN_GUILD(0x28),
-        NOT_IN_GUILD(0x2d);
-        private int value;
+        NOT_IN_CHANNEL(OpsGuild.GuildRes_JoinGuild_UnknownUser),
+        ALREADY_IN_GUILD(OpsGuild.GuildRes_JoinGuild_AlreadyJoined),
+        NOT_IN_GUILD(OpsGuild.GuildRes_WithdrawGuild_NotJoined);
+        private final OpsGuild ops;
 
-        private MapleGuildResponse(int val) {
-            value = val;
+        private MapleGuildResponse(OpsGuild ops) {
+            this.ops = ops;
         }
 
         public int getValue() {
-            return value;
+            return ops.get();
         }
 
         // used by script
         public ServerPacket getPacket() {
-            return ResCWvsContext.genericGuildMessage((byte) value);
+            return ResCWvsContext.genericGuildMessage(ops);
         }
 
     }

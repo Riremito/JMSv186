@@ -20,222 +20,231 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import odin.handling.world.Guild;
+import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuild.MapleGuildResponse;
 import tacos.client.TacosCharacter;
-import odin.handling.world.guild.MapleGuild;
-import java.util.Iterator;
-import tacos.packet.response.ResCWvsContext;
+import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsGuild;
+import tacos.packet.response.ResCWvsContext;
 
 public class GuildHandler {
 
-    public static void DenyGuildRequest(ClientPacket cp, TacosCharacter chr) {
-        byte unk1 = cp.Decode1();
-        String from = cp.DecodeStr();
+    private static final int GUILD_OFFICE_MAP_ID = 200000301;
+    private static final int CREATE_GUILD_COST = 5000000;
+    private static final int SET_MARK_COST = 15000000;
+    private static final long INVITE_EXPIRATION = 60 * 60 * 1000; // 1 hour
+    private static final long PRUNE_INTERVAL = 20 * 60 * 1000;
 
-        TacosCharacter cfrom = chr.getChannelServer().getOnlinePlayers().findByName(from);
-        if (cfrom != null) {
-            cfrom.SendPacket(ResCWvsContext.denyGuildInvitation(chr.getName()));
+    private static final class Invited {
+
+        public final String name;
+        public final int gid;
+        public final long expiration;
+
+        public Invited(String name, int gid) {
+            this.name = name.toLowerCase();
+            this.gid = gid;
+            this.expiration = System.currentTimeMillis() + INVITE_EXPIRATION;
+        }
+
+        public boolean matches(String name, int gid) {
+            return this.gid == gid && this.name.equals(name.toLowerCase());
+        }
+    }
+
+    private static final List<Invited> invited = new LinkedList<>();
+    private static long nextPruneTime = System.currentTimeMillis() + PRUNE_INTERVAL;
+
+    // CP_GuildResult : the invitation was blocked or rejected.
+    public static void DenyGuildRequest(ClientPacket cp, TacosCharacter chr) {
+        OpsGuild ops = OpsGuild.find(cp.Decode1());
+        String from = cp.DecodeStr(); // inviter
+        switch (ops) {
+            case GuildRes_InviteGuild_BlockedUser:
+            case GuildRes_InviteGuild_AlreadyInvited:
+            case GuildRes_InviteGuild_Rejected: {
+                break;
+            }
+            default: {
+                ops = OpsGuild.GuildRes_InviteGuild_Rejected;
+                break;
+            }
+        }
+        TacosCharacter inviter = chr.getChannelServer().getOnlinePlayers().findByName(from);
+        if (inviter != null) {
+            inviter.SendPacket(ResCWvsContext.denyGuildInvitation(ops, chr.getName()));
         }
     }
 
     private static boolean isGuildNameAcceptable(String name) {
-        if (name.getBytes().length < 3 || name.getBytes().length > 12) {
-            return false;
-        }
-        /*        for (int i = 0; i < name.length(); i++) {
-            if (!Character.isLowerCase(name.charAt(i)) && !Character.isUpperCase(name.charAt(i))) {
-                return false;
-            }
-        }*/
-        return true;
+        int length = name.getBytes().length;
+        return 3 <= length && length <= 12;
     }
 
-    private static final class Invited {
-
-        public String name;
-        public int gid;
-        public long expiration;
-
-        public Invited(String n, int id) {
-            name = n.toLowerCase();
-            gid = id;
-            expiration = System.currentTimeMillis() + 60 * 60 * 1000; // 1 hr expiration
+    private static void pruneInvited() {
+        long now = System.currentTimeMillis();
+        if (now < nextPruneTime) {
+            return;
         }
-
-        @Override
-        public boolean equals(Object other) {
-            if (!(other instanceof Invited)) {
-                return false;
-            }
-            Invited oth = (Invited) other;
-            return (gid == oth.gid && name.equals(oth.name));
-        }
+        invited.removeIf(inv -> inv.expiration <= now);
+        nextPruneTime = now + PRUNE_INTERVAL;
     }
-    private static final java.util.List<Invited> invited = new java.util.LinkedList<>();
-    private static long nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
 
+    // CP_GuildRequest
     public static void Guild(ClientPacket cp, TacosCharacter chr) {
-        if (System.currentTimeMillis() >= nextPruneTime) {
-            Iterator<Invited> itr = invited.iterator();
-            Invited inv;
-            while (itr.hasNext()) {
-                inv = itr.next();
-                if (System.currentTimeMillis() >= inv.expiration) {
-                    itr.remove();
-                }
-            }
-            nextPruneTime = System.currentTimeMillis() + 20 * 60 * 1000;
-        }
-
-        switch (cp.Decode1()) {
-            case 0x02: // Create guild
-                if (chr.getGuildId() > 0 || chr.getMapId() != 200000301) {
+        pruneInvited();
+        Guild world_guild = chr.getWorld().getGuild();
+        int op = cp.Decode1();
+        switch (OpsGuild.find(op)) {
+            case GuildReq_CheckGuildName: { // create guild
+                if (chr.getGuildId() > 0 || chr.getMapId() != GUILD_OFFICE_MAP_ID) {
                     chr.Alert("You cannot create a new Guild while in one.");
                     return;
-                } else if (chr.getMeso() < 5000000) {
-                    chr.Alert("You do not have enough mesos to create a chr.getWorld().getGuild().");
+                }
+                if (chr.getMeso() < CREATE_GUILD_COST) {
+                    chr.Alert("You do not have enough mesos to create a guild.");
                     return;
                 }
-                String guildName = cp.DecodeStr();
-
-                if (!isGuildNameAcceptable(guildName)) {
+                String guild_name = cp.DecodeStr();
+                if (!isGuildNameAcceptable(guild_name)) {
                     chr.Alert("The Guild name you have chosen is not accepted.");
                     return;
                 }
-                int guildId = chr.getWorld().getGuild().createGuild(chr.getId(), guildName);
-                if (guildId == 0) {
-                    chr.SendPacket(ResCWvsContext.genericGuildMessage((byte) 0x1c));
+                int guild_id = world_guild.createGuild(chr.getId(), guild_name);
+                if (guild_id == 0) {
+                    chr.SendPacket(ResCWvsContext.genericGuildMessage(OpsGuild.GuildRes_CheckGuildName_AlreadyUsed));
                     return;
                 }
-                chr.gainMeso(-5000000, true, false, true);
-                chr.setGuildId(guildId);
+                chr.gainMeso(-CREATE_GUILD_COST, true, false, true);
+                chr.setGuildId(guild_id);
                 chr.setGuildRank((byte) 1);
                 chr.saveGuildStatus();
                 chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
-                chr.getWorld().getGuild().setGuildMemberOnline(chr.getMGC(), true, chr.getClient().getChannelId());
-                chr.Alert("You have successfully created a chr.getWorld().getGuild().");
-                break;
-            case 0x05: // invitation
-                if (chr.getGuildId() <= 0 || chr.getGuildRank() > 2) { // 1 == guild master, 2 == jr
-                    return;
-                }
+                world_guild.setGuildMemberOnline(chr.getMGC(), true, chr.getClient().getChannelId());
+                chr.Alert("You have successfully created a guild.");
+                return;
+            }
+            case GuildReq_InviteGuild: {
                 String name = cp.DecodeStr();
-                MapleGuildResponse mgr = MapleGuild.sendInvite(chr, name);
-
-                if (mgr != null) {
-                    chr.SendPacket(mgr.getPacket());
-                } else {
-                    Invited inv = new Invited(name, chr.getGuildId());
-                    if (!invited.contains(inv)) {
-                        invited.add(inv);
-                    }
-                }
-                break;
-            case 0x06: // accepted guild invitation
-                if (chr.getGuildId() > 0) {
+                if (chr.getGuildId() <= 0 || chr.getGuildRank() > 2) { // 1 = guild master, 2 = jr. master
                     return;
                 }
-                guildId = cp.Decode4();
-                int cid = cp.Decode4();
-
-                if (cid != chr.getId()) {
+                MapleGuildResponse response = MapleGuild.sendInvite(chr, name);
+                if (response != null) {
+                    chr.SendPacket(response.getPacket());
                     return;
                 }
-                name = chr.getName().toLowerCase();
+                if (invited.stream().noneMatch(inv -> inv.matches(name, chr.getGuildId()))) {
+                    invited.add(new Invited(name, chr.getGuildId()));
+                }
+                return;
+            }
+            case GuildReq_JoinGuild: {
+                int guild_id = cp.Decode4(); // m_dwInviterID (guild id)
+                int character_id = cp.Decode4();
+                if (chr.getGuildId() > 0 || character_id != chr.getId()) {
+                    return;
+                }
                 Iterator<Invited> itr = invited.iterator();
-
                 while (itr.hasNext()) {
-                    Invited inv = itr.next();
-                    if (guildId == inv.gid && name.equals(inv.name)) {
-                        chr.setGuildId(guildId);
-                        chr.setGuildRank((byte) 5);
+                    if (itr.next().matches(chr.getName(), guild_id)) {
                         itr.remove();
-
-                        int s = chr.getWorld().getGuild().addGuildMember(chr.getMGC());
-                        if (s == 0) {
-                            chr.Alert("The Guild you are trying to join is already full.");
-                            chr.setGuildId(0);
-                            return;
-                        }
-                        chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
-                        MapleGuild gs = chr.getWorld().getGuild().getGuild(guildId);
-                        for (ServerPacket pack : chr.getWorld().getAlliance().getAllianceInfo(gs.getAllianceId(), true)) {
-                            if (pack != null) {
-                                chr.SendPacket(pack);
-                            }
-                        }
-                        chr.saveGuildStatus();
-                        break;
+                        joinGuild(chr, guild_id);
+                        return;
                     }
                 }
-                break;
-            case 0x07: // leaving
-                cid = cp.Decode4();
-                name = cp.DecodeStr();
-
-                if (cid != chr.getId() || !name.equals(chr.getName()) || chr.getGuildId() <= 0) {
+                return;
+            }
+            case GuildReq_WithdrawGuild: {
+                int character_id = cp.Decode4();
+                String name = cp.DecodeStr();
+                if (character_id != chr.getId() || !name.equals(chr.getName()) || chr.getGuildId() <= 0) {
                     return;
                 }
-                chr.getWorld().getGuild().leaveGuild(chr.getMGC());
+                world_guild.leaveGuild(chr.getMGC());
                 chr.SendPacket(ResCWvsContext.showGuildInfo(null));
-                break;
-            case 0x08: // Expel
-                cid = cp.Decode4();
-                name = cp.DecodeStr();
-
-                if (chr.getGuildRank() > 2 || chr.getGuildId() <= 0) {
+                return;
+            }
+            case GuildReq_KickGuild: {
+                int character_id = cp.Decode4();
+                String name = cp.DecodeStr();
+                if (chr.getGuildId() <= 0 || chr.getGuildRank() > 2) {
                     return;
                 }
-                chr.getWorld().getGuild().expelMember(chr.getMGC(), name, cid);
-                break;
-            case 0x0d: // Guild rank titles change
+                world_guild.expelMember(chr.getMGC(), name, character_id);
+                return;
+            }
+            case GuildReq_SetGradeName: {
+                String[] ranks = new String[5];
+                for (int i = 0; i < ranks.length; i++) {
+                    ranks[i] = cp.DecodeStr();
+                }
                 if (chr.getGuildId() <= 0 || chr.getGuildRank() != 1) {
                     return;
                 }
-                String ranks[] = new String[5];
-                for (int i = 0; i < 5; i++) {
-                    ranks[i] = cp.DecodeStr();
-                }
-
-                chr.getWorld().getGuild().changeRankTitle(chr.getGuildId(), ranks);
-                break;
-            case 0x0e: // Rank change
-                cid = cp.Decode4();
-                byte newRank = cp.Decode1();
-
-                if ((newRank <= 1 || newRank > 5) || chr.getGuildRank() > 2 || (newRank <= 2 && chr.getGuildRank() != 1) || chr.getGuildId() <= 0) {
+                world_guild.changeRankTitle(chr.getGuildId(), ranks);
+                return;
+            }
+            case GuildReq_SetMemberGrade: {
+                int character_id = cp.Decode4();
+                int new_rank = cp.Decode1();
+                if (chr.getGuildId() <= 0 || chr.getGuildRank() > 2 || new_rank <= 1 || 5 < new_rank || (new_rank <= 2 && chr.getGuildRank() != 1)) {
                     return;
                 }
-
-                chr.getWorld().getGuild().changeRank(chr.getGuildId(), cid, newRank);
-                break;
-            case 0x0f: // guild emblem change
-                if (chr.getGuildId() <= 0 || chr.getGuildRank() != 1 || chr.getMapId() != 200000301) {
-                    return;
-                }
-
-                if (chr.getMeso() < 15000000) {
-                    chr.Alert("You do not have enough mesos to create a chr.getWorld().getGuild().");
-                    return;
-                }
+                world_guild.changeRank(chr.getGuildId(), character_id, new_rank);
+                return;
+            }
+            case GuildReq_SetMark: {
                 short bg = cp.Decode2();
                 byte bgcolor = cp.Decode1();
                 short logo = cp.Decode2();
                 byte logocolor = cp.Decode1();
-
-                chr.getWorld().getGuild().setGuildEmblem(chr.getGuildId(), bg, bgcolor, logo, logocolor);
-
-                chr.gainMeso(-15000000, true, false, true);
-                break;
-            case 0x10: // guild notice change
+                if (chr.getGuildId() <= 0 || chr.getGuildRank() != 1 || chr.getMapId() != GUILD_OFFICE_MAP_ID) {
+                    return;
+                }
+                if (chr.getMeso() < SET_MARK_COST) {
+                    chr.Alert("You do not have enough mesos to change the guild emblem.");
+                    return;
+                }
+                world_guild.setGuildEmblem(chr.getGuildId(), bg, bgcolor, logo, logocolor);
+                chr.gainMeso(-SET_MARK_COST, true, false, true);
+                return;
+            }
+            case GuildReq_SetNotice: {
                 String notice = cp.DecodeStr();
                 if (notice.length() > 100 || chr.getGuildId() <= 0 || chr.getGuildRank() > 2) {
                     return;
                 }
-                chr.getWorld().getGuild().setGuildNotice(chr.getGuildId(), notice);
-                break;
+                world_guild.setGuildNotice(chr.getGuildId(), notice);
+                return;
+            }
+            default: {
+                DebugLogger.ErrorLog("GuildRequest : not coded " + op);
+                return;
+            }
         }
+    }
+
+    private static void joinGuild(TacosCharacter chr, int guild_id) {
+        Guild world_guild = chr.getWorld().getGuild();
+        chr.setGuildId(guild_id);
+        chr.setGuildRank((byte) 5);
+        if (world_guild.addGuildMember(chr.getMGC()) == 0) {
+            chr.Alert("The Guild you are trying to join is already full.");
+            chr.setGuildId(0);
+            return;
+        }
+        chr.SendPacket(ResCWvsContext.showGuildInfo(chr));
+        MapleGuild guild = world_guild.getGuild(guild_id);
+        for (ServerPacket sp : chr.getWorld().getAlliance().getAllianceInfo(guild.getAllianceId(), true)) {
+            chr.SendPacket(sp);
+        }
+        chr.saveGuildStatus();
     }
 }

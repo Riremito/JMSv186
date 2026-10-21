@@ -51,5 +51,6 @@ public class PacketOps {
         OpsMREnterResult.init();
         OpsUI.init();
         OpsMoveAbility.init();
+        OpsGuild.init();
     }
 }

@@ -49,6 +49,7 @@ import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsAlliance;
 import tacos.packet.ops.OpsGuildBBS;
+import tacos.packet.ops.OpsGuild;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsEntrustedShop;
@@ -1625,7 +1626,7 @@ public class ResCWvsContext {
     public static ServerPacket guildNotice(int gid, String notice) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(68);
+        sp.Encode1(OpsGuild.GuildRes_SetNotice_Done.get());
         sp.Encode4(gid);
         sp.EncodeStr(notice);
         return sp;
@@ -1635,7 +1636,7 @@ public class ResCWvsContext {
     public static ServerPacket memberLeft(MapleGuildCharacter mgc, boolean bExpelled) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(bExpelled ? 47 : 44);
+        sp.Encode1((bExpelled ? OpsGuild.GuildRes_KickGuild_Done : OpsGuild.GuildRes_WithdrawGuild_Done).get());
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
         sp.EncodeStr(mgc.getName());
@@ -1673,7 +1674,7 @@ public class ResCWvsContext {
     public static ServerPacket guildMemberLevelJobUpdate(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(60);
+        sp.Encode1(OpsGuild.GuildRes_ChangeLevelOrJob.get());
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
         sp.Encode4(mgc.getLevel());
@@ -1705,7 +1706,7 @@ public class ResCWvsContext {
     public static ServerPacket newGuildMember(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(39);
+        sp.Encode1(OpsGuild.GuildRes_JoinGuild_Done.get());
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
         sp.EncodeBuffer(mgc.getName(), 13);
@@ -1734,7 +1735,7 @@ public class ResCWvsContext {
     public static ServerPacket guildMemberOnline(int gid, int cid, boolean bOnline) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(61);
+        sp.Encode1(OpsGuild.GuildRes_NotifyLoginOrLogout.get());
         sp.Encode4(gid);
         sp.Encode4(cid);
         sp.Encode1(bOnline ? 1 : 0);
@@ -1744,7 +1745,7 @@ public class ResCWvsContext {
     public static ServerPacket showGuildRanks(int npcid, List<MapleGuildRanking.GuildRankingInfo> all) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(73);
+        sp.Encode1(OpsGuild.GuildRes_ShowGuildRanking.get());
         sp.Encode4(npcid);
         sp.Encode4(all.size());
         for (MapleGuildRanking.GuildRankingInfo info : all) {
@@ -1758,10 +1759,10 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket denyGuildInvitation(String charname) {
+    public static ServerPacket denyGuildInvitation(OpsGuild ops, String charname) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(55);
+        sp.Encode1(ops.get());
         sp.EncodeStr(charname);
         return sp;
     }
@@ -1769,7 +1770,7 @@ public class ResCWvsContext {
     public static ServerPacket showGuildInfo(TacosCharacter player) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(26); //signature for showing guild info
+        sp.Encode1(OpsGuild.GuildRes_LoadGuild_Done.get());
         if (player == null || player.getMGC() == null) {
             //show empty guild (used for leaving, expelled)
             sp.Encode1(0);
@@ -1789,7 +1790,7 @@ public class ResCWvsContext {
     public static ServerPacket guildEmblemChange(int gid, short bg, byte bgcolor, short logo, byte logocolor) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(66);
+        sp.Encode1(OpsGuild.GuildRes_SetMark_Done.get());
         sp.Encode4(gid);
         sp.Encode2(bg);
         sp.Encode1(bgcolor);
@@ -1833,7 +1834,7 @@ public class ResCWvsContext {
     public static ServerPacket guildDisband(int gid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(50);
+        sp.Encode1(OpsGuild.GuildRes_RemoveGuild_Done.get());
         sp.Encode4(gid);
         sp.Encode1(1);
         return sp;
@@ -1999,12 +2000,16 @@ public class ResCWvsContext {
     public static ServerPacket rankTitleChange(int gid, String[] ranks) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(62);
+        sp.Encode1(OpsGuild.GuildRes_SetGradeName_Done.get());
         sp.Encode4(gid);
         for (String r : ranks) {
             sp.EncodeStr(r);
         }
         return sp;
+    }
+
+    public static ServerPacket genericGuildMessage(OpsGuild ops) {
+        return genericGuildMessage((byte) ops.get());
     }
 
     public static ServerPacket genericGuildMessage(byte code) {
@@ -2030,7 +2035,7 @@ public class ResCWvsContext {
     public static ServerPacket guildCapacityChange(int gid, int capacity) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(58);
+        sp.Encode1(OpsGuild.GuildRes_IncMaxMemberNum_Done.get());
         sp.Encode4(gid);
         sp.Encode1(capacity);
         return sp;
@@ -2039,9 +2044,10 @@ public class ResCWvsContext {
     public static ServerPacket updateGP(int gid, int GP) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(72);
+        sp.Encode1(OpsGuild.GuildRes_IncPoint_Done.get());
         sp.Encode4(gid);
         sp.Encode4(GP);
+        sp.Encode4(1, Config.PostBB()); // nLevel
         return sp;
     }
 
@@ -2057,7 +2063,7 @@ public class ResCWvsContext {
     public static ServerPacket guildInvite(int gid, String charName, int levelFrom, int jobFrom) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(5);
+        sp.Encode1(OpsGuild.GuildReq_InviteGuild.get());
         sp.Encode4(gid);
         sp.EncodeStr(charName);
         sp.Encode4(levelFrom);
@@ -2068,7 +2074,7 @@ public class ResCWvsContext {
     public static ServerPacket changeRank(MapleGuildCharacter mgc) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildResult);
 
-        sp.Encode1(64);
+        sp.Encode1(OpsGuild.GuildRes_SetMemberGrade_Done.get());
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
         sp.Encode1(mgc.getGuildRank());
