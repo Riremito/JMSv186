@@ -973,24 +973,20 @@ public enum OpsSkill_BB {
     GUILD_AGILITYUP(91000004),
     GUILD_BUSINESSEFFICENYUP(91000005),
     GUILD_REGULARSUPPORT(91000006),
-    UNKNOWN(-1);
+    UNKNOWN;
 
-    int value;
+    private final int value;
 
-    OpsSkill_BB(int skill_id) {
+    private OpsSkill_BB(int skill_id) {
         this.value = skill_id;
     }
 
-    OpsSkill_BB() {
-        value = -1;
+    private OpsSkill_BB() {
+        this.value = -1;
     }
 
     public int get() {
         return value;
-    }
-
-    public void set(int skill_id) {
-        this.value = skill_id;
     }
 
     public static OpsSkill_BB find(int skill_id) {
@@ -1001,5 +997,4 @@ public enum OpsSkill_BB {
         }
         return UNKNOWN;
     }
-
 }

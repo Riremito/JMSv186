@@ -582,7 +582,6 @@ public enum OpsSkill {
     WILDHUNTER_MAPLE_WARRIOR(33121007), // 메이플 용사
     WILDHUNTER_HEROS_WILL(33121008), // 용사의 의지
     WILDHUNTER_WILD_ARROW_BLAST(33121009), // 와일드 샷
-    // beginner
     NOVICE_FOLLOW_THE_LEAD(8), // 調教師の統率力
     NOVICE_BLESSING_OF_THE_FAIRY(12), // 精霊の祝福
     NOVICE_THREE_SNAILS(1000), // デンデンスロー
@@ -862,24 +861,20 @@ public enum OpsSkill {
     UNRECORDED_DARKNESS(90001004), // 暗黒
     UNRECORDED_SEAL(90001005), // 封印
     UNRECORDED_FREEZE(90001006), // 氷結
-    UNKNOWN(-1);
+    UNKNOWN;
 
-    int value;
+    private final int value;
 
-    OpsSkill(int skill_id) {
+    private OpsSkill(int skill_id) {
         this.value = skill_id;
     }
 
-    OpsSkill() {
-        value = -1;
+    private OpsSkill() {
+        this.value = -1;
     }
 
     public int get() {
         return value;
-    }
-
-    public void set(int skill_id) {
-        this.value = skill_id;
     }
 
     public static OpsSkill find(int skill_id) {
