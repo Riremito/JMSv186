@@ -20,132 +20,103 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import tacos.client.TacosCharacter;
 import odin.handling.world.guild.MapleBBSThread;
-import java.util.List;
-import tacos.packet.response.ResCWvsContext;
+import odin.handling.world.guild.MapleGuild;
+import tacos.client.TacosCharacter;
+import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
+import tacos.packet.ops.OpsGuildBBS;
+import tacos.packet.response.ResCWvsContext;
 
 public class BBSHandler {
 
+    private static final int TITLE_MAX_LENGTH = 25;
+    private static final int TEXT_MAX_LENGTH = 600;
+    private static final int COMMENT_MAX_LENGTH = 25;
+    // basic emoticons are 0 to 2, cash emoticons are 100 to 106 (item 5290000 to 5290006).
+    private static final int CASH_EMOTICON_MIN = 100;
+    private static final int CASH_EMOTICON_MAX = 106;
+    private static final int CASH_EMOTICON_ITEM_ID = 5290000;
+
     private static String correctLength(String in, int maxSize) {
-        if (in.length() > maxSize) {
-            return in.substring(0, maxSize);
-        }
-        return in;
+        return (in.length() > maxSize) ? in.substring(0, maxSize) : in;
     }
 
+    // CP_GuildBBS
     public static void BBSOperation(ClientPacket cp, TacosCharacter chr) {
-        if (chr.getGuildId() <= 0) {
-            return; // expelled while viewing bbs or hax
+        MapleGuild guild = (chr.getGuildId() > 0) ? chr.getWorld().getGuild().getGuild(chr.getGuildId()) : null;
+        if (guild == null) {
+            return; // expelled while viewing bbs
         }
-        int localthreadid = 0;
-        byte action = cp.Decode1();
-        switch (action) {
-            case 0: // start a new post
-                boolean bEdit = cp.Decode1() > 0;
-                if (bEdit) {
-                    localthreadid = cp.Decode4();
-                }
-                boolean bNotice = cp.Decode1() > 0;
-                String title = correctLength(cp.DecodeStr(), 25);
-                String text = correctLength(cp.DecodeStr(), 600);
+        int op = cp.Decode1();
+        switch (OpsGuildBBS.find(op)) {
+            case GuildBBS_Register: {
+                boolean bModify = cp.Decode1() != 0;
+                int localthreadid = bModify ? cp.Decode4() : 0;
+                boolean bNotice = cp.Decode1() != 0;
+                String title = correctLength(cp.DecodeStr(), TITLE_MAX_LENGTH);
+                String text = correctLength(cp.DecodeStr(), TEXT_MAX_LENGTH);
                 int icon = cp.Decode4();
-                if (icon >= 0x64 && icon <= 0x6a) {
-                    if (!chr.haveItem(5290000 + icon - 0x64, 1, false, true)) {
-                        return; // hax, using an nx icon that s/he doesn't have
-                    }
-                } else if (icon < 0 || icon > 2) {
-                    return; // hax, using an invalid icon
+                if (!isValidEmoticon(chr, icon)) {
+                    return;
                 }
-                if (!bEdit) {
-                    newBBSThread(chr, title, text, icon, bNotice);
+                if (bModify) {
+                    guild.editBBSThread(localthreadid, title, text, icon, chr.getId(), chr.getGuildRank());
                 } else {
-                    editBBSThread(chr, title, text, icon, localthreadid);
+                    localthreadid = guild.addBBSThread(title, text, icon, bNotice, chr.getId());
                 }
-                break;
-            case 1: // delete a thread
-                localthreadid = cp.Decode4();
-                deleteBBSThread(chr, localthreadid);
-                break;
-            case 2: // list threads
-                int start = cp.Decode4();
-                listBBSThreads(chr, start * 10);
-                break;
-            case 3: // list thread + reply, followed by id (int)
-                localthreadid = cp.Decode4();
-                displayThread(chr, localthreadid);
-                break;
-            case 4: // reply
-                localthreadid = cp.Decode4();
-                text = correctLength(cp.DecodeStr(), 25);
-                newBBSReply(chr, localthreadid, text);
-                break;
-            case 5: // delete reply
-                localthreadid = cp.Decode4();
-                int replyid = cp.Decode4();
-                deleteBBSReply(chr, localthreadid, replyid);
-                break;
-        }
-    }
-
-    private static void listBBSThreads(TacosCharacter chr, int start) {
-        if (chr.getGuildId() <= 0) {
-            return;
-        }
-        chr.SendPacket(ResCWvsContext.BBSThreadList(chr.getWorld().getGuild().getBBS(chr.getGuildId()), start));
-    }
-
-    private static void newBBSReply(TacosCharacter chr, int localthreadid, String text) {
-        if (chr.getGuildId() <= 0) {
-            return;
-        }
-        chr.getWorld().getGuild().addBBSReply(chr.getGuildId(), localthreadid, text, chr.getId());
-        displayThread(chr, localthreadid);
-    }
-
-    private static void editBBSThread(TacosCharacter chr, String title, String text, int icon, int localthreadid) {
-        if (chr.getGuildId() <= 0) {
-            return; // expelled while viewing?
-        }
-        chr.getWorld().getGuild().editBBSThread(chr.getGuildId(), localthreadid, title, text, icon, chr.getId(), chr.getGuildRank());
-        displayThread(chr, localthreadid);
-    }
-
-    private static void newBBSThread(TacosCharacter chr, String title, String text, int icon, boolean bNotice) {
-        if (chr.getGuildId() <= 0) {
-            return; // expelled while viewing?
-        }
-        displayThread(chr, chr.getWorld().getGuild().addBBSThread(chr.getGuildId(), title, text, icon, bNotice, chr.getId()));
-    }
-
-    private static void deleteBBSThread(TacosCharacter chr, int localthreadid) {
-        if (chr.getGuildId() <= 0) {
-            return;
-        }
-        chr.getWorld().getGuild().deleteBBSThread(chr.getGuildId(), localthreadid, chr.getId(), (int) chr.getGuildRank());
-    }
-
-    private static void deleteBBSReply(TacosCharacter chr, int localthreadid, int replyid) {
-        if (chr.getGuildId() <= 0) {
-            return;
-        }
-
-        chr.getWorld().getGuild().deleteBBSReply(chr.getGuildId(), localthreadid, replyid, chr.getId(), (int) chr.getGuildRank());
-        displayThread(chr, localthreadid);
-    }
-
-    private static void displayThread(TacosCharacter chr, int localthreadid) {
-        if (chr.getGuildId() <= 0) {
-            return;
-        }
-        List<MapleBBSThread> bbsList = chr.getWorld().getGuild().getBBS(chr.getGuildId());
-        if (bbsList != null) {
-            for (MapleBBSThread t : bbsList) {
-                if (t != null && t.localthreadID == localthreadid) {
-                    chr.SendPacket(ResCWvsContext.showThread(t));
-                }
+                displayThread(chr, guild, localthreadid);
+                return;
+            }
+            case GuildBBS_Delete: {
+                int localthreadid = cp.Decode4();
+                guild.deleteBBSThread(localthreadid, chr.getId(), chr.getGuildRank());
+                return;
+            }
+            case GuildBBS_LoadListRequest: {
+                int page = cp.Decode4(); // m_nEntryListStart
+                chr.SendPacket(ResCWvsContext.BBSThreadList(guild, page * 10));
+                return;
+            }
+            case GuildBBS_ViewEntryRequest: {
+                int localthreadid = cp.Decode4();
+                displayThread(chr, guild, localthreadid);
+                return;
+            }
+            case GuildBBS_RegisterComment: {
+                int localthreadid = cp.Decode4();
+                String text = correctLength(cp.DecodeStr(), COMMENT_MAX_LENGTH);
+                guild.addBBSReply(localthreadid, text, chr.getId());
+                displayThread(chr, guild, localthreadid);
+                return;
+            }
+            case GuildBBS_DeleteComment: {
+                int localthreadid = cp.Decode4();
+                int replyid = cp.Decode4(); // m_nSN
+                guild.deleteBBSReply(localthreadid, replyid, chr.getId(), chr.getGuildRank());
+                displayThread(chr, guild, localthreadid);
+                return;
+            }
+            default: {
+                DebugLogger.ErrorLog("GuildBBS : not coded " + op);
+                return;
             }
         }
+    }
+
+    private static boolean isValidEmoticon(TacosCharacter chr, int icon) {
+        if (CASH_EMOTICON_MIN <= icon && icon <= CASH_EMOTICON_MAX) {
+            return chr.haveItem(CASH_EMOTICON_ITEM_ID + icon - CASH_EMOTICON_MIN, 1, false, true);
+        }
+        return 0 <= icon && icon <= 2;
+    }
+
+    private static void displayThread(TacosCharacter chr, MapleGuild guild, int localthreadid) {
+        MapleBBSThread thread = guild.getBBSThread(localthreadid);
+        if (thread == null) {
+            chr.SendPacket(ResCWvsContext.BBSEntryNotFound());
+            return;
+        }
+        chr.SendPacket(ResCWvsContext.showThread(thread));
     }
 }

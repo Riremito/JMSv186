@@ -23,9 +23,7 @@ package odin.handling.world;
 import java.util.Collection;
 import tacos.client.TacosCharacter;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import odin.handling.world.guild.MapleBBSThread;
 import odin.handling.world.guild.MapleGuild;
 import odin.handling.world.guild.MapleGuildCharacter;
 import odin.handling.world.guild.MapleGuild.MapleGuildSummary;
@@ -230,50 +228,6 @@ public class Guild {
         System.out.println("Saving guilds...");
         for (MapleGuild a : guilds.values()) {
             a.writeToDB(false);
-        }
-    }
-
-    public List<MapleBBSThread> getBBS(int gid) {
-        MapleGuild g = getGuild(gid);
-        if (g != null) {
-            return g.getBBS();
-        }
-        return null;
-    }
-
-    public int addBBSThread(int guildid, String title, String text, int icon, boolean bNotice, int posterID) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            return g.addBBSThread(title, text, icon, bNotice, posterID);
-        }
-        return -1;
-    }
-
-    public void editBBSThread(int guildid, int localthreadid, String title, String text, int icon, int posterID, int guildRank) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.editBBSThread(localthreadid, title, text, icon, posterID, guildRank);
-        }
-    }
-
-    public void deleteBBSThread(int guildid, int localthreadid, int posterID, int guildRank) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.deleteBBSThread(localthreadid, posterID, guildRank);
-        }
-    }
-
-    public void addBBSReply(int guildid, int localthreadid, String text, int posterID) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.addBBSReply(localthreadid, text, posterID);
-        }
-    }
-
-    public void deleteBBSReply(int guildid, int localthreadid, int replyid, int posterID, int guildRank) {
-        MapleGuild g = getGuild(guildid);
-        if (g != null) {
-            g.deleteBBSReply(localthreadid, replyid, posterID, guildRank);
         }
     }
 

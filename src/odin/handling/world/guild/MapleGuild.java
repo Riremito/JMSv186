@@ -544,15 +544,34 @@ public class MapleGuild {
         return null;
     }
 
+    // newest first, the notice (id 0) is not included.
     public List<MapleBBSThread> getBBS() {
-        List<MapleBBSThread> ret = new ArrayList<>(bbs.values());
+        List<MapleBBSThread> ret = new ArrayList<>();
+        for (MapleBBSThread thread : bbs.values()) {
+            if (!thread.isNotice()) {
+                ret.add(thread);
+            }
+        }
         Collections.sort(ret, new MapleBBSThread.ThreadComparator());
         return ret;
     }
 
+    public MapleBBSThread getBBSNotice() {
+        return bbs.get(0);
+    }
+
+    public MapleBBSThread getBBSThread(int localthreadid) {
+        return bbs.get(localthreadid);
+    }
+
     public int addBBSThread(String title, String text, int icon, boolean bNotice, int posterID) {
-        int add = bbs.get(0) == null ? 1 : 0; //add 1 if no notice
-        int ret = bNotice ? 0 : Math.max(1, bbs.size() + add);
+        int ret = 0;
+        if (!bNotice) {
+            for (int localthreadid : bbs.keySet()) {
+                ret = Math.max(ret, localthreadid);
+            }
+            ret++;
+        }
         bbs.put(ret, new MapleBBSThread(ret, title, text, System.currentTimeMillis(), this.id, posterID, icon));
         return ret;
     }
@@ -560,7 +579,10 @@ public class MapleGuild {
     public void editBBSThread(int localthreadid, String title, String text, int icon, int posterID, int guildRank) {
         MapleBBSThread thread = bbs.get(localthreadid);
         if (thread != null && (thread.ownerID == posterID || guildRank <= 2)) {
-            bbs.put(localthreadid, new MapleBBSThread(localthreadid, title, text, System.currentTimeMillis(), this.id, thread.ownerID, icon));
+            thread.name = title;
+            thread.text = text;
+            thread.icon = icon;
+            thread.timestamp = System.currentTimeMillis();
         }
     }
 
@@ -574,7 +596,11 @@ public class MapleGuild {
     public void addBBSReply(int localthreadid, String text, int posterID) {
         MapleBBSThread thread = bbs.get(localthreadid);
         if (thread != null) {
-            thread.replies.put(thread.replies.size(), new MapleBBSReply(thread.replies.size(), posterID, text, System.currentTimeMillis()));
+            int replyid = 0;
+            for (int id : thread.replies.keySet()) {
+                replyid = Math.max(replyid, id + 1);
+            }
+            thread.replies.put(replyid, new MapleBBSReply(replyid, posterID, text, System.currentTimeMillis()));
         }
     }
 

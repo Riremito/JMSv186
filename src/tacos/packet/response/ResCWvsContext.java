@@ -46,6 +46,7 @@ import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsBroadcastMsg;
 import tacos.packet.ops.OpsAlliance;
+import tacos.packet.ops.OpsGuildBBS;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsEntrustedShop;
@@ -1928,19 +1929,20 @@ public class ResCWvsContext {
         return data.getBytes();
     }
 
+    // GuildBBS_ViewEntryResult
     public static ServerPacket showThread(MapleBBSThread thread) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
-        sp.Encode1(7);
-        sp.Encode4(thread.localthreadID);
-        sp.Encode4(thread.ownerID);
-        sp.Encode8(TacosSharedDate.getTimestamp(thread.timestamp));
+        sp.Encode1(OpsGuildBBS.GuildBBS_ViewEntryResult.get());
+        sp.Encode4(thread.localthreadID); // nCurEntryID
+        sp.Encode4(thread.ownerID); // nCurCharacterID
+        sp.Encode8(TacosSharedDate.getTimestamp(thread.timestamp)); // ftCurDate
         sp.EncodeStr(thread.name);
         sp.EncodeStr(thread.text);
-        sp.Encode4(thread.icon);
+        sp.Encode4(thread.icon); // nEmoticon
         sp.Encode4(thread.getReplyCount());
         for (MapleBBSThread.MapleBBSReply reply : thread.replies.values()) {
-            sp.Encode4(reply.replyid);
+            sp.Encode4(reply.replyid); // m_nSN
             sp.Encode4(reply.ownerID);
             sp.Encode8(TacosSharedDate.getTimestamp(reply.timestamp));
             sp.EncodeStr(reply.content);
@@ -1948,42 +1950,33 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket BBSThreadList(List<MapleBBSThread> bbs, int start) {
+    // GuildBBS_EntryNotFound
+    public static ServerPacket BBSEntryNotFound() {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
 
-        sp.Encode1(6);
-        if (bbs == null) {
-            sp.Encode1(0);
-            sp.Encode8(0);
-            return sp;
-        }
-        int threadCount = bbs.size();
-        MapleBBSThread notice = null;
-        for (MapleBBSThread b : bbs) {
-            if (b.isNotice()) {
-                //notice
-                notice = b;
-                break;
-            }
-        }
-        int ret = notice == null ? 0 : 1;
-        sp.Encode1(ret);
+        sp.Encode1(OpsGuildBBS.GuildBBS_EntryNotFound.get());
+        return sp;
+    }
+
+    // GuildBBS_LoadListResult, start = index of the first thread.
+    public static ServerPacket BBSThreadList(MapleGuild guild, int start) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_GuildBBS);
+
+        sp.Encode1(OpsGuildBBS.GuildBBS_LoadListResult.get());
+        MapleBBSThread notice = (guild != null) ? guild.getBBSNotice() : null;
+        List<MapleBBSThread> threads = (guild != null) ? guild.getBBS() : new ArrayList<>();
+        sp.Encode1(notice != null ? 1 : 0);
         if (notice != null) {
-            //has a notice
             sp.EncodeBuffer(addThread(notice));
-            threadCount--; //one thread didn't count (because it's a notice)
         }
-        if (threadCount < start) {
-            //seek to the thread before where we start
-            //uh, we're trying to start at a place past possible
+        if (start < 0 || threads.size() <= start) {
             start = 0;
         }
-        //each page has 10 threads, start = page # in packet but not here
-        sp.Encode4(threadCount);
-        int pages = Math.min(10, threadCount - start);
-        sp.Encode4(pages);
-        for (int i = 0; i < pages; i++) {
-            sp.EncodeBuffer(addThread(bbs.get(start + i + ret))); //because 0 = notice
+        int count = Math.min(10, threads.size() - start); // 10 threads per page
+        sp.Encode4(threads.size()); // nEntryListTotalCount
+        sp.Encode4(count);
+        for (int i = 0; i < count; i++) {
+            sp.EncodeBuffer(addThread(threads.get(start + i)));
         }
         return sp;
     }
