@@ -1116,33 +1116,31 @@ public class ResCWvsContext {
             case DISBAND:
             case EXPEL:
             case LEAVE:
-                sp.Encode1(12);
+                sp.Encode1(OpsParty.PartyRes_WithdrawParty_Done.get());
                 sp.Encode4(party.getId());
                 sp.Encode4(target.getId());
                 sp.Encode1(op == PartyOperation.DISBAND ? 0 : 1);
-                if (op == PartyOperation.DISBAND) {
-                    sp.Encode4(target.getId());
-                } else {
+                if (op != PartyOperation.DISBAND) {
                     sp.Encode1(op == PartyOperation.EXPEL ? 1 : 0);
                     sp.EncodeStr(target.getName());
                     sp.EncodeBuffer(addPartyStatus(forChannel, party));
                 }
                 break;
             case JOIN:
-                sp.Encode1(15);
+                sp.Encode1(OpsParty.PartyRes_JoinParty_Done.get());
                 sp.Encode4(party.getId());
                 sp.EncodeStr(target.getName());
                 sp.EncodeBuffer(addPartyStatus(forChannel, party));
                 break;
             case SILENT_UPDATE:
             case LOG_ONOFF:
-                sp.Encode1(7);
+                sp.Encode1(OpsParty.PartyRes_LoadParty_Done.get());
                 sp.Encode4(party.getId());
                 sp.EncodeBuffer(addPartyStatus(forChannel, party));
                 break;
             case CHANGE_LEADER:
             case CHANGE_LEADER_DC:
-                sp.Encode1(31); //test
+                sp.Encode1(OpsParty.PartyRes_ChangePartyBoss_Done.get());
                 sp.Encode4(target.getId());
                 sp.Encode1(op == PartyOperation.CHANGE_LEADER_DC ? 1 : 0);
                 break;
