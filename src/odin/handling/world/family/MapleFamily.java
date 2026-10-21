@@ -208,7 +208,7 @@ public class MapleFamily {
         bDirty = true; // member formation has changed, update notifications
     }
 
-    public int setRep(int cid, int addrep, int oldLevel) {
+    public int setRep(int cid, int addrep, int oldLevel, String from_name) {
         MapleFamilyCharacter mgc = getMFC(cid);
         if (mgc != null && mgc.getFamilyId() == id) {
             if (oldLevel > mgc.getLevel()) {
@@ -219,7 +219,7 @@ public class MapleFamily {
             if (mgc.isOnline()) {
                 List<Integer> dummy = new ArrayList<>();
                 dummy.add(mgc.getId());
-                broadcast(ResCWvsContext.changeRep(addrep), -1, dummy);
+                broadcast(ResCWvsContext.changeRep(addrep, from_name), -1, dummy);
                 TacosWorld.find(0).getFamily().setFamily(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());
             } else {
                 setOfflineFamilyStatus(id, mgc.getSeniorId(), mgc.getJunior1(), mgc.getJunior2(), mgc.getCurrentRep() + addrep, mgc.getTotalRep() + addrep, mgc.getId());

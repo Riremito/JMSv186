@@ -2522,9 +2522,9 @@ public class TacosCharacter extends TacosPlayer {
                 percentrep = 100 - percentrep + (level / 2);
             }
             if (percentrep > 0) {
-                int sensen = getWorld().getFamily().setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level);
+                int sensen = getWorld().getFamily().setRep(mfc.getFamilyId(), mfc.getSeniorId(), percentrep, level, getName());
                 if (sensen > 0) {
-                    getWorld().getFamily().setRep(mfc.getFamilyId(), sensen, percentrep / 2, level); //and we stop here
+                    getWorld().getFamily().setRep(mfc.getFamilyId(), sensen, percentrep / 2, level, getName()); //and we stop here
                 }
             }
         }

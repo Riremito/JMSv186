@@ -69,10 +69,10 @@ public class Family {
         }
     }
 
-    public int setRep(int fid, int cid, int addrep, int oldLevel) {
+    public int setRep(int fid, int cid, int addrep, int oldLevel, String from_name) {
         MapleFamily f = getFamily(fid);
         if (f != null) {
-            return f.setRep(cid, addrep, oldLevel);
+            return f.setRep(cid, addrep, oldLevel, from_name);
         }
         return 0;
     }

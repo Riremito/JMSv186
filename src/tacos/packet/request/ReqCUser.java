@@ -782,7 +782,7 @@ public class ReqCUser {
 
         switch (header) {
             case CP_FamilyChartRequest: {
-                FamilyHandler.RequestFamily(cp, client);
+                FamilyHandler.RequestFamily(cp, chr);
                 return true;
             }
             case CP_FamilyInfoRequest: {

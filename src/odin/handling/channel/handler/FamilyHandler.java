@@ -30,83 +30,98 @@ import tacos.packet.response.ResCWvsContext;
 import tacos.database.query.DQ_Notes;
 import tacos.packet.ClientPacket;
 import tacos.wz.opt.FieldOpt;
+import tacos.wz.WzNameStorage;
+import tacos.wz.WzName;
 
 public class FamilyHandler {
 
-    public static void RequestFamily(ClientPacket cp, TacosClient client) {
-        TacosCharacter chr = client.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-        if (chr != null) {
-            client.SendPacket(ResCWvsContext.getFamilyPedigree(chr));
+    // CP_FamilyChartRequest
+    public static void RequestFamily(ClientPacket cp, TacosCharacter chr) {
+        TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
+        if (target != null) {
+            chr.SendPacket(ResCWvsContext.getFamilyPedigree(target));
         }
     }
 
+    // CP_FamilyInfoRequest
     public static void OpenFamily(ClientPacket cp, TacosCharacter chr) {
         chr.SendPacket(ResCWvsContext.getFamilyInfo(chr));
     }
 
+    // CP_FamilyUsePrivilege
     public static void UseFamily(ClientPacket cp, TacosCharacter chr) {
-        int type = cp.Decode4();
+        int type = cp.Decode4(); // nPrivilegeIndex
         MapleFamilyBuffEntry entry = MapleFamilyBuff.getBuffEntry(type);
         if (entry == null) {
             return;
         }
-        boolean success = chr.getFamilyId() > 0 && chr.canUseFamilyBuff(entry) && chr.getCurrentRep() > entry.rep;
-        if (!success) {
+        if (chr.getFamilyId() <= 0 || !chr.canUseFamilyBuff(entry) || chr.getCurrentRep() < entry.rep) {
             return;
         }
-        TacosCharacter victim = null;
+        boolean success = true;
         switch (type) {
-            case 0: //teleport: need add check for if not a safe place
-                victim = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
-                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
-                    success = false;
-                } else if (victim == null || (victim.isGM() && !chr.isGM())) {
-                    chr.Alert("Invalid name or you are not on the same channel.");
-                    success = false;
-                } else if (victim.getFamilyId() == chr.getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != chr.getId()) {
-                    chr.changeMapPortal(victim.getMap(), victim.getMap().getPortal(0));
-                } else {
-                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
-                    success = false;
-                }
+            case 0: { // SP_Jump : move to a family member
+                success = teleportToFamily(chr, cp.DecodeStr());
                 break;
-            case 1: // TODO give a check to the player being forced somewhere else..
-                victim = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
-                if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
-                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
-                } else if (victim == null || (victim.isGM() && !chr.isGM())) {
-                    chr.Alert("Invalid name or you are not on the same channel.");
-                } else if (victim.getTeleportName().length() > 0) {
-                    chr.Alert("Another character has requested to summon this character. Please try again later.");
-                } else if (victim.getFamilyId() == chr.getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(victim.getMap().getFieldLimit()) && victim.getId() != chr.getId()) {
-                    victim.SendPacket(ResCWvsContext.familySummonRequest(chr.getName(), "MAP_NAME"));
-                    victim.setTeleportName(chr.getName());
-                } else {
-                    chr.Notice("Summons failed. Your current location or state does not allow a summons.");
-                }
-                return; //RETURN not break
-            case 4: // 6 family members in pedigree online Drop Rate & Exp Rate + 100% 30 minutes
+            }
+            case 1: { // SP_Summon : the rep is used when the member accepts
+                requestFamilySummon(chr, cp.DecodeStr());
+                return;
+            }
+            default: { // exp and drop rate
                 break;
-
-            case 2: // drop rate + 50% 15 min
-            case 3: // exp rate + 50% 15 min
-            case 5: // drop rate + 100% 15 min
-            case 6: // exp rate + 100% 15 min
-            case 7: // drop rate + 100% 30 min
-            case 8: // exp rate + 100% 30 min
-                break;
-            case 9: // drop rate + 100% party 30 min
-            case 10: // exp rate + 100% party 30 min
-                break;
+            }
         }
-        if (success) { //again
-            chr.setCurrentRep(chr.getCurrentRep() - entry.rep);
-            chr.SendPacket(ResCWvsContext.changeRep(-entry.rep));
-            chr.useFamilyBuff(entry);
-        } else {
+        if (!success) {
             chr.Notice("An error occured.");
+            return;
         }
+        chr.setCurrentRep(chr.getCurrentRep() - entry.rep);
+        chr.SendPacket(ResCWvsContext.changeRep(-entry.rep, chr.getName()));
+        chr.useFamilyBuff(entry);
+    }
+
+    private static boolean canFamilyTeleport(TacosCharacter chr, TacosCharacter target) {
+        return target.getFamilyId() == chr.getFamilyId() && target.getId() != chr.getId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(target.getMap().getFieldLimit());
+    }
+
+    private static boolean teleportToFamily(TacosCharacter chr, String name) {
+        TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findByName(name);
+        if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
+            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+            return false;
+        }
+        if (target == null || (target.isGM() && !chr.isGM())) {
+            chr.Alert("Invalid name or you are not on the same channel.");
+            return false;
+        }
+        if (!canFamilyTeleport(chr, target)) {
+            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+            return false;
+        }
+        chr.changeMapPortal(target.getMap(), target.getMap().getPortal(0));
+        return true;
+    }
+
+    private static void requestFamilySummon(TacosCharacter chr, String name) {
+        TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findByName(name);
+        if (FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) || !chr.isAlive()) {
+            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+        } else if (target == null || (target.isGM() && !chr.isGM())) {
+            chr.Alert("Invalid name or you are not on the same channel.");
+        } else if (!target.getTeleportName().isEmpty()) {
+            chr.Alert("Another character has requested to summon this character. Please try again later.");
+        } else if (canFamilyTeleport(chr, target)) {
+            target.SendPacket(ResCWvsContext.familySummonRequest(chr.getName(), getMapName(chr.getMapId())));
+            target.setTeleportName(chr.getName());
+        } else {
+            chr.Notice("Summons failed. Your current location or state does not allow a summons.");
+        }
+    }
+
+    private static String getMapName(int map_id) {
+        WzName name = WzNameStorage.MAP.get(map_id);
+        return (name != null) ? name.getMapName() : "";
     }
 
     public static void FamilyOperation(ClientPacket cp, TacosCharacter chr) {
@@ -152,13 +167,13 @@ public class FamilyHandler {
         TacosCharacter tt = chr.getChannelServer().getOnlinePlayers().findByName(cp.DecodeStr());
         if (chr.getFamilyId() > 0 && tt != null && tt.getFamilyId() == chr.getFamilyId() && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(tt.getMap().getFieldLimit())
                 && !FieldOpt.FIELDOPT_TELEPORTITEMLIMIT.check(chr.getMap().getFieldLimit()) && chr.isAlive() && tt.isAlive() && tt.canUseFamilyBuff(cost)
-                && chr.getTeleportName().equals(tt.getName()) && tt.getCurrentRep() > cost.rep) {
+                && chr.getTeleportName().equals(tt.getName()) && tt.getCurrentRep() >= cost.rep) {
             //whew lots of checks
             boolean accepted = cp.Decode1() > 0;
             if (accepted) {
                 chr.changeMapPortal(tt.getMap(), tt.getMap().getPortal(0));
                 tt.setCurrentRep(tt.getCurrentRep() - cost.rep);
-                tt.SendPacket(ResCWvsContext.changeRep(-cost.rep));
+                tt.SendPacket(ResCWvsContext.changeRep(-cost.rep, tt.getName()));
                 tt.useFamilyBuff(cost);
             } else {
                 tt.Notice("Summons failed. Your current location or state does not allow a summons.");

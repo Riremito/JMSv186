@@ -42,6 +42,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsBroadcastMsg;
@@ -2081,11 +2083,12 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket changeRep(int r) {
+    // CWvsContext::OnFamilyFamousPointIncResult
+    public static ServerPacket changeRep(int r, String name) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyFamousPointIncResult);
 
         sp.Encode4(r);
-        sp.Encode4(0);
+        sp.EncodeStr(name);
         return sp;
     }
 
@@ -2151,122 +2154,89 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // CWvsContext::OnFamilySetPrivilege, Privilege::Decode
     public static ServerPacket familyBuff(int type, int buffnr, int amount, int time) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilySetPrivilege);
 
         sp.Encode1(type);
-        if (type >= 2 && type <= 4) {
-            sp.Encode4(buffnr);
-            //first int = exp, second int = drop
-            sp.Encode4(type == 3 ? 0 : amount);
-            sp.Encode4(type == 2 ? 0 : amount);
-            sp.Encode1(0);
-            sp.Encode4(time);
+        if (type != 0) {
+            sp.Encode4(buffnr); // nIndex
+            sp.Encode4(type == 3 ? 0 : amount); // dwIncExpRate
+            sp.Encode4(type == 2 ? 0 : amount); // dwIncDropRate
+            sp.Encode1(0); // DecodeTime
+            sp.Encode4(time); // DecodeTime
         }
         return sp;
     }
 
+    // CUIFamilyChart::DecodeLocalChart
     public static ServerPacket getFamilyPedigree(TacosCharacter chr) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_FamilyChartResult);
 
-        sp.Encode4(chr.getId());
         MapleFamily family = chr.getWorld().getFamily().getFamily(chr.getFamilyId());
-        int descendants = 2;
-        int gens = 0;
-        int generations = 0;
+        MapleFamilyCharacter mine = (chr.getMFC() != null) ? chr.getMFC() : new MapleFamilyCharacter(chr, 0, 0, 0, 0);
+        // leader, grand parent, parent, me, sibling, children and grand children.
+        Map<Integer, MapleFamilyCharacter> members = new LinkedHashMap<>();
+        List<MapleFamilyCharacter> grand_children = new ArrayList<>();
         if (family == null) {
-            sp.Encode4(2);
-            sp.EncodeBuffer(addFamilyCharInfo(new MapleFamilyCharacter(chr, 0, 0, 0, 0))); //leader
+            members.put(mine.getId(), mine);
         } else {
-            sp.Encode4(family.getMFC(chr.getId()).getPedigree().size() + 1); //+ 1 for leader, but we don't want leader seeing all msgs
-            sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(family.getLeaderId())));
-            if (chr.getSeniorId() > 0) {
-                MapleFamilyCharacter senior = family.getMFC(chr.getSeniorId());
-                if (senior.getSeniorId() > 0) {
-                    sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(senior.getSeniorId())));
-                }
-                sp.EncodeBuffer(addFamilyCharInfo(senior));
+            addFamilyMember(members, family.getMFC(family.getLeaderId()));
+            MapleFamilyCharacter parent = (chr.getSeniorId() > 0) ? family.getMFC(chr.getSeniorId()) : null;
+            if (parent != null && parent.getSeniorId() > 0) {
+                addFamilyMember(members, family.getMFC(parent.getSeniorId()));
             }
-        }
-        sp.EncodeBuffer(addFamilyCharInfo(chr.getMFC() == null ? new MapleFamilyCharacter(chr, 0, 0, 0, 0) : chr.getMFC()));
-        if (family != null) {
-            if (chr.getSeniorId() > 0) {
-                MapleFamilyCharacter senior = family.getMFC(chr.getSeniorId());
-                if (senior != null) {
-                    if (senior.getJunior1() > 0 && senior.getJunior1() != chr.getId()) {
-                        sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(senior.getJunior1())));
-                    } else if (senior.getJunior2() > 0 && senior.getJunior2() != chr.getId()) {
-                        sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(senior.getJunior2())));
+            addFamilyMember(members, parent);
+            members.put(mine.getId(), mine);
+            if (parent != null) {
+                for (int sibling_id : new int[]{parent.getJunior1(), parent.getJunior2()}) {
+                    if (sibling_id > 0 && sibling_id != chr.getId()) {
+                        addFamilyMember(members, family.getMFC(sibling_id));
                     }
                 }
             }
-            if (chr.getJunior1() > 0) {
-                sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(chr.getJunior1())));
-            }
-            if (chr.getJunior2() > 0) {
-                sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(chr.getJunior2())));
-            }
-            if (chr.getJunior1() > 0) {
-                MapleFamilyCharacter junior = family.getMFC(chr.getJunior1());
-                if (junior.getJunior1() > 0) {
-                    descendants++;
-                    sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(junior.getJunior1())));
+            for (int child_id : new int[]{chr.getJunior1(), chr.getJunior2()}) {
+                MapleFamilyCharacter child = (child_id > 0) ? family.getMFC(child_id) : null;
+                if (child == null) {
+                    continue;
                 }
-                if (junior.getJunior2() > 0) {
-                    descendants++;
-                    sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(junior.getJunior2())));
-                }
-            }
-            if (chr.getJunior2() > 0) {
-                MapleFamilyCharacter junior = family.getMFC(chr.getJunior2());
-                if (junior.getJunior1() > 0) {
-                    descendants++;
-                    sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(junior.getJunior1())));
-                }
-                if (junior.getJunior2() > 0) {
-                    descendants++;
-                    sp.EncodeBuffer(addFamilyCharInfo(family.getMFC(junior.getJunior2())));
-                }
-            }
-            gens = family.getGens();
-            generations = family.getMemberSize();
-        }
-        sp.Encode8(descendants);
-        sp.Encode4(gens);
-        sp.Encode4(-1);
-        sp.Encode4(generations);
-        if (family != null) {
-            if (chr.getJunior1() > 0) {
-                MapleFamilyCharacter junior = family.getMFC(chr.getJunior1());
-                if (junior.getJunior1() > 0) {
-                    sp.Encode4(junior.getJunior1());
-                    sp.Encode4(family.getMFC(junior.getJunior1()).getDescendants());
-                }
-                if (junior.getJunior2() > 0) {
-                    sp.Encode4(junior.getJunior2());
-                    sp.Encode4(family.getMFC(junior.getJunior2()).getDescendants());
-                }
-            }
-            if (chr.getJunior2() > 0) {
-                MapleFamilyCharacter junior = family.getMFC(chr.getJunior2());
-                if (junior.getJunior1() > 0) {
-                    sp.Encode4(junior.getJunior1());
-                    sp.Encode4(family.getMFC(junior.getJunior1()).getDescendants());
-                }
-                if (junior.getJunior2() > 0) {
-                    sp.Encode4(junior.getJunior2());
-                    sp.Encode4(family.getMFC(junior.getJunior2()).getDescendants());
+                addFamilyMember(members, child);
+                for (int grand_child_id : new int[]{child.getJunior1(), child.getJunior2()}) {
+                    MapleFamilyCharacter grand_child = (grand_child_id > 0) ? family.getMFC(grand_child_id) : null;
+                    if (grand_child != null) {
+                        addFamilyMember(members, grand_child);
+                        grand_children.add(grand_child);
+                    }
                 }
             }
         }
-        List<SimpleImmutableEntry<Integer, Integer>> b = chr.usedBuffs();
-        sp.Encode4(b.size());
-        for (SimpleImmutableEntry<Integer, Integer> ii : b) {
-            sp.Encode4(ii.getKey()); //buffid
-            sp.Encode4(ii.getValue()); //times used
+
+        sp.Encode4(chr.getId());
+        sp.Encode4(members.size());
+        for (MapleFamilyCharacter member : members.values()) {
+            sp.EncodeBuffer(addFamilyCharInfo(member));
+        }
+        // m_mStatistic : number of descendants
+        sp.Encode4(grand_children.size());
+        for (MapleFamilyCharacter grand_child : grand_children) {
+            sp.Encode4(grand_child.getId());
+            sp.Encode4(grand_child.getDescendants());
+        }
+        // m_mPrivilege : times used
+        List<SimpleImmutableEntry<Integer, Integer>> used = chr.usedBuffs();
+        sp.Encode4(used.size());
+        for (SimpleImmutableEntry<Integer, Integer> privilege : used) {
+            sp.Encode4(privilege.getKey());
+            sp.Encode4(privilege.getValue());
         }
         sp.Encode2(2);
         return sp;
+    }
+
+    private static void addFamilyMember(Map<Integer, MapleFamilyCharacter> members, MapleFamilyCharacter member) {
+        if (member != null) {
+            members.putIfAbsent(member.getId(), member);
+        }
     }
 
     public static ServerPacket getFamilyInfo(TacosCharacter chr) {
