@@ -97,8 +97,7 @@ public class EtcWz extends WzXML {
                         for (MapleData rewardNRecipe : itemFolder.getChildren()) {
                             for (MapleData ind : rewardNRecipe.getChildren()) {
                                 if (rewardNRecipe.getName().equals("randomReward")) {
-                                    ret.addRandomReward(ind.getInt("item"), ind.getInt("prob"));
-// MapleDataTool.getInt("itemNum", ind, 0)
+                                    ret.addRandomReward(ind.getInt("item"), ind.getInt("itemNum", 1), ind.getInt("prob"));
                                 } else if (rewardNRecipe.getName().equals("recipe")) {
                                     ret.addReqRecipe(ind.getInt("item"), ind.getInt("count"));
                                 }

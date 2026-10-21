@@ -124,6 +124,7 @@ public class ResCUserLocal {
             }
             case UserEffect_ItemMaker: {
                 data.Encode4(pb.maker.get());
+                break;
             }
             default: {
                 break;

@@ -24,6 +24,7 @@ import tacos.config.Region;
 import java.util.List;
 import java.util.Map;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsItemMakerResult;
 import tacos.packet.request.parse.ParseCMovePath;
 import tacos.packet.response.data.RD_AvatarLook;
 import tacos.packet.response.data.RD_CUser;
@@ -330,12 +331,12 @@ public class ResCUserRemote {
         return sp;
     }
 
-    public static ServerPacket ItemMakerResultTo(TacosCharacter chr, boolean is_success) {
+    public static ServerPacket ItemMakerResultTo(TacosCharacter chr, OpsItemMakerResult result) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_UserEffectRemote);
 
         sp.Encode4(chr.getId());
-        sp.Encode1(17);
-        sp.Encode4(is_success ? 0 : 1);
+        sp.Encode1(OpsUserEffect.UserEffect_ItemMaker.get());
+        sp.Encode4(result.get());
         return sp;
     }
 
