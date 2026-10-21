@@ -32,7 +32,7 @@ import tacos.config.Config;
 import tacos.config.ContentCustom;
 import tacos.constants.TacosConstants;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsUserEffect;
 import tacos.packet.request.parse.ParseCUser_Attack;
 import tacos.packet.response.builder.PB_UserEffect;
@@ -66,10 +66,10 @@ public class ResCUserRemote {
             sp.Encode4(attack.nSkillID); // nSkillID
         }
 
-        OpsSkill skill = OpsSkill.find(attack.nSkillID);
+        OpsSkill_BB skill = OpsSkill_BB.find(attack.nSkillID);
         if (Config.PostBB()) {
-            if (skill == OpsSkill.SNIPER_STRAFE) {
-                OpsSkill passive_skill = OpsSkill.CROSSBOWMASTER_ULTIMATE_STRAFE;
+            if (skill == OpsSkill_BB.SNIPER_STRAFE) {
+                OpsSkill_BB passive_skill = OpsSkill_BB.CROSSBOWMASTER_ULTIMATE_STRAFE;
                 int nPassiveSLV = chr.getSkillLevel(passive_skill);
                 sp.Encode1(nPassiveSLV); // nPassiveSLV
                 if (nPassiveSLV != 0) {

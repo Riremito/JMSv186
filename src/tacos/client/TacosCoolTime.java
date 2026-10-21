@@ -23,7 +23,7 @@ import tacos.config.Config;
 import tacos.config.DeveloperMode;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.response.ResCUserLocal;
 
 /**
@@ -32,14 +32,14 @@ import tacos.packet.response.ResCUserLocal;
  */
 public class TacosCoolTime {
 
-    private TreeMap<OpsSkill, TacosCoolTimeData> map_ctd = new TreeMap<>();
+    private TreeMap<OpsSkill_BB, TacosCoolTimeData> map_ctd = new TreeMap<>();
     private TacosCharacter chr;
 
     public TacosCoolTime(TacosCharacter chr) {
         this.chr = chr;
     }
 
-    public boolean add(OpsSkill skill, int skill_ct_sec) {
+    public boolean add(OpsSkill_BB skill, int skill_ct_sec) {
         if (check(skill)) {
             return false;
         }
@@ -59,7 +59,7 @@ public class TacosCoolTime {
         return true;
     }
 
-    public boolean remove(OpsSkill skill) {
+    public boolean remove(OpsSkill_BB skill) {
         if (!check(skill)) {
             return false;
         }
@@ -69,13 +69,13 @@ public class TacosCoolTime {
         return true;
     }
 
-    public boolean check(OpsSkill skill) {
+    public boolean check(OpsSkill_BB skill) {
         return this.map_ctd.containsKey(skill);
     }
 
     public void timeLeap() {
         for (TacosCoolTimeData ctd : this.map_ctd.values()) {
-            if (ctd.skill != OpsSkill.VIPER_TIME_LEAP) {
+            if (ctd.skill != OpsSkill_BB.VIPER_TIME_LEAP) {
                 remove(ctd.skill);
             }
         }
@@ -109,7 +109,7 @@ public class TacosCoolTime {
 
     public static class TacosCoolTimeData {
 
-        public OpsSkill skill;
+        public OpsSkill_BB skill;
         public long time_start;
         public long time_end;
     }

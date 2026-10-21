@@ -22,7 +22,7 @@ import odin.client.Skill;
 import tacos.wz.WzXML;
 import odin.server.MapleStatEffect;
 import tacos.config.Config;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 
 /**
  *
@@ -46,26 +46,26 @@ public class TacosCriticalRate {
     public int getPassiveRate() {
         int job = this.chr.getJob() / 100 * 100;
 
-        OpsSkill ops_skill;
+        OpsSkill_BB ops_skill;
         switch (job) {
             case 300 -> {
                 // 300.img/3000001/skill/level/1/prop
-                ops_skill = OpsSkill.ARCHER_CRITICAL_SHOT;
+                ops_skill = OpsSkill_BB.ARCHER_CRITICAL_SHOT;
             }
             case 400 -> {
-                ops_skill = OpsSkill.ASSASSIN_CRITICAL_THROW;
+                ops_skill = OpsSkill_BB.ASSASSIN_CRITICAL_THROW;
             }
             case 500 -> {
-                ops_skill = OpsSkill.GUNSLINGER_CRITICAL_SHOT;
+                ops_skill = OpsSkill_BB.GUNSLINGER_CRITICAL_SHOT;
             }
             case 1300 -> {
-                ops_skill = OpsSkill.WINDBREAKER_CRITICAL_SHOT;
+                ops_skill = OpsSkill_BB.WINDBREAKER_CRITICAL_SHOT;
             }
             case 1400 -> {
-                ops_skill = OpsSkill.NIGHTWALKER_CRITICAL_THROW;
+                ops_skill = OpsSkill_BB.NIGHTWALKER_CRITICAL_THROW;
             }
             case 2200 -> {
-                ops_skill = OpsSkill.EVAN_MAGIC_CRITICAL;
+                ops_skill = OpsSkill_BB.EVAN_MAGIC_CRITICAL;
             }
             default -> {
                 return 0;

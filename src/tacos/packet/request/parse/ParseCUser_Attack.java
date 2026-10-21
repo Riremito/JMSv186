@@ -39,7 +39,7 @@ import tacos.constants.TacosConstants;
 import tacos.packet.ClientPacket;
 import tacos.packet.ClientPacketHeader;
 import tacos.packet.ServerPacketHeader;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 
 /**
  *
@@ -168,7 +168,7 @@ public class ParseCUser_Attack {
             return false;
         }
         for (Buff buff : chr.getBuff().getAll()) {
-            switch (OpsSkill.find(buff.buff_id)) {
+            switch (OpsSkill_BB.find(buff.buff_id)) {
                 case HUNTER_SOUL_ARROW_BOW:
                 case CROSSBOWMAN_SOUL_ARROW_CROSSBOW:
                 case WINDBREAKER_SOUL_ARROW_BOW:

@@ -19,7 +19,7 @@ import tacos.packet.ops.OpsMobStat;
 import tacos.config.ContentState;
 import odin.constants.GameConstants;
 import tacos.packet.ops.OpsSecondaryStat;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsUserEffect;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.wz.StatEffectData;
@@ -127,7 +127,7 @@ public class MapleStatEffect {
             oss.add(new SimpleImmutableEntry<>(OpsSecondaryStat.CTS_Jump, (int) jump));
         }
 
-        switch (OpsSkill.find(sourceid)) {
+        switch (OpsSkill_BB.find(sourceid)) {
             case MAGICIAN_MAGIC_GUARD:
             case FLAMEWIZARD_MAGIC_GUARD:
             case EVAN_MAGIC_GUARD: {

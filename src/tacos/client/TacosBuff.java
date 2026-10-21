@@ -30,7 +30,7 @@ import tacos.debug.DebugLogger;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import tacos.packet.ops.OpsMobSkill;
 import tacos.packet.ops.OpsSecondaryStat;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.wz.opt.FieldOpt;
 
 /**
@@ -101,7 +101,7 @@ public class TacosBuff {
         MapleStatEffect effect = null;
         // skill or item.
         if (0 < buff_id) {
-            OpsSkill ops_skill = OpsSkill.find(buff_id);
+            OpsSkill_BB ops_skill = OpsSkill_BB.find(buff_id);
             Skill skill = WzXML.SKILL.getSkill().get(buff_id);
             if (skill == null) {
                 DebugLogger.ErrorLog("TacosBuff - update : skill.");
@@ -118,7 +118,7 @@ public class TacosBuff {
                 if (this.chr.getCoolTime().check(ops_skill)) {
                     return false;
                 }
-                if (ops_skill != OpsSkill.CAPTAIN_BATTLESHIP) {
+                if (ops_skill != OpsSkill_BB.CAPTAIN_BATTLESHIP) {
                     this.chr.getCoolTime().add(ops_skill, effect.getCooldown());
                 }
             }

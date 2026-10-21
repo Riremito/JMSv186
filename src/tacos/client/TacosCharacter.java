@@ -83,7 +83,7 @@ import tacos.database.query.DQ_Wishlist;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsMovePathAttr;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.request.ReqCUser;
 import tacos.packet.request.parse.ParseCMovePath;
@@ -793,7 +793,7 @@ public class TacosCharacter extends TacosPlayer {
 
     protected Map<Skill, SkillEntry> skills = new LinkedHashMap<>();
 
-    public int getSkillLevel(OpsSkill ops) {
+    public int getSkillLevel(OpsSkill_BB ops) {
         Skill skill = WzXML.SKILL.getSkill().get(ops.get());
         if (skill == null) {
             return 0;
@@ -804,14 +804,14 @@ public class TacosCharacter extends TacosPlayer {
         return skill_level;
     }
 
-    public OpsSkill getFakeSkill() {
-        if (0 < getSkillLevel(OpsSkill.NIGHTLORD_FAKE)) {
-            return OpsSkill.NIGHTLORD_FAKE;
+    public OpsSkill_BB getFakeSkill() {
+        if (0 < getSkillLevel(OpsSkill_BB.NIGHTLORD_FAKE)) {
+            return OpsSkill_BB.NIGHTLORD_FAKE;
         }
-        if (0 < getSkillLevel(OpsSkill.SHADOWER_FAKE)) {
-            return OpsSkill.SHADOWER_FAKE;
+        if (0 < getSkillLevel(OpsSkill_BB.SHADOWER_FAKE)) {
+            return OpsSkill_BB.SHADOWER_FAKE;
         }
-        return OpsSkill.UNKNOWN;
+        return OpsSkill_BB.UNKNOWN;
     }
 
     protected MapleMount mount = null;
@@ -1396,7 +1396,7 @@ public class TacosCharacter extends TacosPlayer {
 
         int combo_level = this.m_nCombo / 10;
         if (this.m_nCombo % 10 == 0 && 1 <= combo_level && combo_level <= 10) {
-            if (combo_level <= ((TacosCharacter) this).getSkillLevel(OpsSkill.ARAN_COMBO_ABILITY.get())) {
+            if (combo_level <= ((TacosCharacter) this).getSkillLevel(OpsSkill_BB.ARAN_COMBO_ABILITY.get())) {
                 // buff.
             }
         }

@@ -21,7 +21,7 @@ package tacos.packet.response.data;
 import tacos.config.Config;
 import tacos.config.Region;
 import tacos.packet.ServerPacket;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.server.map.object.TacosSummon;
 
 /**
@@ -36,7 +36,7 @@ public class RD_CSummoned {
 
         data.Encode2(summon.getX()); // m_ptPos.x
         data.Encode2(summon.getY()); // m_ptPos.y
-        data.Encode1(summon.getSkill() == OpsSkill.BMAGE_REVIVE ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
+        data.Encode1(summon.getSkill() == OpsSkill_BB.BMAGE_REVIVE ? 5 : 4); // m_nMoveAction MA_PRONE, MA_ALERT, MA_TESLA_COIL_TRIANGLE
         data.Encode2(summon.getFootholdId()); // m_dwSN (CStaticFoothold)
         data.Encode1(summon.getMoveAbility().get()); // m_nMoveAbility
         data.Encode1(summon.getAssist().get()); // m_nAssistType
@@ -44,7 +44,7 @@ public class RD_CSummoned {
         data.Encode1(0, Config.GreaterOrEqual(Region.JMS, 302));
 
         if (Config.PostBB() || Config.GreaterOrEqual(Region.JMS, 186) || Config.GreaterOrEqual(Region.CMS, 85) || Config.GreaterOrEqual(Region.TWMS, 121) || Config.GreaterOrEqual(Region.THMS, 87) || Config.GreaterOrEqual(Region.GMS, 91) || Config.GreaterOrEqual(Region.MSEA, 100) || Config.GreaterOrEqual(Region.EMS, 70)) {
-            boolean is_avater_look = summon.getSkill() == OpsSkill.DUAL5_DUMMY_EFFECT;
+            boolean is_avater_look = summon.getSkill() == OpsSkill_BB.DUAL5_DUMMY_EFFECT;
             data.Encode1(is_avater_look ? 1 : 0);
             if (is_avater_look) {
                 data.EncodeBuffer(RD_AvatarLook.Encode(summon.getOwner()));

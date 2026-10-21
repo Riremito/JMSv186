@@ -96,7 +96,7 @@ import tacos.packet.ops.OpsMobLeaveField;
 import tacos.packet.ops.OpsParty;
 import tacos.packet.ops.OpsQuest;
 import tacos.packet.ops.OpsRPS;
-import tacos.packet.ops.OpsSkill;
+import tacos.packet.ops.OpsSkill_BB;
 import tacos.packet.ops.OpsTransferChannel;
 import tacos.packet.ops.OpsTransferField;
 import tacos.packet.ops.OpsTrunk;
@@ -999,13 +999,13 @@ public class ReqCUser {
                 return false;
             }
             if (0 < skill_effect.getCooldown()) {
-                OpsSkill ops_skill = OpsSkill.find(attack.skill);
+                OpsSkill_BB ops_skill = OpsSkill_BB.find(attack.skill);
                 if (chr.getCoolTime().check(ops_skill)) {
                     return false;
                 }
                 chr.getCoolTime().add(ops_skill, skill_effect.getCooldown());
             }
-            if (attack.skill != OpsSkill.CLERIC_HEAL.get()) {
+            if (attack.skill != OpsSkill_BB.CLERIC_HEAL.get()) {
                 skill_effect.applyTo(chr);
             }
         }
@@ -1014,18 +1014,18 @@ public class ReqCUser {
         }
         Skill eaterSkill = WzXML.SKILL.getSkill().get(GameConstants.getMPEaterForJob(chr.getJob()));
         int eaterLevel = chr.getSkillLevel(eaterSkill);
-        boolean is_meso_explosion = attack.skill == OpsSkill.THIEFMASTER_MESO_EXPLOSION.get();
+        boolean is_meso_explosion = attack.skill == OpsSkill_BB.THIEFMASTER_MESO_EXPLOSION.get();
         boolean is_pick_pocket = false;
         Skill skill_pick_pocket = null;
         MapleStatEffect skill_effect_pick_pocket = null;
         if (is_pick_pocket) {
-            skill_pick_pocket = WzXML.SKILL.getSkill().get(OpsSkill.THIEFMASTER_PICKPOCKET.get());
+            skill_pick_pocket = WzXML.SKILL.getSkill().get(OpsSkill_BB.THIEFMASTER_PICKPOCKET.get());
             skill_effect_pick_pocket = skill_pick_pocket.getEffect(30); // level.
         }
 
         map.splitSendPacket(chr, ResCUserRemote.UserAttack(chr, attack), chr.getId());
 
-        boolean is_steal = attack.skill == OpsSkill.THIEF_STEAL.get();
+        boolean is_steal = attack.skill == OpsSkill_BB.THIEF_STEAL.get();
         for (Map.Entry<Integer, ArrayList<Integer>> entry : attack.damages.entrySet()) {
             TacosMonster monster = map.getMonsterByOid(entry.getKey());
             if (monster == null) {
@@ -1152,8 +1152,8 @@ public class ReqCUser {
         }
         // fake skill.
         if (uhd.nDamage == -1) {
-            OpsSkill fake_skill = chr.getFakeSkill();
-            if (fake_skill == OpsSkill.UNKNOWN) {
+            OpsSkill_BB fake_skill = chr.getFakeSkill();
+            if (fake_skill == OpsSkill_BB.UNKNOWN) {
                 // hack.
                 return true;
             }
@@ -2268,7 +2268,7 @@ public class ReqCUser {
             map.splitSendPacket(chr, ResCUserRemote.UserEffectRemote(OpsUserEffect.UserEffect_SkillUse, PB_UserEffect.builder().player(chr).skill_id(nSkillID).skill_level(nSLV_SS).build()), chr.getId());
         }
 
-        OpsSkill ops_skill = OpsSkill.find(nSkillID);
+        OpsSkill_BB ops_skill = OpsSkill_BB.find(nSkillID);
 
         // summon skill.
         TacosSummonSkill tss = WzXML.SKILL.getSummonSkill(nSkillID, nSLV_SS);
