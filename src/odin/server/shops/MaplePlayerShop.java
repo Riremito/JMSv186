@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package odin.server.shops;
 
 import java.util.ArrayList;
+import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.List;
@@ -371,7 +372,7 @@ public class MaplePlayerShop {
                     if (pItem.bundles <= 0) {
                         boughtnumber++;
                         if (boughtnumber == items.size()) {
-                            closeShop(false, true, 14);
+                            closeShop(false, true, OpsMRLeave.PSLeave_NoMoreItem.get());
                             return;
                         }
                     }

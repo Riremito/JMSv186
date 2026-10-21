@@ -50,6 +50,7 @@ public class PacketOps {
         OpsMiniRoomType.init();
         OpsEntrustedShop.init();
         OpsMREnterResult.init();
+        OpsMRLeave.init();
         OpsUI.init();
         OpsMoveAbility.init();
         OpsGuild.init();

@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
+import tacos.packet.ops.OpsMRLeave;
 import tacos.wz.WzXML;
 import tacos.server.map.object.TacosMerchant;
 import java.util.Map;
@@ -272,7 +273,7 @@ public class InventoryHandler {
         }
         if (merchant.isOwner(chr)) {
             merchant.setOpen(false);
-            merchant.removeAllVisitors((byte) 16, (byte) 0);
+            merchant.removeAllVisitors(OpsMRLeave.ESLeave_StartManage.get(), 0);
             chr.setPlayerShop(merchant);
             chr.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(chr, merchant, false));
             return;

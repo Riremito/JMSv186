@@ -8,6 +8,7 @@ import odin.client.inventory.Item.ItemFlag;
 import odin.constants.GameConstants;
 import tacos.client.TacosClient;
 import odin.client.inventory.MapleInventoryType;
+import tacos.packet.ops.OpsMRLeave;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 
 public class MapleTrade {
@@ -56,7 +57,7 @@ public class MapleTrade {
         }
         exchangeMeso = 0;
 
-        wrchr.SendPacket(ResCMiniRoomBaseDlg.TradeMessage(tradingslot, (byte) 0x07));
+        wrchr.SendPacket(ResCMiniRoomBaseDlg.TradeMessage(tradingslot, OpsMRLeave.TRLeave_TradeDone));
     }
 
     public void cancel(TacosCharacter chr) {

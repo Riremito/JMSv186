@@ -19,6 +19,8 @@
 package tacos.packet.response;
 
 import tacos.client.TacosCharacter;
+import tacos.packet.ops.OpsMREnterResult;
+import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.object.TacosMerchant;
 import odin.client.inventory.Equip;
 import odin.client.inventory.Item;
@@ -218,7 +220,7 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Invite.get());
-        sp.Encode1(isPointTrade ? 6 : 3);
+        sp.Encode1(isPointTrade ? OpsMiniRoomType.MR_CashTradingRoom.get() : OpsMiniRoomType.MR_TradingRoom.get());
         sp.EncodeStr(player.getName());
         sp.Encode4(0); // Trade ID
         return sp;
@@ -263,17 +265,12 @@ public class ResCMiniRoomBaseDlg {
         return sp;
     }
 
-    public static ServerPacket TradeMessage(byte UserSlot, byte message) {
+    public static ServerPacket TradeMessage(byte UserSlot, OpsMRLeave message) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         sp.Encode1(UserSlot);
-        sp.Encode1(message);
-        //0x02 = cancelled
-        //0x07 = success [tax is automated]
-        //0x08 = unsuccessful
-        //0x09 = "You cannot make the trade because there are some items which you cannot carry more than one."
-        //0x0A = "You cannot make the trade because the other person's on a different map."
+        sp.Encode1(message.get());
         return sp;
     }
 
@@ -289,8 +286,8 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
-        sp.Encode1(isPointTrade ? 6 : 3);
-        sp.Encode1(2);
+        sp.Encode1(isPointTrade ? OpsMiniRoomType.MR_CashTradingRoom.get() : OpsMiniRoomType.MR_TradingRoom.get());
+        sp.Encode1(2); // m_nMaxUsers
         sp.Encode1(number);
         if (number == 1) {
             sp.Encode1(0);
@@ -312,7 +309,7 @@ public class ResCMiniRoomBaseDlg {
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         sp.Encode1(UserSlot);
-        sp.Encode1(unsuccessful == 0 ? 2 : (unsuccessful == 1 ? 8 : 9));
+        sp.Encode1(unsuccessful == 0 ? OpsMRLeave.MRLeave_Closed.get() : (unsuccessful == 1 ? OpsMRLeave.TRLeave_TradeFail.get() : OpsMRLeave.TRLeave_TradeFail_OnlyItem.get()));
         return sp;
     }
 
@@ -331,35 +328,17 @@ public class ResCMiniRoomBaseDlg {
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         // キャラクターの場所を正しく指定しないとD/C
         sp.Encode1(slot);
-        // 強制退場されました。
-        sp.Encode1(5);
+        sp.Encode1(OpsMRLeave.MRLeave_Kicked.get());
         return sp;
     }
 
-    public static ServerPacket shopErrorMessage(int error, int type) {
+    public static ServerPacket shopErrorMessage(int error, int slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         // 退場する人の番号 0 = 開いている人
-        sp.Encode1(type);
-        /*
-        商店を閉じる理由
-        0   =   なし
-        1   =   ここではオープン出来ません。
-        2   =   なし
-        3   =   商店が閉じています
-        4   =   なし
-        5   =   強制退場されました。
-        6   =   制限時間が経過し、商店を開くことができませんした
-        7   =   なし
-        8   =   なし
-        9   =   なし
-        10  =   なし
-        11  =   なし
-        12  =   なし
-        13  =   なし
-        14  =   品物は売れ切れです。
-         */
+        sp.Encode1(slot);
+        // OpsMRLeave
         sp.Encode1(error);
         return sp;
     }
@@ -430,9 +409,9 @@ public class ResCMiniRoomBaseDlg {
     public static ServerPacket getHiredMerch(TacosCharacter chr, TacosMerchant merch, boolean firstTime) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
-        sp.Encode1(5);
-        sp.Encode1(5);
-        sp.Encode1(4);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
+        sp.Encode1(OpsMiniRoomType.MR_EntrustedShop.get());
+        sp.Encode1(4); // m_nMaxUsers
         sp.Encode2(merch.getVisitorSlot(chr));
         sp.Encode4(merch.getItemId());
         sp.EncodeStr("雇用商人");
@@ -462,7 +441,7 @@ public class ResCMiniRoomBaseDlg {
         }
 
         sp.EncodeStr(merch.getDescription());
-        sp.Encode1(10);
+        sp.Encode1(10); // m_nItemMaxCount
         sp.Encode4(merch.getMeso()); // meso
         sp.Encode1(merch.getItems().size());
 
@@ -479,7 +458,7 @@ public class ResCMiniRoomBaseDlg {
     public static ServerPacket shopVisitorAdd(TacosCharacter chr, int slot) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
-        sp.Encode1(4);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Enter.get());
         sp.Encode1(slot);
         sp.EncodeBuffer(RD_AvatarLook.Encode(chr));
         sp.EncodeStr(chr.getName());
@@ -492,11 +471,10 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         // UIを閉じる
-        sp.Encode1(10);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_Leave.get());
         // キャラクターを指定
         sp.Encode1(slot);
-        // UI閉じるときのメッセージ（何も表示しない設定)
-        sp.Encode1(17);
+        sp.Encode1(OpsMRLeave.ESLeave_StartManage.get());
         return sp;
     }
 
@@ -533,8 +511,8 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
-        sp.Encode1(0);
-        sp.Encode1(2);
+        sp.Encode1(0); // failed
+        sp.Encode1(OpsMREnterResult.MREnterResult_Full.get());
         return sp;
     }
 
@@ -542,7 +520,7 @@ public class ResCMiniRoomBaseDlg {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_MiniRoom);
 
         sp.Encode1(OpsMiniRoomProtocol.MRP_Chat.get());
-        sp.Encode1(8);
+        sp.Encode1(OpsMiniRoomProtocol.MRP_UserChat.get());
         sp.Encode1(slot);
         sp.EncodeStr(message);
         return sp;
@@ -556,17 +534,17 @@ public class ResCMiniRoomBaseDlg {
             case 2:
                 sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
                 sp.Encode1(OpsMiniRoomType.MR_PersonalShop.get());
-                sp.Encode1(4);
+                sp.Encode1(4); // m_nMaxUsers
                 break;
             case 3:
                 sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
                 sp.Encode1(OpsMiniRoomType.MR_MemoryGameRoom.get());
-                sp.Encode1(2);
+                sp.Encode1(2); // m_nMaxUsers
                 break;
             case 4:
                 sp.Encode1(OpsMiniRoomProtocol.MRP_EnterResult.get());
                 sp.Encode1(OpsMiniRoomType.MR_OmokRoom.get());
-                sp.Encode1(2);
+                sp.Encode1(2); // m_nMaxUsers
                 break;
         }
 
@@ -582,7 +560,7 @@ public class ResCMiniRoomBaseDlg {
         }
         sp.Encode1(-1);
         sp.EncodeStr(ShopDispatch.getDescription(ips));
-        sp.Encode1(10);
+        sp.Encode1(10); // m_nItemMaxCount
         sp.Encode1(ShopDispatch.getItems(ips).size());
         for (MaplePlayerShopItem item : ShopDispatch.getItems(ips)) {
             sp.Encode2(item.bundles);

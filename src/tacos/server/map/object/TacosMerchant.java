@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsMRLeave;
 import tacos.packet.response.ResCMiniRoomBaseDlg;
 import tacos.server.TacosRoom;
 import odin.client.inventory.Item;
@@ -59,7 +60,7 @@ public class TacosMerchant extends TacosMapObject {
     public boolean enter(TacosCharacter visitor) {
         if (getOwnerId() == visitor.getId()) {
             setOpen(false);
-            removeAllVisitors(0, 0);
+            removeAllVisitors(OpsMRLeave.MRLeave_UserRequest.get(), 0);
             visitor.setPlayerShop(this);
             visitor.SendPacket(ResCMiniRoomBaseDlg.getHiredMerch(visitor, this, false));
             return true;

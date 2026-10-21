@@ -18,6 +18,7 @@
  */
 package tacos.client;
 
+import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.object.TacosDragon;
 import tacos.wz.WzXML;
 import tacos.server.map.object.TacosMerchant;
@@ -3730,7 +3731,7 @@ public class TacosCharacter extends TacosPlayer {
                     if (ShopDispatch.getShopType(shop) == 1 && ShopDispatch.isAvailable(shop)) {
                         ShopDispatch.setOpen(shop, true);
                     } else {
-                        ShopDispatch.closeShop(shop, true, true, 6);
+                        ShopDispatch.closeShop(shop, true, true, OpsMRLeave.MRLeave_OpenTimeOver.get());
                     }
                 }
             }

@@ -23,6 +23,8 @@ package odin.server.shops;
 
 import java.util.ArrayList;
 import odin.server.shops.MaplePlayerShop.MaplePlayerShopItem;
+import tacos.packet.ops.OpsMRLeave;
+import tacos.packet.ops.OpsMiniRoomType;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.Collections;
@@ -336,13 +338,13 @@ public class MapleMiniGame {
 
     public int getGameType() {
         if (getShopType() == HIRED_MERCHANT) { //hiredmerch
-            return 5;
+            return OpsMiniRoomType.MR_EntrustedShop.get();
         } else if (getShopType() == PLAYER_SHOP) { //shop lol
-            return 4;
+            return OpsMiniRoomType.MR_PersonalShop.get();
         } else if (getShopType() == OMOK) { //omok
-            return 1;
+            return OpsMiniRoomType.MR_OmokRoom.get();
         } else if (getShopType() == MATCH_CARD) { //matchcard
-            return 2;
+            return OpsMiniRoomType.MR_MemoryGameRoom.get();
         }
         return 0;
     }
@@ -508,7 +510,7 @@ public class MapleMiniGame {
     public void exit(TacosCharacter player) {
         player.setPlayerShop(null);
         if (isOwner(player)) {
-            removeAllVisitors(3, 1);
+            removeAllVisitors(OpsMRLeave.MRLeave_HostOut.get(), 1);
         } else {
             removeVisitor(player);
         }
@@ -663,7 +665,7 @@ public class MapleMiniGame {
     }
 
     public void closeShop(boolean s, boolean z, int reason) {
-        removeAllVisitors(3, 1);
+        removeAllVisitors(OpsMRLeave.MRLeave_HostOut.get(), 1);
         if (getMCOwner() != null) {
             getMCOwner().setPlayerShop(null);
         }

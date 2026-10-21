@@ -19,6 +19,7 @@
 package tacos.packet.request;
 
 import tacos.debug.DebugLogger;
+import tacos.packet.ops.OpsMRLeave;
 import tacos.server.map.TacosMap;
 import tacos.client.TacosCharacter;
 import java.util.List;
@@ -97,7 +98,7 @@ public class ReqCMiniRoomBaseDlg {
                             pass = cp.DecodeStr();
                         }
                         int piece = cp.Decode1();
-                        int itemId = miniroom_type == 1 ? (4080000 + piece) : 4080100;
+                        int itemId = miniroom_type == OpsMiniRoomType.MR_OmokRoom.get() ? (4080000 + piece) : 4080100;
                         if (!chr.haveItem(itemId) || (chr.getMapId() >= 910000001 && chr.getMapId() <= 910000022)) {
                             return true;
                         }
@@ -291,7 +292,7 @@ public class ReqCMiniRoomBaseDlg {
                 }
                 /*
                 if (!ShopDispatch.isAvailable(ips) || (ShopDispatch.isOwner(ips, chr) && ShopDispatch.getShopType(ips) != 1)) {
-                    ShopDispatch.closeShop(ips, false, ShopDispatch.isAvailable(ips), 3);
+                    ShopDispatch.closeShop(ips, false, ShopDispatch.isAvailable(ips), OpsMRLeave.MRLeave_HostOut.get());
                 } else {
                     ShopDispatch.removeVisitor(ips, chr);
                 }
@@ -542,7 +543,7 @@ public class ReqCMiniRoomBaseDlg {
                         }
                     }
 
-                    ShopDispatch.closeShop(ips, false, true, 20);
+                    ShopDispatch.closeShop(ips, false, true, OpsMRLeave.ESLeave_DestoryByAdmin.get());
                 }
 
                 chr.setPlayerShop(null);
@@ -690,8 +691,7 @@ public class ReqCMiniRoomBaseDlg {
                     if (!game.isOpen()) {
                         return true;
                     }
-                    // 5 = 強制退場されました。
-                    game.removeAllVisitors(5, 1);
+                    game.removeAllVisitors(OpsMRLeave.MRLeave_Kicked.get(), 1);
                 }
                 return true;
             }
@@ -707,7 +707,7 @@ public class ReqCMiniRoomBaseDlg {
                         }
                         game.setGameType();
                         game.shuffleList();
-                        if (game.getGameType() == 1) {
+                        if (game.getGameType() == OpsMiniRoomType.MR_OmokRoom.get()) {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMiniGameStart(game.getLoser()));
                         } else {
                             game.broadcastToVisitors(ResCMiniRoomBaseDlg.getMatchCardStart(game, game.getLoser()));
