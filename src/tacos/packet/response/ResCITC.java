@@ -21,7 +21,7 @@ package tacos.packet.response;
 import odin.client.inventory.Item;
 import tacos.client.TacosCharacter;
 import odin.server.MTSStorage;
-import tacos.config.Config;
+import tacos.config.Region;
 import tacos.packet.ServerPacket;
 import tacos.packet.ServerPacketHeader;
 import tacos.packet.ops.OpsITC;
@@ -51,6 +51,10 @@ public class ResCITC {
         return sp;
     }
 
+    private static OpsITC getFailReason(PB_ITC pb) {
+        return (pb != null && pb.fail_reason != null) ? pb.fail_reason : OpsITC.ITCFailReason_Unknown;
+    }
+
     // CITC::OnNormalItemResult
     public static ServerPacket ITCNormalItemResult(OpsITC ops) {
         return ITCNormalItemResult(ops, null);
@@ -77,13 +81,14 @@ public class ResCITC {
                 break;
             }
             case ITCRes_GetITCList_Failed: {
-                sp.Encode1(pb.fail_reason.get());
+                sp.Encode1(getFailReason(pb).get());
                 break;
             }
             case ITCRes_GetSearchITCList_Done: {
                 break;
             }
             case ITCRes_GetSearchITCList_Failed: {
+                sp.Encode1(getFailReason(pb).get());
                 break;
             }
             case ITCRes_GetMaplePoint_Done: {
@@ -102,12 +107,18 @@ public class ResCITC {
                 break;
             }
             case ITCRes_RegisterSaleEntry_Failed: {
+                OpsITC reason = getFailReason(pb);
+                sp.Encode1(reason.get());
+                if (reason == OpsITC.ITCFailReason_SlotMaxMismatch) {
+                    sp.Encode2(0); // slot max
+                }
                 break;
             }
             case ITCRes_SaleCurrentItemToWish_Done: {
                 break;
             }
             case ITCRes_SaleCurrentItemToWish_Failed: {
+                sp.Encode1(getFailReason(pb).get());
                 break;
             }
             case ITCRes_GetUserPurchaseItem_Done: {
@@ -120,6 +131,7 @@ public class ResCITC {
                 break;
             }
             case ITCRes_GetUserPurchaseItem_Failed: {
+                sp.Encode1(getFailReason(pb).get());
                 break;
             }
             case ITCRes_GetUserSaleItem_Done: {
@@ -130,12 +142,14 @@ public class ResCITC {
                 break;
             }
             case ITCRes_GetUserSaleItem_Failed: {
+                sp.Encode1(getFailReason(pb).get());
                 break;
             }
             case ITCRes_CancelSaleItem_Done: {
                 break;
             }
             case ITCRes_CancelSaleItem_Failed: {
+                sp.Encode1(getFailReason(pb).get());
                 break;
             }
             case ITCRes_MoveITCPurchaseItemLtoS_Done: {
@@ -144,6 +158,7 @@ public class ResCITC {
                 break;
             }
             case ITCRes_MoveITCPurchaseItemLtoS_Failed: {
+                sp.Encode1(getFailReason(pb).get());
                 break;
             }
             case ITCRes_SetZzim_Done: {
@@ -224,68 +239,32 @@ public class ResCITC {
 
     // ITCITEM::Decode
     public static byte[] ITCITEM_Encode(Item item) {
-        ServerPacket data = new ServerPacket();
-
-        data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
-        data.Encode4(0); // nITCSN
-        data.Encode4(0); // nPrice
-        data.Encode4(0); // nContractFee
-
-        switch (Config.REGION) {
-            case JMS: {
-                // JMS187
-                data.Encode4(0);
-                data.Encode4(0);
-                break;
-            }
-            default: {
-                // GMS95
-                data.EncodeStr(""); // sContractFeeTxId
-                data.EncodeStr(""); // sRollbackUsageID
-                break;
-            }
-        }
-
-        data.Encode8(0); // ftITCDateExpired
-        data.EncodeStr(""); // sUserID
-        data.EncodeStr(""); // sGameID
-        data.EncodeStr(""); // sComment
-        data.Encode4(0); // nBidCount
-        data.Encode4(0); // nBidRange
-        data.Encode4(0); // nBidPrice
-        data.Encode4(0); // nMinPrice
-        data.Encode4(0); // nMaxPrice
-        data.Encode4(0); // nUnitPrice
-        data.Encode2(0); // nProcessStatus
-        return data.getBytes();
+        return ITCITEM_Encode(item, null);
     }
 
     public static byte[] ITCITEM_Encode(MTSStorage.MTSItemInfo mts_item) {
+        return ITCITEM_Encode(mts_item.getItem(), mts_item);
+    }
+
+    private static byte[] ITCITEM_Encode(Item item, MTSStorage.MTSItemInfo mts_item) {
         ServerPacket data = new ServerPacket();
 
-        data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(mts_item.getItem()));
-        data.Encode4(mts_item.getId()); // nITCSN
-        data.Encode4(mts_item.getPrice()); // nPrice
-        data.Encode4(mts_item.getTaxes()); // nContractFee
-
-        switch (Config.REGION) {
-            case JMS: {
-                // JMS187
-                data.Encode4(0);
-                data.Encode4(0);
-                break;
-            }
-            default: {
-                // GMS95
-                data.EncodeStr(""); // sContractFeeTxId
-                data.EncodeStr(""); // sRollbackUsageID
-                break;
-            }
+        data.EncodeBuffer(RD_GW_ItemSlotBase.Encode(item));
+        data.Encode4(mts_item != null ? mts_item.getId() : 0); // nITCSN
+        data.Encode4(mts_item != null ? mts_item.getPrice() : 0); // nPrice
+        data.Encode4(mts_item != null ? mts_item.getTaxes() : 0); // nContractFee
+        if (Region.JMS.check()) {
+            // JMS187
+            data.Encode4(0);
+            data.Encode4(0);
+        } else {
+            // GMS95
+            data.EncodeStr(""); // sContractFeeTxId
+            data.EncodeStr(""); // sRollbackUsageID
         }
-
-        data.Encode8(TacosSharedDate.getTimestamp(mts_item.getEndingDate())); // ftITCDateExpired
+        data.Encode8(mts_item != null ? TacosSharedDate.getTimestamp(mts_item.getEndingDate()) : 0); // ftITCDateExpired
         data.EncodeStr(""); // sUserID
-        data.EncodeStr(mts_item.getSeller()); // sGameID
+        data.EncodeStr(mts_item != null ? mts_item.getSeller() : ""); // sGameID
         data.EncodeStr(""); // sComment
         data.Encode4(0); // nBidCount
         data.Encode4(0); // nBidRange

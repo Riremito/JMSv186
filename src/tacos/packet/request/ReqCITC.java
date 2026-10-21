@@ -98,19 +98,26 @@ public class ReqCITC {
                 byte unk1 = cp.Decode1(); // 01
                 if (hours != 7 || price < 0 || item_quantity <= 0 || inv_slot <= 0) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_CannotRegisterItem)
+                            .build();
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_RegisterSaleEntry_Failed, pb));
+                    return true;
+                }
+                if (chr.getMeso() < TacosITC.m_nRegisterFeeMeso) {
+                    PB_ITC pb = PB_ITC.builder()
+                            .fail_reason(OpsITC.ITCFailReason_NoRemainMeso)
                             .build();
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_RegisterSaleEntry_Failed, pb));
                     return true;
                 }
                 MapleInventoryType inv_type = GameConstants.getInventoryType(item_id);
                 Item item = chr.getInventory(inv_type).getItem((short) inv_slot);
-                if (GameConstants.isRechargable(item_id)) {
+                if (item != null && GameConstants.isRechargable(item_id)) {
                     item_quantity = item.getQuantity();
                 }
-                if (item.getItemId() != item_id || item_quantity <= 0 || item.getQuantity() < item_quantity) {
+                if (item == null || item.getItemId() != item_id || item_quantity <= 0 || item.getQuantity() < item_quantity) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_ItemFailed)
                             .build();
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_RegisterSaleEntry_Failed, pb));
                     return true;
@@ -156,7 +163,7 @@ public class ReqCITC {
                 if (!MTSStorage.getInstance().removeFromBuyNow(unk1, chr.getId(), true)) {
 
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_AlreadyCancelled_or_SoldOut)
                             .build();
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_CancelSaleItem_Failed, pb));
                 } else {
@@ -176,9 +183,9 @@ public class ReqCITC {
                 Item item = cart.getInventory().get(id);
                 if (item == null || item.getQuantity() <= 0 || !MapleInventoryManipulator.checkSpace(chr, item.getItemId(), item.getQuantity(), item.getOwner())) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_NoEmptyPos)
                             .build();
-                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Failed, pb));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_MoveITCPurchaseItemLtoS_Failed, pb));
                     return true;
                 }
 
@@ -186,9 +193,9 @@ public class ReqCITC {
                 short pos = MapleInventoryManipulator.addbyItem(chr, item_, true);
                 if (pos < 0) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_NoEmptyPos)
                             .build();
-                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Failed, pb));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_MoveITCPurchaseItemLtoS_Failed, pb));
                     return true;
                 }
                 if (item_.getPet() != null) {
@@ -251,7 +258,7 @@ public class ReqCITC {
                 // TODO : account checks
                 if (mts.getCharacterId() == chr.getId()) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_Unknown)
                             .build();
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Failed, pb));
                     return true;
@@ -265,7 +272,7 @@ public class ReqCITC {
                 }
                 if (!MTSStorage.getInstance().removeFromBuyNow(mts.getId(), chr.getId(), false)) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_AlreadySoldOut)
                             .build();
                     chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Failed, pb));
                     return true;
@@ -287,28 +294,28 @@ public class ReqCITC {
                 // TODO : account checks
                 if (mts.getCharacterId() == chr.getId()) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_Unknown)
                             .build();
-                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Failed, pb));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyZzimItem_Failed, pb));
                     return true;
                 }
                 if (chr.getNexonPoint() < mts.getRealPrice()) {
                     PB_ITC pb = PB_ITC.builder()
                             .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
                             .build();
-                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Failed, pb));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyZzimItem_Failed, pb));
                     return true;
                 }
                 if (!MTSStorage.getInstance().removeFromBuyNow(mts.getId(), chr.getId(), false)) {
                     PB_ITC pb = PB_ITC.builder()
-                            .fail_reason(OpsITC.ITCFailReason_NoRemainCash)
+                            .fail_reason(OpsITC.ITCFailReason_AlreadySoldOut)
                             .build();
-                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Failed, pb));
+                    chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyZzimItem_Failed, pb));
                     return true;
                 }
                 chr.modifyCSPoints(1, -mts.getRealPrice(), false);
                 MTSStorage.getInstance().getCart(mts.getCharacterId()).increaseOwedNX(mts.getPrice());
-                chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyItem_Done));
+                chr.SendPacket(ResCITC.ITCNormalItemResult(OpsITC.ITCRes_BuyZzimItem_Done));
                 sendMTSPackets(client.getPlayer(), cart, true);
                 return true;
             }
