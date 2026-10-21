@@ -41,11 +41,11 @@ import tacos.server.TacosWorld;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import tacos.packet.ServerPacket;
 import tacos.packet.ops.OpsBodyPart;
 import tacos.packet.ops.OpsBroadcastMsg;
+import tacos.packet.ops.OpsAlliance;
 import tacos.packet.response.builder.PB_BroadcastMsg;
 import tacos.packet.ops.OpsChangeStat;
 import tacos.packet.ops.OpsEntrustedShop;
@@ -1639,6 +1639,7 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // GUILDDATA::Decode
     private static byte[] getGuildInfo(MapleGuild guild) {
         ServerPacket data = new ServerPacket();
 
@@ -1657,38 +1658,13 @@ public class ResCWvsContext {
         data.Encode1(guild.getLogoColor());
         data.EncodeStr(guild.getNotice());
         data.Encode4(guild.getGP());
-        data.Encode4(guild.getAllianceId() > 0 ? guild.getAllianceId() : 0);
+        data.Encode4(guild.getAllianceId() > 0 ? guild.getAllianceId() : 0); // nAllianceID
+        // JMS187, GMS95
+        data.Encode1(1, Config.PostBB()); // nLevel
+        // JMS188, GMS95
+        data.Encode2(0, Config.GreaterOrEqual(Region.JMS, 188) || Config.GreaterOrEqual(Region.GMS, 95)); // guild skill count
 
         return data.getBytes();
-    }
-
-    public static ServerPacket changeAlliance(MapleGuildAlliance alliance, boolean in) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
-
-        sp.Encode1(1);
-        sp.Encode1(in ? 1 : 0);
-        sp.Encode4(in ? alliance.getId() : 0);
-        int noGuilds = alliance.getNoGuilds();
-        MapleGuild[] g = new MapleGuild[noGuilds];
-        for (int i = 0; i < noGuilds; i++) {
-            g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
-            if (g[i] == null) {
-                //return WrapCWvsContext.updateStat();
-                return null;
-            }
-        }
-        sp.Encode1(noGuilds);
-        for (int i = 0; i < noGuilds; i++) {
-            sp.Encode4(g[i].getId());
-            //must be world
-            Collection<MapleGuildCharacter> members = g[i].getMembers();
-            sp.Encode4(members.size());
-            for (MapleGuildCharacter mgc : members) {
-                sp.Encode4(mgc.getId());
-                sp.Encode1(in ? mgc.getAllianceRank() : 0);
-            }
-        }
-        return sp;
     }
 
     public static ServerPacket guildMemberLevelJobUpdate(MapleGuildCharacter mgc) {
@@ -1702,10 +1678,11 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // AllianceRes_NotifyLoginOrLogout
     public static ServerPacket allianceMemberOnline(int alliance, int gid, int id, boolean online) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(14);
+        sp.Encode1(OpsAlliance.AllianceRes_NotifyLoginOrLogout.get());
         sp.Encode4(alliance);
         sp.Encode4(gid);
         sp.Encode4(id);
@@ -1713,25 +1690,11 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket changeGuildInAlliance(MapleGuildAlliance alliance, MapleGuild guild, boolean add) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
-
-        sp.Encode1(4);
-        sp.Encode4(add ? alliance.getId() : 0);
-        sp.Encode4(guild.getId());
-        Collection<MapleGuildCharacter> members = guild.getMembers();
-        sp.Encode4(members.size());
-        for (MapleGuildCharacter mgc : members) {
-            sp.Encode4(mgc.getId());
-            sp.Encode1(add ? mgc.getAllianceRank() : 0);
-        }
-        return sp;
-    }
-
+    // AllianceRes_Destroy_Done
     public static ServerPacket disbandAlliance(int alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(29);
+        sp.Encode1(OpsAlliance.AllianceRes_Destroy_Done.get());
         sp.Encode4(alliance);
         return sp;
     }
@@ -1752,36 +1715,15 @@ public class ResCWvsContext {
         return sp;
     }
 
-    public static ServerPacket updateAllianceRank(int allianceid, MapleGuildCharacter mgc) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
-
-        sp.Encode1(27);
-        sp.Encode4(allianceid);
-        sp.Encode4(mgc.getId());
-        sp.Encode4(mgc.getAllianceRank());
-        return sp;
-    }
-
+    // AllianceRes_LoadGuildDone
     public static ServerPacket getGuildAlliance(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(13);
-        if (alliance == null) {
-            sp.Encode4(0);
-            return sp;
-        }
-        int noGuilds = alliance.getNoGuilds();
-        MapleGuild[] g = new MapleGuild[noGuilds];
-        for (int i = 0; i < alliance.getNoGuilds(); i++) {
-            g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
-            if (g[i] == null) {
-                //return WrapCWvsContext.updateStat();
-                return null;
-            }
-        }
-        sp.Encode4(noGuilds);
-        for (MapleGuild gg : g) {
-            sp.EncodeBuffer(getGuildInfo(gg));
+        sp.Encode1(OpsAlliance.AllianceRes_LoadGuildDone.get());
+        List<MapleGuild> guilds = getAllianceGuilds(alliance);
+        sp.Encode4(guilds.size());
+        for (MapleGuild guild : guilds) {
+            sp.EncodeBuffer(getGuildInfo(guild)); // GUILDDATA::Decode
         }
         return sp;
     }
@@ -1793,16 +1735,6 @@ public class ResCWvsContext {
         sp.Encode4(gid);
         sp.Encode4(cid);
         sp.Encode1(bOnline ? 1 : 0);
-        return sp;
-    }
-
-    public static ServerPacket changeAllianceLeader(int allianceid, int newLeader, int oldLeader) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
-
-        sp.Encode1(2);
-        sp.Encode4(allianceid);
-        sp.Encode4(oldLeader);
-        sp.Encode4(newLeader);
         return sp;
     }
 
@@ -1863,25 +1795,36 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // ALLIANCEDATA::Decode
     private static byte[] addAllianceInfo(MapleGuildAlliance alliance) {
         ServerPacket data = new ServerPacket();
 
         data.Encode4(alliance.getId());
         data.EncodeStr(alliance.getName());
-
         for (int i = 1; i <= 5; i++) {
             data.EncodeStr(alliance.getRank(i));
         }
-
         data.Encode1(alliance.getNoGuilds());
         for (int i = 0; i < alliance.getNoGuilds(); i++) {
             data.Encode4(alliance.getGuildId(i));
         }
-
-        data.Encode4(alliance.getCapacity()); // ????
+        data.Encode4(alliance.getCapacity()); // nMaxMemberNum
         data.EncodeStr(alliance.getNotice());
-
         return data.getBytes();
+    }
+
+    private static List<MapleGuild> getAllianceGuilds(MapleGuildAlliance alliance) {
+        List<MapleGuild> guilds = new ArrayList<>();
+        if (alliance == null) {
+            return guilds;
+        }
+        for (int i = 0; i < alliance.getNoGuilds(); i++) {
+            MapleGuild guild = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
+            if (guild != null) {
+                guilds.add(guild);
+            }
+        }
+        return guilds;
     }
 
     public static ServerPacket guildDisband(int gid) {
@@ -1893,42 +1836,67 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // AllianceRes_LoadDone
     public static ServerPacket getAllianceInfo(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(12);
-        sp.Encode1(alliance == null ? 0 : 1); //in an alliance
+        sp.Encode1(OpsAlliance.AllianceRes_LoadDone.get());
+        sp.Encode1(alliance == null ? 0 : 1);
         if (alliance != null) {
-            sp.EncodeBuffer(addAllianceInfo(alliance));
+            sp.EncodeBuffer(addAllianceInfo(alliance)); // ALLIANCEDATA::Decode
         }
         return sp;
     }
 
+    // AllianceRes_ChangeMaster_Done
     public static ServerPacket updateAllianceLeader(int allianceid, int newLeader, int oldLeader) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(25);
+        sp.Encode1(OpsAlliance.AllianceRes_ChangeMaster_Done.get());
         sp.Encode4(allianceid);
-        sp.Encode4(oldLeader);
-        sp.Encode4(newLeader);
+        sp.Encode4(oldLeader); // grade 2
+        sp.Encode4(newLeader); // grade 1
         return sp;
     }
 
+    // AllianceRes_SetGradeName_Done
+    public static ServerPacket setAllianceGradeName(MapleGuildAlliance alliance) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
+
+        sp.Encode1(OpsAlliance.AllianceRes_SetGradeName_Done.get());
+        sp.Encode4(alliance.getId());
+        for (int i = 1; i <= 5; i++) {
+            sp.EncodeStr(alliance.getRank(i));
+        }
+        return sp;
+    }
+
+    // AllianceRes_SetNotice_Done
+    public static ServerPacket setAllianceNotice(MapleGuildAlliance alliance) {
+        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
+
+        sp.Encode1(OpsAlliance.AllianceRes_SetNotice_Done.get());
+        sp.Encode4(alliance.getId());
+        sp.EncodeStr(alliance.getNotice());
+        return sp;
+    }
+
+    // AllianceRes_Invite_Done
     public static ServerPacket addGuildToAlliance(MapleGuildAlliance alliance, MapleGuild newGuild) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(18);
+        sp.Encode1(OpsAlliance.AllianceRes_Invite_Done.get());
         sp.EncodeBuffer(addAllianceInfo(alliance));
-        sp.Encode4(newGuild.getId()); //???
+        sp.Encode4(newGuild.getId());
         sp.EncodeBuffer(getGuildInfo(newGuild));
-        sp.Encode1(0); //???
         return sp;
     }
 
+    // AllianceRes_ChangeLevelOrJob
     public static ServerPacket updateAlliance(MapleGuildCharacter mgc, int allianceid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(24);
+        sp.Encode1(OpsAlliance.AllianceRes_ChangeLevelOrJob.get());
         sp.Encode4(allianceid);
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
@@ -1937,13 +1905,13 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // AllianceReq_Invite
     public static ServerPacket sendAllianceInvite(String allianceName, TacosCharacter inviter) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(3);
+        sp.Encode1(OpsAlliance.AllianceReq_Invite.get());
         sp.Encode4(inviter.getGuildId());
         sp.EncodeStr(inviter.getName());
-        //alliance invite did NOT change
         sp.EncodeStr(allianceName);
         return sp;
     }
@@ -2020,22 +1988,15 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // AllianceRes_CreateDone
     public static ServerPacket createGuildAlliance(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(15);
+        sp.Encode1(OpsAlliance.AllianceRes_CreateDone.get());
         sp.EncodeBuffer(addAllianceInfo(alliance));
-        int noGuilds = alliance.getNoGuilds();
-        MapleGuild[] g = new MapleGuild[noGuilds];
-        for (int i = 0; i < alliance.getNoGuilds(); i++) {
-            g[i] = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
-            if (g[i] == null) {
-                //return WrapCWvsContext.updateStat();
-                return null;
-            }
-        }
-        for (MapleGuild gg : g) {
-            sp.EncodeBuffer(getGuildInfo(gg));
+        // GUILDDATA for each guild id in ALLIANCEDATA.
+        for (MapleGuild guild : getAllianceGuilds(alliance)) {
+            sp.EncodeBuffer(getGuildInfo(guild));
         }
         return sp;
     }
@@ -2058,13 +2019,16 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // AllianceRes_Withdraw_Done
     public static ServerPacket removeGuildFromAlliance(MapleGuildAlliance alliance, MapleGuild expelledGuild, boolean expelled) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(16);
+        sp.Encode1(OpsAlliance.AllianceRes_Withdraw_Done.get());
         sp.EncodeBuffer(addAllianceInfo(alliance));
+        sp.Encode4(expelledGuild.getId());
+        // the guild that left reads its new GUILDDATA and the message type.
         sp.EncodeBuffer(getGuildInfo(expelledGuild));
-        sp.Encode1(expelled ? 1 : 0); //1 = expelled, 0 = left
+        sp.Encode1(expelled ? 1 : 0); // 1 = expelled, 0 = left
         return sp;
     }
 
@@ -2086,10 +2050,11 @@ public class ResCWvsContext {
         return sp;
     }
 
+    // AllianceRes_UpdateAllianceInfo
     public static ServerPacket getAllianceUpdate(MapleGuildAlliance alliance) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
 
-        sp.Encode1(23);
+        sp.Encode1(OpsAlliance.AllianceRes_UpdateAllianceInfo.get());
         sp.EncodeBuffer(addAllianceInfo(alliance));
         return sp;
     }
@@ -2112,16 +2077,6 @@ public class ResCWvsContext {
         sp.Encode4(mgc.getGuildId());
         sp.Encode4(mgc.getId());
         sp.Encode1(mgc.getGuildRank());
-        return sp;
-    }
-
-    public static ServerPacket changeAllianceRank(int allianceid, MapleGuildCharacter player) {
-        ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_AllianceResult);
-
-        sp.Encode1(5);
-        sp.Encode4(allianceid);
-        sp.Encode4(player.getId());
-        sp.Encode4(player.getAllianceRank());
         return sp;
     }
 

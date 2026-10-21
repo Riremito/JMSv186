@@ -171,7 +171,6 @@ public class Alliance {
         sendGuild(ResCWvsContext.createGuildAlliance(alliance), -1, allianceid);
         sendGuild(ResCWvsContext.getAllianceInfo(alliance), -1, allianceid);
         sendGuild(ResCWvsContext.getGuildAlliance(alliance), -1, allianceid);
-        sendGuild(ResCWvsContext.changeAlliance(alliance, true), -1, allianceid);
         return true;
     }
 
@@ -199,14 +198,12 @@ public class Alliance {
                     guild.setAllianceId(allianceid);
                     guild.broadcast(ResCWvsContext.getAllianceInfo(alliance));
                     guild.broadcast(ResCWvsContext.getGuildAlliance(alliance));
-                    guild.broadcast(ResCWvsContext.changeAlliance(alliance, true));
                     guild.changeARank();
                     guild.writeToDB(false);
                 } else {
                     MapleGuild g_ = TacosWorld.find(0).getGuild().getGuild(alliance.getGuildId(i));
                     if (g_ != null) {
                         g_.broadcast(ResCWvsContext.addGuildToAlliance(alliance, guild));
-                        g_.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, guild, true));
                     }
                 }
             }
@@ -231,7 +228,6 @@ public class Alliance {
                     guild.broadcast(ResCWvsContext.disbandAlliance(allianceid));
                 } else if (g_ != null) {
                     guild.broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("[" + g_.getName() + "] Guild has left the alliance.").build()));
-                    guild.broadcast(ResCWvsContext.changeGuildInAlliance(alliance, g_, false));
                     guild.broadcast(ResCWvsContext.removeGuildFromAlliance(alliance, g_, expelled));
                 }
 

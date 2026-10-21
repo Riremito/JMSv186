@@ -135,7 +135,7 @@ public class MapleGuildAlliance {
 
     public void setRank(String[] ranks) {
         this.ranks = ranks;
-        broadcast(ResCWvsContext.getAllianceUpdate(this));
+        broadcast(ResCWvsContext.setAllianceGradeName(this));
         saveToDb();
     }
 
@@ -149,7 +149,7 @@ public class MapleGuildAlliance {
 
     public void setNotice(String newNotice) {
         this.notice = newNotice;
-        broadcast(ResCWvsContext.getAllianceUpdate(this));
+        broadcast(ResCWvsContext.setAllianceNotice(this));
         broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message("Alliance Notice : " + newNotice).build()));
         saveToDb();
     }
@@ -184,29 +184,22 @@ public class MapleGuildAlliance {
 
     public boolean removeGuild(int guildid, boolean expelled) {
         for (int i = 0; i < getNoGuilds(); i++) {
-            if (guilds[i] == guildid) {
-                broadcast(null, guildid, GAOp.DISBAND, expelled);
-                if (i > 0 && i != getNoGuilds() - 1) { // if guild isnt the last guild.. damnit
-                    for (int x = i + 1; x < getNoGuilds(); x++) {
-                        if (guilds[x] > 0) {
-                            guilds[x - 1] = guilds[x];
-                            if (x == getNoGuilds() - 1) {
-                                guilds[x] = -1;
-                            }
-                        }
-                    }
-                } else {
-                    guilds[i] = -1;
-                }
-                if (i == 0) { //leader guild.. FUCK THIS ALLIANCE! xD
-                    return disband();
-                } else {
-                    broadcast(ResCWvsContext.getAllianceUpdate(this));
-                    broadcast(ResCWvsContext.getGuildAlliance(this));
-                    saveToDb();
-                    return true;
-                }
+            if (guilds[i] != guildid) {
+                continue;
             }
+            broadcast(null, guildid, GAOp.DISBAND, expelled);
+            // the first guild is the leader guild.
+            if (i == 0) {
+                return disband();
+            }
+            for (int x = i; x < guilds.length - 1; x++) {
+                guilds[x] = guilds[x + 1];
+            }
+            guilds[guilds.length - 1] = -1;
+            broadcast(ResCWvsContext.getAllianceUpdate(this));
+            broadcast(ResCWvsContext.getGuildAlliance(this));
+            saveToDb();
+            return true;
         }
         return false;
     }
@@ -249,8 +242,7 @@ public class MapleGuildAlliance {
         if (leaderName != null) {
             broadcast(ResCWvsContext.BroadcastMsg(OpsBroadcastMsg.BM_EVENT, PB_BroadcastMsg.builder().message(leaderName + " has become the leader of the alliance.").build()));
         }
-        broadcast(ResCWvsContext.changeAllianceLeader(allianceid, leaderid, c));
-        broadcast(ResCWvsContext.updateAllianceLeader(allianceid, leaderid, c));
+        broadcast(ResCWvsContext.updateAllianceLeader(allianceid, c, leaderid));
         broadcast(ResCWvsContext.getAllianceUpdate(this));
         broadcast(ResCWvsContext.getGuildAlliance(this));
         this.leaderid = c;

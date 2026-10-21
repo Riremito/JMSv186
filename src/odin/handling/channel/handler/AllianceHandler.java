@@ -21,138 +21,170 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package odin.handling.channel.handler;
 
-import tacos.client.TacosCharacter;
+import odin.handling.world.Alliance;
 import odin.handling.world.guild.MapleGuild;
-import tacos.packet.response.ResCWvsContext;
+import odin.handling.world.guild.MapleGuildAlliance;
+import tacos.client.TacosCharacter;
+import tacos.debug.DebugLogger;
 import tacos.packet.ClientPacket;
 import tacos.packet.ServerPacket;
+import tacos.packet.ops.OpsAlliance;
+import tacos.packet.response.ResCWvsContext;
 
 public class AllianceHandler {
 
-    public static void HandleAlliance(ClientPacket cp, TacosCharacter player, boolean denied) {
-        TacosCharacter chr = player;
-        if (chr.getGuildId() <= 0) {
+    // CP_AllianceRequest (result = false), CP_AllianceResult (result = true)
+    public static void HandleAlliance(ClientPacket cp, TacosCharacter chr, boolean result) {
+        MapleGuild guild = (chr.getGuildId() > 0) ? chr.getWorld().getGuild().getGuild(chr.getGuildId()) : null;
+        if (guild == null) {
             chr.updateStat();
             return;
         }
-        MapleGuild gs = player.getWorld().getGuild().getGuild(chr.getGuildId());
-        if (gs == null) {
-            chr.updateStat();
+        int op = cp.Decode1();
+        OpsAlliance ops = OpsAlliance.find(op);
+        // only loading does not need the guild master.
+        if (ops != OpsAlliance.AllianceReq_Load && chr.getGuildRank() != 1) {
             return;
         }
-        //System.out.println("Unhandled GuildAlliance \n" + slea.toString());
-        byte op = cp.Decode1();
-        if (chr.getGuildRank() != 1 && op != 1) { //only updating doesn't need guild leader
+
+        Alliance world_alliance = chr.getWorld().getAlliance();
+        int alliance_id = guild.getAllianceId();
+        int leader_id = (alliance_id > 0) ? world_alliance.getAllianceLeader(alliance_id) : 0;
+
+        // CFadeWnd::SendCloseMessage, CWvsContext::OnAllianceResult
+        if (result) {
+            switch (ops) {
+                case AllianceRes_InviteGuild_BlockedByOpt:
+                case AllianceRes_InviteGuild_AlreadyInvited:
+                case AllianceRes_InviteGuild_Rejected: {
+                    if (alliance_id <= 0 && leader_id <= 0) {
+                        denyInvite(chr, guild);
+                    }
+                    break;
+                }
+                default: {
+                    DebugLogger.ErrorLog("AllianceResult : not coded " + op);
+                    break;
+                }
+            }
             return;
         }
-        if (op == 22) {
-            denied = true;
-        }
-        int leaderid = 0;
-        if (gs.getAllianceId() > 0) {
-            leaderid = player.getWorld().getAlliance().getAllianceLeader(gs.getAllianceId());
-        }
-        //accept invite, and deny invite don't need allianceid.
-        if (op != 4 && !denied) {
-            if (gs.getAllianceId() <= 0 || leaderid <= 0) {
+
+        // joining needs no alliance, the others need an alliance.
+        if (ops == OpsAlliance.AllianceReq_Join) {
+            if (alliance_id > 0 || leader_id > 0) {
                 return;
             }
-        } else if (leaderid > 0 || gs.getAllianceId() > 0) { //infact, if they have allianceid it's suspicious
+        } else if (alliance_id <= 0 || leader_id <= 0) {
             return;
         }
-        if (denied) {
-            DenyInvite(player, gs);
-            return;
-        }
-        int inviteid;
-        switch (op) {
-            case 1: //load... must be in world op
 
-                for (ServerPacket pack : player.getWorld().getAlliance().getAllianceInfo(gs.getAllianceId(), false)) {
-                    if (pack != null) {
-                        chr.SendPacket(pack);
-                    }
+        boolean is_leader = chr.getAllianceRank() == 1 && leader_id == chr.getId();
+        switch (ops) {
+            case AllianceReq_Load: {
+                for (ServerPacket sp : world_alliance.getAllianceInfo(alliance_id, false)) {
+                    chr.SendPacket(sp);
                 }
                 break;
-            case 3: //invite
-                int newGuild = player.getWorld().getGuild().getGuildLeader(cp.DecodeStr());
-                if (newGuild > 0 && chr.getAllianceRank() == 1 && leaderid == chr.getId()) {
-                    chr = player.getChannelServer().getOnlinePlayers().findById(newGuild);
-                    if (chr != null && chr.getGuildId() > 0 && player.getWorld().getAlliance().canInvite(gs.getAllianceId())) {
-                        chr.SendPacket(ResCWvsContext.sendAllianceInvite(player.getWorld().getAlliance().getAlliance(gs.getAllianceId()).getName(), player));
-                        player.getWorld().getGuild().setInvitedId(chr.getGuildId(), gs.getAllianceId());
-                    }
+            }
+            case AllianceReq_Withdraw: {
+                if (chr.getAllianceRank() <= 2 && !world_alliance.removeGuildFromAlliance(alliance_id, guild.getId(), false)) {
+                    chr.Notice("An error occured when removing guild.");
                 }
                 break;
-            case 4: //accept invite... guildid that invited(int, a/b check) -> guildname that was invited? but we dont care about that
-                inviteid = player.getWorld().getGuild().getInvitedId(player.getGuildId());
-                if (inviteid > 0) {
-                    if (!player.getWorld().getAlliance().addGuildToAlliance(inviteid, player.getGuildId())) {
-                        player.Notice("An error occured when adding guild.");
-                    }
-                    player.getWorld().getGuild().setInvitedId(player.getGuildId(), 0);
+            }
+            case AllianceReq_Invite: {
+                String guild_name = cp.DecodeStr();
+                int new_guild_leader = chr.getWorld().getGuild().getGuildLeader(guild_name);
+                if (new_guild_leader <= 0 || !is_leader) {
+                    break;
+                }
+                TacosCharacter target = chr.getChannelServer().getOnlinePlayers().findById(new_guild_leader);
+                if (target == null || target.getGuildId() <= 0 || !world_alliance.canInvite(alliance_id)) {
+                    break;
+                }
+                MapleGuildAlliance alliance = world_alliance.getAlliance(alliance_id);
+                target.SendPacket(ResCWvsContext.sendAllianceInvite(alliance.getName(), chr));
+                chr.getWorld().getGuild().setInvitedId(target.getGuildId(), alliance_id);
+                break;
+            }
+            case AllianceReq_Join: {
+                // dwInviterID and the name follow, not used.
+                int invited_alliance_id = chr.getWorld().getGuild().getInvitedId(guild.getId());
+                if (invited_alliance_id <= 0) {
+                    break;
+                }
+                if (!world_alliance.addGuildToAlliance(invited_alliance_id, guild.getId())) {
+                    chr.Notice("An error occured when adding guild.");
+                }
+                chr.getWorld().getGuild().setInvitedId(guild.getId(), 0);
+                break;
+            }
+            case AllianceReq_Kick: {
+                int guild_id = cp.Decode4();
+                int kick_alliance_id = cp.Decode4();
+                boolean can_kick = chr.getAllianceRank() == 1 || (chr.getAllianceRank() == 2 && guild_id == guild.getId());
+                if (kick_alliance_id != alliance_id || !can_kick) {
+                    break;
+                }
+                if (!world_alliance.removeGuildFromAlliance(alliance_id, guild_id, guild_id != guild.getId())) {
+                    chr.Notice("An error occured when removing guild.");
                 }
                 break;
-            case 2: //leave; nothing
-            case 6: //expel, guildid(int) -> allianceid(don't care, a/b check)
-                int gid;
-                if (op == 6/* && slea.available() >= 4*/) {
-                    gid = cp.Decode4();
-                    if (/*slea.available() >= 4 &&*/gs.getAllianceId() != cp.Decode4()) {
-                        break;
-                    }
-                } else {
-                    gid = player.getGuildId();
-                }
-                if (player.getAllianceRank() <= 2 && (player.getAllianceRank() == 1 || player.getGuildId() == gid) && !player.getWorld().getAlliance().removeGuildFromAlliance(gs.getAllianceId(), gid, player.getGuildId() != gid)) {
-                    player.Notice("An error occured when removing guild.");
+            }
+            case AllianceReq_ChangeMaster: {
+                int new_leader_id = cp.Decode4();
+                if (is_leader && !world_alliance.changeAllianceLeader(alliance_id, new_leader_id)) {
+                    chr.Notice("An error occured when changing leader.");
                 }
                 break;
-            case 7: //change leader
-                if (player.getAllianceRank() == 1 && leaderid == player.getId() && !player.getWorld().getAlliance().changeAllianceLeader(gs.getAllianceId(), cp.Decode4())) {
-                    player.Notice("An error occured when changing leader.");
+            }
+            case AllianceReq_SetGradeName: {
+                String[] grade_names = new String[5];
+                for (int i = 0; i < grade_names.length; i++) {
+                    grade_names[i] = cp.DecodeStr();
+                }
+                if (is_leader) {
+                    world_alliance.updateAllianceRanks(alliance_id, grade_names);
                 }
                 break;
-            case 8: //title update
-                if (player.getAllianceRank() == 1 && leaderid == player.getId()) {
-                    String[] ranks = new String[5];
-                    for (int i = 0; i < 5; i++) {
-                        ranks[i] = cp.DecodeStr();
-                    }
-                    player.getWorld().getAlliance().updateAllianceRanks(gs.getAllianceId(), ranks);
+            }
+            case AllianceReq_ChangeGrade: {
+                int character_id = cp.Decode4();
+                int up = cp.Decode1(); // bUp
+                if (chr.getAllianceRank() <= 2 && !world_alliance.changeAllianceRank(alliance_id, character_id, up)) {
+                    chr.Notice("An error occured when changing rank.");
                 }
                 break;
-            case 9:
-                if (player.getAllianceRank() <= 2 && !player.getWorld().getAlliance().changeAllianceRank(gs.getAllianceId(), cp.Decode4(), cp.Decode1())) {
-                    player.Notice("An error occured when changing rank.");
+            }
+            case AllianceReq_SetNotice: {
+                String notice = cp.DecodeStr();
+                if (chr.getAllianceRank() <= 2 && notice.length() <= 100) {
+                    world_alliance.updateAllianceNotice(alliance_id, notice);
                 }
                 break;
-            case 10: //notice update
-                if (player.getAllianceRank() <= 2) {
-                    String notice = cp.DecodeStr();
-                    if (notice.length() > 100) {
-                        break;
-                    }
-                    player.getWorld().getAlliance().updateAllianceNotice(gs.getAllianceId(), notice);
-                }
+            }
+            default: {
+                DebugLogger.ErrorLog("AllianceRequest : not coded " + op);
                 break;
-            default:
-                System.out.println("Unhandled GuildAlliance op: " + op + ", \n"/* + slea.toString()*/);
-                break;
+            }
         }
     }
 
-    public static void DenyInvite(TacosCharacter player, MapleGuild gs) { //playername that invited -> guildname that was invited but we also don't care
-        int inviteid = player.getWorld().getGuild().getInvitedId(player.getGuildId());
-        if (inviteid > 0) {
-            int newAlliance = player.getWorld().getAlliance().getAllianceLeader(inviteid);
-            if (newAlliance > 0) {
-                TacosCharacter chr = player.getChannelServer().getOnlinePlayers().findById(newAlliance);
-                if (chr != null) {
-                    chr.Notice(gs.getName() + " Guild has rejected the Guild Union invitation.");
-                }
-                player.getWorld().getGuild().setInvitedId(player.getGuildId(), 0);
-            }
+    // the guild master refused the invitation.
+    private static void denyInvite(TacosCharacter chr, MapleGuild guild) {
+        int invited_alliance_id = chr.getWorld().getGuild().getInvitedId(guild.getId());
+        if (invited_alliance_id <= 0) {
+            return;
         }
+        int alliance_leader_id = chr.getWorld().getAlliance().getAllianceLeader(invited_alliance_id);
+        if (alliance_leader_id <= 0) {
+            return;
+        }
+        TacosCharacter alliance_leader = chr.getChannelServer().getOnlinePlayers().findById(alliance_leader_id);
+        if (alliance_leader != null) {
+            alliance_leader.Notice(guild.getName() + " Guild has rejected the Guild Union invitation.");
+        }
+        chr.getWorld().getGuild().setInvitedId(guild.getId(), 0);
     }
 }

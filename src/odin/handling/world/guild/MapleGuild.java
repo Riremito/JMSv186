@@ -402,8 +402,6 @@ public class MapleGuild {
                     setOfflineGuildStatus((short) this.id, (byte) mgc.getGuildRank(), (byte) newRank, cid);
                 }
                 mgc.setAllianceRank((byte) newRank);
-                //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.changeAllianceRank(allianceid, mgc), -1, allianceid);
-                //WorldRegistryImpl.getInstance().sendGuild(MaplePacketCreator.updateAllianceRank(allianceid, mgc), -1, allianceid);
                 TacosWorld.find(0).getAlliance().sendGuild(allianceid);
                 return;
             }
