@@ -18,59 +18,14 @@
  */
 package tacos.packet.ops;
 
+import tacos.config.Region;
+
 /**
  *
  * @author Riremito
  */
-public enum OpsCashItemFailReason {
-    // JMS v186
-    CashItemFailReason_Timeout(0xB2),
-    CashItemFailReason_NoRemainCash(0xB4),
-    CashItemFailReason_GiftUnderAge(0xB5),
-    CashItemFailReason_GiftLimitOver(0xB6),
-    CashItemFailReason_GiftSameAccount(0xB7),
-    CashItemFailReason_GiftUnknownRecipient(0xB8),
-    CashItemFailReason_GiftRecipientGenderMismatch(0xB9),
-    CashItemFailReason_GiftRecipientLockerFull(0xBA),
-    CashItemFailReason_BuyStoredProcFailed(0xBB),
-    CashItemFailReason_InvalidCoupon(0xBF),
-    CashItemFailReason_ExpiredCoupon(0xC0),
-    CashItemFailReason_UsedCoupon(0xC1),
-    CashItemFailReason_CouponForCafeOnly(0xC2),
-    CashItemFailReason_CouponForCafeOnly_Used(0xC3),
-    CashItemFailReason_CouponForCafeOnly_Expired(0xC4),
-    CashItemFailReason_NotAvailableCoupon(0xC5),
-    CashItemFailReason_GenderMisMatch(0xC6),
-    CashItemFailReason_GiftNormalItem(0xC7),
-    CashItemFailReason_GiftMaplePoint(0xC8),
-    CashItemFailReason_NoEmptyPos(0xC9),
-    CashItemFailReason_ForPremiumUserOnly(0xCA),
-    CashItemFailReason_BuyCoupleStoredProcFailed(0xCB),
-    CashItemFailReason_BuyFriendshipStoredProcFailed(0xCC),
-    CashItemFailReason_NotAvailableTime(0xCD),
-    CashItemFailReason_NoStock(0xCE),
-    CashItemFailReason_PurchaseLimitOver(0xCF),
-    CashItemFailReason_NoRemainMeso(0xD0),
-    CashItemFailReason_InvalidPassportID(0xD1),
-    CashItemFailReason_IncorrectSSN2(0xD2), // インベントリに空きがないため、プレゼントが渡せませんでした。
-    CashItemFailReason_ForNoPurchaseExpUsersOnly(0xD3),
-    CashItemFailReason_AlreadyApplied(0xD4),
-    CashItemFailReason_GachaponLimitOver(0xD9),
-    CashItemFailReason_CouponLimitError(0xDC),
-    CashItemFailReason_Account_Age_limit(0xDE),
-    CashItemFailReason_GiftNoMoney(0xDF),
-    CashItemFailReason_ExceedLimit(0xE1),
-    CashItemFailReason_UnknownError(0xE3),
-    CashItemFailReason_LevelLimit_20(0xE4),
-    CashItemFailReason_TransferWorldFailed_InvalidWorld_SameWorld(0xE5),
-    CashItemFailReason_TransferWorldFailed_InvalidWorld_NewWorld(0xE6),
-    CashItemFailReason_TransferWorldFailed_MaxCharacter(0xE7),
-    // 0xE8 Lv30以上
-    // 0xE9 Lv70以上
-    CashItemFailReason_OnlyNXCash(0xEC),
-    CashItemFailReason_TryAgainRandomBox(0xED), // しばらく後もう一度行ってください。
+public enum OpsCashItemFailReason implements IPacketOps {
     // GMS v95
-    /*
     CashItemFailReason_Unknown(0x0),
     CashItemFailReason_Timeout(0x1),
     CashItemFailReason_CashDaemonDBError(0x2),
@@ -141,29 +96,94 @@ public enum OpsCashItemFailReason {
     CashItemFailReason_GiftTooYoungToRecv(0x43),
     CashItemFailReason_LimitOverTheItem(0x44),
     CashItemFailReason_CashLock(0x45),
-     */
-    UNKNOWN(-1);
+    UNKNOWN;
 
+    private final int gms95;
     private int value;
 
-    OpsCashItemFailReason(int flag) {
-        value = flag;
+    OpsCashItemFailReason(int val) {
+        this.gms95 = val;
+        this.value = val;
     }
 
     OpsCashItemFailReason() {
-        value = -1;
+        this.gms95 = -1;
+        this.value = -1;
     }
 
+    @Override
     public int get() {
-        return value;
+        return this.value;
+    }
+
+    @Override
+    public void set(int val) {
+        this.value = val;
     }
 
     public static OpsCashItemFailReason find(int val) {
-        for (OpsCashItemFailReason o : OpsCashItemFailReason.values()) {
-            if (o.get() == val) {
-                return o;
+        for (OpsCashItemFailReason ops : values()) {
+            if (ops.get() == val && val != UNKNOWN.get()) {
+                return ops;
             }
         }
         return UNKNOWN;
+    }
+
+    public static void init() {
+        for (OpsCashItemFailReason ops : values()) {
+            ops.set(ops.gms95);
+        }
+        if (!Region.JMS.check()) {
+            return;
+        }
+        // JMS v186
+        for (OpsCashItemFailReason ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+        CashItemFailReason_Timeout.set(0xB2);
+        CashItemFailReason_NoRemainCash.set(0xB4);
+        CashItemFailReason_GiftUnderAge.set(0xB5);
+        CashItemFailReason_GiftLimitOver.set(0xB6);
+        CashItemFailReason_GiftSameAccount.set(0xB7);
+        CashItemFailReason_GiftUnknownRecipient.set(0xB8);
+        CashItemFailReason_GiftRecipientGenderMismatch.set(0xB9);
+        CashItemFailReason_GiftRecipientLockerFull.set(0xBA);
+        CashItemFailReason_BuyStoredProcFailed.set(0xBB);
+        CashItemFailReason_InvalidCoupon.set(0xBF);
+        CashItemFailReason_ExpiredCoupon.set(0xC0);
+        CashItemFailReason_UsedCoupon.set(0xC1);
+        CashItemFailReason_CouponForCafeOnly.set(0xC2);
+        CashItemFailReason_CouponForCafeOnly_Used.set(0xC3);
+        CashItemFailReason_CouponForCafeOnly_Expired.set(0xC4);
+        CashItemFailReason_NotAvailableCoupon.set(0xC5);
+        CashItemFailReason_GenderMisMatch.set(0xC6);
+        CashItemFailReason_GiftNormalItem.set(0xC7);
+        CashItemFailReason_GiftMaplePoint.set(0xC8);
+        CashItemFailReason_NoEmptyPos.set(0xC9);
+        CashItemFailReason_ForPremiumUserOnly.set(0xCA);
+        CashItemFailReason_BuyCoupleStoredProcFailed.set(0xCB);
+        CashItemFailReason_BuyFriendshipStoredProcFailed.set(0xCC);
+        CashItemFailReason_NotAvailableTime.set(0xCD);
+        CashItemFailReason_NoStock.set(0xCE);
+        CashItemFailReason_PurchaseLimitOver.set(0xCF);
+        CashItemFailReason_NoRemainMeso.set(0xD0);
+        CashItemFailReason_InvalidPassportID.set(0xD1);
+        CashItemFailReason_IncorrectSSN2.set(0xD2); // インベントリに空きがないため、プレゼントが渡せませんでした。
+        CashItemFailReason_ForNoPurchaseExpUsersOnly.set(0xD3);
+        CashItemFailReason_AlreadyApplied.set(0xD4);
+        CashItemFailReason_GachaponLimitOver.set(0xD9);
+        CashItemFailReason_CouponLimitError.set(0xDC);
+        CashItemFailReason_Account_Age_limit.set(0xDE);
+        CashItemFailReason_GiftNoMoney.set(0xDF);
+        CashItemFailReason_ExceedLimit.set(0xE1);
+        CashItemFailReason_UnknownError.set(0xE3);
+        CashItemFailReason_LevelLimit_20.set(0xE4);
+        CashItemFailReason_TransferWorldFailed_InvalidWorld_SameWorld.set(0xE5);
+        CashItemFailReason_TransferWorldFailed_InvalidWorld_NewWorld.set(0xE6);
+        CashItemFailReason_TransferWorldFailed_MaxCharacter.set(0xE7);
+        CashItemFailReason_OnlyNXCash.set(0xEC);
+        CashItemFailReason_TryAgainRandomBox.set(0xED); // しばらく後もう一度行ってください。
+        // 0xE8 Lv30以上, 0xE9 Lv70以上
     }
 }

@@ -408,7 +408,7 @@ public class ResCCashShop {
     public static ServerPacket cashItemExpired(int uniqueid) {
         ServerPacket sp = new ServerPacket(ServerPacketHeader.LP_CashShopCashItemResult);
 
-        sp.Encode1(113); //use to be 5d
+        sp.Encode1(OpsCashItem.CashItemRes_Expire_Done.get());
         sp.Encode8(uniqueid);
         return sp;
     }

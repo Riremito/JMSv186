@@ -27,6 +27,7 @@ public class PacketOps {
     public static void initAll() {
         OpsAttackIndex.init();
         OpsCashItem.init();
+        OpsCashItemFailReason.init();
         OpsNewCharacter.init();
         OpsDBCHAR.init();
         OpsChangeStat.init();

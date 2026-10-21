@@ -26,69 +26,11 @@ import tacos.config.Region;
  * @author Riremito
  */
 public enum OpsCashItem implements IPacketOps {
-    // JMS v186
-    CashItemReq_Buy(0x03),
-    CashItemReq_Gift(0x04),
-    CashItemReq_SetWish(0x05),
-    CashItemReq_IncSlotCount(0x06),
-    CashItemReq_IncTrunkCount(0x07),
-    CashItemReq_MoveLtoS(0x0E),
-    CashItemReq_MoveStoL(0x0F),
-    CashItemReq_Destroy(0x1B),
-    CashItemReq_BuyPackage(0x1F),
-    CashItemReq_BuyNormal(0x21),
-    CashItemReq_FreeCashItem(0x2A),
-    //
-    CashItemReq_ItemUpgrade(51),
-    CashItemRes_ItemUpgradeSuccess(52),
-    CashItemReq_ItemUpgradeFail(53),
-    CashItemReq_ItemUpgradeReq(54),
-    CashItemReq_ItemUpgradeDone(55),
-    CashItemRes_ItemUpgradeDone(56),
-    CashItemRes_ItemUpgradeErr(57),
-    CashItemReq_Vega(58),
-    CashItemRes_VegaSuccess1(59),
-    CashItemRes_VegaSuccess2(60),
-    CashItemRes_VegaErr(61),
-    CashItemRes_VegaErr2(62),
-    CashItemRes_VegaErr_InvalidItem(63),
-    CashItemRes_VegaFail(64),
-    //
-    CashItemRes_LoadLocker_Done(0x4E),
-    CashItemRes_LoadLocker_Failed(0x4F),
-    CashItemRes_LoadGift_Done(0x50),
-    CashItemRes_LoadGift_Failed(0x51),
-    CashItemRes_LoadWish_Done(0x52),
-    CashItemRes_LoadWish_Failed(0x53),
-    CashItemRes_SetWish_Done(0x56),
-    CashItemRes_SetWish_Failed(0x57),
-    CashItemRes_Buy_Done(0x58),
-    CashItemRes_Buy_Failed(0x59),
-    CashItemRes_UseCoupon_Done(0x5A),
-    CashItemRes_GiftCoupon_Done(0x5C),
-    CashItemRes_UseCoupon_Failed(0x5D),
-    CashItemRes_IncSlotCount_Done(0x61),
-    CashItemRes_IncSlotCount_Failed(0x62),
-    CashItemRes_IncTrunkCount_Done(0x63),
-    CashItemRes_IncTrunkCount_Failed(0x64),
-    CashItemRes_MoveLtoS_Done(0x6B),
-    CashItemRes_MoveLtoS_Failed(0x6C),
-    CashItemRes_MoveStoL_Done(0x6D),
-    CashItemRes_MoveStoL_Failed(0x6E),
-    CashItemRes_Destroy_Done(0x6F),
-    CashItemRes_Destroy_Failed(0x70),
-    CashItemRes_BuyNormal_Done(0x90),
-    CashItemRes_BuyNormal_Failed(0x91),
-    CashItemRes_BuyPackage_Done(-1),
-    CashItemRes_BuyPackage_Failed(-1),
-    CashItemRes_FreeCashItem_Done(0xA5),
-    CashItemRes_GashItemGachapon_Failed(0xEA),
-    CashItemRes_CashItemGachapon_Done(0xEB),
     // GMS v95
-    //CashItemReq_WebShopOrderGetList(0x0),
-    //CashItemReq_LoadLocker(0x1),
-    //CashItemReq_LoadWish(0x2),
-    /*
+    CashItemReq_WebShopOrderGetList(0x0),
+    CashItemReq_LoadLocker(0x1),
+    CashItemReq_LoadWish(0x2),
+    CashItemReq_Buy(0x3),
     CashItemReq_Gift(0x4),
     CashItemReq_SetWish(0x5),
     CashItemReq_IncSlotCount(0x6),
@@ -118,7 +60,8 @@ public enum OpsCashItem implements IPacketOps {
     CashItemReq_GiftCoupon(0x1E),
     CashItemReq_Couple(0x1F),
     CashItemReq_BuyPackage(0x20),
-    //CashItemReq_GiftPackage(0x21),
+    CashItemReq_GiftPackage(0x21),
+    CashItemReq_BuyNormal(0x22),
     CashItemReq_ApplyWishListEvent(0x23),
     CashItemReq_MovePetStat(0x24),
     CashItemReq_FriendShip(0x25),
@@ -278,17 +221,19 @@ public enum OpsCashItem implements IPacketOps {
     CashItemRes_Give_Failed(0xBF),
     CashItemRes_GashItemGachapon_Failed(0xC0),
     CashItemRes_CashItemGachapon_Done(0xC1),
-     */
     UNKNOWN;
 
+    private final int gms95;
     private int value;
 
     OpsCashItem(int val) {
-        value = val;
+        this.gms95 = val;
+        this.value = val;
     }
 
     OpsCashItem() {
-        value = -1;
+        this.gms95 = -1;
+        this.value = -1;
     }
 
     @Override
@@ -302,15 +247,89 @@ public enum OpsCashItem implements IPacketOps {
     }
 
     public static OpsCashItem find(int val) {
-        for (OpsCashItem o : OpsCashItem.values()) {
-            if (o.get() == val) {
-                return o;
+        for (OpsCashItem ops : values()) {
+            if (ops.get() == val && val != UNKNOWN.get()) {
+                return ops;
             }
         }
         return UNKNOWN;
     }
 
     public static void init() {
+        for (OpsCashItem ops : values()) {
+            ops.set(ops.gms95);
+        }
+        if (!Region.JMS.check()) {
+            return;
+        }
+        // JMS v186 (CCashShop::OnCashItemResult), others are not used.
+        for (OpsCashItem ops : values()) {
+            ops.set(UNKNOWN.get());
+        }
+        CashItemReq_Buy.set(0x3);
+        CashItemReq_Gift.set(0x4);
+        CashItemReq_SetWish.set(0x5);
+        CashItemReq_IncSlotCount.set(0x6);
+        CashItemReq_IncTrunkCount.set(0x7);
+        CashItemReq_MoveLtoS.set(0xE);
+        CashItemReq_MoveStoL.set(0xF);
+        CashItemReq_Destroy.set(0x1B);
+        CashItemReq_BuyPackage.set(0x1F);
+        CashItemReq_BuyNormal.set(0x21);
+        CashItemReq_FreeCashItem.set(0x2A);
+        CashItemReq_ItemUpgrade.set(0x33);
+        CashItemRes_ItemUpgradeSuccess.set(0x34);
+        CashItemReq_ItemUpgradeFail.set(0x35);
+        CashItemReq_ItemUpgradeReq.set(0x36);
+        CashItemReq_ItemUpgradeDone.set(0x37);
+        CashItemRes_ItemUpgradeDone.set(0x38);
+        CashItemRes_ItemUpgradeErr.set(0x39);
+        CashItemReq_Vega.set(0x3A);
+        CashItemRes_VegaSuccess1.set(0x3B);
+        CashItemRes_VegaSuccess2.set(0x3C);
+        CashItemRes_VegaErr.set(0x3D);
+        CashItemRes_VegaErr2.set(0x3E);
+        CashItemRes_VegaErr_InvalidItem.set(0x3F);
+        CashItemRes_VegaFail.set(0x40);
+        CashItemRes_LoadLocker_Done.set(0x4E);
+        CashItemRes_LoadLocker_Failed.set(0x4F);
+        CashItemRes_LoadGift_Done.set(0x50);
+        CashItemRes_LoadGift_Failed.set(0x51);
+        CashItemRes_LoadWish_Done.set(0x52);
+        CashItemRes_LoadWish_Failed.set(0x53);
+        CashItemRes_SetWish_Done.set(0x56);
+        CashItemRes_SetWish_Failed.set(0x57);
+        CashItemRes_Buy_Done.set(0x58);
+        CashItemRes_Buy_Failed.set(0x59);
+        CashItemRes_UseCoupon_Done.set(0x5A);
+        CashItemRes_GiftCoupon_Done.set(0x5C);
+        CashItemRes_UseCoupon_Failed.set(0x5D);
+        CashItemRes_IncSlotCount_Done.set(0x61);
+        CashItemRes_IncSlotCount_Failed.set(0x62);
+        CashItemRes_IncTrunkCount_Done.set(0x63);
+        CashItemRes_IncTrunkCount_Failed.set(0x64);
+        CashItemRes_MoveLtoS_Done.set(0x6B);
+        CashItemRes_MoveLtoS_Failed.set(0x6C);
+        CashItemRes_MoveStoL_Done.set(0x6D);
+        CashItemRes_MoveStoL_Failed.set(0x6E);
+        CashItemRes_Destroy_Done.set(0x6F);
+        CashItemRes_Destroy_Failed.set(0x70);
+        CashItemRes_Expire_Done.set(0x71);
+        CashItemRes_BuyNormal_Done.set(0x90);
+        CashItemRes_BuyNormal_Failed.set(0x91);
+        CashItemRes_BuyPackage_Done.set(-1);
+        CashItemRes_BuyPackage_Failed.set(-1);
+        CashItemRes_FreeCashItem_Done.set(0xA5);
+        CashItemRes_GashItemGachapon_Failed.set(0xEA);
+        CashItemRes_CashItemGachapon_Done.set(0xEB);
+        // JMS v147 : the results from 0x4A to 0x6D are 28 smaller.
+        if (Config.LessOrEqual(Region.JMS, 164)) {
+            for (OpsCashItem ops : values()) {
+                if (0x4A <= ops.get() && ops.get() <= 0x6D && ops.name().startsWith("CashItemRes_")) {
+                    ops.set(ops.get() - 28);
+                }
+            }
+        }
         if (Config.GreaterOrEqual(Region.JMS, 187)) {
             CashItemReq_ItemUpgrade.set(52);
             CashItemRes_ItemUpgradeSuccess.set(53);
@@ -343,6 +362,5 @@ public enum OpsCashItem implements IPacketOps {
             CashItemRes_VegaErr_InvalidItem.set(CashItemReq_ItemUpgrade.get() + 12);
             CashItemRes_VegaFail.set(CashItemReq_ItemUpgrade.get() + 13);
         }
-        return;
     }
 }
